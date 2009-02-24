@@ -1,0 +1,707 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>boto.mashups.order</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="boto-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="boto-module.html">Package&nbsp;boto</a> ::
+        <a href="boto.mashups-module.html">Package&nbsp;mashups</a> ::
+        Module&nbsp;order
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="boto.mashups.order-pysrc.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="boto.mashups.order-module.html">Module boto.mashups.order</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno">  1</tt>  <tt class="py-line"><tt class="py-comment"># Copyright (c) 2006,2007 Mitch Garnaat http://garnaat.org/</tt> </tt>
+<a name="L2"></a><tt class="py-lineno">  2</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment">#</tt> </tt>
+<a name="L3"></a><tt class="py-lineno">  3</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># Permission is hereby granted, free of charge, to any person obtaining a</tt> </tt>
+<a name="L4"></a><tt class="py-lineno">  4</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># copy of this software and associated documentation files (the</tt> </tt>
+<a name="L5"></a><tt class="py-lineno">  5</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># "Software"), to deal in the Software without restriction, including</tt> </tt>
+<a name="L6"></a><tt class="py-lineno">  6</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># without limitation the rights to use, copy, modify, merge, publish, dis-</tt> </tt>
+<a name="L7"></a><tt class="py-lineno">  7</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># tribute, sublicense, and/or sell copies of the Software, and to permit</tt> </tt>
+<a name="L8"></a><tt class="py-lineno">  8</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># persons to whom the Software is furnished to do so, subject to the fol-</tt> </tt>
+<a name="L9"></a><tt class="py-lineno">  9</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># lowing conditions:</tt> </tt>
+<a name="L10"></a><tt class="py-lineno"> 10</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment">#</tt> </tt>
+<a name="L11"></a><tt class="py-lineno"> 11</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># The above copyright notice and this permission notice shall be included</tt> </tt>
+<a name="L12"></a><tt class="py-lineno"> 12</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># in all copies or substantial portions of the Software.</tt> </tt>
+<a name="L13"></a><tt class="py-lineno"> 13</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment">#</tt> </tt>
+<a name="L14"></a><tt class="py-lineno"> 14</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS</tt> </tt>
+<a name="L15"></a><tt class="py-lineno"> 15</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABIL-</tt> </tt>
+<a name="L16"></a><tt class="py-lineno"> 16</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># ITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT</tt> </tt>
+<a name="L17"></a><tt class="py-lineno"> 17</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># SHALL THE AUTHOR BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, </tt> </tt>
+<a name="L18"></a><tt class="py-lineno"> 18</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</tt> </tt>
+<a name="L19"></a><tt class="py-lineno"> 19</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS</tt> </tt>
+<a name="L20"></a><tt class="py-lineno"> 20</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># IN THE SOFTWARE.</tt> </tt>
+<a name="L21"></a><tt class="py-lineno"> 21</tt>  <tt class="py-line"><tt class="py-comment"></tt> </tt>
+<a name="L22"></a><tt class="py-lineno"> 22</tt>  <tt class="py-line"><tt class="py-docstring">"""</tt> </tt>
+<a name="L23"></a><tt class="py-lineno"> 23</tt>  <tt class="py-line"><tt class="py-docstring">High-level abstraction of an EC2 order for servers</tt> </tt>
+<a name="L24"></a><tt class="py-lineno"> 24</tt>  <tt class="py-line"><tt class="py-docstring">"""</tt> </tt>
+<a name="L25"></a><tt class="py-lineno"> 25</tt>  <tt class="py-line"> </tt>
+<a name="L26"></a><tt class="py-lineno"> 26</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt id="link-0" class="py-name" targets="Package boto=boto-module.html"><a title="boto" class="py-name" href="#" onclick="return doclink('link-0', 'boto', 'link-0');">boto</a></tt> </tt>
+<a name="L27"></a><tt class="py-lineno"> 27</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt id="link-1" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-1', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-2" class="py-name" targets="Package boto.ec2=boto.ec2-module.html,Variable boto.mashups.server.Server.ec2=boto.mashups.server.Server-class.html#ec2"><a title="boto.ec2
+boto.mashups.server.Server.ec2" class="py-name" href="#" onclick="return doclink('link-2', 'ec2', 'link-2');">ec2</a></tt> </tt>
+<a name="L28"></a><tt class="py-lineno"> 28</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-3" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-3', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-4" class="py-name" targets="Package boto.mashups=boto.mashups-module.html"><a title="boto.mashups" class="py-name" href="#" onclick="return doclink('link-4', 'mashups', 'link-4');">mashups</a></tt><tt class="py-op">.</tt><tt id="link-5" class="py-name" targets="Module boto.mashups.server=boto.mashups.server-module.html"><a title="boto.mashups.server" class="py-name" href="#" onclick="return doclink('link-5', 'server', 'link-5');">server</a></tt> <tt class="py-keyword">import</tt> <tt id="link-6" class="py-name" targets="Class boto.mashups.server.Server=boto.mashups.server.Server-class.html"><a title="boto.mashups.server.Server" class="py-name" href="#" onclick="return doclink('link-6', 'Server', 'link-6');">Server</a></tt><tt class="py-op">,</tt> <tt id="link-7" class="py-name" targets="Class boto.mashups.server.ServerSet=boto.mashups.server.ServerSet-class.html"><a title="boto.mashups.server.ServerSet" class="py-name" href="#" onclick="return doclink('link-7', 'ServerSet', 'link-7');">ServerSet</a></tt> </tt>
+<a name="L29"></a><tt class="py-lineno"> 29</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-8" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-8', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-9" class="py-name"><a title="boto.mashups" class="py-name" href="#" onclick="return doclink('link-9', 'mashups', 'link-4');">mashups</a></tt><tt class="py-op">.</tt><tt id="link-10" class="py-name" targets="Module boto.mashups.iobject=boto.mashups.iobject-module.html"><a title="boto.mashups.iobject" class="py-name" href="#" onclick="return doclink('link-10', 'iobject', 'link-10');">iobject</a></tt> <tt class="py-keyword">import</tt> <tt id="link-11" class="py-name" targets="Class boto.mashups.iobject.IObject=boto.mashups.iobject.IObject-class.html"><a title="boto.mashups.iobject.IObject" class="py-name" href="#" onclick="return doclink('link-11', 'IObject', 'link-11');">IObject</a></tt> </tt>
+<a name="L30"></a><tt class="py-lineno"> 30</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-12" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-12', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-13" class="py-name" targets="Package boto.pyami=boto.pyami-module.html"><a title="boto.pyami" class="py-name" href="#" onclick="return doclink('link-13', 'pyami', 'link-13');">pyami</a></tt><tt class="py-op">.</tt><tt id="link-14" class="py-name" targets="Variable boto.config=boto-module.html#config,Variable boto.mashups.server.Server.config=boto.mashups.server.Server-class.html#config,Module boto.pyami.config=boto.pyami.config-module.html"><a title="boto.config
+boto.mashups.server.Server.config
+boto.pyami.config" class="py-name" href="#" onclick="return doclink('link-14', 'config', 'link-14');">config</a></tt> <tt class="py-keyword">import</tt> <tt id="link-15" class="py-name" targets="Class boto.pyami.config.Config=boto.pyami.config.Config-class.html"><a title="boto.pyami.config.Config" class="py-name" href="#" onclick="return doclink('link-15', 'Config', 'link-15');">Config</a></tt> </tt>
+<a name="L31"></a><tt class="py-lineno"> 31</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-16" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-16', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-17" class="py-name" targets="Package boto.sdb=boto.sdb-module.html"><a title="boto.sdb" class="py-name" href="#" onclick="return doclink('link-17', 'sdb', 'link-17');">sdb</a></tt><tt class="py-op">.</tt><tt id="link-18" class="py-name" targets="Package boto.sdb.persist=boto.sdb.persist-module.html"><a title="boto.sdb.persist" class="py-name" href="#" onclick="return doclink('link-18', 'persist', 'link-18');">persist</a></tt> <tt class="py-keyword">import</tt> <tt id="link-19" class="py-name" targets="Method boto.sdb.connection.SDBConnection.get_domain()=boto.sdb.connection.SDBConnection-class.html#get_domain,Function boto.sdb.persist.get_domain()=boto.sdb.persist-module.html#get_domain"><a title="boto.sdb.connection.SDBConnection.get_domain
+boto.sdb.persist.get_domain" class="py-name" href="#" onclick="return doclink('link-19', 'get_domain', 'link-19');">get_domain</a></tt><tt class="py-op">,</tt> <tt id="link-20" class="py-name" targets="Function boto.sdb.persist.set_domain()=boto.sdb.persist-module.html#set_domain"><a title="boto.sdb.persist.set_domain" class="py-name" href="#" onclick="return doclink('link-20', 'set_domain', 'link-20');">set_domain</a></tt> </tt>
+<a name="L32"></a><tt class="py-lineno"> 32</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">time</tt><tt class="py-op">,</tt> <tt class="py-name">StringIO</tt> </tt>
+<a name="L33"></a><tt class="py-lineno"> 33</tt>  <tt class="py-line"> </tt>
+<a name="L34"></a><tt class="py-lineno"> 34</tt>  <tt class="py-line"><tt id="link-21" class="py-name" targets="Variable boto.mashups.order.InstanceTypes=boto.mashups.order-module.html#InstanceTypes"><a title="boto.mashups.order.InstanceTypes" class="py-name" href="#" onclick="return doclink('link-21', 'InstanceTypes', 'link-21');">InstanceTypes</a></tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-string">'m1.small'</tt><tt class="py-op">,</tt> <tt class="py-string">'m1.large'</tt><tt class="py-op">,</tt> <tt class="py-string">'m1.xlarge'</tt><tt class="py-op">,</tt> <tt class="py-string">'c1.medium'</tt><tt class="py-op">,</tt> <tt class="py-string">'c1.xlarge'</tt><tt class="py-op">]</tt> </tt>
+<a name="L35"></a><tt class="py-lineno"> 35</tt>  <tt class="py-line"> </tt>
+<a name="Item"></a><div id="Item-def"><a name="L36"></a><tt class="py-lineno"> 36</tt> <a class="py-toggle" href="#" id="Item-toggle" onclick="return toggle('Item');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="boto.mashups.order.Item-class.html">Item</a><tt class="py-op">(</tt><tt class="py-base-class">IObject</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Item-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="Item-expanded"><a name="L37"></a><tt class="py-lineno"> 37</tt>  <tt class="py-line">     </tt>
+<a name="Item.__init__"></a><div id="Item.__init__-def"><a name="L38"></a><tt class="py-lineno"> 38</tt> <a class="py-toggle" href="#" id="Item.__init__-toggle" onclick="return toggle('Item.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.mashups.order.Item-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Item.__init__-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Item.__init__-expanded"><a name="L39"></a><tt class="py-lineno"> 39</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">region</tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+<a name="L40"></a><tt class="py-lineno"> 40</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-22" class="py-name" targets="Variable boto.mapreduce.partitiondb.Partition.name=boto.mapreduce.partitiondb.Partition-class.html#name,Variable boto.mapreduce.partitiondb.PartitionDB.name=boto.mapreduce.partitiondb.PartitionDB-class.html#name,Variable boto.mapreduce.partitiondb.Version.name=boto.mapreduce.partitiondb.Version-class.html#name,Variable boto.mashups.server.Server.name=boto.mashups.server.Server-class.html#name,Method boto.sdb.db.key.Key.name()=boto.sdb.db.key.Key-class.html#name,Variable boto.sdb.db.property.Property.name=boto.sdb.db.property.Property-class.html#name,Variable boto.sdb.db.test_db.TestBasic.name=boto.sdb.db.test_db.TestBasic-class.html#name,Variable boto.sdb.db.test_db.TestList.name=boto.sdb.db.test_db.TestList-class.html#name,Variable boto.sdb.db.test_db.TestListReference.name=boto.sdb.db.test_db.TestListReference-class.html#name,Variable boto.sdb.db.test_db.TestUnique.name=boto.sdb.db.test_db.TestUnique-class.html#name,Variable boto.sdb.persist.test_persist.TestRef.name=boto.sdb.persist.test_persist.TestRef-class.html#name,Variable boto.sdb.persist.test_persist.TestScalar.name=boto.sdb.persist.test_persist.TestScalar-class.html#name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-22', 'name', 'link-22');">name</a></tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+<a name="L41"></a><tt class="py-lineno"> 41</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-23" class="py-name" targets="Variable boto.mashups.server.Server.instance_type=boto.mashups.server.Server-class.html#instance_type"><a title="boto.mashups.server.Server.instance_type" class="py-name" href="#" onclick="return doclink('link-23', 'instance_type', 'link-23');">instance_type</a></tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+<a name="L42"></a><tt class="py-lineno"> 42</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">quantity</tt> <tt class="py-op">=</tt> <tt class="py-number">0</tt> </tt>
+<a name="L43"></a><tt class="py-lineno"> 43</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-24" class="py-name" targets="Module boto.ec2.zone=boto.ec2.zone-module.html,Variable boto.mashups.server.Server.zone=boto.mashups.server.Server-class.html#zone"><a title="boto.ec2.zone
+boto.mashups.server.Server.zone" class="py-name" href="#" onclick="return doclink('link-24', 'zone', 'link-24');">zone</a></tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+<a name="L44"></a><tt class="py-lineno"> 44</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-25" class="py-name" targets="Variable boto.mashups.server.Server.ami=boto.mashups.server.Server-class.html#ami"><a title="boto.mashups.server.Server.ami" class="py-name" href="#" onclick="return doclink('link-25', 'ami', 'link-25');">ami</a></tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+<a name="L45"></a><tt class="py-lineno"> 45</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-26" class="py-name" targets="Variable boto.mashups.server.Server.groups=boto.mashups.server.Server-class.html#groups"><a title="boto.mashups.server.Server.groups" class="py-name" href="#" onclick="return doclink('link-26', 'groups', 'link-26');">groups</a></tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt> </tt>
+<a name="L46"></a><tt class="py-lineno"> 46</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-27" class="py-name" targets="Module boto.s3.key=boto.s3.key-module.html,Module boto.sdb.db.key=boto.sdb.db.key-module.html,Method boto.sdb.db.model.Model.key()=boto.sdb.db.model.Model-class.html#key,Method boto.sdb.db.model.Model.key()=boto.sdb.db.model.Model-class.html#key"><a title="boto.s3.key
+boto.sdb.db.key
+boto.sdb.db.model.Model.key
+boto.sdb.db.model.Model.key" class="py-name" href="#" onclick="return doclink('link-27', 'key', 'link-27');">key</a></tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+<a name="L47"></a><tt class="py-lineno"> 47</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-28" class="py-name"><a title="boto.ec2
+boto.mashups.server.Server.ec2" class="py-name" href="#" onclick="return doclink('link-28', 'ec2', 'link-2');">ec2</a></tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+<a name="L48"></a><tt class="py-lineno"> 48</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-29" class="py-name"><a title="boto.config
+boto.mashups.server.Server.config
+boto.pyami.config" class="py-name" href="#" onclick="return doclink('link-29', 'config', 'link-14');">config</a></tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+</div><a name="L49"></a><tt class="py-lineno"> 49</tt>  <tt class="py-line"> </tt>
+<a name="Item.set_userdata"></a><div id="Item.set_userdata-def"><a name="L50"></a><tt class="py-lineno"> 50</tt> <a class="py-toggle" href="#" id="Item.set_userdata-toggle" onclick="return toggle('Item.set_userdata');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.mashups.order.Item-class.html#set_userdata">set_userdata</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">key</tt><tt class="py-op">,</tt> <tt class="py-param">value</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Item.set_userdata-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Item.set_userdata-expanded"><a name="L51"></a><tt class="py-lineno"> 51</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">userdata</tt><tt class="py-op">[</tt><tt id="link-30" class="py-name"><a title="boto.s3.key
+boto.sdb.db.key
+boto.sdb.db.model.Model.key
+boto.sdb.db.model.Model.key" class="py-name" href="#" onclick="return doclink('link-30', 'key', 'link-27');">key</a></tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">value</tt> </tt>
+</div><a name="L52"></a><tt class="py-lineno"> 52</tt>  <tt class="py-line"> </tt>
+<a name="Item.get_userdata"></a><div id="Item.get_userdata-def"><a name="L53"></a><tt class="py-lineno"> 53</tt> <a class="py-toggle" href="#" id="Item.get_userdata-toggle" onclick="return toggle('Item.get_userdata');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.mashups.order.Item-class.html#get_userdata">get_userdata</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">key</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Item.get_userdata-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Item.get_userdata-expanded"><a name="L54"></a><tt class="py-lineno"> 54</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">userdata</tt><tt class="py-op">[</tt><tt id="link-31" class="py-name"><a title="boto.s3.key
+boto.sdb.db.key
+boto.sdb.db.model.Model.key
+boto.sdb.db.model.Model.key" class="py-name" href="#" onclick="return doclink('link-31', 'key', 'link-27');">key</a></tt><tt class="py-op">]</tt> </tt>
+</div><a name="L55"></a><tt class="py-lineno"> 55</tt>  <tt class="py-line"> </tt>
+<a name="Item.set_region"></a><div id="Item.set_region-def"><a name="L56"></a><tt class="py-lineno"> 56</tt> <a class="py-toggle" href="#" id="Item.set_region-toggle" onclick="return toggle('Item.set_region');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.mashups.order.Item-class.html#set_region">set_region</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">region</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Item.set_region-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Item.set_region-expanded"><a name="L57"></a><tt class="py-lineno"> 57</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">region</tt><tt class="py-op">:</tt> </tt>
+<a name="L58"></a><tt class="py-lineno"> 58</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">region</tt> <tt class="py-op">=</tt> <tt class="py-name">region</tt> </tt>
+<a name="L59"></a><tt class="py-lineno"> 59</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L60"></a><tt class="py-lineno"> 60</tt>  <tt class="py-line">            <tt class="py-name">l</tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-op">(</tt><tt class="py-name">r</tt><tt class="py-op">,</tt> <tt class="py-name">r</tt><tt class="py-op">.</tt><tt id="link-32" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-32', 'name', 'link-22');">name</a></tt><tt class="py-op">,</tt> <tt class="py-name">r</tt><tt class="py-op">.</tt><tt class="py-name">url</tt><tt class="py-op">)</tt> <tt class="py-keyword">for</tt> <tt class="py-name">r</tt> <tt class="py-keyword">in</tt> <tt id="link-33" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-33', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-34" class="py-name"><a title="boto.ec2
+boto.mashups.server.Server.ec2" class="py-name" href="#" onclick="return doclink('link-34', 'ec2', 'link-2');">ec2</a></tt><tt class="py-op">.</tt><tt id="link-35" class="py-name" targets="Function boto.ec2.regions()=boto.ec2-module.html#regions"><a title="boto.ec2.regions" class="py-name" href="#" onclick="return doclink('link-35', 'regions', 'link-35');">regions</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">]</tt> </tt>
+<a name="L61"></a><tt class="py-lineno"> 61</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">region</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-36" class="py-name" targets="Method boto.mashups.iobject.IObject.choose_from_list()=boto.mashups.iobject.IObject-class.html#choose_from_list,Method boto.mashups.iobject.IObject.choose_from_list()=boto.mashups.iobject.IObject-class.html#choose_from_list"><a title="boto.mashups.iobject.IObject.choose_from_list
+boto.mashups.iobject.IObject.choose_from_list" class="py-name" href="#" onclick="return doclink('link-36', 'choose_from_list', 'link-36');">choose_from_list</a></tt><tt class="py-op">(</tt><tt class="py-name">l</tt><tt class="py-op">,</tt> <tt class="py-name">prompt</tt><tt class="py-op">=</tt><tt class="py-string">'Choose Region'</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L62"></a><tt class="py-lineno"> 62</tt>  <tt class="py-line"> </tt>
+<a name="Item.set_name"></a><div id="Item.set_name-def"><a name="L63"></a><tt class="py-lineno"> 63</tt> <a class="py-toggle" href="#" id="Item.set_name-toggle" onclick="return toggle('Item.set_name');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.mashups.order.Item-class.html#set_name">set_name</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">name</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Item.set_name-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Item.set_name-expanded"><a name="L64"></a><tt class="py-lineno"> 64</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt id="link-37" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-37', 'name', 'link-22');">name</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L65"></a><tt class="py-lineno"> 65</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-38" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-38', 'name', 'link-22');">name</a></tt> <tt class="py-op">=</tt> <tt id="link-39" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-39', 'name', 'link-22');">name</a></tt> </tt>
+<a name="L66"></a><tt class="py-lineno"> 66</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L67"></a><tt class="py-lineno"> 67</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-40" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-40', 'name', 'link-22');">name</a></tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-41" class="py-name" targets="Method boto.mashups.iobject.IObject.get_string()=boto.mashups.iobject.IObject-class.html#get_string,Method boto.mashups.iobject.IObject.get_string()=boto.mashups.iobject.IObject-class.html#get_string"><a title="boto.mashups.iobject.IObject.get_string
+boto.mashups.iobject.IObject.get_string" class="py-name" href="#" onclick="return doclink('link-41', 'get_string', 'link-41');">get_string</a></tt><tt class="py-op">(</tt><tt class="py-string">'Name'</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L68"></a><tt class="py-lineno"> 68</tt>  <tt class="py-line"> </tt>
+<a name="Item.set_instance_type"></a><div id="Item.set_instance_type-def"><a name="L69"></a><tt class="py-lineno"> 69</tt> <a class="py-toggle" href="#" id="Item.set_instance_type-toggle" onclick="return toggle('Item.set_instance_type');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.mashups.order.Item-class.html#set_instance_type">set_instance_type</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">instance_type</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Item.set_instance_type-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Item.set_instance_type-expanded"><a name="L70"></a><tt class="py-lineno"> 70</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt id="link-42" class="py-name"><a title="boto.mashups.server.Server.instance_type" class="py-name" href="#" onclick="return doclink('link-42', 'instance_type', 'link-23');">instance_type</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L71"></a><tt class="py-lineno"> 71</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-43" class="py-name"><a title="boto.mashups.server.Server.instance_type" class="py-name" href="#" onclick="return doclink('link-43', 'instance_type', 'link-23');">instance_type</a></tt> <tt class="py-op">=</tt> <tt id="link-44" class="py-name"><a title="boto.mashups.server.Server.instance_type" class="py-name" href="#" onclick="return doclink('link-44', 'instance_type', 'link-23');">instance_type</a></tt> </tt>
+<a name="L72"></a><tt class="py-lineno"> 72</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L73"></a><tt class="py-lineno"> 73</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-45" class="py-name"><a title="boto.mashups.server.Server.instance_type" class="py-name" href="#" onclick="return doclink('link-45', 'instance_type', 'link-23');">instance_type</a></tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-46" class="py-name"><a title="boto.mashups.iobject.IObject.choose_from_list
+boto.mashups.iobject.IObject.choose_from_list" class="py-name" href="#" onclick="return doclink('link-46', 'choose_from_list', 'link-36');">choose_from_list</a></tt><tt class="py-op">(</tt><tt id="link-47" class="py-name"><a title="boto.mashups.order.InstanceTypes" class="py-name" href="#" onclick="return doclink('link-47', 'InstanceTypes', 'link-21');">InstanceTypes</a></tt><tt class="py-op">,</tt> <tt class="py-string">'Instance Type'</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L74"></a><tt class="py-lineno"> 74</tt>  <tt class="py-line"> </tt>
+<a name="Item.set_quantity"></a><div id="Item.set_quantity-def"><a name="L75"></a><tt class="py-lineno"> 75</tt> <a class="py-toggle" href="#" id="Item.set_quantity-toggle" onclick="return toggle('Item.set_quantity');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.mashups.order.Item-class.html#set_quantity">set_quantity</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">n</tt><tt class="py-op">=</tt><tt class="py-number">0</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Item.set_quantity-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Item.set_quantity-expanded"><a name="L76"></a><tt class="py-lineno"> 76</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">n</tt> <tt class="py-op">&gt;</tt> <tt class="py-number">0</tt><tt class="py-op">:</tt> </tt>
+<a name="L77"></a><tt class="py-lineno"> 77</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">quantity</tt> <tt class="py-op">=</tt> <tt class="py-name">n</tt> </tt>
+<a name="L78"></a><tt class="py-lineno"> 78</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L79"></a><tt class="py-lineno"> 79</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">quantity</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-48" class="py-name" targets="Method boto.mashups.iobject.IObject.get_int()=boto.mashups.iobject.IObject-class.html#get_int,Method boto.mashups.iobject.IObject.get_int()=boto.mashups.iobject.IObject-class.html#get_int"><a title="boto.mashups.iobject.IObject.get_int
+boto.mashups.iobject.IObject.get_int" class="py-name" href="#" onclick="return doclink('link-48', 'get_int', 'link-48');">get_int</a></tt><tt class="py-op">(</tt><tt class="py-string">'Quantity'</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L80"></a><tt class="py-lineno"> 80</tt>  <tt class="py-line"> </tt>
+<a name="Item.set_zone"></a><div id="Item.set_zone-def"><a name="L81"></a><tt class="py-lineno"> 81</tt> <a class="py-toggle" href="#" id="Item.set_zone-toggle" onclick="return toggle('Item.set_zone');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.mashups.order.Item-class.html#set_zone">set_zone</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">zone</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Item.set_zone-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Item.set_zone-expanded"><a name="L82"></a><tt class="py-lineno"> 82</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt id="link-49" class="py-name"><a title="boto.ec2.zone
+boto.mashups.server.Server.zone" class="py-name" href="#" onclick="return doclink('link-49', 'zone', 'link-24');">zone</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L83"></a><tt class="py-lineno"> 83</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-50" class="py-name"><a title="boto.ec2.zone
+boto.mashups.server.Server.zone" class="py-name" href="#" onclick="return doclink('link-50', 'zone', 'link-24');">zone</a></tt> <tt class="py-op">=</tt> <tt id="link-51" class="py-name"><a title="boto.ec2.zone
+boto.mashups.server.Server.zone" class="py-name" href="#" onclick="return doclink('link-51', 'zone', 'link-24');">zone</a></tt> </tt>
+<a name="L84"></a><tt class="py-lineno"> 84</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L85"></a><tt class="py-lineno"> 85</tt>  <tt class="py-line">            <tt class="py-name">l</tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-op">(</tt><tt class="py-name">z</tt><tt class="py-op">,</tt> <tt class="py-name">z</tt><tt class="py-op">.</tt><tt id="link-52" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-52', 'name', 'link-22');">name</a></tt><tt class="py-op">,</tt> <tt class="py-name">z</tt><tt class="py-op">.</tt><tt class="py-name">state</tt><tt class="py-op">)</tt> <tt class="py-keyword">for</tt> <tt class="py-name">z</tt> <tt class="py-keyword">in</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-53" class="py-name"><a title="boto.ec2
+boto.mashups.server.Server.ec2" class="py-name" href="#" onclick="return doclink('link-53', 'ec2', 'link-2');">ec2</a></tt><tt class="py-op">.</tt><tt id="link-54" class="py-name" targets="Method boto.ec2.connection.EC2Connection.get_all_zones()=boto.ec2.connection.EC2Connection-class.html#get_all_zones"><a title="boto.ec2.connection.EC2Connection.get_all_zones" class="py-name" href="#" onclick="return doclink('link-54', 'get_all_zones', 'link-54');">get_all_zones</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">]</tt> </tt>
+<a name="L86"></a><tt class="py-lineno"> 86</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-55" class="py-name"><a title="boto.ec2.zone
+boto.mashups.server.Server.zone" class="py-name" href="#" onclick="return doclink('link-55', 'zone', 'link-24');">zone</a></tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-56" class="py-name"><a title="boto.mashups.iobject.IObject.choose_from_list
+boto.mashups.iobject.IObject.choose_from_list" class="py-name" href="#" onclick="return doclink('link-56', 'choose_from_list', 'link-36');">choose_from_list</a></tt><tt class="py-op">(</tt><tt class="py-name">l</tt><tt class="py-op">,</tt> <tt class="py-name">prompt</tt><tt class="py-op">=</tt><tt class="py-string">'Choose Availability Zone'</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L87"></a><tt class="py-lineno"> 87</tt>  <tt class="py-line">             </tt>
+<a name="Item.set_ami"></a><div id="Item.set_ami-def"><a name="L88"></a><tt class="py-lineno"> 88</tt> <a class="py-toggle" href="#" id="Item.set_ami-toggle" onclick="return toggle('Item.set_ami');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.mashups.order.Item-class.html#set_ami">set_ami</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">ami</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Item.set_ami-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Item.set_ami-expanded"><a name="L89"></a><tt class="py-lineno"> 89</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt id="link-57" class="py-name"><a title="boto.mashups.server.Server.ami" class="py-name" href="#" onclick="return doclink('link-57', 'ami', 'link-25');">ami</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L90"></a><tt class="py-lineno"> 90</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-58" class="py-name"><a title="boto.mashups.server.Server.ami" class="py-name" href="#" onclick="return doclink('link-58', 'ami', 'link-25');">ami</a></tt> <tt class="py-op">=</tt> <tt id="link-59" class="py-name"><a title="boto.mashups.server.Server.ami" class="py-name" href="#" onclick="return doclink('link-59', 'ami', 'link-25');">ami</a></tt> </tt>
+<a name="L91"></a><tt class="py-lineno"> 91</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L92"></a><tt class="py-lineno"> 92</tt>  <tt class="py-line">            <tt class="py-name">l</tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-op">(</tt><tt class="py-name">a</tt><tt class="py-op">,</tt> <tt class="py-name">a</tt><tt class="py-op">.</tt><tt id="link-60" class="py-name" targets="Method boto.sdb.db.key.Key.id()=boto.sdb.db.key.Key-class.html#id"><a title="boto.sdb.db.key.Key.id" class="py-name" href="#" onclick="return doclink('link-60', 'id', 'link-60');">id</a></tt><tt class="py-op">,</tt> <tt class="py-name">a</tt><tt class="py-op">.</tt><tt class="py-name">location</tt><tt class="py-op">)</tt> <tt class="py-keyword">for</tt> <tt class="py-name">a</tt> <tt class="py-keyword">in</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-61" class="py-name"><a title="boto.ec2
+boto.mashups.server.Server.ec2" class="py-name" href="#" onclick="return doclink('link-61', 'ec2', 'link-2');">ec2</a></tt><tt class="py-op">.</tt><tt id="link-62" class="py-name" targets="Method boto.ec2.connection.EC2Connection.get_all_images()=boto.ec2.connection.EC2Connection-class.html#get_all_images"><a title="boto.ec2.connection.EC2Connection.get_all_images" class="py-name" href="#" onclick="return doclink('link-62', 'get_all_images', 'link-62');">get_all_images</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">]</tt> </tt>
+<a name="L93"></a><tt class="py-lineno"> 93</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-63" class="py-name"><a title="boto.mashups.server.Server.ami" class="py-name" href="#" onclick="return doclink('link-63', 'ami', 'link-25');">ami</a></tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-64" class="py-name"><a title="boto.mashups.iobject.IObject.choose_from_list
+boto.mashups.iobject.IObject.choose_from_list" class="py-name" href="#" onclick="return doclink('link-64', 'choose_from_list', 'link-36');">choose_from_list</a></tt><tt class="py-op">(</tt><tt class="py-name">l</tt><tt class="py-op">,</tt> <tt class="py-name">prompt</tt><tt class="py-op">=</tt><tt class="py-string">'Choose AMI'</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L94"></a><tt class="py-lineno"> 94</tt>  <tt class="py-line"> </tt>
+<a name="Item.add_group"></a><div id="Item.add_group-def"><a name="L95"></a><tt class="py-lineno"> 95</tt> <a class="py-toggle" href="#" id="Item.add_group-toggle" onclick="return toggle('Item.add_group');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.mashups.order.Item-class.html#add_group">add_group</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">group</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Item.add_group-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Item.add_group-expanded"><a name="L96"></a><tt class="py-lineno"> 96</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">group</tt><tt class="py-op">:</tt> </tt>
+<a name="L97"></a><tt class="py-lineno"> 97</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-65" class="py-name"><a title="boto.mashups.server.Server.groups" class="py-name" href="#" onclick="return doclink('link-65', 'groups', 'link-26');">groups</a></tt><tt class="py-op">.</tt><tt id="link-66" class="py-name" targets="Method boto.sdb.persist.property.MultiValue.append()=boto.sdb.persist.property.MultiValue-class.html#append"><a title="boto.sdb.persist.property.MultiValue.append" class="py-name" href="#" onclick="return doclink('link-66', 'append', 'link-66');">append</a></tt><tt class="py-op">(</tt><tt class="py-name">group</tt><tt class="py-op">)</tt> </tt>
+<a name="L98"></a><tt class="py-lineno"> 98</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L99"></a><tt class="py-lineno"> 99</tt>  <tt class="py-line">            <tt class="py-name">l</tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-op">(</tt><tt class="py-name">s</tt><tt class="py-op">,</tt> <tt class="py-name">s</tt><tt class="py-op">.</tt><tt id="link-67" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-67', 'name', 'link-22');">name</a></tt><tt class="py-op">,</tt> <tt class="py-name">s</tt><tt class="py-op">.</tt><tt id="link-68" class="py-name" targets="Variable boto.mashups.server.Server.description=boto.mashups.server.Server-class.html#description,Variable boto.sdb.persist.test_persist.TestScalar.description=boto.sdb.persist.test_persist.TestScalar-class.html#description"><a title="boto.mashups.server.Server.description
+boto.sdb.persist.test_persist.TestScalar.description" class="py-name" href="#" onclick="return doclink('link-68', 'description', 'link-68');">description</a></tt><tt class="py-op">)</tt> <tt class="py-keyword">for</tt> <tt class="py-name">s</tt> <tt class="py-keyword">in</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-69" class="py-name"><a title="boto.ec2
+boto.mashups.server.Server.ec2" class="py-name" href="#" onclick="return doclink('link-69', 'ec2', 'link-2');">ec2</a></tt><tt class="py-op">.</tt><tt id="link-70" class="py-name" targets="Method boto.ec2.connection.EC2Connection.get_all_security_groups()=boto.ec2.connection.EC2Connection-class.html#get_all_security_groups"><a title="boto.ec2.connection.EC2Connection.get_all_security_groups" class="py-name" href="#" onclick="return doclink('link-70', 'get_all_security_groups', 'link-70');">get_all_security_groups</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">]</tt> </tt>
+<a name="L100"></a><tt class="py-lineno">100</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-71" class="py-name"><a title="boto.mashups.server.Server.groups" class="py-name" href="#" onclick="return doclink('link-71', 'groups', 'link-26');">groups</a></tt><tt class="py-op">.</tt><tt id="link-72" class="py-name"><a title="boto.sdb.persist.property.MultiValue.append" class="py-name" href="#" onclick="return doclink('link-72', 'append', 'link-66');">append</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-73" class="py-name"><a title="boto.mashups.iobject.IObject.choose_from_list
+boto.mashups.iobject.IObject.choose_from_list" class="py-name" href="#" onclick="return doclink('link-73', 'choose_from_list', 'link-36');">choose_from_list</a></tt><tt class="py-op">(</tt><tt class="py-name">l</tt><tt class="py-op">,</tt> <tt class="py-name">prompt</tt><tt class="py-op">=</tt><tt class="py-string">'Choose Security Group'</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L101"></a><tt class="py-lineno">101</tt>  <tt class="py-line"> </tt>
+<a name="Item.set_key"></a><div id="Item.set_key-def"><a name="L102"></a><tt class="py-lineno">102</tt> <a class="py-toggle" href="#" id="Item.set_key-toggle" onclick="return toggle('Item.set_key');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.mashups.order.Item-class.html#set_key">set_key</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">key</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Item.set_key-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Item.set_key-expanded"><a name="L103"></a><tt class="py-lineno">103</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt id="link-74" class="py-name"><a title="boto.s3.key
+boto.sdb.db.key
+boto.sdb.db.model.Model.key
+boto.sdb.db.model.Model.key" class="py-name" href="#" onclick="return doclink('link-74', 'key', 'link-27');">key</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L104"></a><tt class="py-lineno">104</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-75" class="py-name"><a title="boto.s3.key
+boto.sdb.db.key
+boto.sdb.db.model.Model.key
+boto.sdb.db.model.Model.key" class="py-name" href="#" onclick="return doclink('link-75', 'key', 'link-27');">key</a></tt> <tt class="py-op">=</tt> <tt id="link-76" class="py-name"><a title="boto.s3.key
+boto.sdb.db.key
+boto.sdb.db.model.Model.key
+boto.sdb.db.model.Model.key" class="py-name" href="#" onclick="return doclink('link-76', 'key', 'link-27');">key</a></tt> </tt>
+<a name="L105"></a><tt class="py-lineno">105</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L106"></a><tt class="py-lineno">106</tt>  <tt class="py-line">            <tt class="py-name">l</tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-op">(</tt><tt class="py-name">k</tt><tt class="py-op">,</tt> <tt class="py-name">k</tt><tt class="py-op">.</tt><tt id="link-77" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-77', 'name', 'link-22');">name</a></tt><tt class="py-op">,</tt> <tt class="py-string">''</tt><tt class="py-op">)</tt> <tt class="py-keyword">for</tt> <tt class="py-name">k</tt> <tt class="py-keyword">in</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-78" class="py-name"><a title="boto.ec2
+boto.mashups.server.Server.ec2" class="py-name" href="#" onclick="return doclink('link-78', 'ec2', 'link-2');">ec2</a></tt><tt class="py-op">.</tt><tt id="link-79" class="py-name" targets="Method boto.ec2.connection.EC2Connection.get_all_key_pairs()=boto.ec2.connection.EC2Connection-class.html#get_all_key_pairs"><a title="boto.ec2.connection.EC2Connection.get_all_key_pairs" class="py-name" href="#" onclick="return doclink('link-79', 'get_all_key_pairs', 'link-79');">get_all_key_pairs</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">]</tt> </tt>
+<a name="L107"></a><tt class="py-lineno">107</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-80" class="py-name"><a title="boto.s3.key
+boto.sdb.db.key
+boto.sdb.db.model.Model.key
+boto.sdb.db.model.Model.key" class="py-name" href="#" onclick="return doclink('link-80', 'key', 'link-27');">key</a></tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-81" class="py-name"><a title="boto.mashups.iobject.IObject.choose_from_list
+boto.mashups.iobject.IObject.choose_from_list" class="py-name" href="#" onclick="return doclink('link-81', 'choose_from_list', 'link-36');">choose_from_list</a></tt><tt class="py-op">(</tt><tt class="py-name">l</tt><tt class="py-op">,</tt> <tt class="py-name">prompt</tt><tt class="py-op">=</tt><tt class="py-string">'Choose Keypair'</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L108"></a><tt class="py-lineno">108</tt>  <tt class="py-line"> </tt>
+<a name="Item.update_config"></a><div id="Item.update_config-def"><a name="L109"></a><tt class="py-lineno">109</tt> <a class="py-toggle" href="#" id="Item.update_config-toggle" onclick="return toggle('Item.update_config');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.mashups.order.Item-class.html#update_config">update_config</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Item.update_config-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Item.update_config-expanded"><a name="L110"></a><tt class="py-lineno">110</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-keyword">not</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-82" class="py-name"><a title="boto.config
+boto.mashups.server.Server.config
+boto.pyami.config" class="py-name" href="#" onclick="return doclink('link-82', 'config', 'link-14');">config</a></tt><tt class="py-op">.</tt><tt class="py-name">has_section</tt><tt class="py-op">(</tt><tt class="py-string">'Credentials'</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L111"></a><tt class="py-lineno">111</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-83" class="py-name"><a title="boto.config
+boto.mashups.server.Server.config
+boto.pyami.config" class="py-name" href="#" onclick="return doclink('link-83', 'config', 'link-14');">config</a></tt><tt class="py-op">.</tt><tt class="py-name">add_section</tt><tt class="py-op">(</tt><tt class="py-string">'Credentials'</tt><tt class="py-op">)</tt> </tt>
+<a name="L112"></a><tt class="py-lineno">112</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-84" class="py-name"><a title="boto.config
+boto.mashups.server.Server.config
+boto.pyami.config" class="py-name" href="#" onclick="return doclink('link-84', 'config', 'link-14');">config</a></tt><tt class="py-op">.</tt><tt id="link-85" class="py-name" targets="Method boto.utils.Password.set()=boto.utils.Password-class.html#set"><a title="boto.utils.Password.set" class="py-name" href="#" onclick="return doclink('link-85', 'set', 'link-85');">set</a></tt><tt class="py-op">(</tt><tt class="py-string">'Credentials'</tt><tt class="py-op">,</tt> <tt class="py-string">'aws_access_key_id'</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-86" class="py-name"><a title="boto.ec2
+boto.mashups.server.Server.ec2" class="py-name" href="#" onclick="return doclink('link-86', 'ec2', 'link-2');">ec2</a></tt><tt class="py-op">.</tt><tt class="py-name">aws_access_key_id</tt><tt class="py-op">)</tt> </tt>
+<a name="L113"></a><tt class="py-lineno">113</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-87" class="py-name"><a title="boto.config
+boto.mashups.server.Server.config
+boto.pyami.config" class="py-name" href="#" onclick="return doclink('link-87', 'config', 'link-14');">config</a></tt><tt class="py-op">.</tt><tt id="link-88" class="py-name"><a title="boto.utils.Password.set" class="py-name" href="#" onclick="return doclink('link-88', 'set', 'link-85');">set</a></tt><tt class="py-op">(</tt><tt class="py-string">'Credentials'</tt><tt class="py-op">,</tt> <tt class="py-string">'aws_secret_access_key'</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-89" class="py-name"><a title="boto.ec2
+boto.mashups.server.Server.ec2" class="py-name" href="#" onclick="return doclink('link-89', 'ec2', 'link-2');">ec2</a></tt><tt class="py-op">.</tt><tt class="py-name">aws_secret_access_key</tt><tt class="py-op">)</tt> </tt>
+<a name="L114"></a><tt class="py-lineno">114</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-keyword">not</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-90" class="py-name"><a title="boto.config
+boto.mashups.server.Server.config
+boto.pyami.config" class="py-name" href="#" onclick="return doclink('link-90', 'config', 'link-14');">config</a></tt><tt class="py-op">.</tt><tt class="py-name">has_section</tt><tt class="py-op">(</tt><tt class="py-string">'Pyami'</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L115"></a><tt class="py-lineno">115</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-91" class="py-name"><a title="boto.config
+boto.mashups.server.Server.config
+boto.pyami.config" class="py-name" href="#" onclick="return doclink('link-91', 'config', 'link-14');">config</a></tt><tt class="py-op">.</tt><tt class="py-name">add_section</tt><tt class="py-op">(</tt><tt class="py-string">'Pyami'</tt><tt class="py-op">)</tt> </tt>
+<a name="L116"></a><tt class="py-lineno">116</tt>  <tt class="py-line">        <tt class="py-name">sdb_domain</tt> <tt class="py-op">=</tt> <tt id="link-92" class="py-name"><a title="boto.sdb.connection.SDBConnection.get_domain
+boto.sdb.persist.get_domain" class="py-name" href="#" onclick="return doclink('link-92', 'get_domain', 'link-19');">get_domain</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L117"></a><tt class="py-lineno">117</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">sdb_domain</tt><tt class="py-op">:</tt> </tt>
+<a name="L118"></a><tt class="py-lineno">118</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-93" class="py-name"><a title="boto.config
+boto.mashups.server.Server.config
+boto.pyami.config" class="py-name" href="#" onclick="return doclink('link-93', 'config', 'link-14');">config</a></tt><tt class="py-op">.</tt><tt id="link-94" class="py-name"><a title="boto.utils.Password.set" class="py-name" href="#" onclick="return doclink('link-94', 'set', 'link-85');">set</a></tt><tt class="py-op">(</tt><tt class="py-string">'Pyami'</tt><tt class="py-op">,</tt> <tt class="py-string">'server_sdb_domain'</tt><tt class="py-op">,</tt> <tt class="py-name">sdb_domain</tt><tt class="py-op">)</tt> </tt>
+<a name="L119"></a><tt class="py-lineno">119</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-95" class="py-name"><a title="boto.config
+boto.mashups.server.Server.config
+boto.pyami.config" class="py-name" href="#" onclick="return doclink('link-95', 'config', 'link-14');">config</a></tt><tt class="py-op">.</tt><tt id="link-96" class="py-name"><a title="boto.utils.Password.set" class="py-name" href="#" onclick="return doclink('link-96', 'set', 'link-85');">set</a></tt><tt class="py-op">(</tt><tt class="py-string">'Pyami'</tt><tt class="py-op">,</tt> <tt class="py-string">'server_sdb_name'</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-97" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-97', 'name', 'link-22');">name</a></tt><tt class="py-op">)</tt> </tt>
+</div><a name="L120"></a><tt class="py-lineno">120</tt>  <tt class="py-line"> </tt>
+<a name="Item.set_config"></a><div id="Item.set_config-def"><a name="L121"></a><tt class="py-lineno">121</tt> <a class="py-toggle" href="#" id="Item.set_config-toggle" onclick="return toggle('Item.set_config');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.mashups.order.Item-class.html#set_config">set_config</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">config_path</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Item.set_config-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Item.set_config-expanded"><a name="L122"></a><tt class="py-lineno">122</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-keyword">not</tt> <tt class="py-name">config_path</tt><tt class="py-op">:</tt> </tt>
+<a name="L123"></a><tt class="py-lineno">123</tt>  <tt class="py-line">            <tt class="py-name">config_path</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-98" class="py-name" targets="Method boto.mashups.iobject.IObject.get_filename()=boto.mashups.iobject.IObject-class.html#get_filename,Method boto.mashups.iobject.IObject.get_filename()=boto.mashups.iobject.IObject-class.html#get_filename"><a title="boto.mashups.iobject.IObject.get_filename
+boto.mashups.iobject.IObject.get_filename" class="py-name" href="#" onclick="return doclink('link-98', 'get_filename', 'link-98');">get_filename</a></tt><tt class="py-op">(</tt><tt class="py-string">'Specify Config file'</tt><tt class="py-op">)</tt> </tt>
+<a name="L124"></a><tt class="py-lineno">124</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-99" class="py-name"><a title="boto.config
+boto.mashups.server.Server.config
+boto.pyami.config" class="py-name" href="#" onclick="return doclink('link-99', 'config', 'link-14');">config</a></tt> <tt class="py-op">=</tt> <tt id="link-100" class="py-name"><a title="boto.pyami.config.Config" class="py-name" href="#" onclick="return doclink('link-100', 'Config', 'link-15');">Config</a></tt><tt class="py-op">(</tt><tt class="py-name">path</tt><tt class="py-op">=</tt><tt class="py-name">config_path</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L125"></a><tt class="py-lineno">125</tt>  <tt class="py-line"> </tt>
+<a name="Item.get_userdata_string"></a><div id="Item.get_userdata_string-def"><a name="L126"></a><tt class="py-lineno">126</tt> <a class="py-toggle" href="#" id="Item.get_userdata_string-toggle" onclick="return toggle('Item.get_userdata_string');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.mashups.order.Item-class.html#get_userdata_string">get_userdata_string</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Item.get_userdata_string-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Item.get_userdata_string-expanded"><a name="L127"></a><tt class="py-lineno">127</tt>  <tt class="py-line">        <tt class="py-name">s</tt> <tt class="py-op">=</tt> <tt class="py-name">StringIO</tt><tt class="py-op">.</tt><tt class="py-name">StringIO</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L128"></a><tt class="py-lineno">128</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-101" class="py-name"><a title="boto.config
+boto.mashups.server.Server.config
+boto.pyami.config" class="py-name" href="#" onclick="return doclink('link-101', 'config', 'link-14');">config</a></tt><tt class="py-op">.</tt><tt id="link-102" class="py-name" targets="Method boto.sqs.20070501.queue.Queue.write()=boto.sqs.20070501.queue.Queue-class.html#write,Method boto.sqs.queue.Queue.write()=boto.sqs.queue.Queue-class.html#write"><a title="boto.sqs.20070501.queue.Queue.write
+boto.sqs.queue.Queue.write" class="py-name" href="#" onclick="return doclink('link-102', 'write', 'link-102');">write</a></tt><tt class="py-op">(</tt><tt class="py-name">s</tt><tt class="py-op">)</tt> </tt>
+<a name="L129"></a><tt class="py-lineno">129</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">s</tt><tt class="py-op">.</tt><tt class="py-name">getvalue</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L130"></a><tt class="py-lineno">130</tt>  <tt class="py-line"> </tt>
+<a name="Item.enter"></a><div id="Item.enter-def"><a name="L131"></a><tt class="py-lineno">131</tt> <a class="py-toggle" href="#" id="Item.enter-toggle" onclick="return toggle('Item.enter');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.mashups.order.Item-class.html#enter">enter</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-op">**</tt><tt class="py-param">params</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Item.enter-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Item.enter-expanded"><a name="L132"></a><tt class="py-lineno">132</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">region</tt> <tt class="py-op">=</tt> <tt class="py-name">params</tt><tt class="py-op">.</tt><tt id="link-103" class="py-name" targets="Method boto.mapreduce.queuetools.LQSClient.get()=boto.mapreduce.queuetools.LQSClient-class.html#get,Method boto.mapreduce.queuetools.SQSClient.get()=boto.mapreduce.queuetools.SQSClient-class.html#get,Method boto.pyami.config.Config.get()=boto.pyami.config.Config-class.html#get,Class Method boto.sdb.persist.object.SDBObject.get()=boto.sdb.persist.object.SDBObject-class.html#get,Method boto.services.servicedef.ServiceDef.get()=boto.services.servicedef.ServiceDef-class.html#get,Method boto.sqs.20070501.message.MHMessage.get()=boto.sqs.20070501.message.MHMessage-class.html#get,Method boto.sqs.message.MHMessage.get()=boto.sqs.message.MHMessage-class.html#get"><a title="boto.mapreduce.queuetools.LQSClient.get
+boto.mapreduce.queuetools.SQSClient.get
+boto.pyami.config.Config.get
+boto.sdb.persist.object.SDBObject.get
+boto.services.servicedef.ServiceDef.get
+boto.sqs.20070501.message.MHMessage.get
+boto.sqs.message.MHMessage.get" class="py-name" href="#" onclick="return doclink('link-103', 'get', 'link-103');">get</a></tt><tt class="py-op">(</tt><tt class="py-string">'region'</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">region</tt><tt class="py-op">)</tt> </tt>
+<a name="L133"></a><tt class="py-lineno">133</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-keyword">not</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">region</tt><tt class="py-op">:</tt> </tt>
+<a name="L134"></a><tt class="py-lineno">134</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-104" class="py-name" targets="Method boto.mashups.order.Item.set_region()=boto.mashups.order.Item-class.html#set_region"><a title="boto.mashups.order.Item.set_region" class="py-name" href="#" onclick="return doclink('link-104', 'set_region', 'link-104');">set_region</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L135"></a><tt class="py-lineno">135</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-105" class="py-name"><a title="boto.ec2
+boto.mashups.server.Server.ec2" class="py-name" href="#" onclick="return doclink('link-105', 'ec2', 'link-2');">ec2</a></tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">region</tt><tt class="py-op">.</tt><tt id="link-106" class="py-name" targets="Method boto.ec2.regioninfo.RegionInfo.connect()=boto.ec2.regioninfo.RegionInfo-class.html#connect,Method boto.mapreduce.queuetools.LQSClient.connect()=boto.mapreduce.queuetools.LQSClient-class.html#connect,Method boto.mapreduce.queuetools.SQSClient.connect()=boto.mapreduce.queuetools.SQSClient-class.html#connect"><a title="boto.ec2.regioninfo.RegionInfo.connect
+boto.mapreduce.queuetools.LQSClient.connect
+boto.mapreduce.queuetools.SQSClient.connect" class="py-name" href="#" onclick="return doclink('link-106', 'connect', 'link-106');">connect</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L136"></a><tt class="py-lineno">136</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-107" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-107', 'name', 'link-22');">name</a></tt> <tt class="py-op">=</tt> <tt class="py-name">params</tt><tt class="py-op">.</tt><tt id="link-108" class="py-name"><a title="boto.mapreduce.queuetools.LQSClient.get
+boto.mapreduce.queuetools.SQSClient.get
+boto.pyami.config.Config.get
+boto.sdb.persist.object.SDBObject.get
+boto.services.servicedef.ServiceDef.get
+boto.sqs.20070501.message.MHMessage.get
+boto.sqs.message.MHMessage.get" class="py-name" href="#" onclick="return doclink('link-108', 'get', 'link-103');">get</a></tt><tt class="py-op">(</tt><tt class="py-string">'name'</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-109" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-109', 'name', 'link-22');">name</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L137"></a><tt class="py-lineno">137</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-keyword">not</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-110" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-110', 'name', 'link-22');">name</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L138"></a><tt class="py-lineno">138</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-111" class="py-name" targets="Method boto.mashups.order.Item.set_name()=boto.mashups.order.Item-class.html#set_name,Method boto.sdb.persist.property.HasManyProperty.set_name()=boto.sdb.persist.property.HasManyProperty-class.html#set_name,Method boto.sdb.persist.property.Property.set_name()=boto.sdb.persist.property.Property-class.html#set_name"><a title="boto.mashups.order.Item.set_name
+boto.sdb.persist.property.HasManyProperty.set_name
+boto.sdb.persist.property.Property.set_name" class="py-name" href="#" onclick="return doclink('link-111', 'set_name', 'link-111');">set_name</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L139"></a><tt class="py-lineno">139</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-112" class="py-name"><a title="boto.mashups.server.Server.instance_type" class="py-name" href="#" onclick="return doclink('link-112', 'instance_type', 'link-23');">instance_type</a></tt> <tt class="py-op">=</tt> <tt class="py-name">params</tt><tt class="py-op">.</tt><tt id="link-113" class="py-name"><a title="boto.mapreduce.queuetools.LQSClient.get
+boto.mapreduce.queuetools.SQSClient.get
+boto.pyami.config.Config.get
+boto.sdb.persist.object.SDBObject.get
+boto.services.servicedef.ServiceDef.get
+boto.sqs.20070501.message.MHMessage.get
+boto.sqs.message.MHMessage.get" class="py-name" href="#" onclick="return doclink('link-113', 'get', 'link-103');">get</a></tt><tt class="py-op">(</tt><tt class="py-string">'instance_type'</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-114" class="py-name"><a title="boto.mashups.server.Server.instance_type" class="py-name" href="#" onclick="return doclink('link-114', 'instance_type', 'link-23');">instance_type</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L140"></a><tt class="py-lineno">140</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-keyword">not</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-115" class="py-name"><a title="boto.mashups.server.Server.instance_type" class="py-name" href="#" onclick="return doclink('link-115', 'instance_type', 'link-23');">instance_type</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L141"></a><tt class="py-lineno">141</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-116" class="py-name" targets="Method boto.mashups.order.Item.set_instance_type()=boto.mashups.order.Item-class.html#set_instance_type"><a title="boto.mashups.order.Item.set_instance_type" class="py-name" href="#" onclick="return doclink('link-116', 'set_instance_type', 'link-116');">set_instance_type</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L142"></a><tt class="py-lineno">142</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-117" class="py-name"><a title="boto.ec2.zone
+boto.mashups.server.Server.zone" class="py-name" href="#" onclick="return doclink('link-117', 'zone', 'link-24');">zone</a></tt> <tt class="py-op">=</tt> <tt class="py-name">params</tt><tt class="py-op">.</tt><tt id="link-118" class="py-name"><a title="boto.mapreduce.queuetools.LQSClient.get
+boto.mapreduce.queuetools.SQSClient.get
+boto.pyami.config.Config.get
+boto.sdb.persist.object.SDBObject.get
+boto.services.servicedef.ServiceDef.get
+boto.sqs.20070501.message.MHMessage.get
+boto.sqs.message.MHMessage.get" class="py-name" href="#" onclick="return doclink('link-118', 'get', 'link-103');">get</a></tt><tt class="py-op">(</tt><tt class="py-string">'zone'</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-119" class="py-name"><a title="boto.ec2.zone
+boto.mashups.server.Server.zone" class="py-name" href="#" onclick="return doclink('link-119', 'zone', 'link-24');">zone</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L143"></a><tt class="py-lineno">143</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-keyword">not</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-120" class="py-name"><a title="boto.ec2.zone
+boto.mashups.server.Server.zone" class="py-name" href="#" onclick="return doclink('link-120', 'zone', 'link-24');">zone</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L144"></a><tt class="py-lineno">144</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-121" class="py-name" targets="Method boto.mashups.order.Item.set_zone()=boto.mashups.order.Item-class.html#set_zone"><a title="boto.mashups.order.Item.set_zone" class="py-name" href="#" onclick="return doclink('link-121', 'set_zone', 'link-121');">set_zone</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L145"></a><tt class="py-lineno">145</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">quantity</tt> <tt class="py-op">=</tt> <tt class="py-name">params</tt><tt class="py-op">.</tt><tt id="link-122" class="py-name"><a title="boto.mapreduce.queuetools.LQSClient.get
+boto.mapreduce.queuetools.SQSClient.get
+boto.pyami.config.Config.get
+boto.sdb.persist.object.SDBObject.get
+boto.services.servicedef.ServiceDef.get
+boto.sqs.20070501.message.MHMessage.get
+boto.sqs.message.MHMessage.get" class="py-name" href="#" onclick="return doclink('link-122', 'get', 'link-103');">get</a></tt><tt class="py-op">(</tt><tt class="py-string">'quantity'</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">quantity</tt><tt class="py-op">)</tt> </tt>
+<a name="L146"></a><tt class="py-lineno">146</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-keyword">not</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">quantity</tt><tt class="py-op">:</tt> </tt>
+<a name="L147"></a><tt class="py-lineno">147</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-123" class="py-name" targets="Method boto.mashups.order.Item.set_quantity()=boto.mashups.order.Item-class.html#set_quantity"><a title="boto.mashups.order.Item.set_quantity" class="py-name" href="#" onclick="return doclink('link-123', 'set_quantity', 'link-123');">set_quantity</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L148"></a><tt class="py-lineno">148</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-124" class="py-name"><a title="boto.mashups.server.Server.ami" class="py-name" href="#" onclick="return doclink('link-124', 'ami', 'link-25');">ami</a></tt> <tt class="py-op">=</tt> <tt class="py-name">params</tt><tt class="py-op">.</tt><tt id="link-125" class="py-name"><a title="boto.mapreduce.queuetools.LQSClient.get
+boto.mapreduce.queuetools.SQSClient.get
+boto.pyami.config.Config.get
+boto.sdb.persist.object.SDBObject.get
+boto.services.servicedef.ServiceDef.get
+boto.sqs.20070501.message.MHMessage.get
+boto.sqs.message.MHMessage.get" class="py-name" href="#" onclick="return doclink('link-125', 'get', 'link-103');">get</a></tt><tt class="py-op">(</tt><tt class="py-string">'ami'</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-126" class="py-name"><a title="boto.mashups.server.Server.ami" class="py-name" href="#" onclick="return doclink('link-126', 'ami', 'link-25');">ami</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L149"></a><tt class="py-lineno">149</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-keyword">not</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-127" class="py-name"><a title="boto.mashups.server.Server.ami" class="py-name" href="#" onclick="return doclink('link-127', 'ami', 'link-25');">ami</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L150"></a><tt class="py-lineno">150</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-128" class="py-name" targets="Method boto.mashups.order.Item.set_ami()=boto.mashups.order.Item-class.html#set_ami"><a title="boto.mashups.order.Item.set_ami" class="py-name" href="#" onclick="return doclink('link-128', 'set_ami', 'link-128');">set_ami</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L151"></a><tt class="py-lineno">151</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-129" class="py-name"><a title="boto.mashups.server.Server.groups" class="py-name" href="#" onclick="return doclink('link-129', 'groups', 'link-26');">groups</a></tt> <tt class="py-op">=</tt> <tt class="py-name">params</tt><tt class="py-op">.</tt><tt id="link-130" class="py-name"><a title="boto.mapreduce.queuetools.LQSClient.get
+boto.mapreduce.queuetools.SQSClient.get
+boto.pyami.config.Config.get
+boto.sdb.persist.object.SDBObject.get
+boto.services.servicedef.ServiceDef.get
+boto.sqs.20070501.message.MHMessage.get
+boto.sqs.message.MHMessage.get" class="py-name" href="#" onclick="return doclink('link-130', 'get', 'link-103');">get</a></tt><tt class="py-op">(</tt><tt class="py-string">'groups'</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-131" class="py-name"><a title="boto.mashups.server.Server.groups" class="py-name" href="#" onclick="return doclink('link-131', 'groups', 'link-26');">groups</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L152"></a><tt class="py-lineno">152</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-keyword">not</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-132" class="py-name"><a title="boto.mashups.server.Server.groups" class="py-name" href="#" onclick="return doclink('link-132', 'groups', 'link-26');">groups</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L153"></a><tt class="py-lineno">153</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-133" class="py-name" targets="Method boto.mashups.order.Item.add_group()=boto.mashups.order.Item-class.html#add_group"><a title="boto.mashups.order.Item.add_group" class="py-name" href="#" onclick="return doclink('link-133', 'add_group', 'link-133');">add_group</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L154"></a><tt class="py-lineno">154</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-134" class="py-name"><a title="boto.s3.key
+boto.sdb.db.key
+boto.sdb.db.model.Model.key
+boto.sdb.db.model.Model.key" class="py-name" href="#" onclick="return doclink('link-134', 'key', 'link-27');">key</a></tt> <tt class="py-op">=</tt> <tt class="py-name">params</tt><tt class="py-op">.</tt><tt id="link-135" class="py-name"><a title="boto.mapreduce.queuetools.LQSClient.get
+boto.mapreduce.queuetools.SQSClient.get
+boto.pyami.config.Config.get
+boto.sdb.persist.object.SDBObject.get
+boto.services.servicedef.ServiceDef.get
+boto.sqs.20070501.message.MHMessage.get
+boto.sqs.message.MHMessage.get" class="py-name" href="#" onclick="return doclink('link-135', 'get', 'link-103');">get</a></tt><tt class="py-op">(</tt><tt class="py-string">'key'</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-136" class="py-name"><a title="boto.s3.key
+boto.sdb.db.key
+boto.sdb.db.model.Model.key
+boto.sdb.db.model.Model.key" class="py-name" href="#" onclick="return doclink('link-136', 'key', 'link-27');">key</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L155"></a><tt class="py-lineno">155</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-keyword">not</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-137" class="py-name"><a title="boto.s3.key
+boto.sdb.db.key
+boto.sdb.db.model.Model.key
+boto.sdb.db.model.Model.key" class="py-name" href="#" onclick="return doclink('link-137', 'key', 'link-27');">key</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L156"></a><tt class="py-lineno">156</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-138" class="py-name" targets="Method boto.mashups.order.Item.set_key()=boto.mashups.order.Item-class.html#set_key"><a title="boto.mashups.order.Item.set_key" class="py-name" href="#" onclick="return doclink('link-138', 'set_key', 'link-138');">set_key</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L157"></a><tt class="py-lineno">157</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-139" class="py-name"><a title="boto.config
+boto.mashups.server.Server.config
+boto.pyami.config" class="py-name" href="#" onclick="return doclink('link-139', 'config', 'link-14');">config</a></tt> <tt class="py-op">=</tt> <tt class="py-name">params</tt><tt class="py-op">.</tt><tt id="link-140" class="py-name"><a title="boto.mapreduce.queuetools.LQSClient.get
+boto.mapreduce.queuetools.SQSClient.get
+boto.pyami.config.Config.get
+boto.sdb.persist.object.SDBObject.get
+boto.services.servicedef.ServiceDef.get
+boto.sqs.20070501.message.MHMessage.get
+boto.sqs.message.MHMessage.get" class="py-name" href="#" onclick="return doclink('link-140', 'get', 'link-103');">get</a></tt><tt class="py-op">(</tt><tt class="py-string">'config'</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-141" class="py-name"><a title="boto.config
+boto.mashups.server.Server.config
+boto.pyami.config" class="py-name" href="#" onclick="return doclink('link-141', 'config', 'link-14');">config</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L158"></a><tt class="py-lineno">158</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-keyword">not</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-142" class="py-name"><a title="boto.config
+boto.mashups.server.Server.config
+boto.pyami.config" class="py-name" href="#" onclick="return doclink('link-142', 'config', 'link-14');">config</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L159"></a><tt class="py-lineno">159</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-143" class="py-name" targets="Method boto.mashups.order.Item.set_config()=boto.mashups.order.Item-class.html#set_config,Method boto.mashups.server.Server.set_config()=boto.mashups.server.Server-class.html#set_config"><a title="boto.mashups.order.Item.set_config
+boto.mashups.server.Server.set_config" class="py-name" href="#" onclick="return doclink('link-143', 'set_config', 'link-143');">set_config</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L160"></a><tt class="py-lineno">160</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-144" class="py-name" targets="Method boto.mashups.order.Item.update_config()=boto.mashups.order.Item-class.html#update_config"><a title="boto.mashups.order.Item.update_config" class="py-name" href="#" onclick="return doclink('link-144', 'update_config', 'link-144');">update_config</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L161"></a><tt class="py-lineno">161</tt>  <tt class="py-line"> </tt>
+<a name="Order"></a><div id="Order-def"><a name="L162"></a><tt class="py-lineno">162</tt> <a class="py-toggle" href="#" id="Order-toggle" onclick="return toggle('Order');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="boto.mashups.order.Order-class.html">Order</a><tt class="py-op">(</tt><tt class="py-base-class">IObject</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Order-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="Order-expanded"><a name="L163"></a><tt class="py-lineno">163</tt>  <tt class="py-line"> </tt>
+<a name="Order.__init__"></a><div id="Order.__init__-def"><a name="L164"></a><tt class="py-lineno">164</tt> <a class="py-toggle" href="#" id="Order.__init__-toggle" onclick="return toggle('Order.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.mashups.order.Order-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Order.__init__-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Order.__init__-expanded"><a name="L165"></a><tt class="py-lineno">165</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-145" class="py-name" targets="Method boto.sqs.20070501.message.MHMessage.items()=boto.sqs.20070501.message.MHMessage-class.html#items,Method boto.sqs.message.MHMessage.items()=boto.sqs.message.MHMessage-class.html#items"><a title="boto.sqs.20070501.message.MHMessage.items
+boto.sqs.message.MHMessage.items" class="py-name" href="#" onclick="return doclink('link-145', 'items', 'link-145');">items</a></tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt> </tt>
+<a name="L166"></a><tt class="py-lineno">166</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">reservation</tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+</div><a name="L167"></a><tt class="py-lineno">167</tt>  <tt class="py-line"> </tt>
+<a name="Order.add_item"></a><div id="Order.add_item-def"><a name="L168"></a><tt class="py-lineno">168</tt> <a class="py-toggle" href="#" id="Order.add_item-toggle" onclick="return toggle('Order.add_item');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.mashups.order.Order-class.html#add_item">add_item</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-op">**</tt><tt class="py-param">params</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Order.add_item-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Order.add_item-expanded"><a name="L169"></a><tt class="py-lineno">169</tt>  <tt class="py-line">        <tt id="link-146" class="py-name" targets="Module boto.sdb.item=boto.sdb.item-module.html"><a title="boto.sdb.item" class="py-name" href="#" onclick="return doclink('link-146', 'item', 'link-146');">item</a></tt> <tt class="py-op">=</tt> <tt id="link-147" class="py-name" targets="Class boto.mashups.order.Item=boto.mashups.order.Item-class.html,Class boto.sdb.item.Item=boto.sdb.item.Item-class.html"><a title="boto.mashups.order.Item
+boto.sdb.item.Item" class="py-name" href="#" onclick="return doclink('link-147', 'Item', 'link-147');">Item</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L170"></a><tt class="py-lineno">170</tt>  <tt class="py-line">        <tt id="link-148" class="py-name"><a title="boto.sdb.item" class="py-name" href="#" onclick="return doclink('link-148', 'item', 'link-146');">item</a></tt><tt class="py-op">.</tt><tt id="link-149" class="py-name" targets="Method boto.mashups.order.Item.enter()=boto.mashups.order.Item-class.html#enter"><a title="boto.mashups.order.Item.enter" class="py-name" href="#" onclick="return doclink('link-149', 'enter', 'link-149');">enter</a></tt><tt class="py-op">(</tt><tt class="py-op">**</tt><tt class="py-name">params</tt><tt class="py-op">)</tt> </tt>
+<a name="L171"></a><tt class="py-lineno">171</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-150" class="py-name"><a title="boto.sqs.20070501.message.MHMessage.items
+boto.sqs.message.MHMessage.items" class="py-name" href="#" onclick="return doclink('link-150', 'items', 'link-145');">items</a></tt><tt class="py-op">.</tt><tt id="link-151" class="py-name"><a title="boto.sdb.persist.property.MultiValue.append" class="py-name" href="#" onclick="return doclink('link-151', 'append', 'link-66');">append</a></tt><tt class="py-op">(</tt><tt id="link-152" class="py-name"><a title="boto.sdb.item" class="py-name" href="#" onclick="return doclink('link-152', 'item', 'link-146');">item</a></tt><tt class="py-op">)</tt> </tt>
+</div><a name="L172"></a><tt class="py-lineno">172</tt>  <tt class="py-line"> </tt>
+<a name="Order.display"></a><div id="Order.display-def"><a name="L173"></a><tt class="py-lineno">173</tt> <a class="py-toggle" href="#" id="Order.display-toggle" onclick="return toggle('Order.display');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.mashups.order.Order-class.html#display">display</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Order.display-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Order.display-expanded"><a name="L174"></a><tt class="py-lineno">174</tt>  <tt class="py-line">        <tt class="py-keyword">print</tt> <tt class="py-string">'This Order consists of the following items'</tt> </tt>
+<a name="L175"></a><tt class="py-lineno">175</tt>  <tt class="py-line">        <tt class="py-keyword">print</tt>  </tt>
+<a name="L176"></a><tt class="py-lineno">176</tt>  <tt class="py-line">        <tt class="py-keyword">print</tt> <tt class="py-string">'QTY\tNAME\tTYPE\nAMI\t\tGroups\t\t\tKeyPair'</tt> </tt>
+<a name="L177"></a><tt class="py-lineno">177</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt id="link-153" class="py-name"><a title="boto.sdb.item" class="py-name" href="#" onclick="return doclink('link-153', 'item', 'link-146');">item</a></tt> <tt class="py-keyword">in</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-154" class="py-name"><a title="boto.sqs.20070501.message.MHMessage.items
+boto.sqs.message.MHMessage.items" class="py-name" href="#" onclick="return doclink('link-154', 'items', 'link-145');">items</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L178"></a><tt class="py-lineno">178</tt>  <tt class="py-line">            <tt class="py-keyword">print</tt> <tt class="py-string">'%s\t%s\t%s\t%s\t%s\t%s'</tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt id="link-155" class="py-name"><a title="boto.sdb.item" class="py-name" href="#" onclick="return doclink('link-155', 'item', 'link-146');">item</a></tt><tt class="py-op">.</tt><tt class="py-name">quantity</tt><tt class="py-op">,</tt> <tt id="link-156" class="py-name"><a title="boto.sdb.item" class="py-name" href="#" onclick="return doclink('link-156', 'item', 'link-146');">item</a></tt><tt class="py-op">.</tt><tt id="link-157" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-157', 'name', 'link-22');">name</a></tt><tt class="py-op">,</tt> <tt id="link-158" class="py-name"><a title="boto.sdb.item" class="py-name" href="#" onclick="return doclink('link-158', 'item', 'link-146');">item</a></tt><tt class="py-op">.</tt><tt id="link-159" class="py-name"><a title="boto.mashups.server.Server.instance_type" class="py-name" href="#" onclick="return doclink('link-159', 'instance_type', 'link-23');">instance_type</a></tt><tt class="py-op">,</tt> </tt>
+<a name="L179"></a><tt class="py-lineno">179</tt>  <tt class="py-line">                                              <tt id="link-160" class="py-name"><a title="boto.sdb.item" class="py-name" href="#" onclick="return doclink('link-160', 'item', 'link-146');">item</a></tt><tt class="py-op">.</tt><tt id="link-161" class="py-name"><a title="boto.mashups.server.Server.ami" class="py-name" href="#" onclick="return doclink('link-161', 'ami', 'link-25');">ami</a></tt><tt class="py-op">.</tt><tt id="link-162" class="py-name"><a title="boto.sdb.db.key.Key.id" class="py-name" href="#" onclick="return doclink('link-162', 'id', 'link-60');">id</a></tt><tt class="py-op">,</tt> <tt id="link-163" class="py-name"><a title="boto.sdb.item" class="py-name" href="#" onclick="return doclink('link-163', 'item', 'link-146');">item</a></tt><tt class="py-op">.</tt><tt id="link-164" class="py-name"><a title="boto.mashups.server.Server.groups" class="py-name" href="#" onclick="return doclink('link-164', 'groups', 'link-26');">groups</a></tt><tt class="py-op">,</tt> <tt id="link-165" class="py-name"><a title="boto.sdb.item" class="py-name" href="#" onclick="return doclink('link-165', 'item', 'link-146');">item</a></tt><tt class="py-op">.</tt><tt id="link-166" class="py-name"><a title="boto.s3.key
+boto.sdb.db.key
+boto.sdb.db.model.Model.key
+boto.sdb.db.model.Model.key" class="py-name" href="#" onclick="return doclink('link-166', 'key', 'link-27');">key</a></tt><tt class="py-op">.</tt><tt id="link-167" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-167', 'name', 'link-22');">name</a></tt><tt class="py-op">)</tt> </tt>
+</div><a name="L180"></a><tt class="py-lineno">180</tt>  <tt class="py-line"> </tt>
+<a name="Order.place"></a><div id="Order.place-def"><a name="L181"></a><tt class="py-lineno">181</tt> <a class="py-toggle" href="#" id="Order.place-toggle" onclick="return toggle('Order.place');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.mashups.order.Order-class.html#place">place</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">block</tt><tt class="py-op">=</tt><tt class="py-name">True</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Order.place-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Order.place-expanded"><a name="L182"></a><tt class="py-lineno">182</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt id="link-168" class="py-name"><a title="boto.sdb.connection.SDBConnection.get_domain
+boto.sdb.persist.get_domain" class="py-name" href="#" onclick="return doclink('link-168', 'get_domain', 'link-19');">get_domain</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> <tt class="py-op">==</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L183"></a><tt class="py-lineno">183</tt>  <tt class="py-line">            <tt class="py-keyword">print</tt> <tt class="py-string">'SDB Persistence Domain not set'</tt> </tt>
+<a name="L184"></a><tt class="py-lineno">184</tt>  <tt class="py-line">            <tt class="py-name">domain_name</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-169" class="py-name"><a title="boto.mashups.iobject.IObject.get_string
+boto.mashups.iobject.IObject.get_string" class="py-name" href="#" onclick="return doclink('link-169', 'get_string', 'link-41');">get_string</a></tt><tt class="py-op">(</tt><tt class="py-string">'Specify SDB Domain'</tt><tt class="py-op">)</tt> </tt>
+<a name="L185"></a><tt class="py-lineno">185</tt>  <tt class="py-line">            <tt id="link-170" class="py-name"><a title="boto.sdb.persist.set_domain" class="py-name" href="#" onclick="return doclink('link-170', 'set_domain', 'link-20');">set_domain</a></tt><tt class="py-op">(</tt><tt class="py-name">domain_name</tt><tt class="py-op">)</tt> </tt>
+<a name="L186"></a><tt class="py-lineno">186</tt>  <tt class="py-line">        <tt class="py-name">s</tt> <tt class="py-op">=</tt> <tt id="link-171" class="py-name"><a title="boto.mashups.server.ServerSet" class="py-name" href="#" onclick="return doclink('link-171', 'ServerSet', 'link-7');">ServerSet</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L187"></a><tt class="py-lineno">187</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt id="link-172" class="py-name"><a title="boto.sdb.item" class="py-name" href="#" onclick="return doclink('link-172', 'item', 'link-146');">item</a></tt> <tt class="py-keyword">in</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-173" class="py-name"><a title="boto.sqs.20070501.message.MHMessage.items
+boto.sqs.message.MHMessage.items" class="py-name" href="#" onclick="return doclink('link-173', 'items', 'link-145');">items</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L188"></a><tt class="py-lineno">188</tt>  <tt class="py-line">            <tt class="py-name">r</tt> <tt class="py-op">=</tt> <tt id="link-174" class="py-name"><a title="boto.sdb.item" class="py-name" href="#" onclick="return doclink('link-174', 'item', 'link-146');">item</a></tt><tt class="py-op">.</tt><tt id="link-175" class="py-name"><a title="boto.mashups.server.Server.ami" class="py-name" href="#" onclick="return doclink('link-175', 'ami', 'link-25');">ami</a></tt><tt class="py-op">.</tt><tt id="link-176" class="py-name" targets="Method boto.ec2.image.Image.run()=boto.ec2.image.Image-class.html#run,Method boto.pyami.scriptbase.ScriptBase.run()=boto.pyami.scriptbase.ScriptBase-class.html#run,Method boto.sdb.connection.ItemThread.run()=boto.sdb.connection.ItemThread-class.html#run,Method boto.utils.ShellCommand.run()=boto.utils.ShellCommand-class.html#run"><a title="boto.ec2.image.Image.run
+boto.pyami.scriptbase.ScriptBase.run
+boto.sdb.connection.ItemThread.run
+boto.utils.ShellCommand.run" class="py-name" href="#" onclick="return doclink('link-176', 'run', 'link-176');">run</a></tt><tt class="py-op">(</tt><tt class="py-name">min_count</tt><tt class="py-op">=</tt><tt class="py-number">1</tt><tt class="py-op">,</tt> <tt class="py-name">max_count</tt><tt class="py-op">=</tt><tt id="link-177" class="py-name"><a title="boto.sdb.item" class="py-name" href="#" onclick="return doclink('link-177', 'item', 'link-146');">item</a></tt><tt class="py-op">.</tt><tt class="py-name">quantity</tt><tt class="py-op">,</tt> </tt>
+<a name="L189"></a><tt class="py-lineno">189</tt>  <tt class="py-line">                             <tt id="link-178" class="py-name" targets="Variable boto.mashups.server.Server.key_name=boto.mashups.server.Server-class.html#key_name"><a title="boto.mashups.server.Server.key_name" class="py-name" href="#" onclick="return doclink('link-178', 'key_name', 'link-178');">key_name</a></tt><tt class="py-op">=</tt><tt id="link-179" class="py-name"><a title="boto.sdb.item" class="py-name" href="#" onclick="return doclink('link-179', 'item', 'link-146');">item</a></tt><tt class="py-op">.</tt><tt id="link-180" class="py-name"><a title="boto.s3.key
+boto.sdb.db.key
+boto.sdb.db.model.Model.key
+boto.sdb.db.model.Model.key" class="py-name" href="#" onclick="return doclink('link-180', 'key', 'link-27');">key</a></tt><tt class="py-op">.</tt><tt id="link-181" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-181', 'name', 'link-22');">name</a></tt><tt class="py-op">,</tt> <tt class="py-name">user_data</tt><tt class="py-op">=</tt><tt id="link-182" class="py-name"><a title="boto.sdb.item" class="py-name" href="#" onclick="return doclink('link-182', 'item', 'link-146');">item</a></tt><tt class="py-op">.</tt><tt id="link-183" class="py-name" targets="Method boto.mashups.order.Item.get_userdata_string()=boto.mashups.order.Item-class.html#get_userdata_string"><a title="boto.mashups.order.Item.get_userdata_string" class="py-name" href="#" onclick="return doclink('link-183', 'get_userdata_string', 'link-183');">get_userdata_string</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> </tt>
+<a name="L190"></a><tt class="py-lineno">190</tt>  <tt class="py-line">                             <tt class="py-name">security_groups</tt><tt class="py-op">=</tt><tt id="link-184" class="py-name"><a title="boto.sdb.item" class="py-name" href="#" onclick="return doclink('link-184', 'item', 'link-146');">item</a></tt><tt class="py-op">.</tt><tt id="link-185" class="py-name"><a title="boto.mashups.server.Server.groups" class="py-name" href="#" onclick="return doclink('link-185', 'groups', 'link-26');">groups</a></tt><tt class="py-op">,</tt> <tt id="link-186" class="py-name"><a title="boto.mashups.server.Server.instance_type" class="py-name" href="#" onclick="return doclink('link-186', 'instance_type', 'link-23');">instance_type</a></tt><tt class="py-op">=</tt><tt id="link-187" class="py-name"><a title="boto.sdb.item" class="py-name" href="#" onclick="return doclink('link-187', 'item', 'link-146');">item</a></tt><tt class="py-op">.</tt><tt id="link-188" class="py-name"><a title="boto.mashups.server.Server.instance_type" class="py-name" href="#" onclick="return doclink('link-188', 'instance_type', 'link-23');">instance_type</a></tt><tt class="py-op">,</tt> </tt>
+<a name="L191"></a><tt class="py-lineno">191</tt>  <tt class="py-line">                             <tt class="py-name">placement</tt><tt class="py-op">=</tt><tt id="link-189" class="py-name"><a title="boto.sdb.item" class="py-name" href="#" onclick="return doclink('link-189', 'item', 'link-146');">item</a></tt><tt class="py-op">.</tt><tt id="link-190" class="py-name"><a title="boto.ec2.zone
+boto.mashups.server.Server.zone" class="py-name" href="#" onclick="return doclink('link-190', 'zone', 'link-24');">zone</a></tt><tt class="py-op">.</tt><tt id="link-191" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-191', 'name', 'link-22');">name</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L192"></a><tt class="py-lineno">192</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-name">block</tt><tt class="py-op">:</tt> </tt>
+<a name="L193"></a><tt class="py-lineno">193</tt>  <tt class="py-line">                <tt class="py-name">states</tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-name">i</tt><tt class="py-op">.</tt><tt class="py-name">state</tt> <tt class="py-keyword">for</tt> <tt class="py-name">i</tt> <tt class="py-keyword">in</tt> <tt class="py-name">r</tt><tt class="py-op">.</tt><tt class="py-name">instances</tt><tt class="py-op">]</tt> </tt>
+<a name="L194"></a><tt class="py-lineno">194</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt> <tt class="py-name">states</tt><tt class="py-op">.</tt><tt id="link-192" class="py-name" targets="Method boto.sdb.db.query.Query.count()=boto.sdb.db.query.Query-class.html#count,Method boto.sqs.20070501.queue.Queue.count()=boto.sqs.20070501.queue.Queue-class.html#count,Method boto.sqs.queue.Queue.count()=boto.sqs.queue.Queue-class.html#count"><a title="boto.sdb.db.query.Query.count
+boto.sqs.20070501.queue.Queue.count
+boto.sqs.queue.Queue.count" class="py-name" href="#" onclick="return doclink('link-192', 'count', 'link-192');">count</a></tt><tt class="py-op">(</tt><tt class="py-string">'running'</tt><tt class="py-op">)</tt> <tt class="py-op">!=</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">states</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L195"></a><tt class="py-lineno">195</tt>  <tt class="py-line">                    <tt class="py-keyword">print</tt> <tt class="py-name">states</tt> </tt>
+<a name="L196"></a><tt class="py-lineno">196</tt>  <tt class="py-line">                    <tt class="py-name">time</tt><tt class="py-op">.</tt><tt class="py-name">sleep</tt><tt class="py-op">(</tt><tt class="py-number">15</tt><tt class="py-op">)</tt> </tt>
+<a name="L197"></a><tt class="py-lineno">197</tt>  <tt class="py-line">                    <tt class="py-name">states</tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-name">i</tt><tt class="py-op">.</tt><tt id="link-193" class="py-name" targets="Method boto.cloudfront.distribution.Distribution.update()=boto.cloudfront.distribution.Distribution-class.html#update,Method boto.ec2.instance.Instance.update()=boto.ec2.instance.Instance-class.html#update,Method boto.ec2.snapshot.Snapshot.update()=boto.ec2.snapshot.Snapshot-class.html#update,Method boto.sqs.20070501.message.MHMessage.update()=boto.sqs.20070501.message.MHMessage-class.html#update,Method boto.sqs.message.MHMessage.update()=boto.sqs.message.MHMessage-class.html#update"><a title="boto.cloudfront.distribution.Distribution.update
+boto.ec2.instance.Instance.update
+boto.ec2.snapshot.Snapshot.update
+boto.sqs.20070501.message.MHMessage.update
+boto.sqs.message.MHMessage.update" class="py-name" href="#" onclick="return doclink('link-193', 'update', 'link-193');">update</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> <tt class="py-keyword">for</tt> <tt class="py-name">i</tt> <tt class="py-keyword">in</tt> <tt class="py-name">r</tt><tt class="py-op">.</tt><tt class="py-name">instances</tt><tt class="py-op">]</tt> </tt>
+<a name="L198"></a><tt class="py-lineno">198</tt>  <tt class="py-line">            <tt class="py-keyword">for</tt> <tt class="py-name">i</tt> <tt class="py-keyword">in</tt> <tt class="py-name">r</tt><tt class="py-op">.</tt><tt class="py-name">instances</tt><tt class="py-op">:</tt> </tt>
+<a name="L199"></a><tt class="py-lineno">199</tt>  <tt class="py-line">                <tt id="link-194" class="py-name"><a title="boto.mashups.server" class="py-name" href="#" onclick="return doclink('link-194', 'server', 'link-5');">server</a></tt> <tt class="py-op">=</tt> <tt id="link-195" class="py-name"><a title="boto.mashups.server.Server" class="py-name" href="#" onclick="return doclink('link-195', 'Server', 'link-6');">Server</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L200"></a><tt class="py-lineno">200</tt>  <tt class="py-line">                <tt id="link-196" class="py-name"><a title="boto.mashups.server" class="py-name" href="#" onclick="return doclink('link-196', 'server', 'link-5');">server</a></tt><tt class="py-op">.</tt><tt id="link-197" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-197', 'name', 'link-22');">name</a></tt> <tt class="py-op">=</tt> <tt id="link-198" class="py-name"><a title="boto.sdb.item" class="py-name" href="#" onclick="return doclink('link-198', 'item', 'link-146');">item</a></tt><tt class="py-op">.</tt><tt id="link-199" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-199', 'name', 'link-22');">name</a></tt> </tt>
+<a name="L201"></a><tt class="py-lineno">201</tt>  <tt class="py-line">                <tt id="link-200" class="py-name"><a title="boto.mashups.server" class="py-name" href="#" onclick="return doclink('link-200', 'server', 'link-5');">server</a></tt><tt class="py-op">.</tt><tt id="link-201" class="py-name" targets="Variable boto.mashups.server.Server.instance_id=boto.mashups.server.Server-class.html#instance_id"><a title="boto.mashups.server.Server.instance_id" class="py-name" href="#" onclick="return doclink('link-201', 'instance_id', 'link-201');">instance_id</a></tt> <tt class="py-op">=</tt> <tt class="py-name">i</tt><tt class="py-op">.</tt><tt id="link-202" class="py-name"><a title="boto.sdb.db.key.Key.id" class="py-name" href="#" onclick="return doclink('link-202', 'id', 'link-60');">id</a></tt> </tt>
+<a name="L202"></a><tt class="py-lineno">202</tt>  <tt class="py-line">                <tt id="link-203" class="py-name"><a title="boto.mashups.server" class="py-name" href="#" onclick="return doclink('link-203', 'server', 'link-5');">server</a></tt><tt class="py-op">.</tt><tt class="py-name">reservation</tt> <tt class="py-op">=</tt> <tt class="py-name">r</tt> </tt>
+<a name="L203"></a><tt class="py-lineno">203</tt>  <tt class="py-line">                <tt id="link-204" class="py-name"><a title="boto.mashups.server" class="py-name" href="#" onclick="return doclink('link-204', 'server', 'link-5');">server</a></tt><tt class="py-op">.</tt><tt id="link-205" class="py-name" targets="Method boto.ec2.keypair.KeyPair.save()=boto.ec2.keypair.KeyPair-class.html#save,Method boto.sdb.item.Item.save()=boto.sdb.item.Item-class.html#save,Method boto.sdb.persist.object.SDBObject.save()=boto.sdb.persist.object.SDBObject-class.html#save,Method boto.sdb.persist.property.ScalarProperty.save()=boto.sdb.persist.property.ScalarProperty-class.html#save,Method boto.sqs.20070501.queue.Queue.save()=boto.sqs.20070501.queue.Queue-class.html#save,Method boto.sqs.queue.Queue.save()=boto.sqs.queue.Queue-class.html#save"><a title="boto.ec2.keypair.KeyPair.save
+boto.sdb.item.Item.save
+boto.sdb.persist.object.SDBObject.save
+boto.sdb.persist.property.ScalarProperty.save
+boto.sqs.20070501.queue.Queue.save
+boto.sqs.queue.Queue.save" class="py-name" href="#" onclick="return doclink('link-205', 'save', 'link-205');">save</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L204"></a><tt class="py-lineno">204</tt>  <tt class="py-line">                <tt class="py-name">s</tt><tt class="py-op">.</tt><tt id="link-206" class="py-name"><a title="boto.sdb.persist.property.MultiValue.append" class="py-name" href="#" onclick="return doclink('link-206', 'append', 'link-66');">append</a></tt><tt class="py-op">(</tt><tt id="link-207" class="py-name"><a title="boto.mashups.server" class="py-name" href="#" onclick="return doclink('link-207', 'server', 'link-5');">server</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L205"></a><tt class="py-lineno">205</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">s</tt><tt class="py-op">)</tt> <tt class="py-op">==</tt> <tt class="py-number">1</tt><tt class="py-op">:</tt> </tt>
+<a name="L206"></a><tt class="py-lineno">206</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt class="py-name">s</tt><tt class="py-op">[</tt><tt class="py-number">0</tt><tt class="py-op">]</tt> </tt>
+<a name="L207"></a><tt class="py-lineno">207</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L208"></a><tt class="py-lineno">208</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt class="py-name">s</tt> </tt>
+</div></div><a name="L209"></a><tt class="py-lineno">209</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="boto-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0beta1 on Fri Feb 20 11:45:21 2009
+    </td>
+    <td align="right" class="footer">
+      <a href="http://epydoc.sourceforge.net">http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie()
+  // -->
+</script>
+  
+</body>
+</html>

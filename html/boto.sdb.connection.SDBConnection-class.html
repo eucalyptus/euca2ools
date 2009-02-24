@@ -1,0 +1,969 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>boto.sdb.connection.SDBConnection</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="boto-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="boto-module.html">Package&nbsp;boto</a> ::
+        <a href="boto.sdb-module.html">Package&nbsp;sdb</a> ::
+        <a href="boto.sdb.connection-module.html">Module&nbsp;connection</a> ::
+        Class&nbsp;SDBConnection
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="boto.sdb.connection.SDBConnection-class.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class SDBConnection</h1><span class="codelink"><a href="boto.sdb.connection-pysrc.html#SDBConnection">source&nbsp;code</a></span><br /><br />
+<pre class="base-tree">
+<a href="boto.connection.AWSAuthConnection-class.html">connection.AWSAuthConnection</a> --+    
+                               |    
+   <a href="boto.connection.AWSQueryConnection-class.html">connection.AWSQueryConnection</a> --+
+                                   |
+                                  <strong class="uidshort">SDBConnection</strong>
+</pre>
+
+<hr />
+<!-- ==================== NESTED CLASSES ==================== -->
+<a name="section-NestedClasses"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Nested Classes</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-NestedClasses"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="boto.exception.SDBResponseError-class.html" class="summary-name">ResponseError</a><br />
+      Error in respones from SDB.
+    </td>
+  </tr>
+</table>
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Instance Methods</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-InstanceMethods"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="boto.sdb.connection.SDBConnection-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">aws_access_key_id</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">aws_secret_access_key</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">is_secure</span>=<span class="summary-sig-default">True</span>,
+        <span class="summary-sig-arg">port</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">proxy</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">proxy_port</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">proxy_user</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">proxy_pass</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">host</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">sdb.amazonaws.com</code><code class="variable-quote">'</code></span>,
+        <span class="summary-sig-arg">debug</span>=<span class="summary-sig-default">0</span>,
+        <span class="summary-sig-arg">https_connection_factory</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="boto.sdb.connection-pysrc.html#SDBConnection.__init__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="build_name_value_list"></a><span class="summary-sig-name">build_name_value_list</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">params</span>,
+        <span class="summary-sig-arg">attributes</span>,
+        <span class="summary-sig-arg">replace</span>=<span class="summary-sig-default">True</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="boto.sdb.connection-pysrc.html#SDBConnection.build_name_value_list">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="build_name_list"></a><span class="summary-sig-name">build_name_list</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">params</span>,
+        <span class="summary-sig-arg">attribute_names</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="boto.sdb.connection-pysrc.html#SDBConnection.build_name_list">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">float</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="boto.sdb.connection.SDBConnection-class.html#get_usage" class="summary-sig-name">get_usage</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Returns the BoxUsage accumulated on this SDBConnection object.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="boto.sdb.connection-pysrc.html#SDBConnection.get_usage">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="print_usage"></a><span class="summary-sig-name">print_usage</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Print the BoxUsage and approximate costs of all requests made on 
+      this connection.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="boto.sdb.connection-pysrc.html#SDBConnection.print_usage">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_domain"></a><span class="summary-sig-name">get_domain</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">domain_name</span>,
+        <span class="summary-sig-arg">validate</span>=<span class="summary-sig-default">True</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="boto.sdb.connection-pysrc.html#SDBConnection.get_domain">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type"><a href="boto.sdb.domain.Domain-class.html" 
+      class="link">Domain</a> object or None</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="boto.sdb.connection.SDBConnection-class.html#lookup" class="summary-sig-name">lookup</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">domain_name</span>,
+        <span class="summary-sig-arg">validate</span>=<span class="summary-sig-default">True</span>)</span><br />
+      Lookup an existing SimpleDB domain</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="boto.sdb.connection-pysrc.html#SDBConnection.lookup">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_all_domains"></a><span class="summary-sig-name">get_all_domains</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">max_domains</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">next_token</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="boto.sdb.connection-pysrc.html#SDBConnection.get_all_domains">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type"><a href="boto.sdb.domain.Domain-class.html" 
+      class="link">Domain</a> object</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="boto.sdb.connection.SDBConnection-class.html#create_domain" class="summary-sig-name">create_domain</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">domain_name</span>)</span><br />
+      Create a SimpleDB domain.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="boto.sdb.connection-pysrc.html#SDBConnection.create_domain">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_domain_and_name"></a><span class="summary-sig-name">get_domain_and_name</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">domain_or_name</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="boto.sdb.connection-pysrc.html#SDBConnection.get_domain_and_name">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">bool</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="boto.sdb.connection.SDBConnection-class.html#delete_domain" class="summary-sig-name">delete_domain</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">domain_or_name</span>)</span><br />
+      Delete a SimpleDB domain.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="boto.sdb.connection-pysrc.html#SDBConnection.delete_domain">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type"><a href="boto.sdb.domain.DomainMetaData-class.html" 
+      class="link">DomainMetaData</a> object</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="boto.sdb.connection.SDBConnection-class.html#domain_metadata" class="summary-sig-name">domain_metadata</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">domain_or_name</span>)</span><br />
+      Get the Metadata for a SimpleDB domain.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="boto.sdb.connection-pysrc.html#SDBConnection.domain_metadata">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">bool</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="boto.sdb.connection.SDBConnection-class.html#put_attributes" class="summary-sig-name">put_attributes</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">domain_or_name</span>,
+        <span class="summary-sig-arg">item_name</span>,
+        <span class="summary-sig-arg">attributes</span>,
+        <span class="summary-sig-arg">replace</span>=<span class="summary-sig-default">True</span>)</span><br />
+      Store attributes for a given item in a domain.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="boto.sdb.connection-pysrc.html#SDBConnection.put_attributes">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type"><a href="boto.sdb.item.Item-class.html" class="link">Item</a></span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="boto.sdb.connection.SDBConnection-class.html#get_attributes" class="summary-sig-name">get_attributes</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">domain_or_name</span>,
+        <span class="summary-sig-arg">item_name</span>,
+        <span class="summary-sig-arg">attribute_names</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">item</span>=<span class="summary-sig-default">None</span>)</span><br />
+      Retrieve attributes for a given item in a domain.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="boto.sdb.connection-pysrc.html#SDBConnection.get_attributes">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">bool</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="boto.sdb.connection.SDBConnection-class.html#delete_attributes" class="summary-sig-name">delete_attributes</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">domain_or_name</span>,
+        <span class="summary-sig-arg">item_name</span>,
+        <span class="summary-sig-arg">attr_names</span>=<span class="summary-sig-default">None</span>)</span><br />
+      Delete attributes from a given item in a domain.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="boto.sdb.connection-pysrc.html#SDBConnection.delete_attributes">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">ResultSet</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="boto.sdb.connection.SDBConnection-class.html#query" class="summary-sig-name">query</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">domain_or_name</span>,
+        <span class="summary-sig-arg">query</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string"></code><code class="variable-quote">'</code></span>,
+        <span class="summary-sig-arg">max_items</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">next_token</span>=<span class="summary-sig-default">None</span>)</span><br />
+      Returns a list of item names within domain_name that match the 
+      query.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="boto.sdb.connection-pysrc.html#SDBConnection.query">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">ResultSet</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="boto.sdb.connection.SDBConnection-class.html#query_with_attributes" class="summary-sig-name">query_with_attributes</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">domain_or_name</span>,
+        <span class="summary-sig-arg">query</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string"></code><code class="variable-quote">'</code></span>,
+        <span class="summary-sig-arg">attr_names</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">max_items</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">next_token</span>=<span class="summary-sig-default">None</span>)</span><br />
+      Returns a set of Attributes for item names within domain_name that
+      match the query.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="boto.sdb.connection-pysrc.html#SDBConnection.query_with_attributes">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="boto.sdb.connection.SDBConnection-class.html#threaded_query" class="summary-sig-name">threaded_query</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">domain_or_name</span>,
+        <span class="summary-sig-arg">query</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string"></code><code class="variable-quote">'</code></span>,
+        <span class="summary-sig-arg">max_items</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">next_token</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">num_threads</span>=<span class="summary-sig-default">6</span>)</span><br />
+      Returns a list of fully populated items that match the query 
+      provided.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="boto.sdb.connection-pysrc.html#SDBConnection.threaded_query">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="boto.connection.AWSQueryConnection-class.html">connection.AWSQueryConnection</a></code></b>:
+      <code><a href="boto.connection.AWSQueryConnection-class.html#build_list_params">build_list_params</a></code>,
+      <code><a href="boto.connection.AWSQueryConnection-class.html#calc_signature_0">calc_signature_0</a></code>,
+      <code><a href="boto.connection.AWSQueryConnection-class.html#calc_signature_1">calc_signature_1</a></code>,
+      <code><a href="boto.connection.AWSQueryConnection-class.html#calc_signature_2">calc_signature_2</a></code>,
+      <code><a href="boto.connection.AWSQueryConnection-class.html#get_list">get_list</a></code>,
+      <code><a href="boto.connection.AWSQueryConnection-class.html#get_object">get_object</a></code>,
+      <code><a href="boto.connection.AWSQueryConnection-class.html#get_signature">get_signature</a></code>,
+      <code><a href="boto.connection.AWSQueryConnection-class.html#get_status">get_status</a></code>,
+      <code><a href="boto.connection.AWSQueryConnection-class.html#get_utf8_value">get_utf8_value</a></code>,
+      <code><a href="boto.connection.AWSQueryConnection-class.html#make_request">make_request</a></code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="boto.connection.AWSAuthConnection-class.html">connection.AWSAuthConnection</a></code></b>:
+      <code><a href="boto.connection.AWSAuthConnection-class.html#add_aws_auth_header">add_aws_auth_header</a></code>,
+      <code><a href="boto.connection.AWSAuthConnection-class.html#get_http_connection">get_http_connection</a></code>,
+      <code><a href="boto.connection.AWSAuthConnection-class.html#get_proxy_auth_header">get_proxy_auth_header</a></code>,
+      <code><a href="boto.connection.AWSAuthConnection-class.html#handle_proxy">handle_proxy</a></code>,
+      <code><a href="boto.connection.AWSAuthConnection-class.html#prefix_proxy_to_path">prefix_proxy_to_path</a></code>,
+      <code><a href="boto.connection.AWSAuthConnection-class.html#refresh_http_connection">refresh_http_connection</a></code>
+      </p>
+    <div class="private">    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="boto.connection.AWSAuthConnection-class.html">connection.AWSAuthConnection</a></code></b> (private):
+      <code><a href="boto.connection.AWSAuthConnection-class.html#_mexe">_mexe</a></code>
+      </p></div>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS VARIABLES ==================== -->
+<a name="section-ClassVariables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Class Variables</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-ClassVariables"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="APIVersion"></a><span class="summary-name">APIVersion</span> = <code title="'2007-11-07'"><code class="variable-quote">'</code><code class="variable-string">2007-11-07</code><code class="variable-quote">'</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="SignatureVersion"></a><span class="summary-name">SignatureVersion</span> = <code title="'2'"><code class="variable-quote">'</code><code class="variable-string">2</code><code class="variable-quote">'</code></code>
+    </td>
+  </tr>
+</table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Method Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-MethodDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="__init__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">aws_access_key_id</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">aws_secret_access_key</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">is_secure</span>=<span class="sig-default">True</span>,
+        <span class="sig-arg">port</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">proxy</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">proxy_port</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">proxy_user</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">proxy_pass</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">host</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string">sdb.amazonaws.com</code><code class="variable-quote">'</code></span>,
+        <span class="sig-arg">debug</span>=<span class="sig-default">0</span>,
+        <span class="sig-arg">https_connection_factory</span>=<span class="sig-default">None</span>)</span>
+    <br /><em class="fname">(Constructor)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="boto.sdb.connection-pysrc.html#SDBConnection.__init__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </table>
+  
+  
+  <dl class="fields">
+    <dt>Overrides:
+      <a href="boto.connection.AWSQueryConnection-class.html#__init__">connection.AWSQueryConnection.__init__</a>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="get_usage"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_usage</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="boto.sdb.connection-pysrc.html#SDBConnection.get_usage">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </table>
+  
+  Returns the BoxUsage accumulated on this SDBConnection object.
+  <dl class="fields">
+    <dt>Returns: float</dt>
+        <dd>The accumulated BoxUsage of all requests made on the 
+          connection.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="lookup"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">lookup</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">domain_name</span>,
+        <span class="sig-arg">validate</span>=<span class="sig-default">True</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="boto.sdb.connection-pysrc.html#SDBConnection.lookup">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </table>
+  
+  Lookup an existing SimpleDB domain
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>domain_name</code></strong> (string) - The name of the new domain</li>
+    </ul></dd>
+    <dt>Returns: <a href="boto.sdb.domain.Domain-class.html" 
+      class="link">Domain</a> object or None</dt>
+        <dd>The Domain object or None if the domain does not exist.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="create_domain"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">create_domain</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">domain_name</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="boto.sdb.connection-pysrc.html#SDBConnection.create_domain">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </table>
+  
+  Create a SimpleDB domain.
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>domain_name</code></strong> (string) - The name of the new domain</li>
+    </ul></dd>
+    <dt>Returns: <a href="boto.sdb.domain.Domain-class.html" 
+      class="link">Domain</a> object</dt>
+        <dd>The newly created domain</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="delete_domain"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">delete_domain</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">domain_or_name</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="boto.sdb.connection-pysrc.html#SDBConnection.delete_domain">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </table>
+  
+  Delete a SimpleDB domain.
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>domain_or_name</code></strong> (string or <a href="boto.sdb.domain.Domain-class.html" 
+          class="link">Domain</a> object.) - Either the name of a domain or a Domain object</li>
+    </ul></dd>
+    <dt>Returns: bool</dt>
+        <dd><p>True if successful</p>
+          <b>Note:</b> This will delete the domain and all items within 
+          the domain.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="domain_metadata"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">domain_metadata</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">domain_or_name</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="boto.sdb.connection-pysrc.html#SDBConnection.domain_metadata">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </table>
+  
+  Get the Metadata for a SimpleDB domain.
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>domain_or_name</code></strong> (string or <a href="boto.sdb.domain.Domain-class.html" 
+          class="link">Domain</a> object.) - Either the name of a domain or a Domain object</li>
+    </ul></dd>
+    <dt>Returns: <a href="boto.sdb.domain.DomainMetaData-class.html" 
+      class="link">DomainMetaData</a> object</dt>
+        <dd>The newly created domain metadata object</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="put_attributes"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">put_attributes</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">domain_or_name</span>,
+        <span class="sig-arg">item_name</span>,
+        <span class="sig-arg">attributes</span>,
+        <span class="sig-arg">replace</span>=<span class="sig-default">True</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="boto.sdb.connection-pysrc.html#SDBConnection.put_attributes">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </table>
+  
+  Store attributes for a given item in a domain.
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>domain_or_name</code></strong> (string or <a href="boto.sdb.domain.Domain-class.html" 
+          class="link">Domain</a> object.) - Either the name of a domain or a Domain object</li>
+        <li><strong class="pname"><code>item_name</code></strong> (string) - The name of the item whose attributes are being stored.</li>
+        <li><strong class="pname"><code>attribute_names</code></strong> (dict or dict-like object) - The name/value pairs to store as attributes</li>
+        <li><strong class="pname"><code>replace</code></strong> (bool) - Whether the attribute values passed in will replace existing 
+          values or will be added as addition values. Defaults to True.</li>
+    </ul></dd>
+    <dt>Returns: bool</dt>
+        <dd>True if successful</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="get_attributes"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_attributes</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">domain_or_name</span>,
+        <span class="sig-arg">item_name</span>,
+        <span class="sig-arg">attribute_names</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">item</span>=<span class="sig-default">None</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="boto.sdb.connection-pysrc.html#SDBConnection.get_attributes">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </table>
+  
+  Retrieve attributes for a given item in a domain.
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>domain_or_name</code></strong> (string or <a href="boto.sdb.domain.Domain-class.html" 
+          class="link">Domain</a> object.) - Either the name of a domain or a Domain object</li>
+        <li><strong class="pname"><code>item_name</code></strong> (string) - The name of the item whose attributes are being retrieved.</li>
+        <li><strong class="pname"><code>attribute_names</code></strong> (string or list of strings) - An attribute name or list of attribute names.  This parameter 
+          is optional.  If not supplied, all attributes will be retrieved 
+          for the item.</li>
+    </ul></dd>
+    <dt>Returns: <a href="boto.sdb.item.Item-class.html" class="link">Item</a></dt>
+        <dd>An Item mapping type containing the requested attribute 
+          name/values</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="delete_attributes"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">delete_attributes</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">domain_or_name</span>,
+        <span class="sig-arg">item_name</span>,
+        <span class="sig-arg">attr_names</span>=<span class="sig-default">None</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="boto.sdb.connection-pysrc.html#SDBConnection.delete_attributes">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </table>
+  
+  Delete attributes from a given item in a domain.
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>domain_or_name</code></strong> (string or <a href="boto.sdb.domain.Domain-class.html" 
+          class="link">Domain</a> object.) - Either the name of a domain or a Domain object</li>
+        <li><strong class="pname"><code>item_name</code></strong> (string) - The name of the item whose attributes are being deleted.</li>
+        <li><strong class="pname"><code>attributes</code></strong> (dict, list or <a href="boto.sdb.item.Item-class.html" 
+          class="link">Item</a>) - Either a list containing attribute names which will cause all 
+          values associated with that attribute name to be deleted or a 
+          dict or Item containing the attribute names and keys and list of 
+          values to delete as the value.  If no value is supplied, all 
+          attribute name/values for the item will be deleted.</li>
+    </ul></dd>
+    <dt>Returns: bool</dt>
+        <dd>True if successful</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="query"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">query</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">domain_or_name</span>,
+        <span class="sig-arg">query</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string"></code><code class="variable-quote">'</code></span>,
+        <span class="sig-arg">max_items</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">next_token</span>=<span class="sig-default">None</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="boto.sdb.connection-pysrc.html#SDBConnection.query">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </table>
+  
+  Returns a list of item names within domain_name that match the 
+  query.
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>domain_or_name</code></strong> (string or <a href="boto.sdb.domain.Domain-class.html" 
+          class="link">Domain</a> object.) - Either the name of a domain or a Domain object</li>
+        <li><strong class="pname"><code>query</code></strong> (string) - The SimpleDB query to be performed.</li>
+        <li><strong class="pname"><code>max_items</code></strong> (int) - The maximum number of items to return.  If not supplied, the 
+          default is None which returns all items matching the query.</li>
+    </ul></dd>
+    <dt>Returns: ResultSet</dt>
+        <dd>An iterator containing the results.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="query_with_attributes"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">query_with_attributes</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">domain_or_name</span>,
+        <span class="sig-arg">query</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string"></code><code class="variable-quote">'</code></span>,
+        <span class="sig-arg">attr_names</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">max_items</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">next_token</span>=<span class="sig-default">None</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="boto.sdb.connection-pysrc.html#SDBConnection.query_with_attributes">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </table>
+  
+  Returns a set of Attributes for item names within domain_name that 
+  match the query.
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>domain_or_name</code></strong> (string or <a href="boto.sdb.domain.Domain-class.html" 
+          class="link">Domain</a> object.) - Either the name of a domain or a Domain object</li>
+        <li><strong class="pname"><code>query</code></strong> (string) - The SimpleDB query to be performed.</li>
+        <li><strong class="pname"><code>attr_names</code></strong> (list) - The name of the attributes to be returned. If no attributes 
+          are specified, all attributes will be returned.</li>
+        <li><strong class="pname"><code>max_items</code></strong> (int) - The maximum number of items to return.  If not supplied, the 
+          default is None which returns all items matching the query.</li>
+    </ul></dd>
+    <dt>Returns: ResultSet</dt>
+        <dd>An iterator containing the results.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="threaded_query"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">threaded_query</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">domain_or_name</span>,
+        <span class="sig-arg">query</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string"></code><code class="variable-quote">'</code></span>,
+        <span class="sig-arg">max_items</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">next_token</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">num_threads</span>=<span class="sig-default">6</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="boto.sdb.connection-pysrc.html#SDBConnection.threaded_query">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </table>
+  
+  <p>Returns a list of fully populated items that match the query 
+  provided.</p>
+  The name/value pairs for all of the matching item names are retrieved 
+  in a number of separate threads (specified by num_threads) to achieve 
+  maximum throughput. The ResultSet that is returned has an attribute 
+  called next_token that can be used to retrieve additional results for the
+  same query.
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="boto-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0beta1 on Fri Feb 20 11:45:19 2009
+    </td>
+    <td align="right" class="footer">
+      <a href="http://epydoc.sourceforge.net">http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie()
+  // -->
+</script>
+  
+</body>
+</html>

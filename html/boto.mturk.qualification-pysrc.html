@@ -1,0 +1,1023 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>boto.mturk.qualification</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="boto-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="boto-module.html">Package&nbsp;boto</a> ::
+        <a href="boto.mturk-module.html">Package&nbsp;mturk</a> ::
+        Module&nbsp;qualification
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="boto.mturk.qualification-pysrc.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="boto.mturk.qualification-module.html">Module boto.mturk.qualification</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno"> 1</tt>  <tt class="py-line"><tt class="py-comment"># Copyright (c) 2008 Chris Moyer http://coredumped.org/</tt> </tt>
+<a name="L2"></a><tt class="py-lineno"> 2</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment">#</tt> </tt>
+<a name="L3"></a><tt class="py-lineno"> 3</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># Permission is hereby granted, free of charge, to any person obtaining a</tt> </tt>
+<a name="L4"></a><tt class="py-lineno"> 4</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># copy of this software and associated documentation files (the</tt> </tt>
+<a name="L5"></a><tt class="py-lineno"> 5</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># "Software"), to deal in the Software without restriction, including</tt> </tt>
+<a name="L6"></a><tt class="py-lineno"> 6</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># without limitation the rights to use, copy, modify, merge, publish, dis-</tt> </tt>
+<a name="L7"></a><tt class="py-lineno"> 7</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># tribute, sublicense, and/or sell copies of the Software, and to permit</tt> </tt>
+<a name="L8"></a><tt class="py-lineno"> 8</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># persons to whom the Software is furnished to do so, subject to the fol-</tt> </tt>
+<a name="L9"></a><tt class="py-lineno"> 9</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># lowing conditions:</tt> </tt>
+<a name="L10"></a><tt class="py-lineno">10</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment">#</tt> </tt>
+<a name="L11"></a><tt class="py-lineno">11</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># The above copyright notice and this permission notice shall be included</tt> </tt>
+<a name="L12"></a><tt class="py-lineno">12</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># in all copies or substantial portions of the Software.</tt> </tt>
+<a name="L13"></a><tt class="py-lineno">13</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment">#</tt> </tt>
+<a name="L14"></a><tt class="py-lineno">14</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS</tt> </tt>
+<a name="L15"></a><tt class="py-lineno">15</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABIL-</tt> </tt>
+<a name="L16"></a><tt class="py-lineno">16</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># ITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT</tt> </tt>
+<a name="L17"></a><tt class="py-lineno">17</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># SHALL THE AUTHOR BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, </tt> </tt>
+<a name="L18"></a><tt class="py-lineno">18</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</tt> </tt>
+<a name="L19"></a><tt class="py-lineno">19</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS</tt> </tt>
+<a name="L20"></a><tt class="py-lineno">20</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># IN THE SOFTWARE.</tt> </tt>
+<a name="L21"></a><tt class="py-lineno">21</tt>  <tt class="py-line"><tt class="py-comment"></tt> </tt>
+<a name="Qualifications"></a><div id="Qualifications-def"><a name="L22"></a><tt class="py-lineno">22</tt> <a class="py-toggle" href="#" id="Qualifications-toggle" onclick="return toggle('Qualifications');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="boto.mturk.qualification.Qualifications-class.html">Qualifications</a><tt class="py-op">:</tt> </tt>
+</div><div id="Qualifications-collapsed" style="display:none;" pad="++" indent="++++"></div><div id="Qualifications-expanded"><a name="L23"></a><tt class="py-lineno">23</tt>  <tt class="py-line"> </tt>
+<a name="Qualifications.__init__"></a><div id="Qualifications.__init__-def"><a name="L24"></a><tt class="py-lineno">24</tt> <a class="py-toggle" href="#" id="Qualifications.__init__-toggle" onclick="return toggle('Qualifications.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.mturk.qualification.Qualifications-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">requirements</tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Qualifications.__init__-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="Qualifications.__init__-expanded"><a name="L25"></a><tt class="py-lineno">25</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">requirements</tt> <tt class="py-op">=</tt> <tt class="py-name">requirements</tt> </tt>
+</div><a name="L26"></a><tt class="py-lineno">26</tt>  <tt class="py-line"> </tt>
+<a name="Qualifications.add"></a><div id="Qualifications.add-def"><a name="L27"></a><tt class="py-lineno">27</tt> <a class="py-toggle" href="#" id="Qualifications.add-toggle" onclick="return toggle('Qualifications.add');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.mturk.qualification.Qualifications-class.html#add">add</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">req</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Qualifications.add-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="Qualifications.add-expanded"><a name="L28"></a><tt class="py-lineno">28</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">requirements</tt><tt class="py-op">.</tt><tt id="link-0" class="py-name" targets="Method boto.sdb.persist.property.MultiValue.append()=boto.sdb.persist.property.MultiValue-class.html#append"><a title="boto.sdb.persist.property.MultiValue.append" class="py-name" href="#" onclick="return doclink('link-0', 'append', 'link-0');">append</a></tt><tt class="py-op">(</tt><tt id="link-1" class="py-name" targets="Variable boto.sdb.db.test_db.TestRequired.req=boto.sdb.db.test_db.TestRequired-class.html#req"><a title="boto.sdb.db.test_db.TestRequired.req" class="py-name" href="#" onclick="return doclink('link-1', 'req', 'link-1');">req</a></tt><tt class="py-op">)</tt> </tt>
+</div><a name="L29"></a><tt class="py-lineno">29</tt>  <tt class="py-line"> </tt>
+<a name="Qualifications.get_as_params"></a><div id="Qualifications.get_as_params-def"><a name="L30"></a><tt class="py-lineno">30</tt> <a class="py-toggle" href="#" id="Qualifications.get_as_params-toggle" onclick="return toggle('Qualifications.get_as_params');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.mturk.qualification.Qualifications-class.html#get_as_params">get_as_params</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Qualifications.get_as_params-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="Qualifications.get_as_params-expanded"><a name="L31"></a><tt class="py-lineno">31</tt>  <tt class="py-line">        <tt class="py-name">params</tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt><tt class="py-op">}</tt> </tt>
+<a name="L32"></a><tt class="py-lineno">32</tt>  <tt class="py-line">        <tt class="py-keyword">assert</tt><tt class="py-op">(</tt><tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">requirements</tt><tt class="py-op">)</tt> <tt class="py-op">&lt;=</tt> <tt class="py-number">10</tt><tt class="py-op">)</tt> </tt>
+<a name="L33"></a><tt class="py-lineno">33</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt class="py-name">n</tt><tt class="py-op">,</tt> <tt id="link-2" class="py-name"><a title="boto.sdb.db.test_db.TestRequired.req" class="py-name" href="#" onclick="return doclink('link-2', 'req', 'link-1');">req</a></tt> <tt class="py-keyword">in</tt> <tt class="py-name">enumerate</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">requirements</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L34"></a><tt class="py-lineno">34</tt>  <tt class="py-line">            <tt class="py-name">params</tt><tt class="py-op">[</tt><tt class="py-string">"QualificationRequirement.%s.QualificationTypeId"</tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt class="py-name">n</tt><tt class="py-op">+</tt><tt class="py-number">1</tt><tt class="py-op">)</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt id="link-3" class="py-name"><a title="boto.sdb.db.test_db.TestRequired.req" class="py-name" href="#" onclick="return doclink('link-3', 'req', 'link-1');">req</a></tt><tt class="py-op">.</tt><tt class="py-name">qualification_type_id</tt> </tt>
+<a name="L35"></a><tt class="py-lineno">35</tt>  <tt class="py-line">            <tt class="py-name">params</tt><tt class="py-op">[</tt><tt class="py-string">"QualificationRequirement.%s.Comparator"</tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt class="py-name">n</tt><tt class="py-op">+</tt><tt class="py-number">1</tt><tt class="py-op">)</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt id="link-4" class="py-name"><a title="boto.sdb.db.test_db.TestRequired.req" class="py-name" href="#" onclick="return doclink('link-4', 'req', 'link-1');">req</a></tt><tt class="py-op">.</tt><tt class="py-name">comparator</tt> </tt>
+<a name="L36"></a><tt class="py-lineno">36</tt>  <tt class="py-line">            <tt class="py-name">params</tt><tt class="py-op">[</tt><tt class="py-string">"QualificationRequirement.%s.IntegerValue"</tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt class="py-name">n</tt><tt class="py-op">+</tt><tt class="py-number">1</tt><tt class="py-op">)</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt id="link-5" class="py-name"><a title="boto.sdb.db.test_db.TestRequired.req" class="py-name" href="#" onclick="return doclink('link-5', 'req', 'link-1');">req</a></tt><tt class="py-op">.</tt><tt class="py-name">integer_value</tt> </tt>
+<a name="L37"></a><tt class="py-lineno">37</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt id="link-6" class="py-name"><a title="boto.sdb.db.test_db.TestRequired.req" class="py-name" href="#" onclick="return doclink('link-6', 'req', 'link-1');">req</a></tt><tt class="py-op">.</tt><tt class="py-name">required_to_preview</tt><tt class="py-op">:</tt> </tt>
+<a name="L38"></a><tt class="py-lineno">38</tt>  <tt class="py-line">                <tt class="py-name">params</tt><tt class="py-op">[</tt><tt class="py-string">"QualificationRequirement.%s.RequiredToPreview"</tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt class="py-name">n</tt><tt class="py-op">+</tt><tt class="py-number">1</tt><tt class="py-op">)</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-string">"true"</tt> </tt>
+<a name="L39"></a><tt class="py-lineno">39</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">params</tt> </tt>
+</div></div><a name="L40"></a><tt class="py-lineno">40</tt>  <tt class="py-line"> </tt>
+<a name="L41"></a><tt class="py-lineno">41</tt>  <tt class="py-line"> </tt>
+<a name="Requirement"></a><div id="Requirement-def"><a name="L42"></a><tt class="py-lineno">42</tt> <a class="py-toggle" href="#" id="Requirement-toggle" onclick="return toggle('Requirement');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="boto.mturk.qualification.Requirement-class.html">Requirement</a><tt class="py-op">:</tt> </tt>
+</div><div id="Requirement-collapsed" style="display:none;" pad="++" indent="++++"></div><div id="Requirement-expanded"><a name="L43"></a><tt class="py-lineno">43</tt>  <tt class="py-line">    <tt class="py-docstring">"""</tt> </tt>
+<a name="L44"></a><tt class="py-lineno">44</tt>  <tt class="py-line"><tt class="py-docstring">    Representation of a single requirement</tt> </tt>
+<a name="L45"></a><tt class="py-lineno">45</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
+<a name="L46"></a><tt class="py-lineno">46</tt>  <tt class="py-line"> </tt>
+<a name="Requirement.__init__"></a><div id="Requirement.__init__-def"><a name="L47"></a><tt class="py-lineno">47</tt> <a class="py-toggle" href="#" id="Requirement.__init__-toggle" onclick="return toggle('Requirement.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.mturk.qualification.Requirement-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">qualification_type_id</tt><tt class="py-op">,</tt> <tt class="py-param">comparator</tt><tt class="py-op">,</tt> <tt class="py-param">integer_value</tt><tt class="py-op">,</tt> <tt class="py-param">required_to_preview</tt><tt class="py-op">=</tt><tt class="py-name">False</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Requirement.__init__-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="Requirement.__init__-expanded"><a name="L48"></a><tt class="py-lineno">48</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">qualification_type_id</tt> <tt class="py-op">=</tt> <tt class="py-name">qualification_type_id</tt> </tt>
+<a name="L49"></a><tt class="py-lineno">49</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">comparator</tt> <tt class="py-op">=</tt> <tt class="py-name">comparator</tt> </tt>
+<a name="L50"></a><tt class="py-lineno">50</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">integer_value</tt> <tt class="py-op">=</tt> <tt class="py-name">integer_value</tt> </tt>
+<a name="L51"></a><tt class="py-lineno">51</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">required_to_preview</tt> <tt class="py-op">=</tt> <tt class="py-name">required_to_preview</tt> </tt>
+</div></div><a name="L52"></a><tt class="py-lineno">52</tt>  <tt class="py-line"> </tt>
+<a name="PercentAssignmentsSubmittedRequirement"></a><div id="PercentAssignmentsSubmittedRequirement-def"><a name="L53"></a><tt class="py-lineno">53</tt> <a class="py-toggle" href="#" id="PercentAssignmentsSubmittedRequirement-toggle" onclick="return toggle('PercentAssignmentsSubmittedRequirement');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="boto.mturk.qualification.PercentAssignmentsSubmittedRequirement-class.html">PercentAssignmentsSubmittedRequirement</a><tt class="py-op">(</tt><tt class="py-base-class">Requirement</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="PercentAssignmentsSubmittedRequirement-collapsed" style="display:none;" pad="++" indent="++++"></div><div id="PercentAssignmentsSubmittedRequirement-expanded"><a name="L54"></a><tt class="py-lineno">54</tt>  <tt class="py-line">    <tt class="py-docstring">"""</tt> </tt>
+<a name="L55"></a><tt class="py-lineno">55</tt>  <tt class="py-line"><tt class="py-docstring">    The percentage of assignments the Worker has submitted, over all assignments the Worker has accepted. The value is an integer between 0 and 100.</tt> </tt>
+<a name="L56"></a><tt class="py-lineno">56</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
+<a name="L57"></a><tt class="py-lineno">57</tt>  <tt class="py-line"> </tt>
+<a name="PercentAssignmentsSubmittedRequirement.__init__"></a><div id="PercentAssignmentsSubmittedRequirement.__init__-def"><a name="L58"></a><tt class="py-lineno">58</tt> <a class="py-toggle" href="#" id="PercentAssignmentsSubmittedRequirement.__init__-toggle" onclick="return toggle('PercentAssignmentsSubmittedRequirement.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.mturk.qualification.PercentAssignmentsSubmittedRequirement-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">comparator</tt><tt class="py-op">,</tt> <tt class="py-param">integer_value</tt><tt class="py-op">,</tt> <tt class="py-param">required_to_preview</tt><tt class="py-op">=</tt><tt class="py-name">False</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="PercentAssignmentsSubmittedRequirement.__init__-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="PercentAssignmentsSubmittedRequirement.__init__-expanded"><a name="L59"></a><tt class="py-lineno">59</tt>  <tt class="py-line">        <tt id="link-7" class="py-name" targets="Class boto.mturk.qualification.Requirement=boto.mturk.qualification.Requirement-class.html"><a title="boto.mturk.qualification.Requirement" class="py-name" href="#" onclick="return doclink('link-7', 'Requirement', 'link-7');">Requirement</a></tt><tt class="py-op">.</tt><tt id="link-8" class="py-name" targets="Method boto.cloudfront.CloudFrontConnection.__init__()=boto.cloudfront.CloudFrontConnection-class.html#__init__,Method boto.cloudfront.distribution.Distribution.__init__()=boto.cloudfront.distribution.Distribution-class.html#__init__,Method boto.cloudfront.distribution.DistributionConfig.__init__()=boto.cloudfront.distribution.DistributionConfig-class.html#__init__,Method boto.cloudfront.distribution.DistributionSummary.__init__()=boto.cloudfront.distribution.DistributionSummary-class.html#__init__,Method boto.connection.AWSAuthConnection.__init__()=boto.connection.AWSAuthConnection-class.html#__init__,Method boto.connection.AWSQueryConnection.__init__()=boto.connection.AWSQueryConnection-class.html#__init__,Method boto.contrib.ymlmessage.YAMLMessage.__init__()=boto.contrib.ymlmessage.YAMLMessage-class.html#__init__,Method boto.ec2.address.Address.__init__()=boto.ec2.address.Address-class.html#__init__,Method boto.ec2.connection.EC2Connection.__init__()=boto.ec2.connection.EC2Connection-class.html#__init__,Method boto.ec2.ec2object.EC2Object.__init__()=boto.ec2.ec2object.EC2Object-class.html#__init__,Method boto.ec2.image.Image.__init__()=boto.ec2.image.Image-class.html#__init__,Method boto.ec2.image.ImageAttribute.__init__()=boto.ec2.image.ImageAttribute-class.html#__init__,Method boto.ec2.instance.ConsoleOutput.__init__()=boto.ec2.instance.ConsoleOutput-class.html#__init__,Method boto.ec2.instance.Group.__init__()=boto.ec2.instance.Group-class.html#__init__,Method boto.ec2.instance.Instance.__init__()=boto.ec2.instance.Instance-class.html#__init__,Method boto.ec2.instance.Reservation.__init__()=boto.ec2.instance.Reservation-class.html#__init__,Method boto.ec2.keypair.KeyPair.__init__()=boto.ec2.keypair.KeyPair-class.html#__init__,Method boto.ec2.regioninfo.RegionInfo.__init__()=boto.ec2.regioninfo.RegionInfo-class.html#__init__,Method boto.ec2.securitygroup.GroupOrCIDR.__init__()=boto.ec2.securitygroup.GroupOrCIDR-class.html#__init__,Method boto.ec2.securitygroup.IPPermissions.__init__()=boto.ec2.securitygroup.IPPermissions-class.html#__init__,Method boto.ec2.securitygroup.SecurityGroup.__init__()=boto.ec2.securitygroup.SecurityGroup-class.html#__init__,Method boto.ec2.snapshot.Snapshot.__init__()=boto.ec2.snapshot.Snapshot-class.html#__init__,Method boto.ec2.volume.Volume.__init__()=boto.ec2.volume.Volume-class.html#__init__,Method boto.ec2.zone.Zone.__init__()=boto.ec2.zone.Zone-class.html#__init__,Method boto.exception.BotoClientError.__init__()=boto.exception.BotoClientError-class.html#__init__,Method boto.exception.BotoServerError.__init__()=boto.exception.BotoServerError-class.html#__init__,Method boto.exception.ConsoleOutput.__init__()=boto.exception.ConsoleOutput-class.html#__init__,Method boto.exception.EC2ResponseError.__init__()=boto.exception.EC2ResponseError-class.html#__init__,Method boto.exception.S3ResponseError.__init__()=boto.exception.S3ResponseError-class.html#__init__,Method boto.exception.SQSError.__init__()=boto.exception.SQSError-class.html#__init__,Method boto.exception._EC2Error.__init__()=boto.exception._EC2Error-class.html#__init__,Method boto.fps.connection.FPSConnection.__init__()=boto.fps.connection.FPSConnection-class.html#__init__,Method boto.handler.XmlHandler.__init__()=boto.handler.XmlHandler-class.html#__init__,Method boto.mapreduce.lqs.LQSCommand.__init__()=boto.mapreduce.lqs.LQSCommand-class.html#__init__,Method boto.mapreduce.lqs.LQSMessage.__init__()=boto.mapreduce.lqs.LQSMessage-class.html#__init__,Method boto.mapreduce.lqs.LQSServer.__init__()=boto.mapreduce.lqs.LQSServer-class.html#__init__,Method boto.mapreduce.partitiondb.Partition.__init__()=boto.mapreduce.partitiondb.Partition-class.html#__init__,Method boto.mapreduce.partitiondb.PartitionDB.__init__()=boto.mapreduce.partitiondb.PartitionDB-class.html#__init__,Method boto.mapreduce.partitiondb.Version.__init__()=boto.mapreduce.partitiondb.Version-class.html#__init__,Method boto.mapreduce.queuetools.LQSClient.__init__()=boto.mapreduce.queuetools.LQSClient-class.html#__init__,Method boto.mapreduce.queuetools.SQSClient.__init__()=boto.mapreduce.queuetools.SQSClient-class.html#__init__,Method boto.mashups.order.Item.__init__()=boto.mashups.order.Item-class.html#__init__,Method boto.mashups.order.Order.__init__()=boto.mashups.order.Order-class.html#__init__,Method boto.mashups.server.Server.__init__()=boto.mashups.server.Server-class.html#__init__,Method boto.mturk.connection.Assignment.__init__()=boto.mturk.connection.Assignment-class.html#__init__,Method boto.mturk.connection.BaseAutoResultElement.__init__()=boto.mturk.connection.BaseAutoResultElement-class.html#__init__,Method boto.mturk.connection.MTurkConnection.__init__()=boto.mturk.connection.MTurkConnection-class.html#__init__,Method boto.mturk.notification.Event.__init__()=boto.mturk.notification.Event-class.html#__init__,Method boto.mturk.notification.NotificationMessage.__init__()=boto.mturk.notification.NotificationMessage-class.html#__init__,Method boto.mturk.price.Price.__init__()=boto.mturk.price.Price-class.html#__init__,Method boto.mturk.qualification.PercentAssignmentsAbandonedRequirement.__init__()=boto.mturk.qualification.PercentAssignmentsAbandonedRequirement-class.html#__init__,Method boto.mturk.qualification.PercentAssignmentsApprovedRequirement.__init__()=boto.mturk.qualification.PercentAssignmentsApprovedRequirement-class.html#__init__,Method boto.mturk.qualification.PercentAssignmentsRejectedRequirement.__init__()=boto.mturk.qualification.PercentAssignmentsRejectedRequirement-class.html#__init__,Method boto.mturk.qualification.PercentAssignmentsReturnedRequirement.__init__()=boto.mturk.qualification.PercentAssignmentsReturnedRequirement-class.html#__init__,Method boto.mturk.qualification.PercentAssignmentsSubmittedRequirement.__init__()=boto.mturk.qualification.PercentAssignmentsSubmittedRequirement-class.html#__init__,Method boto.mturk.qualification.Qualifications.__init__()=boto.mturk.qualification.Qualifications-class.html#__init__,Method boto.mturk.qualification.Requirement.__init__()=boto.mturk.qualification.Requirement-class.html#__init__,Method boto.mturk.question.AnswerSpecification.__init__()=boto.mturk.question.AnswerSpecification-class.html#__init__,Method boto.mturk.question.ExternalQuestion.__init__()=boto.mturk.question.ExternalQuestion-class.html#__init__,Method boto.mturk.question.FileUploadAnswer.__init__()=boto.mturk.question.FileUploadAnswer-class.html#__init__,Method boto.mturk.question.FreeTextAnswer.__init__()=boto.mturk.question.FreeTextAnswer-class.html#__init__,Method boto.mturk.question.Question.__init__()=boto.mturk.question.Question-class.html#__init__,Method boto.mturk.question.QuestionContent.__init__()=boto.mturk.question.QuestionContent-class.html#__init__,Method boto.mturk.question.QuestionForm.__init__()=boto.mturk.question.QuestionForm-class.html#__init__,Method boto.mturk.question.SelectionAnswer.__init__()=boto.mturk.question.SelectionAnswer-class.html#__init__,Method boto.pyami.bootstrap.Bootstrap.__init__()=boto.pyami.bootstrap.Bootstrap-class.html#__init__,Method boto.pyami.config.Config.__init__()=boto.pyami.config.Config-class.html#__init__,Method boto.pyami.copybot.CopyBot.__init__()=boto.pyami.copybot.CopyBot-class.html#__init__,Method boto.pyami.scriptbase.ScriptBase.__init__()=boto.pyami.scriptbase.ScriptBase-class.html#__init__,Method boto.resultset.ResultSet.__init__()=boto.resultset.ResultSet-class.html#__init__,Method boto.s3.acl.ACL.__init__()=boto.s3.acl.ACL-class.html#__init__,Method boto.s3.acl.Grant.__init__()=boto.s3.acl.Grant-class.html#__init__,Method boto.s3.acl.Policy.__init__()=boto.s3.acl.Policy-class.html#__init__,Method boto.s3.bucket.Bucket.__init__()=boto.s3.bucket.Bucket-class.html#__init__,Method boto.s3.bucketlistresultset.BucketListResultSet.__init__()=boto.s3.bucketlistresultset.BucketListResultSet-class.html#__init__,Method boto.s3.connection.S3Connection.__init__()=boto.s3.connection.S3Connection-class.html#__init__,Method boto.s3.key.Key.__init__()=boto.s3.key.Key-class.html#__init__,Method boto.s3.prefix.Prefix.__init__()=boto.s3.prefix.Prefix-class.html#__init__,Method boto.s3.user.User.__init__()=boto.s3.user.User-class.html#__init__,Method boto.sdb.connection.ItemThread.__init__()=boto.sdb.connection.ItemThread-class.html#__init__,Method boto.sdb.connection.SDBConnection.__init__()=boto.sdb.connection.SDBConnection-class.html#__init__,Method boto.sdb.db.key.Key.__init__()=boto.sdb.db.key.Key-class.html#__init__,Method boto.sdb.db.manager.pgmanager.PGConverter.__init__()=boto.sdb.db.manager.pgmanager.PGConverter-class.html#__init__,Method boto.sdb.db.manager.pgmanager.PGManager.__init__()=boto.sdb.db.manager.pgmanager.PGManager-class.html#__init__,Method boto.sdb.db.manager.sdbmanager.SDBConverter.__init__()=boto.sdb.db.manager.sdbmanager.SDBConverter-class.html#__init__,Method boto.sdb.db.manager.sdbmanager.SDBManager.__init__()=boto.sdb.db.manager.sdbmanager.SDBManager-class.html#__init__,Method boto.sdb.db.model.Model.__init__()=boto.sdb.db.model.Model-class.html#__init__,Method boto.sdb.db.model.Model.__init__()=boto.sdb.db.model.Model-class.html#__init__,Method boto.sdb.db.model.ModelMeta.__init__()=boto.sdb.db.model.ModelMeta-class.html#__init__,Method boto.sdb.db.model.ModelMeta.__init__()=boto.sdb.db.model.ModelMeta-class.html#__init__,Method boto.sdb.db.property.BooleanProperty.__init__()=boto.sdb.db.property.BooleanProperty-class.html#__init__,Method boto.sdb.db.property.CalculatedProperty.__init__()=boto.sdb.db.property.CalculatedProperty-class.html#__init__,Method boto.sdb.db.property.DateTimeProperty.__init__()=boto.sdb.db.property.DateTimeProperty-class.html#__init__,Method boto.sdb.db.property.IntegerProperty.__init__()=boto.sdb.db.property.IntegerProperty-class.html#__init__,Method boto.sdb.db.property.ListProperty.__init__()=boto.sdb.db.property.ListProperty-class.html#__init__,Method boto.sdb.db.property.LongProperty.__init__()=boto.sdb.db.property.LongProperty-class.html#__init__,Method boto.sdb.db.property.PasswordProperty.__init__()=boto.sdb.db.property.PasswordProperty-class.html#__init__,Method boto.sdb.db.property.Property.__init__()=boto.sdb.db.property.Property-class.html#__init__,Method boto.sdb.db.property.ReferenceProperty.__init__()=boto.sdb.db.property.ReferenceProperty-class.html#__init__,Method boto.sdb.db.property.S3KeyProperty.__init__()=boto.sdb.db.property.S3KeyProperty-class.html#__init__,Method boto.sdb.db.property.StringProperty.__init__()=boto.sdb.db.property.StringProperty-class.html#__init__,Method boto.sdb.db.property.TextProperty.__init__()=boto.sdb.db.property.TextProperty-class.html#__init__,Method boto.sdb.db.property._ReverseReferenceProperty.__init__()=boto.sdb.db.property._ReverseReferenceProperty-class.html#__init__,Method boto.sdb.db.query.Query.__init__()=boto.sdb.db.query.Query-class.html#__init__,Method boto.sdb.domain.Domain.__init__()=boto.sdb.domain.Domain-class.html#__init__,Method boto.sdb.domain.DomainMetaData.__init__()=boto.sdb.domain.DomainMetaData-class.html#__init__,Method boto.sdb.item.Item.__init__()=boto.sdb.item.Item-class.html#__init__,Method boto.sdb.persist.Manager.__init__()=boto.sdb.persist.Manager-class.html#__init__,Method boto.sdb.persist.checker.BooleanChecker.__init__()=boto.sdb.persist.checker.BooleanChecker-class.html#__init__,Method boto.sdb.persist.checker.DateTimeChecker.__init__()=boto.sdb.persist.checker.DateTimeChecker-class.html#__init__,Method boto.sdb.persist.checker.IntegerChecker.__init__()=boto.sdb.persist.checker.IntegerChecker-class.html#__init__,Method boto.sdb.persist.checker.ObjectChecker.__init__()=boto.sdb.persist.checker.ObjectChecker-class.html#__init__,Method boto.sdb.persist.checker.S3BucketChecker.__init__()=boto.sdb.persist.checker.S3BucketChecker-class.html#__init__,Method boto.sdb.persist.checker.S3KeyChecker.__init__()=boto.sdb.persist.checker.S3KeyChecker-class.html#__init__,Method boto.sdb.persist.checker.StringChecker.__init__()=boto.sdb.persist.checker.StringChecker-class.html#__init__,Method boto.sdb.persist.object.SDBBase.__init__()=boto.sdb.persist.object.SDBBase-class.html#__init__,Method boto.sdb.persist.object.SDBObject.__init__()=boto.sdb.persist.object.SDBObject-class.html#__init__,Method boto.sdb.persist.property.BooleanListProperty.__init__()=boto.sdb.persist.property.BooleanListProperty-class.html#__init__,Method boto.sdb.persist.property.BooleanProperty.__init__()=boto.sdb.persist.property.BooleanProperty-class.html#__init__,Method boto.sdb.persist.property.DateTimeProperty.__init__()=boto.sdb.persist.property.DateTimeProperty-class.html#__init__,Method boto.sdb.persist.property.IntegerListProperty.__init__()=boto.sdb.persist.property.IntegerListProperty-class.html#__init__,Method boto.sdb.persist.property.IntegerProperty.__init__()=boto.sdb.persist.property.IntegerProperty-class.html#__init__,Method boto.sdb.persist.property.LargeIntegerListProperty.__init__()=boto.sdb.persist.property.LargeIntegerListProperty-class.html#__init__,Method boto.sdb.persist.property.LargeIntegerProperty.__init__()=boto.sdb.persist.property.LargeIntegerProperty-class.html#__init__,Method boto.sdb.persist.property.LargePositiveIntegerListProperty.__init__()=boto.sdb.persist.property.LargePositiveIntegerListProperty-class.html#__init__,Method boto.sdb.persist.property.LargePositiveIntegerProperty.__init__()=boto.sdb.persist.property.LargePositiveIntegerProperty-class.html#__init__,Method boto.sdb.persist.property.MultiValue.__init__()=boto.sdb.persist.property.MultiValue-class.html#__init__,Method boto.sdb.persist.property.MultiValueProperty.__init__()=boto.sdb.persist.property.MultiValueProperty-class.html#__init__,Method boto.sdb.persist.property.ObjectListProperty.__init__()=boto.sdb.persist.property.ObjectListProperty-class.html#__init__,Method boto.sdb.persist.property.ObjectProperty.__init__()=boto.sdb.persist.property.ObjectProperty-class.html#__init__,Method boto.sdb.persist.property.PasswordProperty.__init__()=boto.sdb.persist.property.PasswordProperty-class.html#__init__,Method boto.sdb.persist.property.PositiveIntegerListProperty.__init__()=boto.sdb.persist.property.PositiveIntegerListProperty-class.html#__init__,Method boto.sdb.persist.property.PositiveIntegerProperty.__init__()=boto.sdb.persist.property.PositiveIntegerProperty-class.html#__init__,Method boto.sdb.persist.property.Property.__init__()=boto.sdb.persist.property.Property-class.html#__init__,Method boto.sdb.persist.property.S3BucketProperty.__init__()=boto.sdb.persist.property.S3BucketProperty-class.html#__init__,Method boto.sdb.persist.property.S3KeyProperty.__init__()=boto.sdb.persist.property.S3KeyProperty-class.html#__init__,Method boto.sdb.persist.property.SmallIntegerListProperty.__init__()=boto.sdb.persist.property.SmallIntegerListProperty-class.html#__init__,Method boto.sdb.persist.property.SmallIntegerProperty.__init__()=boto.sdb.persist.property.SmallIntegerProperty-class.html#__init__,Method boto.sdb.persist.property.SmallPositiveIntegerListProperty.__init__()=boto.sdb.persist.property.SmallPositiveIntegerListProperty-class.html#__init__,Method boto.sdb.persist.property.SmallPositiveIntegerProperty.__init__()=boto.sdb.persist.property.SmallPositiveIntegerProperty-class.html#__init__,Method boto.sdb.persist.property.StringListProperty.__init__()=boto.sdb.persist.property.StringListProperty-class.html#__init__,Method boto.sdb.persist.property.StringProperty.__init__()=boto.sdb.persist.property.StringProperty-class.html#__init__,Method boto.sdb.queryresultset.QueryResultSet.__init__()=boto.sdb.queryresultset.QueryResultSet-class.html#__init__,Method boto.services.bs.BS.__init__()=boto.services.bs.BS-class.html#__init__,Method boto.services.result.ResultProcessor.__init__()=boto.services.result.ResultProcessor-class.html#__init__,Method boto.services.service.Service.__init__()=boto.services.service.Service-class.html#__init__,Method boto.services.servicedef.ServiceDef.__init__()=boto.services.servicedef.ServiceDef-class.html#__init__,Method boto.services.sonofmmm.SonOfMMM.__init__()=boto.services.sonofmmm.SonOfMMM-class.html#__init__,Method boto.services.submit.Submitter.__init__()=boto.services.submit.Submitter-class.html#__init__,Method boto.sqs.20070501.attributes.Attributes.__init__()=boto.sqs.20070501.attributes.Attributes-class.html#__init__,Method boto.sqs.20070501.connection.SQSConnection.__init__()=boto.sqs.20070501.connection.SQSConnection-class.html#__init__,Method boto.sqs.20070501.connection.SQSQueryConnection.__init__()=boto.sqs.20070501.connection.SQSQueryConnection-class.html#__init__,Method boto.sqs.20070501.message.MHMessage.__init__()=boto.sqs.20070501.message.MHMessage-class.html#__init__,Method boto.sqs.20070501.message.RawMessage.__init__()=boto.sqs.20070501.message.RawMessage-class.html#__init__,Method boto.sqs.20070501.queue.Queue.__init__()=boto.sqs.20070501.queue.Queue-class.html#__init__,Method boto.sqs.attributes.Attributes.__init__()=boto.sqs.attributes.Attributes-class.html#__init__,Method boto.sqs.connection.SQSConnection.__init__()=boto.sqs.connection.SQSConnection-class.html#__init__,Method boto.sqs.message.MHMessage.__init__()=boto.sqs.message.MHMessage-class.html#__init__,Method boto.sqs.message.RawMessage.__init__()=boto.sqs.message.RawMessage-class.html#__init__,Method boto.sqs.queue.Queue.__init__()=boto.sqs.queue.Queue-class.html#__init__,Method boto.utils.AuthSMTPHandler.__init__()=boto.utils.AuthSMTPHandler-class.html#__init__,Method boto.utils.LRUCache._Item.__init__()=boto.utils.LRUCache._Item-class.html#__init__,Method boto.utils.LRUCache.__init__()=boto.utils.LRUCache-class.html#__init__,Method boto.utils.Password.__init__()=boto.utils.Password-class.html#__init__,Method boto.utils.ShellCommand.__init__()=boto.utils.ShellCommand-class.html#__init__"><a title="boto.cloudfront.CloudFrontConnection.__init__
+boto.cloudfront.distribution.Distribution.__init__
+boto.cloudfront.distribution.DistributionConfig.__init__
+boto.cloudfront.distribution.DistributionSummary.__init__
+boto.connection.AWSAuthConnection.__init__
+boto.connection.AWSQueryConnection.__init__
+boto.contrib.ymlmessage.YAMLMessage.__init__
+boto.ec2.address.Address.__init__
+boto.ec2.connection.EC2Connection.__init__
+boto.ec2.ec2object.EC2Object.__init__
+boto.ec2.image.Image.__init__
+boto.ec2.image.ImageAttribute.__init__
+boto.ec2.instance.ConsoleOutput.__init__
+boto.ec2.instance.Group.__init__
+boto.ec2.instance.Instance.__init__
+boto.ec2.instance.Reservation.__init__
+boto.ec2.keypair.KeyPair.__init__
+boto.ec2.regioninfo.RegionInfo.__init__
+boto.ec2.securitygroup.GroupOrCIDR.__init__
+boto.ec2.securitygroup.IPPermissions.__init__
+boto.ec2.securitygroup.SecurityGroup.__init__
+boto.ec2.snapshot.Snapshot.__init__
+boto.ec2.volume.Volume.__init__
+boto.ec2.zone.Zone.__init__
+boto.exception.BotoClientError.__init__
+boto.exception.BotoServerError.__init__
+boto.exception.ConsoleOutput.__init__
+boto.exception.EC2ResponseError.__init__
+boto.exception.S3ResponseError.__init__
+boto.exception.SQSError.__init__
+boto.exception._EC2Error.__init__
+boto.fps.connection.FPSConnection.__init__
+boto.handler.XmlHandler.__init__
+boto.mapreduce.lqs.LQSCommand.__init__
+boto.mapreduce.lqs.LQSMessage.__init__
+boto.mapreduce.lqs.LQSServer.__init__
+boto.mapreduce.partitiondb.Partition.__init__
+boto.mapreduce.partitiondb.PartitionDB.__init__
+boto.mapreduce.partitiondb.Version.__init__
+boto.mapreduce.queuetools.LQSClient.__init__
+boto.mapreduce.queuetools.SQSClient.__init__
+boto.mashups.order.Item.__init__
+boto.mashups.order.Order.__init__
+boto.mashups.server.Server.__init__
+boto.mturk.connection.Assignment.__init__
+boto.mturk.connection.BaseAutoResultElement.__init__
+boto.mturk.connection.MTurkConnection.__init__
+boto.mturk.notification.Event.__init__
+boto.mturk.notification.NotificationMessage.__init__
+boto.mturk.price.Price.__init__
+boto.mturk.qualification.PercentAssignmentsAbandonedRequirement.__init__
+boto.mturk.qualification.PercentAssignmentsApprovedRequirement.__init__
+boto.mturk.qualification.PercentAssignmentsRejectedRequirement.__init__
+boto.mturk.qualification.PercentAssignmentsReturnedRequirement.__init__
+boto.mturk.qualification.PercentAssignmentsSubmittedRequirement.__init__
+boto.mturk.qualification.Qualifications.__init__
+boto.mturk.qualification.Requirement.__init__
+boto.mturk.question.AnswerSpecification.__init__
+boto.mturk.question.ExternalQuestion.__init__
+boto.mturk.question.FileUploadAnswer.__init__
+boto.mturk.question.FreeTextAnswer.__init__
+boto.mturk.question.Question.__init__
+boto.mturk.question.QuestionContent.__init__
+boto.mturk.question.QuestionForm.__init__
+boto.mturk.question.SelectionAnswer.__init__
+boto.pyami.bootstrap.Bootstrap.__init__
+boto.pyami.config.Config.__init__
+boto.pyami.copybot.CopyBot.__init__
+boto.pyami.scriptbase.ScriptBase.__init__
+boto.resultset.ResultSet.__init__
+boto.s3.acl.ACL.__init__
+boto.s3.acl.Grant.__init__
+boto.s3.acl.Policy.__init__
+boto.s3.bucket.Bucket.__init__
+boto.s3.bucketlistresultset.BucketListResultSet.__init__
+boto.s3.connection.S3Connection.__init__
+boto.s3.key.Key.__init__
+boto.s3.prefix.Prefix.__init__
+boto.s3.user.User.__init__
+boto.sdb.connection.ItemThread.__init__
+boto.sdb.connection.SDBConnection.__init__
+boto.sdb.db.key.Key.__init__
+boto.sdb.db.manager.pgmanager.PGConverter.__init__
+boto.sdb.db.manager.pgmanager.PGManager.__init__
+boto.sdb.db.manager.sdbmanager.SDBConverter.__init__
+boto.sdb.db.manager.sdbmanager.SDBManager.__init__
+boto.sdb.db.model.Model.__init__
+boto.sdb.db.model.Model.__init__
+boto.sdb.db.model.ModelMeta.__init__
+boto.sdb.db.model.ModelMeta.__init__
+boto.sdb.db.property.BooleanProperty.__init__
+boto.sdb.db.property.CalculatedProperty.__init__
+boto.sdb.db.property.DateTimeProperty.__init__
+boto.sdb.db.property.IntegerProperty.__init__
+boto.sdb.db.property.ListProperty.__init__
+boto.sdb.db.property.LongProperty.__init__
+boto.sdb.db.property.PasswordProperty.__init__
+boto.sdb.db.property.Property.__init__
+boto.sdb.db.property.ReferenceProperty.__init__
+boto.sdb.db.property.S3KeyProperty.__init__
+boto.sdb.db.property.StringProperty.__init__
+boto.sdb.db.property.TextProperty.__init__
+boto.sdb.db.property._ReverseReferenceProperty.__init__
+boto.sdb.db.query.Query.__init__
+boto.sdb.domain.Domain.__init__
+boto.sdb.domain.DomainMetaData.__init__
+boto.sdb.item.Item.__init__
+boto.sdb.persist.Manager.__init__
+boto.sdb.persist.checker.BooleanChecker.__init__
+boto.sdb.persist.checker.DateTimeChecker.__init__
+boto.sdb.persist.checker.IntegerChecker.__init__
+boto.sdb.persist.checker.ObjectChecker.__init__
+boto.sdb.persist.checker.S3BucketChecker.__init__
+boto.sdb.persist.checker.S3KeyChecker.__init__
+boto.sdb.persist.checker.StringChecker.__init__
+boto.sdb.persist.object.SDBBase.__init__
+boto.sdb.persist.object.SDBObject.__init__
+boto.sdb.persist.property.BooleanListProperty.__init__
+boto.sdb.persist.property.BooleanProperty.__init__
+boto.sdb.persist.property.DateTimeProperty.__init__
+boto.sdb.persist.property.IntegerListProperty.__init__
+boto.sdb.persist.property.IntegerProperty.__init__
+boto.sdb.persist.property.LargeIntegerListProperty.__init__
+boto.sdb.persist.property.LargeIntegerProperty.__init__
+boto.sdb.persist.property.LargePositiveIntegerListProperty.__init__
+boto.sdb.persist.property.LargePositiveIntegerProperty.__init__
+boto.sdb.persist.property.MultiValue.__init__
+boto.sdb.persist.property.MultiValueProperty.__init__
+boto.sdb.persist.property.ObjectListProperty.__init__
+boto.sdb.persist.property.ObjectProperty.__init__
+boto.sdb.persist.property.PasswordProperty.__init__
+boto.sdb.persist.property.PositiveIntegerListProperty.__init__
+boto.sdb.persist.property.PositiveIntegerProperty.__init__
+boto.sdb.persist.property.Property.__init__
+boto.sdb.persist.property.S3BucketProperty.__init__
+boto.sdb.persist.property.S3KeyProperty.__init__
+boto.sdb.persist.property.SmallIntegerListProperty.__init__
+boto.sdb.persist.property.SmallIntegerProperty.__init__
+boto.sdb.persist.property.SmallPositiveIntegerListProperty.__init__
+boto.sdb.persist.property.SmallPositiveIntegerProperty.__init__
+boto.sdb.persist.property.StringListProperty.__init__
+boto.sdb.persist.property.StringProperty.__init__
+boto.sdb.queryresultset.QueryResultSet.__init__
+boto.services.bs.BS.__init__
+boto.services.result.ResultProcessor.__init__
+boto.services.service.Service.__init__
+boto.services.servicedef.ServiceDef.__init__
+boto.services.sonofmmm.SonOfMMM.__init__
+boto.services.submit.Submitter.__init__
+boto.sqs.20070501.attributes.Attributes.__init__
+boto.sqs.20070501.connection.SQSConnection.__init__
+boto.sqs.20070501.connection.SQSQueryConnection.__init__
+boto.sqs.20070501.message.MHMessage.__init__
+boto.sqs.20070501.message.RawMessage.__init__
+boto.sqs.20070501.queue.Queue.__init__
+boto.sqs.attributes.Attributes.__init__
+boto.sqs.connection.SQSConnection.__init__
+boto.sqs.message.MHMessage.__init__
+boto.sqs.message.RawMessage.__init__
+boto.sqs.queue.Queue.__init__
+boto.utils.AuthSMTPHandler.__init__
+boto.utils.LRUCache._Item.__init__
+boto.utils.LRUCache.__init__
+boto.utils.Password.__init__
+boto.utils.ShellCommand.__init__" class="py-name" href="#" onclick="return doclink('link-8', '__init__', 'link-8');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt> <tt class="py-name">qualification_type_id</tt><tt class="py-op">=</tt><tt class="py-string">"00000000000000000000"</tt><tt class="py-op">,</tt> <tt class="py-name">comparator</tt><tt class="py-op">=</tt><tt class="py-name">comparator</tt><tt class="py-op">,</tt> <tt class="py-name">integer_value</tt><tt class="py-op">=</tt><tt class="py-name">integer_value</tt><tt class="py-op">,</tt> <tt class="py-name">required_to_preview</tt><tt class="py-op">=</tt><tt class="py-name">required_to_preview</tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L60"></a><tt class="py-lineno">60</tt>  <tt class="py-line"> </tt>
+<a name="PercentAssignmentsAbandonedRequirement"></a><div id="PercentAssignmentsAbandonedRequirement-def"><a name="L61"></a><tt class="py-lineno">61</tt> <a class="py-toggle" href="#" id="PercentAssignmentsAbandonedRequirement-toggle" onclick="return toggle('PercentAssignmentsAbandonedRequirement');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="boto.mturk.qualification.PercentAssignmentsAbandonedRequirement-class.html">PercentAssignmentsAbandonedRequirement</a><tt class="py-op">(</tt><tt class="py-base-class">Requirement</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="PercentAssignmentsAbandonedRequirement-collapsed" style="display:none;" pad="++" indent="++++"></div><div id="PercentAssignmentsAbandonedRequirement-expanded"><a name="L62"></a><tt class="py-lineno">62</tt>  <tt class="py-line">    <tt class="py-docstring">"""</tt> </tt>
+<a name="L63"></a><tt class="py-lineno">63</tt>  <tt class="py-line"><tt class="py-docstring">    The percentage of assignments the Worker has abandoned (allowed the deadline to elapse), over all assignments the Worker has accepted. The value is an integer between 0 and 100.</tt> </tt>
+<a name="L64"></a><tt class="py-lineno">64</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
+<a name="L65"></a><tt class="py-lineno">65</tt>  <tt class="py-line"> </tt>
+<a name="PercentAssignmentsAbandonedRequirement.__init__"></a><div id="PercentAssignmentsAbandonedRequirement.__init__-def"><a name="L66"></a><tt class="py-lineno">66</tt> <a class="py-toggle" href="#" id="PercentAssignmentsAbandonedRequirement.__init__-toggle" onclick="return toggle('PercentAssignmentsAbandonedRequirement.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.mturk.qualification.PercentAssignmentsAbandonedRequirement-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">comparator</tt><tt class="py-op">,</tt> <tt class="py-param">integer_value</tt><tt class="py-op">,</tt> <tt class="py-param">required_to_preview</tt><tt class="py-op">=</tt><tt class="py-name">False</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="PercentAssignmentsAbandonedRequirement.__init__-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="PercentAssignmentsAbandonedRequirement.__init__-expanded"><a name="L67"></a><tt class="py-lineno">67</tt>  <tt class="py-line">        <tt id="link-9" class="py-name"><a title="boto.mturk.qualification.Requirement" class="py-name" href="#" onclick="return doclink('link-9', 'Requirement', 'link-7');">Requirement</a></tt><tt class="py-op">.</tt><tt id="link-10" class="py-name"><a title="boto.cloudfront.CloudFrontConnection.__init__
+boto.cloudfront.distribution.Distribution.__init__
+boto.cloudfront.distribution.DistributionConfig.__init__
+boto.cloudfront.distribution.DistributionSummary.__init__
+boto.connection.AWSAuthConnection.__init__
+boto.connection.AWSQueryConnection.__init__
+boto.contrib.ymlmessage.YAMLMessage.__init__
+boto.ec2.address.Address.__init__
+boto.ec2.connection.EC2Connection.__init__
+boto.ec2.ec2object.EC2Object.__init__
+boto.ec2.image.Image.__init__
+boto.ec2.image.ImageAttribute.__init__
+boto.ec2.instance.ConsoleOutput.__init__
+boto.ec2.instance.Group.__init__
+boto.ec2.instance.Instance.__init__
+boto.ec2.instance.Reservation.__init__
+boto.ec2.keypair.KeyPair.__init__
+boto.ec2.regioninfo.RegionInfo.__init__
+boto.ec2.securitygroup.GroupOrCIDR.__init__
+boto.ec2.securitygroup.IPPermissions.__init__
+boto.ec2.securitygroup.SecurityGroup.__init__
+boto.ec2.snapshot.Snapshot.__init__
+boto.ec2.volume.Volume.__init__
+boto.ec2.zone.Zone.__init__
+boto.exception.BotoClientError.__init__
+boto.exception.BotoServerError.__init__
+boto.exception.ConsoleOutput.__init__
+boto.exception.EC2ResponseError.__init__
+boto.exception.S3ResponseError.__init__
+boto.exception.SQSError.__init__
+boto.exception._EC2Error.__init__
+boto.fps.connection.FPSConnection.__init__
+boto.handler.XmlHandler.__init__
+boto.mapreduce.lqs.LQSCommand.__init__
+boto.mapreduce.lqs.LQSMessage.__init__
+boto.mapreduce.lqs.LQSServer.__init__
+boto.mapreduce.partitiondb.Partition.__init__
+boto.mapreduce.partitiondb.PartitionDB.__init__
+boto.mapreduce.partitiondb.Version.__init__
+boto.mapreduce.queuetools.LQSClient.__init__
+boto.mapreduce.queuetools.SQSClient.__init__
+boto.mashups.order.Item.__init__
+boto.mashups.order.Order.__init__
+boto.mashups.server.Server.__init__
+boto.mturk.connection.Assignment.__init__
+boto.mturk.connection.BaseAutoResultElement.__init__
+boto.mturk.connection.MTurkConnection.__init__
+boto.mturk.notification.Event.__init__
+boto.mturk.notification.NotificationMessage.__init__
+boto.mturk.price.Price.__init__
+boto.mturk.qualification.PercentAssignmentsAbandonedRequirement.__init__
+boto.mturk.qualification.PercentAssignmentsApprovedRequirement.__init__
+boto.mturk.qualification.PercentAssignmentsRejectedRequirement.__init__
+boto.mturk.qualification.PercentAssignmentsReturnedRequirement.__init__
+boto.mturk.qualification.PercentAssignmentsSubmittedRequirement.__init__
+boto.mturk.qualification.Qualifications.__init__
+boto.mturk.qualification.Requirement.__init__
+boto.mturk.question.AnswerSpecification.__init__
+boto.mturk.question.ExternalQuestion.__init__
+boto.mturk.question.FileUploadAnswer.__init__
+boto.mturk.question.FreeTextAnswer.__init__
+boto.mturk.question.Question.__init__
+boto.mturk.question.QuestionContent.__init__
+boto.mturk.question.QuestionForm.__init__
+boto.mturk.question.SelectionAnswer.__init__
+boto.pyami.bootstrap.Bootstrap.__init__
+boto.pyami.config.Config.__init__
+boto.pyami.copybot.CopyBot.__init__
+boto.pyami.scriptbase.ScriptBase.__init__
+boto.resultset.ResultSet.__init__
+boto.s3.acl.ACL.__init__
+boto.s3.acl.Grant.__init__
+boto.s3.acl.Policy.__init__
+boto.s3.bucket.Bucket.__init__
+boto.s3.bucketlistresultset.BucketListResultSet.__init__
+boto.s3.connection.S3Connection.__init__
+boto.s3.key.Key.__init__
+boto.s3.prefix.Prefix.__init__
+boto.s3.user.User.__init__
+boto.sdb.connection.ItemThread.__init__
+boto.sdb.connection.SDBConnection.__init__
+boto.sdb.db.key.Key.__init__
+boto.sdb.db.manager.pgmanager.PGConverter.__init__
+boto.sdb.db.manager.pgmanager.PGManager.__init__
+boto.sdb.db.manager.sdbmanager.SDBConverter.__init__
+boto.sdb.db.manager.sdbmanager.SDBManager.__init__
+boto.sdb.db.model.Model.__init__
+boto.sdb.db.model.Model.__init__
+boto.sdb.db.model.ModelMeta.__init__
+boto.sdb.db.model.ModelMeta.__init__
+boto.sdb.db.property.BooleanProperty.__init__
+boto.sdb.db.property.CalculatedProperty.__init__
+boto.sdb.db.property.DateTimeProperty.__init__
+boto.sdb.db.property.IntegerProperty.__init__
+boto.sdb.db.property.ListProperty.__init__
+boto.sdb.db.property.LongProperty.__init__
+boto.sdb.db.property.PasswordProperty.__init__
+boto.sdb.db.property.Property.__init__
+boto.sdb.db.property.ReferenceProperty.__init__
+boto.sdb.db.property.S3KeyProperty.__init__
+boto.sdb.db.property.StringProperty.__init__
+boto.sdb.db.property.TextProperty.__init__
+boto.sdb.db.property._ReverseReferenceProperty.__init__
+boto.sdb.db.query.Query.__init__
+boto.sdb.domain.Domain.__init__
+boto.sdb.domain.DomainMetaData.__init__
+boto.sdb.item.Item.__init__
+boto.sdb.persist.Manager.__init__
+boto.sdb.persist.checker.BooleanChecker.__init__
+boto.sdb.persist.checker.DateTimeChecker.__init__
+boto.sdb.persist.checker.IntegerChecker.__init__
+boto.sdb.persist.checker.ObjectChecker.__init__
+boto.sdb.persist.checker.S3BucketChecker.__init__
+boto.sdb.persist.checker.S3KeyChecker.__init__
+boto.sdb.persist.checker.StringChecker.__init__
+boto.sdb.persist.object.SDBBase.__init__
+boto.sdb.persist.object.SDBObject.__init__
+boto.sdb.persist.property.BooleanListProperty.__init__
+boto.sdb.persist.property.BooleanProperty.__init__
+boto.sdb.persist.property.DateTimeProperty.__init__
+boto.sdb.persist.property.IntegerListProperty.__init__
+boto.sdb.persist.property.IntegerProperty.__init__
+boto.sdb.persist.property.LargeIntegerListProperty.__init__
+boto.sdb.persist.property.LargeIntegerProperty.__init__
+boto.sdb.persist.property.LargePositiveIntegerListProperty.__init__
+boto.sdb.persist.property.LargePositiveIntegerProperty.__init__
+boto.sdb.persist.property.MultiValue.__init__
+boto.sdb.persist.property.MultiValueProperty.__init__
+boto.sdb.persist.property.ObjectListProperty.__init__
+boto.sdb.persist.property.ObjectProperty.__init__
+boto.sdb.persist.property.PasswordProperty.__init__
+boto.sdb.persist.property.PositiveIntegerListProperty.__init__
+boto.sdb.persist.property.PositiveIntegerProperty.__init__
+boto.sdb.persist.property.Property.__init__
+boto.sdb.persist.property.S3BucketProperty.__init__
+boto.sdb.persist.property.S3KeyProperty.__init__
+boto.sdb.persist.property.SmallIntegerListProperty.__init__
+boto.sdb.persist.property.SmallIntegerProperty.__init__
+boto.sdb.persist.property.SmallPositiveIntegerListProperty.__init__
+boto.sdb.persist.property.SmallPositiveIntegerProperty.__init__
+boto.sdb.persist.property.StringListProperty.__init__
+boto.sdb.persist.property.StringProperty.__init__
+boto.sdb.queryresultset.QueryResultSet.__init__
+boto.services.bs.BS.__init__
+boto.services.result.ResultProcessor.__init__
+boto.services.service.Service.__init__
+boto.services.servicedef.ServiceDef.__init__
+boto.services.sonofmmm.SonOfMMM.__init__
+boto.services.submit.Submitter.__init__
+boto.sqs.20070501.attributes.Attributes.__init__
+boto.sqs.20070501.connection.SQSConnection.__init__
+boto.sqs.20070501.connection.SQSQueryConnection.__init__
+boto.sqs.20070501.message.MHMessage.__init__
+boto.sqs.20070501.message.RawMessage.__init__
+boto.sqs.20070501.queue.Queue.__init__
+boto.sqs.attributes.Attributes.__init__
+boto.sqs.connection.SQSConnection.__init__
+boto.sqs.message.MHMessage.__init__
+boto.sqs.message.RawMessage.__init__
+boto.sqs.queue.Queue.__init__
+boto.utils.AuthSMTPHandler.__init__
+boto.utils.LRUCache._Item.__init__
+boto.utils.LRUCache.__init__
+boto.utils.Password.__init__
+boto.utils.ShellCommand.__init__" class="py-name" href="#" onclick="return doclink('link-10', '__init__', 'link-8');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt> <tt class="py-name">qualification_type_id</tt><tt class="py-op">=</tt><tt class="py-string">"00000000000000000070"</tt><tt class="py-op">,</tt> <tt class="py-name">comparator</tt><tt class="py-op">=</tt><tt class="py-name">comparator</tt><tt class="py-op">,</tt> <tt class="py-name">integer_value</tt><tt class="py-op">=</tt><tt class="py-name">integer_value</tt><tt class="py-op">,</tt> <tt class="py-name">required_to_preview</tt><tt class="py-op">=</tt><tt class="py-name">required_to_preview</tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L68"></a><tt class="py-lineno">68</tt>  <tt class="py-line"> </tt>
+<a name="PercentAssignmentsReturnedRequirement"></a><div id="PercentAssignmentsReturnedRequirement-def"><a name="L69"></a><tt class="py-lineno">69</tt> <a class="py-toggle" href="#" id="PercentAssignmentsReturnedRequirement-toggle" onclick="return toggle('PercentAssignmentsReturnedRequirement');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="boto.mturk.qualification.PercentAssignmentsReturnedRequirement-class.html">PercentAssignmentsReturnedRequirement</a><tt class="py-op">(</tt><tt class="py-base-class">Requirement</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="PercentAssignmentsReturnedRequirement-collapsed" style="display:none;" pad="++" indent="++++"></div><div id="PercentAssignmentsReturnedRequirement-expanded"><a name="L70"></a><tt class="py-lineno">70</tt>  <tt class="py-line">    <tt class="py-docstring">"""</tt> </tt>
+<a name="L71"></a><tt class="py-lineno">71</tt>  <tt class="py-line"><tt class="py-docstring">    The percentage of assignments the Worker has returned, over all assignments the Worker has accepted. The value is an integer between 0 and 100.</tt> </tt>
+<a name="L72"></a><tt class="py-lineno">72</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
+<a name="L73"></a><tt class="py-lineno">73</tt>  <tt class="py-line"> </tt>
+<a name="PercentAssignmentsReturnedRequirement.__init__"></a><div id="PercentAssignmentsReturnedRequirement.__init__-def"><a name="L74"></a><tt class="py-lineno">74</tt> <a class="py-toggle" href="#" id="PercentAssignmentsReturnedRequirement.__init__-toggle" onclick="return toggle('PercentAssignmentsReturnedRequirement.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.mturk.qualification.PercentAssignmentsReturnedRequirement-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">comparator</tt><tt class="py-op">,</tt> <tt class="py-param">integer_value</tt><tt class="py-op">,</tt> <tt class="py-param">required_to_preview</tt><tt class="py-op">=</tt><tt class="py-name">False</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="PercentAssignmentsReturnedRequirement.__init__-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="PercentAssignmentsReturnedRequirement.__init__-expanded"><a name="L75"></a><tt class="py-lineno">75</tt>  <tt class="py-line">        <tt id="link-11" class="py-name"><a title="boto.mturk.qualification.Requirement" class="py-name" href="#" onclick="return doclink('link-11', 'Requirement', 'link-7');">Requirement</a></tt><tt class="py-op">.</tt><tt id="link-12" class="py-name"><a title="boto.cloudfront.CloudFrontConnection.__init__
+boto.cloudfront.distribution.Distribution.__init__
+boto.cloudfront.distribution.DistributionConfig.__init__
+boto.cloudfront.distribution.DistributionSummary.__init__
+boto.connection.AWSAuthConnection.__init__
+boto.connection.AWSQueryConnection.__init__
+boto.contrib.ymlmessage.YAMLMessage.__init__
+boto.ec2.address.Address.__init__
+boto.ec2.connection.EC2Connection.__init__
+boto.ec2.ec2object.EC2Object.__init__
+boto.ec2.image.Image.__init__
+boto.ec2.image.ImageAttribute.__init__
+boto.ec2.instance.ConsoleOutput.__init__
+boto.ec2.instance.Group.__init__
+boto.ec2.instance.Instance.__init__
+boto.ec2.instance.Reservation.__init__
+boto.ec2.keypair.KeyPair.__init__
+boto.ec2.regioninfo.RegionInfo.__init__
+boto.ec2.securitygroup.GroupOrCIDR.__init__
+boto.ec2.securitygroup.IPPermissions.__init__
+boto.ec2.securitygroup.SecurityGroup.__init__
+boto.ec2.snapshot.Snapshot.__init__
+boto.ec2.volume.Volume.__init__
+boto.ec2.zone.Zone.__init__
+boto.exception.BotoClientError.__init__
+boto.exception.BotoServerError.__init__
+boto.exception.ConsoleOutput.__init__
+boto.exception.EC2ResponseError.__init__
+boto.exception.S3ResponseError.__init__
+boto.exception.SQSError.__init__
+boto.exception._EC2Error.__init__
+boto.fps.connection.FPSConnection.__init__
+boto.handler.XmlHandler.__init__
+boto.mapreduce.lqs.LQSCommand.__init__
+boto.mapreduce.lqs.LQSMessage.__init__
+boto.mapreduce.lqs.LQSServer.__init__
+boto.mapreduce.partitiondb.Partition.__init__
+boto.mapreduce.partitiondb.PartitionDB.__init__
+boto.mapreduce.partitiondb.Version.__init__
+boto.mapreduce.queuetools.LQSClient.__init__
+boto.mapreduce.queuetools.SQSClient.__init__
+boto.mashups.order.Item.__init__
+boto.mashups.order.Order.__init__
+boto.mashups.server.Server.__init__
+boto.mturk.connection.Assignment.__init__
+boto.mturk.connection.BaseAutoResultElement.__init__
+boto.mturk.connection.MTurkConnection.__init__
+boto.mturk.notification.Event.__init__
+boto.mturk.notification.NotificationMessage.__init__
+boto.mturk.price.Price.__init__
+boto.mturk.qualification.PercentAssignmentsAbandonedRequirement.__init__
+boto.mturk.qualification.PercentAssignmentsApprovedRequirement.__init__
+boto.mturk.qualification.PercentAssignmentsRejectedRequirement.__init__
+boto.mturk.qualification.PercentAssignmentsReturnedRequirement.__init__
+boto.mturk.qualification.PercentAssignmentsSubmittedRequirement.__init__
+boto.mturk.qualification.Qualifications.__init__
+boto.mturk.qualification.Requirement.__init__
+boto.mturk.question.AnswerSpecification.__init__
+boto.mturk.question.ExternalQuestion.__init__
+boto.mturk.question.FileUploadAnswer.__init__
+boto.mturk.question.FreeTextAnswer.__init__
+boto.mturk.question.Question.__init__
+boto.mturk.question.QuestionContent.__init__
+boto.mturk.question.QuestionForm.__init__
+boto.mturk.question.SelectionAnswer.__init__
+boto.pyami.bootstrap.Bootstrap.__init__
+boto.pyami.config.Config.__init__
+boto.pyami.copybot.CopyBot.__init__
+boto.pyami.scriptbase.ScriptBase.__init__
+boto.resultset.ResultSet.__init__
+boto.s3.acl.ACL.__init__
+boto.s3.acl.Grant.__init__
+boto.s3.acl.Policy.__init__
+boto.s3.bucket.Bucket.__init__
+boto.s3.bucketlistresultset.BucketListResultSet.__init__
+boto.s3.connection.S3Connection.__init__
+boto.s3.key.Key.__init__
+boto.s3.prefix.Prefix.__init__
+boto.s3.user.User.__init__
+boto.sdb.connection.ItemThread.__init__
+boto.sdb.connection.SDBConnection.__init__
+boto.sdb.db.key.Key.__init__
+boto.sdb.db.manager.pgmanager.PGConverter.__init__
+boto.sdb.db.manager.pgmanager.PGManager.__init__
+boto.sdb.db.manager.sdbmanager.SDBConverter.__init__
+boto.sdb.db.manager.sdbmanager.SDBManager.__init__
+boto.sdb.db.model.Model.__init__
+boto.sdb.db.model.Model.__init__
+boto.sdb.db.model.ModelMeta.__init__
+boto.sdb.db.model.ModelMeta.__init__
+boto.sdb.db.property.BooleanProperty.__init__
+boto.sdb.db.property.CalculatedProperty.__init__
+boto.sdb.db.property.DateTimeProperty.__init__
+boto.sdb.db.property.IntegerProperty.__init__
+boto.sdb.db.property.ListProperty.__init__
+boto.sdb.db.property.LongProperty.__init__
+boto.sdb.db.property.PasswordProperty.__init__
+boto.sdb.db.property.Property.__init__
+boto.sdb.db.property.ReferenceProperty.__init__
+boto.sdb.db.property.S3KeyProperty.__init__
+boto.sdb.db.property.StringProperty.__init__
+boto.sdb.db.property.TextProperty.__init__
+boto.sdb.db.property._ReverseReferenceProperty.__init__
+boto.sdb.db.query.Query.__init__
+boto.sdb.domain.Domain.__init__
+boto.sdb.domain.DomainMetaData.__init__
+boto.sdb.item.Item.__init__
+boto.sdb.persist.Manager.__init__
+boto.sdb.persist.checker.BooleanChecker.__init__
+boto.sdb.persist.checker.DateTimeChecker.__init__
+boto.sdb.persist.checker.IntegerChecker.__init__
+boto.sdb.persist.checker.ObjectChecker.__init__
+boto.sdb.persist.checker.S3BucketChecker.__init__
+boto.sdb.persist.checker.S3KeyChecker.__init__
+boto.sdb.persist.checker.StringChecker.__init__
+boto.sdb.persist.object.SDBBase.__init__
+boto.sdb.persist.object.SDBObject.__init__
+boto.sdb.persist.property.BooleanListProperty.__init__
+boto.sdb.persist.property.BooleanProperty.__init__
+boto.sdb.persist.property.DateTimeProperty.__init__
+boto.sdb.persist.property.IntegerListProperty.__init__
+boto.sdb.persist.property.IntegerProperty.__init__
+boto.sdb.persist.property.LargeIntegerListProperty.__init__
+boto.sdb.persist.property.LargeIntegerProperty.__init__
+boto.sdb.persist.property.LargePositiveIntegerListProperty.__init__
+boto.sdb.persist.property.LargePositiveIntegerProperty.__init__
+boto.sdb.persist.property.MultiValue.__init__
+boto.sdb.persist.property.MultiValueProperty.__init__
+boto.sdb.persist.property.ObjectListProperty.__init__
+boto.sdb.persist.property.ObjectProperty.__init__
+boto.sdb.persist.property.PasswordProperty.__init__
+boto.sdb.persist.property.PositiveIntegerListProperty.__init__
+boto.sdb.persist.property.PositiveIntegerProperty.__init__
+boto.sdb.persist.property.Property.__init__
+boto.sdb.persist.property.S3BucketProperty.__init__
+boto.sdb.persist.property.S3KeyProperty.__init__
+boto.sdb.persist.property.SmallIntegerListProperty.__init__
+boto.sdb.persist.property.SmallIntegerProperty.__init__
+boto.sdb.persist.property.SmallPositiveIntegerListProperty.__init__
+boto.sdb.persist.property.SmallPositiveIntegerProperty.__init__
+boto.sdb.persist.property.StringListProperty.__init__
+boto.sdb.persist.property.StringProperty.__init__
+boto.sdb.queryresultset.QueryResultSet.__init__
+boto.services.bs.BS.__init__
+boto.services.result.ResultProcessor.__init__
+boto.services.service.Service.__init__
+boto.services.servicedef.ServiceDef.__init__
+boto.services.sonofmmm.SonOfMMM.__init__
+boto.services.submit.Submitter.__init__
+boto.sqs.20070501.attributes.Attributes.__init__
+boto.sqs.20070501.connection.SQSConnection.__init__
+boto.sqs.20070501.connection.SQSQueryConnection.__init__
+boto.sqs.20070501.message.MHMessage.__init__
+boto.sqs.20070501.message.RawMessage.__init__
+boto.sqs.20070501.queue.Queue.__init__
+boto.sqs.attributes.Attributes.__init__
+boto.sqs.connection.SQSConnection.__init__
+boto.sqs.message.MHMessage.__init__
+boto.sqs.message.RawMessage.__init__
+boto.sqs.queue.Queue.__init__
+boto.utils.AuthSMTPHandler.__init__
+boto.utils.LRUCache._Item.__init__
+boto.utils.LRUCache.__init__
+boto.utils.Password.__init__
+boto.utils.ShellCommand.__init__" class="py-name" href="#" onclick="return doclink('link-12', '__init__', 'link-8');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt> <tt class="py-name">qualification_type_id</tt><tt class="py-op">=</tt><tt class="py-string">"000000000000000000E0"</tt><tt class="py-op">,</tt> <tt class="py-name">comparator</tt><tt class="py-op">=</tt><tt class="py-name">comparator</tt><tt class="py-op">,</tt> <tt class="py-name">integer_value</tt><tt class="py-op">=</tt><tt class="py-name">integer_value</tt><tt class="py-op">,</tt> <tt class="py-name">required_to_preview</tt><tt class="py-op">=</tt><tt class="py-name">required_to_preview</tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L76"></a><tt class="py-lineno">76</tt>  <tt class="py-line"> </tt>
+<a name="PercentAssignmentsApprovedRequirement"></a><div id="PercentAssignmentsApprovedRequirement-def"><a name="L77"></a><tt class="py-lineno">77</tt> <a class="py-toggle" href="#" id="PercentAssignmentsApprovedRequirement-toggle" onclick="return toggle('PercentAssignmentsApprovedRequirement');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="boto.mturk.qualification.PercentAssignmentsApprovedRequirement-class.html">PercentAssignmentsApprovedRequirement</a><tt class="py-op">(</tt><tt class="py-base-class">Requirement</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="PercentAssignmentsApprovedRequirement-collapsed" style="display:none;" pad="++" indent="++++"></div><div id="PercentAssignmentsApprovedRequirement-expanded"><a name="L78"></a><tt class="py-lineno">78</tt>  <tt class="py-line">    <tt class="py-docstring">"""</tt> </tt>
+<a name="L79"></a><tt class="py-lineno">79</tt>  <tt class="py-line"><tt class="py-docstring">    The percentage of assignments the Worker has submitted that were subsequently approved by the Requester, over all assignments the Worker has submitted. The value is an integer between 0 and 100.</tt> </tt>
+<a name="L80"></a><tt class="py-lineno">80</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
+<a name="L81"></a><tt class="py-lineno">81</tt>  <tt class="py-line"> </tt>
+<a name="PercentAssignmentsApprovedRequirement.__init__"></a><div id="PercentAssignmentsApprovedRequirement.__init__-def"><a name="L82"></a><tt class="py-lineno">82</tt> <a class="py-toggle" href="#" id="PercentAssignmentsApprovedRequirement.__init__-toggle" onclick="return toggle('PercentAssignmentsApprovedRequirement.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.mturk.qualification.PercentAssignmentsApprovedRequirement-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">comparator</tt><tt class="py-op">,</tt> <tt class="py-param">integer_value</tt><tt class="py-op">,</tt> <tt class="py-param">required_to_preview</tt><tt class="py-op">=</tt><tt class="py-name">False</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="PercentAssignmentsApprovedRequirement.__init__-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="PercentAssignmentsApprovedRequirement.__init__-expanded"><a name="L83"></a><tt class="py-lineno">83</tt>  <tt class="py-line">        <tt id="link-13" class="py-name"><a title="boto.mturk.qualification.Requirement" class="py-name" href="#" onclick="return doclink('link-13', 'Requirement', 'link-7');">Requirement</a></tt><tt class="py-op">.</tt><tt id="link-14" class="py-name"><a title="boto.cloudfront.CloudFrontConnection.__init__
+boto.cloudfront.distribution.Distribution.__init__
+boto.cloudfront.distribution.DistributionConfig.__init__
+boto.cloudfront.distribution.DistributionSummary.__init__
+boto.connection.AWSAuthConnection.__init__
+boto.connection.AWSQueryConnection.__init__
+boto.contrib.ymlmessage.YAMLMessage.__init__
+boto.ec2.address.Address.__init__
+boto.ec2.connection.EC2Connection.__init__
+boto.ec2.ec2object.EC2Object.__init__
+boto.ec2.image.Image.__init__
+boto.ec2.image.ImageAttribute.__init__
+boto.ec2.instance.ConsoleOutput.__init__
+boto.ec2.instance.Group.__init__
+boto.ec2.instance.Instance.__init__
+boto.ec2.instance.Reservation.__init__
+boto.ec2.keypair.KeyPair.__init__
+boto.ec2.regioninfo.RegionInfo.__init__
+boto.ec2.securitygroup.GroupOrCIDR.__init__
+boto.ec2.securitygroup.IPPermissions.__init__
+boto.ec2.securitygroup.SecurityGroup.__init__
+boto.ec2.snapshot.Snapshot.__init__
+boto.ec2.volume.Volume.__init__
+boto.ec2.zone.Zone.__init__
+boto.exception.BotoClientError.__init__
+boto.exception.BotoServerError.__init__
+boto.exception.ConsoleOutput.__init__
+boto.exception.EC2ResponseError.__init__
+boto.exception.S3ResponseError.__init__
+boto.exception.SQSError.__init__
+boto.exception._EC2Error.__init__
+boto.fps.connection.FPSConnection.__init__
+boto.handler.XmlHandler.__init__
+boto.mapreduce.lqs.LQSCommand.__init__
+boto.mapreduce.lqs.LQSMessage.__init__
+boto.mapreduce.lqs.LQSServer.__init__
+boto.mapreduce.partitiondb.Partition.__init__
+boto.mapreduce.partitiondb.PartitionDB.__init__
+boto.mapreduce.partitiondb.Version.__init__
+boto.mapreduce.queuetools.LQSClient.__init__
+boto.mapreduce.queuetools.SQSClient.__init__
+boto.mashups.order.Item.__init__
+boto.mashups.order.Order.__init__
+boto.mashups.server.Server.__init__
+boto.mturk.connection.Assignment.__init__
+boto.mturk.connection.BaseAutoResultElement.__init__
+boto.mturk.connection.MTurkConnection.__init__
+boto.mturk.notification.Event.__init__
+boto.mturk.notification.NotificationMessage.__init__
+boto.mturk.price.Price.__init__
+boto.mturk.qualification.PercentAssignmentsAbandonedRequirement.__init__
+boto.mturk.qualification.PercentAssignmentsApprovedRequirement.__init__
+boto.mturk.qualification.PercentAssignmentsRejectedRequirement.__init__
+boto.mturk.qualification.PercentAssignmentsReturnedRequirement.__init__
+boto.mturk.qualification.PercentAssignmentsSubmittedRequirement.__init__
+boto.mturk.qualification.Qualifications.__init__
+boto.mturk.qualification.Requirement.__init__
+boto.mturk.question.AnswerSpecification.__init__
+boto.mturk.question.ExternalQuestion.__init__
+boto.mturk.question.FileUploadAnswer.__init__
+boto.mturk.question.FreeTextAnswer.__init__
+boto.mturk.question.Question.__init__
+boto.mturk.question.QuestionContent.__init__
+boto.mturk.question.QuestionForm.__init__
+boto.mturk.question.SelectionAnswer.__init__
+boto.pyami.bootstrap.Bootstrap.__init__
+boto.pyami.config.Config.__init__
+boto.pyami.copybot.CopyBot.__init__
+boto.pyami.scriptbase.ScriptBase.__init__
+boto.resultset.ResultSet.__init__
+boto.s3.acl.ACL.__init__
+boto.s3.acl.Grant.__init__
+boto.s3.acl.Policy.__init__
+boto.s3.bucket.Bucket.__init__
+boto.s3.bucketlistresultset.BucketListResultSet.__init__
+boto.s3.connection.S3Connection.__init__
+boto.s3.key.Key.__init__
+boto.s3.prefix.Prefix.__init__
+boto.s3.user.User.__init__
+boto.sdb.connection.ItemThread.__init__
+boto.sdb.connection.SDBConnection.__init__
+boto.sdb.db.key.Key.__init__
+boto.sdb.db.manager.pgmanager.PGConverter.__init__
+boto.sdb.db.manager.pgmanager.PGManager.__init__
+boto.sdb.db.manager.sdbmanager.SDBConverter.__init__
+boto.sdb.db.manager.sdbmanager.SDBManager.__init__
+boto.sdb.db.model.Model.__init__
+boto.sdb.db.model.Model.__init__
+boto.sdb.db.model.ModelMeta.__init__
+boto.sdb.db.model.ModelMeta.__init__
+boto.sdb.db.property.BooleanProperty.__init__
+boto.sdb.db.property.CalculatedProperty.__init__
+boto.sdb.db.property.DateTimeProperty.__init__
+boto.sdb.db.property.IntegerProperty.__init__
+boto.sdb.db.property.ListProperty.__init__
+boto.sdb.db.property.LongProperty.__init__
+boto.sdb.db.property.PasswordProperty.__init__
+boto.sdb.db.property.Property.__init__
+boto.sdb.db.property.ReferenceProperty.__init__
+boto.sdb.db.property.S3KeyProperty.__init__
+boto.sdb.db.property.StringProperty.__init__
+boto.sdb.db.property.TextProperty.__init__
+boto.sdb.db.property._ReverseReferenceProperty.__init__
+boto.sdb.db.query.Query.__init__
+boto.sdb.domain.Domain.__init__
+boto.sdb.domain.DomainMetaData.__init__
+boto.sdb.item.Item.__init__
+boto.sdb.persist.Manager.__init__
+boto.sdb.persist.checker.BooleanChecker.__init__
+boto.sdb.persist.checker.DateTimeChecker.__init__
+boto.sdb.persist.checker.IntegerChecker.__init__
+boto.sdb.persist.checker.ObjectChecker.__init__
+boto.sdb.persist.checker.S3BucketChecker.__init__
+boto.sdb.persist.checker.S3KeyChecker.__init__
+boto.sdb.persist.checker.StringChecker.__init__
+boto.sdb.persist.object.SDBBase.__init__
+boto.sdb.persist.object.SDBObject.__init__
+boto.sdb.persist.property.BooleanListProperty.__init__
+boto.sdb.persist.property.BooleanProperty.__init__
+boto.sdb.persist.property.DateTimeProperty.__init__
+boto.sdb.persist.property.IntegerListProperty.__init__
+boto.sdb.persist.property.IntegerProperty.__init__
+boto.sdb.persist.property.LargeIntegerListProperty.__init__
+boto.sdb.persist.property.LargeIntegerProperty.__init__
+boto.sdb.persist.property.LargePositiveIntegerListProperty.__init__
+boto.sdb.persist.property.LargePositiveIntegerProperty.__init__
+boto.sdb.persist.property.MultiValue.__init__
+boto.sdb.persist.property.MultiValueProperty.__init__
+boto.sdb.persist.property.ObjectListProperty.__init__
+boto.sdb.persist.property.ObjectProperty.__init__
+boto.sdb.persist.property.PasswordProperty.__init__
+boto.sdb.persist.property.PositiveIntegerListProperty.__init__
+boto.sdb.persist.property.PositiveIntegerProperty.__init__
+boto.sdb.persist.property.Property.__init__
+boto.sdb.persist.property.S3BucketProperty.__init__
+boto.sdb.persist.property.S3KeyProperty.__init__
+boto.sdb.persist.property.SmallIntegerListProperty.__init__
+boto.sdb.persist.property.SmallIntegerProperty.__init__
+boto.sdb.persist.property.SmallPositiveIntegerListProperty.__init__
+boto.sdb.persist.property.SmallPositiveIntegerProperty.__init__
+boto.sdb.persist.property.StringListProperty.__init__
+boto.sdb.persist.property.StringProperty.__init__
+boto.sdb.queryresultset.QueryResultSet.__init__
+boto.services.bs.BS.__init__
+boto.services.result.ResultProcessor.__init__
+boto.services.service.Service.__init__
+boto.services.servicedef.ServiceDef.__init__
+boto.services.sonofmmm.SonOfMMM.__init__
+boto.services.submit.Submitter.__init__
+boto.sqs.20070501.attributes.Attributes.__init__
+boto.sqs.20070501.connection.SQSConnection.__init__
+boto.sqs.20070501.connection.SQSQueryConnection.__init__
+boto.sqs.20070501.message.MHMessage.__init__
+boto.sqs.20070501.message.RawMessage.__init__
+boto.sqs.20070501.queue.Queue.__init__
+boto.sqs.attributes.Attributes.__init__
+boto.sqs.connection.SQSConnection.__init__
+boto.sqs.message.MHMessage.__init__
+boto.sqs.message.RawMessage.__init__
+boto.sqs.queue.Queue.__init__
+boto.utils.AuthSMTPHandler.__init__
+boto.utils.LRUCache._Item.__init__
+boto.utils.LRUCache.__init__
+boto.utils.Password.__init__
+boto.utils.ShellCommand.__init__" class="py-name" href="#" onclick="return doclink('link-14', '__init__', 'link-8');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt> <tt class="py-name">qualification_type_id</tt><tt class="py-op">=</tt><tt class="py-string">"000000000000000000L0"</tt><tt class="py-op">,</tt> <tt class="py-name">comparator</tt><tt class="py-op">=</tt><tt class="py-name">comparator</tt><tt class="py-op">,</tt> <tt class="py-name">integer_value</tt><tt class="py-op">=</tt><tt class="py-name">integer_value</tt><tt class="py-op">,</tt> <tt class="py-name">required_to_preview</tt><tt class="py-op">=</tt><tt class="py-name">required_to_preview</tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L84"></a><tt class="py-lineno">84</tt>  <tt class="py-line"> </tt>
+<a name="PercentAssignmentsRejectedRequirement"></a><div id="PercentAssignmentsRejectedRequirement-def"><a name="L85"></a><tt class="py-lineno">85</tt> <a class="py-toggle" href="#" id="PercentAssignmentsRejectedRequirement-toggle" onclick="return toggle('PercentAssignmentsRejectedRequirement');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="boto.mturk.qualification.PercentAssignmentsRejectedRequirement-class.html">PercentAssignmentsRejectedRequirement</a><tt class="py-op">(</tt><tt class="py-base-class">Requirement</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="PercentAssignmentsRejectedRequirement-collapsed" style="display:none;" pad="++" indent="++++"></div><div id="PercentAssignmentsRejectedRequirement-expanded"><a name="L86"></a><tt class="py-lineno">86</tt>  <tt class="py-line">    <tt class="py-docstring">"""</tt> </tt>
+<a name="L87"></a><tt class="py-lineno">87</tt>  <tt class="py-line"><tt class="py-docstring">    The percentage of assignments the Worker has submitted that were subsequently rejected by the Requester, over all assignments the Worker has submitted. The value is an integer between 0 and 100.</tt> </tt>
+<a name="L88"></a><tt class="py-lineno">88</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
+<a name="L89"></a><tt class="py-lineno">89</tt>  <tt class="py-line"> </tt>
+<a name="PercentAssignmentsRejectedRequirement.__init__"></a><div id="PercentAssignmentsRejectedRequirement.__init__-def"><a name="L90"></a><tt class="py-lineno">90</tt> <a class="py-toggle" href="#" id="PercentAssignmentsRejectedRequirement.__init__-toggle" onclick="return toggle('PercentAssignmentsRejectedRequirement.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.mturk.qualification.PercentAssignmentsRejectedRequirement-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">comparator</tt><tt class="py-op">,</tt> <tt class="py-param">integer_value</tt><tt class="py-op">,</tt> <tt class="py-param">required_to_preview</tt><tt class="py-op">=</tt><tt class="py-name">False</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="PercentAssignmentsRejectedRequirement.__init__-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="PercentAssignmentsRejectedRequirement.__init__-expanded"><a name="L91"></a><tt class="py-lineno">91</tt>  <tt class="py-line">        <tt id="link-15" class="py-name"><a title="boto.mturk.qualification.Requirement" class="py-name" href="#" onclick="return doclink('link-15', 'Requirement', 'link-7');">Requirement</a></tt><tt class="py-op">.</tt><tt id="link-16" class="py-name"><a title="boto.cloudfront.CloudFrontConnection.__init__
+boto.cloudfront.distribution.Distribution.__init__
+boto.cloudfront.distribution.DistributionConfig.__init__
+boto.cloudfront.distribution.DistributionSummary.__init__
+boto.connection.AWSAuthConnection.__init__
+boto.connection.AWSQueryConnection.__init__
+boto.contrib.ymlmessage.YAMLMessage.__init__
+boto.ec2.address.Address.__init__
+boto.ec2.connection.EC2Connection.__init__
+boto.ec2.ec2object.EC2Object.__init__
+boto.ec2.image.Image.__init__
+boto.ec2.image.ImageAttribute.__init__
+boto.ec2.instance.ConsoleOutput.__init__
+boto.ec2.instance.Group.__init__
+boto.ec2.instance.Instance.__init__
+boto.ec2.instance.Reservation.__init__
+boto.ec2.keypair.KeyPair.__init__
+boto.ec2.regioninfo.RegionInfo.__init__
+boto.ec2.securitygroup.GroupOrCIDR.__init__
+boto.ec2.securitygroup.IPPermissions.__init__
+boto.ec2.securitygroup.SecurityGroup.__init__
+boto.ec2.snapshot.Snapshot.__init__
+boto.ec2.volume.Volume.__init__
+boto.ec2.zone.Zone.__init__
+boto.exception.BotoClientError.__init__
+boto.exception.BotoServerError.__init__
+boto.exception.ConsoleOutput.__init__
+boto.exception.EC2ResponseError.__init__
+boto.exception.S3ResponseError.__init__
+boto.exception.SQSError.__init__
+boto.exception._EC2Error.__init__
+boto.fps.connection.FPSConnection.__init__
+boto.handler.XmlHandler.__init__
+boto.mapreduce.lqs.LQSCommand.__init__
+boto.mapreduce.lqs.LQSMessage.__init__
+boto.mapreduce.lqs.LQSServer.__init__
+boto.mapreduce.partitiondb.Partition.__init__
+boto.mapreduce.partitiondb.PartitionDB.__init__
+boto.mapreduce.partitiondb.Version.__init__
+boto.mapreduce.queuetools.LQSClient.__init__
+boto.mapreduce.queuetools.SQSClient.__init__
+boto.mashups.order.Item.__init__
+boto.mashups.order.Order.__init__
+boto.mashups.server.Server.__init__
+boto.mturk.connection.Assignment.__init__
+boto.mturk.connection.BaseAutoResultElement.__init__
+boto.mturk.connection.MTurkConnection.__init__
+boto.mturk.notification.Event.__init__
+boto.mturk.notification.NotificationMessage.__init__
+boto.mturk.price.Price.__init__
+boto.mturk.qualification.PercentAssignmentsAbandonedRequirement.__init__
+boto.mturk.qualification.PercentAssignmentsApprovedRequirement.__init__
+boto.mturk.qualification.PercentAssignmentsRejectedRequirement.__init__
+boto.mturk.qualification.PercentAssignmentsReturnedRequirement.__init__
+boto.mturk.qualification.PercentAssignmentsSubmittedRequirement.__init__
+boto.mturk.qualification.Qualifications.__init__
+boto.mturk.qualification.Requirement.__init__
+boto.mturk.question.AnswerSpecification.__init__
+boto.mturk.question.ExternalQuestion.__init__
+boto.mturk.question.FileUploadAnswer.__init__
+boto.mturk.question.FreeTextAnswer.__init__
+boto.mturk.question.Question.__init__
+boto.mturk.question.QuestionContent.__init__
+boto.mturk.question.QuestionForm.__init__
+boto.mturk.question.SelectionAnswer.__init__
+boto.pyami.bootstrap.Bootstrap.__init__
+boto.pyami.config.Config.__init__
+boto.pyami.copybot.CopyBot.__init__
+boto.pyami.scriptbase.ScriptBase.__init__
+boto.resultset.ResultSet.__init__
+boto.s3.acl.ACL.__init__
+boto.s3.acl.Grant.__init__
+boto.s3.acl.Policy.__init__
+boto.s3.bucket.Bucket.__init__
+boto.s3.bucketlistresultset.BucketListResultSet.__init__
+boto.s3.connection.S3Connection.__init__
+boto.s3.key.Key.__init__
+boto.s3.prefix.Prefix.__init__
+boto.s3.user.User.__init__
+boto.sdb.connection.ItemThread.__init__
+boto.sdb.connection.SDBConnection.__init__
+boto.sdb.db.key.Key.__init__
+boto.sdb.db.manager.pgmanager.PGConverter.__init__
+boto.sdb.db.manager.pgmanager.PGManager.__init__
+boto.sdb.db.manager.sdbmanager.SDBConverter.__init__
+boto.sdb.db.manager.sdbmanager.SDBManager.__init__
+boto.sdb.db.model.Model.__init__
+boto.sdb.db.model.Model.__init__
+boto.sdb.db.model.ModelMeta.__init__
+boto.sdb.db.model.ModelMeta.__init__
+boto.sdb.db.property.BooleanProperty.__init__
+boto.sdb.db.property.CalculatedProperty.__init__
+boto.sdb.db.property.DateTimeProperty.__init__
+boto.sdb.db.property.IntegerProperty.__init__
+boto.sdb.db.property.ListProperty.__init__
+boto.sdb.db.property.LongProperty.__init__
+boto.sdb.db.property.PasswordProperty.__init__
+boto.sdb.db.property.Property.__init__
+boto.sdb.db.property.ReferenceProperty.__init__
+boto.sdb.db.property.S3KeyProperty.__init__
+boto.sdb.db.property.StringProperty.__init__
+boto.sdb.db.property.TextProperty.__init__
+boto.sdb.db.property._ReverseReferenceProperty.__init__
+boto.sdb.db.query.Query.__init__
+boto.sdb.domain.Domain.__init__
+boto.sdb.domain.DomainMetaData.__init__
+boto.sdb.item.Item.__init__
+boto.sdb.persist.Manager.__init__
+boto.sdb.persist.checker.BooleanChecker.__init__
+boto.sdb.persist.checker.DateTimeChecker.__init__
+boto.sdb.persist.checker.IntegerChecker.__init__
+boto.sdb.persist.checker.ObjectChecker.__init__
+boto.sdb.persist.checker.S3BucketChecker.__init__
+boto.sdb.persist.checker.S3KeyChecker.__init__
+boto.sdb.persist.checker.StringChecker.__init__
+boto.sdb.persist.object.SDBBase.__init__
+boto.sdb.persist.object.SDBObject.__init__
+boto.sdb.persist.property.BooleanListProperty.__init__
+boto.sdb.persist.property.BooleanProperty.__init__
+boto.sdb.persist.property.DateTimeProperty.__init__
+boto.sdb.persist.property.IntegerListProperty.__init__
+boto.sdb.persist.property.IntegerProperty.__init__
+boto.sdb.persist.property.LargeIntegerListProperty.__init__
+boto.sdb.persist.property.LargeIntegerProperty.__init__
+boto.sdb.persist.property.LargePositiveIntegerListProperty.__init__
+boto.sdb.persist.property.LargePositiveIntegerProperty.__init__
+boto.sdb.persist.property.MultiValue.__init__
+boto.sdb.persist.property.MultiValueProperty.__init__
+boto.sdb.persist.property.ObjectListProperty.__init__
+boto.sdb.persist.property.ObjectProperty.__init__
+boto.sdb.persist.property.PasswordProperty.__init__
+boto.sdb.persist.property.PositiveIntegerListProperty.__init__
+boto.sdb.persist.property.PositiveIntegerProperty.__init__
+boto.sdb.persist.property.Property.__init__
+boto.sdb.persist.property.S3BucketProperty.__init__
+boto.sdb.persist.property.S3KeyProperty.__init__
+boto.sdb.persist.property.SmallIntegerListProperty.__init__
+boto.sdb.persist.property.SmallIntegerProperty.__init__
+boto.sdb.persist.property.SmallPositiveIntegerListProperty.__init__
+boto.sdb.persist.property.SmallPositiveIntegerProperty.__init__
+boto.sdb.persist.property.StringListProperty.__init__
+boto.sdb.persist.property.StringProperty.__init__
+boto.sdb.queryresultset.QueryResultSet.__init__
+boto.services.bs.BS.__init__
+boto.services.result.ResultProcessor.__init__
+boto.services.service.Service.__init__
+boto.services.servicedef.ServiceDef.__init__
+boto.services.sonofmmm.SonOfMMM.__init__
+boto.services.submit.Submitter.__init__
+boto.sqs.20070501.attributes.Attributes.__init__
+boto.sqs.20070501.connection.SQSConnection.__init__
+boto.sqs.20070501.connection.SQSQueryConnection.__init__
+boto.sqs.20070501.message.MHMessage.__init__
+boto.sqs.20070501.message.RawMessage.__init__
+boto.sqs.20070501.queue.Queue.__init__
+boto.sqs.attributes.Attributes.__init__
+boto.sqs.connection.SQSConnection.__init__
+boto.sqs.message.MHMessage.__init__
+boto.sqs.message.RawMessage.__init__
+boto.sqs.queue.Queue.__init__
+boto.utils.AuthSMTPHandler.__init__
+boto.utils.LRUCache._Item.__init__
+boto.utils.LRUCache.__init__
+boto.utils.Password.__init__
+boto.utils.ShellCommand.__init__" class="py-name" href="#" onclick="return doclink('link-16', '__init__', 'link-8');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt> <tt class="py-name">qualification_type_id</tt><tt class="py-op">=</tt><tt class="py-string">"000000000000000000S0"</tt><tt class="py-op">,</tt> <tt class="py-name">comparator</tt><tt class="py-op">=</tt><tt class="py-name">comparator</tt><tt class="py-op">,</tt> <tt class="py-name">integer_value</tt><tt class="py-op">=</tt><tt class="py-name">integer_value</tt><tt class="py-op">,</tt> <tt class="py-name">required_to_preview</tt><tt class="py-op">=</tt><tt class="py-name">required_to_preview</tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L92"></a><tt class="py-lineno">92</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="boto-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0beta1 on Fri Feb 20 11:45:22 2009
+    </td>
+    <td align="right" class="footer">
+      <a href="http://epydoc.sourceforge.net">http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie()
+  // -->
+</script>
+  
+</body>
+</html>

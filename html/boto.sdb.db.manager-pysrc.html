@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>boto.sdb.db.manager</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="boto-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="boto-module.html">Package&nbsp;boto</a> ::
+        <a href="boto.sdb-module.html">Package&nbsp;sdb</a> ::
+        <a href="boto.sdb.db-module.html">Package&nbsp;db</a> ::
+        Package&nbsp;manager
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="boto.sdb.db.manager-pysrc.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="boto.sdb.db.manager-module.html">Package boto.sdb.db.manager</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno"> 1</tt>  <tt class="py-line"><tt class="py-comment"># Copyright (c) 2006,2007,2008 Mitch Garnaat http://garnaat.org/</tt> </tt>
+<a name="L2"></a><tt class="py-lineno"> 2</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment">#</tt> </tt>
+<a name="L3"></a><tt class="py-lineno"> 3</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># Permission is hereby granted, free of charge, to any person obtaining a</tt> </tt>
+<a name="L4"></a><tt class="py-lineno"> 4</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># copy of this software and associated documentation files (the</tt> </tt>
+<a name="L5"></a><tt class="py-lineno"> 5</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># "Software"), to deal in the Software without restriction, including</tt> </tt>
+<a name="L6"></a><tt class="py-lineno"> 6</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># without limitation the rights to use, copy, modify, merge, publish, dis-</tt> </tt>
+<a name="L7"></a><tt class="py-lineno"> 7</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># tribute, sublicense, and/or sell copies of the Software, and to permit</tt> </tt>
+<a name="L8"></a><tt class="py-lineno"> 8</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># persons to whom the Software is furnished to do so, subject to the fol-</tt> </tt>
+<a name="L9"></a><tt class="py-lineno"> 9</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># lowing conditions:</tt> </tt>
+<a name="L10"></a><tt class="py-lineno">10</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment">#</tt> </tt>
+<a name="L11"></a><tt class="py-lineno">11</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># The above copyright notice and this permission notice shall be included</tt> </tt>
+<a name="L12"></a><tt class="py-lineno">12</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># in all copies or substantial portions of the Software.</tt> </tt>
+<a name="L13"></a><tt class="py-lineno">13</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment">#</tt> </tt>
+<a name="L14"></a><tt class="py-lineno">14</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS</tt> </tt>
+<a name="L15"></a><tt class="py-lineno">15</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABIL-</tt> </tt>
+<a name="L16"></a><tt class="py-lineno">16</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># ITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT</tt> </tt>
+<a name="L17"></a><tt class="py-lineno">17</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># SHALL THE AUTHOR BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, </tt> </tt>
+<a name="L18"></a><tt class="py-lineno">18</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</tt> </tt>
+<a name="L19"></a><tt class="py-lineno">19</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS</tt> </tt>
+<a name="L20"></a><tt class="py-lineno">20</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># IN THE SOFTWARE.</tt> </tt>
+<a name="L21"></a><tt class="py-lineno">21</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-keyword">import</tt> <tt id="link-0" class="py-name" targets="Package boto=boto-module.html"><a title="boto" class="py-name" href="#" onclick="return doclink('link-0', 'boto', 'link-0');">boto</a></tt> </tt>
+<a name="L22"></a><tt class="py-lineno">22</tt>  <tt class="py-line"> </tt>
+<a name="get_manager"></a><div id="get_manager-def"><a name="L23"></a><tt class="py-lineno">23</tt> <a class="py-toggle" href="#" id="get_manager-toggle" onclick="return toggle('get_manager');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sdb.db.manager-module.html#get_manager">get_manager</a><tt class="py-op">(</tt><tt class="py-param">cls</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="get_manager-collapsed" style="display:none;" pad="++" indent="++++"></div><div id="get_manager-expanded"><a name="L24"></a><tt class="py-lineno">24</tt>  <tt class="py-line">    <tt class="py-docstring">"""</tt> </tt>
+<a name="L25"></a><tt class="py-lineno">25</tt>  <tt class="py-line"><tt class="py-docstring">    Returns the appropriate Manager class for a given Model class.  It does this by</tt> </tt>
+<a name="L26"></a><tt class="py-lineno">26</tt>  <tt class="py-line"><tt class="py-docstring">    looking in the boto config for a section like this:</tt> </tt>
+<a name="L27"></a><tt class="py-lineno">27</tt>  <tt class="py-line"><tt class="py-docstring">        [DB]</tt> </tt>
+<a name="L28"></a><tt class="py-lineno">28</tt>  <tt class="py-line"><tt class="py-docstring">        db_type = SimpleDB</tt> </tt>
+<a name="L29"></a><tt class="py-lineno">29</tt>  <tt class="py-line"><tt class="py-docstring">        db_user = &lt;aws access key id&gt;</tt> </tt>
+<a name="L30"></a><tt class="py-lineno">30</tt>  <tt class="py-line"><tt class="py-docstring">        db_passwd = &lt;aws secret access key&gt;</tt> </tt>
+<a name="L31"></a><tt class="py-lineno">31</tt>  <tt class="py-line"><tt class="py-docstring">        db_name = my_domain</tt> </tt>
+<a name="L32"></a><tt class="py-lineno">32</tt>  <tt class="py-line"><tt class="py-docstring">        [DB_TestBasic]</tt> </tt>
+<a name="L33"></a><tt class="py-lineno">33</tt>  <tt class="py-line"><tt class="py-docstring">        db_type = SimpleDB</tt> </tt>
+<a name="L34"></a><tt class="py-lineno">34</tt>  <tt class="py-line"><tt class="py-docstring">        db_user = &lt;another aws access key id&gt;</tt> </tt>
+<a name="L35"></a><tt class="py-lineno">35</tt>  <tt class="py-line"><tt class="py-docstring">        db_passwd = &lt;another aws secret access key&gt;</tt> </tt>
+<a name="L36"></a><tt class="py-lineno">36</tt>  <tt class="py-line"><tt class="py-docstring">        db_name = basic_domain</tt> </tt>
+<a name="L37"></a><tt class="py-lineno">37</tt>  <tt class="py-line"><tt class="py-docstring">        db_port = 1111</tt> </tt>
+<a name="L38"></a><tt class="py-lineno">38</tt>  <tt class="py-line"><tt class="py-docstring">    The values in the DB section are "generic values" that will be used if nothing more</tt> </tt>
+<a name="L39"></a><tt class="py-lineno">39</tt>  <tt class="py-line"><tt class="py-docstring">    specific is found.  You can also create a section for a specific Model class that</tt> </tt>
+<a name="L40"></a><tt class="py-lineno">40</tt>  <tt class="py-line"><tt class="py-docstring">    gives the db info for that class.  In the example above, TestBasic is a Model subclass.</tt> </tt>
+<a name="L41"></a><tt class="py-lineno">41</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
+<a name="L42"></a><tt class="py-lineno">42</tt>  <tt class="py-line">    <tt class="py-name">db_user</tt> <tt class="py-op">=</tt> <tt id="link-1" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-1', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-2" class="py-name" targets="Variable boto.config=boto-module.html#config,Variable boto.mashups.server.Server.config=boto.mashups.server.Server-class.html#config,Module boto.pyami.config=boto.pyami.config-module.html"><a title="boto.config
+boto.mashups.server.Server.config
+boto.pyami.config" class="py-name" href="#" onclick="return doclink('link-2', 'config', 'link-2');">config</a></tt><tt class="py-op">.</tt><tt id="link-3" class="py-name" targets="Method boto.mapreduce.queuetools.LQSClient.get()=boto.mapreduce.queuetools.LQSClient-class.html#get,Method boto.mapreduce.queuetools.SQSClient.get()=boto.mapreduce.queuetools.SQSClient-class.html#get,Method boto.pyami.config.Config.get()=boto.pyami.config.Config-class.html#get,Class Method boto.sdb.persist.object.SDBObject.get()=boto.sdb.persist.object.SDBObject-class.html#get,Method boto.services.servicedef.ServiceDef.get()=boto.services.servicedef.ServiceDef-class.html#get,Method boto.sqs.20070501.message.MHMessage.get()=boto.sqs.20070501.message.MHMessage-class.html#get,Method boto.sqs.message.MHMessage.get()=boto.sqs.message.MHMessage-class.html#get"><a title="boto.mapreduce.queuetools.LQSClient.get
+boto.mapreduce.queuetools.SQSClient.get
+boto.pyami.config.Config.get
+boto.sdb.persist.object.SDBObject.get
+boto.services.servicedef.ServiceDef.get
+boto.sqs.20070501.message.MHMessage.get
+boto.sqs.message.MHMessage.get" class="py-name" href="#" onclick="return doclink('link-3', 'get', 'link-3');">get</a></tt><tt class="py-op">(</tt><tt class="py-string">'DB'</tt><tt class="py-op">,</tt> <tt class="py-string">'db_user'</tt><tt class="py-op">,</tt> <tt class="py-name">None</tt><tt class="py-op">)</tt> </tt>
+<a name="L43"></a><tt class="py-lineno">43</tt>  <tt class="py-line">    <tt class="py-name">db_passwd</tt> <tt class="py-op">=</tt> <tt id="link-4" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-4', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-5" class="py-name"><a title="boto.config
+boto.mashups.server.Server.config
+boto.pyami.config" class="py-name" href="#" onclick="return doclink('link-5', 'config', 'link-2');">config</a></tt><tt class="py-op">.</tt><tt id="link-6" class="py-name"><a title="boto.mapreduce.queuetools.LQSClient.get
+boto.mapreduce.queuetools.SQSClient.get
+boto.pyami.config.Config.get
+boto.sdb.persist.object.SDBObject.get
+boto.services.servicedef.ServiceDef.get
+boto.sqs.20070501.message.MHMessage.get
+boto.sqs.message.MHMessage.get" class="py-name" href="#" onclick="return doclink('link-6', 'get', 'link-3');">get</a></tt><tt class="py-op">(</tt><tt class="py-string">'DB'</tt><tt class="py-op">,</tt> <tt class="py-string">'db_passwd'</tt><tt class="py-op">,</tt> <tt class="py-name">None</tt><tt class="py-op">)</tt> </tt>
+<a name="L44"></a><tt class="py-lineno">44</tt>  <tt class="py-line">    <tt class="py-name">db_type</tt> <tt class="py-op">=</tt> <tt id="link-7" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-7', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-8" class="py-name"><a title="boto.config
+boto.mashups.server.Server.config
+boto.pyami.config" class="py-name" href="#" onclick="return doclink('link-8', 'config', 'link-2');">config</a></tt><tt class="py-op">.</tt><tt id="link-9" class="py-name"><a title="boto.mapreduce.queuetools.LQSClient.get
+boto.mapreduce.queuetools.SQSClient.get
+boto.pyami.config.Config.get
+boto.sdb.persist.object.SDBObject.get
+boto.services.servicedef.ServiceDef.get
+boto.sqs.20070501.message.MHMessage.get
+boto.sqs.message.MHMessage.get" class="py-name" href="#" onclick="return doclink('link-9', 'get', 'link-3');">get</a></tt><tt class="py-op">(</tt><tt class="py-string">'DB'</tt><tt class="py-op">,</tt> <tt class="py-string">'db_type'</tt><tt class="py-op">,</tt> <tt class="py-string">'SimpleDB'</tt><tt class="py-op">)</tt> </tt>
+<a name="L45"></a><tt class="py-lineno">45</tt>  <tt class="py-line">    <tt class="py-name">db_name</tt> <tt class="py-op">=</tt> <tt id="link-10" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-10', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-11" class="py-name"><a title="boto.config
+boto.mashups.server.Server.config
+boto.pyami.config" class="py-name" href="#" onclick="return doclink('link-11', 'config', 'link-2');">config</a></tt><tt class="py-op">.</tt><tt id="link-12" class="py-name"><a title="boto.mapreduce.queuetools.LQSClient.get
+boto.mapreduce.queuetools.SQSClient.get
+boto.pyami.config.Config.get
+boto.sdb.persist.object.SDBObject.get
+boto.services.servicedef.ServiceDef.get
+boto.sqs.20070501.message.MHMessage.get
+boto.sqs.message.MHMessage.get" class="py-name" href="#" onclick="return doclink('link-12', 'get', 'link-3');">get</a></tt><tt class="py-op">(</tt><tt class="py-string">'DB'</tt><tt class="py-op">,</tt> <tt class="py-string">'db_name'</tt><tt class="py-op">,</tt> <tt class="py-name">None</tt><tt class="py-op">)</tt> </tt>
+<a name="L46"></a><tt class="py-lineno">46</tt>  <tt class="py-line">    <tt class="py-name">db_table</tt> <tt class="py-op">=</tt> <tt id="link-13" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-13', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-14" class="py-name"><a title="boto.config
+boto.mashups.server.Server.config
+boto.pyami.config" class="py-name" href="#" onclick="return doclink('link-14', 'config', 'link-2');">config</a></tt><tt class="py-op">.</tt><tt id="link-15" class="py-name"><a title="boto.mapreduce.queuetools.LQSClient.get
+boto.mapreduce.queuetools.SQSClient.get
+boto.pyami.config.Config.get
+boto.sdb.persist.object.SDBObject.get
+boto.services.servicedef.ServiceDef.get
+boto.sqs.20070501.message.MHMessage.get
+boto.sqs.message.MHMessage.get" class="py-name" href="#" onclick="return doclink('link-15', 'get', 'link-3');">get</a></tt><tt class="py-op">(</tt><tt class="py-string">'DB'</tt><tt class="py-op">,</tt> <tt class="py-string">'db_table'</tt><tt class="py-op">,</tt> <tt class="py-name">None</tt><tt class="py-op">)</tt> </tt>
+<a name="L47"></a><tt class="py-lineno">47</tt>  <tt class="py-line">    <tt class="py-name">db_host</tt> <tt class="py-op">=</tt> <tt id="link-16" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-16', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-17" class="py-name"><a title="boto.config
+boto.mashups.server.Server.config
+boto.pyami.config" class="py-name" href="#" onclick="return doclink('link-17', 'config', 'link-2');">config</a></tt><tt class="py-op">.</tt><tt id="link-18" class="py-name"><a title="boto.mapreduce.queuetools.LQSClient.get
+boto.mapreduce.queuetools.SQSClient.get
+boto.pyami.config.Config.get
+boto.sdb.persist.object.SDBObject.get
+boto.services.servicedef.ServiceDef.get
+boto.sqs.20070501.message.MHMessage.get
+boto.sqs.message.MHMessage.get" class="py-name" href="#" onclick="return doclink('link-18', 'get', 'link-3');">get</a></tt><tt class="py-op">(</tt><tt class="py-string">'DB'</tt><tt class="py-op">,</tt> <tt class="py-string">'db_host'</tt><tt class="py-op">,</tt> <tt class="py-name">None</tt><tt class="py-op">)</tt> </tt>
+<a name="L48"></a><tt class="py-lineno">48</tt>  <tt class="py-line">    <tt class="py-name">db_port</tt> <tt class="py-op">=</tt> <tt id="link-19" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-19', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-20" class="py-name"><a title="boto.config
+boto.mashups.server.Server.config
+boto.pyami.config" class="py-name" href="#" onclick="return doclink('link-20', 'config', 'link-2');">config</a></tt><tt class="py-op">.</tt><tt id="link-21" class="py-name" targets="Method boto.pyami.config.Config.getint()=boto.pyami.config.Config-class.html#getint,Method boto.services.servicedef.ServiceDef.getint()=boto.services.servicedef.ServiceDef-class.html#getint"><a title="boto.pyami.config.Config.getint
+boto.services.servicedef.ServiceDef.getint" class="py-name" href="#" onclick="return doclink('link-21', 'getint', 'link-21');">getint</a></tt><tt class="py-op">(</tt><tt class="py-string">'DB'</tt><tt class="py-op">,</tt> <tt class="py-string">'db_port'</tt><tt class="py-op">,</tt> <tt class="py-number">0</tt><tt class="py-op">)</tt> </tt>
+<a name="L49"></a><tt class="py-lineno">49</tt>  <tt class="py-line">    <tt class="py-name">sql_dir</tt> <tt class="py-op">=</tt> <tt id="link-22" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-22', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-23" class="py-name"><a title="boto.config
+boto.mashups.server.Server.config
+boto.pyami.config" class="py-name" href="#" onclick="return doclink('link-23', 'config', 'link-2');">config</a></tt><tt class="py-op">.</tt><tt id="link-24" class="py-name"><a title="boto.mapreduce.queuetools.LQSClient.get
+boto.mapreduce.queuetools.SQSClient.get
+boto.pyami.config.Config.get
+boto.sdb.persist.object.SDBObject.get
+boto.services.servicedef.ServiceDef.get
+boto.sqs.20070501.message.MHMessage.get
+boto.sqs.message.MHMessage.get" class="py-name" href="#" onclick="return doclink('link-24', 'get', 'link-3');">get</a></tt><tt class="py-op">(</tt><tt class="py-string">'DB'</tt><tt class="py-op">,</tt> <tt class="py-string">'sql_dir'</tt><tt class="py-op">,</tt> <tt class="py-name">None</tt><tt class="py-op">)</tt> </tt>
+<a name="L50"></a><tt class="py-lineno">50</tt>  <tt class="py-line">    <tt class="py-name">debug</tt> <tt class="py-op">=</tt> <tt id="link-25" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-25', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-26" class="py-name"><a title="boto.config
+boto.mashups.server.Server.config
+boto.pyami.config" class="py-name" href="#" onclick="return doclink('link-26', 'config', 'link-2');">config</a></tt><tt class="py-op">.</tt><tt id="link-27" class="py-name"><a title="boto.pyami.config.Config.getint
+boto.services.servicedef.ServiceDef.getint" class="py-name" href="#" onclick="return doclink('link-27', 'getint', 'link-21');">getint</a></tt><tt class="py-op">(</tt><tt class="py-string">'DB'</tt><tt class="py-op">,</tt> <tt class="py-string">'debug'</tt><tt class="py-op">,</tt> <tt class="py-number">0</tt><tt class="py-op">)</tt> </tt>
+<a name="L51"></a><tt class="py-lineno">51</tt>  <tt class="py-line">    <tt class="py-name">db_section</tt> <tt class="py-op">=</tt> <tt class="py-string">'DB_'</tt> <tt class="py-op">+</tt> <tt class="py-name">cls</tt><tt class="py-op">.</tt><tt class="py-name">__name__</tt> </tt>
+<a name="L52"></a><tt class="py-lineno">52</tt>  <tt class="py-line">    <tt class="py-keyword">if</tt> <tt id="link-28" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-28', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-29" class="py-name"><a title="boto.config
+boto.mashups.server.Server.config
+boto.pyami.config" class="py-name" href="#" onclick="return doclink('link-29', 'config', 'link-2');">config</a></tt><tt class="py-op">.</tt><tt class="py-name">has_section</tt><tt class="py-op">(</tt><tt class="py-name">db_section</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L53"></a><tt class="py-lineno">53</tt>  <tt class="py-line">        <tt class="py-name">db_user</tt> <tt class="py-op">=</tt> <tt id="link-30" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-30', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-31" class="py-name"><a title="boto.config
+boto.mashups.server.Server.config
+boto.pyami.config" class="py-name" href="#" onclick="return doclink('link-31', 'config', 'link-2');">config</a></tt><tt class="py-op">.</tt><tt id="link-32" class="py-name"><a title="boto.mapreduce.queuetools.LQSClient.get
+boto.mapreduce.queuetools.SQSClient.get
+boto.pyami.config.Config.get
+boto.sdb.persist.object.SDBObject.get
+boto.services.servicedef.ServiceDef.get
+boto.sqs.20070501.message.MHMessage.get
+boto.sqs.message.MHMessage.get" class="py-name" href="#" onclick="return doclink('link-32', 'get', 'link-3');">get</a></tt><tt class="py-op">(</tt><tt class="py-name">db_section</tt><tt class="py-op">,</tt> <tt class="py-string">'db_user'</tt><tt class="py-op">,</tt> <tt class="py-name">db_user</tt><tt class="py-op">)</tt> </tt>
+<a name="L54"></a><tt class="py-lineno">54</tt>  <tt class="py-line">        <tt class="py-name">db_passwd</tt> <tt class="py-op">=</tt> <tt id="link-33" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-33', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-34" class="py-name"><a title="boto.config
+boto.mashups.server.Server.config
+boto.pyami.config" class="py-name" href="#" onclick="return doclink('link-34', 'config', 'link-2');">config</a></tt><tt class="py-op">.</tt><tt id="link-35" class="py-name"><a title="boto.mapreduce.queuetools.LQSClient.get
+boto.mapreduce.queuetools.SQSClient.get
+boto.pyami.config.Config.get
+boto.sdb.persist.object.SDBObject.get
+boto.services.servicedef.ServiceDef.get
+boto.sqs.20070501.message.MHMessage.get
+boto.sqs.message.MHMessage.get" class="py-name" href="#" onclick="return doclink('link-35', 'get', 'link-3');">get</a></tt><tt class="py-op">(</tt><tt class="py-name">db_section</tt><tt class="py-op">,</tt> <tt class="py-string">'db_passwd'</tt><tt class="py-op">,</tt> <tt class="py-name">db_passwd</tt><tt class="py-op">)</tt> </tt>
+<a name="L55"></a><tt class="py-lineno">55</tt>  <tt class="py-line">        <tt class="py-name">db_type</tt> <tt class="py-op">=</tt> <tt id="link-36" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-36', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-37" class="py-name"><a title="boto.config
+boto.mashups.server.Server.config
+boto.pyami.config" class="py-name" href="#" onclick="return doclink('link-37', 'config', 'link-2');">config</a></tt><tt class="py-op">.</tt><tt id="link-38" class="py-name"><a title="boto.mapreduce.queuetools.LQSClient.get
+boto.mapreduce.queuetools.SQSClient.get
+boto.pyami.config.Config.get
+boto.sdb.persist.object.SDBObject.get
+boto.services.servicedef.ServiceDef.get
+boto.sqs.20070501.message.MHMessage.get
+boto.sqs.message.MHMessage.get" class="py-name" href="#" onclick="return doclink('link-38', 'get', 'link-3');">get</a></tt><tt class="py-op">(</tt><tt class="py-name">db_section</tt><tt class="py-op">,</tt> <tt class="py-string">'db_type'</tt><tt class="py-op">,</tt> <tt class="py-name">db_type</tt><tt class="py-op">)</tt> </tt>
+<a name="L56"></a><tt class="py-lineno">56</tt>  <tt class="py-line">        <tt class="py-name">db_name</tt> <tt class="py-op">=</tt> <tt id="link-39" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-39', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-40" class="py-name"><a title="boto.config
+boto.mashups.server.Server.config
+boto.pyami.config" class="py-name" href="#" onclick="return doclink('link-40', 'config', 'link-2');">config</a></tt><tt class="py-op">.</tt><tt id="link-41" class="py-name"><a title="boto.mapreduce.queuetools.LQSClient.get
+boto.mapreduce.queuetools.SQSClient.get
+boto.pyami.config.Config.get
+boto.sdb.persist.object.SDBObject.get
+boto.services.servicedef.ServiceDef.get
+boto.sqs.20070501.message.MHMessage.get
+boto.sqs.message.MHMessage.get" class="py-name" href="#" onclick="return doclink('link-41', 'get', 'link-3');">get</a></tt><tt class="py-op">(</tt><tt class="py-name">db_section</tt><tt class="py-op">,</tt> <tt class="py-string">'db_name'</tt><tt class="py-op">,</tt> <tt class="py-name">db_name</tt><tt class="py-op">)</tt> </tt>
+<a name="L57"></a><tt class="py-lineno">57</tt>  <tt class="py-line">        <tt class="py-name">db_table</tt> <tt class="py-op">=</tt> <tt id="link-42" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-42', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-43" class="py-name"><a title="boto.config
+boto.mashups.server.Server.config
+boto.pyami.config" class="py-name" href="#" onclick="return doclink('link-43', 'config', 'link-2');">config</a></tt><tt class="py-op">.</tt><tt id="link-44" class="py-name"><a title="boto.mapreduce.queuetools.LQSClient.get
+boto.mapreduce.queuetools.SQSClient.get
+boto.pyami.config.Config.get
+boto.sdb.persist.object.SDBObject.get
+boto.services.servicedef.ServiceDef.get
+boto.sqs.20070501.message.MHMessage.get
+boto.sqs.message.MHMessage.get" class="py-name" href="#" onclick="return doclink('link-44', 'get', 'link-3');">get</a></tt><tt class="py-op">(</tt><tt class="py-name">db_section</tt><tt class="py-op">,</tt> <tt class="py-string">'db_table'</tt><tt class="py-op">,</tt> <tt class="py-name">db_table</tt><tt class="py-op">)</tt> </tt>
+<a name="L58"></a><tt class="py-lineno">58</tt>  <tt class="py-line">        <tt class="py-name">db_host</tt> <tt class="py-op">=</tt> <tt id="link-45" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-45', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-46" class="py-name"><a title="boto.config
+boto.mashups.server.Server.config
+boto.pyami.config" class="py-name" href="#" onclick="return doclink('link-46', 'config', 'link-2');">config</a></tt><tt class="py-op">.</tt><tt id="link-47" class="py-name"><a title="boto.mapreduce.queuetools.LQSClient.get
+boto.mapreduce.queuetools.SQSClient.get
+boto.pyami.config.Config.get
+boto.sdb.persist.object.SDBObject.get
+boto.services.servicedef.ServiceDef.get
+boto.sqs.20070501.message.MHMessage.get
+boto.sqs.message.MHMessage.get" class="py-name" href="#" onclick="return doclink('link-47', 'get', 'link-3');">get</a></tt><tt class="py-op">(</tt><tt class="py-name">db_section</tt><tt class="py-op">,</tt> <tt class="py-string">'db_host'</tt><tt class="py-op">,</tt> <tt class="py-name">db_host</tt><tt class="py-op">)</tt> </tt>
+<a name="L59"></a><tt class="py-lineno">59</tt>  <tt class="py-line">        <tt class="py-name">db_port</tt> <tt class="py-op">=</tt> <tt id="link-48" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-48', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-49" class="py-name"><a title="boto.config
+boto.mashups.server.Server.config
+boto.pyami.config" class="py-name" href="#" onclick="return doclink('link-49', 'config', 'link-2');">config</a></tt><tt class="py-op">.</tt><tt id="link-50" class="py-name"><a title="boto.pyami.config.Config.getint
+boto.services.servicedef.ServiceDef.getint" class="py-name" href="#" onclick="return doclink('link-50', 'getint', 'link-21');">getint</a></tt><tt class="py-op">(</tt><tt class="py-name">db_section</tt><tt class="py-op">,</tt> <tt class="py-string">'db_port'</tt><tt class="py-op">,</tt> <tt class="py-name">db_port</tt><tt class="py-op">)</tt> </tt>
+<a name="L60"></a><tt class="py-lineno">60</tt>  <tt class="py-line">        <tt class="py-name">debug</tt> <tt class="py-op">=</tt> <tt id="link-51" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-51', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-52" class="py-name"><a title="boto.config
+boto.mashups.server.Server.config
+boto.pyami.config" class="py-name" href="#" onclick="return doclink('link-52', 'config', 'link-2');">config</a></tt><tt class="py-op">.</tt><tt id="link-53" class="py-name"><a title="boto.pyami.config.Config.getint
+boto.services.servicedef.ServiceDef.getint" class="py-name" href="#" onclick="return doclink('link-53', 'getint', 'link-21');">getint</a></tt><tt class="py-op">(</tt><tt class="py-name">db_section</tt><tt class="py-op">,</tt> <tt class="py-string">'debug'</tt><tt class="py-op">,</tt> <tt class="py-name">debug</tt><tt class="py-op">)</tt> </tt>
+<a name="L61"></a><tt class="py-lineno">61</tt>  <tt class="py-line">    <tt class="py-keyword">if</tt> <tt class="py-name">db_type</tt> <tt class="py-op">==</tt> <tt class="py-string">'SimpleDB'</tt><tt class="py-op">:</tt> </tt>
+<a name="L62"></a><tt class="py-lineno">62</tt>  <tt class="py-line">        <tt class="py-keyword">from</tt> <tt id="link-54" class="py-name" targets="Module boto.sdb.db.manager.sdbmanager=boto.sdb.db.manager.sdbmanager-module.html"><a title="boto.sdb.db.manager.sdbmanager" class="py-name" href="#" onclick="return doclink('link-54', 'sdbmanager', 'link-54');">sdbmanager</a></tt> <tt class="py-keyword">import</tt> <tt id="link-55" class="py-name" targets="Class boto.sdb.db.manager.sdbmanager.SDBManager=boto.sdb.db.manager.sdbmanager.SDBManager-class.html"><a title="boto.sdb.db.manager.sdbmanager.SDBManager" class="py-name" href="#" onclick="return doclink('link-55', 'SDBManager', 'link-55');">SDBManager</a></tt> </tt>
+<a name="L63"></a><tt class="py-lineno">63</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt id="link-56" class="py-name"><a title="boto.sdb.db.manager.sdbmanager.SDBManager" class="py-name" href="#" onclick="return doclink('link-56', 'SDBManager', 'link-55');">SDBManager</a></tt><tt class="py-op">(</tt><tt class="py-name">cls</tt><tt class="py-op">,</tt> <tt class="py-name">db_name</tt><tt class="py-op">,</tt> <tt class="py-name">db_user</tt><tt class="py-op">,</tt> <tt class="py-name">db_passwd</tt><tt class="py-op">,</tt> </tt>
+<a name="L64"></a><tt class="py-lineno">64</tt>  <tt class="py-line">                          <tt class="py-name">db_host</tt><tt class="py-op">,</tt> <tt class="py-name">db_port</tt><tt class="py-op">,</tt> <tt class="py-name">db_table</tt><tt class="py-op">,</tt> <tt class="py-name">sql_dir</tt><tt class="py-op">)</tt> </tt>
+<a name="L65"></a><tt class="py-lineno">65</tt>  <tt class="py-line">    <tt class="py-keyword">elif</tt> <tt class="py-name">db_type</tt> <tt class="py-op">==</tt> <tt class="py-string">'PostgreSQL'</tt><tt class="py-op">:</tt> </tt>
+<a name="L66"></a><tt class="py-lineno">66</tt>  <tt class="py-line">        <tt class="py-keyword">from</tt> <tt id="link-57" class="py-name" targets="Module boto.sdb.db.manager.pgmanager=boto.sdb.db.manager.pgmanager-module.html"><a title="boto.sdb.db.manager.pgmanager" class="py-name" href="#" onclick="return doclink('link-57', 'pgmanager', 'link-57');">pgmanager</a></tt> <tt class="py-keyword">import</tt> <tt id="link-58" class="py-name" targets="Class boto.sdb.db.manager.pgmanager.PGManager=boto.sdb.db.manager.pgmanager.PGManager-class.html"><a title="boto.sdb.db.manager.pgmanager.PGManager" class="py-name" href="#" onclick="return doclink('link-58', 'PGManager', 'link-58');">PGManager</a></tt> </tt>
+<a name="L67"></a><tt class="py-lineno">67</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">db_table</tt><tt class="py-op">:</tt> </tt>
+<a name="L68"></a><tt class="py-lineno">68</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt id="link-59" class="py-name"><a title="boto.sdb.db.manager.pgmanager.PGManager" class="py-name" href="#" onclick="return doclink('link-59', 'PGManager', 'link-58');">PGManager</a></tt><tt class="py-op">(</tt><tt class="py-name">cls</tt><tt class="py-op">,</tt> <tt class="py-name">db_name</tt><tt class="py-op">,</tt> <tt class="py-name">db_user</tt><tt class="py-op">,</tt> <tt class="py-name">db_passwd</tt><tt class="py-op">,</tt> </tt>
+<a name="L69"></a><tt class="py-lineno">69</tt>  <tt class="py-line">                             <tt class="py-name">db_host</tt><tt class="py-op">,</tt> <tt class="py-name">db_port</tt><tt class="py-op">,</tt> <tt class="py-name">db_table</tt><tt class="py-op">,</tt> <tt class="py-name">sql_dir</tt><tt class="py-op">)</tt> </tt>
+<a name="L70"></a><tt class="py-lineno">70</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L71"></a><tt class="py-lineno">71</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt class="py-name">None</tt> </tt>
+<a name="L72"></a><tt class="py-lineno">72</tt>  <tt class="py-line">    <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L73"></a><tt class="py-lineno">73</tt>  <tt class="py-line">        <tt class="py-keyword">raise</tt> <tt class="py-name">ValueError</tt><tt class="py-op">,</tt> <tt class="py-string">'Unknown db_type: %s'</tt> <tt class="py-op">%</tt> <tt class="py-name">db_type</tt> </tt>
+</div><a name="L74"></a><tt class="py-lineno">74</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="boto-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0beta1 on Fri Feb 20 11:45:20 2009
+    </td>
+    <td align="right" class="footer">
+      <a href="http://epydoc.sourceforge.net">http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie()
+  // -->
+</script>
+  
+</body>
+</html>

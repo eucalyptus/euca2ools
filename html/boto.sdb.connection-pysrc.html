@@ -1,0 +1,996 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>boto.sdb.connection</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="boto-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="boto-module.html">Package&nbsp;boto</a> ::
+        <a href="boto.sdb-module.html">Package&nbsp;sdb</a> ::
+        Module&nbsp;connection
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="boto.sdb.connection-pysrc.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="boto.sdb.connection-module.html">Module boto.sdb.connection</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno">  1</tt>  <tt class="py-line"><tt class="py-comment"># Copyright (c) 2006,2007 Mitch Garnaat http://garnaat.org/</tt> </tt>
+<a name="L2"></a><tt class="py-lineno">  2</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment">#</tt> </tt>
+<a name="L3"></a><tt class="py-lineno">  3</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># Permission is hereby granted, free of charge, to any person obtaining a</tt> </tt>
+<a name="L4"></a><tt class="py-lineno">  4</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># copy of this software and associated documentation files (the</tt> </tt>
+<a name="L5"></a><tt class="py-lineno">  5</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># "Software"), to deal in the Software without restriction, including</tt> </tt>
+<a name="L6"></a><tt class="py-lineno">  6</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># without limitation the rights to use, copy, modify, merge, publish, dis-</tt> </tt>
+<a name="L7"></a><tt class="py-lineno">  7</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># tribute, sublicense, and/or sell copies of the Software, and to permit</tt> </tt>
+<a name="L8"></a><tt class="py-lineno">  8</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># persons to whom the Software is furnished to do so, subject to the fol-</tt> </tt>
+<a name="L9"></a><tt class="py-lineno">  9</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># lowing conditions:</tt> </tt>
+<a name="L10"></a><tt class="py-lineno"> 10</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment">#</tt> </tt>
+<a name="L11"></a><tt class="py-lineno"> 11</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># The above copyright notice and this permission notice shall be included</tt> </tt>
+<a name="L12"></a><tt class="py-lineno"> 12</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># in all copies or substantial portions of the Software.</tt> </tt>
+<a name="L13"></a><tt class="py-lineno"> 13</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment">#</tt> </tt>
+<a name="L14"></a><tt class="py-lineno"> 14</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS</tt> </tt>
+<a name="L15"></a><tt class="py-lineno"> 15</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABIL-</tt> </tt>
+<a name="L16"></a><tt class="py-lineno"> 16</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># ITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT</tt> </tt>
+<a name="L17"></a><tt class="py-lineno"> 17</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># SHALL THE AUTHOR BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, </tt> </tt>
+<a name="L18"></a><tt class="py-lineno"> 18</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</tt> </tt>
+<a name="L19"></a><tt class="py-lineno"> 19</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS</tt> </tt>
+<a name="L20"></a><tt class="py-lineno"> 20</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># IN THE SOFTWARE.</tt> </tt>
+<a name="L21"></a><tt class="py-lineno"> 21</tt>  <tt class="py-line"><tt class="py-comment"></tt> </tt>
+<a name="L22"></a><tt class="py-lineno"> 22</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">urllib</tt> </tt>
+<a name="L23"></a><tt class="py-lineno"> 23</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">xml</tt><tt class="py-op">.</tt><tt class="py-name">sax</tt> </tt>
+<a name="L24"></a><tt class="py-lineno"> 24</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">threading</tt> </tt>
+<a name="L25"></a><tt class="py-lineno"> 25</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt id="link-0" class="py-name" targets="Package boto=boto-module.html"><a title="boto" class="py-name" href="#" onclick="return doclink('link-0', 'boto', 'link-0');">boto</a></tt> </tt>
+<a name="L26"></a><tt class="py-lineno"> 26</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-1" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-1', 'boto', 'link-0');">boto</a></tt> <tt class="py-keyword">import</tt> <tt id="link-2" class="py-name" targets="Module boto.handler=boto.handler-module.html"><a title="boto.handler" class="py-name" href="#" onclick="return doclink('link-2', 'handler', 'link-2');">handler</a></tt> </tt>
+<a name="L27"></a><tt class="py-lineno"> 27</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-3" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-3', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-4" class="py-name" targets="Module boto.connection=boto.connection-module.html,Module boto.ec2.connection=boto.ec2.connection-module.html,Module boto.fps.connection=boto.fps.connection-module.html,Module boto.mturk.connection=boto.mturk.connection-module.html,Module boto.s3.connection=boto.s3.connection-module.html,Module boto.sdb.connection=boto.sdb.connection-module.html,Module boto.sqs.20070501.connection=boto.sqs.20070501.connection-module.html,Module boto.sqs.connection=boto.sqs.connection-module.html"><a title="boto.connection
+boto.ec2.connection
+boto.fps.connection
+boto.mturk.connection
+boto.s3.connection
+boto.sdb.connection
+boto.sqs.20070501.connection
+boto.sqs.connection" class="py-name" href="#" onclick="return doclink('link-4', 'connection', 'link-4');">connection</a></tt> <tt class="py-keyword">import</tt> <tt id="link-5" class="py-name" targets="Class boto.connection.AWSQueryConnection=boto.connection.AWSQueryConnection-class.html"><a title="boto.connection.AWSQueryConnection" class="py-name" href="#" onclick="return doclink('link-5', 'AWSQueryConnection', 'link-5');">AWSQueryConnection</a></tt> </tt>
+<a name="L28"></a><tt class="py-lineno"> 28</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-6" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-6', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-7" class="py-name" targets="Package boto.sdb=boto.sdb-module.html"><a title="boto.sdb" class="py-name" href="#" onclick="return doclink('link-7', 'sdb', 'link-7');">sdb</a></tt><tt class="py-op">.</tt><tt id="link-8" class="py-name" targets="Module boto.sdb.domain=boto.sdb.domain-module.html"><a title="boto.sdb.domain" class="py-name" href="#" onclick="return doclink('link-8', 'domain', 'link-8');">domain</a></tt> <tt class="py-keyword">import</tt> <tt id="link-9" class="py-name" targets="Class boto.sdb.domain.Domain=boto.sdb.domain.Domain-class.html"><a title="boto.sdb.domain.Domain" class="py-name" href="#" onclick="return doclink('link-9', 'Domain', 'link-9');">Domain</a></tt><tt class="py-op">,</tt> <tt id="link-10" class="py-name" targets="Class boto.sdb.domain.DomainMetaData=boto.sdb.domain.DomainMetaData-class.html"><a title="boto.sdb.domain.DomainMetaData" class="py-name" href="#" onclick="return doclink('link-10', 'DomainMetaData', 'link-10');">DomainMetaData</a></tt> </tt>
+<a name="L29"></a><tt class="py-lineno"> 29</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-11" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-11', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-12" class="py-name"><a title="boto.sdb" class="py-name" href="#" onclick="return doclink('link-12', 'sdb', 'link-7');">sdb</a></tt><tt class="py-op">.</tt><tt id="link-13" class="py-name" targets="Module boto.sdb.item=boto.sdb.item-module.html"><a title="boto.sdb.item" class="py-name" href="#" onclick="return doclink('link-13', 'item', 'link-13');">item</a></tt> <tt class="py-keyword">import</tt> <tt id="link-14" class="py-name" targets="Class boto.mashups.order.Item=boto.mashups.order.Item-class.html,Class boto.sdb.item.Item=boto.sdb.item.Item-class.html"><a title="boto.mashups.order.Item
+boto.sdb.item.Item" class="py-name" href="#" onclick="return doclink('link-14', 'Item', 'link-14');">Item</a></tt> </tt>
+<a name="L30"></a><tt class="py-lineno"> 30</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-15" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-15', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-16" class="py-name" targets="Module boto.cloudfront.exception=boto.cloudfront.exception-module.html,Module boto.exception=boto.exception-module.html"><a title="boto.cloudfront.exception
+boto.exception" class="py-name" href="#" onclick="return doclink('link-16', 'exception', 'link-16');">exception</a></tt> <tt class="py-keyword">import</tt> <tt id="link-17" class="py-name" targets="Class boto.exception.SDBResponseError=boto.exception.SDBResponseError-class.html"><a title="boto.exception.SDBResponseError" class="py-name" href="#" onclick="return doclink('link-17', 'SDBResponseError', 'link-17');">SDBResponseError</a></tt> </tt>
+<a name="L31"></a><tt class="py-lineno"> 31</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-18" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-18', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-19" class="py-name" targets="Module boto.resultset=boto.resultset-module.html"><a title="boto.resultset" class="py-name" href="#" onclick="return doclink('link-19', 'resultset', 'link-19');">resultset</a></tt> <tt class="py-keyword">import</tt> <tt id="link-20" class="py-name" targets="Class boto.resultset.ResultSet=boto.resultset.ResultSet-class.html"><a title="boto.resultset.ResultSet" class="py-name" href="#" onclick="return doclink('link-20', 'ResultSet', 'link-20');">ResultSet</a></tt> </tt>
+<a name="L32"></a><tt class="py-lineno"> 32</tt>  <tt class="py-line"> </tt>
+<a name="ItemThread"></a><div id="ItemThread-def"><a name="L33"></a><tt class="py-lineno"> 33</tt> <a class="py-toggle" href="#" id="ItemThread-toggle" onclick="return toggle('ItemThread');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="boto.sdb.connection.ItemThread-class.html">ItemThread</a><tt class="py-op">(</tt><tt class="py-base-class">threading</tt><tt class="py-op">.</tt><tt class="py-base-class">Thread</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ItemThread-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="ItemThread-expanded"><a name="L34"></a><tt class="py-lineno"> 34</tt>  <tt class="py-line">     </tt>
+<a name="ItemThread.__init__"></a><div id="ItemThread.__init__-def"><a name="L35"></a><tt class="py-lineno"> 35</tt> <a class="py-toggle" href="#" id="ItemThread.__init__-toggle" onclick="return toggle('ItemThread.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sdb.connection.ItemThread-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">name</tt><tt class="py-op">,</tt> <tt class="py-param">domain_name</tt><tt class="py-op">,</tt> <tt class="py-param">item_names</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ItemThread.__init__-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="ItemThread.__init__-expanded"><a name="L36"></a><tt class="py-lineno"> 36</tt>  <tt class="py-line">        <tt class="py-name">threading</tt><tt class="py-op">.</tt><tt class="py-name">Thread</tt><tt class="py-op">.</tt><tt id="link-21" class="py-name" targets="Method boto.cloudfront.CloudFrontConnection.__init__()=boto.cloudfront.CloudFrontConnection-class.html#__init__,Method boto.cloudfront.distribution.Distribution.__init__()=boto.cloudfront.distribution.Distribution-class.html#__init__,Method boto.cloudfront.distribution.DistributionConfig.__init__()=boto.cloudfront.distribution.DistributionConfig-class.html#__init__,Method boto.cloudfront.distribution.DistributionSummary.__init__()=boto.cloudfront.distribution.DistributionSummary-class.html#__init__,Method boto.connection.AWSAuthConnection.__init__()=boto.connection.AWSAuthConnection-class.html#__init__,Method boto.connection.AWSQueryConnection.__init__()=boto.connection.AWSQueryConnection-class.html#__init__,Method boto.contrib.ymlmessage.YAMLMessage.__init__()=boto.contrib.ymlmessage.YAMLMessage-class.html#__init__,Method boto.ec2.address.Address.__init__()=boto.ec2.address.Address-class.html#__init__,Method boto.ec2.connection.EC2Connection.__init__()=boto.ec2.connection.EC2Connection-class.html#__init__,Method boto.ec2.ec2object.EC2Object.__init__()=boto.ec2.ec2object.EC2Object-class.html#__init__,Method boto.ec2.image.Image.__init__()=boto.ec2.image.Image-class.html#__init__,Method boto.ec2.image.ImageAttribute.__init__()=boto.ec2.image.ImageAttribute-class.html#__init__,Method boto.ec2.instance.ConsoleOutput.__init__()=boto.ec2.instance.ConsoleOutput-class.html#__init__,Method boto.ec2.instance.Group.__init__()=boto.ec2.instance.Group-class.html#__init__,Method boto.ec2.instance.Instance.__init__()=boto.ec2.instance.Instance-class.html#__init__,Method boto.ec2.instance.Reservation.__init__()=boto.ec2.instance.Reservation-class.html#__init__,Method boto.ec2.keypair.KeyPair.__init__()=boto.ec2.keypair.KeyPair-class.html#__init__,Method boto.ec2.regioninfo.RegionInfo.__init__()=boto.ec2.regioninfo.RegionInfo-class.html#__init__,Method boto.ec2.securitygroup.GroupOrCIDR.__init__()=boto.ec2.securitygroup.GroupOrCIDR-class.html#__init__,Method boto.ec2.securitygroup.IPPermissions.__init__()=boto.ec2.securitygroup.IPPermissions-class.html#__init__,Method boto.ec2.securitygroup.SecurityGroup.__init__()=boto.ec2.securitygroup.SecurityGroup-class.html#__init__,Method boto.ec2.snapshot.Snapshot.__init__()=boto.ec2.snapshot.Snapshot-class.html#__init__,Method boto.ec2.volume.Volume.__init__()=boto.ec2.volume.Volume-class.html#__init__,Method boto.ec2.zone.Zone.__init__()=boto.ec2.zone.Zone-class.html#__init__,Method boto.exception.BotoClientError.__init__()=boto.exception.BotoClientError-class.html#__init__,Method boto.exception.BotoServerError.__init__()=boto.exception.BotoServerError-class.html#__init__,Method boto.exception.ConsoleOutput.__init__()=boto.exception.ConsoleOutput-class.html#__init__,Method boto.exception.EC2ResponseError.__init__()=boto.exception.EC2ResponseError-class.html#__init__,Method boto.exception.S3ResponseError.__init__()=boto.exception.S3ResponseError-class.html#__init__,Method boto.exception.SQSError.__init__()=boto.exception.SQSError-class.html#__init__,Method boto.exception._EC2Error.__init__()=boto.exception._EC2Error-class.html#__init__,Method boto.fps.connection.FPSConnection.__init__()=boto.fps.connection.FPSConnection-class.html#__init__,Method boto.handler.XmlHandler.__init__()=boto.handler.XmlHandler-class.html#__init__,Method boto.mapreduce.lqs.LQSCommand.__init__()=boto.mapreduce.lqs.LQSCommand-class.html#__init__,Method boto.mapreduce.lqs.LQSMessage.__init__()=boto.mapreduce.lqs.LQSMessage-class.html#__init__,Method boto.mapreduce.lqs.LQSServer.__init__()=boto.mapreduce.lqs.LQSServer-class.html#__init__,Method boto.mapreduce.partitiondb.Partition.__init__()=boto.mapreduce.partitiondb.Partition-class.html#__init__,Method boto.mapreduce.partitiondb.PartitionDB.__init__()=boto.mapreduce.partitiondb.PartitionDB-class.html#__init__,Method boto.mapreduce.partitiondb.Version.__init__()=boto.mapreduce.partitiondb.Version-class.html#__init__,Method boto.mapreduce.queuetools.LQSClient.__init__()=boto.mapreduce.queuetools.LQSClient-class.html#__init__,Method boto.mapreduce.queuetools.SQSClient.__init__()=boto.mapreduce.queuetools.SQSClient-class.html#__init__,Method boto.mashups.order.Item.__init__()=boto.mashups.order.Item-class.html#__init__,Method boto.mashups.order.Order.__init__()=boto.mashups.order.Order-class.html#__init__,Method boto.mashups.server.Server.__init__()=boto.mashups.server.Server-class.html#__init__,Method boto.mturk.connection.Assignment.__init__()=boto.mturk.connection.Assignment-class.html#__init__,Method boto.mturk.connection.BaseAutoResultElement.__init__()=boto.mturk.connection.BaseAutoResultElement-class.html#__init__,Method boto.mturk.connection.MTurkConnection.__init__()=boto.mturk.connection.MTurkConnection-class.html#__init__,Method boto.mturk.notification.Event.__init__()=boto.mturk.notification.Event-class.html#__init__,Method boto.mturk.notification.NotificationMessage.__init__()=boto.mturk.notification.NotificationMessage-class.html#__init__,Method boto.mturk.price.Price.__init__()=boto.mturk.price.Price-class.html#__init__,Method boto.mturk.qualification.PercentAssignmentsAbandonedRequirement.__init__()=boto.mturk.qualification.PercentAssignmentsAbandonedRequirement-class.html#__init__,Method boto.mturk.qualification.PercentAssignmentsApprovedRequirement.__init__()=boto.mturk.qualification.PercentAssignmentsApprovedRequirement-class.html#__init__,Method boto.mturk.qualification.PercentAssignmentsRejectedRequirement.__init__()=boto.mturk.qualification.PercentAssignmentsRejectedRequirement-class.html#__init__,Method boto.mturk.qualification.PercentAssignmentsReturnedRequirement.__init__()=boto.mturk.qualification.PercentAssignmentsReturnedRequirement-class.html#__init__,Method boto.mturk.qualification.PercentAssignmentsSubmittedRequirement.__init__()=boto.mturk.qualification.PercentAssignmentsSubmittedRequirement-class.html#__init__,Method boto.mturk.qualification.Qualifications.__init__()=boto.mturk.qualification.Qualifications-class.html#__init__,Method boto.mturk.qualification.Requirement.__init__()=boto.mturk.qualification.Requirement-class.html#__init__,Method boto.mturk.question.AnswerSpecification.__init__()=boto.mturk.question.AnswerSpecification-class.html#__init__,Method boto.mturk.question.ExternalQuestion.__init__()=boto.mturk.question.ExternalQuestion-class.html#__init__,Method boto.mturk.question.FileUploadAnswer.__init__()=boto.mturk.question.FileUploadAnswer-class.html#__init__,Method boto.mturk.question.FreeTextAnswer.__init__()=boto.mturk.question.FreeTextAnswer-class.html#__init__,Method boto.mturk.question.Question.__init__()=boto.mturk.question.Question-class.html#__init__,Method boto.mturk.question.QuestionContent.__init__()=boto.mturk.question.QuestionContent-class.html#__init__,Method boto.mturk.question.QuestionForm.__init__()=boto.mturk.question.QuestionForm-class.html#__init__,Method boto.mturk.question.SelectionAnswer.__init__()=boto.mturk.question.SelectionAnswer-class.html#__init__,Method boto.pyami.bootstrap.Bootstrap.__init__()=boto.pyami.bootstrap.Bootstrap-class.html#__init__,Method boto.pyami.config.Config.__init__()=boto.pyami.config.Config-class.html#__init__,Method boto.pyami.copybot.CopyBot.__init__()=boto.pyami.copybot.CopyBot-class.html#__init__,Method boto.pyami.scriptbase.ScriptBase.__init__()=boto.pyami.scriptbase.ScriptBase-class.html#__init__,Method boto.resultset.ResultSet.__init__()=boto.resultset.ResultSet-class.html#__init__,Method boto.s3.acl.ACL.__init__()=boto.s3.acl.ACL-class.html#__init__,Method boto.s3.acl.Grant.__init__()=boto.s3.acl.Grant-class.html#__init__,Method boto.s3.acl.Policy.__init__()=boto.s3.acl.Policy-class.html#__init__,Method boto.s3.bucket.Bucket.__init__()=boto.s3.bucket.Bucket-class.html#__init__,Method boto.s3.bucketlistresultset.BucketListResultSet.__init__()=boto.s3.bucketlistresultset.BucketListResultSet-class.html#__init__,Method boto.s3.connection.S3Connection.__init__()=boto.s3.connection.S3Connection-class.html#__init__,Method boto.s3.key.Key.__init__()=boto.s3.key.Key-class.html#__init__,Method boto.s3.prefix.Prefix.__init__()=boto.s3.prefix.Prefix-class.html#__init__,Method boto.s3.user.User.__init__()=boto.s3.user.User-class.html#__init__,Method boto.sdb.connection.ItemThread.__init__()=boto.sdb.connection.ItemThread-class.html#__init__,Method boto.sdb.connection.SDBConnection.__init__()=boto.sdb.connection.SDBConnection-class.html#__init__,Method boto.sdb.db.key.Key.__init__()=boto.sdb.db.key.Key-class.html#__init__,Method boto.sdb.db.manager.pgmanager.PGConverter.__init__()=boto.sdb.db.manager.pgmanager.PGConverter-class.html#__init__,Method boto.sdb.db.manager.pgmanager.PGManager.__init__()=boto.sdb.db.manager.pgmanager.PGManager-class.html#__init__,Method boto.sdb.db.manager.sdbmanager.SDBConverter.__init__()=boto.sdb.db.manager.sdbmanager.SDBConverter-class.html#__init__,Method boto.sdb.db.manager.sdbmanager.SDBManager.__init__()=boto.sdb.db.manager.sdbmanager.SDBManager-class.html#__init__,Method boto.sdb.db.model.Model.__init__()=boto.sdb.db.model.Model-class.html#__init__,Method boto.sdb.db.model.Model.__init__()=boto.sdb.db.model.Model-class.html#__init__,Method boto.sdb.db.model.ModelMeta.__init__()=boto.sdb.db.model.ModelMeta-class.html#__init__,Method boto.sdb.db.model.ModelMeta.__init__()=boto.sdb.db.model.ModelMeta-class.html#__init__,Method boto.sdb.db.property.BooleanProperty.__init__()=boto.sdb.db.property.BooleanProperty-class.html#__init__,Method boto.sdb.db.property.CalculatedProperty.__init__()=boto.sdb.db.property.CalculatedProperty-class.html#__init__,Method boto.sdb.db.property.DateTimeProperty.__init__()=boto.sdb.db.property.DateTimeProperty-class.html#__init__,Method boto.sdb.db.property.IntegerProperty.__init__()=boto.sdb.db.property.IntegerProperty-class.html#__init__,Method boto.sdb.db.property.ListProperty.__init__()=boto.sdb.db.property.ListProperty-class.html#__init__,Method boto.sdb.db.property.LongProperty.__init__()=boto.sdb.db.property.LongProperty-class.html#__init__,Method boto.sdb.db.property.PasswordProperty.__init__()=boto.sdb.db.property.PasswordProperty-class.html#__init__,Method boto.sdb.db.property.Property.__init__()=boto.sdb.db.property.Property-class.html#__init__,Method boto.sdb.db.property.ReferenceProperty.__init__()=boto.sdb.db.property.ReferenceProperty-class.html#__init__,Method boto.sdb.db.property.S3KeyProperty.__init__()=boto.sdb.db.property.S3KeyProperty-class.html#__init__,Method boto.sdb.db.property.StringProperty.__init__()=boto.sdb.db.property.StringProperty-class.html#__init__,Method boto.sdb.db.property.TextProperty.__init__()=boto.sdb.db.property.TextProperty-class.html#__init__,Method boto.sdb.db.property._ReverseReferenceProperty.__init__()=boto.sdb.db.property._ReverseReferenceProperty-class.html#__init__,Method boto.sdb.db.query.Query.__init__()=boto.sdb.db.query.Query-class.html#__init__,Method boto.sdb.domain.Domain.__init__()=boto.sdb.domain.Domain-class.html#__init__,Method boto.sdb.domain.DomainMetaData.__init__()=boto.sdb.domain.DomainMetaData-class.html#__init__,Method boto.sdb.item.Item.__init__()=boto.sdb.item.Item-class.html#__init__,Method boto.sdb.persist.Manager.__init__()=boto.sdb.persist.Manager-class.html#__init__,Method boto.sdb.persist.checker.BooleanChecker.__init__()=boto.sdb.persist.checker.BooleanChecker-class.html#__init__,Method boto.sdb.persist.checker.DateTimeChecker.__init__()=boto.sdb.persist.checker.DateTimeChecker-class.html#__init__,Method boto.sdb.persist.checker.IntegerChecker.__init__()=boto.sdb.persist.checker.IntegerChecker-class.html#__init__,Method boto.sdb.persist.checker.ObjectChecker.__init__()=boto.sdb.persist.checker.ObjectChecker-class.html#__init__,Method boto.sdb.persist.checker.S3BucketChecker.__init__()=boto.sdb.persist.checker.S3BucketChecker-class.html#__init__,Method boto.sdb.persist.checker.S3KeyChecker.__init__()=boto.sdb.persist.checker.S3KeyChecker-class.html#__init__,Method boto.sdb.persist.checker.StringChecker.__init__()=boto.sdb.persist.checker.StringChecker-class.html#__init__,Method boto.sdb.persist.object.SDBBase.__init__()=boto.sdb.persist.object.SDBBase-class.html#__init__,Method boto.sdb.persist.object.SDBObject.__init__()=boto.sdb.persist.object.SDBObject-class.html#__init__,Method boto.sdb.persist.property.BooleanListProperty.__init__()=boto.sdb.persist.property.BooleanListProperty-class.html#__init__,Method boto.sdb.persist.property.BooleanProperty.__init__()=boto.sdb.persist.property.BooleanProperty-class.html#__init__,Method boto.sdb.persist.property.DateTimeProperty.__init__()=boto.sdb.persist.property.DateTimeProperty-class.html#__init__,Method boto.sdb.persist.property.IntegerListProperty.__init__()=boto.sdb.persist.property.IntegerListProperty-class.html#__init__,Method boto.sdb.persist.property.IntegerProperty.__init__()=boto.sdb.persist.property.IntegerProperty-class.html#__init__,Method boto.sdb.persist.property.LargeIntegerListProperty.__init__()=boto.sdb.persist.property.LargeIntegerListProperty-class.html#__init__,Method boto.sdb.persist.property.LargeIntegerProperty.__init__()=boto.sdb.persist.property.LargeIntegerProperty-class.html#__init__,Method boto.sdb.persist.property.LargePositiveIntegerListProperty.__init__()=boto.sdb.persist.property.LargePositiveIntegerListProperty-class.html#__init__,Method boto.sdb.persist.property.LargePositiveIntegerProperty.__init__()=boto.sdb.persist.property.LargePositiveIntegerProperty-class.html#__init__,Method boto.sdb.persist.property.MultiValue.__init__()=boto.sdb.persist.property.MultiValue-class.html#__init__,Method boto.sdb.persist.property.MultiValueProperty.__init__()=boto.sdb.persist.property.MultiValueProperty-class.html#__init__,Method boto.sdb.persist.property.ObjectListProperty.__init__()=boto.sdb.persist.property.ObjectListProperty-class.html#__init__,Method boto.sdb.persist.property.ObjectProperty.__init__()=boto.sdb.persist.property.ObjectProperty-class.html#__init__,Method boto.sdb.persist.property.PasswordProperty.__init__()=boto.sdb.persist.property.PasswordProperty-class.html#__init__,Method boto.sdb.persist.property.PositiveIntegerListProperty.__init__()=boto.sdb.persist.property.PositiveIntegerListProperty-class.html#__init__,Method boto.sdb.persist.property.PositiveIntegerProperty.__init__()=boto.sdb.persist.property.PositiveIntegerProperty-class.html#__init__,Method boto.sdb.persist.property.Property.__init__()=boto.sdb.persist.property.Property-class.html#__init__,Method boto.sdb.persist.property.S3BucketProperty.__init__()=boto.sdb.persist.property.S3BucketProperty-class.html#__init__,Method boto.sdb.persist.property.S3KeyProperty.__init__()=boto.sdb.persist.property.S3KeyProperty-class.html#__init__,Method boto.sdb.persist.property.SmallIntegerListProperty.__init__()=boto.sdb.persist.property.SmallIntegerListProperty-class.html#__init__,Method boto.sdb.persist.property.SmallIntegerProperty.__init__()=boto.sdb.persist.property.SmallIntegerProperty-class.html#__init__,Method boto.sdb.persist.property.SmallPositiveIntegerListProperty.__init__()=boto.sdb.persist.property.SmallPositiveIntegerListProperty-class.html#__init__,Method boto.sdb.persist.property.SmallPositiveIntegerProperty.__init__()=boto.sdb.persist.property.SmallPositiveIntegerProperty-class.html#__init__,Method boto.sdb.persist.property.StringListProperty.__init__()=boto.sdb.persist.property.StringListProperty-class.html#__init__,Method boto.sdb.persist.property.StringProperty.__init__()=boto.sdb.persist.property.StringProperty-class.html#__init__,Method boto.sdb.queryresultset.QueryResultSet.__init__()=boto.sdb.queryresultset.QueryResultSet-class.html#__init__,Method boto.services.bs.BS.__init__()=boto.services.bs.BS-class.html#__init__,Method boto.services.result.ResultProcessor.__init__()=boto.services.result.ResultProcessor-class.html#__init__,Method boto.services.service.Service.__init__()=boto.services.service.Service-class.html#__init__,Method boto.services.servicedef.ServiceDef.__init__()=boto.services.servicedef.ServiceDef-class.html#__init__,Method boto.services.sonofmmm.SonOfMMM.__init__()=boto.services.sonofmmm.SonOfMMM-class.html#__init__,Method boto.services.submit.Submitter.__init__()=boto.services.submit.Submitter-class.html#__init__,Method boto.sqs.20070501.attributes.Attributes.__init__()=boto.sqs.20070501.attributes.Attributes-class.html#__init__,Method boto.sqs.20070501.connection.SQSConnection.__init__()=boto.sqs.20070501.connection.SQSConnection-class.html#__init__,Method boto.sqs.20070501.connection.SQSQueryConnection.__init__()=boto.sqs.20070501.connection.SQSQueryConnection-class.html#__init__,Method boto.sqs.20070501.message.MHMessage.__init__()=boto.sqs.20070501.message.MHMessage-class.html#__init__,Method boto.sqs.20070501.message.RawMessage.__init__()=boto.sqs.20070501.message.RawMessage-class.html#__init__,Method boto.sqs.20070501.queue.Queue.__init__()=boto.sqs.20070501.queue.Queue-class.html#__init__,Method boto.sqs.attributes.Attributes.__init__()=boto.sqs.attributes.Attributes-class.html#__init__,Method boto.sqs.connection.SQSConnection.__init__()=boto.sqs.connection.SQSConnection-class.html#__init__,Method boto.sqs.message.MHMessage.__init__()=boto.sqs.message.MHMessage-class.html#__init__,Method boto.sqs.message.RawMessage.__init__()=boto.sqs.message.RawMessage-class.html#__init__,Method boto.sqs.queue.Queue.__init__()=boto.sqs.queue.Queue-class.html#__init__,Method boto.utils.AuthSMTPHandler.__init__()=boto.utils.AuthSMTPHandler-class.html#__init__,Method boto.utils.LRUCache._Item.__init__()=boto.utils.LRUCache._Item-class.html#__init__,Method boto.utils.LRUCache.__init__()=boto.utils.LRUCache-class.html#__init__,Method boto.utils.Password.__init__()=boto.utils.Password-class.html#__init__,Method boto.utils.ShellCommand.__init__()=boto.utils.ShellCommand-class.html#__init__"><a title="boto.cloudfront.CloudFrontConnection.__init__
+boto.cloudfront.distribution.Distribution.__init__
+boto.cloudfront.distribution.DistributionConfig.__init__
+boto.cloudfront.distribution.DistributionSummary.__init__
+boto.connection.AWSAuthConnection.__init__
+boto.connection.AWSQueryConnection.__init__
+boto.contrib.ymlmessage.YAMLMessage.__init__
+boto.ec2.address.Address.__init__
+boto.ec2.connection.EC2Connection.__init__
+boto.ec2.ec2object.EC2Object.__init__
+boto.ec2.image.Image.__init__
+boto.ec2.image.ImageAttribute.__init__
+boto.ec2.instance.ConsoleOutput.__init__
+boto.ec2.instance.Group.__init__
+boto.ec2.instance.Instance.__init__
+boto.ec2.instance.Reservation.__init__
+boto.ec2.keypair.KeyPair.__init__
+boto.ec2.regioninfo.RegionInfo.__init__
+boto.ec2.securitygroup.GroupOrCIDR.__init__
+boto.ec2.securitygroup.IPPermissions.__init__
+boto.ec2.securitygroup.SecurityGroup.__init__
+boto.ec2.snapshot.Snapshot.__init__
+boto.ec2.volume.Volume.__init__
+boto.ec2.zone.Zone.__init__
+boto.exception.BotoClientError.__init__
+boto.exception.BotoServerError.__init__
+boto.exception.ConsoleOutput.__init__
+boto.exception.EC2ResponseError.__init__
+boto.exception.S3ResponseError.__init__
+boto.exception.SQSError.__init__
+boto.exception._EC2Error.__init__
+boto.fps.connection.FPSConnection.__init__
+boto.handler.XmlHandler.__init__
+boto.mapreduce.lqs.LQSCommand.__init__
+boto.mapreduce.lqs.LQSMessage.__init__
+boto.mapreduce.lqs.LQSServer.__init__
+boto.mapreduce.partitiondb.Partition.__init__
+boto.mapreduce.partitiondb.PartitionDB.__init__
+boto.mapreduce.partitiondb.Version.__init__
+boto.mapreduce.queuetools.LQSClient.__init__
+boto.mapreduce.queuetools.SQSClient.__init__
+boto.mashups.order.Item.__init__
+boto.mashups.order.Order.__init__
+boto.mashups.server.Server.__init__
+boto.mturk.connection.Assignment.__init__
+boto.mturk.connection.BaseAutoResultElement.__init__
+boto.mturk.connection.MTurkConnection.__init__
+boto.mturk.notification.Event.__init__
+boto.mturk.notification.NotificationMessage.__init__
+boto.mturk.price.Price.__init__
+boto.mturk.qualification.PercentAssignmentsAbandonedRequirement.__init__
+boto.mturk.qualification.PercentAssignmentsApprovedRequirement.__init__
+boto.mturk.qualification.PercentAssignmentsRejectedRequirement.__init__
+boto.mturk.qualification.PercentAssignmentsReturnedRequirement.__init__
+boto.mturk.qualification.PercentAssignmentsSubmittedRequirement.__init__
+boto.mturk.qualification.Qualifications.__init__
+boto.mturk.qualification.Requirement.__init__
+boto.mturk.question.AnswerSpecification.__init__
+boto.mturk.question.ExternalQuestion.__init__
+boto.mturk.question.FileUploadAnswer.__init__
+boto.mturk.question.FreeTextAnswer.__init__
+boto.mturk.question.Question.__init__
+boto.mturk.question.QuestionContent.__init__
+boto.mturk.question.QuestionForm.__init__
+boto.mturk.question.SelectionAnswer.__init__
+boto.pyami.bootstrap.Bootstrap.__init__
+boto.pyami.config.Config.__init__
+boto.pyami.copybot.CopyBot.__init__
+boto.pyami.scriptbase.ScriptBase.__init__
+boto.resultset.ResultSet.__init__
+boto.s3.acl.ACL.__init__
+boto.s3.acl.Grant.__init__
+boto.s3.acl.Policy.__init__
+boto.s3.bucket.Bucket.__init__
+boto.s3.bucketlistresultset.BucketListResultSet.__init__
+boto.s3.connection.S3Connection.__init__
+boto.s3.key.Key.__init__
+boto.s3.prefix.Prefix.__init__
+boto.s3.user.User.__init__
+boto.sdb.connection.ItemThread.__init__
+boto.sdb.connection.SDBConnection.__init__
+boto.sdb.db.key.Key.__init__
+boto.sdb.db.manager.pgmanager.PGConverter.__init__
+boto.sdb.db.manager.pgmanager.PGManager.__init__
+boto.sdb.db.manager.sdbmanager.SDBConverter.__init__
+boto.sdb.db.manager.sdbmanager.SDBManager.__init__
+boto.sdb.db.model.Model.__init__
+boto.sdb.db.model.Model.__init__
+boto.sdb.db.model.ModelMeta.__init__
+boto.sdb.db.model.ModelMeta.__init__
+boto.sdb.db.property.BooleanProperty.__init__
+boto.sdb.db.property.CalculatedProperty.__init__
+boto.sdb.db.property.DateTimeProperty.__init__
+boto.sdb.db.property.IntegerProperty.__init__
+boto.sdb.db.property.ListProperty.__init__
+boto.sdb.db.property.LongProperty.__init__
+boto.sdb.db.property.PasswordProperty.__init__
+boto.sdb.db.property.Property.__init__
+boto.sdb.db.property.ReferenceProperty.__init__
+boto.sdb.db.property.S3KeyProperty.__init__
+boto.sdb.db.property.StringProperty.__init__
+boto.sdb.db.property.TextProperty.__init__
+boto.sdb.db.property._ReverseReferenceProperty.__init__
+boto.sdb.db.query.Query.__init__
+boto.sdb.domain.Domain.__init__
+boto.sdb.domain.DomainMetaData.__init__
+boto.sdb.item.Item.__init__
+boto.sdb.persist.Manager.__init__
+boto.sdb.persist.checker.BooleanChecker.__init__
+boto.sdb.persist.checker.DateTimeChecker.__init__
+boto.sdb.persist.checker.IntegerChecker.__init__
+boto.sdb.persist.checker.ObjectChecker.__init__
+boto.sdb.persist.checker.S3BucketChecker.__init__
+boto.sdb.persist.checker.S3KeyChecker.__init__
+boto.sdb.persist.checker.StringChecker.__init__
+boto.sdb.persist.object.SDBBase.__init__
+boto.sdb.persist.object.SDBObject.__init__
+boto.sdb.persist.property.BooleanListProperty.__init__
+boto.sdb.persist.property.BooleanProperty.__init__
+boto.sdb.persist.property.DateTimeProperty.__init__
+boto.sdb.persist.property.IntegerListProperty.__init__
+boto.sdb.persist.property.IntegerProperty.__init__
+boto.sdb.persist.property.LargeIntegerListProperty.__init__
+boto.sdb.persist.property.LargeIntegerProperty.__init__
+boto.sdb.persist.property.LargePositiveIntegerListProperty.__init__
+boto.sdb.persist.property.LargePositiveIntegerProperty.__init__
+boto.sdb.persist.property.MultiValue.__init__
+boto.sdb.persist.property.MultiValueProperty.__init__
+boto.sdb.persist.property.ObjectListProperty.__init__
+boto.sdb.persist.property.ObjectProperty.__init__
+boto.sdb.persist.property.PasswordProperty.__init__
+boto.sdb.persist.property.PositiveIntegerListProperty.__init__
+boto.sdb.persist.property.PositiveIntegerProperty.__init__
+boto.sdb.persist.property.Property.__init__
+boto.sdb.persist.property.S3BucketProperty.__init__
+boto.sdb.persist.property.S3KeyProperty.__init__
+boto.sdb.persist.property.SmallIntegerListProperty.__init__
+boto.sdb.persist.property.SmallIntegerProperty.__init__
+boto.sdb.persist.property.SmallPositiveIntegerListProperty.__init__
+boto.sdb.persist.property.SmallPositiveIntegerProperty.__init__
+boto.sdb.persist.property.StringListProperty.__init__
+boto.sdb.persist.property.StringProperty.__init__
+boto.sdb.queryresultset.QueryResultSet.__init__
+boto.services.bs.BS.__init__
+boto.services.result.ResultProcessor.__init__
+boto.services.service.Service.__init__
+boto.services.servicedef.ServiceDef.__init__
+boto.services.sonofmmm.SonOfMMM.__init__
+boto.services.submit.Submitter.__init__
+boto.sqs.20070501.attributes.Attributes.__init__
+boto.sqs.20070501.connection.SQSConnection.__init__
+boto.sqs.20070501.connection.SQSQueryConnection.__init__
+boto.sqs.20070501.message.MHMessage.__init__
+boto.sqs.20070501.message.RawMessage.__init__
+boto.sqs.20070501.queue.Queue.__init__
+boto.sqs.attributes.Attributes.__init__
+boto.sqs.connection.SQSConnection.__init__
+boto.sqs.message.MHMessage.__init__
+boto.sqs.message.RawMessage.__init__
+boto.sqs.queue.Queue.__init__
+boto.utils.AuthSMTPHandler.__init__
+boto.utils.LRUCache._Item.__init__
+boto.utils.LRUCache.__init__
+boto.utils.Password.__init__
+boto.utils.ShellCommand.__init__" class="py-name" href="#" onclick="return doclink('link-21', '__init__', 'link-21');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt> <tt id="link-22" class="py-name" targets="Variable boto.mapreduce.partitiondb.Partition.name=boto.mapreduce.partitiondb.Partition-class.html#name,Variable boto.mapreduce.partitiondb.PartitionDB.name=boto.mapreduce.partitiondb.PartitionDB-class.html#name,Variable boto.mapreduce.partitiondb.Version.name=boto.mapreduce.partitiondb.Version-class.html#name,Variable boto.mashups.server.Server.name=boto.mashups.server.Server-class.html#name,Method boto.sdb.db.key.Key.name()=boto.sdb.db.key.Key-class.html#name,Variable boto.sdb.db.property.Property.name=boto.sdb.db.property.Property-class.html#name,Variable boto.sdb.db.test_db.TestBasic.name=boto.sdb.db.test_db.TestBasic-class.html#name,Variable boto.sdb.db.test_db.TestList.name=boto.sdb.db.test_db.TestList-class.html#name,Variable boto.sdb.db.test_db.TestListReference.name=boto.sdb.db.test_db.TestListReference-class.html#name,Variable boto.sdb.db.test_db.TestUnique.name=boto.sdb.db.test_db.TestUnique-class.html#name,Variable boto.sdb.persist.test_persist.TestRef.name=boto.sdb.persist.test_persist.TestRef-class.html#name,Variable boto.sdb.persist.test_persist.TestScalar.name=boto.sdb.persist.test_persist.TestScalar-class.html#name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-22', 'name', 'link-22');">name</a></tt><tt class="py-op">=</tt><tt id="link-23" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-23', 'name', 'link-22');">name</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L37"></a><tt class="py-lineno"> 37</tt>  <tt class="py-line">        <tt class="py-keyword">print</tt> <tt class="py-string">'starting %s with %d items'</tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt id="link-24" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-24', 'name', 'link-22');">name</a></tt><tt class="py-op">,</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">item_names</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L38"></a><tt class="py-lineno"> 38</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">domain_name</tt> <tt class="py-op">=</tt> <tt class="py-name">domain_name</tt> </tt>
+<a name="L39"></a><tt class="py-lineno"> 39</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">conn</tt> <tt class="py-op">=</tt> <tt id="link-25" class="py-name" targets="Class boto.sdb.connection.SDBConnection=boto.sdb.connection.SDBConnection-class.html"><a title="boto.sdb.connection.SDBConnection" class="py-name" href="#" onclick="return doclink('link-25', 'SDBConnection', 'link-25');">SDBConnection</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L40"></a><tt class="py-lineno"> 40</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">item_names</tt> <tt class="py-op">=</tt> <tt class="py-name">item_names</tt> </tt>
+<a name="L41"></a><tt class="py-lineno"> 41</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-26" class="py-name" targets="Method boto.sqs.20070501.message.MHMessage.items()=boto.sqs.20070501.message.MHMessage-class.html#items,Method boto.sqs.message.MHMessage.items()=boto.sqs.message.MHMessage-class.html#items"><a title="boto.sqs.20070501.message.MHMessage.items
+boto.sqs.message.MHMessage.items" class="py-name" href="#" onclick="return doclink('link-26', 'items', 'link-26');">items</a></tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt> </tt>
+</div><a name="L42"></a><tt class="py-lineno"> 42</tt>  <tt class="py-line">         </tt>
+<a name="ItemThread.run"></a><div id="ItemThread.run-def"><a name="L43"></a><tt class="py-lineno"> 43</tt> <a class="py-toggle" href="#" id="ItemThread.run-toggle" onclick="return toggle('ItemThread.run');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sdb.connection.ItemThread-class.html#run">run</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ItemThread.run-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="ItemThread.run-expanded"><a name="L44"></a><tt class="py-lineno"> 44</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt class="py-name">item_name</tt> <tt class="py-keyword">in</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">item_names</tt><tt class="py-op">:</tt> </tt>
+<a name="L45"></a><tt class="py-lineno"> 45</tt>  <tt class="py-line">            <tt id="link-27" class="py-name"><a title="boto.sdb.item" class="py-name" href="#" onclick="return doclink('link-27', 'item', 'link-13');">item</a></tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">conn</tt><tt class="py-op">.</tt><tt id="link-28" class="py-name" targets="Method boto.sdb.connection.SDBConnection.get_attributes()=boto.sdb.connection.SDBConnection-class.html#get_attributes,Method boto.sdb.domain.Domain.get_attributes()=boto.sdb.domain.Domain-class.html#get_attributes,Method boto.sqs.20070501.queue.Queue.get_attributes()=boto.sqs.20070501.queue.Queue-class.html#get_attributes,Method boto.sqs.queue.Queue.get_attributes()=boto.sqs.queue.Queue-class.html#get_attributes"><a title="boto.sdb.connection.SDBConnection.get_attributes
+boto.sdb.domain.Domain.get_attributes
+boto.sqs.20070501.queue.Queue.get_attributes
+boto.sqs.queue.Queue.get_attributes" class="py-name" href="#" onclick="return doclink('link-28', 'get_attributes', 'link-28');">get_attributes</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">domain_name</tt><tt class="py-op">,</tt> <tt class="py-name">item_name</tt><tt class="py-op">)</tt> </tt>
+<a name="L46"></a><tt class="py-lineno"> 46</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-29" class="py-name"><a title="boto.sqs.20070501.message.MHMessage.items
+boto.sqs.message.MHMessage.items" class="py-name" href="#" onclick="return doclink('link-29', 'items', 'link-26');">items</a></tt><tt class="py-op">.</tt><tt id="link-30" class="py-name" targets="Method boto.sdb.persist.property.MultiValue.append()=boto.sdb.persist.property.MultiValue-class.html#append"><a title="boto.sdb.persist.property.MultiValue.append" class="py-name" href="#" onclick="return doclink('link-30', 'append', 'link-30');">append</a></tt><tt class="py-op">(</tt><tt id="link-31" class="py-name"><a title="boto.sdb.item" class="py-name" href="#" onclick="return doclink('link-31', 'item', 'link-13');">item</a></tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L47"></a><tt class="py-lineno"> 47</tt>  <tt class="py-line"> </tt>
+<a name="SDBConnection"></a><div id="SDBConnection-def"><a name="L48"></a><tt class="py-lineno"> 48</tt> <a class="py-toggle" href="#" id="SDBConnection-toggle" onclick="return toggle('SDBConnection');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="boto.sdb.connection.SDBConnection-class.html">SDBConnection</a><tt class="py-op">(</tt><tt class="py-base-class">AWSQueryConnection</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SDBConnection-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="SDBConnection-expanded"><a name="L49"></a><tt class="py-lineno"> 49</tt>  <tt class="py-line"> </tt>
+<a name="L50"></a><tt class="py-lineno"> 50</tt>  <tt class="py-line">    <tt id="link-32" class="py-name" targets="Variable boto.connection.AWSQueryConnection.APIVersion=boto.connection.AWSQueryConnection-class.html#APIVersion,Variable boto.ec2.connection.EC2Connection.APIVersion=boto.ec2.connection.EC2Connection-class.html#APIVersion,Variable boto.fps.connection.FPSConnection.APIVersion=boto.fps.connection.FPSConnection-class.html#APIVersion,Variable boto.mturk.connection.MTurkConnection.APIVersion=boto.mturk.connection.MTurkConnection-class.html#APIVersion,Variable boto.sdb.connection.SDBConnection.APIVersion=boto.sdb.connection.SDBConnection-class.html#APIVersion,Variable boto.sqs.20070501.connection.SQSConnection.APIVersion=boto.sqs.20070501.connection.SQSConnection-class.html#APIVersion,Variable boto.sqs.20070501.connection.SQSQueryConnection.APIVersion=boto.sqs.20070501.connection.SQSQueryConnection-class.html#APIVersion,Variable boto.sqs.connection.SQSConnection.APIVersion=boto.sqs.connection.SQSConnection-class.html#APIVersion"><a title="boto.connection.AWSQueryConnection.APIVersion
+boto.ec2.connection.EC2Connection.APIVersion
+boto.fps.connection.FPSConnection.APIVersion
+boto.mturk.connection.MTurkConnection.APIVersion
+boto.sdb.connection.SDBConnection.APIVersion
+boto.sqs.20070501.connection.SQSConnection.APIVersion
+boto.sqs.20070501.connection.SQSQueryConnection.APIVersion
+boto.sqs.connection.SQSConnection.APIVersion" class="py-name" href="#" onclick="return doclink('link-32', 'APIVersion', 'link-32');">APIVersion</a></tt> <tt class="py-op">=</tt> <tt class="py-string">'2007-11-07'</tt> </tt>
+<a name="L51"></a><tt class="py-lineno"> 51</tt>  <tt class="py-line">    <tt id="link-33" class="py-name" targets="Variable boto.connection.AWSQueryConnection.SignatureVersion=boto.connection.AWSQueryConnection-class.html#SignatureVersion,Variable boto.ec2.connection.EC2Connection.SignatureVersion=boto.ec2.connection.EC2Connection-class.html#SignatureVersion,Variable boto.fps.connection.FPSConnection.SignatureVersion=boto.fps.connection.FPSConnection-class.html#SignatureVersion,Variable boto.mturk.connection.MTurkConnection.SignatureVersion=boto.mturk.connection.MTurkConnection-class.html#SignatureVersion,Variable boto.sdb.connection.SDBConnection.SignatureVersion=boto.sdb.connection.SDBConnection-class.html#SignatureVersion,Variable boto.sqs.20070501.connection.SQSQueryConnection.SignatureVersion=boto.sqs.20070501.connection.SQSQueryConnection-class.html#SignatureVersion,Variable boto.sqs.connection.SQSConnection.SignatureVersion=boto.sqs.connection.SQSConnection-class.html#SignatureVersion"><a title="boto.connection.AWSQueryConnection.SignatureVersion
+boto.ec2.connection.EC2Connection.SignatureVersion
+boto.fps.connection.FPSConnection.SignatureVersion
+boto.mturk.connection.MTurkConnection.SignatureVersion
+boto.sdb.connection.SDBConnection.SignatureVersion
+boto.sqs.20070501.connection.SQSQueryConnection.SignatureVersion
+boto.sqs.connection.SQSConnection.SignatureVersion" class="py-name" href="#" onclick="return doclink('link-33', 'SignatureVersion', 'link-33');">SignatureVersion</a></tt> <tt class="py-op">=</tt> <tt class="py-string">'2'</tt> </tt>
+<a name="L52"></a><tt class="py-lineno"> 52</tt>  <tt class="py-line">    <tt class="py-name">ResponseError</tt> <tt class="py-op">=</tt> <tt id="link-34" class="py-name"><a title="boto.exception.SDBResponseError" class="py-name" href="#" onclick="return doclink('link-34', 'SDBResponseError', 'link-17');">SDBResponseError</a></tt> </tt>
+<a name="L53"></a><tt class="py-lineno"> 53</tt>  <tt class="py-line"> </tt>
+<a name="SDBConnection.__init__"></a><div id="SDBConnection.__init__-def"><a name="L54"></a><tt class="py-lineno"> 54</tt> <a class="py-toggle" href="#" id="SDBConnection.__init__-toggle" onclick="return toggle('SDBConnection.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sdb.connection.SDBConnection-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">aws_access_key_id</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-param">aws_secret_access_key</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> </tt>
+<a name="L55"></a><tt class="py-lineno"> 55</tt>  <tt class="py-line">                 <tt class="py-param">is_secure</tt><tt class="py-op">=</tt><tt class="py-name">True</tt><tt class="py-op">,</tt> <tt class="py-param">port</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-param">proxy</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-param">proxy_port</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> </tt>
+<a name="L56"></a><tt class="py-lineno"> 56</tt>  <tt class="py-line">                 <tt class="py-param">proxy_user</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-param">proxy_pass</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-param">host</tt><tt class="py-op">=</tt><tt class="py-string">'sdb.amazonaws.com'</tt><tt class="py-op">,</tt> <tt class="py-param">debug</tt><tt class="py-op">=</tt><tt class="py-number">0</tt><tt class="py-op">,</tt> </tt>
+<a name="L57"></a><tt class="py-lineno"> 57</tt>  <tt class="py-line">                 <tt class="py-param">https_connection_factory</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SDBConnection.__init__-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="SDBConnection.__init__-expanded"><a name="L58"></a><tt class="py-lineno"> 58</tt>  <tt class="py-line">        <tt id="link-35" class="py-name"><a title="boto.connection.AWSQueryConnection" class="py-name" href="#" onclick="return doclink('link-35', 'AWSQueryConnection', 'link-5');">AWSQueryConnection</a></tt><tt class="py-op">.</tt><tt id="link-36" class="py-name"><a title="boto.cloudfront.CloudFrontConnection.__init__
+boto.cloudfront.distribution.Distribution.__init__
+boto.cloudfront.distribution.DistributionConfig.__init__
+boto.cloudfront.distribution.DistributionSummary.__init__
+boto.connection.AWSAuthConnection.__init__
+boto.connection.AWSQueryConnection.__init__
+boto.contrib.ymlmessage.YAMLMessage.__init__
+boto.ec2.address.Address.__init__
+boto.ec2.connection.EC2Connection.__init__
+boto.ec2.ec2object.EC2Object.__init__
+boto.ec2.image.Image.__init__
+boto.ec2.image.ImageAttribute.__init__
+boto.ec2.instance.ConsoleOutput.__init__
+boto.ec2.instance.Group.__init__
+boto.ec2.instance.Instance.__init__
+boto.ec2.instance.Reservation.__init__
+boto.ec2.keypair.KeyPair.__init__
+boto.ec2.regioninfo.RegionInfo.__init__
+boto.ec2.securitygroup.GroupOrCIDR.__init__
+boto.ec2.securitygroup.IPPermissions.__init__
+boto.ec2.securitygroup.SecurityGroup.__init__
+boto.ec2.snapshot.Snapshot.__init__
+boto.ec2.volume.Volume.__init__
+boto.ec2.zone.Zone.__init__
+boto.exception.BotoClientError.__init__
+boto.exception.BotoServerError.__init__
+boto.exception.ConsoleOutput.__init__
+boto.exception.EC2ResponseError.__init__
+boto.exception.S3ResponseError.__init__
+boto.exception.SQSError.__init__
+boto.exception._EC2Error.__init__
+boto.fps.connection.FPSConnection.__init__
+boto.handler.XmlHandler.__init__
+boto.mapreduce.lqs.LQSCommand.__init__
+boto.mapreduce.lqs.LQSMessage.__init__
+boto.mapreduce.lqs.LQSServer.__init__
+boto.mapreduce.partitiondb.Partition.__init__
+boto.mapreduce.partitiondb.PartitionDB.__init__
+boto.mapreduce.partitiondb.Version.__init__
+boto.mapreduce.queuetools.LQSClient.__init__
+boto.mapreduce.queuetools.SQSClient.__init__
+boto.mashups.order.Item.__init__
+boto.mashups.order.Order.__init__
+boto.mashups.server.Server.__init__
+boto.mturk.connection.Assignment.__init__
+boto.mturk.connection.BaseAutoResultElement.__init__
+boto.mturk.connection.MTurkConnection.__init__
+boto.mturk.notification.Event.__init__
+boto.mturk.notification.NotificationMessage.__init__
+boto.mturk.price.Price.__init__
+boto.mturk.qualification.PercentAssignmentsAbandonedRequirement.__init__
+boto.mturk.qualification.PercentAssignmentsApprovedRequirement.__init__
+boto.mturk.qualification.PercentAssignmentsRejectedRequirement.__init__
+boto.mturk.qualification.PercentAssignmentsReturnedRequirement.__init__
+boto.mturk.qualification.PercentAssignmentsSubmittedRequirement.__init__
+boto.mturk.qualification.Qualifications.__init__
+boto.mturk.qualification.Requirement.__init__
+boto.mturk.question.AnswerSpecification.__init__
+boto.mturk.question.ExternalQuestion.__init__
+boto.mturk.question.FileUploadAnswer.__init__
+boto.mturk.question.FreeTextAnswer.__init__
+boto.mturk.question.Question.__init__
+boto.mturk.question.QuestionContent.__init__
+boto.mturk.question.QuestionForm.__init__
+boto.mturk.question.SelectionAnswer.__init__
+boto.pyami.bootstrap.Bootstrap.__init__
+boto.pyami.config.Config.__init__
+boto.pyami.copybot.CopyBot.__init__
+boto.pyami.scriptbase.ScriptBase.__init__
+boto.resultset.ResultSet.__init__
+boto.s3.acl.ACL.__init__
+boto.s3.acl.Grant.__init__
+boto.s3.acl.Policy.__init__
+boto.s3.bucket.Bucket.__init__
+boto.s3.bucketlistresultset.BucketListResultSet.__init__
+boto.s3.connection.S3Connection.__init__
+boto.s3.key.Key.__init__
+boto.s3.prefix.Prefix.__init__
+boto.s3.user.User.__init__
+boto.sdb.connection.ItemThread.__init__
+boto.sdb.connection.SDBConnection.__init__
+boto.sdb.db.key.Key.__init__
+boto.sdb.db.manager.pgmanager.PGConverter.__init__
+boto.sdb.db.manager.pgmanager.PGManager.__init__
+boto.sdb.db.manager.sdbmanager.SDBConverter.__init__
+boto.sdb.db.manager.sdbmanager.SDBManager.__init__
+boto.sdb.db.model.Model.__init__
+boto.sdb.db.model.Model.__init__
+boto.sdb.db.model.ModelMeta.__init__
+boto.sdb.db.model.ModelMeta.__init__
+boto.sdb.db.property.BooleanProperty.__init__
+boto.sdb.db.property.CalculatedProperty.__init__
+boto.sdb.db.property.DateTimeProperty.__init__
+boto.sdb.db.property.IntegerProperty.__init__
+boto.sdb.db.property.ListProperty.__init__
+boto.sdb.db.property.LongProperty.__init__
+boto.sdb.db.property.PasswordProperty.__init__
+boto.sdb.db.property.Property.__init__
+boto.sdb.db.property.ReferenceProperty.__init__
+boto.sdb.db.property.S3KeyProperty.__init__
+boto.sdb.db.property.StringProperty.__init__
+boto.sdb.db.property.TextProperty.__init__
+boto.sdb.db.property._ReverseReferenceProperty.__init__
+boto.sdb.db.query.Query.__init__
+boto.sdb.domain.Domain.__init__
+boto.sdb.domain.DomainMetaData.__init__
+boto.sdb.item.Item.__init__
+boto.sdb.persist.Manager.__init__
+boto.sdb.persist.checker.BooleanChecker.__init__
+boto.sdb.persist.checker.DateTimeChecker.__init__
+boto.sdb.persist.checker.IntegerChecker.__init__
+boto.sdb.persist.checker.ObjectChecker.__init__
+boto.sdb.persist.checker.S3BucketChecker.__init__
+boto.sdb.persist.checker.S3KeyChecker.__init__
+boto.sdb.persist.checker.StringChecker.__init__
+boto.sdb.persist.object.SDBBase.__init__
+boto.sdb.persist.object.SDBObject.__init__
+boto.sdb.persist.property.BooleanListProperty.__init__
+boto.sdb.persist.property.BooleanProperty.__init__
+boto.sdb.persist.property.DateTimeProperty.__init__
+boto.sdb.persist.property.IntegerListProperty.__init__
+boto.sdb.persist.property.IntegerProperty.__init__
+boto.sdb.persist.property.LargeIntegerListProperty.__init__
+boto.sdb.persist.property.LargeIntegerProperty.__init__
+boto.sdb.persist.property.LargePositiveIntegerListProperty.__init__
+boto.sdb.persist.property.LargePositiveIntegerProperty.__init__
+boto.sdb.persist.property.MultiValue.__init__
+boto.sdb.persist.property.MultiValueProperty.__init__
+boto.sdb.persist.property.ObjectListProperty.__init__
+boto.sdb.persist.property.ObjectProperty.__init__
+boto.sdb.persist.property.PasswordProperty.__init__
+boto.sdb.persist.property.PositiveIntegerListProperty.__init__
+boto.sdb.persist.property.PositiveIntegerProperty.__init__
+boto.sdb.persist.property.Property.__init__
+boto.sdb.persist.property.S3BucketProperty.__init__
+boto.sdb.persist.property.S3KeyProperty.__init__
+boto.sdb.persist.property.SmallIntegerListProperty.__init__
+boto.sdb.persist.property.SmallIntegerProperty.__init__
+boto.sdb.persist.property.SmallPositiveIntegerListProperty.__init__
+boto.sdb.persist.property.SmallPositiveIntegerProperty.__init__
+boto.sdb.persist.property.StringListProperty.__init__
+boto.sdb.persist.property.StringProperty.__init__
+boto.sdb.queryresultset.QueryResultSet.__init__
+boto.services.bs.BS.__init__
+boto.services.result.ResultProcessor.__init__
+boto.services.service.Service.__init__
+boto.services.servicedef.ServiceDef.__init__
+boto.services.sonofmmm.SonOfMMM.__init__
+boto.services.submit.Submitter.__init__
+boto.sqs.20070501.attributes.Attributes.__init__
+boto.sqs.20070501.connection.SQSConnection.__init__
+boto.sqs.20070501.connection.SQSQueryConnection.__init__
+boto.sqs.20070501.message.MHMessage.__init__
+boto.sqs.20070501.message.RawMessage.__init__
+boto.sqs.20070501.queue.Queue.__init__
+boto.sqs.attributes.Attributes.__init__
+boto.sqs.connection.SQSConnection.__init__
+boto.sqs.message.MHMessage.__init__
+boto.sqs.message.RawMessage.__init__
+boto.sqs.queue.Queue.__init__
+boto.utils.AuthSMTPHandler.__init__
+boto.utils.LRUCache._Item.__init__
+boto.utils.LRUCache.__init__
+boto.utils.Password.__init__
+boto.utils.ShellCommand.__init__" class="py-name" href="#" onclick="return doclink('link-36', '__init__', 'link-21');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt> <tt class="py-name">aws_access_key_id</tt><tt class="py-op">,</tt> <tt class="py-name">aws_secret_access_key</tt><tt class="py-op">,</tt> </tt>
+<a name="L59"></a><tt class="py-lineno"> 59</tt>  <tt class="py-line">                                    <tt class="py-name">is_secure</tt><tt class="py-op">,</tt> <tt class="py-name">port</tt><tt class="py-op">,</tt> <tt class="py-name">proxy</tt><tt class="py-op">,</tt> <tt class="py-name">proxy_port</tt><tt class="py-op">,</tt> <tt class="py-name">proxy_user</tt><tt class="py-op">,</tt> <tt class="py-name">proxy_pass</tt><tt class="py-op">,</tt> </tt>
+<a name="L60"></a><tt class="py-lineno"> 60</tt>  <tt class="py-line">                                    <tt class="py-name">host</tt><tt class="py-op">,</tt> <tt class="py-name">debug</tt><tt class="py-op">,</tt> <tt id="link-37" class="py-name" targets="Function boto.contrib.m2helpers.https_connection_factory()=boto.contrib.m2helpers-module.html#https_connection_factory"><a title="boto.contrib.m2helpers.https_connection_factory" class="py-name" href="#" onclick="return doclink('link-37', 'https_connection_factory', 'link-37');">https_connection_factory</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L61"></a><tt class="py-lineno"> 61</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">box_usage</tt> <tt class="py-op">=</tt> <tt class="py-number">0.0</tt> </tt>
+</div><a name="L62"></a><tt class="py-lineno"> 62</tt>  <tt class="py-line"> </tt>
+<a name="SDBConnection.build_name_value_list"></a><div id="SDBConnection.build_name_value_list-def"><a name="L63"></a><tt class="py-lineno"> 63</tt> <a class="py-toggle" href="#" id="SDBConnection.build_name_value_list-toggle" onclick="return toggle('SDBConnection.build_name_value_list');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sdb.connection.SDBConnection-class.html#build_name_value_list">build_name_value_list</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">params</tt><tt class="py-op">,</tt> <tt class="py-param">attributes</tt><tt class="py-op">,</tt> <tt class="py-param">replace</tt><tt class="py-op">=</tt><tt class="py-name">False</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SDBConnection.build_name_value_list-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="SDBConnection.build_name_value_list-expanded"><a name="L64"></a><tt class="py-lineno"> 64</tt>  <tt class="py-line">        <tt id="link-38" class="py-name" targets="Method boto.sdb.item.Item.keys()=boto.sdb.item.Item-class.html#keys,Method boto.sqs.20070501.message.MHMessage.keys()=boto.sqs.20070501.message.MHMessage-class.html#keys,Method boto.sqs.message.MHMessage.keys()=boto.sqs.message.MHMessage-class.html#keys"><a title="boto.sdb.item.Item.keys
+boto.sqs.20070501.message.MHMessage.keys
+boto.sqs.message.MHMessage.keys" class="py-name" href="#" onclick="return doclink('link-38', 'keys', 'link-38');">keys</a></tt> <tt class="py-op">=</tt> <tt id="link-39" class="py-name" targets="Module boto.sqs.20070501.attributes=boto.sqs.20070501.attributes-module.html,Module boto.sqs.attributes=boto.sqs.attributes-module.html"><a title="boto.sqs.20070501.attributes
+boto.sqs.attributes" class="py-name" href="#" onclick="return doclink('link-39', 'attributes', 'link-39');">attributes</a></tt><tt class="py-op">.</tt><tt id="link-40" class="py-name"><a title="boto.sdb.item.Item.keys
+boto.sqs.20070501.message.MHMessage.keys
+boto.sqs.message.MHMessage.keys" class="py-name" href="#" onclick="return doclink('link-40', 'keys', 'link-38');">keys</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L65"></a><tt class="py-lineno"> 65</tt>  <tt class="py-line">        <tt id="link-41" class="py-name"><a title="boto.sdb.item.Item.keys
+boto.sqs.20070501.message.MHMessage.keys
+boto.sqs.message.MHMessage.keys" class="py-name" href="#" onclick="return doclink('link-41', 'keys', 'link-38');">keys</a></tt><tt class="py-op">.</tt><tt class="py-name">sort</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L66"></a><tt class="py-lineno"> 66</tt>  <tt class="py-line">        <tt class="py-name">i</tt> <tt class="py-op">=</tt> <tt class="py-number">1</tt> </tt>
+<a name="L67"></a><tt class="py-lineno"> 67</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt id="link-42" class="py-name" targets="Module boto.s3.key=boto.s3.key-module.html,Module boto.sdb.db.key=boto.sdb.db.key-module.html,Method boto.sdb.db.model.Model.key()=boto.sdb.db.model.Model-class.html#key,Method boto.sdb.db.model.Model.key()=boto.sdb.db.model.Model-class.html#key"><a title="boto.s3.key
+boto.sdb.db.key
+boto.sdb.db.model.Model.key
+boto.sdb.db.model.Model.key" class="py-name" href="#" onclick="return doclink('link-42', 'key', 'link-42');">key</a></tt> <tt class="py-keyword">in</tt> <tt id="link-43" class="py-name"><a title="boto.sdb.item.Item.keys
+boto.sqs.20070501.message.MHMessage.keys
+boto.sqs.message.MHMessage.keys" class="py-name" href="#" onclick="return doclink('link-43', 'keys', 'link-38');">keys</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L68"></a><tt class="py-lineno"> 68</tt>  <tt class="py-line">            <tt class="py-name">value</tt> <tt class="py-op">=</tt> <tt id="link-44" class="py-name"><a title="boto.sqs.20070501.attributes
+boto.sqs.attributes" class="py-name" href="#" onclick="return doclink('link-44', 'attributes', 'link-39');">attributes</a></tt><tt class="py-op">[</tt><tt id="link-45" class="py-name"><a title="boto.s3.key
+boto.sdb.db.key
+boto.sdb.db.model.Model.key
+boto.sdb.db.model.Model.key" class="py-name" href="#" onclick="return doclink('link-45', 'key', 'link-42');">key</a></tt><tt class="py-op">]</tt> </tt>
+<a name="L69"></a><tt class="py-lineno"> 69</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-name">isinstance</tt><tt class="py-op">(</tt><tt class="py-name">value</tt><tt class="py-op">,</tt> <tt id="link-46" class="py-name" targets="Method boto.s3.bucket.Bucket.list()=boto.s3.bucket.Bucket-class.html#list,Class Method boto.sdb.persist.object.SDBObject.list()=boto.sdb.persist.object.SDBObject-class.html#list,Class list=list-class.html"><a title="boto.s3.bucket.Bucket.list
+boto.sdb.persist.object.SDBObject.list
+list" class="py-name" href="#" onclick="return doclink('link-46', 'list', 'link-46');">list</a></tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L70"></a><tt class="py-lineno"> 70</tt>  <tt class="py-line">                <tt class="py-keyword">for</tt> <tt class="py-name">v</tt> <tt class="py-keyword">in</tt> <tt class="py-name">value</tt><tt class="py-op">:</tt> </tt>
+<a name="L71"></a><tt class="py-lineno"> 71</tt>  <tt class="py-line">                    <tt class="py-name">params</tt><tt class="py-op">[</tt><tt class="py-string">'Attribute.%d.Name'</tt><tt class="py-op">%</tt><tt class="py-name">i</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt id="link-47" class="py-name"><a title="boto.s3.key
+boto.sdb.db.key
+boto.sdb.db.model.Model.key
+boto.sdb.db.model.Model.key" class="py-name" href="#" onclick="return doclink('link-47', 'key', 'link-42');">key</a></tt> </tt>
+<a name="L72"></a><tt class="py-lineno"> 72</tt>  <tt class="py-line">                    <tt class="py-name">params</tt><tt class="py-op">[</tt><tt class="py-string">'Attribute.%d.Value'</tt><tt class="py-op">%</tt><tt class="py-name">i</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">v</tt> </tt>
+<a name="L73"></a><tt class="py-lineno"> 73</tt>  <tt class="py-line">                    <tt class="py-keyword">if</tt> <tt class="py-name">replace</tt><tt class="py-op">:</tt> </tt>
+<a name="L74"></a><tt class="py-lineno"> 74</tt>  <tt class="py-line">                        <tt class="py-name">params</tt><tt class="py-op">[</tt><tt class="py-string">'Attribute.%d.Replace'</tt><tt class="py-op">%</tt><tt class="py-name">i</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-string">'true'</tt> </tt>
+<a name="L75"></a><tt class="py-lineno"> 75</tt>  <tt class="py-line">                    <tt class="py-name">i</tt> <tt class="py-op">+=</tt> <tt class="py-number">1</tt> </tt>
+<a name="L76"></a><tt class="py-lineno"> 76</tt>  <tt class="py-line">            <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L77"></a><tt class="py-lineno"> 77</tt>  <tt class="py-line">                <tt class="py-name">params</tt><tt class="py-op">[</tt><tt class="py-string">'Attribute.%d.Name'</tt><tt class="py-op">%</tt><tt class="py-name">i</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt id="link-48" class="py-name"><a title="boto.s3.key
+boto.sdb.db.key
+boto.sdb.db.model.Model.key
+boto.sdb.db.model.Model.key" class="py-name" href="#" onclick="return doclink('link-48', 'key', 'link-42');">key</a></tt> </tt>
+<a name="L78"></a><tt class="py-lineno"> 78</tt>  <tt class="py-line">                <tt class="py-name">params</tt><tt class="py-op">[</tt><tt class="py-string">'Attribute.%d.Value'</tt><tt class="py-op">%</tt><tt class="py-name">i</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">value</tt> </tt>
+<a name="L79"></a><tt class="py-lineno"> 79</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt> <tt class="py-name">replace</tt><tt class="py-op">:</tt> </tt>
+<a name="L80"></a><tt class="py-lineno"> 80</tt>  <tt class="py-line">                    <tt class="py-name">params</tt><tt class="py-op">[</tt><tt class="py-string">'Attribute.%d.Replace'</tt><tt class="py-op">%</tt><tt class="py-name">i</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-string">'true'</tt> </tt>
+<a name="L81"></a><tt class="py-lineno"> 81</tt>  <tt class="py-line">            <tt class="py-name">i</tt> <tt class="py-op">+=</tt> <tt class="py-number">1</tt> </tt>
+</div><a name="L82"></a><tt class="py-lineno"> 82</tt>  <tt class="py-line"> </tt>
+<a name="SDBConnection.build_name_list"></a><div id="SDBConnection.build_name_list-def"><a name="L83"></a><tt class="py-lineno"> 83</tt> <a class="py-toggle" href="#" id="SDBConnection.build_name_list-toggle" onclick="return toggle('SDBConnection.build_name_list');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sdb.connection.SDBConnection-class.html#build_name_list">build_name_list</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">params</tt><tt class="py-op">,</tt> <tt class="py-param">attribute_names</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SDBConnection.build_name_list-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="SDBConnection.build_name_list-expanded"><a name="L84"></a><tt class="py-lineno"> 84</tt>  <tt class="py-line">        <tt class="py-name">i</tt> <tt class="py-op">=</tt> <tt class="py-number">1</tt> </tt>
+<a name="L85"></a><tt class="py-lineno"> 85</tt>  <tt class="py-line">        <tt class="py-name">attribute_names</tt><tt class="py-op">.</tt><tt class="py-name">sort</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L86"></a><tt class="py-lineno"> 86</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt id="link-49" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-49', 'name', 'link-22');">name</a></tt> <tt class="py-keyword">in</tt> <tt class="py-name">attribute_names</tt><tt class="py-op">:</tt> </tt>
+<a name="L87"></a><tt class="py-lineno"> 87</tt>  <tt class="py-line">            <tt class="py-name">params</tt><tt class="py-op">[</tt><tt class="py-string">'Attribute.%d.Name'</tt><tt class="py-op">%</tt><tt class="py-name">i</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt id="link-50" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-50', 'name', 'link-22');">name</a></tt> </tt>
+<a name="L88"></a><tt class="py-lineno"> 88</tt>  <tt class="py-line">            <tt class="py-name">i</tt> <tt class="py-op">+=</tt> <tt class="py-number">1</tt> </tt>
+</div><a name="L89"></a><tt class="py-lineno"> 89</tt>  <tt class="py-line"> </tt>
+<a name="SDBConnection.get_usage"></a><div id="SDBConnection.get_usage-def"><a name="L90"></a><tt class="py-lineno"> 90</tt> <a class="py-toggle" href="#" id="SDBConnection.get_usage-toggle" onclick="return toggle('SDBConnection.get_usage');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sdb.connection.SDBConnection-class.html#get_usage">get_usage</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SDBConnection.get_usage-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="SDBConnection.get_usage-expanded"><a name="L91"></a><tt class="py-lineno"> 91</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L92"></a><tt class="py-lineno"> 92</tt>  <tt class="py-line"><tt class="py-docstring">        Returns the BoxUsage accumulated on this SDBConnection object.</tt> </tt>
+<a name="L93"></a><tt class="py-lineno"> 93</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L94"></a><tt class="py-lineno"> 94</tt>  <tt class="py-line"><tt class="py-docstring">        @rtype: float</tt> </tt>
+<a name="L95"></a><tt class="py-lineno"> 95</tt>  <tt class="py-line"><tt class="py-docstring">        @return: The accumulated BoxUsage of all requests made on the connection.</tt> </tt>
+<a name="L96"></a><tt class="py-lineno"> 96</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L97"></a><tt class="py-lineno"> 97</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">box_usage</tt> </tt>
+</div><a name="L98"></a><tt class="py-lineno"> 98</tt>  <tt class="py-line"> </tt>
+<a name="SDBConnection.print_usage"></a><div id="SDBConnection.print_usage-def"><a name="L99"></a><tt class="py-lineno"> 99</tt> <a class="py-toggle" href="#" id="SDBConnection.print_usage-toggle" onclick="return toggle('SDBConnection.print_usage');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sdb.connection.SDBConnection-class.html#print_usage">print_usage</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SDBConnection.print_usage-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="SDBConnection.print_usage-expanded"><a name="L100"></a><tt class="py-lineno">100</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L101"></a><tt class="py-lineno">101</tt>  <tt class="py-line"><tt class="py-docstring">        Print the BoxUsage and approximate costs of all requests made on this connection.</tt> </tt>
+<a name="L102"></a><tt class="py-lineno">102</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L103"></a><tt class="py-lineno">103</tt>  <tt class="py-line">        <tt class="py-keyword">print</tt> <tt class="py-string">'Total Usage: %f compute seconds'</tt> <tt class="py-op">%</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">box_usage</tt> </tt>
+<a name="L104"></a><tt class="py-lineno">104</tt>  <tt class="py-line">        <tt class="py-name">cost</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">box_usage</tt> <tt class="py-op">*</tt> <tt class="py-number">0.14</tt> </tt>
+<a name="L105"></a><tt class="py-lineno">105</tt>  <tt class="py-line">        <tt class="py-keyword">print</tt> <tt class="py-string">'Approximate Cost: $%f'</tt> <tt class="py-op">%</tt> <tt class="py-name">cost</tt> </tt>
+</div><a name="L106"></a><tt class="py-lineno">106</tt>  <tt class="py-line"> </tt>
+<a name="SDBConnection.get_domain"></a><div id="SDBConnection.get_domain-def"><a name="L107"></a><tt class="py-lineno">107</tt> <a class="py-toggle" href="#" id="SDBConnection.get_domain-toggle" onclick="return toggle('SDBConnection.get_domain');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sdb.connection.SDBConnection-class.html#get_domain">get_domain</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">domain_name</tt><tt class="py-op">,</tt> <tt class="py-param">validate</tt><tt class="py-op">=</tt><tt class="py-name">True</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SDBConnection.get_domain-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="SDBConnection.get_domain-expanded"><a name="L108"></a><tt class="py-lineno">108</tt>  <tt class="py-line">        <tt id="link-51" class="py-name"><a title="boto.sdb.domain" class="py-name" href="#" onclick="return doclink('link-51', 'domain', 'link-8');">domain</a></tt> <tt class="py-op">=</tt> <tt id="link-52" class="py-name"><a title="boto.sdb.domain.Domain" class="py-name" href="#" onclick="return doclink('link-52', 'Domain', 'link-9');">Domain</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt> <tt class="py-name">domain_name</tt><tt class="py-op">)</tt> </tt>
+<a name="L109"></a><tt class="py-lineno">109</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt id="link-53" class="py-name" targets="Method boto.sdb.db.property.IntegerProperty.validate()=boto.sdb.db.property.IntegerProperty-class.html#validate,Method boto.sdb.db.property.ListProperty.validate()=boto.sdb.db.property.ListProperty-class.html#validate,Method boto.sdb.db.property.LongProperty.validate()=boto.sdb.db.property.LongProperty-class.html#validate,Method boto.sdb.db.property.PasswordProperty.validate()=boto.sdb.db.property.PasswordProperty-class.html#validate,Method boto.sdb.db.property.Property.validate()=boto.sdb.db.property.Property-class.html#validate,Method boto.sdb.db.property.ReferenceProperty.validate()=boto.sdb.db.property.ReferenceProperty-class.html#validate"><a title="boto.sdb.db.property.IntegerProperty.validate
+boto.sdb.db.property.ListProperty.validate
+boto.sdb.db.property.LongProperty.validate
+boto.sdb.db.property.PasswordProperty.validate
+boto.sdb.db.property.Property.validate
+boto.sdb.db.property.ReferenceProperty.validate" class="py-name" href="#" onclick="return doclink('link-53', 'validate', 'link-53');">validate</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L110"></a><tt class="py-lineno">110</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-54" class="py-name" targets="Method boto.sdb.connection.SDBConnection.query()=boto.sdb.connection.SDBConnection-class.html#query,Method boto.sdb.db.manager.pgmanager.PGManager.query()=boto.sdb.db.manager.pgmanager.PGManager-class.html#query,Method boto.sdb.db.manager.sdbmanager.SDBManager.query()=boto.sdb.db.manager.sdbmanager.SDBManager-class.html#query,Module boto.sdb.db.query=boto.sdb.db.query-module.html,Method boto.sdb.domain.Domain.query()=boto.sdb.domain.Domain-class.html#query"><a title="boto.sdb.connection.SDBConnection.query
+boto.sdb.db.manager.pgmanager.PGManager.query
+boto.sdb.db.manager.sdbmanager.SDBManager.query
+boto.sdb.db.query
+boto.sdb.domain.Domain.query" class="py-name" href="#" onclick="return doclink('link-54', 'query', 'link-54');">query</a></tt><tt class="py-op">(</tt><tt id="link-55" class="py-name"><a title="boto.sdb.domain" class="py-name" href="#" onclick="return doclink('link-55', 'domain', 'link-8');">domain</a></tt><tt class="py-op">,</tt> <tt class="py-string">''</tt><tt class="py-op">,</tt> <tt class="py-name">max_items</tt><tt class="py-op">=</tt><tt class="py-number">1</tt><tt class="py-op">)</tt> </tt>
+<a name="L111"></a><tt class="py-lineno">111</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt id="link-56" class="py-name"><a title="boto.sdb.domain" class="py-name" href="#" onclick="return doclink('link-56', 'domain', 'link-8');">domain</a></tt> </tt>
+</div><a name="L112"></a><tt class="py-lineno">112</tt>  <tt class="py-line"> </tt>
+<a name="SDBConnection.lookup"></a><div id="SDBConnection.lookup-def"><a name="L113"></a><tt class="py-lineno">113</tt> <a class="py-toggle" href="#" id="SDBConnection.lookup-toggle" onclick="return toggle('SDBConnection.lookup');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sdb.connection.SDBConnection-class.html#lookup">lookup</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">domain_name</tt><tt class="py-op">,</tt> <tt class="py-param">validate</tt><tt class="py-op">=</tt><tt class="py-name">True</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SDBConnection.lookup-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="SDBConnection.lookup-expanded"><a name="L114"></a><tt class="py-lineno">114</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L115"></a><tt class="py-lineno">115</tt>  <tt class="py-line"><tt class="py-docstring">        Lookup an existing SimpleDB domain</tt> </tt>
+<a name="L116"></a><tt class="py-lineno">116</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L117"></a><tt class="py-lineno">117</tt>  <tt class="py-line"><tt class="py-docstring">        @type domain_name: string</tt> </tt>
+<a name="L118"></a><tt class="py-lineno">118</tt>  <tt class="py-line"><tt class="py-docstring">        @param domain_name: The name of the new domain</tt> </tt>
+<a name="L119"></a><tt class="py-lineno">119</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L120"></a><tt class="py-lineno">120</tt>  <tt class="py-line"><tt class="py-docstring">        @rtype: L{Domain&lt;boto.sdb.domain.Domain&gt;} object or None</tt> </tt>
+<a name="L121"></a><tt class="py-lineno">121</tt>  <tt class="py-line"><tt class="py-docstring">        @return: The Domain object or None if the domain does not exist.</tt> </tt>
+<a name="L122"></a><tt class="py-lineno">122</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L123"></a><tt class="py-lineno">123</tt>  <tt class="py-line">        <tt class="py-keyword">try</tt><tt class="py-op">:</tt> </tt>
+<a name="L124"></a><tt class="py-lineno">124</tt>  <tt class="py-line">            <tt id="link-57" class="py-name"><a title="boto.sdb.domain" class="py-name" href="#" onclick="return doclink('link-57', 'domain', 'link-8');">domain</a></tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-58" class="py-name" targets="Method boto.sdb.connection.SDBConnection.get_domain()=boto.sdb.connection.SDBConnection-class.html#get_domain,Function boto.sdb.persist.get_domain()=boto.sdb.persist-module.html#get_domain"><a title="boto.sdb.connection.SDBConnection.get_domain
+boto.sdb.persist.get_domain" class="py-name" href="#" onclick="return doclink('link-58', 'get_domain', 'link-58');">get_domain</a></tt><tt class="py-op">(</tt><tt class="py-name">domain_name</tt><tt class="py-op">,</tt> <tt id="link-59" class="py-name"><a title="boto.sdb.db.property.IntegerProperty.validate
+boto.sdb.db.property.ListProperty.validate
+boto.sdb.db.property.LongProperty.validate
+boto.sdb.db.property.PasswordProperty.validate
+boto.sdb.db.property.Property.validate
+boto.sdb.db.property.ReferenceProperty.validate" class="py-name" href="#" onclick="return doclink('link-59', 'validate', 'link-53');">validate</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L125"></a><tt class="py-lineno">125</tt>  <tt class="py-line">        <tt class="py-keyword">except</tt><tt class="py-op">:</tt> </tt>
+<a name="L126"></a><tt class="py-lineno">126</tt>  <tt class="py-line">            <tt id="link-60" class="py-name"><a title="boto.sdb.domain" class="py-name" href="#" onclick="return doclink('link-60', 'domain', 'link-8');">domain</a></tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+<a name="L127"></a><tt class="py-lineno">127</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt id="link-61" class="py-name"><a title="boto.sdb.domain" class="py-name" href="#" onclick="return doclink('link-61', 'domain', 'link-8');">domain</a></tt> </tt>
+</div><a name="L128"></a><tt class="py-lineno">128</tt>  <tt class="py-line"> </tt>
+<a name="SDBConnection.get_all_domains"></a><div id="SDBConnection.get_all_domains-def"><a name="L129"></a><tt class="py-lineno">129</tt> <a class="py-toggle" href="#" id="SDBConnection.get_all_domains-toggle" onclick="return toggle('SDBConnection.get_all_domains');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sdb.connection.SDBConnection-class.html#get_all_domains">get_all_domains</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">max_domains</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-param">next_token</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SDBConnection.get_all_domains-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="SDBConnection.get_all_domains-expanded"><a name="L130"></a><tt class="py-lineno">130</tt>  <tt class="py-line">        <tt class="py-name">params</tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt><tt class="py-op">}</tt> </tt>
+<a name="L131"></a><tt class="py-lineno">131</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">max_domains</tt><tt class="py-op">:</tt> </tt>
+<a name="L132"></a><tt class="py-lineno">132</tt>  <tt class="py-line">            <tt class="py-name">params</tt><tt class="py-op">[</tt><tt class="py-string">'MaxNumberOfDomains'</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">max_domains</tt> </tt>
+<a name="L133"></a><tt class="py-lineno">133</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">next_token</tt><tt class="py-op">:</tt> </tt>
+<a name="L134"></a><tt class="py-lineno">134</tt>  <tt class="py-line">            <tt class="py-name">params</tt><tt class="py-op">[</tt><tt class="py-string">'NextToken'</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">next_token</tt> </tt>
+<a name="L135"></a><tt class="py-lineno">135</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-62" class="py-name" targets="Method boto.connection.AWSQueryConnection.get_list()=boto.connection.AWSQueryConnection-class.html#get_list"><a title="boto.connection.AWSQueryConnection.get_list" class="py-name" href="#" onclick="return doclink('link-62', 'get_list', 'link-62');">get_list</a></tt><tt class="py-op">(</tt><tt class="py-string">'ListDomains'</tt><tt class="py-op">,</tt> <tt class="py-name">params</tt><tt class="py-op">,</tt> <tt class="py-op">[</tt><tt class="py-op">(</tt><tt class="py-string">'DomainName'</tt><tt class="py-op">,</tt> <tt id="link-63" class="py-name"><a title="boto.sdb.domain.Domain" class="py-name" href="#" onclick="return doclink('link-63', 'Domain', 'link-9');">Domain</a></tt><tt class="py-op">)</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L136"></a><tt class="py-lineno">136</tt>  <tt class="py-line">         </tt>
+<a name="SDBConnection.create_domain"></a><div id="SDBConnection.create_domain-def"><a name="L137"></a><tt class="py-lineno">137</tt> <a class="py-toggle" href="#" id="SDBConnection.create_domain-toggle" onclick="return toggle('SDBConnection.create_domain');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sdb.connection.SDBConnection-class.html#create_domain">create_domain</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">domain_name</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SDBConnection.create_domain-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="SDBConnection.create_domain-expanded"><a name="L138"></a><tt class="py-lineno">138</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L139"></a><tt class="py-lineno">139</tt>  <tt class="py-line"><tt class="py-docstring">        Create a SimpleDB domain.</tt> </tt>
+<a name="L140"></a><tt class="py-lineno">140</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L141"></a><tt class="py-lineno">141</tt>  <tt class="py-line"><tt class="py-docstring">        @type domain_name: string</tt> </tt>
+<a name="L142"></a><tt class="py-lineno">142</tt>  <tt class="py-line"><tt class="py-docstring">        @param domain_name: The name of the new domain</tt> </tt>
+<a name="L143"></a><tt class="py-lineno">143</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L144"></a><tt class="py-lineno">144</tt>  <tt class="py-line"><tt class="py-docstring">        @rtype: L{Domain&lt;boto.sdb.domain.Domain&gt;} object</tt> </tt>
+<a name="L145"></a><tt class="py-lineno">145</tt>  <tt class="py-line"><tt class="py-docstring">        @return: The newly created domain</tt> </tt>
+<a name="L146"></a><tt class="py-lineno">146</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L147"></a><tt class="py-lineno">147</tt>  <tt class="py-line">        <tt class="py-name">params</tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt><tt class="py-string">'DomainName'</tt><tt class="py-op">:</tt><tt class="py-name">domain_name</tt><tt class="py-op">}</tt> </tt>
+<a name="L148"></a><tt class="py-lineno">148</tt>  <tt class="py-line">        <tt class="py-name">d</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-64" class="py-name" targets="Method boto.connection.AWSQueryConnection.get_object()=boto.connection.AWSQueryConnection-class.html#get_object,Method boto.sdb.db.manager.pgmanager.PGManager.get_object()=boto.sdb.db.manager.pgmanager.PGManager-class.html#get_object,Method boto.sdb.db.manager.sdbmanager.SDBManager.get_object()=boto.sdb.db.manager.sdbmanager.SDBManager-class.html#get_object"><a title="boto.connection.AWSQueryConnection.get_object
+boto.sdb.db.manager.pgmanager.PGManager.get_object
+boto.sdb.db.manager.sdbmanager.SDBManager.get_object" class="py-name" href="#" onclick="return doclink('link-64', 'get_object', 'link-64');">get_object</a></tt><tt class="py-op">(</tt><tt class="py-string">'CreateDomain'</tt><tt class="py-op">,</tt> <tt class="py-name">params</tt><tt class="py-op">,</tt> <tt id="link-65" class="py-name"><a title="boto.sdb.domain.Domain" class="py-name" href="#" onclick="return doclink('link-65', 'Domain', 'link-9');">Domain</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L149"></a><tt class="py-lineno">149</tt>  <tt class="py-line">        <tt class="py-name">d</tt><tt class="py-op">.</tt><tt id="link-66" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-66', 'name', 'link-22');">name</a></tt> <tt class="py-op">=</tt> <tt class="py-name">domain_name</tt> </tt>
+<a name="L150"></a><tt class="py-lineno">150</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">d</tt> </tt>
+</div><a name="L151"></a><tt class="py-lineno">151</tt>  <tt class="py-line"> </tt>
+<a name="SDBConnection.get_domain_and_name"></a><div id="SDBConnection.get_domain_and_name-def"><a name="L152"></a><tt class="py-lineno">152</tt> <a class="py-toggle" href="#" id="SDBConnection.get_domain_and_name-toggle" onclick="return toggle('SDBConnection.get_domain_and_name');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sdb.connection.SDBConnection-class.html#get_domain_and_name">get_domain_and_name</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">domain_or_name</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SDBConnection.get_domain_and_name-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="SDBConnection.get_domain_and_name-expanded"><a name="L153"></a><tt class="py-lineno">153</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-op">(</tt><tt class="py-name">isinstance</tt><tt class="py-op">(</tt><tt class="py-name">domain_or_name</tt><tt class="py-op">,</tt> <tt id="link-67" class="py-name"><a title="boto.sdb.domain.Domain" class="py-name" href="#" onclick="return doclink('link-67', 'Domain', 'link-9');">Domain</a></tt><tt class="py-op">)</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L154"></a><tt class="py-lineno">154</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt class="py-op">(</tt><tt class="py-name">domain_or_name</tt><tt class="py-op">,</tt> <tt class="py-name">domain_or_name</tt><tt class="py-op">.</tt><tt id="link-68" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-68', 'name', 'link-22');">name</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L155"></a><tt class="py-lineno">155</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L156"></a><tt class="py-lineno">156</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-69" class="py-name"><a title="boto.sdb.connection.SDBConnection.get_domain
+boto.sdb.persist.get_domain" class="py-name" href="#" onclick="return doclink('link-69', 'get_domain', 'link-58');">get_domain</a></tt><tt class="py-op">(</tt><tt class="py-name">domain_or_name</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-name">domain_or_name</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L157"></a><tt class="py-lineno">157</tt>  <tt class="py-line">         </tt>
+<a name="SDBConnection.delete_domain"></a><div id="SDBConnection.delete_domain-def"><a name="L158"></a><tt class="py-lineno">158</tt> <a class="py-toggle" href="#" id="SDBConnection.delete_domain-toggle" onclick="return toggle('SDBConnection.delete_domain');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sdb.connection.SDBConnection-class.html#delete_domain">delete_domain</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">domain_or_name</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SDBConnection.delete_domain-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="SDBConnection.delete_domain-expanded"><a name="L159"></a><tt class="py-lineno">159</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L160"></a><tt class="py-lineno">160</tt>  <tt class="py-line"><tt class="py-docstring">        Delete a SimpleDB domain.</tt> </tt>
+<a name="L161"></a><tt class="py-lineno">161</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L162"></a><tt class="py-lineno">162</tt>  <tt class="py-line"><tt class="py-docstring">        @type domain_or_name: string or L{Domain&lt;boto.sdb.domain.Domain&gt;} object.</tt> </tt>
+<a name="L163"></a><tt class="py-lineno">163</tt>  <tt class="py-line"><tt class="py-docstring">        @param domain_or_name: Either the name of a domain or a Domain object</tt> </tt>
+<a name="L164"></a><tt class="py-lineno">164</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L165"></a><tt class="py-lineno">165</tt>  <tt class="py-line"><tt class="py-docstring">        @rtype: bool</tt> </tt>
+<a name="L166"></a><tt class="py-lineno">166</tt>  <tt class="py-line"><tt class="py-docstring">        @return: True if successful</tt> </tt>
+<a name="L167"></a><tt class="py-lineno">167</tt>  <tt class="py-line"><tt class="py-docstring">        </tt> </tt>
+<a name="L168"></a><tt class="py-lineno">168</tt>  <tt class="py-line"><tt class="py-docstring">        B{Note:} This will delete the domain and all items within the domain.</tt> </tt>
+<a name="L169"></a><tt class="py-lineno">169</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L170"></a><tt class="py-lineno">170</tt>  <tt class="py-line">        <tt id="link-70" class="py-name"><a title="boto.sdb.domain" class="py-name" href="#" onclick="return doclink('link-70', 'domain', 'link-8');">domain</a></tt><tt class="py-op">,</tt> <tt class="py-name">domain_name</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-71" class="py-name" targets="Method boto.sdb.connection.SDBConnection.get_domain_and_name()=boto.sdb.connection.SDBConnection-class.html#get_domain_and_name"><a title="boto.sdb.connection.SDBConnection.get_domain_and_name" class="py-name" href="#" onclick="return doclink('link-71', 'get_domain_and_name', 'link-71');">get_domain_and_name</a></tt><tt class="py-op">(</tt><tt class="py-name">domain_or_name</tt><tt class="py-op">)</tt> </tt>
+<a name="L171"></a><tt class="py-lineno">171</tt>  <tt class="py-line">        <tt class="py-name">params</tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt><tt class="py-string">'DomainName'</tt><tt class="py-op">:</tt><tt class="py-name">domain_name</tt><tt class="py-op">}</tt> </tt>
+<a name="L172"></a><tt class="py-lineno">172</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-72" class="py-name" targets="Method boto.connection.AWSQueryConnection.get_status()=boto.connection.AWSQueryConnection-class.html#get_status"><a title="boto.connection.AWSQueryConnection.get_status" class="py-name" href="#" onclick="return doclink('link-72', 'get_status', 'link-72');">get_status</a></tt><tt class="py-op">(</tt><tt class="py-string">'DeleteDomain'</tt><tt class="py-op">,</tt> <tt class="py-name">params</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L173"></a><tt class="py-lineno">173</tt>  <tt class="py-line">         </tt>
+<a name="SDBConnection.domain_metadata"></a><div id="SDBConnection.domain_metadata-def"><a name="L174"></a><tt class="py-lineno">174</tt> <a class="py-toggle" href="#" id="SDBConnection.domain_metadata-toggle" onclick="return toggle('SDBConnection.domain_metadata');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sdb.connection.SDBConnection-class.html#domain_metadata">domain_metadata</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">domain_or_name</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SDBConnection.domain_metadata-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="SDBConnection.domain_metadata-expanded"><a name="L175"></a><tt class="py-lineno">175</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L176"></a><tt class="py-lineno">176</tt>  <tt class="py-line"><tt class="py-docstring">        Get the Metadata for a SimpleDB domain.</tt> </tt>
+<a name="L177"></a><tt class="py-lineno">177</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L178"></a><tt class="py-lineno">178</tt>  <tt class="py-line"><tt class="py-docstring">        @type domain_or_name: string or L{Domain&lt;boto.sdb.domain.Domain&gt;} object.</tt> </tt>
+<a name="L179"></a><tt class="py-lineno">179</tt>  <tt class="py-line"><tt class="py-docstring">        @param domain_or_name: Either the name of a domain or a Domain object</tt> </tt>
+<a name="L180"></a><tt class="py-lineno">180</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L181"></a><tt class="py-lineno">181</tt>  <tt class="py-line"><tt class="py-docstring">        @rtype: L{DomainMetaData&lt;boto.sdb.domain.DomainMetaData&gt;} object</tt> </tt>
+<a name="L182"></a><tt class="py-lineno">182</tt>  <tt class="py-line"><tt class="py-docstring">        @return: The newly created domain metadata object</tt> </tt>
+<a name="L183"></a><tt class="py-lineno">183</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L184"></a><tt class="py-lineno">184</tt>  <tt class="py-line">        <tt id="link-73" class="py-name"><a title="boto.sdb.domain" class="py-name" href="#" onclick="return doclink('link-73', 'domain', 'link-8');">domain</a></tt><tt class="py-op">,</tt> <tt class="py-name">domain_name</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-74" class="py-name"><a title="boto.sdb.connection.SDBConnection.get_domain_and_name" class="py-name" href="#" onclick="return doclink('link-74', 'get_domain_and_name', 'link-71');">get_domain_and_name</a></tt><tt class="py-op">(</tt><tt class="py-name">domain_or_name</tt><tt class="py-op">)</tt> </tt>
+<a name="L185"></a><tt class="py-lineno">185</tt>  <tt class="py-line">        <tt class="py-name">params</tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt><tt class="py-string">'DomainName'</tt><tt class="py-op">:</tt><tt class="py-name">domain_name</tt><tt class="py-op">}</tt> </tt>
+<a name="L186"></a><tt class="py-lineno">186</tt>  <tt class="py-line">        <tt class="py-name">d</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-75" class="py-name"><a title="boto.connection.AWSQueryConnection.get_object
+boto.sdb.db.manager.pgmanager.PGManager.get_object
+boto.sdb.db.manager.sdbmanager.SDBManager.get_object" class="py-name" href="#" onclick="return doclink('link-75', 'get_object', 'link-64');">get_object</a></tt><tt class="py-op">(</tt><tt class="py-string">'DomainMetadata'</tt><tt class="py-op">,</tt> <tt class="py-name">params</tt><tt class="py-op">,</tt> <tt id="link-76" class="py-name"><a title="boto.sdb.domain.DomainMetaData" class="py-name" href="#" onclick="return doclink('link-76', 'DomainMetaData', 'link-10');">DomainMetaData</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L187"></a><tt class="py-lineno">187</tt>  <tt class="py-line">        <tt class="py-name">d</tt><tt class="py-op">.</tt><tt id="link-77" class="py-name"><a title="boto.sdb.domain" class="py-name" href="#" onclick="return doclink('link-77', 'domain', 'link-8');">domain</a></tt> <tt class="py-op">=</tt> <tt id="link-78" class="py-name"><a title="boto.sdb.domain" class="py-name" href="#" onclick="return doclink('link-78', 'domain', 'link-8');">domain</a></tt> </tt>
+<a name="L188"></a><tt class="py-lineno">188</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">d</tt> </tt>
+</div><a name="L189"></a><tt class="py-lineno">189</tt>  <tt class="py-line">         </tt>
+<a name="SDBConnection.put_attributes"></a><div id="SDBConnection.put_attributes-def"><a name="L190"></a><tt class="py-lineno">190</tt> <a class="py-toggle" href="#" id="SDBConnection.put_attributes-toggle" onclick="return toggle('SDBConnection.put_attributes');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sdb.connection.SDBConnection-class.html#put_attributes">put_attributes</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">domain_or_name</tt><tt class="py-op">,</tt> <tt class="py-param">item_name</tt><tt class="py-op">,</tt> <tt class="py-param">attributes</tt><tt class="py-op">,</tt> <tt class="py-param">replace</tt><tt class="py-op">=</tt><tt class="py-name">True</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SDBConnection.put_attributes-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="SDBConnection.put_attributes-expanded"><a name="L191"></a><tt class="py-lineno">191</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L192"></a><tt class="py-lineno">192</tt>  <tt class="py-line"><tt class="py-docstring">        Store attributes for a given item in a domain.</tt> </tt>
+<a name="L193"></a><tt class="py-lineno">193</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L194"></a><tt class="py-lineno">194</tt>  <tt class="py-line"><tt class="py-docstring">        @type domain_or_name: string or L{Domain&lt;boto.sdb.domain.Domain&gt;} object.</tt> </tt>
+<a name="L195"></a><tt class="py-lineno">195</tt>  <tt class="py-line"><tt class="py-docstring">        @param domain_or_name: Either the name of a domain or a Domain object</tt> </tt>
+<a name="L196"></a><tt class="py-lineno">196</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L197"></a><tt class="py-lineno">197</tt>  <tt class="py-line"><tt class="py-docstring">        @type item_name: string</tt> </tt>
+<a name="L198"></a><tt class="py-lineno">198</tt>  <tt class="py-line"><tt class="py-docstring">        @param item_name: The name of the item whose attributes are being stored.</tt> </tt>
+<a name="L199"></a><tt class="py-lineno">199</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L200"></a><tt class="py-lineno">200</tt>  <tt class="py-line"><tt class="py-docstring">        @type attribute_names: dict or dict-like object</tt> </tt>
+<a name="L201"></a><tt class="py-lineno">201</tt>  <tt class="py-line"><tt class="py-docstring">        @param attribute_names: The name/value pairs to store as attributes</tt> </tt>
+<a name="L202"></a><tt class="py-lineno">202</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L203"></a><tt class="py-lineno">203</tt>  <tt class="py-line"><tt class="py-docstring">        @type replace: bool</tt> </tt>
+<a name="L204"></a><tt class="py-lineno">204</tt>  <tt class="py-line"><tt class="py-docstring">        @param replace: Whether the attribute values passed in will replace</tt> </tt>
+<a name="L205"></a><tt class="py-lineno">205</tt>  <tt class="py-line"><tt class="py-docstring">                        existing values or will be added as addition values.</tt> </tt>
+<a name="L206"></a><tt class="py-lineno">206</tt>  <tt class="py-line"><tt class="py-docstring">                        Defaults to True.</tt> </tt>
+<a name="L207"></a><tt class="py-lineno">207</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L208"></a><tt class="py-lineno">208</tt>  <tt class="py-line"><tt class="py-docstring">        @rtype: bool</tt> </tt>
+<a name="L209"></a><tt class="py-lineno">209</tt>  <tt class="py-line"><tt class="py-docstring">        @return: True if successful</tt> </tt>
+<a name="L210"></a><tt class="py-lineno">210</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L211"></a><tt class="py-lineno">211</tt>  <tt class="py-line">        <tt id="link-79" class="py-name"><a title="boto.sdb.domain" class="py-name" href="#" onclick="return doclink('link-79', 'domain', 'link-8');">domain</a></tt><tt class="py-op">,</tt> <tt class="py-name">domain_name</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-80" class="py-name"><a title="boto.sdb.connection.SDBConnection.get_domain_and_name" class="py-name" href="#" onclick="return doclink('link-80', 'get_domain_and_name', 'link-71');">get_domain_and_name</a></tt><tt class="py-op">(</tt><tt class="py-name">domain_or_name</tt><tt class="py-op">)</tt> </tt>
+<a name="L212"></a><tt class="py-lineno">212</tt>  <tt class="py-line">        <tt class="py-name">params</tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt><tt class="py-string">'DomainName'</tt> <tt class="py-op">:</tt> <tt class="py-name">domain_name</tt><tt class="py-op">,</tt> </tt>
+<a name="L213"></a><tt class="py-lineno">213</tt>  <tt class="py-line">                  <tt class="py-string">'ItemName'</tt> <tt class="py-op">:</tt> <tt class="py-name">item_name</tt><tt class="py-op">}</tt> </tt>
+<a name="L214"></a><tt class="py-lineno">214</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-81" class="py-name" targets="Method boto.sdb.connection.SDBConnection.build_name_value_list()=boto.sdb.connection.SDBConnection-class.html#build_name_value_list"><a title="boto.sdb.connection.SDBConnection.build_name_value_list" class="py-name" href="#" onclick="return doclink('link-81', 'build_name_value_list', 'link-81');">build_name_value_list</a></tt><tt class="py-op">(</tt><tt class="py-name">params</tt><tt class="py-op">,</tt> <tt id="link-82" class="py-name"><a title="boto.sqs.20070501.attributes
+boto.sqs.attributes" class="py-name" href="#" onclick="return doclink('link-82', 'attributes', 'link-39');">attributes</a></tt><tt class="py-op">,</tt> <tt class="py-name">replace</tt><tt class="py-op">)</tt> </tt>
+<a name="L215"></a><tt class="py-lineno">215</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-83" class="py-name"><a title="boto.connection.AWSQueryConnection.get_status" class="py-name" href="#" onclick="return doclink('link-83', 'get_status', 'link-72');">get_status</a></tt><tt class="py-op">(</tt><tt class="py-string">'PutAttributes'</tt><tt class="py-op">,</tt> <tt class="py-name">params</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L216"></a><tt class="py-lineno">216</tt>  <tt class="py-line"> </tt>
+<a name="SDBConnection.get_attributes"></a><div id="SDBConnection.get_attributes-def"><a name="L217"></a><tt class="py-lineno">217</tt> <a class="py-toggle" href="#" id="SDBConnection.get_attributes-toggle" onclick="return toggle('SDBConnection.get_attributes');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sdb.connection.SDBConnection-class.html#get_attributes">get_attributes</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">domain_or_name</tt><tt class="py-op">,</tt> <tt class="py-param">item_name</tt><tt class="py-op">,</tt> <tt class="py-param">attribute_names</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-param">item</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SDBConnection.get_attributes-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="SDBConnection.get_attributes-expanded"><a name="L218"></a><tt class="py-lineno">218</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L219"></a><tt class="py-lineno">219</tt>  <tt class="py-line"><tt class="py-docstring">        Retrieve attributes for a given item in a domain.</tt> </tt>
+<a name="L220"></a><tt class="py-lineno">220</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L221"></a><tt class="py-lineno">221</tt>  <tt class="py-line"><tt class="py-docstring">        @type domain_or_name: string or L{Domain&lt;boto.sdb.domain.Domain&gt;} object.</tt> </tt>
+<a name="L222"></a><tt class="py-lineno">222</tt>  <tt class="py-line"><tt class="py-docstring">        @param domain_or_name: Either the name of a domain or a Domain object</tt> </tt>
+<a name="L223"></a><tt class="py-lineno">223</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L224"></a><tt class="py-lineno">224</tt>  <tt class="py-line"><tt class="py-docstring">        @type item_name: string</tt> </tt>
+<a name="L225"></a><tt class="py-lineno">225</tt>  <tt class="py-line"><tt class="py-docstring">        @param item_name: The name of the item whose attributes are being retrieved.</tt> </tt>
+<a name="L226"></a><tt class="py-lineno">226</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L227"></a><tt class="py-lineno">227</tt>  <tt class="py-line"><tt class="py-docstring">        @type attribute_names: string or list of strings</tt> </tt>
+<a name="L228"></a><tt class="py-lineno">228</tt>  <tt class="py-line"><tt class="py-docstring">        @param attribute_names: An attribute name or list of attribute names.  This</tt> </tt>
+<a name="L229"></a><tt class="py-lineno">229</tt>  <tt class="py-line"><tt class="py-docstring">                                parameter is optional.  If not supplied, all attributes</tt> </tt>
+<a name="L230"></a><tt class="py-lineno">230</tt>  <tt class="py-line"><tt class="py-docstring">                                will be retrieved for the item.</tt> </tt>
+<a name="L231"></a><tt class="py-lineno">231</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L232"></a><tt class="py-lineno">232</tt>  <tt class="py-line"><tt class="py-docstring">        @rtype: L{Item&lt;boto.sdb.item.Item&gt;}</tt> </tt>
+<a name="L233"></a><tt class="py-lineno">233</tt>  <tt class="py-line"><tt class="py-docstring">        @return: An Item mapping type containing the requested attribute name/values</tt> </tt>
+<a name="L234"></a><tt class="py-lineno">234</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L235"></a><tt class="py-lineno">235</tt>  <tt class="py-line">        <tt id="link-84" class="py-name"><a title="boto.sdb.domain" class="py-name" href="#" onclick="return doclink('link-84', 'domain', 'link-8');">domain</a></tt><tt class="py-op">,</tt> <tt class="py-name">domain_name</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-85" class="py-name"><a title="boto.sdb.connection.SDBConnection.get_domain_and_name" class="py-name" href="#" onclick="return doclink('link-85', 'get_domain_and_name', 'link-71');">get_domain_and_name</a></tt><tt class="py-op">(</tt><tt class="py-name">domain_or_name</tt><tt class="py-op">)</tt> </tt>
+<a name="L236"></a><tt class="py-lineno">236</tt>  <tt class="py-line">        <tt class="py-name">params</tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt><tt class="py-string">'DomainName'</tt> <tt class="py-op">:</tt> <tt class="py-name">domain_name</tt><tt class="py-op">,</tt> </tt>
+<a name="L237"></a><tt class="py-lineno">237</tt>  <tt class="py-line">                  <tt class="py-string">'ItemName'</tt> <tt class="py-op">:</tt> <tt class="py-name">item_name</tt><tt class="py-op">}</tt> </tt>
+<a name="L238"></a><tt class="py-lineno">238</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">attribute_names</tt><tt class="py-op">:</tt> </tt>
+<a name="L239"></a><tt class="py-lineno">239</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-keyword">not</tt> <tt class="py-name">isinstance</tt><tt class="py-op">(</tt><tt class="py-name">attribute_names</tt><tt class="py-op">,</tt> <tt id="link-86" class="py-name"><a title="boto.s3.bucket.Bucket.list
+boto.sdb.persist.object.SDBObject.list
+list" class="py-name" href="#" onclick="return doclink('link-86', 'list', 'link-46');">list</a></tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L240"></a><tt class="py-lineno">240</tt>  <tt class="py-line">                <tt class="py-name">attribute_names</tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-name">attribute_names</tt><tt class="py-op">]</tt> </tt>
+<a name="L241"></a><tt class="py-lineno">241</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-87" class="py-name" targets="Method boto.connection.AWSQueryConnection.build_list_params()=boto.connection.AWSQueryConnection-class.html#build_list_params"><a title="boto.connection.AWSQueryConnection.build_list_params" class="py-name" href="#" onclick="return doclink('link-87', 'build_list_params', 'link-87');">build_list_params</a></tt><tt class="py-op">(</tt><tt class="py-name">params</tt><tt class="py-op">,</tt> <tt class="py-name">attribute_names</tt><tt class="py-op">,</tt> <tt class="py-string">'AttributeName'</tt><tt class="py-op">)</tt> </tt>
+<a name="L242"></a><tt class="py-lineno">242</tt>  <tt class="py-line">        <tt class="py-name">response</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-88" class="py-name" targets="Method boto.connection.AWSAuthConnection.make_request()=boto.connection.AWSAuthConnection-class.html#make_request,Method boto.connection.AWSQueryConnection.make_request()=boto.connection.AWSQueryConnection-class.html#make_request,Method boto.s3.connection.S3Connection.make_request()=boto.s3.connection.S3Connection-class.html#make_request,Method boto.sqs.20070501.connection.SQSConnection.make_request()=boto.sqs.20070501.connection.SQSConnection-class.html#make_request"><a title="boto.connection.AWSAuthConnection.make_request
+boto.connection.AWSQueryConnection.make_request
+boto.s3.connection.S3Connection.make_request
+boto.sqs.20070501.connection.SQSConnection.make_request" class="py-name" href="#" onclick="return doclink('link-88', 'make_request', 'link-88');">make_request</a></tt><tt class="py-op">(</tt><tt class="py-string">'GetAttributes'</tt><tt class="py-op">,</tt> <tt class="py-name">params</tt><tt class="py-op">)</tt> </tt>
+<a name="L243"></a><tt class="py-lineno">243</tt>  <tt class="py-line">        <tt class="py-name">body</tt> <tt class="py-op">=</tt> <tt class="py-name">response</tt><tt class="py-op">.</tt><tt id="link-89" class="py-name" targets="Method boto.s3.key.Key.read()=boto.s3.key.Key-class.html#read,Method boto.sqs.20070501.queue.Queue.read()=boto.sqs.20070501.queue.Queue-class.html#read,Method boto.sqs.queue.Queue.read()=boto.sqs.queue.Queue-class.html#read"><a title="boto.s3.key.Key.read
+boto.sqs.20070501.queue.Queue.read
+boto.sqs.queue.Queue.read" class="py-name" href="#" onclick="return doclink('link-89', 'read', 'link-89');">read</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L244"></a><tt class="py-lineno">244</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">response</tt><tt class="py-op">.</tt><tt id="link-90" class="py-name" targets="Variable boto.mashups.server.Server.status=boto.mashups.server.Server-class.html#status,Variable boto.utils.ShellCommand.status=boto.utils.ShellCommand-class.html#status"><a title="boto.mashups.server.Server.status
+boto.utils.ShellCommand.status" class="py-name" href="#" onclick="return doclink('link-90', 'status', 'link-90');">status</a></tt> <tt class="py-op">==</tt> <tt class="py-number">200</tt><tt class="py-op">:</tt> </tt>
+<a name="L245"></a><tt class="py-lineno">245</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt id="link-91" class="py-name"><a title="boto.sdb.item" class="py-name" href="#" onclick="return doclink('link-91', 'item', 'link-13');">item</a></tt> <tt class="py-op">==</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L246"></a><tt class="py-lineno">246</tt>  <tt class="py-line">                <tt id="link-92" class="py-name"><a title="boto.sdb.item" class="py-name" href="#" onclick="return doclink('link-92', 'item', 'link-13');">item</a></tt> <tt class="py-op">=</tt> <tt id="link-93" class="py-name"><a title="boto.mashups.order.Item
+boto.sdb.item.Item" class="py-name" href="#" onclick="return doclink('link-93', 'Item', 'link-14');">Item</a></tt><tt class="py-op">(</tt><tt id="link-94" class="py-name"><a title="boto.sdb.domain" class="py-name" href="#" onclick="return doclink('link-94', 'domain', 'link-8');">domain</a></tt><tt class="py-op">,</tt> <tt class="py-name">item_name</tt><tt class="py-op">)</tt> </tt>
+<a name="L247"></a><tt class="py-lineno">247</tt>  <tt class="py-line">            <tt class="py-name">h</tt> <tt class="py-op">=</tt> <tt id="link-95" class="py-name"><a title="boto.handler" class="py-name" href="#" onclick="return doclink('link-95', 'handler', 'link-2');">handler</a></tt><tt class="py-op">.</tt><tt id="link-96" class="py-name" targets="Class boto.handler.XmlHandler=boto.handler.XmlHandler-class.html"><a title="boto.handler.XmlHandler" class="py-name" href="#" onclick="return doclink('link-96', 'XmlHandler', 'link-96');">XmlHandler</a></tt><tt class="py-op">(</tt><tt id="link-97" class="py-name"><a title="boto.sdb.item" class="py-name" href="#" onclick="return doclink('link-97', 'item', 'link-13');">item</a></tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">)</tt> </tt>
+<a name="L248"></a><tt class="py-lineno">248</tt>  <tt class="py-line">            <tt class="py-name">xml</tt><tt class="py-op">.</tt><tt class="py-name">sax</tt><tt class="py-op">.</tt><tt class="py-name">parseString</tt><tt class="py-op">(</tt><tt class="py-name">body</tt><tt class="py-op">,</tt> <tt class="py-name">h</tt><tt class="py-op">)</tt> </tt>
+<a name="L249"></a><tt class="py-lineno">249</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt id="link-98" class="py-name"><a title="boto.sdb.item" class="py-name" href="#" onclick="return doclink('link-98', 'item', 'link-13');">item</a></tt> </tt>
+<a name="L250"></a><tt class="py-lineno">250</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L251"></a><tt class="py-lineno">251</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-99" class="py-name"><a title="boto.exception.SDBResponseError" class="py-name" href="#" onclick="return doclink('link-99', 'SDBResponseError', 'link-17');">SDBResponseError</a></tt><tt class="py-op">(</tt><tt class="py-name">response</tt><tt class="py-op">.</tt><tt id="link-100" class="py-name"><a title="boto.mashups.server.Server.status
+boto.utils.ShellCommand.status" class="py-name" href="#" onclick="return doclink('link-100', 'status', 'link-90');">status</a></tt><tt class="py-op">,</tt> <tt class="py-name">response</tt><tt class="py-op">.</tt><tt class="py-name">reason</tt><tt class="py-op">,</tt> <tt class="py-name">body</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L252"></a><tt class="py-lineno">252</tt>  <tt class="py-line">         </tt>
+<a name="SDBConnection.delete_attributes"></a><div id="SDBConnection.delete_attributes-def"><a name="L253"></a><tt class="py-lineno">253</tt> <a class="py-toggle" href="#" id="SDBConnection.delete_attributes-toggle" onclick="return toggle('SDBConnection.delete_attributes');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sdb.connection.SDBConnection-class.html#delete_attributes">delete_attributes</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">domain_or_name</tt><tt class="py-op">,</tt> <tt class="py-param">item_name</tt><tt class="py-op">,</tt> <tt class="py-param">attr_names</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SDBConnection.delete_attributes-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="SDBConnection.delete_attributes-expanded"><a name="L254"></a><tt class="py-lineno">254</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L255"></a><tt class="py-lineno">255</tt>  <tt class="py-line"><tt class="py-docstring">        Delete attributes from a given item in a domain.</tt> </tt>
+<a name="L256"></a><tt class="py-lineno">256</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L257"></a><tt class="py-lineno">257</tt>  <tt class="py-line"><tt class="py-docstring">        @type domain_or_name: string or L{Domain&lt;boto.sdb.domain.Domain&gt;} object.</tt> </tt>
+<a name="L258"></a><tt class="py-lineno">258</tt>  <tt class="py-line"><tt class="py-docstring">        @param domain_or_name: Either the name of a domain or a Domain object</tt> </tt>
+<a name="L259"></a><tt class="py-lineno">259</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L260"></a><tt class="py-lineno">260</tt>  <tt class="py-line"><tt class="py-docstring">        @type item_name: string</tt> </tt>
+<a name="L261"></a><tt class="py-lineno">261</tt>  <tt class="py-line"><tt class="py-docstring">        @param item_name: The name of the item whose attributes are being deleted.</tt> </tt>
+<a name="L262"></a><tt class="py-lineno">262</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L263"></a><tt class="py-lineno">263</tt>  <tt class="py-line"><tt class="py-docstring">        @type attributes: dict, list or L{Item&lt;boto.sdb.item.Item&gt;}</tt> </tt>
+<a name="L264"></a><tt class="py-lineno">264</tt>  <tt class="py-line"><tt class="py-docstring">        @param attributes: Either a list containing attribute names which will cause</tt> </tt>
+<a name="L265"></a><tt class="py-lineno">265</tt>  <tt class="py-line"><tt class="py-docstring">                           all values associated with that attribute name to be deleted or</tt> </tt>
+<a name="L266"></a><tt class="py-lineno">266</tt>  <tt class="py-line"><tt class="py-docstring">                           a dict or Item containing the attribute names and keys and list</tt> </tt>
+<a name="L267"></a><tt class="py-lineno">267</tt>  <tt class="py-line"><tt class="py-docstring">                           of values to delete as the value.  If no value is supplied,</tt> </tt>
+<a name="L268"></a><tt class="py-lineno">268</tt>  <tt class="py-line"><tt class="py-docstring">                           all attribute name/values for the item will be deleted.</tt> </tt>
+<a name="L269"></a><tt class="py-lineno">269</tt>  <tt class="py-line"><tt class="py-docstring">                           </tt> </tt>
+<a name="L270"></a><tt class="py-lineno">270</tt>  <tt class="py-line"><tt class="py-docstring">        @rtype: bool</tt> </tt>
+<a name="L271"></a><tt class="py-lineno">271</tt>  <tt class="py-line"><tt class="py-docstring">        @return: True if successful</tt> </tt>
+<a name="L272"></a><tt class="py-lineno">272</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L273"></a><tt class="py-lineno">273</tt>  <tt class="py-line">        <tt id="link-101" class="py-name"><a title="boto.sdb.domain" class="py-name" href="#" onclick="return doclink('link-101', 'domain', 'link-8');">domain</a></tt><tt class="py-op">,</tt> <tt class="py-name">domain_name</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-102" class="py-name"><a title="boto.sdb.connection.SDBConnection.get_domain_and_name" class="py-name" href="#" onclick="return doclink('link-102', 'get_domain_and_name', 'link-71');">get_domain_and_name</a></tt><tt class="py-op">(</tt><tt class="py-name">domain_or_name</tt><tt class="py-op">)</tt> </tt>
+<a name="L274"></a><tt class="py-lineno">274</tt>  <tt class="py-line">        <tt class="py-name">params</tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt><tt class="py-string">'DomainName'</tt><tt class="py-op">:</tt><tt class="py-name">domain_name</tt><tt class="py-op">,</tt> </tt>
+<a name="L275"></a><tt class="py-lineno">275</tt>  <tt class="py-line">                  <tt class="py-string">'ItemName'</tt> <tt class="py-op">:</tt> <tt class="py-name">item_name</tt><tt class="py-op">}</tt> </tt>
+<a name="L276"></a><tt class="py-lineno">276</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">attr_names</tt><tt class="py-op">:</tt> </tt>
+<a name="L277"></a><tt class="py-lineno">277</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-name">isinstance</tt><tt class="py-op">(</tt><tt class="py-name">attr_names</tt><tt class="py-op">,</tt> <tt id="link-103" class="py-name"><a title="boto.s3.bucket.Bucket.list
+boto.sdb.persist.object.SDBObject.list
+list" class="py-name" href="#" onclick="return doclink('link-103', 'list', 'link-46');">list</a></tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L278"></a><tt class="py-lineno">278</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-104" class="py-name" targets="Method boto.sdb.connection.SDBConnection.build_name_list()=boto.sdb.connection.SDBConnection-class.html#build_name_list"><a title="boto.sdb.connection.SDBConnection.build_name_list" class="py-name" href="#" onclick="return doclink('link-104', 'build_name_list', 'link-104');">build_name_list</a></tt><tt class="py-op">(</tt><tt class="py-name">params</tt><tt class="py-op">,</tt> <tt class="py-name">attr_names</tt><tt class="py-op">)</tt> </tt>
+<a name="L279"></a><tt class="py-lineno">279</tt>  <tt class="py-line">            <tt class="py-keyword">elif</tt> <tt class="py-name">isinstance</tt><tt class="py-op">(</tt><tt class="py-name">attr_names</tt><tt class="py-op">,</tt> <tt class="py-name">dict</tt><tt class="py-op">)</tt> <tt class="py-keyword">or</tt> <tt class="py-name">isinstance</tt><tt class="py-op">(</tt><tt class="py-name">attr_names</tt><tt class="py-op">,</tt> <tt id="link-105" class="py-name"><a title="boto.mashups.order.Item
+boto.sdb.item.Item" class="py-name" href="#" onclick="return doclink('link-105', 'Item', 'link-14');">Item</a></tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L280"></a><tt class="py-lineno">280</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-106" class="py-name"><a title="boto.sdb.connection.SDBConnection.build_name_value_list" class="py-name" href="#" onclick="return doclink('link-106', 'build_name_value_list', 'link-81');">build_name_value_list</a></tt><tt class="py-op">(</tt><tt class="py-name">params</tt><tt class="py-op">,</tt> <tt class="py-name">attr_names</tt><tt class="py-op">)</tt> </tt>
+<a name="L281"></a><tt class="py-lineno">281</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-107" class="py-name"><a title="boto.connection.AWSQueryConnection.get_status" class="py-name" href="#" onclick="return doclink('link-107', 'get_status', 'link-72');">get_status</a></tt><tt class="py-op">(</tt><tt class="py-string">'DeleteAttributes'</tt><tt class="py-op">,</tt> <tt class="py-name">params</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L282"></a><tt class="py-lineno">282</tt>  <tt class="py-line">         </tt>
+<a name="SDBConnection.query"></a><div id="SDBConnection.query-def"><a name="L283"></a><tt class="py-lineno">283</tt> <a class="py-toggle" href="#" id="SDBConnection.query-toggle" onclick="return toggle('SDBConnection.query');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sdb.connection.SDBConnection-class.html#query">query</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">domain_or_name</tt><tt class="py-op">,</tt> <tt class="py-param">query</tt><tt class="py-op">=</tt><tt class="py-string">''</tt><tt class="py-op">,</tt> <tt class="py-param">max_items</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-param">next_token</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SDBConnection.query-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="SDBConnection.query-expanded"><a name="L284"></a><tt class="py-lineno">284</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L285"></a><tt class="py-lineno">285</tt>  <tt class="py-line"><tt class="py-docstring">        Returns a list of item names within domain_name that match the query.</tt> </tt>
+<a name="L286"></a><tt class="py-lineno">286</tt>  <tt class="py-line"><tt class="py-docstring">        </tt> </tt>
+<a name="L287"></a><tt class="py-lineno">287</tt>  <tt class="py-line"><tt class="py-docstring">        @type domain_or_name: string or L{Domain&lt;boto.sdb.domain.Domain&gt;} object.</tt> </tt>
+<a name="L288"></a><tt class="py-lineno">288</tt>  <tt class="py-line"><tt class="py-docstring">        @param domain_or_name: Either the name of a domain or a Domain object</tt> </tt>
+<a name="L289"></a><tt class="py-lineno">289</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L290"></a><tt class="py-lineno">290</tt>  <tt class="py-line"><tt class="py-docstring">        @type query: string</tt> </tt>
+<a name="L291"></a><tt class="py-lineno">291</tt>  <tt class="py-line"><tt class="py-docstring">        @param query: The SimpleDB query to be performed.</tt> </tt>
+<a name="L292"></a><tt class="py-lineno">292</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L293"></a><tt class="py-lineno">293</tt>  <tt class="py-line"><tt class="py-docstring">        @type max_items: int</tt> </tt>
+<a name="L294"></a><tt class="py-lineno">294</tt>  <tt class="py-line"><tt class="py-docstring">        @param max_items: The maximum number of items to return.  If not</tt> </tt>
+<a name="L295"></a><tt class="py-lineno">295</tt>  <tt class="py-line"><tt class="py-docstring">                          supplied, the default is None which returns all</tt> </tt>
+<a name="L296"></a><tt class="py-lineno">296</tt>  <tt class="py-line"><tt class="py-docstring">                          items matching the query.</tt> </tt>
+<a name="L297"></a><tt class="py-lineno">297</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L298"></a><tt class="py-lineno">298</tt>  <tt class="py-line"><tt class="py-docstring">        @rtype: ResultSet</tt> </tt>
+<a name="L299"></a><tt class="py-lineno">299</tt>  <tt class="py-line"><tt class="py-docstring">        @return: An iterator containing the results.</tt> </tt>
+<a name="L300"></a><tt class="py-lineno">300</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L301"></a><tt class="py-lineno">301</tt>  <tt class="py-line">        <tt id="link-108" class="py-name"><a title="boto.sdb.domain" class="py-name" href="#" onclick="return doclink('link-108', 'domain', 'link-8');">domain</a></tt><tt class="py-op">,</tt> <tt class="py-name">domain_name</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-109" class="py-name"><a title="boto.sdb.connection.SDBConnection.get_domain_and_name" class="py-name" href="#" onclick="return doclink('link-109', 'get_domain_and_name', 'link-71');">get_domain_and_name</a></tt><tt class="py-op">(</tt><tt class="py-name">domain_or_name</tt><tt class="py-op">)</tt> </tt>
+<a name="L302"></a><tt class="py-lineno">302</tt>  <tt class="py-line">        <tt class="py-name">params</tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt><tt class="py-string">'DomainName'</tt><tt class="py-op">:</tt><tt class="py-name">domain_name</tt><tt class="py-op">,</tt> </tt>
+<a name="L303"></a><tt class="py-lineno">303</tt>  <tt class="py-line">                  <tt class="py-string">'QueryExpression'</tt> <tt class="py-op">:</tt> <tt id="link-110" class="py-name"><a title="boto.sdb.connection.SDBConnection.query
+boto.sdb.db.manager.pgmanager.PGManager.query
+boto.sdb.db.manager.sdbmanager.SDBManager.query
+boto.sdb.db.query
+boto.sdb.domain.Domain.query" class="py-name" href="#" onclick="return doclink('link-110', 'query', 'link-54');">query</a></tt><tt class="py-op">}</tt> </tt>
+<a name="L304"></a><tt class="py-lineno">304</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">max_items</tt><tt class="py-op">:</tt> </tt>
+<a name="L305"></a><tt class="py-lineno">305</tt>  <tt class="py-line">            <tt class="py-name">params</tt><tt class="py-op">[</tt><tt class="py-string">'MaxNumberOfItems'</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">max_items</tt> </tt>
+<a name="L306"></a><tt class="py-lineno">306</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">next_token</tt><tt class="py-op">:</tt> </tt>
+<a name="L307"></a><tt class="py-lineno">307</tt>  <tt class="py-line">            <tt class="py-name">params</tt><tt class="py-op">[</tt><tt class="py-string">'NextToken'</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">next_token</tt> </tt>
+<a name="L308"></a><tt class="py-lineno">308</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-111" class="py-name"><a title="boto.connection.AWSQueryConnection.get_object
+boto.sdb.db.manager.pgmanager.PGManager.get_object
+boto.sdb.db.manager.sdbmanager.SDBManager.get_object" class="py-name" href="#" onclick="return doclink('link-111', 'get_object', 'link-64');">get_object</a></tt><tt class="py-op">(</tt><tt class="py-string">'Query'</tt><tt class="py-op">,</tt> <tt class="py-name">params</tt><tt class="py-op">,</tt> <tt id="link-112" class="py-name"><a title="boto.resultset.ResultSet" class="py-name" href="#" onclick="return doclink('link-112', 'ResultSet', 'link-20');">ResultSet</a></tt><tt class="py-op">)</tt> </tt>
+</div><a name="L309"></a><tt class="py-lineno">309</tt>  <tt class="py-line"> </tt>
+<a name="SDBConnection.query_with_attributes"></a><div id="SDBConnection.query_with_attributes-def"><a name="L310"></a><tt class="py-lineno">310</tt> <a class="py-toggle" href="#" id="SDBConnection.query_with_attributes-toggle" onclick="return toggle('SDBConnection.query_with_attributes');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sdb.connection.SDBConnection-class.html#query_with_attributes">query_with_attributes</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">domain_or_name</tt><tt class="py-op">,</tt> <tt class="py-param">query</tt><tt class="py-op">=</tt><tt class="py-string">''</tt><tt class="py-op">,</tt> <tt class="py-param">attr_names</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> </tt>
+<a name="L311"></a><tt class="py-lineno">311</tt>  <tt class="py-line">                              <tt class="py-param">max_items</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-param">next_token</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SDBConnection.query_with_attributes-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="SDBConnection.query_with_attributes-expanded"><a name="L312"></a><tt class="py-lineno">312</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L313"></a><tt class="py-lineno">313</tt>  <tt class="py-line"><tt class="py-docstring">        Returns a set of Attributes for item names within domain_name that match the query.</tt> </tt>
+<a name="L314"></a><tt class="py-lineno">314</tt>  <tt class="py-line"><tt class="py-docstring">        </tt> </tt>
+<a name="L315"></a><tt class="py-lineno">315</tt>  <tt class="py-line"><tt class="py-docstring">        @type domain_or_name: string or L{Domain&lt;boto.sdb.domain.Domain&gt;} object.</tt> </tt>
+<a name="L316"></a><tt class="py-lineno">316</tt>  <tt class="py-line"><tt class="py-docstring">        @param domain_or_name: Either the name of a domain or a Domain object</tt> </tt>
+<a name="L317"></a><tt class="py-lineno">317</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L318"></a><tt class="py-lineno">318</tt>  <tt class="py-line"><tt class="py-docstring">        @type query: string</tt> </tt>
+<a name="L319"></a><tt class="py-lineno">319</tt>  <tt class="py-line"><tt class="py-docstring">        @param query: The SimpleDB query to be performed.</tt> </tt>
+<a name="L320"></a><tt class="py-lineno">320</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L321"></a><tt class="py-lineno">321</tt>  <tt class="py-line"><tt class="py-docstring">        @type attr_names: list</tt> </tt>
+<a name="L322"></a><tt class="py-lineno">322</tt>  <tt class="py-line"><tt class="py-docstring">        @param attr_names: The name of the attributes to be returned.</tt> </tt>
+<a name="L323"></a><tt class="py-lineno">323</tt>  <tt class="py-line"><tt class="py-docstring">                           If no attributes are specified, all attributes</tt> </tt>
+<a name="L324"></a><tt class="py-lineno">324</tt>  <tt class="py-line"><tt class="py-docstring">                           will be returned.</tt> </tt>
+<a name="L325"></a><tt class="py-lineno">325</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L326"></a><tt class="py-lineno">326</tt>  <tt class="py-line"><tt class="py-docstring">        @type max_items: int</tt> </tt>
+<a name="L327"></a><tt class="py-lineno">327</tt>  <tt class="py-line"><tt class="py-docstring">        @param max_items: The maximum number of items to return.  If not</tt> </tt>
+<a name="L328"></a><tt class="py-lineno">328</tt>  <tt class="py-line"><tt class="py-docstring">                          supplied, the default is None which returns all</tt> </tt>
+<a name="L329"></a><tt class="py-lineno">329</tt>  <tt class="py-line"><tt class="py-docstring">                          items matching the query.</tt> </tt>
+<a name="L330"></a><tt class="py-lineno">330</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L331"></a><tt class="py-lineno">331</tt>  <tt class="py-line"><tt class="py-docstring">        @rtype: ResultSet</tt> </tt>
+<a name="L332"></a><tt class="py-lineno">332</tt>  <tt class="py-line"><tt class="py-docstring">        @return: An iterator containing the results.</tt> </tt>
+<a name="L333"></a><tt class="py-lineno">333</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L334"></a><tt class="py-lineno">334</tt>  <tt class="py-line">        <tt id="link-113" class="py-name"><a title="boto.sdb.domain" class="py-name" href="#" onclick="return doclink('link-113', 'domain', 'link-8');">domain</a></tt><tt class="py-op">,</tt> <tt class="py-name">domain_name</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-114" class="py-name"><a title="boto.sdb.connection.SDBConnection.get_domain_and_name" class="py-name" href="#" onclick="return doclink('link-114', 'get_domain_and_name', 'link-71');">get_domain_and_name</a></tt><tt class="py-op">(</tt><tt class="py-name">domain_or_name</tt><tt class="py-op">)</tt> </tt>
+<a name="L335"></a><tt class="py-lineno">335</tt>  <tt class="py-line">        <tt class="py-name">params</tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt><tt class="py-string">'DomainName'</tt><tt class="py-op">:</tt><tt class="py-name">domain_name</tt><tt class="py-op">,</tt> </tt>
+<a name="L336"></a><tt class="py-lineno">336</tt>  <tt class="py-line">                  <tt class="py-string">'QueryExpression'</tt> <tt class="py-op">:</tt> <tt id="link-115" class="py-name"><a title="boto.sdb.connection.SDBConnection.query
+boto.sdb.db.manager.pgmanager.PGManager.query
+boto.sdb.db.manager.sdbmanager.SDBManager.query
+boto.sdb.db.query
+boto.sdb.domain.Domain.query" class="py-name" href="#" onclick="return doclink('link-115', 'query', 'link-54');">query</a></tt><tt class="py-op">}</tt> </tt>
+<a name="L337"></a><tt class="py-lineno">337</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">max_items</tt><tt class="py-op">:</tt> </tt>
+<a name="L338"></a><tt class="py-lineno">338</tt>  <tt class="py-line">            <tt class="py-name">params</tt><tt class="py-op">[</tt><tt class="py-string">'MaxNumberOfItems'</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">max_items</tt> </tt>
+<a name="L339"></a><tt class="py-lineno">339</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">next_token</tt><tt class="py-op">:</tt> </tt>
+<a name="L340"></a><tt class="py-lineno">340</tt>  <tt class="py-line">            <tt class="py-name">params</tt><tt class="py-op">[</tt><tt class="py-string">'NextToken'</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">next_token</tt> </tt>
+<a name="L341"></a><tt class="py-lineno">341</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">attr_names</tt><tt class="py-op">:</tt> </tt>
+<a name="L342"></a><tt class="py-lineno">342</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-116" class="py-name"><a title="boto.connection.AWSQueryConnection.build_list_params" class="py-name" href="#" onclick="return doclink('link-116', 'build_list_params', 'link-87');">build_list_params</a></tt><tt class="py-op">(</tt><tt class="py-name">params</tt><tt class="py-op">,</tt> <tt class="py-name">attr_names</tt><tt class="py-op">,</tt> <tt class="py-string">'AttributeName'</tt><tt class="py-op">)</tt> </tt>
+<a name="L343"></a><tt class="py-lineno">343</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-117" class="py-name"><a title="boto.connection.AWSQueryConnection.get_list" class="py-name" href="#" onclick="return doclink('link-117', 'get_list', 'link-62');">get_list</a></tt><tt class="py-op">(</tt><tt class="py-string">'QueryWithAttributes'</tt><tt class="py-op">,</tt> <tt class="py-name">params</tt><tt class="py-op">,</tt> <tt class="py-op">[</tt><tt class="py-op">(</tt><tt class="py-string">'Item'</tt><tt class="py-op">,</tt> <tt id="link-118" class="py-name"><a title="boto.mashups.order.Item
+boto.sdb.item.Item" class="py-name" href="#" onclick="return doclink('link-118', 'Item', 'link-14');">Item</a></tt><tt class="py-op">)</tt><tt class="py-op">]</tt><tt class="py-op">,</tt> <tt id="link-119" class="py-name" targets="Method boto.sdb.db.key.Key.parent()=boto.sdb.db.key.Key-class.html#parent"><a title="boto.sdb.db.key.Key.parent" class="py-name" href="#" onclick="return doclink('link-119', 'parent', 'link-119');">parent</a></tt><tt class="py-op">=</tt><tt id="link-120" class="py-name"><a title="boto.sdb.domain" class="py-name" href="#" onclick="return doclink('link-120', 'domain', 'link-8');">domain</a></tt><tt class="py-op">)</tt> </tt>
+</div><a name="L344"></a><tt class="py-lineno">344</tt>  <tt class="py-line"> </tt>
+<a name="SDBConnection.threaded_query"></a><div id="SDBConnection.threaded_query-def"><a name="L345"></a><tt class="py-lineno">345</tt> <a class="py-toggle" href="#" id="SDBConnection.threaded_query-toggle" onclick="return toggle('SDBConnection.threaded_query');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sdb.connection.SDBConnection-class.html#threaded_query">threaded_query</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">domain_or_name</tt><tt class="py-op">,</tt> <tt class="py-param">query</tt><tt class="py-op">=</tt><tt class="py-string">''</tt><tt class="py-op">,</tt> <tt class="py-param">max_items</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-param">next_token</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-param">num_threads</tt><tt class="py-op">=</tt><tt class="py-number">6</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SDBConnection.threaded_query-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="SDBConnection.threaded_query-expanded"><a name="L346"></a><tt class="py-lineno">346</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L347"></a><tt class="py-lineno">347</tt>  <tt class="py-line"><tt class="py-docstring">        Returns a list of fully populated items that match the query provided.</tt> </tt>
+<a name="L348"></a><tt class="py-lineno">348</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L349"></a><tt class="py-lineno">349</tt>  <tt class="py-line"><tt class="py-docstring">        The name/value pairs for all of the matching item names are retrieved in a number of separate</tt> </tt>
+<a name="L350"></a><tt class="py-lineno">350</tt>  <tt class="py-line"><tt class="py-docstring">        threads (specified by num_threads) to achieve maximum throughput.</tt> </tt>
+<a name="L351"></a><tt class="py-lineno">351</tt>  <tt class="py-line"><tt class="py-docstring">        The ResultSet that is returned has an attribute called next_token that can be used</tt> </tt>
+<a name="L352"></a><tt class="py-lineno">352</tt>  <tt class="py-line"><tt class="py-docstring">        to retrieve additional results for the same query.</tt> </tt>
+<a name="L353"></a><tt class="py-lineno">353</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L354"></a><tt class="py-lineno">354</tt>  <tt class="py-line">        <tt id="link-121" class="py-name"><a title="boto.sdb.domain" class="py-name" href="#" onclick="return doclink('link-121', 'domain', 'link-8');">domain</a></tt><tt class="py-op">,</tt> <tt class="py-name">domain_name</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-122" class="py-name"><a title="boto.sdb.connection.SDBConnection.get_domain_and_name" class="py-name" href="#" onclick="return doclink('link-122', 'get_domain_and_name', 'link-71');">get_domain_and_name</a></tt><tt class="py-op">(</tt><tt class="py-name">domain_or_name</tt><tt class="py-op">)</tt> </tt>
+<a name="L355"></a><tt class="py-lineno">355</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">max_items</tt> <tt class="py-keyword">and</tt> <tt class="py-name">num_threads</tt> <tt class="py-op">&gt;</tt> <tt class="py-name">max_items</tt><tt class="py-op">:</tt> </tt>
+<a name="L356"></a><tt class="py-lineno">356</tt>  <tt class="py-line">            <tt class="py-name">num_threads</tt> <tt class="py-op">=</tt> <tt class="py-name">max_items</tt> </tt>
+<a name="L357"></a><tt class="py-lineno">357</tt>  <tt class="py-line">        <tt class="py-name">rs</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-123" class="py-name"><a title="boto.sdb.connection.SDBConnection.query
+boto.sdb.db.manager.pgmanager.PGManager.query
+boto.sdb.db.manager.sdbmanager.SDBManager.query
+boto.sdb.db.query
+boto.sdb.domain.Domain.query" class="py-name" href="#" onclick="return doclink('link-123', 'query', 'link-54');">query</a></tt><tt class="py-op">(</tt><tt class="py-name">domain_or_name</tt><tt class="py-op">,</tt> <tt id="link-124" class="py-name"><a title="boto.sdb.connection.SDBConnection.query
+boto.sdb.db.manager.pgmanager.PGManager.query
+boto.sdb.db.manager.sdbmanager.SDBManager.query
+boto.sdb.db.query
+boto.sdb.domain.Domain.query" class="py-name" href="#" onclick="return doclink('link-124', 'query', 'link-54');">query</a></tt><tt class="py-op">,</tt> <tt class="py-name">max_items</tt><tt class="py-op">,</tt> <tt class="py-name">next_token</tt><tt class="py-op">)</tt> </tt>
+<a name="L358"></a><tt class="py-lineno">358</tt>  <tt class="py-line">        <tt class="py-name">threads</tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt> </tt>
+<a name="L359"></a><tt class="py-lineno">359</tt>  <tt class="py-line">        <tt class="py-name">n</tt> <tt class="py-op">=</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">rs</tt><tt class="py-op">)</tt> <tt class="py-op">/</tt> <tt class="py-name">num_threads</tt> </tt>
+<a name="L360"></a><tt class="py-lineno">360</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt class="py-name">i</tt> <tt class="py-keyword">in</tt> <tt class="py-name">range</tt><tt class="py-op">(</tt><tt class="py-number">0</tt><tt class="py-op">,</tt> <tt class="py-name">num_threads</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L361"></a><tt class="py-lineno">361</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-name">i</tt><tt class="py-op">+</tt><tt class="py-number">1</tt> <tt class="py-op">==</tt> <tt class="py-name">num_threads</tt><tt class="py-op">:</tt> </tt>
+<a name="L362"></a><tt class="py-lineno">362</tt>  <tt class="py-line">                <tt class="py-name">thread</tt> <tt class="py-op">=</tt> <tt id="link-125" class="py-name" targets="Class boto.sdb.connection.ItemThread=boto.sdb.connection.ItemThread-class.html"><a title="boto.sdb.connection.ItemThread" class="py-name" href="#" onclick="return doclink('link-125', 'ItemThread', 'link-125');">ItemThread</a></tt><tt class="py-op">(</tt><tt class="py-string">'Thread-%d'</tt> <tt class="py-op">%</tt> <tt class="py-name">i</tt><tt class="py-op">,</tt> <tt class="py-name">domain_name</tt><tt class="py-op">,</tt> <tt class="py-name">rs</tt><tt class="py-op">[</tt><tt class="py-name">n</tt><tt class="py-op">*</tt><tt class="py-name">i</tt><tt class="py-op">:</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L363"></a><tt class="py-lineno">363</tt>  <tt class="py-line">            <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L364"></a><tt class="py-lineno">364</tt>  <tt class="py-line">                <tt class="py-name">thread</tt> <tt class="py-op">=</tt> <tt id="link-126" class="py-name"><a title="boto.sdb.connection.ItemThread" class="py-name" href="#" onclick="return doclink('link-126', 'ItemThread', 'link-125');">ItemThread</a></tt><tt class="py-op">(</tt><tt class="py-string">'Thread-%d'</tt> <tt class="py-op">%</tt> <tt class="py-name">i</tt><tt class="py-op">,</tt> <tt class="py-name">domain_name</tt><tt class="py-op">,</tt> <tt class="py-name">rs</tt><tt class="py-op">[</tt><tt class="py-name">n</tt><tt class="py-op">*</tt><tt class="py-name">i</tt><tt class="py-op">:</tt><tt class="py-name">n</tt><tt class="py-op">*</tt><tt class="py-op">(</tt><tt class="py-name">i</tt><tt class="py-op">+</tt><tt class="py-number">1</tt><tt class="py-op">)</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L365"></a><tt class="py-lineno">365</tt>  <tt class="py-line">            <tt class="py-name">threads</tt><tt class="py-op">.</tt><tt id="link-127" class="py-name"><a title="boto.sdb.persist.property.MultiValue.append" class="py-name" href="#" onclick="return doclink('link-127', 'append', 'link-30');">append</a></tt><tt class="py-op">(</tt><tt class="py-name">thread</tt><tt class="py-op">)</tt> </tt>
+<a name="L366"></a><tt class="py-lineno">366</tt>  <tt class="py-line">            <tt class="py-name">thread</tt><tt class="py-op">.</tt><tt id="link-128" class="py-name" targets="Method boto.mashups.server.Server.start()=boto.mashups.server.Server-class.html#start,Method boto.pyami.installers.Installer.start()=boto.pyami.installers.Installer-class.html#start,Method boto.pyami.installers.ubuntu.installer.Installer.start()=boto.pyami.installers.ubuntu.installer.Installer-class.html#start"><a title="boto.mashups.server.Server.start
+boto.pyami.installers.Installer.start
+boto.pyami.installers.ubuntu.installer.Installer.start" class="py-name" href="#" onclick="return doclink('link-128', 'start', 'link-128');">start</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L367"></a><tt class="py-lineno">367</tt>  <tt class="py-line">        <tt class="py-keyword">del</tt> <tt class="py-name">rs</tt><tt class="py-op">[</tt><tt class="py-number">0</tt><tt class="py-op">:</tt><tt class="py-op">]</tt> </tt>
+<a name="L368"></a><tt class="py-lineno">368</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt class="py-name">thread</tt> <tt class="py-keyword">in</tt> <tt class="py-name">threads</tt><tt class="py-op">:</tt> </tt>
+<a name="L369"></a><tt class="py-lineno">369</tt>  <tt class="py-line">            <tt class="py-name">thread</tt><tt class="py-op">.</tt><tt class="py-name">join</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L370"></a><tt class="py-lineno">370</tt>  <tt class="py-line">            <tt class="py-keyword">for</tt> <tt id="link-129" class="py-name"><a title="boto.sdb.item" class="py-name" href="#" onclick="return doclink('link-129', 'item', 'link-13');">item</a></tt> <tt class="py-keyword">in</tt> <tt class="py-name">thread</tt><tt class="py-op">.</tt><tt id="link-130" class="py-name"><a title="boto.sqs.20070501.message.MHMessage.items
+boto.sqs.message.MHMessage.items" class="py-name" href="#" onclick="return doclink('link-130', 'items', 'link-26');">items</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L371"></a><tt class="py-lineno">371</tt>  <tt class="py-line">                <tt class="py-name">rs</tt><tt class="py-op">.</tt><tt id="link-131" class="py-name"><a title="boto.sdb.persist.property.MultiValue.append" class="py-name" href="#" onclick="return doclink('link-131', 'append', 'link-30');">append</a></tt><tt class="py-op">(</tt><tt id="link-132" class="py-name"><a title="boto.sdb.item" class="py-name" href="#" onclick="return doclink('link-132', 'item', 'link-13');">item</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L372"></a><tt class="py-lineno">372</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">rs</tt> </tt>
+</div></div><a name="L373"></a><tt class="py-lineno">373</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="boto-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0beta1 on Fri Feb 20 11:45:21 2009
+    </td>
+    <td align="right" class="footer">
+      <a href="http://epydoc.sourceforge.net">http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie()
+  // -->
+</script>
+  
+</body>
+</html>

@@ -1,0 +1,725 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>boto.pyami.copybot</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="boto-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="boto-module.html">Package&nbsp;boto</a> ::
+        <a href="boto.pyami-module.html">Package&nbsp;pyami</a> ::
+        Module&nbsp;copybot
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="boto.pyami.copybot-pysrc.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="boto.pyami.copybot-module.html">Module boto.pyami.copybot</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno"> 1</tt>  <tt class="py-line"><tt class="py-comment"># Copyright (c) 2006,2007 Mitch Garnaat http://garnaat.org/</tt> </tt>
+<a name="L2"></a><tt class="py-lineno"> 2</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment">#</tt> </tt>
+<a name="L3"></a><tt class="py-lineno"> 3</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># Permission is hereby granted, free of charge, to any person obtaining a</tt> </tt>
+<a name="L4"></a><tt class="py-lineno"> 4</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># copy of this software and associated documentation files (the</tt> </tt>
+<a name="L5"></a><tt class="py-lineno"> 5</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># "Software"), to deal in the Software without restriction, including</tt> </tt>
+<a name="L6"></a><tt class="py-lineno"> 6</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># without limitation the rights to use, copy, modify, merge, publish, dis-</tt> </tt>
+<a name="L7"></a><tt class="py-lineno"> 7</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># tribute, sublicense, and/or sell copies of the Software, and to permit</tt> </tt>
+<a name="L8"></a><tt class="py-lineno"> 8</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># persons to whom the Software is furnished to do so, subject to the fol-</tt> </tt>
+<a name="L9"></a><tt class="py-lineno"> 9</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># lowing conditions:</tt> </tt>
+<a name="L10"></a><tt class="py-lineno">10</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment">#</tt> </tt>
+<a name="L11"></a><tt class="py-lineno">11</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># The above copyright notice and this permission notice shall be included</tt> </tt>
+<a name="L12"></a><tt class="py-lineno">12</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># in all copies or substantial portions of the Software.</tt> </tt>
+<a name="L13"></a><tt class="py-lineno">13</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment">#</tt> </tt>
+<a name="L14"></a><tt class="py-lineno">14</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS</tt> </tt>
+<a name="L15"></a><tt class="py-lineno">15</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABIL-</tt> </tt>
+<a name="L16"></a><tt class="py-lineno">16</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># ITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT</tt> </tt>
+<a name="L17"></a><tt class="py-lineno">17</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># SHALL THE AUTHOR BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, </tt> </tt>
+<a name="L18"></a><tt class="py-lineno">18</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</tt> </tt>
+<a name="L19"></a><tt class="py-lineno">19</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS</tt> </tt>
+<a name="L20"></a><tt class="py-lineno">20</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># IN THE SOFTWARE.</tt> </tt>
+<a name="L21"></a><tt class="py-lineno">21</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment">#</tt> </tt>
+<a name="L22"></a><tt class="py-lineno">22</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-keyword">import</tt> <tt id="link-0" class="py-name" targets="Package boto=boto-module.html"><a title="boto" class="py-name" href="#" onclick="return doclink('link-0', 'boto', 'link-0');">boto</a></tt> </tt>
+<a name="L23"></a><tt class="py-lineno">23</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-1" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-1', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-2" class="py-name" targets="Package boto.pyami=boto.pyami-module.html"><a title="boto.pyami" class="py-name" href="#" onclick="return doclink('link-2', 'pyami', 'link-2');">pyami</a></tt><tt class="py-op">.</tt><tt id="link-3" class="py-name" targets="Module boto.pyami.scriptbase=boto.pyami.scriptbase-module.html"><a title="boto.pyami.scriptbase" class="py-name" href="#" onclick="return doclink('link-3', 'scriptbase', 'link-3');">scriptbase</a></tt> <tt class="py-keyword">import</tt> <tt id="link-4" class="py-name" targets="Class boto.pyami.scriptbase.ScriptBase=boto.pyami.scriptbase.ScriptBase-class.html"><a title="boto.pyami.scriptbase.ScriptBase" class="py-name" href="#" onclick="return doclink('link-4', 'ScriptBase', 'link-4');">ScriptBase</a></tt> </tt>
+<a name="L24"></a><tt class="py-lineno">24</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">os</tt><tt class="py-op">,</tt> <tt class="py-name">StringIO</tt> </tt>
+<a name="L25"></a><tt class="py-lineno">25</tt>  <tt class="py-line"> </tt>
+<a name="CopyBot"></a><div id="CopyBot-def"><a name="L26"></a><tt class="py-lineno">26</tt> <a class="py-toggle" href="#" id="CopyBot-toggle" onclick="return toggle('CopyBot');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="boto.pyami.copybot.CopyBot-class.html">CopyBot</a><tt class="py-op">(</tt><tt class="py-base-class">ScriptBase</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="CopyBot-collapsed" style="display:none;" pad="++" indent="++++"></div><div id="CopyBot-expanded"><a name="L27"></a><tt class="py-lineno">27</tt>  <tt class="py-line"> </tt>
+<a name="CopyBot.__init__"></a><div id="CopyBot.__init__-def"><a name="L28"></a><tt class="py-lineno">28</tt> <a class="py-toggle" href="#" id="CopyBot.__init__-toggle" onclick="return toggle('CopyBot.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.pyami.copybot.CopyBot-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="CopyBot.__init__-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="CopyBot.__init__-expanded"><a name="L29"></a><tt class="py-lineno">29</tt>  <tt class="py-line">        <tt id="link-5" class="py-name"><a title="boto.pyami.scriptbase.ScriptBase" class="py-name" href="#" onclick="return doclink('link-5', 'ScriptBase', 'link-4');">ScriptBase</a></tt><tt class="py-op">.</tt><tt id="link-6" class="py-name" targets="Method boto.cloudfront.CloudFrontConnection.__init__()=boto.cloudfront.CloudFrontConnection-class.html#__init__,Method boto.cloudfront.distribution.Distribution.__init__()=boto.cloudfront.distribution.Distribution-class.html#__init__,Method boto.cloudfront.distribution.DistributionConfig.__init__()=boto.cloudfront.distribution.DistributionConfig-class.html#__init__,Method boto.cloudfront.distribution.DistributionSummary.__init__()=boto.cloudfront.distribution.DistributionSummary-class.html#__init__,Method boto.connection.AWSAuthConnection.__init__()=boto.connection.AWSAuthConnection-class.html#__init__,Method boto.connection.AWSQueryConnection.__init__()=boto.connection.AWSQueryConnection-class.html#__init__,Method boto.contrib.ymlmessage.YAMLMessage.__init__()=boto.contrib.ymlmessage.YAMLMessage-class.html#__init__,Method boto.ec2.address.Address.__init__()=boto.ec2.address.Address-class.html#__init__,Method boto.ec2.connection.EC2Connection.__init__()=boto.ec2.connection.EC2Connection-class.html#__init__,Method boto.ec2.ec2object.EC2Object.__init__()=boto.ec2.ec2object.EC2Object-class.html#__init__,Method boto.ec2.image.Image.__init__()=boto.ec2.image.Image-class.html#__init__,Method boto.ec2.image.ImageAttribute.__init__()=boto.ec2.image.ImageAttribute-class.html#__init__,Method boto.ec2.instance.ConsoleOutput.__init__()=boto.ec2.instance.ConsoleOutput-class.html#__init__,Method boto.ec2.instance.Group.__init__()=boto.ec2.instance.Group-class.html#__init__,Method boto.ec2.instance.Instance.__init__()=boto.ec2.instance.Instance-class.html#__init__,Method boto.ec2.instance.Reservation.__init__()=boto.ec2.instance.Reservation-class.html#__init__,Method boto.ec2.keypair.KeyPair.__init__()=boto.ec2.keypair.KeyPair-class.html#__init__,Method boto.ec2.regioninfo.RegionInfo.__init__()=boto.ec2.regioninfo.RegionInfo-class.html#__init__,Method boto.ec2.securitygroup.GroupOrCIDR.__init__()=boto.ec2.securitygroup.GroupOrCIDR-class.html#__init__,Method boto.ec2.securitygroup.IPPermissions.__init__()=boto.ec2.securitygroup.IPPermissions-class.html#__init__,Method boto.ec2.securitygroup.SecurityGroup.__init__()=boto.ec2.securitygroup.SecurityGroup-class.html#__init__,Method boto.ec2.snapshot.Snapshot.__init__()=boto.ec2.snapshot.Snapshot-class.html#__init__,Method boto.ec2.volume.Volume.__init__()=boto.ec2.volume.Volume-class.html#__init__,Method boto.ec2.zone.Zone.__init__()=boto.ec2.zone.Zone-class.html#__init__,Method boto.exception.BotoClientError.__init__()=boto.exception.BotoClientError-class.html#__init__,Method boto.exception.BotoServerError.__init__()=boto.exception.BotoServerError-class.html#__init__,Method boto.exception.ConsoleOutput.__init__()=boto.exception.ConsoleOutput-class.html#__init__,Method boto.exception.EC2ResponseError.__init__()=boto.exception.EC2ResponseError-class.html#__init__,Method boto.exception.S3ResponseError.__init__()=boto.exception.S3ResponseError-class.html#__init__,Method boto.exception.SQSError.__init__()=boto.exception.SQSError-class.html#__init__,Method boto.exception._EC2Error.__init__()=boto.exception._EC2Error-class.html#__init__,Method boto.fps.connection.FPSConnection.__init__()=boto.fps.connection.FPSConnection-class.html#__init__,Method boto.handler.XmlHandler.__init__()=boto.handler.XmlHandler-class.html#__init__,Method boto.mapreduce.lqs.LQSCommand.__init__()=boto.mapreduce.lqs.LQSCommand-class.html#__init__,Method boto.mapreduce.lqs.LQSMessage.__init__()=boto.mapreduce.lqs.LQSMessage-class.html#__init__,Method boto.mapreduce.lqs.LQSServer.__init__()=boto.mapreduce.lqs.LQSServer-class.html#__init__,Method boto.mapreduce.partitiondb.Partition.__init__()=boto.mapreduce.partitiondb.Partition-class.html#__init__,Method boto.mapreduce.partitiondb.PartitionDB.__init__()=boto.mapreduce.partitiondb.PartitionDB-class.html#__init__,Method boto.mapreduce.partitiondb.Version.__init__()=boto.mapreduce.partitiondb.Version-class.html#__init__,Method boto.mapreduce.queuetools.LQSClient.__init__()=boto.mapreduce.queuetools.LQSClient-class.html#__init__,Method boto.mapreduce.queuetools.SQSClient.__init__()=boto.mapreduce.queuetools.SQSClient-class.html#__init__,Method boto.mashups.order.Item.__init__()=boto.mashups.order.Item-class.html#__init__,Method boto.mashups.order.Order.__init__()=boto.mashups.order.Order-class.html#__init__,Method boto.mashups.server.Server.__init__()=boto.mashups.server.Server-class.html#__init__,Method boto.mturk.connection.Assignment.__init__()=boto.mturk.connection.Assignment-class.html#__init__,Method boto.mturk.connection.BaseAutoResultElement.__init__()=boto.mturk.connection.BaseAutoResultElement-class.html#__init__,Method boto.mturk.connection.MTurkConnection.__init__()=boto.mturk.connection.MTurkConnection-class.html#__init__,Method boto.mturk.notification.Event.__init__()=boto.mturk.notification.Event-class.html#__init__,Method boto.mturk.notification.NotificationMessage.__init__()=boto.mturk.notification.NotificationMessage-class.html#__init__,Method boto.mturk.price.Price.__init__()=boto.mturk.price.Price-class.html#__init__,Method boto.mturk.qualification.PercentAssignmentsAbandonedRequirement.__init__()=boto.mturk.qualification.PercentAssignmentsAbandonedRequirement-class.html#__init__,Method boto.mturk.qualification.PercentAssignmentsApprovedRequirement.__init__()=boto.mturk.qualification.PercentAssignmentsApprovedRequirement-class.html#__init__,Method boto.mturk.qualification.PercentAssignmentsRejectedRequirement.__init__()=boto.mturk.qualification.PercentAssignmentsRejectedRequirement-class.html#__init__,Method boto.mturk.qualification.PercentAssignmentsReturnedRequirement.__init__()=boto.mturk.qualification.PercentAssignmentsReturnedRequirement-class.html#__init__,Method boto.mturk.qualification.PercentAssignmentsSubmittedRequirement.__init__()=boto.mturk.qualification.PercentAssignmentsSubmittedRequirement-class.html#__init__,Method boto.mturk.qualification.Qualifications.__init__()=boto.mturk.qualification.Qualifications-class.html#__init__,Method boto.mturk.qualification.Requirement.__init__()=boto.mturk.qualification.Requirement-class.html#__init__,Method boto.mturk.question.AnswerSpecification.__init__()=boto.mturk.question.AnswerSpecification-class.html#__init__,Method boto.mturk.question.ExternalQuestion.__init__()=boto.mturk.question.ExternalQuestion-class.html#__init__,Method boto.mturk.question.FileUploadAnswer.__init__()=boto.mturk.question.FileUploadAnswer-class.html#__init__,Method boto.mturk.question.FreeTextAnswer.__init__()=boto.mturk.question.FreeTextAnswer-class.html#__init__,Method boto.mturk.question.Question.__init__()=boto.mturk.question.Question-class.html#__init__,Method boto.mturk.question.QuestionContent.__init__()=boto.mturk.question.QuestionContent-class.html#__init__,Method boto.mturk.question.QuestionForm.__init__()=boto.mturk.question.QuestionForm-class.html#__init__,Method boto.mturk.question.SelectionAnswer.__init__()=boto.mturk.question.SelectionAnswer-class.html#__init__,Method boto.pyami.bootstrap.Bootstrap.__init__()=boto.pyami.bootstrap.Bootstrap-class.html#__init__,Method boto.pyami.config.Config.__init__()=boto.pyami.config.Config-class.html#__init__,Method boto.pyami.copybot.CopyBot.__init__()=boto.pyami.copybot.CopyBot-class.html#__init__,Method boto.pyami.scriptbase.ScriptBase.__init__()=boto.pyami.scriptbase.ScriptBase-class.html#__init__,Method boto.resultset.ResultSet.__init__()=boto.resultset.ResultSet-class.html#__init__,Method boto.s3.acl.ACL.__init__()=boto.s3.acl.ACL-class.html#__init__,Method boto.s3.acl.Grant.__init__()=boto.s3.acl.Grant-class.html#__init__,Method boto.s3.acl.Policy.__init__()=boto.s3.acl.Policy-class.html#__init__,Method boto.s3.bucket.Bucket.__init__()=boto.s3.bucket.Bucket-class.html#__init__,Method boto.s3.bucketlistresultset.BucketListResultSet.__init__()=boto.s3.bucketlistresultset.BucketListResultSet-class.html#__init__,Method boto.s3.connection.S3Connection.__init__()=boto.s3.connection.S3Connection-class.html#__init__,Method boto.s3.key.Key.__init__()=boto.s3.key.Key-class.html#__init__,Method boto.s3.prefix.Prefix.__init__()=boto.s3.prefix.Prefix-class.html#__init__,Method boto.s3.user.User.__init__()=boto.s3.user.User-class.html#__init__,Method boto.sdb.connection.ItemThread.__init__()=boto.sdb.connection.ItemThread-class.html#__init__,Method boto.sdb.connection.SDBConnection.__init__()=boto.sdb.connection.SDBConnection-class.html#__init__,Method boto.sdb.db.key.Key.__init__()=boto.sdb.db.key.Key-class.html#__init__,Method boto.sdb.db.manager.pgmanager.PGConverter.__init__()=boto.sdb.db.manager.pgmanager.PGConverter-class.html#__init__,Method boto.sdb.db.manager.pgmanager.PGManager.__init__()=boto.sdb.db.manager.pgmanager.PGManager-class.html#__init__,Method boto.sdb.db.manager.sdbmanager.SDBConverter.__init__()=boto.sdb.db.manager.sdbmanager.SDBConverter-class.html#__init__,Method boto.sdb.db.manager.sdbmanager.SDBManager.__init__()=boto.sdb.db.manager.sdbmanager.SDBManager-class.html#__init__,Method boto.sdb.db.model.Model.__init__()=boto.sdb.db.model.Model-class.html#__init__,Method boto.sdb.db.model.Model.__init__()=boto.sdb.db.model.Model-class.html#__init__,Method boto.sdb.db.model.ModelMeta.__init__()=boto.sdb.db.model.ModelMeta-class.html#__init__,Method boto.sdb.db.model.ModelMeta.__init__()=boto.sdb.db.model.ModelMeta-class.html#__init__,Method boto.sdb.db.property.BooleanProperty.__init__()=boto.sdb.db.property.BooleanProperty-class.html#__init__,Method boto.sdb.db.property.CalculatedProperty.__init__()=boto.sdb.db.property.CalculatedProperty-class.html#__init__,Method boto.sdb.db.property.DateTimeProperty.__init__()=boto.sdb.db.property.DateTimeProperty-class.html#__init__,Method boto.sdb.db.property.IntegerProperty.__init__()=boto.sdb.db.property.IntegerProperty-class.html#__init__,Method boto.sdb.db.property.ListProperty.__init__()=boto.sdb.db.property.ListProperty-class.html#__init__,Method boto.sdb.db.property.LongProperty.__init__()=boto.sdb.db.property.LongProperty-class.html#__init__,Method boto.sdb.db.property.PasswordProperty.__init__()=boto.sdb.db.property.PasswordProperty-class.html#__init__,Method boto.sdb.db.property.Property.__init__()=boto.sdb.db.property.Property-class.html#__init__,Method boto.sdb.db.property.ReferenceProperty.__init__()=boto.sdb.db.property.ReferenceProperty-class.html#__init__,Method boto.sdb.db.property.S3KeyProperty.__init__()=boto.sdb.db.property.S3KeyProperty-class.html#__init__,Method boto.sdb.db.property.StringProperty.__init__()=boto.sdb.db.property.StringProperty-class.html#__init__,Method boto.sdb.db.property.TextProperty.__init__()=boto.sdb.db.property.TextProperty-class.html#__init__,Method boto.sdb.db.property._ReverseReferenceProperty.__init__()=boto.sdb.db.property._ReverseReferenceProperty-class.html#__init__,Method boto.sdb.db.query.Query.__init__()=boto.sdb.db.query.Query-class.html#__init__,Method boto.sdb.domain.Domain.__init__()=boto.sdb.domain.Domain-class.html#__init__,Method boto.sdb.domain.DomainMetaData.__init__()=boto.sdb.domain.DomainMetaData-class.html#__init__,Method boto.sdb.item.Item.__init__()=boto.sdb.item.Item-class.html#__init__,Method boto.sdb.persist.Manager.__init__()=boto.sdb.persist.Manager-class.html#__init__,Method boto.sdb.persist.checker.BooleanChecker.__init__()=boto.sdb.persist.checker.BooleanChecker-class.html#__init__,Method boto.sdb.persist.checker.DateTimeChecker.__init__()=boto.sdb.persist.checker.DateTimeChecker-class.html#__init__,Method boto.sdb.persist.checker.IntegerChecker.__init__()=boto.sdb.persist.checker.IntegerChecker-class.html#__init__,Method boto.sdb.persist.checker.ObjectChecker.__init__()=boto.sdb.persist.checker.ObjectChecker-class.html#__init__,Method boto.sdb.persist.checker.S3BucketChecker.__init__()=boto.sdb.persist.checker.S3BucketChecker-class.html#__init__,Method boto.sdb.persist.checker.S3KeyChecker.__init__()=boto.sdb.persist.checker.S3KeyChecker-class.html#__init__,Method boto.sdb.persist.checker.StringChecker.__init__()=boto.sdb.persist.checker.StringChecker-class.html#__init__,Method boto.sdb.persist.object.SDBBase.__init__()=boto.sdb.persist.object.SDBBase-class.html#__init__,Method boto.sdb.persist.object.SDBObject.__init__()=boto.sdb.persist.object.SDBObject-class.html#__init__,Method boto.sdb.persist.property.BooleanListProperty.__init__()=boto.sdb.persist.property.BooleanListProperty-class.html#__init__,Method boto.sdb.persist.property.BooleanProperty.__init__()=boto.sdb.persist.property.BooleanProperty-class.html#__init__,Method boto.sdb.persist.property.DateTimeProperty.__init__()=boto.sdb.persist.property.DateTimeProperty-class.html#__init__,Method boto.sdb.persist.property.IntegerListProperty.__init__()=boto.sdb.persist.property.IntegerListProperty-class.html#__init__,Method boto.sdb.persist.property.IntegerProperty.__init__()=boto.sdb.persist.property.IntegerProperty-class.html#__init__,Method boto.sdb.persist.property.LargeIntegerListProperty.__init__()=boto.sdb.persist.property.LargeIntegerListProperty-class.html#__init__,Method boto.sdb.persist.property.LargeIntegerProperty.__init__()=boto.sdb.persist.property.LargeIntegerProperty-class.html#__init__,Method boto.sdb.persist.property.LargePositiveIntegerListProperty.__init__()=boto.sdb.persist.property.LargePositiveIntegerListProperty-class.html#__init__,Method boto.sdb.persist.property.LargePositiveIntegerProperty.__init__()=boto.sdb.persist.property.LargePositiveIntegerProperty-class.html#__init__,Method boto.sdb.persist.property.MultiValue.__init__()=boto.sdb.persist.property.MultiValue-class.html#__init__,Method boto.sdb.persist.property.MultiValueProperty.__init__()=boto.sdb.persist.property.MultiValueProperty-class.html#__init__,Method boto.sdb.persist.property.ObjectListProperty.__init__()=boto.sdb.persist.property.ObjectListProperty-class.html#__init__,Method boto.sdb.persist.property.ObjectProperty.__init__()=boto.sdb.persist.property.ObjectProperty-class.html#__init__,Method boto.sdb.persist.property.PasswordProperty.__init__()=boto.sdb.persist.property.PasswordProperty-class.html#__init__,Method boto.sdb.persist.property.PositiveIntegerListProperty.__init__()=boto.sdb.persist.property.PositiveIntegerListProperty-class.html#__init__,Method boto.sdb.persist.property.PositiveIntegerProperty.__init__()=boto.sdb.persist.property.PositiveIntegerProperty-class.html#__init__,Method boto.sdb.persist.property.Property.__init__()=boto.sdb.persist.property.Property-class.html#__init__,Method boto.sdb.persist.property.S3BucketProperty.__init__()=boto.sdb.persist.property.S3BucketProperty-class.html#__init__,Method boto.sdb.persist.property.S3KeyProperty.__init__()=boto.sdb.persist.property.S3KeyProperty-class.html#__init__,Method boto.sdb.persist.property.SmallIntegerListProperty.__init__()=boto.sdb.persist.property.SmallIntegerListProperty-class.html#__init__,Method boto.sdb.persist.property.SmallIntegerProperty.__init__()=boto.sdb.persist.property.SmallIntegerProperty-class.html#__init__,Method boto.sdb.persist.property.SmallPositiveIntegerListProperty.__init__()=boto.sdb.persist.property.SmallPositiveIntegerListProperty-class.html#__init__,Method boto.sdb.persist.property.SmallPositiveIntegerProperty.__init__()=boto.sdb.persist.property.SmallPositiveIntegerProperty-class.html#__init__,Method boto.sdb.persist.property.StringListProperty.__init__()=boto.sdb.persist.property.StringListProperty-class.html#__init__,Method boto.sdb.persist.property.StringProperty.__init__()=boto.sdb.persist.property.StringProperty-class.html#__init__,Method boto.sdb.queryresultset.QueryResultSet.__init__()=boto.sdb.queryresultset.QueryResultSet-class.html#__init__,Method boto.services.bs.BS.__init__()=boto.services.bs.BS-class.html#__init__,Method boto.services.result.ResultProcessor.__init__()=boto.services.result.ResultProcessor-class.html#__init__,Method boto.services.service.Service.__init__()=boto.services.service.Service-class.html#__init__,Method boto.services.servicedef.ServiceDef.__init__()=boto.services.servicedef.ServiceDef-class.html#__init__,Method boto.services.sonofmmm.SonOfMMM.__init__()=boto.services.sonofmmm.SonOfMMM-class.html#__init__,Method boto.services.submit.Submitter.__init__()=boto.services.submit.Submitter-class.html#__init__,Method boto.sqs.20070501.attributes.Attributes.__init__()=boto.sqs.20070501.attributes.Attributes-class.html#__init__,Method boto.sqs.20070501.connection.SQSConnection.__init__()=boto.sqs.20070501.connection.SQSConnection-class.html#__init__,Method boto.sqs.20070501.connection.SQSQueryConnection.__init__()=boto.sqs.20070501.connection.SQSQueryConnection-class.html#__init__,Method boto.sqs.20070501.message.MHMessage.__init__()=boto.sqs.20070501.message.MHMessage-class.html#__init__,Method boto.sqs.20070501.message.RawMessage.__init__()=boto.sqs.20070501.message.RawMessage-class.html#__init__,Method boto.sqs.20070501.queue.Queue.__init__()=boto.sqs.20070501.queue.Queue-class.html#__init__,Method boto.sqs.attributes.Attributes.__init__()=boto.sqs.attributes.Attributes-class.html#__init__,Method boto.sqs.connection.SQSConnection.__init__()=boto.sqs.connection.SQSConnection-class.html#__init__,Method boto.sqs.message.MHMessage.__init__()=boto.sqs.message.MHMessage-class.html#__init__,Method boto.sqs.message.RawMessage.__init__()=boto.sqs.message.RawMessage-class.html#__init__,Method boto.sqs.queue.Queue.__init__()=boto.sqs.queue.Queue-class.html#__init__,Method boto.utils.AuthSMTPHandler.__init__()=boto.utils.AuthSMTPHandler-class.html#__init__,Method boto.utils.LRUCache._Item.__init__()=boto.utils.LRUCache._Item-class.html#__init__,Method boto.utils.LRUCache.__init__()=boto.utils.LRUCache-class.html#__init__,Method boto.utils.Password.__init__()=boto.utils.Password-class.html#__init__,Method boto.utils.ShellCommand.__init__()=boto.utils.ShellCommand-class.html#__init__"><a title="boto.cloudfront.CloudFrontConnection.__init__
+boto.cloudfront.distribution.Distribution.__init__
+boto.cloudfront.distribution.DistributionConfig.__init__
+boto.cloudfront.distribution.DistributionSummary.__init__
+boto.connection.AWSAuthConnection.__init__
+boto.connection.AWSQueryConnection.__init__
+boto.contrib.ymlmessage.YAMLMessage.__init__
+boto.ec2.address.Address.__init__
+boto.ec2.connection.EC2Connection.__init__
+boto.ec2.ec2object.EC2Object.__init__
+boto.ec2.image.Image.__init__
+boto.ec2.image.ImageAttribute.__init__
+boto.ec2.instance.ConsoleOutput.__init__
+boto.ec2.instance.Group.__init__
+boto.ec2.instance.Instance.__init__
+boto.ec2.instance.Reservation.__init__
+boto.ec2.keypair.KeyPair.__init__
+boto.ec2.regioninfo.RegionInfo.__init__
+boto.ec2.securitygroup.GroupOrCIDR.__init__
+boto.ec2.securitygroup.IPPermissions.__init__
+boto.ec2.securitygroup.SecurityGroup.__init__
+boto.ec2.snapshot.Snapshot.__init__
+boto.ec2.volume.Volume.__init__
+boto.ec2.zone.Zone.__init__
+boto.exception.BotoClientError.__init__
+boto.exception.BotoServerError.__init__
+boto.exception.ConsoleOutput.__init__
+boto.exception.EC2ResponseError.__init__
+boto.exception.S3ResponseError.__init__
+boto.exception.SQSError.__init__
+boto.exception._EC2Error.__init__
+boto.fps.connection.FPSConnection.__init__
+boto.handler.XmlHandler.__init__
+boto.mapreduce.lqs.LQSCommand.__init__
+boto.mapreduce.lqs.LQSMessage.__init__
+boto.mapreduce.lqs.LQSServer.__init__
+boto.mapreduce.partitiondb.Partition.__init__
+boto.mapreduce.partitiondb.PartitionDB.__init__
+boto.mapreduce.partitiondb.Version.__init__
+boto.mapreduce.queuetools.LQSClient.__init__
+boto.mapreduce.queuetools.SQSClient.__init__
+boto.mashups.order.Item.__init__
+boto.mashups.order.Order.__init__
+boto.mashups.server.Server.__init__
+boto.mturk.connection.Assignment.__init__
+boto.mturk.connection.BaseAutoResultElement.__init__
+boto.mturk.connection.MTurkConnection.__init__
+boto.mturk.notification.Event.__init__
+boto.mturk.notification.NotificationMessage.__init__
+boto.mturk.price.Price.__init__
+boto.mturk.qualification.PercentAssignmentsAbandonedRequirement.__init__
+boto.mturk.qualification.PercentAssignmentsApprovedRequirement.__init__
+boto.mturk.qualification.PercentAssignmentsRejectedRequirement.__init__
+boto.mturk.qualification.PercentAssignmentsReturnedRequirement.__init__
+boto.mturk.qualification.PercentAssignmentsSubmittedRequirement.__init__
+boto.mturk.qualification.Qualifications.__init__
+boto.mturk.qualification.Requirement.__init__
+boto.mturk.question.AnswerSpecification.__init__
+boto.mturk.question.ExternalQuestion.__init__
+boto.mturk.question.FileUploadAnswer.__init__
+boto.mturk.question.FreeTextAnswer.__init__
+boto.mturk.question.Question.__init__
+boto.mturk.question.QuestionContent.__init__
+boto.mturk.question.QuestionForm.__init__
+boto.mturk.question.SelectionAnswer.__init__
+boto.pyami.bootstrap.Bootstrap.__init__
+boto.pyami.config.Config.__init__
+boto.pyami.copybot.CopyBot.__init__
+boto.pyami.scriptbase.ScriptBase.__init__
+boto.resultset.ResultSet.__init__
+boto.s3.acl.ACL.__init__
+boto.s3.acl.Grant.__init__
+boto.s3.acl.Policy.__init__
+boto.s3.bucket.Bucket.__init__
+boto.s3.bucketlistresultset.BucketListResultSet.__init__
+boto.s3.connection.S3Connection.__init__
+boto.s3.key.Key.__init__
+boto.s3.prefix.Prefix.__init__
+boto.s3.user.User.__init__
+boto.sdb.connection.ItemThread.__init__
+boto.sdb.connection.SDBConnection.__init__
+boto.sdb.db.key.Key.__init__
+boto.sdb.db.manager.pgmanager.PGConverter.__init__
+boto.sdb.db.manager.pgmanager.PGManager.__init__
+boto.sdb.db.manager.sdbmanager.SDBConverter.__init__
+boto.sdb.db.manager.sdbmanager.SDBManager.__init__
+boto.sdb.db.model.Model.__init__
+boto.sdb.db.model.Model.__init__
+boto.sdb.db.model.ModelMeta.__init__
+boto.sdb.db.model.ModelMeta.__init__
+boto.sdb.db.property.BooleanProperty.__init__
+boto.sdb.db.property.CalculatedProperty.__init__
+boto.sdb.db.property.DateTimeProperty.__init__
+boto.sdb.db.property.IntegerProperty.__init__
+boto.sdb.db.property.ListProperty.__init__
+boto.sdb.db.property.LongProperty.__init__
+boto.sdb.db.property.PasswordProperty.__init__
+boto.sdb.db.property.Property.__init__
+boto.sdb.db.property.ReferenceProperty.__init__
+boto.sdb.db.property.S3KeyProperty.__init__
+boto.sdb.db.property.StringProperty.__init__
+boto.sdb.db.property.TextProperty.__init__
+boto.sdb.db.property._ReverseReferenceProperty.__init__
+boto.sdb.db.query.Query.__init__
+boto.sdb.domain.Domain.__init__
+boto.sdb.domain.DomainMetaData.__init__
+boto.sdb.item.Item.__init__
+boto.sdb.persist.Manager.__init__
+boto.sdb.persist.checker.BooleanChecker.__init__
+boto.sdb.persist.checker.DateTimeChecker.__init__
+boto.sdb.persist.checker.IntegerChecker.__init__
+boto.sdb.persist.checker.ObjectChecker.__init__
+boto.sdb.persist.checker.S3BucketChecker.__init__
+boto.sdb.persist.checker.S3KeyChecker.__init__
+boto.sdb.persist.checker.StringChecker.__init__
+boto.sdb.persist.object.SDBBase.__init__
+boto.sdb.persist.object.SDBObject.__init__
+boto.sdb.persist.property.BooleanListProperty.__init__
+boto.sdb.persist.property.BooleanProperty.__init__
+boto.sdb.persist.property.DateTimeProperty.__init__
+boto.sdb.persist.property.IntegerListProperty.__init__
+boto.sdb.persist.property.IntegerProperty.__init__
+boto.sdb.persist.property.LargeIntegerListProperty.__init__
+boto.sdb.persist.property.LargeIntegerProperty.__init__
+boto.sdb.persist.property.LargePositiveIntegerListProperty.__init__
+boto.sdb.persist.property.LargePositiveIntegerProperty.__init__
+boto.sdb.persist.property.MultiValue.__init__
+boto.sdb.persist.property.MultiValueProperty.__init__
+boto.sdb.persist.property.ObjectListProperty.__init__
+boto.sdb.persist.property.ObjectProperty.__init__
+boto.sdb.persist.property.PasswordProperty.__init__
+boto.sdb.persist.property.PositiveIntegerListProperty.__init__
+boto.sdb.persist.property.PositiveIntegerProperty.__init__
+boto.sdb.persist.property.Property.__init__
+boto.sdb.persist.property.S3BucketProperty.__init__
+boto.sdb.persist.property.S3KeyProperty.__init__
+boto.sdb.persist.property.SmallIntegerListProperty.__init__
+boto.sdb.persist.property.SmallIntegerProperty.__init__
+boto.sdb.persist.property.SmallPositiveIntegerListProperty.__init__
+boto.sdb.persist.property.SmallPositiveIntegerProperty.__init__
+boto.sdb.persist.property.StringListProperty.__init__
+boto.sdb.persist.property.StringProperty.__init__
+boto.sdb.queryresultset.QueryResultSet.__init__
+boto.services.bs.BS.__init__
+boto.services.result.ResultProcessor.__init__
+boto.services.service.Service.__init__
+boto.services.servicedef.ServiceDef.__init__
+boto.services.sonofmmm.SonOfMMM.__init__
+boto.services.submit.Submitter.__init__
+boto.sqs.20070501.attributes.Attributes.__init__
+boto.sqs.20070501.connection.SQSConnection.__init__
+boto.sqs.20070501.connection.SQSQueryConnection.__init__
+boto.sqs.20070501.message.MHMessage.__init__
+boto.sqs.20070501.message.RawMessage.__init__
+boto.sqs.20070501.queue.Queue.__init__
+boto.sqs.attributes.Attributes.__init__
+boto.sqs.connection.SQSConnection.__init__
+boto.sqs.message.MHMessage.__init__
+boto.sqs.message.RawMessage.__init__
+boto.sqs.queue.Queue.__init__
+boto.utils.AuthSMTPHandler.__init__
+boto.utils.LRUCache._Item.__init__
+boto.utils.LRUCache.__init__
+boto.utils.Password.__init__
+boto.utils.ShellCommand.__init__" class="py-name" href="#" onclick="return doclink('link-6', '__init__', 'link-6');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">)</tt> </tt>
+<a name="L30"></a><tt class="py-lineno">30</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">wdir</tt> <tt class="py-op">=</tt> <tt id="link-7" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-7', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-8" class="py-name" targets="Variable boto.config=boto-module.html#config,Variable boto.mashups.server.Server.config=boto.mashups.server.Server-class.html#config,Module boto.pyami.config=boto.pyami.config-module.html"><a title="boto.config
+boto.mashups.server.Server.config
+boto.pyami.config" class="py-name" href="#" onclick="return doclink('link-8', 'config', 'link-8');">config</a></tt><tt class="py-op">.</tt><tt id="link-9" class="py-name" targets="Method boto.mapreduce.queuetools.LQSClient.get()=boto.mapreduce.queuetools.LQSClient-class.html#get,Method boto.mapreduce.queuetools.SQSClient.get()=boto.mapreduce.queuetools.SQSClient-class.html#get,Method boto.pyami.config.Config.get()=boto.pyami.config.Config-class.html#get,Class Method boto.sdb.persist.object.SDBObject.get()=boto.sdb.persist.object.SDBObject-class.html#get,Method boto.services.servicedef.ServiceDef.get()=boto.services.servicedef.ServiceDef-class.html#get,Method boto.sqs.20070501.message.MHMessage.get()=boto.sqs.20070501.message.MHMessage-class.html#get,Method boto.sqs.message.MHMessage.get()=boto.sqs.message.MHMessage-class.html#get"><a title="boto.mapreduce.queuetools.LQSClient.get
+boto.mapreduce.queuetools.SQSClient.get
+boto.pyami.config.Config.get
+boto.sdb.persist.object.SDBObject.get
+boto.services.servicedef.ServiceDef.get
+boto.sqs.20070501.message.MHMessage.get
+boto.sqs.message.MHMessage.get" class="py-name" href="#" onclick="return doclink('link-9', 'get', 'link-9');">get</a></tt><tt class="py-op">(</tt><tt class="py-string">'Pyami'</tt><tt class="py-op">,</tt> <tt class="py-string">'working_dir'</tt><tt class="py-op">)</tt> </tt>
+<a name="L31"></a><tt class="py-lineno">31</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">log_file</tt> <tt class="py-op">=</tt> <tt class="py-string">'%s.log'</tt> <tt class="py-op">%</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-10" class="py-name" targets="Variable boto.mashups.server.Server.instance_id=boto.mashups.server.Server-class.html#instance_id"><a title="boto.mashups.server.Server.instance_id" class="py-name" href="#" onclick="return doclink('link-10', 'instance_id', 'link-10');">instance_id</a></tt> </tt>
+<a name="L32"></a><tt class="py-lineno">32</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">log_path</tt> <tt class="py-op">=</tt> <tt class="py-name">os</tt><tt class="py-op">.</tt><tt class="py-name">path</tt><tt class="py-op">.</tt><tt class="py-name">join</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">wdir</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">log_file</tt><tt class="py-op">)</tt> </tt>
+<a name="L33"></a><tt class="py-lineno">33</tt>  <tt class="py-line">        <tt id="link-11" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-11', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-12" class="py-name" targets="Function boto.set_file_logger()=boto-module.html#set_file_logger"><a title="boto.set_file_logger" class="py-name" href="#" onclick="return doclink('link-12', 'set_file_logger', 'link-12');">set_file_logger</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-13" class="py-name" targets="Variable boto.mapreduce.partitiondb.Partition.name=boto.mapreduce.partitiondb.Partition-class.html#name,Variable boto.mapreduce.partitiondb.PartitionDB.name=boto.mapreduce.partitiondb.PartitionDB-class.html#name,Variable boto.mapreduce.partitiondb.Version.name=boto.mapreduce.partitiondb.Version-class.html#name,Variable boto.mashups.server.Server.name=boto.mashups.server.Server-class.html#name,Method boto.sdb.db.key.Key.name()=boto.sdb.db.key.Key-class.html#name,Variable boto.sdb.db.property.Property.name=boto.sdb.db.property.Property-class.html#name,Variable boto.sdb.db.test_db.TestBasic.name=boto.sdb.db.test_db.TestBasic-class.html#name,Variable boto.sdb.db.test_db.TestList.name=boto.sdb.db.test_db.TestList-class.html#name,Variable boto.sdb.db.test_db.TestListReference.name=boto.sdb.db.test_db.TestListReference-class.html#name,Variable boto.sdb.db.test_db.TestUnique.name=boto.sdb.db.test_db.TestUnique-class.html#name,Variable boto.sdb.persist.test_persist.TestRef.name=boto.sdb.persist.test_persist.TestRef-class.html#name,Variable boto.sdb.persist.test_persist.TestScalar.name=boto.sdb.persist.test_persist.TestScalar-class.html#name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-13', 'name', 'link-13');">name</a></tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">log_path</tt><tt class="py-op">)</tt> </tt>
+<a name="L34"></a><tt class="py-lineno">34</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">src_name</tt> <tt class="py-op">=</tt> <tt id="link-14" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-14', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-15" class="py-name"><a title="boto.config
+boto.mashups.server.Server.config
+boto.pyami.config" class="py-name" href="#" onclick="return doclink('link-15', 'config', 'link-8');">config</a></tt><tt class="py-op">.</tt><tt id="link-16" class="py-name"><a title="boto.mapreduce.queuetools.LQSClient.get
+boto.mapreduce.queuetools.SQSClient.get
+boto.pyami.config.Config.get
+boto.sdb.persist.object.SDBObject.get
+boto.services.servicedef.ServiceDef.get
+boto.sqs.20070501.message.MHMessage.get
+boto.sqs.message.MHMessage.get" class="py-name" href="#" onclick="return doclink('link-16', 'get', 'link-9');">get</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-17" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-17', 'name', 'link-13');">name</a></tt><tt class="py-op">,</tt> <tt class="py-string">'src_bucket'</tt><tt class="py-op">)</tt> </tt>
+<a name="L35"></a><tt class="py-lineno">35</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">dst_name</tt> <tt class="py-op">=</tt> <tt id="link-18" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-18', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-19" class="py-name"><a title="boto.config
+boto.mashups.server.Server.config
+boto.pyami.config" class="py-name" href="#" onclick="return doclink('link-19', 'config', 'link-8');">config</a></tt><tt class="py-op">.</tt><tt id="link-20" class="py-name"><a title="boto.mapreduce.queuetools.LQSClient.get
+boto.mapreduce.queuetools.SQSClient.get
+boto.pyami.config.Config.get
+boto.sdb.persist.object.SDBObject.get
+boto.services.servicedef.ServiceDef.get
+boto.sqs.20070501.message.MHMessage.get
+boto.sqs.message.MHMessage.get" class="py-name" href="#" onclick="return doclink('link-20', 'get', 'link-9');">get</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-21" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-21', 'name', 'link-13');">name</a></tt><tt class="py-op">,</tt> <tt class="py-string">'dst_bucket'</tt><tt class="py-op">)</tt> </tt>
+<a name="L36"></a><tt class="py-lineno">36</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">replace</tt> <tt class="py-op">=</tt> <tt id="link-22" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-22', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-23" class="py-name"><a title="boto.config
+boto.mashups.server.Server.config
+boto.pyami.config" class="py-name" href="#" onclick="return doclink('link-23', 'config', 'link-8');">config</a></tt><tt class="py-op">.</tt><tt id="link-24" class="py-name" targets="Method boto.pyami.config.Config.getbool()=boto.pyami.config.Config-class.html#getbool,Method boto.services.servicedef.ServiceDef.getbool()=boto.services.servicedef.ServiceDef-class.html#getbool"><a title="boto.pyami.config.Config.getbool
+boto.services.servicedef.ServiceDef.getbool" class="py-name" href="#" onclick="return doclink('link-24', 'getbool', 'link-24');">getbool</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-25" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-25', 'name', 'link-13');">name</a></tt><tt class="py-op">,</tt> <tt class="py-string">'replace_dst'</tt><tt class="py-op">,</tt> <tt class="py-name">True</tt><tt class="py-op">)</tt> </tt>
+<a name="L37"></a><tt class="py-lineno">37</tt>  <tt class="py-line">        <tt id="link-26" class="py-name" targets="Package boto.s3=boto.s3-module.html"><a title="boto.s3" class="py-name" href="#" onclick="return doclink('link-26', 's3', 'link-26');">s3</a></tt> <tt class="py-op">=</tt> <tt id="link-27" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-27', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-28" class="py-name" targets="Function boto.connect_s3()=boto-module.html#connect_s3"><a title="boto.connect_s3" class="py-name" href="#" onclick="return doclink('link-28', 'connect_s3', 'link-28');">connect_s3</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L38"></a><tt class="py-lineno">38</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">src</tt> <tt class="py-op">=</tt> <tt id="link-29" class="py-name"><a title="boto.s3" class="py-name" href="#" onclick="return doclink('link-29', 's3', 'link-26');">s3</a></tt><tt class="py-op">.</tt><tt id="link-30" class="py-name" targets="Function boto.lookup()=boto-module.html#lookup,Method boto.s3.bucket.Bucket.lookup()=boto.s3.bucket.Bucket-class.html#lookup,Method boto.s3.connection.S3Connection.lookup()=boto.s3.connection.S3Connection-class.html#lookup,Method boto.sdb.connection.SDBConnection.lookup()=boto.sdb.connection.SDBConnection-class.html#lookup,Method boto.sdb.db.manager.pgmanager.PGManager.lookup()=boto.sdb.db.manager.pgmanager.PGManager-class.html#lookup,Class Method boto.sdb.db.model.Model.lookup()=boto.sdb.db.model.Model-class.html#lookup,Class Method boto.sdb.db.model.Model.lookup()=boto.sdb.db.model.Model-class.html#lookup"><a title="boto.lookup
+boto.s3.bucket.Bucket.lookup
+boto.s3.connection.S3Connection.lookup
+boto.sdb.connection.SDBConnection.lookup
+boto.sdb.db.manager.pgmanager.PGManager.lookup
+boto.sdb.db.model.Model.lookup
+boto.sdb.db.model.Model.lookup" class="py-name" href="#" onclick="return doclink('link-30', 'lookup', 'link-30');">lookup</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">src_name</tt><tt class="py-op">)</tt> </tt>
+<a name="L39"></a><tt class="py-lineno">39</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-keyword">not</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">src</tt><tt class="py-op">:</tt> </tt>
+<a name="L40"></a><tt class="py-lineno">40</tt>  <tt class="py-line">            <tt id="link-31" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-31', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-32" class="py-name" targets="Variable boto.log=boto-module.html#log,Variable boto.mashups.server.Server.log=boto.mashups.server.Server-class.html#log"><a title="boto.log
+boto.mashups.server.Server.log" class="py-name" href="#" onclick="return doclink('link-32', 'log', 'link-32');">log</a></tt><tt class="py-op">.</tt><tt id="link-33" class="py-name" targets="Method boto.mapreduce.lqs.LQSHandler.error()=boto.mapreduce.lqs.LQSHandler-class.html#error"><a title="boto.mapreduce.lqs.LQSHandler.error" class="py-name" href="#" onclick="return doclink('link-33', 'error', 'link-33');">error</a></tt><tt class="py-op">(</tt><tt class="py-string">'Source bucket does not exist: %s'</tt> <tt class="py-op">%</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">src_name</tt><tt class="py-op">)</tt> </tt>
+<a name="L41"></a><tt class="py-lineno">41</tt>  <tt class="py-line">        <tt class="py-name">dest_access_key</tt> <tt class="py-op">=</tt> <tt id="link-34" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-34', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-35" class="py-name"><a title="boto.config
+boto.mashups.server.Server.config
+boto.pyami.config" class="py-name" href="#" onclick="return doclink('link-35', 'config', 'link-8');">config</a></tt><tt class="py-op">.</tt><tt id="link-36" class="py-name"><a title="boto.mapreduce.queuetools.LQSClient.get
+boto.mapreduce.queuetools.SQSClient.get
+boto.pyami.config.Config.get
+boto.sdb.persist.object.SDBObject.get
+boto.services.servicedef.ServiceDef.get
+boto.sqs.20070501.message.MHMessage.get
+boto.sqs.message.MHMessage.get" class="py-name" href="#" onclick="return doclink('link-36', 'get', 'link-9');">get</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-37" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-37', 'name', 'link-13');">name</a></tt><tt class="py-op">,</tt> <tt class="py-string">'dest_aws_access_key_id'</tt><tt class="py-op">,</tt> <tt class="py-name">None</tt><tt class="py-op">)</tt> </tt>
+<a name="L42"></a><tt class="py-lineno">42</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">dest_access_key</tt><tt class="py-op">:</tt> </tt>
+<a name="L43"></a><tt class="py-lineno">43</tt>  <tt class="py-line">            <tt class="py-name">dest_secret_key</tt> <tt class="py-op">=</tt> <tt id="link-38" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-38', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-39" class="py-name"><a title="boto.config
+boto.mashups.server.Server.config
+boto.pyami.config" class="py-name" href="#" onclick="return doclink('link-39', 'config', 'link-8');">config</a></tt><tt class="py-op">.</tt><tt id="link-40" class="py-name"><a title="boto.mapreduce.queuetools.LQSClient.get
+boto.mapreduce.queuetools.SQSClient.get
+boto.pyami.config.Config.get
+boto.sdb.persist.object.SDBObject.get
+boto.services.servicedef.ServiceDef.get
+boto.sqs.20070501.message.MHMessage.get
+boto.sqs.message.MHMessage.get" class="py-name" href="#" onclick="return doclink('link-40', 'get', 'link-9');">get</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-41" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-41', 'name', 'link-13');">name</a></tt><tt class="py-op">,</tt> <tt class="py-string">'dest_aws_secret_access_key'</tt><tt class="py-op">,</tt> <tt class="py-name">None</tt><tt class="py-op">)</tt> </tt>
+<a name="L44"></a><tt class="py-lineno">44</tt>  <tt class="py-line">            <tt id="link-42" class="py-name"><a title="boto.s3" class="py-name" href="#" onclick="return doclink('link-42', 's3', 'link-26');">s3</a></tt> <tt class="py-op">=</tt> <tt id="link-43" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-43', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-44" class="py-name" targets="Method boto.ec2.regioninfo.RegionInfo.connect()=boto.ec2.regioninfo.RegionInfo-class.html#connect,Method boto.mapreduce.queuetools.LQSClient.connect()=boto.mapreduce.queuetools.LQSClient-class.html#connect,Method boto.mapreduce.queuetools.SQSClient.connect()=boto.mapreduce.queuetools.SQSClient-class.html#connect"><a title="boto.ec2.regioninfo.RegionInfo.connect
+boto.mapreduce.queuetools.LQSClient.connect
+boto.mapreduce.queuetools.SQSClient.connect" class="py-name" href="#" onclick="return doclink('link-44', 'connect', 'link-44');">connect</a></tt><tt class="py-op">(</tt><tt class="py-name">dest_access_key</tt><tt class="py-op">,</tt> <tt class="py-name">dest_secret_key</tt><tt class="py-op">)</tt> </tt>
+<a name="L45"></a><tt class="py-lineno">45</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">dst</tt> <tt class="py-op">=</tt> <tt id="link-45" class="py-name"><a title="boto.s3" class="py-name" href="#" onclick="return doclink('link-45', 's3', 'link-26');">s3</a></tt><tt class="py-op">.</tt><tt id="link-46" class="py-name"><a title="boto.lookup
+boto.s3.bucket.Bucket.lookup
+boto.s3.connection.S3Connection.lookup
+boto.sdb.connection.SDBConnection.lookup
+boto.sdb.db.manager.pgmanager.PGManager.lookup
+boto.sdb.db.model.Model.lookup
+boto.sdb.db.model.Model.lookup" class="py-name" href="#" onclick="return doclink('link-46', 'lookup', 'link-30');">lookup</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">dst_name</tt><tt class="py-op">)</tt> </tt>
+<a name="L46"></a><tt class="py-lineno">46</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-keyword">not</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">dst</tt><tt class="py-op">:</tt> </tt>
+<a name="L47"></a><tt class="py-lineno">47</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">dst</tt> <tt class="py-op">=</tt> <tt id="link-47" class="py-name"><a title="boto.s3" class="py-name" href="#" onclick="return doclink('link-47', 's3', 'link-26');">s3</a></tt><tt class="py-op">.</tt><tt id="link-48" class="py-name" targets="Method boto.s3.connection.S3Connection.create_bucket()=boto.s3.connection.S3Connection-class.html#create_bucket"><a title="boto.s3.connection.S3Connection.create_bucket" class="py-name" href="#" onclick="return doclink('link-48', 'create_bucket', 'link-48');">create_bucket</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">dst_name</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L48"></a><tt class="py-lineno">48</tt>  <tt class="py-line"> </tt>
+<a name="CopyBot.copy_bucket_acl"></a><div id="CopyBot.copy_bucket_acl-def"><a name="L49"></a><tt class="py-lineno">49</tt> <a class="py-toggle" href="#" id="CopyBot.copy_bucket_acl-toggle" onclick="return toggle('CopyBot.copy_bucket_acl');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.pyami.copybot.CopyBot-class.html#copy_bucket_acl">copy_bucket_acl</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="CopyBot.copy_bucket_acl-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="CopyBot.copy_bucket_acl-expanded"><a name="L50"></a><tt class="py-lineno">50</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt id="link-49" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-49', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-50" class="py-name"><a title="boto.config
+boto.mashups.server.Server.config
+boto.pyami.config" class="py-name" href="#" onclick="return doclink('link-50', 'config', 'link-8');">config</a></tt><tt class="py-op">.</tt><tt id="link-51" class="py-name"><a title="boto.mapreduce.queuetools.LQSClient.get
+boto.mapreduce.queuetools.SQSClient.get
+boto.pyami.config.Config.get
+boto.sdb.persist.object.SDBObject.get
+boto.services.servicedef.ServiceDef.get
+boto.sqs.20070501.message.MHMessage.get
+boto.sqs.message.MHMessage.get" class="py-name" href="#" onclick="return doclink('link-51', 'get', 'link-9');">get</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-52" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-52', 'name', 'link-13');">name</a></tt><tt class="py-op">,</tt> <tt class="py-string">'copy_acls'</tt><tt class="py-op">,</tt> <tt class="py-name">True</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L51"></a><tt class="py-lineno">51</tt>  <tt class="py-line">            <tt id="link-53" class="py-name" targets="Module boto.s3.acl=boto.s3.acl-module.html"><a title="boto.s3.acl" class="py-name" href="#" onclick="return doclink('link-53', 'acl', 'link-53');">acl</a></tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">src</tt><tt class="py-op">.</tt><tt id="link-54" class="py-name" targets="Method boto.s3.bucket.Bucket.get_xml_acl()=boto.s3.bucket.Bucket-class.html#get_xml_acl,Method boto.s3.key.Key.get_xml_acl()=boto.s3.key.Key-class.html#get_xml_acl"><a title="boto.s3.bucket.Bucket.get_xml_acl
+boto.s3.key.Key.get_xml_acl" class="py-name" href="#" onclick="return doclink('link-54', 'get_xml_acl', 'link-54');">get_xml_acl</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L52"></a><tt class="py-lineno">52</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">dst</tt><tt class="py-op">.</tt><tt id="link-55" class="py-name" targets="Method boto.s3.bucket.Bucket.set_xml_acl()=boto.s3.bucket.Bucket-class.html#set_xml_acl,Method boto.s3.key.Key.set_xml_acl()=boto.s3.key.Key-class.html#set_xml_acl"><a title="boto.s3.bucket.Bucket.set_xml_acl
+boto.s3.key.Key.set_xml_acl" class="py-name" href="#" onclick="return doclink('link-55', 'set_xml_acl', 'link-55');">set_xml_acl</a></tt><tt class="py-op">(</tt><tt id="link-56" class="py-name"><a title="boto.s3.acl" class="py-name" href="#" onclick="return doclink('link-56', 'acl', 'link-53');">acl</a></tt><tt class="py-op">)</tt> </tt>
+</div><a name="L53"></a><tt class="py-lineno">53</tt>  <tt class="py-line"> </tt>
+<a name="CopyBot.copy_key_acl"></a><div id="CopyBot.copy_key_acl-def"><a name="L54"></a><tt class="py-lineno">54</tt> <a class="py-toggle" href="#" id="CopyBot.copy_key_acl-toggle" onclick="return toggle('CopyBot.copy_key_acl');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.pyami.copybot.CopyBot-class.html#copy_key_acl">copy_key_acl</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">src</tt><tt class="py-op">,</tt> <tt class="py-param">dst</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="CopyBot.copy_key_acl-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="CopyBot.copy_key_acl-expanded"><a name="L55"></a><tt class="py-lineno">55</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt id="link-57" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-57', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-58" class="py-name"><a title="boto.config
+boto.mashups.server.Server.config
+boto.pyami.config" class="py-name" href="#" onclick="return doclink('link-58', 'config', 'link-8');">config</a></tt><tt class="py-op">.</tt><tt id="link-59" class="py-name"><a title="boto.mapreduce.queuetools.LQSClient.get
+boto.mapreduce.queuetools.SQSClient.get
+boto.pyami.config.Config.get
+boto.sdb.persist.object.SDBObject.get
+boto.services.servicedef.ServiceDef.get
+boto.sqs.20070501.message.MHMessage.get
+boto.sqs.message.MHMessage.get" class="py-name" href="#" onclick="return doclink('link-59', 'get', 'link-9');">get</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-60" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-60', 'name', 'link-13');">name</a></tt><tt class="py-op">,</tt> <tt class="py-string">'copy_acls'</tt><tt class="py-op">,</tt> <tt class="py-name">True</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L56"></a><tt class="py-lineno">56</tt>  <tt class="py-line">            <tt id="link-61" class="py-name"><a title="boto.s3.acl" class="py-name" href="#" onclick="return doclink('link-61', 'acl', 'link-53');">acl</a></tt> <tt class="py-op">=</tt> <tt class="py-name">src</tt><tt class="py-op">.</tt><tt id="link-62" class="py-name"><a title="boto.s3.bucket.Bucket.get_xml_acl
+boto.s3.key.Key.get_xml_acl" class="py-name" href="#" onclick="return doclink('link-62', 'get_xml_acl', 'link-54');">get_xml_acl</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L57"></a><tt class="py-lineno">57</tt>  <tt class="py-line">            <tt class="py-name">dst</tt><tt class="py-op">.</tt><tt id="link-63" class="py-name"><a title="boto.s3.bucket.Bucket.set_xml_acl
+boto.s3.key.Key.set_xml_acl" class="py-name" href="#" onclick="return doclink('link-63', 'set_xml_acl', 'link-55');">set_xml_acl</a></tt><tt class="py-op">(</tt><tt id="link-64" class="py-name"><a title="boto.s3.acl" class="py-name" href="#" onclick="return doclink('link-64', 'acl', 'link-53');">acl</a></tt><tt class="py-op">)</tt> </tt>
+</div><a name="L58"></a><tt class="py-lineno">58</tt>  <tt class="py-line"> </tt>
+<a name="CopyBot.copy_keys"></a><div id="CopyBot.copy_keys-def"><a name="L59"></a><tt class="py-lineno">59</tt> <a class="py-toggle" href="#" id="CopyBot.copy_keys-toggle" onclick="return toggle('CopyBot.copy_keys');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.pyami.copybot.CopyBot-class.html#copy_keys">copy_keys</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="CopyBot.copy_keys-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="CopyBot.copy_keys-expanded"><a name="L60"></a><tt class="py-lineno">60</tt>  <tt class="py-line">        <tt id="link-65" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-65', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-66" class="py-name"><a title="boto.log
+boto.mashups.server.Server.log" class="py-name" href="#" onclick="return doclink('link-66', 'log', 'link-32');">log</a></tt><tt class="py-op">.</tt><tt class="py-name">info</tt><tt class="py-op">(</tt><tt class="py-string">'src=%s'</tt> <tt class="py-op">%</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">src</tt><tt class="py-op">.</tt><tt id="link-67" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-67', 'name', 'link-13');">name</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L61"></a><tt class="py-lineno">61</tt>  <tt class="py-line">        <tt id="link-68" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-68', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-69" class="py-name"><a title="boto.log
+boto.mashups.server.Server.log" class="py-name" href="#" onclick="return doclink('link-69', 'log', 'link-32');">log</a></tt><tt class="py-op">.</tt><tt class="py-name">info</tt><tt class="py-op">(</tt><tt class="py-string">'dst=%s'</tt> <tt class="py-op">%</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">dst</tt><tt class="py-op">.</tt><tt id="link-70" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-70', 'name', 'link-13');">name</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L62"></a><tt class="py-lineno">62</tt>  <tt class="py-line">        <tt class="py-keyword">try</tt><tt class="py-op">:</tt> </tt>
+<a name="L63"></a><tt class="py-lineno">63</tt>  <tt class="py-line">            <tt class="py-keyword">for</tt> <tt id="link-71" class="py-name" targets="Module boto.s3.key=boto.s3.key-module.html,Module boto.sdb.db.key=boto.sdb.db.key-module.html,Method boto.sdb.db.model.Model.key()=boto.sdb.db.model.Model-class.html#key,Method boto.sdb.db.model.Model.key()=boto.sdb.db.model.Model-class.html#key"><a title="boto.s3.key
+boto.sdb.db.key
+boto.sdb.db.model.Model.key
+boto.sdb.db.model.Model.key" class="py-name" href="#" onclick="return doclink('link-71', 'key', 'link-71');">key</a></tt> <tt class="py-keyword">in</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">src</tt><tt class="py-op">:</tt> </tt>
+<a name="L64"></a><tt class="py-lineno">64</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt> <tt class="py-keyword">not</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">replace</tt><tt class="py-op">:</tt> </tt>
+<a name="L65"></a><tt class="py-lineno">65</tt>  <tt class="py-line">                    <tt id="link-72" class="py-name" targets="Method boto.s3.key.Key.exists()=boto.s3.key.Key-class.html#exists"><a title="boto.s3.key.Key.exists" class="py-name" href="#" onclick="return doclink('link-72', 'exists', 'link-72');">exists</a></tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">dst</tt><tt class="py-op">.</tt><tt id="link-73" class="py-name"><a title="boto.lookup
+boto.s3.bucket.Bucket.lookup
+boto.s3.connection.S3Connection.lookup
+boto.sdb.connection.SDBConnection.lookup
+boto.sdb.db.manager.pgmanager.PGManager.lookup
+boto.sdb.db.model.Model.lookup
+boto.sdb.db.model.Model.lookup" class="py-name" href="#" onclick="return doclink('link-73', 'lookup', 'link-30');">lookup</a></tt><tt class="py-op">(</tt><tt id="link-74" class="py-name"><a title="boto.s3.key
+boto.sdb.db.key
+boto.sdb.db.model.Model.key
+boto.sdb.db.model.Model.key" class="py-name" href="#" onclick="return doclink('link-74', 'key', 'link-71');">key</a></tt><tt class="py-op">.</tt><tt id="link-75" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-75', 'name', 'link-13');">name</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L66"></a><tt class="py-lineno">66</tt>  <tt class="py-line">                    <tt class="py-keyword">if</tt> <tt id="link-76" class="py-name"><a title="boto.s3.key.Key.exists" class="py-name" href="#" onclick="return doclink('link-76', 'exists', 'link-72');">exists</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L67"></a><tt class="py-lineno">67</tt>  <tt class="py-line">                        <tt id="link-77" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-77', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-78" class="py-name"><a title="boto.log
+boto.mashups.server.Server.log" class="py-name" href="#" onclick="return doclink('link-78', 'log', 'link-32');">log</a></tt><tt class="py-op">.</tt><tt class="py-name">info</tt><tt class="py-op">(</tt><tt class="py-string">'key=%s already exists in %s, skipping'</tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt id="link-79" class="py-name"><a title="boto.s3.key
+boto.sdb.db.key
+boto.sdb.db.model.Model.key
+boto.sdb.db.model.Model.key" class="py-name" href="#" onclick="return doclink('link-79', 'key', 'link-71');">key</a></tt><tt class="py-op">.</tt><tt id="link-80" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-80', 'name', 'link-13');">name</a></tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">dst</tt><tt class="py-op">.</tt><tt id="link-81" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-81', 'name', 'link-13');">name</a></tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L68"></a><tt class="py-lineno">68</tt>  <tt class="py-line">                        <tt class="py-keyword">continue</tt> </tt>
+<a name="L69"></a><tt class="py-lineno">69</tt>  <tt class="py-line">                <tt id="link-82" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-82', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-83" class="py-name"><a title="boto.log
+boto.mashups.server.Server.log" class="py-name" href="#" onclick="return doclink('link-83', 'log', 'link-32');">log</a></tt><tt class="py-op">.</tt><tt class="py-name">info</tt><tt class="py-op">(</tt><tt class="py-string">'copying %d bytes from key=%s'</tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt id="link-84" class="py-name"><a title="boto.s3.key
+boto.sdb.db.key
+boto.sdb.db.model.Model.key
+boto.sdb.db.model.Model.key" class="py-name" href="#" onclick="return doclink('link-84', 'key', 'link-71');">key</a></tt><tt class="py-op">.</tt><tt id="link-85" class="py-name" targets="Variable boto.sdb.db.test_db.TestBasic.size=boto.sdb.db.test_db.TestBasic-class.html#size,Variable boto.sdb.persist.test_persist.TestScalar.size=boto.sdb.persist.test_persist.TestScalar-class.html#size"><a title="boto.sdb.db.test_db.TestBasic.size
+boto.sdb.persist.test_persist.TestScalar.size" class="py-name" href="#" onclick="return doclink('link-85', 'size', 'link-85');">size</a></tt><tt class="py-op">,</tt> <tt id="link-86" class="py-name"><a title="boto.s3.key
+boto.sdb.db.key
+boto.sdb.db.model.Model.key
+boto.sdb.db.model.Model.key" class="py-name" href="#" onclick="return doclink('link-86', 'key', 'link-71');">key</a></tt><tt class="py-op">.</tt><tt id="link-87" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-87', 'name', 'link-13');">name</a></tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L70"></a><tt class="py-lineno">70</tt>  <tt class="py-line">                <tt class="py-name">path</tt> <tt class="py-op">=</tt> <tt class="py-name">os</tt><tt class="py-op">.</tt><tt class="py-name">path</tt><tt class="py-op">.</tt><tt class="py-name">join</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">wdir</tt><tt class="py-op">,</tt> <tt id="link-88" class="py-name"><a title="boto.s3.key
+boto.sdb.db.key
+boto.sdb.db.model.Model.key
+boto.sdb.db.model.Model.key" class="py-name" href="#" onclick="return doclink('link-88', 'key', 'link-71');">key</a></tt><tt class="py-op">.</tt><tt id="link-89" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-89', 'name', 'link-13');">name</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L71"></a><tt class="py-lineno">71</tt>  <tt class="py-line">                <tt id="link-90" class="py-name"><a title="boto.s3.key
+boto.sdb.db.key
+boto.sdb.db.model.Model.key
+boto.sdb.db.model.Model.key" class="py-name" href="#" onclick="return doclink('link-90', 'key', 'link-71');">key</a></tt><tt class="py-op">.</tt><tt id="link-91" class="py-name" targets="Method boto.s3.key.Key.get_contents_to_filename()=boto.s3.key.Key-class.html#get_contents_to_filename"><a title="boto.s3.key.Key.get_contents_to_filename" class="py-name" href="#" onclick="return doclink('link-91', 'get_contents_to_filename', 'link-91');">get_contents_to_filename</a></tt><tt class="py-op">(</tt><tt class="py-name">path</tt><tt class="py-op">)</tt> </tt>
+<a name="L72"></a><tt class="py-lineno">72</tt>  <tt class="py-line">                <tt id="link-92" class="py-name" targets="Method boto.s3.bucket.Bucket.new_key()=boto.s3.bucket.Bucket-class.html#new_key"><a title="boto.s3.bucket.Bucket.new_key" class="py-name" href="#" onclick="return doclink('link-92', 'new_key', 'link-92');">new_key</a></tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">dst</tt><tt class="py-op">.</tt><tt id="link-93" class="py-name"><a title="boto.s3.bucket.Bucket.new_key" class="py-name" href="#" onclick="return doclink('link-93', 'new_key', 'link-92');">new_key</a></tt><tt class="py-op">(</tt><tt id="link-94" class="py-name"><a title="boto.s3.key
+boto.sdb.db.key
+boto.sdb.db.model.Model.key
+boto.sdb.db.model.Model.key" class="py-name" href="#" onclick="return doclink('link-94', 'key', 'link-71');">key</a></tt><tt class="py-op">.</tt><tt id="link-95" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-95', 'name', 'link-13');">name</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L73"></a><tt class="py-lineno">73</tt>  <tt class="py-line">                <tt id="link-96" class="py-name"><a title="boto.s3.bucket.Bucket.new_key" class="py-name" href="#" onclick="return doclink('link-96', 'new_key', 'link-92');">new_key</a></tt><tt class="py-op">.</tt><tt id="link-97" class="py-name" targets="Method boto.s3.key.Key.set_contents_from_filename()=boto.s3.key.Key-class.html#set_contents_from_filename"><a title="boto.s3.key.Key.set_contents_from_filename" class="py-name" href="#" onclick="return doclink('link-97', 'set_contents_from_filename', 'link-97');">set_contents_from_filename</a></tt><tt class="py-op">(</tt><tt class="py-name">path</tt><tt class="py-op">)</tt> </tt>
+<a name="L74"></a><tt class="py-lineno">74</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-98" class="py-name" targets="Method boto.pyami.copybot.CopyBot.copy_key_acl()=boto.pyami.copybot.CopyBot-class.html#copy_key_acl"><a title="boto.pyami.copybot.CopyBot.copy_key_acl" class="py-name" href="#" onclick="return doclink('link-98', 'copy_key_acl', 'link-98');">copy_key_acl</a></tt><tt class="py-op">(</tt><tt id="link-99" class="py-name"><a title="boto.s3.key
+boto.sdb.db.key
+boto.sdb.db.model.Model.key
+boto.sdb.db.model.Model.key" class="py-name" href="#" onclick="return doclink('link-99', 'key', 'link-71');">key</a></tt><tt class="py-op">,</tt> <tt id="link-100" class="py-name"><a title="boto.s3.bucket.Bucket.new_key" class="py-name" href="#" onclick="return doclink('link-100', 'new_key', 'link-92');">new_key</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L75"></a><tt class="py-lineno">75</tt>  <tt class="py-line">                <tt class="py-name">os</tt><tt class="py-op">.</tt><tt class="py-name">unlink</tt><tt class="py-op">(</tt><tt class="py-name">path</tt><tt class="py-op">)</tt> </tt>
+<a name="L76"></a><tt class="py-lineno">76</tt>  <tt class="py-line">        <tt class="py-keyword">except</tt><tt class="py-op">:</tt> </tt>
+<a name="L77"></a><tt class="py-lineno">77</tt>  <tt class="py-line">            <tt id="link-101" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-101', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-102" class="py-name"><a title="boto.log
+boto.mashups.server.Server.log" class="py-name" href="#" onclick="return doclink('link-102', 'log', 'link-32');">log</a></tt><tt class="py-op">.</tt><tt id="link-103" class="py-name" targets="Module boto.cloudfront.exception=boto.cloudfront.exception-module.html,Module boto.exception=boto.exception-module.html"><a title="boto.cloudfront.exception
+boto.exception" class="py-name" href="#" onclick="return doclink('link-103', 'exception', 'link-103');">exception</a></tt><tt class="py-op">(</tt><tt class="py-string">'Error copying key: %s'</tt> <tt class="py-op">%</tt> <tt id="link-104" class="py-name"><a title="boto.s3.key
+boto.sdb.db.key
+boto.sdb.db.model.Model.key
+boto.sdb.db.model.Model.key" class="py-name" href="#" onclick="return doclink('link-104', 'key', 'link-71');">key</a></tt><tt class="py-op">.</tt><tt id="link-105" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-105', 'name', 'link-13');">name</a></tt><tt class="py-op">)</tt> </tt>
+</div><a name="L78"></a><tt class="py-lineno">78</tt>  <tt class="py-line"> </tt>
+<a name="CopyBot.copy_log"></a><div id="CopyBot.copy_log-def"><a name="L79"></a><tt class="py-lineno">79</tt> <a class="py-toggle" href="#" id="CopyBot.copy_log-toggle" onclick="return toggle('CopyBot.copy_log');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.pyami.copybot.CopyBot-class.html#copy_log">copy_log</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="CopyBot.copy_log-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="CopyBot.copy_log-expanded"><a name="L80"></a><tt class="py-lineno">80</tt>  <tt class="py-line">        <tt id="link-106" class="py-name"><a title="boto.s3.key
+boto.sdb.db.key
+boto.sdb.db.model.Model.key
+boto.sdb.db.model.Model.key" class="py-name" href="#" onclick="return doclink('link-106', 'key', 'link-71');">key</a></tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">dst</tt><tt class="py-op">.</tt><tt id="link-107" class="py-name"><a title="boto.s3.bucket.Bucket.new_key" class="py-name" href="#" onclick="return doclink('link-107', 'new_key', 'link-92');">new_key</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">log_file</tt><tt class="py-op">)</tt> </tt>
+<a name="L81"></a><tt class="py-lineno">81</tt>  <tt class="py-line">        <tt id="link-108" class="py-name"><a title="boto.s3.key
+boto.sdb.db.key
+boto.sdb.db.model.Model.key
+boto.sdb.db.model.Model.key" class="py-name" href="#" onclick="return doclink('link-108', 'key', 'link-71');">key</a></tt><tt class="py-op">.</tt><tt id="link-109" class="py-name"><a title="boto.s3.key.Key.set_contents_from_filename" class="py-name" href="#" onclick="return doclink('link-109', 'set_contents_from_filename', 'link-97');">set_contents_from_filename</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">log_path</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L82"></a><tt class="py-lineno">82</tt>  <tt class="py-line">         </tt>
+<a name="CopyBot.main"></a><div id="CopyBot.main-def"><a name="L83"></a><tt class="py-lineno">83</tt> <a class="py-toggle" href="#" id="CopyBot.main-toggle" onclick="return toggle('CopyBot.main');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.pyami.copybot.CopyBot-class.html#main">main</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="CopyBot.main-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="CopyBot.main-expanded"><a name="L84"></a><tt class="py-lineno">84</tt>  <tt class="py-line">        <tt class="py-name">fp</tt> <tt class="py-op">=</tt> <tt class="py-name">StringIO</tt><tt class="py-op">.</tt><tt class="py-name">StringIO</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L85"></a><tt class="py-lineno">85</tt>  <tt class="py-line">        <tt id="link-110" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-110', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-111" class="py-name"><a title="boto.config
+boto.mashups.server.Server.config
+boto.pyami.config" class="py-name" href="#" onclick="return doclink('link-111', 'config', 'link-8');">config</a></tt><tt class="py-op">.</tt><tt id="link-112" class="py-name" targets="Method boto.pyami.config.Config.dump_safe()=boto.pyami.config.Config-class.html#dump_safe"><a title="boto.pyami.config.Config.dump_safe" class="py-name" href="#" onclick="return doclink('link-112', 'dump_safe', 'link-112');">dump_safe</a></tt><tt class="py-op">(</tt><tt class="py-name">fp</tt><tt class="py-op">)</tt> </tt>
+<a name="L86"></a><tt class="py-lineno">86</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-113" class="py-name" targets="Method boto.pyami.scriptbase.ScriptBase.notify()=boto.pyami.scriptbase.ScriptBase-class.html#notify"><a title="boto.pyami.scriptbase.ScriptBase.notify" class="py-name" href="#" onclick="return doclink('link-113', 'notify', 'link-113');">notify</a></tt><tt class="py-op">(</tt><tt class="py-string">'%s (%s) Starting'</tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-114" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-114', 'name', 'link-13');">name</a></tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-115" class="py-name"><a title="boto.mashups.server.Server.instance_id" class="py-name" href="#" onclick="return doclink('link-115', 'instance_id', 'link-10');">instance_id</a></tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-name">fp</tt><tt class="py-op">.</tt><tt class="py-name">getvalue</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L87"></a><tt class="py-lineno">87</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">src</tt> <tt class="py-keyword">and</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">dst</tt><tt class="py-op">:</tt> </tt>
+<a name="L88"></a><tt class="py-lineno">88</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-116" class="py-name" targets="Method boto.pyami.copybot.CopyBot.copy_keys()=boto.pyami.copybot.CopyBot-class.html#copy_keys"><a title="boto.pyami.copybot.CopyBot.copy_keys" class="py-name" href="#" onclick="return doclink('link-116', 'copy_keys', 'link-116');">copy_keys</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L89"></a><tt class="py-lineno">89</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">dst</tt><tt class="py-op">:</tt> </tt>
+<a name="L90"></a><tt class="py-lineno">90</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-117" class="py-name" targets="Method boto.pyami.copybot.CopyBot.copy_log()=boto.pyami.copybot.CopyBot-class.html#copy_log"><a title="boto.pyami.copybot.CopyBot.copy_log" class="py-name" href="#" onclick="return doclink('link-117', 'copy_log', 'link-117');">copy_log</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L91"></a><tt class="py-lineno">91</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-118" class="py-name"><a title="boto.pyami.scriptbase.ScriptBase.notify" class="py-name" href="#" onclick="return doclink('link-118', 'notify', 'link-113');">notify</a></tt><tt class="py-op">(</tt><tt class="py-string">'%s (%s) Stopping'</tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-119" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-119', 'name', 'link-13');">name</a></tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-120" class="py-name"><a title="boto.mashups.server.Server.instance_id" class="py-name" href="#" onclick="return doclink('link-120', 'instance_id', 'link-10');">instance_id</a></tt><tt class="py-op">)</tt><tt class="py-op">,</tt> </tt>
+<a name="L92"></a><tt class="py-lineno">92</tt>  <tt class="py-line">                    <tt class="py-string">'Copy Operation Complete'</tt><tt class="py-op">)</tt> </tt>
+<a name="L93"></a><tt class="py-lineno">93</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt id="link-121" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-121', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-122" class="py-name"><a title="boto.config
+boto.mashups.server.Server.config
+boto.pyami.config" class="py-name" href="#" onclick="return doclink('link-122', 'config', 'link-8');">config</a></tt><tt class="py-op">.</tt><tt id="link-123" class="py-name"><a title="boto.pyami.config.Config.getbool
+boto.services.servicedef.ServiceDef.getbool" class="py-name" href="#" onclick="return doclink('link-123', 'getbool', 'link-24');">getbool</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-124" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-124', 'name', 'link-13');">name</a></tt><tt class="py-op">,</tt> <tt class="py-string">'exit_on_completion'</tt><tt class="py-op">,</tt> <tt class="py-name">True</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L94"></a><tt class="py-lineno">94</tt>  <tt class="py-line">            <tt id="link-125" class="py-name" targets="Package boto.ec2=boto.ec2-module.html,Variable boto.mashups.server.Server.ec2=boto.mashups.server.Server-class.html#ec2"><a title="boto.ec2
+boto.mashups.server.Server.ec2" class="py-name" href="#" onclick="return doclink('link-125', 'ec2', 'link-125');">ec2</a></tt> <tt class="py-op">=</tt> <tt id="link-126" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-126', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-127" class="py-name" targets="Function boto.connect_ec2()=boto-module.html#connect_ec2"><a title="boto.connect_ec2" class="py-name" href="#" onclick="return doclink('link-127', 'connect_ec2', 'link-127');">connect_ec2</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L95"></a><tt class="py-lineno">95</tt>  <tt class="py-line">            <tt id="link-128" class="py-name"><a title="boto.ec2
+boto.mashups.server.Server.ec2" class="py-name" href="#" onclick="return doclink('link-128', 'ec2', 'link-125');">ec2</a></tt><tt class="py-op">.</tt><tt id="link-129" class="py-name" targets="Method boto.ec2.connection.EC2Connection.terminate_instances()=boto.ec2.connection.EC2Connection-class.html#terminate_instances"><a title="boto.ec2.connection.EC2Connection.terminate_instances" class="py-name" href="#" onclick="return doclink('link-129', 'terminate_instances', 'link-129');">terminate_instances</a></tt><tt class="py-op">(</tt><tt class="py-op">[</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-130" class="py-name"><a title="boto.mashups.server.Server.instance_id" class="py-name" href="#" onclick="return doclink('link-130', 'instance_id', 'link-10');">instance_id</a></tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L96"></a><tt class="py-lineno">96</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="boto-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0beta1 on Fri Feb 20 11:45:21 2009
+    </td>
+    <td align="right" class="footer">
+      <a href="http://epydoc.sourceforge.net">http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie()
+  // -->
+</script>
+  
+</body>
+</html>

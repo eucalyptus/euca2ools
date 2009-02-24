@@ -1,0 +1,960 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>boto.sdb.db.manager.pgmanager</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="boto-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="boto-module.html">Package&nbsp;boto</a> ::
+        <a href="boto.sdb-module.html">Package&nbsp;sdb</a> ::
+        <a href="boto.sdb.db-module.html">Package&nbsp;db</a> ::
+        <a href="boto.sdb.db.manager-module.html">Package&nbsp;manager</a> ::
+        Module&nbsp;pgmanager
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="boto.sdb.db.manager.pgmanager-pysrc.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="boto.sdb.db.manager.pgmanager-module.html">Module boto.sdb.db.manager.pgmanager</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno">  1</tt>  <tt class="py-line"><tt class="py-comment"># Copyright (c) 2006,2007,2008 Mitch Garnaat http://garnaat.org/</tt> </tt>
+<a name="L2"></a><tt class="py-lineno">  2</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment">#</tt> </tt>
+<a name="L3"></a><tt class="py-lineno">  3</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># Permission is hereby granted, free of charge, to any person obtaining a</tt> </tt>
+<a name="L4"></a><tt class="py-lineno">  4</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># copy of this software and associated documentation files (the</tt> </tt>
+<a name="L5"></a><tt class="py-lineno">  5</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># "Software"), to deal in the Software without restriction, including</tt> </tt>
+<a name="L6"></a><tt class="py-lineno">  6</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># without limitation the rights to use, copy, modify, merge, publish, dis-</tt> </tt>
+<a name="L7"></a><tt class="py-lineno">  7</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># tribute, sublicense, and/or sell copies of the Software, and to permit</tt> </tt>
+<a name="L8"></a><tt class="py-lineno">  8</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># persons to whom the Software is furnished to do so, subject to the fol-</tt> </tt>
+<a name="L9"></a><tt class="py-lineno">  9</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># lowing conditions:</tt> </tt>
+<a name="L10"></a><tt class="py-lineno"> 10</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment">#</tt> </tt>
+<a name="L11"></a><tt class="py-lineno"> 11</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># The above copyright notice and this permission notice shall be included</tt> </tt>
+<a name="L12"></a><tt class="py-lineno"> 12</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># in all copies or substantial portions of the Software.</tt> </tt>
+<a name="L13"></a><tt class="py-lineno"> 13</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment">#</tt> </tt>
+<a name="L14"></a><tt class="py-lineno"> 14</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS</tt> </tt>
+<a name="L15"></a><tt class="py-lineno"> 15</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABIL-</tt> </tt>
+<a name="L16"></a><tt class="py-lineno"> 16</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># ITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT</tt> </tt>
+<a name="L17"></a><tt class="py-lineno"> 17</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># SHALL THE AUTHOR BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, </tt> </tt>
+<a name="L18"></a><tt class="py-lineno"> 18</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</tt> </tt>
+<a name="L19"></a><tt class="py-lineno"> 19</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS</tt> </tt>
+<a name="L20"></a><tt class="py-lineno"> 20</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># IN THE SOFTWARE.</tt> </tt>
+<a name="L21"></a><tt class="py-lineno"> 21</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-keyword">from</tt> <tt id="link-0" class="py-name" targets="Package boto=boto-module.html"><a title="boto" class="py-name" href="#" onclick="return doclink('link-0', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-1" class="py-name" targets="Package boto.sdb=boto.sdb-module.html"><a title="boto.sdb" class="py-name" href="#" onclick="return doclink('link-1', 'sdb', 'link-1');">sdb</a></tt><tt class="py-op">.</tt><tt id="link-2" class="py-name" targets="Package boto.sdb.db=boto.sdb.db-module.html"><a title="boto.sdb.db" class="py-name" href="#" onclick="return doclink('link-2', 'db', 'link-2');">db</a></tt><tt class="py-op">.</tt><tt id="link-3" class="py-name" targets="Module boto.s3.key=boto.s3.key-module.html,Module boto.sdb.db.key=boto.sdb.db.key-module.html,Method boto.sdb.db.model.Model.key()=boto.sdb.db.model.Model-class.html#key,Method boto.sdb.db.model.Model.key()=boto.sdb.db.model.Model-class.html#key"><a title="boto.s3.key
+boto.sdb.db.key
+boto.sdb.db.model.Model.key
+boto.sdb.db.model.Model.key" class="py-name" href="#" onclick="return doclink('link-3', 'key', 'link-3');">key</a></tt> <tt class="py-keyword">import</tt> <tt id="link-4" class="py-name" targets="Class boto.s3.key.Key=boto.s3.key.Key-class.html,Class boto.sdb.db.key.Key=boto.sdb.db.key.Key-class.html"><a title="boto.s3.key.Key
+boto.sdb.db.key.Key" class="py-name" href="#" onclick="return doclink('link-4', 'Key', 'link-4');">Key</a></tt> </tt>
+<a name="L22"></a><tt class="py-lineno"> 22</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-5" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-5', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-6" class="py-name"><a title="boto.sdb" class="py-name" href="#" onclick="return doclink('link-6', 'sdb', 'link-1');">sdb</a></tt><tt class="py-op">.</tt><tt id="link-7" class="py-name"><a title="boto.sdb.db" class="py-name" href="#" onclick="return doclink('link-7', 'db', 'link-2');">db</a></tt><tt class="py-op">.</tt><tt id="link-8" class="py-name" targets="Module boto.sdb.db.model=boto.sdb.db.model-module.html"><a title="boto.sdb.db.model" class="py-name" href="#" onclick="return doclink('link-8', 'model', 'link-8');">model</a></tt> <tt class="py-keyword">import</tt> <tt id="link-9" class="py-name" targets="Class boto.sdb.db.model.Model=boto.sdb.db.model.Model-class.html"><a title="boto.sdb.db.model.Model" class="py-name" href="#" onclick="return doclink('link-9', 'Model', 'link-9');">Model</a></tt> </tt>
+<a name="L23"></a><tt class="py-lineno"> 23</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">psycopg2</tt> </tt>
+<a name="L24"></a><tt class="py-lineno"> 24</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">psycopg2</tt><tt class="py-op">.</tt><tt class="py-name">extensions</tt> </tt>
+<a name="L25"></a><tt class="py-lineno"> 25</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">uuid</tt><tt class="py-op">,</tt> <tt class="py-name">sys</tt><tt class="py-op">,</tt> <tt class="py-name">os</tt><tt class="py-op">,</tt> <tt class="py-name">string</tt> </tt>
+<a name="L26"></a><tt class="py-lineno"> 26</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-10" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-10', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-11" class="py-name" targets="Module boto.cloudfront.exception=boto.cloudfront.exception-module.html,Module boto.exception=boto.exception-module.html"><a title="boto.cloudfront.exception
+boto.exception" class="py-name" href="#" onclick="return doclink('link-11', 'exception', 'link-11');">exception</a></tt> <tt class="py-keyword">import</tt> <tt class="py-op">*</tt> </tt>
+<a name="L27"></a><tt class="py-lineno"> 27</tt>  <tt class="py-line"> </tt>
+<a name="L28"></a><tt class="py-lineno"> 28</tt>  <tt class="py-line"><tt class="py-name">psycopg2</tt><tt class="py-op">.</tt><tt class="py-name">extensions</tt><tt class="py-op">.</tt><tt class="py-name">register_type</tt><tt class="py-op">(</tt><tt class="py-name">psycopg2</tt><tt class="py-op">.</tt><tt class="py-name">extensions</tt><tt class="py-op">.</tt><tt class="py-name">UNICODE</tt><tt class="py-op">)</tt> </tt>
+<a name="L29"></a><tt class="py-lineno"> 29</tt>  <tt class="py-line"> </tt>
+<a name="PGConverter"></a><div id="PGConverter-def"><a name="L30"></a><tt class="py-lineno"> 30</tt> <a class="py-toggle" href="#" id="PGConverter-toggle" onclick="return toggle('PGConverter');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="boto.sdb.db.manager.pgmanager.PGConverter-class.html">PGConverter</a><tt class="py-op">:</tt> </tt>
+</div><div id="PGConverter-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="PGConverter-expanded"><a name="L31"></a><tt class="py-lineno"> 31</tt>  <tt class="py-line">     </tt>
+<a name="PGConverter.__init__"></a><div id="PGConverter.__init__-def"><a name="L32"></a><tt class="py-lineno"> 32</tt> <a class="py-toggle" href="#" id="PGConverter.__init__-toggle" onclick="return toggle('PGConverter.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sdb.db.manager.pgmanager.PGConverter-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">manager</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="PGConverter.__init__-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="PGConverter.__init__-expanded"><a name="L33"></a><tt class="py-lineno"> 33</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-12" class="py-name" targets="Package boto.sdb.db.manager=boto.sdb.db.manager-module.html"><a title="boto.sdb.db.manager" class="py-name" href="#" onclick="return doclink('link-12', 'manager', 'link-12');">manager</a></tt> <tt class="py-op">=</tt> <tt id="link-13" class="py-name"><a title="boto.sdb.db.manager" class="py-name" href="#" onclick="return doclink('link-13', 'manager', 'link-12');">manager</a></tt> </tt>
+<a name="L34"></a><tt class="py-lineno"> 34</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">type_map</tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt><tt id="link-14" class="py-name"><a title="boto.s3.key.Key
+boto.sdb.db.key.Key" class="py-name" href="#" onclick="return doclink('link-14', 'Key', 'link-4');">Key</a></tt> <tt class="py-op">:</tt> <tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-15" class="py-name" targets="Method boto.sdb.db.manager.pgmanager.PGConverter.encode_reference()=boto.sdb.db.manager.pgmanager.PGConverter-class.html#encode_reference,Method boto.sdb.db.manager.sdbmanager.SDBConverter.encode_reference()=boto.sdb.db.manager.sdbmanager.SDBConverter-class.html#encode_reference"><a title="boto.sdb.db.manager.pgmanager.PGConverter.encode_reference
+boto.sdb.db.manager.sdbmanager.SDBConverter.encode_reference" class="py-name" href="#" onclick="return doclink('link-15', 'encode_reference', 'link-15');">encode_reference</a></tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-16" class="py-name" targets="Method boto.sdb.db.manager.pgmanager.PGConverter.decode_reference()=boto.sdb.db.manager.pgmanager.PGConverter-class.html#decode_reference,Method boto.sdb.db.manager.sdbmanager.SDBConverter.decode_reference()=boto.sdb.db.manager.sdbmanager.SDBConverter-class.html#decode_reference"><a title="boto.sdb.db.manager.pgmanager.PGConverter.decode_reference
+boto.sdb.db.manager.sdbmanager.SDBConverter.decode_reference" class="py-name" href="#" onclick="return doclink('link-16', 'decode_reference', 'link-16');">decode_reference</a></tt><tt class="py-op">)</tt><tt class="py-op">,</tt> </tt>
+<a name="L35"></a><tt class="py-lineno"> 35</tt>  <tt class="py-line">                         <tt id="link-17" class="py-name"><a title="boto.sdb.db.model.Model" class="py-name" href="#" onclick="return doclink('link-17', 'Model', 'link-9');">Model</a></tt> <tt class="py-op">:</tt> <tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-18" class="py-name"><a title="boto.sdb.db.manager.pgmanager.PGConverter.encode_reference
+boto.sdb.db.manager.sdbmanager.SDBConverter.encode_reference" class="py-name" href="#" onclick="return doclink('link-18', 'encode_reference', 'link-15');">encode_reference</a></tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-19" class="py-name"><a title="boto.sdb.db.manager.pgmanager.PGConverter.decode_reference
+boto.sdb.db.manager.sdbmanager.SDBConverter.decode_reference" class="py-name" href="#" onclick="return doclink('link-19', 'decode_reference', 'link-16');">decode_reference</a></tt><tt class="py-op">)</tt><tt class="py-op">}</tt> </tt>
+</div><a name="L36"></a><tt class="py-lineno"> 36</tt>  <tt class="py-line"> </tt>
+<a name="PGConverter.encode"></a><div id="PGConverter.encode-def"><a name="L37"></a><tt class="py-lineno"> 37</tt> <a class="py-toggle" href="#" id="PGConverter.encode-toggle" onclick="return toggle('PGConverter.encode');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sdb.db.manager.pgmanager.PGConverter-class.html#encode">encode</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">type</tt><tt class="py-op">,</tt> <tt class="py-param">value</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="PGConverter.encode-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="PGConverter.encode-expanded"><a name="L38"></a><tt class="py-lineno"> 38</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">type</tt> <tt class="py-keyword">in</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">type_map</tt><tt class="py-op">:</tt> </tt>
+<a name="L39"></a><tt class="py-lineno"> 39</tt>  <tt class="py-line">            <tt id="link-20" class="py-name" targets="Method boto.mapreduce.lqs.LQSMessage.encode()=boto.mapreduce.lqs.LQSMessage-class.html#encode,Method boto.sdb.db.manager.pgmanager.PGConverter.encode()=boto.sdb.db.manager.pgmanager.PGConverter-class.html#encode,Method boto.sdb.db.manager.sdbmanager.SDBConverter.encode()=boto.sdb.db.manager.sdbmanager.SDBConverter-class.html#encode,Method boto.sqs.jsonmessage.JSONMessage.encode()=boto.sqs.jsonmessage.JSONMessage-class.html#encode,Method boto.sqs.message.MHMessage.encode()=boto.sqs.message.MHMessage-class.html#encode,Method boto.sqs.message.Message.encode()=boto.sqs.message.Message-class.html#encode,Method boto.sqs.message.RawMessage.encode()=boto.sqs.message.RawMessage-class.html#encode"><a title="boto.mapreduce.lqs.LQSMessage.encode
+boto.sdb.db.manager.pgmanager.PGConverter.encode
+boto.sdb.db.manager.sdbmanager.SDBConverter.encode
+boto.sqs.jsonmessage.JSONMessage.encode
+boto.sqs.message.MHMessage.encode
+boto.sqs.message.Message.encode
+boto.sqs.message.RawMessage.encode" class="py-name" href="#" onclick="return doclink('link-20', 'encode', 'link-20');">encode</a></tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">type_map</tt><tt class="py-op">[</tt><tt class="py-name">type</tt><tt class="py-op">]</tt><tt class="py-op">[</tt><tt class="py-number">0</tt><tt class="py-op">]</tt> </tt>
+<a name="L40"></a><tt class="py-lineno"> 40</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt id="link-21" class="py-name"><a title="boto.mapreduce.lqs.LQSMessage.encode
+boto.sdb.db.manager.pgmanager.PGConverter.encode
+boto.sdb.db.manager.sdbmanager.SDBConverter.encode
+boto.sqs.jsonmessage.JSONMessage.encode
+boto.sqs.message.MHMessage.encode
+boto.sqs.message.Message.encode
+boto.sqs.message.RawMessage.encode" class="py-name" href="#" onclick="return doclink('link-21', 'encode', 'link-20');">encode</a></tt><tt class="py-op">(</tt><tt class="py-name">value</tt><tt class="py-op">)</tt> </tt>
+<a name="L41"></a><tt class="py-lineno"> 41</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">value</tt> </tt>
+</div><a name="L42"></a><tt class="py-lineno"> 42</tt>  <tt class="py-line"> </tt>
+<a name="PGConverter.decode"></a><div id="PGConverter.decode-def"><a name="L43"></a><tt class="py-lineno"> 43</tt> <a class="py-toggle" href="#" id="PGConverter.decode-toggle" onclick="return toggle('PGConverter.decode');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sdb.db.manager.pgmanager.PGConverter-class.html#decode">decode</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">type</tt><tt class="py-op">,</tt> <tt class="py-param">value</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="PGConverter.decode-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="PGConverter.decode-expanded"><a name="L44"></a><tt class="py-lineno"> 44</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">type</tt> <tt class="py-keyword">in</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">type_map</tt><tt class="py-op">:</tt> </tt>
+<a name="L45"></a><tt class="py-lineno"> 45</tt>  <tt class="py-line">            <tt id="link-22" class="py-name" targets="Method boto.mapreduce.lqs.LQSMessage.decode()=boto.mapreduce.lqs.LQSMessage-class.html#decode,Method boto.mapreduce.queuetools.LQSClient.decode()=boto.mapreduce.queuetools.LQSClient-class.html#decode,Method boto.sdb.db.manager.pgmanager.PGConverter.decode()=boto.sdb.db.manager.pgmanager.PGConverter-class.html#decode,Method boto.sdb.db.manager.sdbmanager.SDBConverter.decode()=boto.sdb.db.manager.sdbmanager.SDBConverter-class.html#decode,Method boto.sqs.jsonmessage.JSONMessage.decode()=boto.sqs.jsonmessage.JSONMessage-class.html#decode,Method boto.sqs.message.MHMessage.decode()=boto.sqs.message.MHMessage-class.html#decode,Method boto.sqs.message.Message.decode()=boto.sqs.message.Message-class.html#decode,Method boto.sqs.message.RawMessage.decode()=boto.sqs.message.RawMessage-class.html#decode"><a title="boto.mapreduce.lqs.LQSMessage.decode
+boto.mapreduce.queuetools.LQSClient.decode
+boto.sdb.db.manager.pgmanager.PGConverter.decode
+boto.sdb.db.manager.sdbmanager.SDBConverter.decode
+boto.sqs.jsonmessage.JSONMessage.decode
+boto.sqs.message.MHMessage.decode
+boto.sqs.message.Message.decode
+boto.sqs.message.RawMessage.decode" class="py-name" href="#" onclick="return doclink('link-22', 'decode', 'link-22');">decode</a></tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">type_map</tt><tt class="py-op">[</tt><tt class="py-name">type</tt><tt class="py-op">]</tt><tt class="py-op">[</tt><tt class="py-number">1</tt><tt class="py-op">]</tt> </tt>
+<a name="L46"></a><tt class="py-lineno"> 46</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt id="link-23" class="py-name"><a title="boto.mapreduce.lqs.LQSMessage.decode
+boto.mapreduce.queuetools.LQSClient.decode
+boto.sdb.db.manager.pgmanager.PGConverter.decode
+boto.sdb.db.manager.sdbmanager.SDBConverter.decode
+boto.sqs.jsonmessage.JSONMessage.decode
+boto.sqs.message.MHMessage.decode
+boto.sqs.message.Message.decode
+boto.sqs.message.RawMessage.decode" class="py-name" href="#" onclick="return doclink('link-23', 'decode', 'link-22');">decode</a></tt><tt class="py-op">(</tt><tt class="py-name">value</tt><tt class="py-op">)</tt> </tt>
+<a name="L47"></a><tt class="py-lineno"> 47</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">value</tt> </tt>
+</div><a name="L48"></a><tt class="py-lineno"> 48</tt>  <tt class="py-line"> </tt>
+<a name="PGConverter.encode_prop"></a><div id="PGConverter.encode_prop-def"><a name="L49"></a><tt class="py-lineno"> 49</tt> <a class="py-toggle" href="#" id="PGConverter.encode_prop-toggle" onclick="return toggle('PGConverter.encode_prop');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sdb.db.manager.pgmanager.PGConverter-class.html#encode_prop">encode_prop</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">prop</tt><tt class="py-op">,</tt> <tt class="py-param">value</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="PGConverter.encode_prop-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="PGConverter.encode_prop-expanded"><a name="L50"></a><tt class="py-lineno"> 50</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">isinstance</tt><tt class="py-op">(</tt><tt class="py-name">value</tt><tt class="py-op">,</tt> <tt id="link-24" class="py-name" targets="Method boto.s3.bucket.Bucket.list()=boto.s3.bucket.Bucket-class.html#list,Class Method boto.sdb.persist.object.SDBObject.list()=boto.sdb.persist.object.SDBObject-class.html#list,Class list=list-class.html"><a title="boto.s3.bucket.Bucket.list
+boto.sdb.persist.object.SDBObject.list
+list" class="py-name" href="#" onclick="return doclink('link-24', 'list', 'link-24');">list</a></tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L51"></a><tt class="py-lineno"> 51</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-name">hasattr</tt><tt class="py-op">(</tt><tt class="py-name">prop</tt><tt class="py-op">,</tt> <tt class="py-string">'item_type'</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L52"></a><tt class="py-lineno"> 52</tt>  <tt class="py-line">                <tt class="py-name">s</tt> <tt class="py-op">=</tt> <tt class="py-string">"{"</tt> </tt>
+<a name="L53"></a><tt class="py-lineno"> 53</tt>  <tt class="py-line">                <tt class="py-name">new_value</tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt> </tt>
+<a name="L54"></a><tt class="py-lineno"> 54</tt>  <tt class="py-line">                <tt class="py-keyword">for</tt> <tt class="py-name">v</tt> <tt class="py-keyword">in</tt> <tt class="py-name">value</tt><tt class="py-op">:</tt> </tt>
+<a name="L55"></a><tt class="py-lineno"> 55</tt>  <tt class="py-line">                    <tt class="py-name">item_type</tt> <tt class="py-op">=</tt> <tt class="py-name">getattr</tt><tt class="py-op">(</tt><tt class="py-name">prop</tt><tt class="py-op">,</tt> <tt class="py-string">'item_type'</tt><tt class="py-op">)</tt> </tt>
+<a name="L56"></a><tt class="py-lineno"> 56</tt>  <tt class="py-line">                    <tt class="py-keyword">if</tt> <tt id="link-25" class="py-name"><a title="boto.sdb.db.model.Model" class="py-name" href="#" onclick="return doclink('link-25', 'Model', 'link-9');">Model</a></tt> <tt class="py-keyword">in</tt> <tt class="py-name">item_type</tt><tt class="py-op">.</tt><tt class="py-name">mro</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L57"></a><tt class="py-lineno"> 57</tt>  <tt class="py-line">                        <tt class="py-name">item_type</tt> <tt class="py-op">=</tt> <tt id="link-26" class="py-name"><a title="boto.sdb.db.model.Model" class="py-name" href="#" onclick="return doclink('link-26', 'Model', 'link-9');">Model</a></tt> </tt>
+<a name="L58"></a><tt class="py-lineno"> 58</tt>  <tt class="py-line">                    <tt class="py-name">new_value</tt><tt class="py-op">.</tt><tt id="link-27" class="py-name" targets="Method boto.sdb.persist.property.MultiValue.append()=boto.sdb.persist.property.MultiValue-class.html#append"><a title="boto.sdb.persist.property.MultiValue.append" class="py-name" href="#" onclick="return doclink('link-27', 'append', 'link-27');">append</a></tt><tt class="py-op">(</tt><tt class="py-string">'%s'</tt> <tt class="py-op">%</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-28" class="py-name"><a title="boto.mapreduce.lqs.LQSMessage.encode
+boto.sdb.db.manager.pgmanager.PGConverter.encode
+boto.sdb.db.manager.sdbmanager.SDBConverter.encode
+boto.sqs.jsonmessage.JSONMessage.encode
+boto.sqs.message.MHMessage.encode
+boto.sqs.message.Message.encode
+boto.sqs.message.RawMessage.encode" class="py-name" href="#" onclick="return doclink('link-28', 'encode', 'link-20');">encode</a></tt><tt class="py-op">(</tt><tt class="py-name">item_type</tt><tt class="py-op">,</tt> <tt class="py-name">v</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L59"></a><tt class="py-lineno"> 59</tt>  <tt class="py-line">                <tt class="py-name">s</tt> <tt class="py-op">+=</tt> <tt class="py-string">','</tt><tt class="py-op">.</tt><tt class="py-name">join</tt><tt class="py-op">(</tt><tt class="py-name">new_value</tt><tt class="py-op">)</tt> </tt>
+<a name="L60"></a><tt class="py-lineno"> 60</tt>  <tt class="py-line">                <tt class="py-name">s</tt> <tt class="py-op">+=</tt> <tt class="py-string">"}"</tt> </tt>
+<a name="L61"></a><tt class="py-lineno"> 61</tt>  <tt class="py-line">                <tt class="py-keyword">return</tt> <tt class="py-name">s</tt> </tt>
+<a name="L62"></a><tt class="py-lineno"> 62</tt>  <tt class="py-line">            <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L63"></a><tt class="py-lineno"> 63</tt>  <tt class="py-line">                <tt class="py-keyword">return</tt> <tt class="py-name">value</tt> </tt>
+<a name="L64"></a><tt class="py-lineno"> 64</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-29" class="py-name"><a title="boto.mapreduce.lqs.LQSMessage.encode
+boto.sdb.db.manager.pgmanager.PGConverter.encode
+boto.sdb.db.manager.sdbmanager.SDBConverter.encode
+boto.sqs.jsonmessage.JSONMessage.encode
+boto.sqs.message.MHMessage.encode
+boto.sqs.message.Message.encode
+boto.sqs.message.RawMessage.encode" class="py-name" href="#" onclick="return doclink('link-29', 'encode', 'link-20');">encode</a></tt><tt class="py-op">(</tt><tt class="py-name">prop</tt><tt class="py-op">.</tt><tt class="py-name">data_type</tt><tt class="py-op">,</tt> <tt class="py-name">value</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L65"></a><tt class="py-lineno"> 65</tt>  <tt class="py-line"> </tt>
+<a name="PGConverter.decode_prop"></a><div id="PGConverter.decode_prop-def"><a name="L66"></a><tt class="py-lineno"> 66</tt> <a class="py-toggle" href="#" id="PGConverter.decode_prop-toggle" onclick="return toggle('PGConverter.decode_prop');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sdb.db.manager.pgmanager.PGConverter-class.html#decode_prop">decode_prop</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">prop</tt><tt class="py-op">,</tt> <tt class="py-param">value</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="PGConverter.decode_prop-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="PGConverter.decode_prop-expanded"><a name="L67"></a><tt class="py-lineno"> 67</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">prop</tt><tt class="py-op">.</tt><tt class="py-name">data_type</tt> <tt class="py-op">==</tt> <tt id="link-30" class="py-name"><a title="boto.s3.bucket.Bucket.list
+boto.sdb.persist.object.SDBObject.list
+list" class="py-name" href="#" onclick="return doclink('link-30', 'list', 'link-24');">list</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L68"></a><tt class="py-lineno"> 68</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-name">value</tt> <tt class="py-op">!=</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L69"></a><tt class="py-lineno"> 69</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt> <tt class="py-keyword">not</tt> <tt class="py-name">isinstance</tt><tt class="py-op">(</tt><tt class="py-name">value</tt><tt class="py-op">,</tt> <tt id="link-31" class="py-name"><a title="boto.s3.bucket.Bucket.list
+boto.sdb.persist.object.SDBObject.list
+list" class="py-name" href="#" onclick="return doclink('link-31', 'list', 'link-24');">list</a></tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L70"></a><tt class="py-lineno"> 70</tt>  <tt class="py-line">                    <tt class="py-name">value</tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-name">value</tt><tt class="py-op">]</tt> </tt>
+<a name="L71"></a><tt class="py-lineno"> 71</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt> <tt class="py-name">hasattr</tt><tt class="py-op">(</tt><tt class="py-name">prop</tt><tt class="py-op">,</tt> <tt class="py-string">'item_type'</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L72"></a><tt class="py-lineno"> 72</tt>  <tt class="py-line">                    <tt class="py-name">item_type</tt> <tt class="py-op">=</tt> <tt class="py-name">getattr</tt><tt class="py-op">(</tt><tt class="py-name">prop</tt><tt class="py-op">,</tt> <tt class="py-string">"item_type"</tt><tt class="py-op">)</tt> </tt>
+<a name="L73"></a><tt class="py-lineno"> 73</tt>  <tt class="py-line">                    <tt class="py-keyword">if</tt> <tt id="link-32" class="py-name"><a title="boto.sdb.db.model.Model" class="py-name" href="#" onclick="return doclink('link-32', 'Model', 'link-9');">Model</a></tt> <tt class="py-keyword">in</tt> <tt class="py-name">item_type</tt><tt class="py-op">.</tt><tt class="py-name">mro</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L74"></a><tt class="py-lineno"> 74</tt>  <tt class="py-line">                        <tt class="py-keyword">if</tt> <tt class="py-name">item_type</tt> <tt class="py-op">!=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-33" class="py-name"><a title="boto.sdb.db.manager" class="py-name" href="#" onclick="return doclink('link-33', 'manager', 'link-12');">manager</a></tt><tt class="py-op">.</tt><tt class="py-name">cls</tt><tt class="py-op">:</tt> </tt>
+<a name="L75"></a><tt class="py-lineno"> 75</tt>  <tt class="py-line">                            <tt class="py-keyword">return</tt> <tt class="py-name">item_type</tt><tt class="py-op">.</tt><tt id="link-34" class="py-name" targets="Variable boto.sdb.persist.object.SDBObject._manager=boto.sdb.persist.object.SDBObject-class.html#_manager"><a title="boto.sdb.persist.object.SDBObject._manager" class="py-name" href="#" onclick="return doclink('link-34', '_manager', 'link-34');">_manager</a></tt><tt class="py-op">.</tt><tt id="link-35" class="py-name" targets="Method boto.sdb.db.manager.pgmanager.PGManager.decode_value()=boto.sdb.db.manager.pgmanager.PGManager-class.html#decode_value,Method boto.sdb.db.manager.sdbmanager.SDBManager.decode_value()=boto.sdb.db.manager.sdbmanager.SDBManager-class.html#decode_value,Method boto.sdb.item.Item.decode_value()=boto.sdb.item.Item-class.html#decode_value"><a title="boto.sdb.db.manager.pgmanager.PGManager.decode_value
+boto.sdb.db.manager.sdbmanager.SDBManager.decode_value
+boto.sdb.item.Item.decode_value" class="py-name" href="#" onclick="return doclink('link-35', 'decode_value', 'link-35');">decode_value</a></tt><tt class="py-op">(</tt><tt class="py-name">prop</tt><tt class="py-op">,</tt> <tt class="py-name">value</tt><tt class="py-op">)</tt> </tt>
+<a name="L76"></a><tt class="py-lineno"> 76</tt>  <tt class="py-line">                        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L77"></a><tt class="py-lineno"> 77</tt>  <tt class="py-line">                            <tt class="py-name">item_type</tt> <tt class="py-op">=</tt> <tt id="link-36" class="py-name"><a title="boto.sdb.db.model.Model" class="py-name" href="#" onclick="return doclink('link-36', 'Model', 'link-9');">Model</a></tt> </tt>
+<a name="L78"></a><tt class="py-lineno"> 78</tt>  <tt class="py-line">                    <tt class="py-keyword">return</tt> <tt class="py-op">[</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-37" class="py-name"><a title="boto.mapreduce.lqs.LQSMessage.decode
+boto.mapreduce.queuetools.LQSClient.decode
+boto.sdb.db.manager.pgmanager.PGConverter.decode
+boto.sdb.db.manager.sdbmanager.SDBConverter.decode
+boto.sqs.jsonmessage.JSONMessage.decode
+boto.sqs.message.MHMessage.decode
+boto.sqs.message.Message.decode
+boto.sqs.message.RawMessage.decode" class="py-name" href="#" onclick="return doclink('link-37', 'decode', 'link-22');">decode</a></tt><tt class="py-op">(</tt><tt class="py-name">item_type</tt><tt class="py-op">,</tt> <tt class="py-name">v</tt><tt class="py-op">)</tt> <tt class="py-keyword">for</tt> <tt class="py-name">v</tt> <tt class="py-keyword">in</tt> <tt class="py-name">value</tt><tt class="py-op">]</tt> </tt>
+<a name="L79"></a><tt class="py-lineno"> 79</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt class="py-name">value</tt> </tt>
+<a name="L80"></a><tt class="py-lineno"> 80</tt>  <tt class="py-line">        <tt class="py-keyword">elif</tt> <tt class="py-name">hasattr</tt><tt class="py-op">(</tt><tt class="py-name">prop</tt><tt class="py-op">,</tt> <tt class="py-string">'reference_class'</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L81"></a><tt class="py-lineno"> 81</tt>  <tt class="py-line">            <tt class="py-name">ref_class</tt> <tt class="py-op">=</tt> <tt class="py-name">getattr</tt><tt class="py-op">(</tt><tt class="py-name">prop</tt><tt class="py-op">,</tt> <tt class="py-string">'reference_class'</tt><tt class="py-op">)</tt> </tt>
+<a name="L82"></a><tt class="py-lineno"> 82</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-name">ref_class</tt> <tt class="py-op">!=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-38" class="py-name"><a title="boto.sdb.db.manager" class="py-name" href="#" onclick="return doclink('link-38', 'manager', 'link-12');">manager</a></tt><tt class="py-op">.</tt><tt class="py-name">cls</tt><tt class="py-op">:</tt> </tt>
+<a name="L83"></a><tt class="py-lineno"> 83</tt>  <tt class="py-line">                <tt class="py-keyword">return</tt> <tt class="py-name">ref_class</tt><tt class="py-op">.</tt><tt id="link-39" class="py-name"><a title="boto.sdb.persist.object.SDBObject._manager" class="py-name" href="#" onclick="return doclink('link-39', '_manager', 'link-34');">_manager</a></tt><tt class="py-op">.</tt><tt id="link-40" class="py-name"><a title="boto.sdb.db.manager.pgmanager.PGManager.decode_value
+boto.sdb.db.manager.sdbmanager.SDBManager.decode_value
+boto.sdb.item.Item.decode_value" class="py-name" href="#" onclick="return doclink('link-40', 'decode_value', 'link-35');">decode_value</a></tt><tt class="py-op">(</tt><tt class="py-name">prop</tt><tt class="py-op">,</tt> <tt class="py-name">value</tt><tt class="py-op">)</tt> </tt>
+<a name="L84"></a><tt class="py-lineno"> 84</tt>  <tt class="py-line">            <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L85"></a><tt class="py-lineno"> 85</tt>  <tt class="py-line">                <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-41" class="py-name"><a title="boto.mapreduce.lqs.LQSMessage.decode
+boto.mapreduce.queuetools.LQSClient.decode
+boto.sdb.db.manager.pgmanager.PGConverter.decode
+boto.sdb.db.manager.sdbmanager.SDBConverter.decode
+boto.sqs.jsonmessage.JSONMessage.decode
+boto.sqs.message.MHMessage.decode
+boto.sqs.message.Message.decode
+boto.sqs.message.RawMessage.decode" class="py-name" href="#" onclick="return doclink('link-41', 'decode', 'link-22');">decode</a></tt><tt class="py-op">(</tt><tt class="py-name">prop</tt><tt class="py-op">.</tt><tt class="py-name">data_type</tt><tt class="py-op">,</tt> <tt class="py-name">value</tt><tt class="py-op">)</tt> </tt>
+<a name="L86"></a><tt class="py-lineno"> 86</tt>  <tt class="py-line">        <tt class="py-keyword">elif</tt> <tt class="py-name">hasattr</tt><tt class="py-op">(</tt><tt class="py-name">prop</tt><tt class="py-op">,</tt> <tt class="py-string">'calculated_type'</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L87"></a><tt class="py-lineno"> 87</tt>  <tt class="py-line">            <tt class="py-name">calc_type</tt> <tt class="py-op">=</tt> <tt class="py-name">getattr</tt><tt class="py-op">(</tt><tt class="py-name">prop</tt><tt class="py-op">,</tt> <tt class="py-string">'calculated_type'</tt><tt class="py-op">)</tt> </tt>
+<a name="L88"></a><tt class="py-lineno"> 88</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-42" class="py-name"><a title="boto.mapreduce.lqs.LQSMessage.decode
+boto.mapreduce.queuetools.LQSClient.decode
+boto.sdb.db.manager.pgmanager.PGConverter.decode
+boto.sdb.db.manager.sdbmanager.SDBConverter.decode
+boto.sqs.jsonmessage.JSONMessage.decode
+boto.sqs.message.MHMessage.decode
+boto.sqs.message.Message.decode
+boto.sqs.message.RawMessage.decode" class="py-name" href="#" onclick="return doclink('link-42', 'decode', 'link-22');">decode</a></tt><tt class="py-op">(</tt><tt class="py-name">calc_type</tt><tt class="py-op">,</tt> <tt class="py-name">value</tt><tt class="py-op">)</tt> </tt>
+<a name="L89"></a><tt class="py-lineno"> 89</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L90"></a><tt class="py-lineno"> 90</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-43" class="py-name"><a title="boto.mapreduce.lqs.LQSMessage.decode
+boto.mapreduce.queuetools.LQSClient.decode
+boto.sdb.db.manager.pgmanager.PGConverter.decode
+boto.sdb.db.manager.sdbmanager.SDBConverter.decode
+boto.sqs.jsonmessage.JSONMessage.decode
+boto.sqs.message.MHMessage.decode
+boto.sqs.message.Message.decode
+boto.sqs.message.RawMessage.decode" class="py-name" href="#" onclick="return doclink('link-43', 'decode', 'link-22');">decode</a></tt><tt class="py-op">(</tt><tt class="py-name">prop</tt><tt class="py-op">.</tt><tt class="py-name">data_type</tt><tt class="py-op">,</tt> <tt class="py-name">value</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L91"></a><tt class="py-lineno"> 91</tt>  <tt class="py-line"> </tt>
+<a name="PGConverter.encode_reference"></a><div id="PGConverter.encode_reference-def"><a name="L92"></a><tt class="py-lineno"> 92</tt> <a class="py-toggle" href="#" id="PGConverter.encode_reference-toggle" onclick="return toggle('PGConverter.encode_reference');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sdb.db.manager.pgmanager.PGConverter-class.html#encode_reference">encode_reference</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">value</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="PGConverter.encode_reference-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="PGConverter.encode_reference-expanded"><a name="L93"></a><tt class="py-lineno"> 93</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">isinstance</tt><tt class="py-op">(</tt><tt class="py-name">value</tt><tt class="py-op">,</tt> <tt id="link-44" class="py-name" targets="Class str=str-class.html"><a title="str" class="py-name" href="#" onclick="return doclink('link-44', 'str', 'link-44');">str</a></tt><tt class="py-op">)</tt> <tt class="py-keyword">or</tt> <tt class="py-name">isinstance</tt><tt class="py-op">(</tt><tt class="py-name">value</tt><tt class="py-op">,</tt> <tt class="py-name">unicode</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L94"></a><tt class="py-lineno"> 94</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt class="py-name">value</tt> </tt>
+<a name="L95"></a><tt class="py-lineno"> 95</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">value</tt> <tt class="py-op">==</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L96"></a><tt class="py-lineno"> 96</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt class="py-string">''</tt> </tt>
+<a name="L97"></a><tt class="py-lineno"> 97</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L98"></a><tt class="py-lineno"> 98</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt class="py-name">value</tt><tt class="py-op">.</tt><tt id="link-45" class="py-name" targets="Method boto.sdb.db.key.Key.id()=boto.sdb.db.key.Key-class.html#id"><a title="boto.sdb.db.key.Key.id" class="py-name" href="#" onclick="return doclink('link-45', 'id', 'link-45');">id</a></tt> </tt>
+</div><a name="L99"></a><tt class="py-lineno"> 99</tt>  <tt class="py-line"> </tt>
+<a name="PGConverter.decode_reference"></a><div id="PGConverter.decode_reference-def"><a name="L100"></a><tt class="py-lineno">100</tt> <a class="py-toggle" href="#" id="PGConverter.decode_reference-toggle" onclick="return toggle('PGConverter.decode_reference');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sdb.db.manager.pgmanager.PGConverter-class.html#decode_reference">decode_reference</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">value</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="PGConverter.decode_reference-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="PGConverter.decode_reference-expanded"><a name="L101"></a><tt class="py-lineno">101</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-keyword">not</tt> <tt class="py-name">value</tt><tt class="py-op">:</tt> </tt>
+<a name="L102"></a><tt class="py-lineno">102</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt class="py-name">None</tt> </tt>
+<a name="L103"></a><tt class="py-lineno">103</tt>  <tt class="py-line">        <tt class="py-keyword">try</tt><tt class="py-op">:</tt> </tt>
+<a name="L104"></a><tt class="py-lineno">104</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-46" class="py-name"><a title="boto.sdb.db.manager" class="py-name" href="#" onclick="return doclink('link-46', 'manager', 'link-12');">manager</a></tt><tt class="py-op">.</tt><tt id="link-47" class="py-name" targets="Method boto.sdb.db.manager.pgmanager.PGManager.get_object_from_id()=boto.sdb.db.manager.pgmanager.PGManager-class.html#get_object_from_id,Method boto.sdb.db.manager.sdbmanager.SDBManager.get_object_from_id()=boto.sdb.db.manager.sdbmanager.SDBManager-class.html#get_object_from_id"><a title="boto.sdb.db.manager.pgmanager.PGManager.get_object_from_id
+boto.sdb.db.manager.sdbmanager.SDBManager.get_object_from_id" class="py-name" href="#" onclick="return doclink('link-47', 'get_object_from_id', 'link-47');">get_object_from_id</a></tt><tt class="py-op">(</tt><tt class="py-name">value</tt><tt class="py-op">)</tt> </tt>
+<a name="L105"></a><tt class="py-lineno">105</tt>  <tt class="py-line">        <tt class="py-keyword">except</tt><tt class="py-op">:</tt> </tt>
+<a name="L106"></a><tt class="py-lineno">106</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt class="py-name">ValueError</tt><tt class="py-op">,</tt> <tt class="py-string">'Unable to convert %s to Object'</tt> <tt class="py-op">%</tt> <tt class="py-name">value</tt> </tt>
+</div></div><a name="L107"></a><tt class="py-lineno">107</tt>  <tt class="py-line"> </tt>
+<a name="PGManager"></a><div id="PGManager-def"><a name="L108"></a><tt class="py-lineno">108</tt> <a class="py-toggle" href="#" id="PGManager-toggle" onclick="return toggle('PGManager');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="boto.sdb.db.manager.pgmanager.PGManager-class.html">PGManager</a><tt class="py-op">(</tt><tt class="py-base-class">object</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="PGManager-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="PGManager-expanded"><a name="L109"></a><tt class="py-lineno">109</tt>  <tt class="py-line"> </tt>
+<a name="PGManager.__init__"></a><div id="PGManager.__init__-def"><a name="L110"></a><tt class="py-lineno">110</tt> <a class="py-toggle" href="#" id="PGManager.__init__-toggle" onclick="return toggle('PGManager.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sdb.db.manager.pgmanager.PGManager-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">cls</tt><tt class="py-op">,</tt> <tt class="py-param">db_name</tt><tt class="py-op">,</tt> <tt class="py-param">db_user</tt><tt class="py-op">,</tt> <tt class="py-param">db_passwd</tt><tt class="py-op">,</tt> </tt>
+<a name="L111"></a><tt class="py-lineno">111</tt>  <tt class="py-line">                 <tt class="py-param">db_host</tt><tt class="py-op">,</tt> <tt class="py-param">db_port</tt><tt class="py-op">,</tt> <tt class="py-param">db_table</tt><tt class="py-op">,</tt> <tt class="py-param">sql_dir</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="PGManager.__init__-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="PGManager.__init__-expanded"><a name="L112"></a><tt class="py-lineno">112</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">cls</tt> <tt class="py-op">=</tt> <tt class="py-name">cls</tt> </tt>
+<a name="L113"></a><tt class="py-lineno">113</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">db_name</tt> <tt class="py-op">=</tt> <tt class="py-name">db_name</tt> </tt>
+<a name="L114"></a><tt class="py-lineno">114</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">db_user</tt> <tt class="py-op">=</tt> <tt class="py-name">db_user</tt> </tt>
+<a name="L115"></a><tt class="py-lineno">115</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">db_passwd</tt> <tt class="py-op">=</tt> <tt class="py-name">db_passwd</tt> </tt>
+<a name="L116"></a><tt class="py-lineno">116</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">db_host</tt> <tt class="py-op">=</tt> <tt class="py-name">db_host</tt> </tt>
+<a name="L117"></a><tt class="py-lineno">117</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">db_port</tt> <tt class="py-op">=</tt> <tt class="py-name">db_port</tt> </tt>
+<a name="L118"></a><tt class="py-lineno">118</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">db_table</tt> <tt class="py-op">=</tt> <tt class="py-name">db_table</tt> </tt>
+<a name="L119"></a><tt class="py-lineno">119</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">sql_dir</tt> <tt class="py-op">=</tt> <tt class="py-name">sql_dir</tt> </tt>
+<a name="L120"></a><tt class="py-lineno">120</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">in_transaction</tt> <tt class="py-op">=</tt> <tt class="py-name">False</tt> </tt>
+<a name="L121"></a><tt class="py-lineno">121</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">converter</tt> <tt class="py-op">=</tt> <tt id="link-48" class="py-name" targets="Class boto.sdb.db.manager.pgmanager.PGConverter=boto.sdb.db.manager.pgmanager.PGConverter-class.html"><a title="boto.sdb.db.manager.pgmanager.PGConverter" class="py-name" href="#" onclick="return doclink('link-48', 'PGConverter', 'link-48');">PGConverter</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">)</tt> </tt>
+<a name="L122"></a><tt class="py-lineno">122</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-49" class="py-name" targets="Method boto.sdb.db.manager.pgmanager.PGManager._connect()=boto.sdb.db.manager.pgmanager.PGManager-class.html#_connect,Method boto.sdb.db.manager.sdbmanager.SDBManager._connect()=boto.sdb.db.manager.sdbmanager.SDBManager-class.html#_connect"><a title="boto.sdb.db.manager.pgmanager.PGManager._connect
+boto.sdb.db.manager.sdbmanager.SDBManager._connect" class="py-name" href="#" onclick="return doclink('link-49', '_connect', 'link-49');">_connect</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L123"></a><tt class="py-lineno">123</tt>  <tt class="py-line"> </tt>
+<a name="PGManager._build_connect_string"></a><div id="PGManager._build_connect_string-def"><a name="L124"></a><tt class="py-lineno">124</tt> <a class="py-toggle" href="#" id="PGManager._build_connect_string-toggle" onclick="return toggle('PGManager._build_connect_string');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sdb.db.manager.pgmanager.PGManager-class.html#_build_connect_string">_build_connect_string</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="PGManager._build_connect_string-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="PGManager._build_connect_string-expanded"><a name="L125"></a><tt class="py-lineno">125</tt>  <tt class="py-line">        <tt class="py-name">cs</tt> <tt class="py-op">=</tt> <tt class="py-string">'dbname=%s user=%s password=%s host=%s port=%d'</tt> </tt>
+<a name="L126"></a><tt class="py-lineno">126</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">cs</tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">db_name</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">db_user</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">db_passwd</tt><tt class="py-op">,</tt> </tt>
+<a name="L127"></a><tt class="py-lineno">127</tt>  <tt class="py-line">                     <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">db_host</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">db_port</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L128"></a><tt class="py-lineno">128</tt>  <tt class="py-line"> </tt>
+<a name="PGManager._connect"></a><div id="PGManager._connect-def"><a name="L129"></a><tt class="py-lineno">129</tt> <a class="py-toggle" href="#" id="PGManager._connect-toggle" onclick="return toggle('PGManager._connect');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sdb.db.manager.pgmanager.PGManager-class.html#_connect">_connect</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="PGManager._connect-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="PGManager._connect-expanded"><a name="L130"></a><tt class="py-lineno">130</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-50" class="py-name" targets="Module boto.connection=boto.connection-module.html,Module boto.ec2.connection=boto.ec2.connection-module.html,Module boto.fps.connection=boto.fps.connection-module.html,Module boto.mturk.connection=boto.mturk.connection-module.html,Module boto.s3.connection=boto.s3.connection-module.html,Module boto.sdb.connection=boto.sdb.connection-module.html,Module boto.sqs.20070501.connection=boto.sqs.20070501.connection-module.html,Module boto.sqs.connection=boto.sqs.connection-module.html"><a title="boto.connection
+boto.ec2.connection
+boto.fps.connection
+boto.mturk.connection
+boto.s3.connection
+boto.sdb.connection
+boto.sqs.20070501.connection
+boto.sqs.connection" class="py-name" href="#" onclick="return doclink('link-50', 'connection', 'link-50');">connection</a></tt> <tt class="py-op">=</tt> <tt class="py-name">psycopg2</tt><tt class="py-op">.</tt><tt id="link-51" class="py-name" targets="Method boto.ec2.regioninfo.RegionInfo.connect()=boto.ec2.regioninfo.RegionInfo-class.html#connect,Method boto.mapreduce.queuetools.LQSClient.connect()=boto.mapreduce.queuetools.LQSClient-class.html#connect,Method boto.mapreduce.queuetools.SQSClient.connect()=boto.mapreduce.queuetools.SQSClient-class.html#connect"><a title="boto.ec2.regioninfo.RegionInfo.connect
+boto.mapreduce.queuetools.LQSClient.connect
+boto.mapreduce.queuetools.SQSClient.connect" class="py-name" href="#" onclick="return doclink('link-51', 'connect', 'link-51');">connect</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-52" class="py-name" targets="Method boto.sdb.db.manager.pgmanager.PGManager._build_connect_string()=boto.sdb.db.manager.pgmanager.PGManager-class.html#_build_connect_string"><a title="boto.sdb.db.manager.pgmanager.PGManager._build_connect_string" class="py-name" href="#" onclick="return doclink('link-52', '_build_connect_string', 'link-52');">_build_connect_string</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L131"></a><tt class="py-lineno">131</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-53" class="py-name"><a title="boto.connection
+boto.ec2.connection
+boto.fps.connection
+boto.mturk.connection
+boto.s3.connection
+boto.sdb.connection
+boto.sqs.20070501.connection
+boto.sqs.connection" class="py-name" href="#" onclick="return doclink('link-53', 'connection', 'link-50');">connection</a></tt><tt class="py-op">.</tt><tt class="py-name">set_client_encoding</tt><tt class="py-op">(</tt><tt class="py-string">'UTF8'</tt><tt class="py-op">)</tt> </tt>
+<a name="L132"></a><tt class="py-lineno">132</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">cursor</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-54" class="py-name"><a title="boto.connection
+boto.ec2.connection
+boto.fps.connection
+boto.mturk.connection
+boto.s3.connection
+boto.sdb.connection
+boto.sqs.20070501.connection
+boto.sqs.connection" class="py-name" href="#" onclick="return doclink('link-54', 'connection', 'link-50');">connection</a></tt><tt class="py-op">.</tt><tt class="py-name">cursor</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L133"></a><tt class="py-lineno">133</tt>  <tt class="py-line"> </tt>
+<a name="PGManager._object_lister"></a><div id="PGManager._object_lister-def"><a name="L134"></a><tt class="py-lineno">134</tt> <a class="py-toggle" href="#" id="PGManager._object_lister-toggle" onclick="return toggle('PGManager._object_lister');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sdb.db.manager.pgmanager.PGManager-class.html#_object_lister">_object_lister</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">cursor</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="PGManager._object_lister-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="PGManager._object_lister-expanded"><a name="L135"></a><tt class="py-lineno">135</tt>  <tt class="py-line">        <tt class="py-keyword">try</tt><tt class="py-op">:</tt> </tt>
+<a name="L136"></a><tt class="py-lineno">136</tt>  <tt class="py-line">            <tt class="py-keyword">for</tt> <tt class="py-name">row</tt> <tt class="py-keyword">in</tt> <tt class="py-name">cursor</tt><tt class="py-op">:</tt> </tt>
+<a name="L137"></a><tt class="py-lineno">137</tt>  <tt class="py-line">                <tt class="py-keyword">yield</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-55" class="py-name" targets="Method boto.sdb.db.manager.pgmanager.PGManager._object_from_row()=boto.sdb.db.manager.pgmanager.PGManager-class.html#_object_from_row"><a title="boto.sdb.db.manager.pgmanager.PGManager._object_from_row" class="py-name" href="#" onclick="return doclink('link-55', '_object_from_row', 'link-55');">_object_from_row</a></tt><tt class="py-op">(</tt><tt class="py-name">row</tt><tt class="py-op">,</tt> <tt class="py-name">cursor</tt><tt class="py-op">.</tt><tt id="link-56" class="py-name" targets="Variable boto.mashups.server.Server.description=boto.mashups.server.Server-class.html#description,Variable boto.sdb.persist.test_persist.TestScalar.description=boto.sdb.persist.test_persist.TestScalar-class.html#description"><a title="boto.mashups.server.Server.description
+boto.sdb.persist.test_persist.TestScalar.description" class="py-name" href="#" onclick="return doclink('link-56', 'description', 'link-56');">description</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L138"></a><tt class="py-lineno">138</tt>  <tt class="py-line">        <tt class="py-keyword">except</tt> <tt class="py-name">StopIteration</tt><tt class="py-op">:</tt> </tt>
+<a name="L139"></a><tt class="py-lineno">139</tt>  <tt class="py-line">            <tt class="py-name">cursor</tt><tt class="py-op">.</tt><tt id="link-57" class="py-name" targets="Method boto.mapreduce.queuetools.LQSClient.close()=boto.mapreduce.queuetools.LQSClient-class.html#close,Method boto.mapreduce.queuetools.SQSClient.close()=boto.mapreduce.queuetools.SQSClient-class.html#close,Method boto.s3.key.Key.close()=boto.s3.key.Key-class.html#close"><a title="boto.mapreduce.queuetools.LQSClient.close
+boto.mapreduce.queuetools.SQSClient.close
+boto.s3.key.Key.close" class="py-name" href="#" onclick="return doclink('link-57', 'close', 'link-57');">close</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L140"></a><tt class="py-lineno">140</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt class="py-name">StopIteration</tt> </tt>
+</div><a name="L141"></a><tt class="py-lineno">141</tt>  <tt class="py-line">                 </tt>
+<a name="PGManager._dict_from_row"></a><div id="PGManager._dict_from_row-def"><a name="L142"></a><tt class="py-lineno">142</tt> <a class="py-toggle" href="#" id="PGManager._dict_from_row-toggle" onclick="return toggle('PGManager._dict_from_row');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sdb.db.manager.pgmanager.PGManager-class.html#_dict_from_row">_dict_from_row</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">row</tt><tt class="py-op">,</tt> <tt class="py-param">description</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="PGManager._dict_from_row-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="PGManager._dict_from_row-expanded"><a name="L143"></a><tt class="py-lineno">143</tt>  <tt class="py-line">        <tt class="py-name">d</tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt><tt class="py-op">}</tt> </tt>
+<a name="L144"></a><tt class="py-lineno">144</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt class="py-name">i</tt> <tt class="py-keyword">in</tt> <tt class="py-name">range</tt><tt class="py-op">(</tt><tt class="py-number">0</tt><tt class="py-op">,</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">row</tt><tt class="py-op">)</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L145"></a><tt class="py-lineno">145</tt>  <tt class="py-line">            <tt class="py-name">d</tt><tt class="py-op">[</tt><tt id="link-58" class="py-name"><a title="boto.mashups.server.Server.description
+boto.sdb.persist.test_persist.TestScalar.description" class="py-name" href="#" onclick="return doclink('link-58', 'description', 'link-56');">description</a></tt><tt class="py-op">[</tt><tt class="py-name">i</tt><tt class="py-op">]</tt><tt class="py-op">[</tt><tt class="py-number">0</tt><tt class="py-op">]</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">row</tt><tt class="py-op">[</tt><tt class="py-name">i</tt><tt class="py-op">]</tt> </tt>
+<a name="L146"></a><tt class="py-lineno">146</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">d</tt> </tt>
+</div><a name="L147"></a><tt class="py-lineno">147</tt>  <tt class="py-line"> </tt>
+<a name="PGManager._object_from_row"></a><div id="PGManager._object_from_row-def"><a name="L148"></a><tt class="py-lineno">148</tt> <a class="py-toggle" href="#" id="PGManager._object_from_row-toggle" onclick="return toggle('PGManager._object_from_row');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sdb.db.manager.pgmanager.PGManager-class.html#_object_from_row">_object_from_row</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">row</tt><tt class="py-op">,</tt> <tt class="py-param">description</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="PGManager._object_from_row-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="PGManager._object_from_row-expanded"><a name="L149"></a><tt class="py-lineno">149</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-keyword">not</tt> <tt id="link-59" class="py-name"><a title="boto.mashups.server.Server.description
+boto.sdb.persist.test_persist.TestScalar.description" class="py-name" href="#" onclick="return doclink('link-59', 'description', 'link-56');">description</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L150"></a><tt class="py-lineno">150</tt>  <tt class="py-line">            <tt id="link-60" class="py-name"><a title="boto.mashups.server.Server.description
+boto.sdb.persist.test_persist.TestScalar.description" class="py-name" href="#" onclick="return doclink('link-60', 'description', 'link-56');">description</a></tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">cursor</tt><tt class="py-op">.</tt><tt id="link-61" class="py-name"><a title="boto.mashups.server.Server.description
+boto.sdb.persist.test_persist.TestScalar.description" class="py-name" href="#" onclick="return doclink('link-61', 'description', 'link-56');">description</a></tt> </tt>
+<a name="L151"></a><tt class="py-lineno">151</tt>  <tt class="py-line">        <tt class="py-name">d</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-62" class="py-name" targets="Method boto.sdb.db.manager.pgmanager.PGManager._dict_from_row()=boto.sdb.db.manager.pgmanager.PGManager-class.html#_dict_from_row"><a title="boto.sdb.db.manager.pgmanager.PGManager._dict_from_row" class="py-name" href="#" onclick="return doclink('link-62', '_dict_from_row', 'link-62');">_dict_from_row</a></tt><tt class="py-op">(</tt><tt class="py-name">row</tt><tt class="py-op">,</tt> <tt id="link-63" class="py-name"><a title="boto.mashups.server.Server.description
+boto.sdb.persist.test_persist.TestScalar.description" class="py-name" href="#" onclick="return doclink('link-63', 'description', 'link-56');">description</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L152"></a><tt class="py-lineno">152</tt>  <tt class="py-line">        <tt class="py-name">obj</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">cls</tt><tt class="py-op">(</tt><tt class="py-name">d</tt><tt class="py-op">[</tt><tt class="py-string">'id'</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L153"></a><tt class="py-lineno">153</tt>  <tt class="py-line">        <tt class="py-name">obj</tt><tt class="py-op">.</tt><tt id="link-64" class="py-name"><a title="boto.sdb.persist.object.SDBObject._manager" class="py-name" href="#" onclick="return doclink('link-64', '_manager', 'link-34');">_manager</a></tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt> </tt>
+<a name="L154"></a><tt class="py-lineno">154</tt>  <tt class="py-line">        <tt class="py-name">obj</tt><tt class="py-op">.</tt><tt class="py-name">_auto_update</tt> <tt class="py-op">=</tt> <tt class="py-name">False</tt> </tt>
+<a name="L155"></a><tt class="py-lineno">155</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt class="py-name">prop</tt> <tt class="py-keyword">in</tt> <tt class="py-name">obj</tt><tt class="py-op">.</tt><tt id="link-65" class="py-name" targets="Class Method boto.sdb.db.model.Model.properties()=boto.sdb.db.model.Model-class.html#properties,Class Method boto.sdb.db.model.Model.properties()=boto.sdb.db.model.Model-class.html#properties,Class Method boto.sdb.persist.object.SDBObject.properties()=boto.sdb.persist.object.SDBObject-class.html#properties"><a title="boto.sdb.db.model.Model.properties
+boto.sdb.db.model.Model.properties
+boto.sdb.persist.object.SDBObject.properties" class="py-name" href="#" onclick="return doclink('link-65', 'properties', 'link-65');">properties</a></tt><tt class="py-op">(</tt><tt class="py-name">hidden</tt><tt class="py-op">=</tt><tt class="py-name">False</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L156"></a><tt class="py-lineno">156</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-name">prop</tt><tt class="py-op">.</tt><tt class="py-name">data_type</tt> <tt class="py-op">!=</tt> <tt id="link-66" class="py-name"><a title="boto.s3.key.Key
+boto.sdb.db.key.Key" class="py-name" href="#" onclick="return doclink('link-66', 'Key', 'link-4');">Key</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L157"></a><tt class="py-lineno">157</tt>  <tt class="py-line">                <tt class="py-name">v</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-67" class="py-name"><a title="boto.sdb.db.manager.pgmanager.PGManager.decode_value
+boto.sdb.db.manager.sdbmanager.SDBManager.decode_value
+boto.sdb.item.Item.decode_value" class="py-name" href="#" onclick="return doclink('link-67', 'decode_value', 'link-35');">decode_value</a></tt><tt class="py-op">(</tt><tt class="py-name">prop</tt><tt class="py-op">,</tt> <tt class="py-name">d</tt><tt class="py-op">[</tt><tt class="py-name">prop</tt><tt class="py-op">.</tt><tt id="link-68" class="py-name" targets="Variable boto.mapreduce.partitiondb.Partition.name=boto.mapreduce.partitiondb.Partition-class.html#name,Variable boto.mapreduce.partitiondb.PartitionDB.name=boto.mapreduce.partitiondb.PartitionDB-class.html#name,Variable boto.mapreduce.partitiondb.Version.name=boto.mapreduce.partitiondb.Version-class.html#name,Variable boto.mashups.server.Server.name=boto.mashups.server.Server-class.html#name,Method boto.sdb.db.key.Key.name()=boto.sdb.db.key.Key-class.html#name,Variable boto.sdb.db.property.Property.name=boto.sdb.db.property.Property-class.html#name,Variable boto.sdb.db.test_db.TestBasic.name=boto.sdb.db.test_db.TestBasic-class.html#name,Variable boto.sdb.db.test_db.TestList.name=boto.sdb.db.test_db.TestList-class.html#name,Variable boto.sdb.db.test_db.TestListReference.name=boto.sdb.db.test_db.TestListReference-class.html#name,Variable boto.sdb.db.test_db.TestUnique.name=boto.sdb.db.test_db.TestUnique-class.html#name,Variable boto.sdb.persist.test_persist.TestRef.name=boto.sdb.persist.test_persist.TestRef-class.html#name,Variable boto.sdb.persist.test_persist.TestScalar.name=boto.sdb.persist.test_persist.TestScalar-class.html#name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-68', 'name', 'link-68');">name</a></tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L158"></a><tt class="py-lineno">158</tt>  <tt class="py-line">                <tt class="py-name">v</tt> <tt class="py-op">=</tt> <tt class="py-name">prop</tt><tt class="py-op">.</tt><tt id="link-69" class="py-name" targets="Method boto.sdb.db.property.PasswordProperty.make_value_from_datastore()=boto.sdb.db.property.PasswordProperty-class.html#make_value_from_datastore,Method boto.sdb.db.property.Property.make_value_from_datastore()=boto.sdb.db.property.Property-class.html#make_value_from_datastore,Method boto.sdb.db.property.S3KeyProperty.make_value_from_datastore()=boto.sdb.db.property.S3KeyProperty-class.html#make_value_from_datastore"><a title="boto.sdb.db.property.PasswordProperty.make_value_from_datastore
+boto.sdb.db.property.Property.make_value_from_datastore
+boto.sdb.db.property.S3KeyProperty.make_value_from_datastore" class="py-name" href="#" onclick="return doclink('link-69', 'make_value_from_datastore', 'link-69');">make_value_from_datastore</a></tt><tt class="py-op">(</tt><tt class="py-name">v</tt><tt class="py-op">)</tt> </tt>
+<a name="L159"></a><tt class="py-lineno">159</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt> <tt class="py-name">hasattr</tt><tt class="py-op">(</tt><tt class="py-name">prop</tt><tt class="py-op">,</tt> <tt class="py-string">'calculated_type'</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L160"></a><tt class="py-lineno">160</tt>  <tt class="py-line">                    <tt class="py-name">prop</tt><tt class="py-op">.</tt><tt id="link-70" class="py-name" targets="Method boto.sdb.db.property.CalculatedProperty._set_direct()=boto.sdb.db.property.CalculatedProperty-class.html#_set_direct"><a title="boto.sdb.db.property.CalculatedProperty._set_direct" class="py-name" href="#" onclick="return doclink('link-70', '_set_direct', 'link-70');">_set_direct</a></tt><tt class="py-op">(</tt><tt class="py-name">obj</tt><tt class="py-op">,</tt> <tt class="py-name">v</tt><tt class="py-op">)</tt> </tt>
+<a name="L161"></a><tt class="py-lineno">161</tt>  <tt class="py-line">                <tt class="py-keyword">elif</tt> <tt class="py-keyword">not</tt> <tt class="py-name">prop</tt><tt class="py-op">.</tt><tt id="link-71" class="py-name" targets="Method boto.sdb.db.property.BooleanProperty.empty()=boto.sdb.db.property.BooleanProperty-class.html#empty,Method boto.sdb.db.property.IntegerProperty.empty()=boto.sdb.db.property.IntegerProperty-class.html#empty,Method boto.sdb.db.property.ListProperty.empty()=boto.sdb.db.property.ListProperty-class.html#empty,Method boto.sdb.db.property.LongProperty.empty()=boto.sdb.db.property.LongProperty-class.html#empty,Method boto.sdb.db.property.Property.empty()=boto.sdb.db.property.Property-class.html#empty"><a title="boto.sdb.db.property.BooleanProperty.empty
+boto.sdb.db.property.IntegerProperty.empty
+boto.sdb.db.property.ListProperty.empty
+boto.sdb.db.property.LongProperty.empty
+boto.sdb.db.property.Property.empty" class="py-name" href="#" onclick="return doclink('link-71', 'empty', 'link-71');">empty</a></tt><tt class="py-op">(</tt><tt class="py-name">v</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L162"></a><tt class="py-lineno">162</tt>  <tt class="py-line">                    <tt class="py-name">setattr</tt><tt class="py-op">(</tt><tt class="py-name">obj</tt><tt class="py-op">,</tt> <tt class="py-name">prop</tt><tt class="py-op">.</tt><tt id="link-72" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-72', 'name', 'link-68');">name</a></tt><tt class="py-op">,</tt> <tt class="py-name">v</tt><tt class="py-op">)</tt> </tt>
+<a name="L163"></a><tt class="py-lineno">163</tt>  <tt class="py-line">                <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L164"></a><tt class="py-lineno">164</tt>  <tt class="py-line">                    <tt class="py-name">setattr</tt><tt class="py-op">(</tt><tt class="py-name">obj</tt><tt class="py-op">,</tt> <tt class="py-name">prop</tt><tt class="py-op">.</tt><tt id="link-73" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-73', 'name', 'link-68');">name</a></tt><tt class="py-op">,</tt> <tt class="py-name">prop</tt><tt class="py-op">.</tt><tt id="link-74" class="py-name" targets="Method boto.sdb.db.property.DateTimeProperty.default_value()=boto.sdb.db.property.DateTimeProperty-class.html#default_value,Method boto.sdb.db.property.ListProperty.default_value()=boto.sdb.db.property.ListProperty-class.html#default_value,Method boto.sdb.db.property.Property.default_value()=boto.sdb.db.property.Property-class.html#default_value"><a title="boto.sdb.db.property.DateTimeProperty.default_value
+boto.sdb.db.property.ListProperty.default_value
+boto.sdb.db.property.Property.default_value" class="py-name" href="#" onclick="return doclink('link-74', 'default_value', 'link-74');">default_value</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L165"></a><tt class="py-lineno">165</tt>  <tt class="py-line">        <tt class="py-name">obj</tt><tt class="py-op">.</tt><tt class="py-name">_auto_update</tt> <tt class="py-op">=</tt> <tt class="py-name">True</tt> </tt>
+<a name="L166"></a><tt class="py-lineno">166</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">obj</tt> </tt>
+</div><a name="L167"></a><tt class="py-lineno">167</tt>  <tt class="py-line"> </tt>
+<a name="PGManager._build_insert_qs"></a><div id="PGManager._build_insert_qs-def"><a name="L168"></a><tt class="py-lineno">168</tt> <a class="py-toggle" href="#" id="PGManager._build_insert_qs-toggle" onclick="return toggle('PGManager._build_insert_qs');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sdb.db.manager.pgmanager.PGManager-class.html#_build_insert_qs">_build_insert_qs</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">obj</tt><tt class="py-op">,</tt> <tt class="py-param">calculated</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="PGManager._build_insert_qs-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="PGManager._build_insert_qs-expanded"><a name="L169"></a><tt class="py-lineno">169</tt>  <tt class="py-line">        <tt class="py-name">fields</tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt> </tt>
+<a name="L170"></a><tt class="py-lineno">170</tt>  <tt class="py-line">        <tt id="link-75" class="py-name" targets="Method boto.sqs.20070501.message.MHMessage.values()=boto.sqs.20070501.message.MHMessage-class.html#values,Method boto.sqs.message.MHMessage.values()=boto.sqs.message.MHMessage-class.html#values"><a title="boto.sqs.20070501.message.MHMessage.values
+boto.sqs.message.MHMessage.values" class="py-name" href="#" onclick="return doclink('link-75', 'values', 'link-75');">values</a></tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt> </tt>
+<a name="L171"></a><tt class="py-lineno">171</tt>  <tt class="py-line">        <tt class="py-name">templs</tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt> </tt>
+<a name="L172"></a><tt class="py-lineno">172</tt>  <tt class="py-line">        <tt class="py-name">id_calculated</tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-name">p</tt> <tt class="py-keyword">for</tt> <tt class="py-name">p</tt> <tt class="py-keyword">in</tt> <tt class="py-name">calculated</tt> <tt class="py-keyword">if</tt> <tt class="py-name">p</tt><tt class="py-op">.</tt><tt id="link-76" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-76', 'name', 'link-68');">name</a></tt> <tt class="py-op">==</tt> <tt class="py-string">'id'</tt><tt class="py-op">]</tt> </tt>
+<a name="L173"></a><tt class="py-lineno">173</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt class="py-name">prop</tt> <tt class="py-keyword">in</tt> <tt class="py-name">obj</tt><tt class="py-op">.</tt><tt id="link-77" class="py-name"><a title="boto.sdb.db.model.Model.properties
+boto.sdb.db.model.Model.properties
+boto.sdb.persist.object.SDBObject.properties" class="py-name" href="#" onclick="return doclink('link-77', 'properties', 'link-65');">properties</a></tt><tt class="py-op">(</tt><tt class="py-name">hidden</tt><tt class="py-op">=</tt><tt class="py-name">False</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L174"></a><tt class="py-lineno">174</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-name">prop</tt> <tt class="py-keyword">not</tt> <tt class="py-keyword">in</tt> <tt class="py-name">calculated</tt><tt class="py-op">:</tt> </tt>
+<a name="L175"></a><tt class="py-lineno">175</tt>  <tt class="py-line">                <tt class="py-name">value</tt> <tt class="py-op">=</tt> <tt class="py-name">prop</tt><tt class="py-op">.</tt><tt id="link-78" class="py-name" targets="Method boto.sdb.db.property.CalculatedProperty.get_value_for_datastore()=boto.sdb.db.property.CalculatedProperty-class.html#get_value_for_datastore,Method boto.sdb.db.property.DateTimeProperty.get_value_for_datastore()=boto.sdb.db.property.DateTimeProperty-class.html#get_value_for_datastore,Method boto.sdb.db.property.PasswordProperty.get_value_for_datastore()=boto.sdb.db.property.PasswordProperty-class.html#get_value_for_datastore,Method boto.sdb.db.property.Property.get_value_for_datastore()=boto.sdb.db.property.Property-class.html#get_value_for_datastore,Method boto.sdb.db.property.S3KeyProperty.get_value_for_datastore()=boto.sdb.db.property.S3KeyProperty-class.html#get_value_for_datastore"><a title="boto.sdb.db.property.CalculatedProperty.get_value_for_datastore
+boto.sdb.db.property.DateTimeProperty.get_value_for_datastore
+boto.sdb.db.property.PasswordProperty.get_value_for_datastore
+boto.sdb.db.property.Property.get_value_for_datastore
+boto.sdb.db.property.S3KeyProperty.get_value_for_datastore" class="py-name" href="#" onclick="return doclink('link-78', 'get_value_for_datastore', 'link-78');">get_value_for_datastore</a></tt><tt class="py-op">(</tt><tt class="py-name">obj</tt><tt class="py-op">)</tt> </tt>
+<a name="L176"></a><tt class="py-lineno">176</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt> <tt class="py-name">value</tt> <tt class="py-op">!=</tt> <tt class="py-name">prop</tt><tt class="py-op">.</tt><tt id="link-79" class="py-name"><a title="boto.sdb.db.property.DateTimeProperty.default_value
+boto.sdb.db.property.ListProperty.default_value
+boto.sdb.db.property.Property.default_value" class="py-name" href="#" onclick="return doclink('link-79', 'default_value', 'link-74');">default_value</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> <tt class="py-keyword">or</tt> <tt class="py-name">prop</tt><tt class="py-op">.</tt><tt class="py-name">required</tt><tt class="py-op">:</tt> </tt>
+<a name="L177"></a><tt class="py-lineno">177</tt>  <tt class="py-line">                    <tt class="py-name">value</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-80" class="py-name" targets="Method boto.sdb.db.manager.pgmanager.PGManager.encode_value()=boto.sdb.db.manager.pgmanager.PGManager-class.html#encode_value,Method boto.sdb.db.manager.sdbmanager.SDBManager.encode_value()=boto.sdb.db.manager.sdbmanager.SDBManager-class.html#encode_value"><a title="boto.sdb.db.manager.pgmanager.PGManager.encode_value
+boto.sdb.db.manager.sdbmanager.SDBManager.encode_value" class="py-name" href="#" onclick="return doclink('link-80', 'encode_value', 'link-80');">encode_value</a></tt><tt class="py-op">(</tt><tt class="py-name">prop</tt><tt class="py-op">,</tt> <tt class="py-name">value</tt><tt class="py-op">)</tt> </tt>
+<a name="L178"></a><tt class="py-lineno">178</tt>  <tt class="py-line">                    <tt id="link-81" class="py-name"><a title="boto.sqs.20070501.message.MHMessage.values
+boto.sqs.message.MHMessage.values" class="py-name" href="#" onclick="return doclink('link-81', 'values', 'link-75');">values</a></tt><tt class="py-op">.</tt><tt id="link-82" class="py-name"><a title="boto.sdb.persist.property.MultiValue.append" class="py-name" href="#" onclick="return doclink('link-82', 'append', 'link-27');">append</a></tt><tt class="py-op">(</tt><tt class="py-name">value</tt><tt class="py-op">)</tt> </tt>
+<a name="L179"></a><tt class="py-lineno">179</tt>  <tt class="py-line">                    <tt class="py-name">fields</tt><tt class="py-op">.</tt><tt id="link-83" class="py-name"><a title="boto.sdb.persist.property.MultiValue.append" class="py-name" href="#" onclick="return doclink('link-83', 'append', 'link-27');">append</a></tt><tt class="py-op">(</tt><tt class="py-string">'"%s"'</tt> <tt class="py-op">%</tt> <tt class="py-name">prop</tt><tt class="py-op">.</tt><tt id="link-84" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-84', 'name', 'link-68');">name</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L180"></a><tt class="py-lineno">180</tt>  <tt class="py-line">                    <tt class="py-name">templs</tt><tt class="py-op">.</tt><tt id="link-85" class="py-name"><a title="boto.sdb.persist.property.MultiValue.append" class="py-name" href="#" onclick="return doclink('link-85', 'append', 'link-27');">append</a></tt><tt class="py-op">(</tt><tt class="py-string">'%s'</tt><tt class="py-op">)</tt> </tt>
+<a name="L181"></a><tt class="py-lineno">181</tt>  <tt class="py-line">        <tt class="py-name">qs</tt> <tt class="py-op">=</tt> <tt class="py-string">'INSERT INTO "%s" ('</tt> <tt class="py-op">%</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">db_table</tt> </tt>
+<a name="L182"></a><tt class="py-lineno">182</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">id_calculated</tt><tt class="py-op">)</tt> <tt class="py-op">==</tt> <tt class="py-number">0</tt><tt class="py-op">:</tt> </tt>
+<a name="L183"></a><tt class="py-lineno">183</tt>  <tt class="py-line">            <tt class="py-name">qs</tt> <tt class="py-op">+=</tt> <tt class="py-string">'"id",'</tt> </tt>
+<a name="L184"></a><tt class="py-lineno">184</tt>  <tt class="py-line">        <tt class="py-name">qs</tt> <tt class="py-op">+=</tt> <tt class="py-string">','</tt><tt class="py-op">.</tt><tt class="py-name">join</tt><tt class="py-op">(</tt><tt class="py-name">fields</tt><tt class="py-op">)</tt> </tt>
+<a name="L185"></a><tt class="py-lineno">185</tt>  <tt class="py-line">        <tt class="py-name">qs</tt> <tt class="py-op">+=</tt> <tt class="py-string">") VALUES ("</tt> </tt>
+<a name="L186"></a><tt class="py-lineno">186</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">id_calculated</tt><tt class="py-op">)</tt> <tt class="py-op">==</tt> <tt class="py-number">0</tt><tt class="py-op">:</tt> </tt>
+<a name="L187"></a><tt class="py-lineno">187</tt>  <tt class="py-line">            <tt class="py-name">qs</tt> <tt class="py-op">+=</tt> <tt class="py-string">"'%s',"</tt> <tt class="py-op">%</tt> <tt class="py-name">obj</tt><tt class="py-op">.</tt><tt id="link-86" class="py-name"><a title="boto.sdb.db.key.Key.id" class="py-name" href="#" onclick="return doclink('link-86', 'id', 'link-45');">id</a></tt> </tt>
+<a name="L188"></a><tt class="py-lineno">188</tt>  <tt class="py-line">        <tt class="py-name">qs</tt> <tt class="py-op">+=</tt> <tt class="py-string">','</tt><tt class="py-op">.</tt><tt class="py-name">join</tt><tt class="py-op">(</tt><tt class="py-name">templs</tt><tt class="py-op">)</tt> </tt>
+<a name="L189"></a><tt class="py-lineno">189</tt>  <tt class="py-line">        <tt class="py-name">qs</tt> <tt class="py-op">+=</tt> <tt class="py-string">')'</tt> </tt>
+<a name="L190"></a><tt class="py-lineno">190</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">calculated</tt><tt class="py-op">:</tt> </tt>
+<a name="L191"></a><tt class="py-lineno">191</tt>  <tt class="py-line">            <tt class="py-name">qs</tt> <tt class="py-op">+=</tt> <tt class="py-string">' RETURNING '</tt> </tt>
+<a name="L192"></a><tt class="py-lineno">192</tt>  <tt class="py-line">            <tt class="py-name">calc_values</tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-string">'"%s"'</tt> <tt class="py-op">%</tt> <tt class="py-name">p</tt><tt class="py-op">.</tt><tt id="link-87" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-87', 'name', 'link-68');">name</a></tt> <tt class="py-keyword">for</tt> <tt class="py-name">p</tt> <tt class="py-keyword">in</tt> <tt class="py-name">calculated</tt><tt class="py-op">]</tt> </tt>
+<a name="L193"></a><tt class="py-lineno">193</tt>  <tt class="py-line">            <tt class="py-name">qs</tt> <tt class="py-op">+=</tt> <tt class="py-string">','</tt><tt class="py-op">.</tt><tt class="py-name">join</tt><tt class="py-op">(</tt><tt class="py-name">calc_values</tt><tt class="py-op">)</tt> </tt>
+<a name="L194"></a><tt class="py-lineno">194</tt>  <tt class="py-line">        <tt class="py-name">qs</tt> <tt class="py-op">+=</tt> <tt class="py-string">';'</tt> </tt>
+<a name="L195"></a><tt class="py-lineno">195</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">qs</tt><tt class="py-op">,</tt> <tt id="link-88" class="py-name"><a title="boto.sqs.20070501.message.MHMessage.values
+boto.sqs.message.MHMessage.values" class="py-name" href="#" onclick="return doclink('link-88', 'values', 'link-75');">values</a></tt> </tt>
+</div><a name="L196"></a><tt class="py-lineno">196</tt>  <tt class="py-line"> </tt>
+<a name="PGManager._build_update_qs"></a><div id="PGManager._build_update_qs-def"><a name="L197"></a><tt class="py-lineno">197</tt> <a class="py-toggle" href="#" id="PGManager._build_update_qs-toggle" onclick="return toggle('PGManager._build_update_qs');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sdb.db.manager.pgmanager.PGManager-class.html#_build_update_qs">_build_update_qs</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">obj</tt><tt class="py-op">,</tt> <tt class="py-param">calculated</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="PGManager._build_update_qs-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="PGManager._build_update_qs-expanded"><a name="L198"></a><tt class="py-lineno">198</tt>  <tt class="py-line">        <tt class="py-name">fields</tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt> </tt>
+<a name="L199"></a><tt class="py-lineno">199</tt>  <tt class="py-line">        <tt id="link-89" class="py-name"><a title="boto.sqs.20070501.message.MHMessage.values
+boto.sqs.message.MHMessage.values" class="py-name" href="#" onclick="return doclink('link-89', 'values', 'link-75');">values</a></tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt> </tt>
+<a name="L200"></a><tt class="py-lineno">200</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt class="py-name">prop</tt> <tt class="py-keyword">in</tt> <tt class="py-name">obj</tt><tt class="py-op">.</tt><tt id="link-90" class="py-name"><a title="boto.sdb.db.model.Model.properties
+boto.sdb.db.model.Model.properties
+boto.sdb.persist.object.SDBObject.properties" class="py-name" href="#" onclick="return doclink('link-90', 'properties', 'link-65');">properties</a></tt><tt class="py-op">(</tt><tt class="py-name">hidden</tt><tt class="py-op">=</tt><tt class="py-name">False</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L201"></a><tt class="py-lineno">201</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-name">prop</tt> <tt class="py-keyword">not</tt> <tt class="py-keyword">in</tt> <tt class="py-name">calculated</tt><tt class="py-op">:</tt> </tt>
+<a name="L202"></a><tt class="py-lineno">202</tt>  <tt class="py-line">                <tt class="py-name">value</tt> <tt class="py-op">=</tt> <tt class="py-name">prop</tt><tt class="py-op">.</tt><tt id="link-91" class="py-name"><a title="boto.sdb.db.property.CalculatedProperty.get_value_for_datastore
+boto.sdb.db.property.DateTimeProperty.get_value_for_datastore
+boto.sdb.db.property.PasswordProperty.get_value_for_datastore
+boto.sdb.db.property.Property.get_value_for_datastore
+boto.sdb.db.property.S3KeyProperty.get_value_for_datastore" class="py-name" href="#" onclick="return doclink('link-91', 'get_value_for_datastore', 'link-78');">get_value_for_datastore</a></tt><tt class="py-op">(</tt><tt class="py-name">obj</tt><tt class="py-op">)</tt> </tt>
+<a name="L203"></a><tt class="py-lineno">203</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt> <tt class="py-name">value</tt> <tt class="py-op">!=</tt> <tt class="py-name">prop</tt><tt class="py-op">.</tt><tt id="link-92" class="py-name"><a title="boto.sdb.db.property.DateTimeProperty.default_value
+boto.sdb.db.property.ListProperty.default_value
+boto.sdb.db.property.Property.default_value" class="py-name" href="#" onclick="return doclink('link-92', 'default_value', 'link-74');">default_value</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> <tt class="py-keyword">or</tt> <tt class="py-name">prop</tt><tt class="py-op">.</tt><tt class="py-name">required</tt><tt class="py-op">:</tt> </tt>
+<a name="L204"></a><tt class="py-lineno">204</tt>  <tt class="py-line">                    <tt class="py-name">value</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-93" class="py-name"><a title="boto.sdb.db.manager.pgmanager.PGManager.encode_value
+boto.sdb.db.manager.sdbmanager.SDBManager.encode_value" class="py-name" href="#" onclick="return doclink('link-93', 'encode_value', 'link-80');">encode_value</a></tt><tt class="py-op">(</tt><tt class="py-name">prop</tt><tt class="py-op">,</tt> <tt class="py-name">value</tt><tt class="py-op">)</tt> </tt>
+<a name="L205"></a><tt class="py-lineno">205</tt>  <tt class="py-line">                    <tt id="link-94" class="py-name"><a title="boto.sqs.20070501.message.MHMessage.values
+boto.sqs.message.MHMessage.values" class="py-name" href="#" onclick="return doclink('link-94', 'values', 'link-75');">values</a></tt><tt class="py-op">.</tt><tt id="link-95" class="py-name"><a title="boto.sdb.persist.property.MultiValue.append" class="py-name" href="#" onclick="return doclink('link-95', 'append', 'link-27');">append</a></tt><tt class="py-op">(</tt><tt class="py-name">value</tt><tt class="py-op">)</tt> </tt>
+<a name="L206"></a><tt class="py-lineno">206</tt>  <tt class="py-line">                    <tt class="py-name">field</tt> <tt class="py-op">=</tt> <tt class="py-string">'"%s"='</tt> <tt class="py-op">%</tt> <tt class="py-name">prop</tt><tt class="py-op">.</tt><tt id="link-96" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-96', 'name', 'link-68');">name</a></tt> </tt>
+<a name="L207"></a><tt class="py-lineno">207</tt>  <tt class="py-line">                    <tt class="py-name">field</tt> <tt class="py-op">+=</tt> <tt class="py-string">'%s'</tt> </tt>
+<a name="L208"></a><tt class="py-lineno">208</tt>  <tt class="py-line">                    <tt class="py-name">fields</tt><tt class="py-op">.</tt><tt id="link-97" class="py-name"><a title="boto.sdb.persist.property.MultiValue.append" class="py-name" href="#" onclick="return doclink('link-97', 'append', 'link-27');">append</a></tt><tt class="py-op">(</tt><tt class="py-name">field</tt><tt class="py-op">)</tt> </tt>
+<a name="L209"></a><tt class="py-lineno">209</tt>  <tt class="py-line">        <tt class="py-name">qs</tt> <tt class="py-op">=</tt> <tt class="py-string">'UPDATE "%s" SET '</tt> <tt class="py-op">%</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">db_table</tt> </tt>
+<a name="L210"></a><tt class="py-lineno">210</tt>  <tt class="py-line">        <tt class="py-name">qs</tt> <tt class="py-op">+=</tt> <tt class="py-string">','</tt><tt class="py-op">.</tt><tt class="py-name">join</tt><tt class="py-op">(</tt><tt class="py-name">fields</tt><tt class="py-op">)</tt> </tt>
+<a name="L211"></a><tt class="py-lineno">211</tt>  <tt class="py-line">        <tt class="py-name">qs</tt> <tt class="py-op">+=</tt> <tt class="py-string">""" WHERE "id" = '%s'"""</tt> <tt class="py-op">%</tt> <tt class="py-name">obj</tt><tt class="py-op">.</tt><tt id="link-98" class="py-name"><a title="boto.sdb.db.key.Key.id" class="py-name" href="#" onclick="return doclink('link-98', 'id', 'link-45');">id</a></tt> </tt>
+<a name="L212"></a><tt class="py-lineno">212</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">calculated</tt><tt class="py-op">:</tt> </tt>
+<a name="L213"></a><tt class="py-lineno">213</tt>  <tt class="py-line">            <tt class="py-name">qs</tt> <tt class="py-op">+=</tt> <tt class="py-string">' RETURNING '</tt> </tt>
+<a name="L214"></a><tt class="py-lineno">214</tt>  <tt class="py-line">            <tt class="py-name">calc_values</tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-string">'"%s"'</tt> <tt class="py-op">%</tt> <tt class="py-name">p</tt><tt class="py-op">.</tt><tt id="link-99" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-99', 'name', 'link-68');">name</a></tt> <tt class="py-keyword">for</tt> <tt class="py-name">p</tt> <tt class="py-keyword">in</tt> <tt class="py-name">calculated</tt><tt class="py-op">]</tt> </tt>
+<a name="L215"></a><tt class="py-lineno">215</tt>  <tt class="py-line">            <tt class="py-name">qs</tt> <tt class="py-op">+=</tt> <tt class="py-string">','</tt><tt class="py-op">.</tt><tt class="py-name">join</tt><tt class="py-op">(</tt><tt class="py-name">calc_values</tt><tt class="py-op">)</tt> </tt>
+<a name="L216"></a><tt class="py-lineno">216</tt>  <tt class="py-line">        <tt class="py-name">qs</tt> <tt class="py-op">+=</tt> <tt class="py-string">';'</tt> </tt>
+<a name="L217"></a><tt class="py-lineno">217</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">qs</tt><tt class="py-op">,</tt> <tt id="link-100" class="py-name"><a title="boto.sqs.20070501.message.MHMessage.values
+boto.sqs.message.MHMessage.values" class="py-name" href="#" onclick="return doclink('link-100', 'values', 'link-75');">values</a></tt> </tt>
+</div><a name="L218"></a><tt class="py-lineno">218</tt>  <tt class="py-line"> </tt>
+<a name="PGManager._get_sql"></a><div id="PGManager._get_sql-def"><a name="L219"></a><tt class="py-lineno">219</tt> <a class="py-toggle" href="#" id="PGManager._get_sql-toggle" onclick="return toggle('PGManager._get_sql');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sdb.db.manager.pgmanager.PGManager-class.html#_get_sql">_get_sql</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">mapping</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="PGManager._get_sql-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="PGManager._get_sql-expanded"><a name="L220"></a><tt class="py-lineno">220</tt>  <tt class="py-line">        <tt class="py-keyword">print</tt> <tt class="py-string">'_get_sql'</tt> </tt>
+<a name="L221"></a><tt class="py-lineno">221</tt>  <tt class="py-line">        <tt class="py-name">sql</tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+<a name="L222"></a><tt class="py-lineno">222</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">sql_dir</tt><tt class="py-op">:</tt> </tt>
+<a name="L223"></a><tt class="py-lineno">223</tt>  <tt class="py-line">            <tt class="py-name">path</tt> <tt class="py-op">=</tt> <tt class="py-name">os</tt><tt class="py-op">.</tt><tt class="py-name">path</tt><tt class="py-op">.</tt><tt class="py-name">join</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">sql_dir</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">cls</tt><tt class="py-op">.</tt><tt class="py-name">__name__</tt> <tt class="py-op">+</tt> <tt class="py-string">'.sql'</tt><tt class="py-op">)</tt> </tt>
+<a name="L224"></a><tt class="py-lineno">224</tt>  <tt class="py-line">            <tt class="py-keyword">print</tt> <tt class="py-name">path</tt> </tt>
+<a name="L225"></a><tt class="py-lineno">225</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-name">os</tt><tt class="py-op">.</tt><tt class="py-name">path</tt><tt class="py-op">.</tt><tt class="py-name">isfile</tt><tt class="py-op">(</tt><tt class="py-name">path</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L226"></a><tt class="py-lineno">226</tt>  <tt class="py-line">                <tt class="py-name">fp</tt> <tt class="py-op">=</tt> <tt id="link-101" class="py-name" targets="Method boto.s3.key.Key.open()=boto.s3.key.Key-class.html#open"><a title="boto.s3.key.Key.open" class="py-name" href="#" onclick="return doclink('link-101', 'open', 'link-101');">open</a></tt><tt class="py-op">(</tt><tt class="py-name">path</tt><tt class="py-op">)</tt> </tt>
+<a name="L227"></a><tt class="py-lineno">227</tt>  <tt class="py-line">                <tt class="py-name">sql</tt> <tt class="py-op">=</tt> <tt class="py-name">fp</tt><tt class="py-op">.</tt><tt id="link-102" class="py-name" targets="Method boto.s3.key.Key.read()=boto.s3.key.Key-class.html#read,Method boto.sqs.20070501.queue.Queue.read()=boto.sqs.20070501.queue.Queue-class.html#read,Method boto.sqs.queue.Queue.read()=boto.sqs.queue.Queue-class.html#read"><a title="boto.s3.key.Key.read
+boto.sqs.20070501.queue.Queue.read
+boto.sqs.queue.Queue.read" class="py-name" href="#" onclick="return doclink('link-102', 'read', 'link-102');">read</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L228"></a><tt class="py-lineno">228</tt>  <tt class="py-line">                <tt class="py-name">fp</tt><tt class="py-op">.</tt><tt id="link-103" class="py-name"><a title="boto.mapreduce.queuetools.LQSClient.close
+boto.mapreduce.queuetools.SQSClient.close
+boto.s3.key.Key.close" class="py-name" href="#" onclick="return doclink('link-103', 'close', 'link-57');">close</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L229"></a><tt class="py-lineno">229</tt>  <tt class="py-line">                <tt class="py-name">t</tt> <tt class="py-op">=</tt> <tt class="py-name">string</tt><tt class="py-op">.</tt><tt class="py-name">Template</tt><tt class="py-op">(</tt><tt class="py-name">sql</tt><tt class="py-op">)</tt> </tt>
+<a name="L230"></a><tt class="py-lineno">230</tt>  <tt class="py-line">                <tt class="py-name">sql</tt> <tt class="py-op">=</tt> <tt class="py-name">t</tt><tt class="py-op">.</tt><tt class="py-name">safe_substitute</tt><tt class="py-op">(</tt><tt class="py-name">mapping</tt><tt class="py-op">)</tt> </tt>
+<a name="L231"></a><tt class="py-lineno">231</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">sql</tt> </tt>
+</div><a name="L232"></a><tt class="py-lineno">232</tt>  <tt class="py-line"> </tt>
+<a name="PGManager.start_transaction"></a><div id="PGManager.start_transaction-def"><a name="L233"></a><tt class="py-lineno">233</tt> <a class="py-toggle" href="#" id="PGManager.start_transaction-toggle" onclick="return toggle('PGManager.start_transaction');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sdb.db.manager.pgmanager.PGManager-class.html#start_transaction">start_transaction</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="PGManager.start_transaction-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="PGManager.start_transaction-expanded"><a name="L234"></a><tt class="py-lineno">234</tt>  <tt class="py-line">        <tt class="py-keyword">print</tt> <tt class="py-string">'start_transaction'</tt> </tt>
+<a name="L235"></a><tt class="py-lineno">235</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">in_transaction</tt> <tt class="py-op">=</tt> <tt class="py-name">True</tt> </tt>
+</div><a name="L236"></a><tt class="py-lineno">236</tt>  <tt class="py-line"> </tt>
+<a name="PGManager.end_transaction"></a><div id="PGManager.end_transaction-def"><a name="L237"></a><tt class="py-lineno">237</tt> <a class="py-toggle" href="#" id="PGManager.end_transaction-toggle" onclick="return toggle('PGManager.end_transaction');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sdb.db.manager.pgmanager.PGManager-class.html#end_transaction">end_transaction</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="PGManager.end_transaction-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="PGManager.end_transaction-expanded"><a name="L238"></a><tt class="py-lineno">238</tt>  <tt class="py-line">        <tt class="py-keyword">print</tt> <tt class="py-string">'end_transaction'</tt> </tt>
+<a name="L239"></a><tt class="py-lineno">239</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">in_transaction</tt> <tt class="py-op">=</tt> <tt class="py-name">False</tt> </tt>
+<a name="L240"></a><tt class="py-lineno">240</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-104" class="py-name" targets="Method boto.sdb.db.manager.pgmanager.PGManager.commit()=boto.sdb.db.manager.pgmanager.PGManager-class.html#commit"><a title="boto.sdb.db.manager.pgmanager.PGManager.commit" class="py-name" href="#" onclick="return doclink('link-104', 'commit', 'link-104');">commit</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L241"></a><tt class="py-lineno">241</tt>  <tt class="py-line"> </tt>
+<a name="PGManager.commit"></a><div id="PGManager.commit-def"><a name="L242"></a><tt class="py-lineno">242</tt> <a class="py-toggle" href="#" id="PGManager.commit-toggle" onclick="return toggle('PGManager.commit');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sdb.db.manager.pgmanager.PGManager-class.html#commit">commit</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="PGManager.commit-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="PGManager.commit-expanded"><a name="L243"></a><tt class="py-lineno">243</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-keyword">not</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">in_transaction</tt><tt class="py-op">:</tt> </tt>
+<a name="L244"></a><tt class="py-lineno">244</tt>  <tt class="py-line">            <tt class="py-keyword">print</tt> <tt class="py-string">'!!commit on %s'</tt> <tt class="py-op">%</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">db_table</tt> </tt>
+<a name="L245"></a><tt class="py-lineno">245</tt>  <tt class="py-line">            <tt class="py-keyword">try</tt><tt class="py-op">:</tt> </tt>
+<a name="L246"></a><tt class="py-lineno">246</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-105" class="py-name"><a title="boto.connection
+boto.ec2.connection
+boto.fps.connection
+boto.mturk.connection
+boto.s3.connection
+boto.sdb.connection
+boto.sqs.20070501.connection
+boto.sqs.connection" class="py-name" href="#" onclick="return doclink('link-105', 'connection', 'link-50');">connection</a></tt><tt class="py-op">.</tt><tt id="link-106" class="py-name"><a title="boto.sdb.db.manager.pgmanager.PGManager.commit" class="py-name" href="#" onclick="return doclink('link-106', 'commit', 'link-104');">commit</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L247"></a><tt class="py-lineno">247</tt>  <tt class="py-line">                 </tt>
+<a name="L248"></a><tt class="py-lineno">248</tt>  <tt class="py-line">            <tt class="py-keyword">except</tt> <tt class="py-name">psycopg2</tt><tt class="py-op">.</tt><tt class="py-name">ProgrammingError</tt><tt class="py-op">,</tt> <tt class="py-name">err</tt><tt class="py-op">:</tt> </tt>
+<a name="L249"></a><tt class="py-lineno">249</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-107" class="py-name"><a title="boto.connection
+boto.ec2.connection
+boto.fps.connection
+boto.mturk.connection
+boto.s3.connection
+boto.sdb.connection
+boto.sqs.20070501.connection
+boto.sqs.connection" class="py-name" href="#" onclick="return doclink('link-107', 'connection', 'link-50');">connection</a></tt><tt class="py-op">.</tt><tt id="link-108" class="py-name" targets="Method boto.sdb.db.manager.pgmanager.PGManager.rollback()=boto.sdb.db.manager.pgmanager.PGManager-class.html#rollback"><a title="boto.sdb.db.manager.pgmanager.PGManager.rollback" class="py-name" href="#" onclick="return doclink('link-108', 'rollback', 'link-108');">rollback</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L250"></a><tt class="py-lineno">250</tt>  <tt class="py-line">                <tt class="py-keyword">raise</tt> <tt class="py-name">err</tt> </tt>
+</div><a name="L251"></a><tt class="py-lineno">251</tt>  <tt class="py-line"> </tt>
+<a name="PGManager.rollback"></a><div id="PGManager.rollback-def"><a name="L252"></a><tt class="py-lineno">252</tt> <a class="py-toggle" href="#" id="PGManager.rollback-toggle" onclick="return toggle('PGManager.rollback');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sdb.db.manager.pgmanager.PGManager-class.html#rollback">rollback</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="PGManager.rollback-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="PGManager.rollback-expanded"><a name="L253"></a><tt class="py-lineno">253</tt>  <tt class="py-line">        <tt class="py-keyword">print</tt> <tt class="py-string">'!!rollback on %s'</tt> <tt class="py-op">%</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">db_table</tt> </tt>
+<a name="L254"></a><tt class="py-lineno">254</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-109" class="py-name"><a title="boto.connection
+boto.ec2.connection
+boto.fps.connection
+boto.mturk.connection
+boto.s3.connection
+boto.sdb.connection
+boto.sqs.20070501.connection
+boto.sqs.connection" class="py-name" href="#" onclick="return doclink('link-109', 'connection', 'link-50');">connection</a></tt><tt class="py-op">.</tt><tt id="link-110" class="py-name"><a title="boto.sdb.db.manager.pgmanager.PGManager.rollback" class="py-name" href="#" onclick="return doclink('link-110', 'rollback', 'link-108');">rollback</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L255"></a><tt class="py-lineno">255</tt>  <tt class="py-line"> </tt>
+<a name="PGManager.delete_table"></a><div id="PGManager.delete_table-def"><a name="L256"></a><tt class="py-lineno">256</tt> <a class="py-toggle" href="#" id="PGManager.delete_table-toggle" onclick="return toggle('PGManager.delete_table');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sdb.db.manager.pgmanager.PGManager-class.html#delete_table">delete_table</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="PGManager.delete_table-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="PGManager.delete_table-expanded"><a name="L257"></a><tt class="py-lineno">257</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">cursor</tt><tt class="py-op">.</tt><tt class="py-name">execute</tt><tt class="py-op">(</tt><tt class="py-string">'DROP TABLE "%s";'</tt> <tt class="py-op">%</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">db_table</tt><tt class="py-op">)</tt> </tt>
+<a name="L258"></a><tt class="py-lineno">258</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-111" class="py-name"><a title="boto.sdb.db.manager.pgmanager.PGManager.commit" class="py-name" href="#" onclick="return doclink('link-111', 'commit', 'link-104');">commit</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L259"></a><tt class="py-lineno">259</tt>  <tt class="py-line"> </tt>
+<a name="PGManager.create_table"></a><div id="PGManager.create_table-def"><a name="L260"></a><tt class="py-lineno">260</tt> <a class="py-toggle" href="#" id="PGManager.create_table-toggle" onclick="return toggle('PGManager.create_table');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sdb.db.manager.pgmanager.PGManager-class.html#create_table">create_table</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">mapping</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="PGManager.create_table-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="PGManager.create_table-expanded"><a name="L261"></a><tt class="py-lineno">261</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">cursor</tt><tt class="py-op">.</tt><tt class="py-name">execute</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-112" class="py-name" targets="Method boto.sdb.db.manager.pgmanager.PGManager._get_sql()=boto.sdb.db.manager.pgmanager.PGManager-class.html#_get_sql"><a title="boto.sdb.db.manager.pgmanager.PGManager._get_sql" class="py-name" href="#" onclick="return doclink('link-112', '_get_sql', 'link-112');">_get_sql</a></tt><tt class="py-op">(</tt><tt class="py-name">mapping</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L262"></a><tt class="py-lineno">262</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-113" class="py-name"><a title="boto.sdb.db.manager.pgmanager.PGManager.commit" class="py-name" href="#" onclick="return doclink('link-113', 'commit', 'link-104');">commit</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L263"></a><tt class="py-lineno">263</tt>  <tt class="py-line"> </tt>
+<a name="PGManager.encode_value"></a><div id="PGManager.encode_value-def"><a name="L264"></a><tt class="py-lineno">264</tt> <a class="py-toggle" href="#" id="PGManager.encode_value-toggle" onclick="return toggle('PGManager.encode_value');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sdb.db.manager.pgmanager.PGManager-class.html#encode_value">encode_value</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">prop</tt><tt class="py-op">,</tt> <tt class="py-param">value</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="PGManager.encode_value-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="PGManager.encode_value-expanded"><a name="L265"></a><tt class="py-lineno">265</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">converter</tt><tt class="py-op">.</tt><tt id="link-114" class="py-name" targets="Method boto.sdb.db.manager.pgmanager.PGConverter.encode_prop()=boto.sdb.db.manager.pgmanager.PGConverter-class.html#encode_prop,Method boto.sdb.db.manager.sdbmanager.SDBConverter.encode_prop()=boto.sdb.db.manager.sdbmanager.SDBConverter-class.html#encode_prop"><a title="boto.sdb.db.manager.pgmanager.PGConverter.encode_prop
+boto.sdb.db.manager.sdbmanager.SDBConverter.encode_prop" class="py-name" href="#" onclick="return doclink('link-114', 'encode_prop', 'link-114');">encode_prop</a></tt><tt class="py-op">(</tt><tt class="py-name">prop</tt><tt class="py-op">,</tt> <tt class="py-name">value</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L266"></a><tt class="py-lineno">266</tt>  <tt class="py-line"> </tt>
+<a name="PGManager.decode_value"></a><div id="PGManager.decode_value-def"><a name="L267"></a><tt class="py-lineno">267</tt> <a class="py-toggle" href="#" id="PGManager.decode_value-toggle" onclick="return toggle('PGManager.decode_value');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sdb.db.manager.pgmanager.PGManager-class.html#decode_value">decode_value</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">prop</tt><tt class="py-op">,</tt> <tt class="py-param">value</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="PGManager.decode_value-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="PGManager.decode_value-expanded"><a name="L268"></a><tt class="py-lineno">268</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">converter</tt><tt class="py-op">.</tt><tt id="link-115" class="py-name" targets="Method boto.sdb.db.manager.pgmanager.PGConverter.decode_prop()=boto.sdb.db.manager.pgmanager.PGConverter-class.html#decode_prop,Method boto.sdb.db.manager.sdbmanager.SDBConverter.decode_prop()=boto.sdb.db.manager.sdbmanager.SDBConverter-class.html#decode_prop"><a title="boto.sdb.db.manager.pgmanager.PGConverter.decode_prop
+boto.sdb.db.manager.sdbmanager.SDBConverter.decode_prop" class="py-name" href="#" onclick="return doclink('link-115', 'decode_prop', 'link-115');">decode_prop</a></tt><tt class="py-op">(</tt><tt class="py-name">prop</tt><tt class="py-op">,</tt> <tt class="py-name">value</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L269"></a><tt class="py-lineno">269</tt>  <tt class="py-line"> </tt>
+<a name="PGManager.execute_sql"></a><div id="PGManager.execute_sql-def"><a name="L270"></a><tt class="py-lineno">270</tt> <a class="py-toggle" href="#" id="PGManager.execute_sql-toggle" onclick="return toggle('PGManager.execute_sql');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sdb.db.manager.pgmanager.PGManager-class.html#execute_sql">execute_sql</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">query</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="PGManager.execute_sql-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="PGManager.execute_sql-expanded"><a name="L271"></a><tt class="py-lineno">271</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">cursor</tt><tt class="py-op">.</tt><tt class="py-name">execute</tt><tt class="py-op">(</tt><tt id="link-116" class="py-name" targets="Method boto.sdb.connection.SDBConnection.query()=boto.sdb.connection.SDBConnection-class.html#query,Method boto.sdb.db.manager.pgmanager.PGManager.query()=boto.sdb.db.manager.pgmanager.PGManager-class.html#query,Method boto.sdb.db.manager.sdbmanager.SDBManager.query()=boto.sdb.db.manager.sdbmanager.SDBManager-class.html#query,Module boto.sdb.db.query=boto.sdb.db.query-module.html,Method boto.sdb.domain.Domain.query()=boto.sdb.domain.Domain-class.html#query"><a title="boto.sdb.connection.SDBConnection.query
+boto.sdb.db.manager.pgmanager.PGManager.query
+boto.sdb.db.manager.sdbmanager.SDBManager.query
+boto.sdb.db.query
+boto.sdb.domain.Domain.query" class="py-name" href="#" onclick="return doclink('link-116', 'query', 'link-116');">query</a></tt><tt class="py-op">,</tt> <tt class="py-name">None</tt><tt class="py-op">)</tt> </tt>
+<a name="L272"></a><tt class="py-lineno">272</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-117" class="py-name"><a title="boto.sdb.db.manager.pgmanager.PGManager.commit" class="py-name" href="#" onclick="return doclink('link-117', 'commit', 'link-104');">commit</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L273"></a><tt class="py-lineno">273</tt>  <tt class="py-line"> </tt>
+<a name="PGManager.query_sql"></a><div id="PGManager.query_sql-def"><a name="L274"></a><tt class="py-lineno">274</tt> <a class="py-toggle" href="#" id="PGManager.query_sql-toggle" onclick="return toggle('PGManager.query_sql');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sdb.db.manager.pgmanager.PGManager-class.html#query_sql">query_sql</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">query</tt><tt class="py-op">,</tt> <tt class="py-param">vars</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="PGManager.query_sql-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="PGManager.query_sql-expanded"><a name="L275"></a><tt class="py-lineno">275</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">cursor</tt><tt class="py-op">.</tt><tt class="py-name">execute</tt><tt class="py-op">(</tt><tt id="link-118" class="py-name"><a title="boto.sdb.connection.SDBConnection.query
+boto.sdb.db.manager.pgmanager.PGManager.query
+boto.sdb.db.manager.sdbmanager.SDBManager.query
+boto.sdb.db.query
+boto.sdb.domain.Domain.query" class="py-name" href="#" onclick="return doclink('link-118', 'query', 'link-116');">query</a></tt><tt class="py-op">,</tt> <tt class="py-name">vars</tt><tt class="py-op">)</tt> </tt>
+<a name="L276"></a><tt class="py-lineno">276</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">cursor</tt><tt class="py-op">.</tt><tt class="py-name">fetchall</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L277"></a><tt class="py-lineno">277</tt>  <tt class="py-line"> </tt>
+<a name="PGManager.lookup"></a><div id="PGManager.lookup-def"><a name="L278"></a><tt class="py-lineno">278</tt> <a class="py-toggle" href="#" id="PGManager.lookup-toggle" onclick="return toggle('PGManager.lookup');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sdb.db.manager.pgmanager.PGManager-class.html#lookup">lookup</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">cls</tt><tt class="py-op">,</tt> <tt class="py-param">name</tt><tt class="py-op">,</tt> <tt class="py-param">value</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="PGManager.lookup-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="PGManager.lookup-expanded"><a name="L279"></a><tt class="py-lineno">279</tt>  <tt class="py-line">        <tt id="link-119" class="py-name"><a title="boto.sqs.20070501.message.MHMessage.values
+boto.sqs.message.MHMessage.values" class="py-name" href="#" onclick="return doclink('link-119', 'values', 'link-75');">values</a></tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt> </tt>
+<a name="L280"></a><tt class="py-lineno">280</tt>  <tt class="py-line">        <tt class="py-name">qs</tt> <tt class="py-op">=</tt> <tt class="py-string">'SELECT * FROM "%s" WHERE '</tt> <tt class="py-op">%</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">db_table</tt> </tt>
+<a name="L281"></a><tt class="py-lineno">281</tt>  <tt class="py-line">        <tt class="py-name">found</tt> <tt class="py-op">=</tt> <tt class="py-name">False</tt> </tt>
+<a name="L282"></a><tt class="py-lineno">282</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt id="link-120" class="py-name" targets="Module boto.sdb.db.property=boto.sdb.db.property-module.html,Module boto.sdb.persist.property=boto.sdb.persist.property-module.html"><a title="boto.sdb.db.property
+boto.sdb.persist.property" class="py-name" href="#" onclick="return doclink('link-120', 'property', 'link-120');">property</a></tt> <tt class="py-keyword">in</tt> <tt class="py-name">cls</tt><tt class="py-op">.</tt><tt id="link-121" class="py-name"><a title="boto.sdb.db.model.Model.properties
+boto.sdb.db.model.Model.properties
+boto.sdb.persist.object.SDBObject.properties" class="py-name" href="#" onclick="return doclink('link-121', 'properties', 'link-65');">properties</a></tt><tt class="py-op">(</tt><tt class="py-name">hidden</tt><tt class="py-op">=</tt><tt class="py-name">False</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L283"></a><tt class="py-lineno">283</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt id="link-122" class="py-name"><a title="boto.sdb.db.property
+boto.sdb.persist.property" class="py-name" href="#" onclick="return doclink('link-122', 'property', 'link-120');">property</a></tt><tt class="py-op">.</tt><tt id="link-123" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-123', 'name', 'link-68');">name</a></tt> <tt class="py-op">==</tt> <tt id="link-124" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-124', 'name', 'link-68');">name</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L284"></a><tt class="py-lineno">284</tt>  <tt class="py-line">                <tt class="py-name">found</tt> <tt class="py-op">=</tt> <tt class="py-name">True</tt> </tt>
+<a name="L285"></a><tt class="py-lineno">285</tt>  <tt class="py-line">                <tt class="py-name">value</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-125" class="py-name"><a title="boto.sdb.db.manager.pgmanager.PGManager.encode_value
+boto.sdb.db.manager.sdbmanager.SDBManager.encode_value" class="py-name" href="#" onclick="return doclink('link-125', 'encode_value', 'link-80');">encode_value</a></tt><tt class="py-op">(</tt><tt id="link-126" class="py-name"><a title="boto.sdb.db.property
+boto.sdb.persist.property" class="py-name" href="#" onclick="return doclink('link-126', 'property', 'link-120');">property</a></tt><tt class="py-op">,</tt> <tt class="py-name">value</tt><tt class="py-op">)</tt> </tt>
+<a name="L286"></a><tt class="py-lineno">286</tt>  <tt class="py-line">                <tt id="link-127" class="py-name"><a title="boto.sqs.20070501.message.MHMessage.values
+boto.sqs.message.MHMessage.values" class="py-name" href="#" onclick="return doclink('link-127', 'values', 'link-75');">values</a></tt><tt class="py-op">.</tt><tt id="link-128" class="py-name"><a title="boto.sdb.persist.property.MultiValue.append" class="py-name" href="#" onclick="return doclink('link-128', 'append', 'link-27');">append</a></tt><tt class="py-op">(</tt><tt class="py-name">value</tt><tt class="py-op">)</tt> </tt>
+<a name="L287"></a><tt class="py-lineno">287</tt>  <tt class="py-line">                <tt class="py-name">qs</tt> <tt class="py-op">+=</tt> <tt class="py-string">"%s="</tt> <tt class="py-op">%</tt> <tt id="link-129" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-129', 'name', 'link-68');">name</a></tt> </tt>
+<a name="L288"></a><tt class="py-lineno">288</tt>  <tt class="py-line">                <tt class="py-name">qs</tt> <tt class="py-op">+=</tt> <tt class="py-string">"%s"</tt> </tt>
+<a name="L289"></a><tt class="py-lineno">289</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-keyword">not</tt> <tt class="py-name">found</tt><tt class="py-op">:</tt> </tt>
+<a name="L290"></a><tt class="py-lineno">290</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-130" class="py-name" targets="Class boto.exception.SDBPersistenceError=boto.exception.SDBPersistenceError-class.html"><a title="boto.exception.SDBPersistenceError" class="py-name" href="#" onclick="return doclink('link-130', 'SDBPersistenceError', 'link-130');">SDBPersistenceError</a></tt><tt class="py-op">(</tt><tt class="py-string">'%s is not a valid field'</tt> <tt class="py-op">%</tt> <tt id="link-131" class="py-name"><a title="boto.s3.key
+boto.sdb.db.key
+boto.sdb.db.model.Model.key
+boto.sdb.db.model.Model.key" class="py-name" href="#" onclick="return doclink('link-131', 'key', 'link-3');">key</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L291"></a><tt class="py-lineno">291</tt>  <tt class="py-line">        <tt class="py-name">qs</tt> <tt class="py-op">+=</tt> <tt class="py-string">';'</tt> </tt>
+<a name="L292"></a><tt class="py-lineno">292</tt>  <tt class="py-line">        <tt class="py-keyword">print</tt> <tt class="py-name">qs</tt> </tt>
+<a name="L293"></a><tt class="py-lineno">293</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">cursor</tt><tt class="py-op">.</tt><tt class="py-name">execute</tt><tt class="py-op">(</tt><tt class="py-name">qs</tt><tt class="py-op">,</tt> <tt id="link-132" class="py-name"><a title="boto.sqs.20070501.message.MHMessage.values
+boto.sqs.message.MHMessage.values" class="py-name" href="#" onclick="return doclink('link-132', 'values', 'link-75');">values</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L294"></a><tt class="py-lineno">294</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">cursor</tt><tt class="py-op">.</tt><tt class="py-name">rowcount</tt> <tt class="py-op">==</tt> <tt class="py-number">1</tt><tt class="py-op">:</tt> </tt>
+<a name="L295"></a><tt class="py-lineno">295</tt>  <tt class="py-line">            <tt class="py-name">row</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">cursor</tt><tt class="py-op">.</tt><tt class="py-name">fetchone</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L296"></a><tt class="py-lineno">296</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-133" class="py-name"><a title="boto.sdb.db.manager.pgmanager.PGManager._object_from_row" class="py-name" href="#" onclick="return doclink('link-133', '_object_from_row', 'link-55');">_object_from_row</a></tt><tt class="py-op">(</tt><tt class="py-name">row</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">cursor</tt><tt class="py-op">.</tt><tt id="link-134" class="py-name"><a title="boto.mashups.server.Server.description
+boto.sdb.persist.test_persist.TestScalar.description" class="py-name" href="#" onclick="return doclink('link-134', 'description', 'link-56');">description</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L297"></a><tt class="py-lineno">297</tt>  <tt class="py-line">        <tt class="py-keyword">elif</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">cursor</tt><tt class="py-op">.</tt><tt class="py-name">rowcount</tt> <tt class="py-op">==</tt> <tt class="py-number">0</tt><tt class="py-op">:</tt> </tt>
+<a name="L298"></a><tt class="py-lineno">298</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt class="py-name">KeyError</tt><tt class="py-op">,</tt> <tt class="py-string">'Object not found'</tt> </tt>
+<a name="L299"></a><tt class="py-lineno">299</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L300"></a><tt class="py-lineno">300</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt class="py-name">LookupError</tt><tt class="py-op">,</tt> <tt class="py-string">'Multiple Objects Found'</tt> </tt>
+</div><a name="L301"></a><tt class="py-lineno">301</tt>  <tt class="py-line"> </tt>
+<a name="PGManager.query"></a><div id="PGManager.query-def"><a name="L302"></a><tt class="py-lineno">302</tt> <a class="py-toggle" href="#" id="PGManager.query-toggle" onclick="return toggle('PGManager.query');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sdb.db.manager.pgmanager.PGManager-class.html#query">query</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">cls</tt><tt class="py-op">,</tt> <tt class="py-param">filters</tt><tt class="py-op">,</tt> <tt class="py-param">limit</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-param">order_by</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="PGManager.query-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="PGManager.query-expanded"><a name="L303"></a><tt class="py-lineno">303</tt>  <tt class="py-line">        <tt class="py-name">parts</tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt> </tt>
+<a name="L304"></a><tt class="py-lineno">304</tt>  <tt class="py-line">        <tt class="py-name">qs</tt> <tt class="py-op">=</tt> <tt class="py-string">'SELECT * FROM "%s"'</tt> <tt class="py-op">%</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">db_table</tt> </tt>
+<a name="L305"></a><tt class="py-lineno">305</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">filters</tt><tt class="py-op">:</tt> </tt>
+<a name="L306"></a><tt class="py-lineno">306</tt>  <tt class="py-line">            <tt class="py-name">qs</tt> <tt class="py-op">+=</tt> <tt class="py-string">' WHERE '</tt> </tt>
+<a name="L307"></a><tt class="py-lineno">307</tt>  <tt class="py-line">            <tt id="link-135" class="py-name"><a title="boto.sdb.db.model.Model.properties
+boto.sdb.db.model.Model.properties
+boto.sdb.persist.object.SDBObject.properties" class="py-name" href="#" onclick="return doclink('link-135', 'properties', 'link-65');">properties</a></tt> <tt class="py-op">=</tt> <tt class="py-name">cls</tt><tt class="py-op">.</tt><tt id="link-136" class="py-name"><a title="boto.sdb.db.model.Model.properties
+boto.sdb.db.model.Model.properties
+boto.sdb.persist.object.SDBObject.properties" class="py-name" href="#" onclick="return doclink('link-136', 'properties', 'link-65');">properties</a></tt><tt class="py-op">(</tt><tt class="py-name">hidden</tt><tt class="py-op">=</tt><tt class="py-name">False</tt><tt class="py-op">)</tt> </tt>
+<a name="L308"></a><tt class="py-lineno">308</tt>  <tt class="py-line">            <tt class="py-keyword">for</tt> <tt id="link-137" class="py-name" targets="Method boto.sdb.db.query.Query.filter()=boto.sdb.db.query.Query-class.html#filter"><a title="boto.sdb.db.query.Query.filter" class="py-name" href="#" onclick="return doclink('link-137', 'filter', 'link-137');">filter</a></tt><tt class="py-op">,</tt> <tt class="py-name">value</tt> <tt class="py-keyword">in</tt> <tt class="py-name">filters</tt><tt class="py-op">:</tt> </tt>
+<a name="L309"></a><tt class="py-lineno">309</tt>  <tt class="py-line">                <tt id="link-138" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-138', 'name', 'link-68');">name</a></tt><tt class="py-op">,</tt> <tt class="py-name">op</tt> <tt class="py-op">=</tt> <tt id="link-139" class="py-name"><a title="boto.sdb.db.query.Query.filter" class="py-name" href="#" onclick="return doclink('link-139', 'filter', 'link-137');">filter</a></tt><tt class="py-op">.</tt><tt class="py-name">strip</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">.</tt><tt class="py-name">split</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L310"></a><tt class="py-lineno">310</tt>  <tt class="py-line">                <tt class="py-name">found</tt> <tt class="py-op">=</tt> <tt class="py-name">False</tt> </tt>
+<a name="L311"></a><tt class="py-lineno">311</tt>  <tt class="py-line">                <tt class="py-keyword">for</tt> <tt id="link-140" class="py-name"><a title="boto.sdb.db.property
+boto.sdb.persist.property" class="py-name" href="#" onclick="return doclink('link-140', 'property', 'link-120');">property</a></tt> <tt class="py-keyword">in</tt> <tt id="link-141" class="py-name"><a title="boto.sdb.db.model.Model.properties
+boto.sdb.db.model.Model.properties
+boto.sdb.persist.object.SDBObject.properties" class="py-name" href="#" onclick="return doclink('link-141', 'properties', 'link-65');">properties</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L312"></a><tt class="py-lineno">312</tt>  <tt class="py-line">                    <tt class="py-keyword">if</tt> <tt id="link-142" class="py-name"><a title="boto.sdb.db.property
+boto.sdb.persist.property" class="py-name" href="#" onclick="return doclink('link-142', 'property', 'link-120');">property</a></tt><tt class="py-op">.</tt><tt id="link-143" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-143', 'name', 'link-68');">name</a></tt> <tt class="py-op">==</tt> <tt id="link-144" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-144', 'name', 'link-68');">name</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L313"></a><tt class="py-lineno">313</tt>  <tt class="py-line">                        <tt class="py-name">found</tt> <tt class="py-op">=</tt> <tt class="py-name">True</tt> </tt>
+<a name="L314"></a><tt class="py-lineno">314</tt>  <tt class="py-line">                        <tt class="py-name">value</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-145" class="py-name"><a title="boto.sdb.db.manager.pgmanager.PGManager.encode_value
+boto.sdb.db.manager.sdbmanager.SDBManager.encode_value" class="py-name" href="#" onclick="return doclink('link-145', 'encode_value', 'link-80');">encode_value</a></tt><tt class="py-op">(</tt><tt id="link-146" class="py-name"><a title="boto.sdb.db.property
+boto.sdb.persist.property" class="py-name" href="#" onclick="return doclink('link-146', 'property', 'link-120');">property</a></tt><tt class="py-op">,</tt> <tt class="py-name">value</tt><tt class="py-op">)</tt> </tt>
+<a name="L315"></a><tt class="py-lineno">315</tt>  <tt class="py-line">                        <tt class="py-name">parts</tt><tt class="py-op">.</tt><tt id="link-147" class="py-name"><a title="boto.sdb.persist.property.MultiValue.append" class="py-name" href="#" onclick="return doclink('link-147', 'append', 'link-27');">append</a></tt><tt class="py-op">(</tt><tt class="py-string">""""%s"%s'%s'"""</tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt id="link-148" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-148', 'name', 'link-68');">name</a></tt><tt class="py-op">,</tt> <tt class="py-name">op</tt><tt class="py-op">,</tt> <tt class="py-name">value</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L316"></a><tt class="py-lineno">316</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt> <tt class="py-keyword">not</tt> <tt class="py-name">found</tt><tt class="py-op">:</tt> </tt>
+<a name="L317"></a><tt class="py-lineno">317</tt>  <tt class="py-line">                    <tt class="py-keyword">raise</tt> <tt id="link-149" class="py-name"><a title="boto.exception.SDBPersistenceError" class="py-name" href="#" onclick="return doclink('link-149', 'SDBPersistenceError', 'link-130');">SDBPersistenceError</a></tt><tt class="py-op">(</tt><tt class="py-string">'%s is not a valid field'</tt> <tt class="py-op">%</tt> <tt id="link-150" class="py-name"><a title="boto.s3.key
+boto.sdb.db.key
+boto.sdb.db.model.Model.key
+boto.sdb.db.model.Model.key" class="py-name" href="#" onclick="return doclink('link-150', 'key', 'link-3');">key</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L318"></a><tt class="py-lineno">318</tt>  <tt class="py-line">            <tt class="py-name">qs</tt> <tt class="py-op">+=</tt> <tt class="py-string">','</tt><tt class="py-op">.</tt><tt class="py-name">join</tt><tt class="py-op">(</tt><tt class="py-name">parts</tt><tt class="py-op">)</tt> </tt>
+<a name="L319"></a><tt class="py-lineno">319</tt>  <tt class="py-line">        <tt class="py-name">qs</tt> <tt class="py-op">+=</tt> <tt class="py-string">';'</tt> </tt>
+<a name="L320"></a><tt class="py-lineno">320</tt>  <tt class="py-line">        <tt class="py-keyword">print</tt> <tt class="py-name">qs</tt> </tt>
+<a name="L321"></a><tt class="py-lineno">321</tt>  <tt class="py-line">        <tt class="py-name">cursor</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-151" class="py-name"><a title="boto.connection
+boto.ec2.connection
+boto.fps.connection
+boto.mturk.connection
+boto.s3.connection
+boto.sdb.connection
+boto.sqs.20070501.connection
+boto.sqs.connection" class="py-name" href="#" onclick="return doclink('link-151', 'connection', 'link-50');">connection</a></tt><tt class="py-op">.</tt><tt class="py-name">cursor</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L322"></a><tt class="py-lineno">322</tt>  <tt class="py-line">        <tt class="py-name">cursor</tt><tt class="py-op">.</tt><tt class="py-name">execute</tt><tt class="py-op">(</tt><tt class="py-name">qs</tt><tt class="py-op">)</tt> </tt>
+<a name="L323"></a><tt class="py-lineno">323</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-152" class="py-name" targets="Method boto.sdb.db.manager.pgmanager.PGManager._object_lister()=boto.sdb.db.manager.pgmanager.PGManager-class.html#_object_lister,Method boto.sdb.db.manager.sdbmanager.SDBManager._object_lister()=boto.sdb.db.manager.sdbmanager.SDBManager-class.html#_object_lister"><a title="boto.sdb.db.manager.pgmanager.PGManager._object_lister
+boto.sdb.db.manager.sdbmanager.SDBManager._object_lister" class="py-name" href="#" onclick="return doclink('link-152', '_object_lister', 'link-152');">_object_lister</a></tt><tt class="py-op">(</tt><tt class="py-name">cursor</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L324"></a><tt class="py-lineno">324</tt>  <tt class="py-line"> </tt>
+<a name="PGManager.get_property"></a><div id="PGManager.get_property-def"><a name="L325"></a><tt class="py-lineno">325</tt> <a class="py-toggle" href="#" id="PGManager.get_property-toggle" onclick="return toggle('PGManager.get_property');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sdb.db.manager.pgmanager.PGManager-class.html#get_property">get_property</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">prop</tt><tt class="py-op">,</tt> <tt class="py-param">obj</tt><tt class="py-op">,</tt> <tt class="py-param">name</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="PGManager.get_property-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="PGManager.get_property-expanded"><a name="L326"></a><tt class="py-lineno">326</tt>  <tt class="py-line">        <tt class="py-name">qs</tt> <tt class="py-op">=</tt> <tt class="py-string">"""SELECT "%s" FROM "%s" WHERE id='%s';"""</tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt id="link-153" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-153', 'name', 'link-68');">name</a></tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">db_table</tt><tt class="py-op">,</tt> <tt class="py-name">obj</tt><tt class="py-op">.</tt><tt id="link-154" class="py-name"><a title="boto.sdb.db.key.Key.id" class="py-name" href="#" onclick="return doclink('link-154', 'id', 'link-45');">id</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L327"></a><tt class="py-lineno">327</tt>  <tt class="py-line">        <tt class="py-keyword">print</tt> <tt class="py-name">qs</tt> </tt>
+<a name="L328"></a><tt class="py-lineno">328</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">cursor</tt><tt class="py-op">.</tt><tt class="py-name">execute</tt><tt class="py-op">(</tt><tt class="py-name">qs</tt><tt class="py-op">,</tt> <tt class="py-name">None</tt><tt class="py-op">)</tt> </tt>
+<a name="L329"></a><tt class="py-lineno">329</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">cursor</tt><tt class="py-op">.</tt><tt class="py-name">rowcount</tt> <tt class="py-op">==</tt> <tt class="py-number">1</tt><tt class="py-op">:</tt> </tt>
+<a name="L330"></a><tt class="py-lineno">330</tt>  <tt class="py-line">            <tt class="py-name">rs</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">cursor</tt><tt class="py-op">.</tt><tt class="py-name">fetchone</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L331"></a><tt class="py-lineno">331</tt>  <tt class="py-line">            <tt class="py-keyword">for</tt> <tt class="py-name">prop</tt> <tt class="py-keyword">in</tt> <tt class="py-name">obj</tt><tt class="py-op">.</tt><tt id="link-155" class="py-name"><a title="boto.sdb.db.model.Model.properties
+boto.sdb.db.model.Model.properties
+boto.sdb.persist.object.SDBObject.properties" class="py-name" href="#" onclick="return doclink('link-155', 'properties', 'link-65');">properties</a></tt><tt class="py-op">(</tt><tt class="py-name">hidden</tt><tt class="py-op">=</tt><tt class="py-name">False</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L332"></a><tt class="py-lineno">332</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt> <tt class="py-name">prop</tt><tt class="py-op">.</tt><tt id="link-156" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-156', 'name', 'link-68');">name</a></tt> <tt class="py-op">==</tt> <tt id="link-157" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-157', 'name', 'link-68');">name</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L333"></a><tt class="py-lineno">333</tt>  <tt class="py-line">                    <tt class="py-name">v</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-158" class="py-name"><a title="boto.sdb.db.manager.pgmanager.PGManager.decode_value
+boto.sdb.db.manager.sdbmanager.SDBManager.decode_value
+boto.sdb.item.Item.decode_value" class="py-name" href="#" onclick="return doclink('link-158', 'decode_value', 'link-35');">decode_value</a></tt><tt class="py-op">(</tt><tt class="py-name">prop</tt><tt class="py-op">,</tt> <tt class="py-name">rs</tt><tt class="py-op">[</tt><tt class="py-number">0</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L334"></a><tt class="py-lineno">334</tt>  <tt class="py-line">                    <tt class="py-keyword">return</tt> <tt class="py-name">v</tt> </tt>
+<a name="L335"></a><tt class="py-lineno">335</tt>  <tt class="py-line">        <tt class="py-keyword">raise</tt> <tt class="py-name">AttributeError</tt><tt class="py-op">,</tt> <tt class="py-string">'%s not found'</tt> <tt class="py-op">%</tt> <tt id="link-159" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-159', 'name', 'link-68');">name</a></tt> </tt>
+</div><a name="L336"></a><tt class="py-lineno">336</tt>  <tt class="py-line"> </tt>
+<a name="PGManager.set_property"></a><div id="PGManager.set_property-def"><a name="L337"></a><tt class="py-lineno">337</tt> <a class="py-toggle" href="#" id="PGManager.set_property-toggle" onclick="return toggle('PGManager.set_property');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sdb.db.manager.pgmanager.PGManager-class.html#set_property">set_property</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">prop</tt><tt class="py-op">,</tt> <tt class="py-param">obj</tt><tt class="py-op">,</tt> <tt class="py-param">name</tt><tt class="py-op">,</tt> <tt class="py-param">value</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="PGManager.set_property-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="PGManager.set_property-expanded"><a name="L338"></a><tt class="py-lineno">338</tt>  <tt class="py-line">        <tt class="py-keyword">pass</tt> </tt>
+<a name="L339"></a><tt class="py-lineno">339</tt>  <tt class="py-line">        <tt class="py-name">value</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-160" class="py-name"><a title="boto.sdb.db.manager.pgmanager.PGManager.encode_value
+boto.sdb.db.manager.sdbmanager.SDBManager.encode_value" class="py-name" href="#" onclick="return doclink('link-160', 'encode_value', 'link-80');">encode_value</a></tt><tt class="py-op">(</tt><tt class="py-name">prop</tt><tt class="py-op">,</tt> <tt class="py-name">value</tt><tt class="py-op">)</tt> </tt>
+<a name="L340"></a><tt class="py-lineno">340</tt>  <tt class="py-line">        <tt class="py-name">qs</tt> <tt class="py-op">=</tt> <tt class="py-string">'UPDATE "%s" SET '</tt> <tt class="py-op">%</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">db_table</tt> </tt>
+<a name="L341"></a><tt class="py-lineno">341</tt>  <tt class="py-line">        <tt class="py-name">qs</tt> <tt class="py-op">+=</tt> <tt class="py-string">"%s='%s'"</tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt id="link-161" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-161', 'name', 'link-68');">name</a></tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-162" class="py-name"><a title="boto.sdb.db.manager.pgmanager.PGManager.encode_value
+boto.sdb.db.manager.sdbmanager.SDBManager.encode_value" class="py-name" href="#" onclick="return doclink('link-162', 'encode_value', 'link-80');">encode_value</a></tt><tt class="py-op">(</tt><tt class="py-name">prop</tt><tt class="py-op">,</tt> <tt class="py-name">value</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L342"></a><tt class="py-lineno">342</tt>  <tt class="py-line">        <tt class="py-name">qs</tt> <tt class="py-op">+=</tt> <tt class="py-string">" WHERE id='%s'"</tt> <tt class="py-op">%</tt> <tt class="py-name">obj</tt><tt class="py-op">.</tt><tt id="link-163" class="py-name"><a title="boto.sdb.db.key.Key.id" class="py-name" href="#" onclick="return doclink('link-163', 'id', 'link-45');">id</a></tt> </tt>
+<a name="L343"></a><tt class="py-lineno">343</tt>  <tt class="py-line">        <tt class="py-name">qs</tt> <tt class="py-op">+=</tt> <tt class="py-string">';'</tt> </tt>
+<a name="L344"></a><tt class="py-lineno">344</tt>  <tt class="py-line">        <tt class="py-keyword">print</tt> <tt class="py-name">qs</tt> </tt>
+<a name="L345"></a><tt class="py-lineno">345</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">cursor</tt><tt class="py-op">.</tt><tt class="py-name">execute</tt><tt class="py-op">(</tt><tt class="py-name">qs</tt><tt class="py-op">)</tt> </tt>
+<a name="L346"></a><tt class="py-lineno">346</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-164" class="py-name"><a title="boto.sdb.db.manager.pgmanager.PGManager.commit" class="py-name" href="#" onclick="return doclink('link-164', 'commit', 'link-104');">commit</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L347"></a><tt class="py-lineno">347</tt>  <tt class="py-line"> </tt>
+<a name="PGManager.get_object"></a><div id="PGManager.get_object-def"><a name="L348"></a><tt class="py-lineno">348</tt> <a class="py-toggle" href="#" id="PGManager.get_object-toggle" onclick="return toggle('PGManager.get_object');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sdb.db.manager.pgmanager.PGManager-class.html#get_object">get_object</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">cls</tt><tt class="py-op">,</tt> <tt class="py-param">id</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="PGManager.get_object-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="PGManager.get_object-expanded"><a name="L349"></a><tt class="py-lineno">349</tt>  <tt class="py-line">        <tt class="py-name">qs</tt> <tt class="py-op">=</tt> <tt class="py-string">"""SELECT * FROM "%s" WHERE id='%s';"""</tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">db_table</tt><tt class="py-op">,</tt> <tt id="link-165" class="py-name"><a title="boto.sdb.db.key.Key.id" class="py-name" href="#" onclick="return doclink('link-165', 'id', 'link-45');">id</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L350"></a><tt class="py-lineno">350</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">cursor</tt><tt class="py-op">.</tt><tt class="py-name">execute</tt><tt class="py-op">(</tt><tt class="py-name">qs</tt><tt class="py-op">,</tt> <tt class="py-name">None</tt><tt class="py-op">)</tt> </tt>
+<a name="L351"></a><tt class="py-lineno">351</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">cursor</tt><tt class="py-op">.</tt><tt class="py-name">rowcount</tt> <tt class="py-op">==</tt> <tt class="py-number">1</tt><tt class="py-op">:</tt> </tt>
+<a name="L352"></a><tt class="py-lineno">352</tt>  <tt class="py-line">            <tt class="py-name">row</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">cursor</tt><tt class="py-op">.</tt><tt class="py-name">fetchone</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L353"></a><tt class="py-lineno">353</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-166" class="py-name"><a title="boto.sdb.db.manager.pgmanager.PGManager._object_from_row" class="py-name" href="#" onclick="return doclink('link-166', '_object_from_row', 'link-55');">_object_from_row</a></tt><tt class="py-op">(</tt><tt class="py-name">row</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">cursor</tt><tt class="py-op">.</tt><tt id="link-167" class="py-name"><a title="boto.mashups.server.Server.description
+boto.sdb.persist.test_persist.TestScalar.description" class="py-name" href="#" onclick="return doclink('link-167', 'description', 'link-56');">description</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L354"></a><tt class="py-lineno">354</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L355"></a><tt class="py-lineno">355</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-168" class="py-name"><a title="boto.exception.SDBPersistenceError" class="py-name" href="#" onclick="return doclink('link-168', 'SDBPersistenceError', 'link-130');">SDBPersistenceError</a></tt><tt class="py-op">(</tt><tt class="py-string">'%s object with id=%s does not exist'</tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt class="py-name">cls</tt><tt class="py-op">.</tt><tt class="py-name">__name__</tt><tt class="py-op">,</tt> <tt id="link-169" class="py-name"><a title="boto.sdb.db.key.Key.id" class="py-name" href="#" onclick="return doclink('link-169', 'id', 'link-45');">id</a></tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L356"></a><tt class="py-lineno">356</tt>  <tt class="py-line">         </tt>
+<a name="PGManager.get_object_from_id"></a><div id="PGManager.get_object_from_id-def"><a name="L357"></a><tt class="py-lineno">357</tt> <a class="py-toggle" href="#" id="PGManager.get_object_from_id-toggle" onclick="return toggle('PGManager.get_object_from_id');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sdb.db.manager.pgmanager.PGManager-class.html#get_object_from_id">get_object_from_id</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">id</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="PGManager.get_object_from_id-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="PGManager.get_object_from_id-expanded"><a name="L358"></a><tt class="py-lineno">358</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-170" class="py-name" targets="Method boto.connection.AWSQueryConnection.get_object()=boto.connection.AWSQueryConnection-class.html#get_object,Method boto.sdb.db.manager.pgmanager.PGManager.get_object()=boto.sdb.db.manager.pgmanager.PGManager-class.html#get_object,Method boto.sdb.db.manager.sdbmanager.SDBManager.get_object()=boto.sdb.db.manager.sdbmanager.SDBManager-class.html#get_object"><a title="boto.connection.AWSQueryConnection.get_object
+boto.sdb.db.manager.pgmanager.PGManager.get_object
+boto.sdb.db.manager.sdbmanager.SDBManager.get_object" class="py-name" href="#" onclick="return doclink('link-170', 'get_object', 'link-170');">get_object</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">cls</tt><tt class="py-op">,</tt> <tt id="link-171" class="py-name"><a title="boto.sdb.db.key.Key.id" class="py-name" href="#" onclick="return doclink('link-171', 'id', 'link-45');">id</a></tt><tt class="py-op">)</tt> </tt>
+</div><a name="L359"></a><tt class="py-lineno">359</tt>  <tt class="py-line"> </tt>
+<a name="PGManager._find_calculated_props"></a><div id="PGManager._find_calculated_props-def"><a name="L360"></a><tt class="py-lineno">360</tt> <a class="py-toggle" href="#" id="PGManager._find_calculated_props-toggle" onclick="return toggle('PGManager._find_calculated_props');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sdb.db.manager.pgmanager.PGManager-class.html#_find_calculated_props">_find_calculated_props</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">obj</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="PGManager._find_calculated_props-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="PGManager._find_calculated_props-expanded"><a name="L361"></a><tt class="py-lineno">361</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-op">[</tt><tt class="py-name">p</tt> <tt class="py-keyword">for</tt> <tt class="py-name">p</tt> <tt class="py-keyword">in</tt> <tt class="py-name">obj</tt><tt class="py-op">.</tt><tt id="link-172" class="py-name"><a title="boto.sdb.db.model.Model.properties
+boto.sdb.db.model.Model.properties
+boto.sdb.persist.object.SDBObject.properties" class="py-name" href="#" onclick="return doclink('link-172', 'properties', 'link-65');">properties</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> <tt class="py-keyword">if</tt> <tt class="py-name">hasattr</tt><tt class="py-op">(</tt><tt class="py-name">p</tt><tt class="py-op">,</tt> <tt class="py-string">'calculated_type'</tt><tt class="py-op">)</tt><tt class="py-op">]</tt> </tt>
+</div><a name="L362"></a><tt class="py-lineno">362</tt>  <tt class="py-line"> </tt>
+<a name="PGManager.save_object"></a><div id="PGManager.save_object-def"><a name="L363"></a><tt class="py-lineno">363</tt> <a class="py-toggle" href="#" id="PGManager.save_object-toggle" onclick="return toggle('PGManager.save_object');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sdb.db.manager.pgmanager.PGManager-class.html#save_object">save_object</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">obj</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="PGManager.save_object-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="PGManager.save_object-expanded"><a name="L364"></a><tt class="py-lineno">364</tt>  <tt class="py-line">        <tt class="py-name">obj</tt><tt class="py-op">.</tt><tt class="py-name">_auto_update</tt> <tt class="py-op">=</tt> <tt class="py-name">False</tt> </tt>
+<a name="L365"></a><tt class="py-lineno">365</tt>  <tt class="py-line">        <tt class="py-name">calculated</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-173" class="py-name" targets="Method boto.sdb.db.manager.pgmanager.PGManager._find_calculated_props()=boto.sdb.db.manager.pgmanager.PGManager-class.html#_find_calculated_props"><a title="boto.sdb.db.manager.pgmanager.PGManager._find_calculated_props" class="py-name" href="#" onclick="return doclink('link-173', '_find_calculated_props', 'link-173');">_find_calculated_props</a></tt><tt class="py-op">(</tt><tt class="py-name">obj</tt><tt class="py-op">)</tt> </tt>
+<a name="L366"></a><tt class="py-lineno">366</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-keyword">not</tt> <tt class="py-name">obj</tt><tt class="py-op">.</tt><tt id="link-174" class="py-name"><a title="boto.sdb.db.key.Key.id" class="py-name" href="#" onclick="return doclink('link-174', 'id', 'link-45');">id</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L367"></a><tt class="py-lineno">367</tt>  <tt class="py-line">            <tt class="py-name">obj</tt><tt class="py-op">.</tt><tt id="link-175" class="py-name"><a title="boto.sdb.db.key.Key.id" class="py-name" href="#" onclick="return doclink('link-175', 'id', 'link-45');">id</a></tt> <tt class="py-op">=</tt> <tt id="link-176" class="py-name"><a title="str" class="py-name" href="#" onclick="return doclink('link-176', 'str', 'link-44');">str</a></tt><tt class="py-op">(</tt><tt class="py-name">uuid</tt><tt class="py-op">.</tt><tt class="py-name">uuid4</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L368"></a><tt class="py-lineno">368</tt>  <tt class="py-line">            <tt class="py-name">qs</tt><tt class="py-op">,</tt> <tt id="link-177" class="py-name"><a title="boto.sqs.20070501.message.MHMessage.values
+boto.sqs.message.MHMessage.values" class="py-name" href="#" onclick="return doclink('link-177', 'values', 'link-75');">values</a></tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-178" class="py-name" targets="Method boto.sdb.db.manager.pgmanager.PGManager._build_insert_qs()=boto.sdb.db.manager.pgmanager.PGManager-class.html#_build_insert_qs"><a title="boto.sdb.db.manager.pgmanager.PGManager._build_insert_qs" class="py-name" href="#" onclick="return doclink('link-178', '_build_insert_qs', 'link-178');">_build_insert_qs</a></tt><tt class="py-op">(</tt><tt class="py-name">obj</tt><tt class="py-op">,</tt> <tt class="py-name">calculated</tt><tt class="py-op">)</tt> </tt>
+<a name="L369"></a><tt class="py-lineno">369</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L370"></a><tt class="py-lineno">370</tt>  <tt class="py-line">            <tt class="py-name">qs</tt><tt class="py-op">,</tt> <tt id="link-179" class="py-name"><a title="boto.sqs.20070501.message.MHMessage.values
+boto.sqs.message.MHMessage.values" class="py-name" href="#" onclick="return doclink('link-179', 'values', 'link-75');">values</a></tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-180" class="py-name" targets="Method boto.sdb.db.manager.pgmanager.PGManager._build_update_qs()=boto.sdb.db.manager.pgmanager.PGManager-class.html#_build_update_qs"><a title="boto.sdb.db.manager.pgmanager.PGManager._build_update_qs" class="py-name" href="#" onclick="return doclink('link-180', '_build_update_qs', 'link-180');">_build_update_qs</a></tt><tt class="py-op">(</tt><tt class="py-name">obj</tt><tt class="py-op">,</tt> <tt class="py-name">calculated</tt><tt class="py-op">)</tt> </tt>
+<a name="L371"></a><tt class="py-lineno">371</tt>  <tt class="py-line">        <tt class="py-keyword">print</tt> <tt class="py-name">qs</tt> </tt>
+<a name="L372"></a><tt class="py-lineno">372</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">cursor</tt><tt class="py-op">.</tt><tt class="py-name">execute</tt><tt class="py-op">(</tt><tt class="py-name">qs</tt><tt class="py-op">,</tt> <tt id="link-181" class="py-name"><a title="boto.sqs.20070501.message.MHMessage.values
+boto.sqs.message.MHMessage.values" class="py-name" href="#" onclick="return doclink('link-181', 'values', 'link-75');">values</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L373"></a><tt class="py-lineno">373</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">calculated</tt><tt class="py-op">:</tt> </tt>
+<a name="L374"></a><tt class="py-lineno">374</tt>  <tt class="py-line">            <tt class="py-name">calc_values</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">cursor</tt><tt class="py-op">.</tt><tt class="py-name">fetchone</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L375"></a><tt class="py-lineno">375</tt>  <tt class="py-line">            <tt class="py-keyword">print</tt> <tt class="py-name">calculated</tt> </tt>
+<a name="L376"></a><tt class="py-lineno">376</tt>  <tt class="py-line">            <tt class="py-keyword">print</tt> <tt class="py-name">calc_values</tt> </tt>
+<a name="L377"></a><tt class="py-lineno">377</tt>  <tt class="py-line">            <tt class="py-keyword">for</tt> <tt class="py-name">i</tt> <tt class="py-keyword">in</tt> <tt class="py-name">range</tt><tt class="py-op">(</tt><tt class="py-number">0</tt><tt class="py-op">,</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">calculated</tt><tt class="py-op">)</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L378"></a><tt class="py-lineno">378</tt>  <tt class="py-line">                <tt class="py-name">prop</tt> <tt class="py-op">=</tt> <tt class="py-name">calculated</tt><tt class="py-op">[</tt><tt class="py-name">i</tt><tt class="py-op">]</tt> </tt>
+<a name="L379"></a><tt class="py-lineno">379</tt>  <tt class="py-line">                <tt class="py-name">prop</tt><tt class="py-op">.</tt><tt id="link-182" class="py-name"><a title="boto.sdb.db.property.CalculatedProperty._set_direct" class="py-name" href="#" onclick="return doclink('link-182', '_set_direct', 'link-70');">_set_direct</a></tt><tt class="py-op">(</tt><tt class="py-name">obj</tt><tt class="py-op">,</tt> <tt class="py-name">calc_values</tt><tt class="py-op">[</tt><tt class="py-name">i</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L380"></a><tt class="py-lineno">380</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-183" class="py-name"><a title="boto.sdb.db.manager.pgmanager.PGManager.commit" class="py-name" href="#" onclick="return doclink('link-183', 'commit', 'link-104');">commit</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L381"></a><tt class="py-lineno">381</tt>  <tt class="py-line">        <tt class="py-name">obj</tt><tt class="py-op">.</tt><tt class="py-name">_auto_update</tt> <tt class="py-op">=</tt> <tt class="py-name">True</tt> </tt>
+</div><a name="L382"></a><tt class="py-lineno">382</tt>  <tt class="py-line"> </tt>
+<a name="PGManager.delete_object"></a><div id="PGManager.delete_object-def"><a name="L383"></a><tt class="py-lineno">383</tt> <a class="py-toggle" href="#" id="PGManager.delete_object-toggle" onclick="return toggle('PGManager.delete_object');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sdb.db.manager.pgmanager.PGManager-class.html#delete_object">delete_object</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">obj</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="PGManager.delete_object-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="PGManager.delete_object-expanded"><a name="L384"></a><tt class="py-lineno">384</tt>  <tt class="py-line">        <tt class="py-name">qs</tt> <tt class="py-op">=</tt> <tt class="py-string">"""DELETE FROM "%s" WHERE id='%s';"""</tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">db_table</tt><tt class="py-op">,</tt> <tt class="py-name">obj</tt><tt class="py-op">.</tt><tt id="link-184" class="py-name"><a title="boto.sdb.db.key.Key.id" class="py-name" href="#" onclick="return doclink('link-184', 'id', 'link-45');">id</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L385"></a><tt class="py-lineno">385</tt>  <tt class="py-line">        <tt class="py-keyword">print</tt> <tt class="py-name">qs</tt> </tt>
+<a name="L386"></a><tt class="py-lineno">386</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">cursor</tt><tt class="py-op">.</tt><tt class="py-name">execute</tt><tt class="py-op">(</tt><tt class="py-name">qs</tt><tt class="py-op">)</tt> </tt>
+<a name="L387"></a><tt class="py-lineno">387</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-185" class="py-name"><a title="boto.sdb.db.manager.pgmanager.PGManager.commit" class="py-name" href="#" onclick="return doclink('link-185', 'commit', 'link-104');">commit</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L388"></a><tt class="py-lineno">388</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="boto-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0beta1 on Fri Feb 20 11:45:22 2009
+    </td>
+    <td align="right" class="footer">
+      <a href="http://epydoc.sourceforge.net">http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie()
+  // -->
+</script>
+  
+</body>
+</html>

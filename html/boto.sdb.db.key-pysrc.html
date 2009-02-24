@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>boto.sdb.db.key</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="boto-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="boto-module.html">Package&nbsp;boto</a> ::
+        <a href="boto.sdb-module.html">Package&nbsp;sdb</a> ::
+        <a href="boto.sdb.db-module.html">Package&nbsp;db</a> ::
+        Module&nbsp;key
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="boto.sdb.db.key-pysrc.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="boto.sdb.db.key-module.html">Module boto.sdb.db.key</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno"> 1</tt>  <tt class="py-line"><tt class="py-comment"># Copyright (c) 2006,2007,2008 Mitch Garnaat http://garnaat.org/</tt> </tt>
+<a name="L2"></a><tt class="py-lineno"> 2</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment">#</tt> </tt>
+<a name="L3"></a><tt class="py-lineno"> 3</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># Permission is hereby granted, free of charge, to any person obtaining a</tt> </tt>
+<a name="L4"></a><tt class="py-lineno"> 4</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># copy of this software and associated documentation files (the</tt> </tt>
+<a name="L5"></a><tt class="py-lineno"> 5</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># "Software"), to deal in the Software without restriction, including</tt> </tt>
+<a name="L6"></a><tt class="py-lineno"> 6</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># without limitation the rights to use, copy, modify, merge, publish, dis-</tt> </tt>
+<a name="L7"></a><tt class="py-lineno"> 7</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># tribute, sublicense, and/or sell copies of the Software, and to permit</tt> </tt>
+<a name="L8"></a><tt class="py-lineno"> 8</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># persons to whom the Software is furnished to do so, subject to the fol-</tt> </tt>
+<a name="L9"></a><tt class="py-lineno"> 9</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># lowing conditions:</tt> </tt>
+<a name="L10"></a><tt class="py-lineno">10</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment">#</tt> </tt>
+<a name="L11"></a><tt class="py-lineno">11</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># The above copyright notice and this permission notice shall be included</tt> </tt>
+<a name="L12"></a><tt class="py-lineno">12</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># in all copies or substantial portions of the Software.</tt> </tt>
+<a name="L13"></a><tt class="py-lineno">13</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment">#</tt> </tt>
+<a name="L14"></a><tt class="py-lineno">14</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS</tt> </tt>
+<a name="L15"></a><tt class="py-lineno">15</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABIL-</tt> </tt>
+<a name="L16"></a><tt class="py-lineno">16</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># ITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT</tt> </tt>
+<a name="L17"></a><tt class="py-lineno">17</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># SHALL THE AUTHOR BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, </tt> </tt>
+<a name="L18"></a><tt class="py-lineno">18</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</tt> </tt>
+<a name="L19"></a><tt class="py-lineno">19</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS</tt> </tt>
+<a name="L20"></a><tt class="py-lineno">20</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># IN THE SOFTWARE.</tt> </tt>
+<a name="L21"></a><tt class="py-lineno">21</tt>  <tt class="py-line"><tt class="py-comment"></tt> </tt>
+<a name="Key"></a><div id="Key-def"><a name="L22"></a><tt class="py-lineno">22</tt> <a class="py-toggle" href="#" id="Key-toggle" onclick="return toggle('Key');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="boto.sdb.db.key.Key-class.html">Key</a><tt class="py-op">(</tt><tt class="py-base-class">object</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Key-collapsed" style="display:none;" pad="++" indent="++++"></div><div id="Key-expanded"><a name="L23"></a><tt class="py-lineno">23</tt>  <tt class="py-line"> </tt>
+<a name="L24"></a><tt class="py-lineno">24</tt>  <tt class="py-line">    <tt class="py-decorator">@</tt><tt class="py-decorator">classmethod</tt> </tt>
+<a name="Key.from_path"></a><div id="Key.from_path-def"><a name="L25"></a><tt class="py-lineno">25</tt> <a class="py-toggle" href="#" id="Key.from_path-toggle" onclick="return toggle('Key.from_path');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sdb.db.key.Key-class.html#from_path">from_path</a><tt class="py-op">(</tt><tt class="py-param">cls</tt><tt class="py-op">,</tt> <tt class="py-op">*</tt><tt class="py-param">args</tt><tt class="py-op">,</tt> <tt class="py-op">**</tt><tt class="py-param">kwds</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Key.from_path-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="Key.from_path-expanded"><a name="L26"></a><tt class="py-lineno">26</tt>  <tt class="py-line">        <tt class="py-keyword">raise</tt> <tt class="py-name">NotImplementedError</tt><tt class="py-op">,</tt> <tt class="py-string">"Paths are not currently supported"</tt> </tt>
+</div><a name="L27"></a><tt class="py-lineno">27</tt>  <tt class="py-line"> </tt>
+<a name="Key.__init__"></a><div id="Key.__init__-def"><a name="L28"></a><tt class="py-lineno">28</tt> <a class="py-toggle" href="#" id="Key.__init__-toggle" onclick="return toggle('Key.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sdb.db.key.Key-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">encoded</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-param">obj</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Key.__init__-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="Key.__init__-expanded"><a name="L29"></a><tt class="py-lineno">29</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-0" class="py-name" targets="Variable boto.mapreduce.partitiondb.Partition.name=boto.mapreduce.partitiondb.Partition-class.html#name,Variable boto.mapreduce.partitiondb.PartitionDB.name=boto.mapreduce.partitiondb.PartitionDB-class.html#name,Variable boto.mapreduce.partitiondb.Version.name=boto.mapreduce.partitiondb.Version-class.html#name,Variable boto.mashups.server.Server.name=boto.mashups.server.Server-class.html#name,Method boto.sdb.db.key.Key.name()=boto.sdb.db.key.Key-class.html#name,Variable boto.sdb.db.property.Property.name=boto.sdb.db.property.Property-class.html#name,Variable boto.sdb.db.test_db.TestBasic.name=boto.sdb.db.test_db.TestBasic-class.html#name,Variable boto.sdb.db.test_db.TestList.name=boto.sdb.db.test_db.TestList-class.html#name,Variable boto.sdb.db.test_db.TestListReference.name=boto.sdb.db.test_db.TestListReference-class.html#name,Variable boto.sdb.db.test_db.TestUnique.name=boto.sdb.db.test_db.TestUnique-class.html#name,Variable boto.sdb.persist.test_persist.TestRef.name=boto.sdb.persist.test_persist.TestRef-class.html#name,Variable boto.sdb.persist.test_persist.TestScalar.name=boto.sdb.persist.test_persist.TestScalar-class.html#name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-0', 'name', 'link-0');">name</a></tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+<a name="L30"></a><tt class="py-lineno">30</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">obj</tt><tt class="py-op">:</tt> </tt>
+<a name="L31"></a><tt class="py-lineno">31</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-1" class="py-name" targets="Method boto.sdb.db.key.Key.id()=boto.sdb.db.key.Key-class.html#id"><a title="boto.sdb.db.key.Key.id" class="py-name" href="#" onclick="return doclink('link-1', 'id', 'link-1');">id</a></tt> <tt class="py-op">=</tt> <tt class="py-name">obj</tt><tt class="py-op">.</tt><tt id="link-2" class="py-name"><a title="boto.sdb.db.key.Key.id" class="py-name" href="#" onclick="return doclink('link-2', 'id', 'link-1');">id</a></tt> </tt>
+<a name="L32"></a><tt class="py-lineno">32</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-3" class="py-name" targets="Method boto.sdb.db.key.Key.kind()=boto.sdb.db.key.Key-class.html#kind,Class Method boto.sdb.db.model.Model.kind()=boto.sdb.db.model.Model-class.html#kind,Class Method boto.sdb.db.model.Model.kind()=boto.sdb.db.model.Model-class.html#kind"><a title="boto.sdb.db.key.Key.kind
+boto.sdb.db.model.Model.kind
+boto.sdb.db.model.Model.kind" class="py-name" href="#" onclick="return doclink('link-3', 'kind', 'link-3');">kind</a></tt> <tt class="py-op">=</tt> <tt class="py-name">obj</tt><tt class="py-op">.</tt><tt id="link-4" class="py-name"><a title="boto.sdb.db.key.Key.kind
+boto.sdb.db.model.Model.kind
+boto.sdb.db.model.Model.kind" class="py-name" href="#" onclick="return doclink('link-4', 'kind', 'link-3');">kind</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L33"></a><tt class="py-lineno">33</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L34"></a><tt class="py-lineno">34</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-5" class="py-name"><a title="boto.sdb.db.key.Key.id" class="py-name" href="#" onclick="return doclink('link-5', 'id', 'link-1');">id</a></tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+<a name="L35"></a><tt class="py-lineno">35</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-6" class="py-name"><a title="boto.sdb.db.key.Key.kind
+boto.sdb.db.model.Model.kind
+boto.sdb.db.model.Model.kind" class="py-name" href="#" onclick="return doclink('link-6', 'kind', 'link-3');">kind</a></tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+</div><a name="L36"></a><tt class="py-lineno">36</tt>  <tt class="py-line"> </tt>
+<a name="Key.app"></a><div id="Key.app-def"><a name="L37"></a><tt class="py-lineno">37</tt> <a class="py-toggle" href="#" id="Key.app-toggle" onclick="return toggle('Key.app');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sdb.db.key.Key-class.html#app">app</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Key.app-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="Key.app-expanded"><a name="L38"></a><tt class="py-lineno">38</tt>  <tt class="py-line">        <tt class="py-keyword">raise</tt> <tt class="py-name">NotImplementedError</tt><tt class="py-op">,</tt> <tt class="py-string">"Applications are not currently supported"</tt> </tt>
+</div><a name="L39"></a><tt class="py-lineno">39</tt>  <tt class="py-line"> </tt>
+<a name="Key.kind"></a><div id="Key.kind-def"><a name="L40"></a><tt class="py-lineno">40</tt> <a class="py-toggle" href="#" id="Key.kind-toggle" onclick="return toggle('Key.kind');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sdb.db.key.Key-class.html#kind">kind</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Key.kind-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="Key.kind-expanded"><a name="L41"></a><tt class="py-lineno">41</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-7" class="py-name"><a title="boto.sdb.db.key.Key.kind
+boto.sdb.db.model.Model.kind
+boto.sdb.db.model.Model.kind" class="py-name" href="#" onclick="return doclink('link-7', 'kind', 'link-3');">kind</a></tt> </tt>
+</div><a name="L42"></a><tt class="py-lineno">42</tt>  <tt class="py-line"> </tt>
+<a name="Key.id"></a><div id="Key.id-def"><a name="L43"></a><tt class="py-lineno">43</tt> <a class="py-toggle" href="#" id="Key.id-toggle" onclick="return toggle('Key.id');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sdb.db.key.Key-class.html#id">id</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Key.id-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="Key.id-expanded"><a name="L44"></a><tt class="py-lineno">44</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-8" class="py-name"><a title="boto.sdb.db.key.Key.id" class="py-name" href="#" onclick="return doclink('link-8', 'id', 'link-1');">id</a></tt> </tt>
+</div><a name="L45"></a><tt class="py-lineno">45</tt>  <tt class="py-line"> </tt>
+<a name="Key.name"></a><div id="Key.name-def"><a name="L46"></a><tt class="py-lineno">46</tt> <a class="py-toggle" href="#" id="Key.name-toggle" onclick="return toggle('Key.name');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sdb.db.key.Key-class.html#name">name</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Key.name-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="Key.name-expanded"><a name="L47"></a><tt class="py-lineno">47</tt>  <tt class="py-line">        <tt class="py-keyword">raise</tt> <tt class="py-name">NotImplementedError</tt><tt class="py-op">,</tt> <tt class="py-string">"Key Names are not currently supported"</tt> </tt>
+</div><a name="L48"></a><tt class="py-lineno">48</tt>  <tt class="py-line"> </tt>
+<a name="Key.id_or_name"></a><div id="Key.id_or_name-def"><a name="L49"></a><tt class="py-lineno">49</tt> <a class="py-toggle" href="#" id="Key.id_or_name-toggle" onclick="return toggle('Key.id_or_name');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sdb.db.key.Key-class.html#id_or_name">id_or_name</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Key.id_or_name-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="Key.id_or_name-expanded"><a name="L50"></a><tt class="py-lineno">50</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-9" class="py-name"><a title="boto.sdb.db.key.Key.id" class="py-name" href="#" onclick="return doclink('link-9', 'id', 'link-1');">id</a></tt> </tt>
+</div><a name="L51"></a><tt class="py-lineno">51</tt>  <tt class="py-line"> </tt>
+<a name="Key.has_id_or_name"></a><div id="Key.has_id_or_name-def"><a name="L52"></a><tt class="py-lineno">52</tt> <a class="py-toggle" href="#" id="Key.has_id_or_name-toggle" onclick="return toggle('Key.has_id_or_name');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sdb.db.key.Key-class.html#has_id_or_name">has_id_or_name</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Key.has_id_or_name-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="Key.has_id_or_name-expanded"><a name="L53"></a><tt class="py-lineno">53</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-10" class="py-name"><a title="boto.sdb.db.key.Key.id" class="py-name" href="#" onclick="return doclink('link-10', 'id', 'link-1');">id</a></tt> <tt class="py-op">!=</tt> <tt class="py-name">None</tt> </tt>
+</div><a name="L54"></a><tt class="py-lineno">54</tt>  <tt class="py-line"> </tt>
+<a name="Key.parent"></a><div id="Key.parent-def"><a name="L55"></a><tt class="py-lineno">55</tt> <a class="py-toggle" href="#" id="Key.parent-toggle" onclick="return toggle('Key.parent');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sdb.db.key.Key-class.html#parent">parent</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Key.parent-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="Key.parent-expanded"><a name="L56"></a><tt class="py-lineno">56</tt>  <tt class="py-line">        <tt class="py-keyword">raise</tt> <tt class="py-name">NotImplementedError</tt><tt class="py-op">,</tt> <tt class="py-string">"Key parents are not currently supported"</tt> </tt>
+</div><a name="L57"></a><tt class="py-lineno">57</tt>  <tt class="py-line">         </tt>
+<a name="Key.__str__"></a><div id="Key.__str__-def"><a name="L58"></a><tt class="py-lineno">58</tt> <a class="py-toggle" href="#" id="Key.__str__-toggle" onclick="return toggle('Key.__str__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sdb.db.key.Key-class.html#__str__">__str__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Key.__str__-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="Key.__str__-expanded"><a name="L59"></a><tt class="py-lineno">59</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-11" class="py-name" targets="Method boto.sdb.db.key.Key.id_or_name()=boto.sdb.db.key.Key-class.html#id_or_name"><a title="boto.sdb.db.key.Key.id_or_name" class="py-name" href="#" onclick="return doclink('link-11', 'id_or_name', 'link-11');">id_or_name</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L60"></a><tt class="py-lineno">60</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="boto-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0beta1 on Fri Feb 20 11:45:21 2009
+    </td>
+    <td align="right" class="footer">
+      <a href="http://epydoc.sourceforge.net">http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie()
+  // -->
+</script>
+  
+</body>
+</html>

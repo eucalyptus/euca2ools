@@ -1,0 +1,1073 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>boto.s3.bucket</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="boto-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="boto-module.html">Package&nbsp;boto</a> ::
+        <a href="boto.s3-module.html">Package&nbsp;s3</a> ::
+        Module&nbsp;bucket
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="boto.s3.bucket-pysrc.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="boto.s3.bucket-module.html">Module boto.s3.bucket</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno">  1</tt>  <tt class="py-line"><tt class="py-comment"># Copyright (c) 2006,2007 Mitch Garnaat http://garnaat.org/</tt> </tt>
+<a name="L2"></a><tt class="py-lineno">  2</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment">#</tt> </tt>
+<a name="L3"></a><tt class="py-lineno">  3</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># Permission is hereby granted, free of charge, to any person obtaining a</tt> </tt>
+<a name="L4"></a><tt class="py-lineno">  4</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># copy of this software and associated documentation files (the</tt> </tt>
+<a name="L5"></a><tt class="py-lineno">  5</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># "Software"), to deal in the Software without restriction, including</tt> </tt>
+<a name="L6"></a><tt class="py-lineno">  6</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># without limitation the rights to use, copy, modify, merge, publish, dis-</tt> </tt>
+<a name="L7"></a><tt class="py-lineno">  7</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># tribute, sublicense, and/or sell copies of the Software, and to permit</tt> </tt>
+<a name="L8"></a><tt class="py-lineno">  8</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># persons to whom the Software is furnished to do so, subject to the fol-</tt> </tt>
+<a name="L9"></a><tt class="py-lineno">  9</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># lowing conditions:</tt> </tt>
+<a name="L10"></a><tt class="py-lineno"> 10</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment">#</tt> </tt>
+<a name="L11"></a><tt class="py-lineno"> 11</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># The above copyright notice and this permission notice shall be included</tt> </tt>
+<a name="L12"></a><tt class="py-lineno"> 12</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># in all copies or substantial portions of the Software.</tt> </tt>
+<a name="L13"></a><tt class="py-lineno"> 13</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment">#</tt> </tt>
+<a name="L14"></a><tt class="py-lineno"> 14</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS</tt> </tt>
+<a name="L15"></a><tt class="py-lineno"> 15</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABIL-</tt> </tt>
+<a name="L16"></a><tt class="py-lineno"> 16</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># ITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT</tt> </tt>
+<a name="L17"></a><tt class="py-lineno"> 17</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># SHALL THE AUTHOR BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, </tt> </tt>
+<a name="L18"></a><tt class="py-lineno"> 18</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</tt> </tt>
+<a name="L19"></a><tt class="py-lineno"> 19</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS</tt> </tt>
+<a name="L20"></a><tt class="py-lineno"> 20</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># IN THE SOFTWARE.</tt> </tt>
+<a name="L21"></a><tt class="py-lineno"> 21</tt>  <tt class="py-line"><tt class="py-comment"></tt> </tt>
+<a name="L22"></a><tt class="py-lineno"> 22</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt id="link-0" class="py-name" targets="Package boto=boto-module.html"><a title="boto" class="py-name" href="#" onclick="return doclink('link-0', 'boto', 'link-0');">boto</a></tt> </tt>
+<a name="L23"></a><tt class="py-lineno"> 23</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-1" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-1', 'boto', 'link-0');">boto</a></tt> <tt class="py-keyword">import</tt> <tt id="link-2" class="py-name" targets="Module boto.handler=boto.handler-module.html"><a title="boto.handler" class="py-name" href="#" onclick="return doclink('link-2', 'handler', 'link-2');">handler</a></tt> </tt>
+<a name="L24"></a><tt class="py-lineno"> 24</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-3" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-3', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-4" class="py-name" targets="Module boto.resultset=boto.resultset-module.html"><a title="boto.resultset" class="py-name" href="#" onclick="return doclink('link-4', 'resultset', 'link-4');">resultset</a></tt> <tt class="py-keyword">import</tt> <tt id="link-5" class="py-name" targets="Class boto.resultset.ResultSet=boto.resultset.ResultSet-class.html"><a title="boto.resultset.ResultSet" class="py-name" href="#" onclick="return doclink('link-5', 'ResultSet', 'link-5');">ResultSet</a></tt> </tt>
+<a name="L25"></a><tt class="py-lineno"> 25</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-6" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-6', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-7" class="py-name" targets="Package boto.s3=boto.s3-module.html"><a title="boto.s3" class="py-name" href="#" onclick="return doclink('link-7', 's3', 'link-7');">s3</a></tt><tt class="py-op">.</tt><tt id="link-8" class="py-name" targets="Module boto.s3.acl=boto.s3.acl-module.html"><a title="boto.s3.acl" class="py-name" href="#" onclick="return doclink('link-8', 'acl', 'link-8');">acl</a></tt> <tt class="py-keyword">import</tt> <tt id="link-9" class="py-name" targets="Class boto.s3.acl.Policy=boto.s3.acl.Policy-class.html"><a title="boto.s3.acl.Policy" class="py-name" href="#" onclick="return doclink('link-9', 'Policy', 'link-9');">Policy</a></tt><tt class="py-op">,</tt> <tt id="link-10" class="py-name" targets="Variable boto.s3.acl.CannedACLStrings=boto.s3.acl-module.html#CannedACLStrings"><a title="boto.s3.acl.CannedACLStrings" class="py-name" href="#" onclick="return doclink('link-10', 'CannedACLStrings', 'link-10');">CannedACLStrings</a></tt><tt class="py-op">,</tt> <tt id="link-11" class="py-name" targets="Class boto.s3.acl.ACL=boto.s3.acl.ACL-class.html"><a title="boto.s3.acl.ACL" class="py-name" href="#" onclick="return doclink('link-11', 'ACL', 'link-11');">ACL</a></tt><tt class="py-op">,</tt> <tt id="link-12" class="py-name" targets="Class boto.s3.acl.Grant=boto.s3.acl.Grant-class.html"><a title="boto.s3.acl.Grant" class="py-name" href="#" onclick="return doclink('link-12', 'Grant', 'link-12');">Grant</a></tt> </tt>
+<a name="L26"></a><tt class="py-lineno"> 26</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-13" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-13', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-14" class="py-name"><a title="boto.s3" class="py-name" href="#" onclick="return doclink('link-14', 's3', 'link-7');">s3</a></tt><tt class="py-op">.</tt><tt id="link-15" class="py-name" targets="Module boto.s3.user=boto.s3.user-module.html"><a title="boto.s3.user" class="py-name" href="#" onclick="return doclink('link-15', 'user', 'link-15');">user</a></tt> <tt class="py-keyword">import</tt> <tt id="link-16" class="py-name" targets="Class boto.s3.user.User=boto.s3.user.User-class.html"><a title="boto.s3.user.User" class="py-name" href="#" onclick="return doclink('link-16', 'User', 'link-16');">User</a></tt> </tt>
+<a name="L27"></a><tt class="py-lineno"> 27</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-17" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-17', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-18" class="py-name"><a title="boto.s3" class="py-name" href="#" onclick="return doclink('link-18', 's3', 'link-7');">s3</a></tt><tt class="py-op">.</tt><tt id="link-19" class="py-name" targets="Module boto.s3.key=boto.s3.key-module.html,Module boto.sdb.db.key=boto.sdb.db.key-module.html,Method boto.sdb.db.model.Model.key()=boto.sdb.db.model.Model-class.html#key,Method boto.sdb.db.model.Model.key()=boto.sdb.db.model.Model-class.html#key"><a title="boto.s3.key
+boto.sdb.db.key
+boto.sdb.db.model.Model.key
+boto.sdb.db.model.Model.key" class="py-name" href="#" onclick="return doclink('link-19', 'key', 'link-19');">key</a></tt> <tt class="py-keyword">import</tt> <tt id="link-20" class="py-name" targets="Class boto.s3.key.Key=boto.s3.key.Key-class.html,Class boto.sdb.db.key.Key=boto.sdb.db.key.Key-class.html"><a title="boto.s3.key.Key
+boto.sdb.db.key.Key" class="py-name" href="#" onclick="return doclink('link-20', 'Key', 'link-20');">Key</a></tt> </tt>
+<a name="L28"></a><tt class="py-lineno"> 28</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-21" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-21', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-22" class="py-name"><a title="boto.s3" class="py-name" href="#" onclick="return doclink('link-22', 's3', 'link-7');">s3</a></tt><tt class="py-op">.</tt><tt id="link-23" class="py-name" targets="Module boto.s3.prefix=boto.s3.prefix-module.html"><a title="boto.s3.prefix" class="py-name" href="#" onclick="return doclink('link-23', 'prefix', 'link-23');">prefix</a></tt> <tt class="py-keyword">import</tt> <tt id="link-24" class="py-name" targets="Class boto.s3.prefix.Prefix=boto.s3.prefix.Prefix-class.html"><a title="boto.s3.prefix.Prefix" class="py-name" href="#" onclick="return doclink('link-24', 'Prefix', 'link-24');">Prefix</a></tt> </tt>
+<a name="L29"></a><tt class="py-lineno"> 29</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-25" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-25', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-26" class="py-name" targets="Module boto.cloudfront.exception=boto.cloudfront.exception-module.html,Module boto.exception=boto.exception-module.html"><a title="boto.cloudfront.exception
+boto.exception" class="py-name" href="#" onclick="return doclink('link-26', 'exception', 'link-26');">exception</a></tt> <tt class="py-keyword">import</tt> <tt id="link-27" class="py-name" targets="Class boto.exception.S3ResponseError=boto.exception.S3ResponseError-class.html"><a title="boto.exception.S3ResponseError" class="py-name" href="#" onclick="return doclink('link-27', 'S3ResponseError', 'link-27');">S3ResponseError</a></tt><tt class="py-op">,</tt> <tt id="link-28" class="py-name" targets="Class boto.exception.S3PermissionsError=boto.exception.S3PermissionsError-class.html"><a title="boto.exception.S3PermissionsError" class="py-name" href="#" onclick="return doclink('link-28', 'S3PermissionsError', 'link-28');">S3PermissionsError</a></tt><tt class="py-op">,</tt> <tt id="link-29" class="py-name" targets="Class boto.exception.S3CopyError=boto.exception.S3CopyError-class.html"><a title="boto.exception.S3CopyError" class="py-name" href="#" onclick="return doclink('link-29', 'S3CopyError', 'link-29');">S3CopyError</a></tt> </tt>
+<a name="L30"></a><tt class="py-lineno"> 30</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-30" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-30', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-31" class="py-name"><a title="boto.s3" class="py-name" href="#" onclick="return doclink('link-31', 's3', 'link-7');">s3</a></tt><tt class="py-op">.</tt><tt id="link-32" class="py-name" targets="Module boto.s3.bucketlistresultset=boto.s3.bucketlistresultset-module.html"><a title="boto.s3.bucketlistresultset" class="py-name" href="#" onclick="return doclink('link-32', 'bucketlistresultset', 'link-32');">bucketlistresultset</a></tt> <tt class="py-keyword">import</tt> <tt id="link-33" class="py-name" targets="Class boto.s3.bucketlistresultset.BucketListResultSet=boto.s3.bucketlistresultset.BucketListResultSet-class.html"><a title="boto.s3.bucketlistresultset.BucketListResultSet" class="py-name" href="#" onclick="return doclink('link-33', 'BucketListResultSet', 'link-33');">BucketListResultSet</a></tt> </tt>
+<a name="L31"></a><tt class="py-lineno"> 31</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt id="link-34" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-34', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-35" class="py-name" targets="Module boto.utils=boto.utils-module.html"><a title="boto.utils" class="py-name" href="#" onclick="return doclink('link-35', 'utils', 'link-35');">utils</a></tt> </tt>
+<a name="L32"></a><tt class="py-lineno"> 32</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">xml</tt><tt class="py-op">.</tt><tt class="py-name">sax</tt> </tt>
+<a name="L33"></a><tt class="py-lineno"> 33</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">urllib</tt> </tt>
+<a name="L34"></a><tt class="py-lineno"> 34</tt>  <tt class="py-line"> </tt>
+<a name="L35"></a><tt class="py-lineno"> 35</tt>  <tt class="py-line"><tt id="link-36" class="py-name" targets="Variable boto.s3.bucket.S3Permissions=boto.s3.bucket-module.html#S3Permissions"><a title="boto.s3.bucket.S3Permissions" class="py-name" href="#" onclick="return doclink('link-36', 'S3Permissions', 'link-36');">S3Permissions</a></tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-string">'READ'</tt><tt class="py-op">,</tt> <tt class="py-string">'WRITE'</tt><tt class="py-op">,</tt> <tt class="py-string">'READ_ACP'</tt><tt class="py-op">,</tt> <tt class="py-string">'WRITE_ACP'</tt><tt class="py-op">,</tt> <tt class="py-string">'FULL_CONTROL'</tt><tt class="py-op">]</tt> </tt>
+<a name="L36"></a><tt class="py-lineno"> 36</tt>  <tt class="py-line"> </tt>
+<a name="Bucket"></a><div id="Bucket-def"><a name="L37"></a><tt class="py-lineno"> 37</tt> <a class="py-toggle" href="#" id="Bucket-toggle" onclick="return toggle('Bucket');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="boto.s3.bucket.Bucket-class.html">Bucket</a><tt class="py-op">:</tt> </tt>
+</div><div id="Bucket-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="Bucket-expanded"><a name="L38"></a><tt class="py-lineno"> 38</tt>  <tt class="py-line"> </tt>
+<a name="L39"></a><tt class="py-lineno"> 39</tt>  <tt class="py-line">    <tt id="link-37" class="py-name" targets="Variable boto.s3.bucket.Bucket.BucketLoggingBody=boto.s3.bucket.Bucket-class.html#BucketLoggingBody"><a title="boto.s3.bucket.Bucket.BucketLoggingBody" class="py-name" href="#" onclick="return doclink('link-37', 'BucketLoggingBody', 'link-37');">BucketLoggingBody</a></tt> <tt class="py-op">=</tt> <tt class="py-string">"""&lt;?xml version="1.0" encoding="UTF-8"?&gt;</tt> </tt>
+<a name="L40"></a><tt class="py-lineno"> 40</tt>  <tt class="py-line"><tt class="py-string">       &lt;BucketLoggingStatus xmlns="http://s3.amazonaws.com/doc/2006-03-01/"&gt;</tt> </tt>
+<a name="L41"></a><tt class="py-lineno"> 41</tt>  <tt class="py-line"><tt class="py-string">         &lt;LoggingEnabled&gt;</tt> </tt>
+<a name="L42"></a><tt class="py-lineno"> 42</tt>  <tt class="py-line"><tt class="py-string">           &lt;TargetBucket&gt;%s&lt;/TargetBucket&gt;</tt> </tt>
+<a name="L43"></a><tt class="py-lineno"> 43</tt>  <tt class="py-line"><tt class="py-string">           &lt;TargetPrefix&gt;%s&lt;/TargetPrefix&gt;</tt> </tt>
+<a name="L44"></a><tt class="py-lineno"> 44</tt>  <tt class="py-line"><tt class="py-string">         &lt;/LoggingEnabled&gt;</tt> </tt>
+<a name="L45"></a><tt class="py-lineno"> 45</tt>  <tt class="py-line"><tt class="py-string">       &lt;/BucketLoggingStatus&gt;"""</tt> </tt>
+<a name="L46"></a><tt class="py-lineno"> 46</tt>  <tt class="py-line">     </tt>
+<a name="L47"></a><tt class="py-lineno"> 47</tt>  <tt class="py-line">    <tt id="link-38" class="py-name" targets="Variable boto.s3.bucket.Bucket.EmptyBucketLoggingBody=boto.s3.bucket.Bucket-class.html#EmptyBucketLoggingBody"><a title="boto.s3.bucket.Bucket.EmptyBucketLoggingBody" class="py-name" href="#" onclick="return doclink('link-38', 'EmptyBucketLoggingBody', 'link-38');">EmptyBucketLoggingBody</a></tt> <tt class="py-op">=</tt> <tt class="py-string">"""&lt;?xml version="1.0" encoding="UTF-8"?&gt;</tt> </tt>
+<a name="L48"></a><tt class="py-lineno"> 48</tt>  <tt class="py-line"><tt class="py-string">       &lt;BucketLoggingStatus xmlns="http://s3.amazonaws.com/doc/2006-03-01/"&gt;</tt> </tt>
+<a name="L49"></a><tt class="py-lineno"> 49</tt>  <tt class="py-line"><tt class="py-string">       &lt;/BucketLoggingStatus&gt;"""</tt> </tt>
+<a name="L50"></a><tt class="py-lineno"> 50</tt>  <tt class="py-line"> </tt>
+<a name="L51"></a><tt class="py-lineno"> 51</tt>  <tt class="py-line">    <tt id="link-39" class="py-name" targets="Variable boto.s3.bucket.Bucket.LoggingGroup=boto.s3.bucket.Bucket-class.html#LoggingGroup"><a title="boto.s3.bucket.Bucket.LoggingGroup" class="py-name" href="#" onclick="return doclink('link-39', 'LoggingGroup', 'link-39');">LoggingGroup</a></tt> <tt class="py-op">=</tt> <tt class="py-string">'http://acs.amazonaws.com/groups/s3/LogDelivery'</tt> </tt>
+<a name="L52"></a><tt class="py-lineno"> 52</tt>  <tt class="py-line"> </tt>
+<a name="Bucket.__init__"></a><div id="Bucket.__init__-def"><a name="L53"></a><tt class="py-lineno"> 53</tt> <a class="py-toggle" href="#" id="Bucket.__init__-toggle" onclick="return toggle('Bucket.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.s3.bucket.Bucket-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">connection</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-param">name</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-param">key_class</tt><tt class="py-op">=</tt><tt id="link-40" class="py-name"><a title="boto.s3.key.Key
+boto.sdb.db.key.Key" class="py-name" href="#" onclick="return doclink('link-40', 'Key', 'link-20');">Key</a></tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Bucket.__init__-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Bucket.__init__-expanded"><a name="L54"></a><tt class="py-lineno"> 54</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-41" class="py-name" targets="Variable boto.mapreduce.partitiondb.Partition.name=boto.mapreduce.partitiondb.Partition-class.html#name,Variable boto.mapreduce.partitiondb.PartitionDB.name=boto.mapreduce.partitiondb.PartitionDB-class.html#name,Variable boto.mapreduce.partitiondb.Version.name=boto.mapreduce.partitiondb.Version-class.html#name,Variable boto.mashups.server.Server.name=boto.mashups.server.Server-class.html#name,Method boto.sdb.db.key.Key.name()=boto.sdb.db.key.Key-class.html#name,Variable boto.sdb.db.property.Property.name=boto.sdb.db.property.Property-class.html#name,Variable boto.sdb.db.test_db.TestBasic.name=boto.sdb.db.test_db.TestBasic-class.html#name,Variable boto.sdb.db.test_db.TestList.name=boto.sdb.db.test_db.TestList-class.html#name,Variable boto.sdb.db.test_db.TestListReference.name=boto.sdb.db.test_db.TestListReference-class.html#name,Variable boto.sdb.db.test_db.TestUnique.name=boto.sdb.db.test_db.TestUnique-class.html#name,Variable boto.sdb.persist.test_persist.TestRef.name=boto.sdb.persist.test_persist.TestRef-class.html#name,Variable boto.sdb.persist.test_persist.TestScalar.name=boto.sdb.persist.test_persist.TestScalar-class.html#name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-41', 'name', 'link-41');">name</a></tt> <tt class="py-op">=</tt> <tt id="link-42" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-42', 'name', 'link-41');">name</a></tt> </tt>
+<a name="L55"></a><tt class="py-lineno"> 55</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-43" class="py-name" targets="Module boto.connection=boto.connection-module.html,Module boto.ec2.connection=boto.ec2.connection-module.html,Module boto.fps.connection=boto.fps.connection-module.html,Module boto.mturk.connection=boto.mturk.connection-module.html,Module boto.s3.connection=boto.s3.connection-module.html,Module boto.sdb.connection=boto.sdb.connection-module.html,Module boto.sqs.20070501.connection=boto.sqs.20070501.connection-module.html,Module boto.sqs.connection=boto.sqs.connection-module.html"><a title="boto.connection
+boto.ec2.connection
+boto.fps.connection
+boto.mturk.connection
+boto.s3.connection
+boto.sdb.connection
+boto.sqs.20070501.connection
+boto.sqs.connection" class="py-name" href="#" onclick="return doclink('link-43', 'connection', 'link-43');">connection</a></tt> <tt class="py-op">=</tt> <tt id="link-44" class="py-name"><a title="boto.connection
+boto.ec2.connection
+boto.fps.connection
+boto.mturk.connection
+boto.s3.connection
+boto.sdb.connection
+boto.sqs.20070501.connection
+boto.sqs.connection" class="py-name" href="#" onclick="return doclink('link-44', 'connection', 'link-43');">connection</a></tt> </tt>
+<a name="L56"></a><tt class="py-lineno"> 56</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">key_class</tt> <tt class="py-op">=</tt> <tt class="py-name">key_class</tt> </tt>
+</div><a name="L57"></a><tt class="py-lineno"> 57</tt>  <tt class="py-line"> </tt>
+<a name="Bucket.__repr__"></a><div id="Bucket.__repr__-def"><a name="L58"></a><tt class="py-lineno"> 58</tt> <a class="py-toggle" href="#" id="Bucket.__repr__-toggle" onclick="return toggle('Bucket.__repr__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.s3.bucket.Bucket-class.html#__repr__">__repr__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Bucket.__repr__-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Bucket.__repr__-expanded"><a name="L59"></a><tt class="py-lineno"> 59</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-string">'&lt;Bucket: %s&gt;'</tt> <tt class="py-op">%</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-45" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-45', 'name', 'link-41');">name</a></tt> </tt>
+</div><a name="L60"></a><tt class="py-lineno"> 60</tt>  <tt class="py-line"> </tt>
+<a name="Bucket.__iter__"></a><div id="Bucket.__iter__-def"><a name="L61"></a><tt class="py-lineno"> 61</tt> <a class="py-toggle" href="#" id="Bucket.__iter__-toggle" onclick="return toggle('Bucket.__iter__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.s3.bucket.Bucket-class.html#__iter__">__iter__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Bucket.__iter__-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Bucket.__iter__-expanded"><a name="L62"></a><tt class="py-lineno"> 62</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">iter</tt><tt class="py-op">(</tt><tt id="link-46" class="py-name"><a title="boto.s3.bucketlistresultset.BucketListResultSet" class="py-name" href="#" onclick="return doclink('link-46', 'BucketListResultSet', 'link-33');">BucketListResultSet</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L63"></a><tt class="py-lineno"> 63</tt>  <tt class="py-line"> </tt>
+<a name="Bucket.__contains__"></a><div id="Bucket.__contains__-def"><a name="L64"></a><tt class="py-lineno"> 64</tt> <a class="py-toggle" href="#" id="Bucket.__contains__-toggle" onclick="return toggle('Bucket.__contains__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.s3.bucket.Bucket-class.html#__contains__">__contains__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">key_name</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Bucket.__contains__-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Bucket.__contains__-expanded"><a name="L65"></a><tt class="py-lineno"> 65</tt>  <tt class="py-line">       <tt class="py-keyword">return</tt> <tt class="py-keyword">not</tt> <tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-47" class="py-name" targets="Method boto.s3.bucket.Bucket.get_key()=boto.s3.bucket.Bucket-class.html#get_key"><a title="boto.s3.bucket.Bucket.get_key" class="py-name" href="#" onclick="return doclink('link-47', 'get_key', 'link-47');">get_key</a></tt><tt class="py-op">(</tt><tt id="link-48" class="py-name" targets="Variable boto.mashups.server.Server.key_name=boto.mashups.server.Server-class.html#key_name"><a title="boto.mashups.server.Server.key_name" class="py-name" href="#" onclick="return doclink('link-48', 'key_name', 'link-48');">key_name</a></tt><tt class="py-op">)</tt> <tt class="py-keyword">is</tt> <tt class="py-name">None</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L66"></a><tt class="py-lineno"> 66</tt>  <tt class="py-line"> </tt>
+<a name="Bucket.startElement"></a><div id="Bucket.startElement-def"><a name="L67"></a><tt class="py-lineno"> 67</tt> <a class="py-toggle" href="#" id="Bucket.startElement-toggle" onclick="return toggle('Bucket.startElement');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.s3.bucket.Bucket-class.html#startElement">startElement</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">name</tt><tt class="py-op">,</tt> <tt class="py-param">attrs</tt><tt class="py-op">,</tt> <tt class="py-param">connection</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Bucket.startElement-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Bucket.startElement-expanded"><a name="L68"></a><tt class="py-lineno"> 68</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">None</tt> </tt>
+</div><a name="L69"></a><tt class="py-lineno"> 69</tt>  <tt class="py-line"> </tt>
+<a name="Bucket.endElement"></a><div id="Bucket.endElement-def"><a name="L70"></a><tt class="py-lineno"> 70</tt> <a class="py-toggle" href="#" id="Bucket.endElement-toggle" onclick="return toggle('Bucket.endElement');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.s3.bucket.Bucket-class.html#endElement">endElement</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">name</tt><tt class="py-op">,</tt> <tt class="py-param">value</tt><tt class="py-op">,</tt> <tt class="py-param">connection</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Bucket.endElement-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Bucket.endElement-expanded"><a name="L71"></a><tt class="py-lineno"> 71</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt id="link-49" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-49', 'name', 'link-41');">name</a></tt> <tt class="py-op">==</tt> <tt class="py-string">'Name'</tt><tt class="py-op">:</tt> </tt>
+<a name="L72"></a><tt class="py-lineno"> 72</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-50" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-50', 'name', 'link-41');">name</a></tt> <tt class="py-op">=</tt> <tt class="py-name">value</tt> </tt>
+<a name="L73"></a><tt class="py-lineno"> 73</tt>  <tt class="py-line">        <tt class="py-keyword">elif</tt> <tt id="link-51" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-51', 'name', 'link-41');">name</a></tt> <tt class="py-op">==</tt> <tt class="py-string">'CreationDate'</tt><tt class="py-op">:</tt> </tt>
+<a name="L74"></a><tt class="py-lineno"> 74</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">creation_date</tt> <tt class="py-op">=</tt> <tt class="py-name">value</tt> </tt>
+<a name="L75"></a><tt class="py-lineno"> 75</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L76"></a><tt class="py-lineno"> 76</tt>  <tt class="py-line">            <tt class="py-name">setattr</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt> <tt id="link-52" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-52', 'name', 'link-41');">name</a></tt><tt class="py-op">,</tt> <tt class="py-name">value</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L77"></a><tt class="py-lineno"> 77</tt>  <tt class="py-line"> </tt>
+<a name="Bucket.set_key_class"></a><div id="Bucket.set_key_class-def"><a name="L78"></a><tt class="py-lineno"> 78</tt> <a class="py-toggle" href="#" id="Bucket.set_key_class-toggle" onclick="return toggle('Bucket.set_key_class');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.s3.bucket.Bucket-class.html#set_key_class">set_key_class</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">key_class</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Bucket.set_key_class-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Bucket.set_key_class-expanded"><a name="L79"></a><tt class="py-lineno"> 79</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L80"></a><tt class="py-lineno"> 80</tt>  <tt class="py-line"><tt class="py-docstring">        Set the Key class associated with this bucket.  By default, this</tt> </tt>
+<a name="L81"></a><tt class="py-lineno"> 81</tt>  <tt class="py-line"><tt class="py-docstring">        would be the boto.s3.key.Key class but if you want to subclass that</tt> </tt>
+<a name="L82"></a><tt class="py-lineno"> 82</tt>  <tt class="py-line"><tt class="py-docstring">        for some reason this allows you to associate your new class with a</tt> </tt>
+<a name="L83"></a><tt class="py-lineno"> 83</tt>  <tt class="py-line"><tt class="py-docstring">        bucket so that when you call bucket.new_key() or when you get a listing</tt> </tt>
+<a name="L84"></a><tt class="py-lineno"> 84</tt>  <tt class="py-line"><tt class="py-docstring">        of keys in the bucket you will get an instances of your key class</tt> </tt>
+<a name="L85"></a><tt class="py-lineno"> 85</tt>  <tt class="py-line"><tt class="py-docstring">        rather than the default.</tt> </tt>
+<a name="L86"></a><tt class="py-lineno"> 86</tt>  <tt class="py-line"><tt class="py-docstring">        </tt> </tt>
+<a name="L87"></a><tt class="py-lineno"> 87</tt>  <tt class="py-line"><tt class="py-docstring">        @type key_class: class</tt> </tt>
+<a name="L88"></a><tt class="py-lineno"> 88</tt>  <tt class="py-line"><tt class="py-docstring">        @param key_class: A subclass of Key that can be more specific</tt> </tt>
+<a name="L89"></a><tt class="py-lineno"> 89</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L90"></a><tt class="py-lineno"> 90</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">key_class</tt> <tt class="py-op">=</tt> <tt class="py-name">key_class</tt> </tt>
+</div><a name="L91"></a><tt class="py-lineno"> 91</tt>  <tt class="py-line"> </tt>
+<a name="Bucket.lookup"></a><div id="Bucket.lookup-def"><a name="L92"></a><tt class="py-lineno"> 92</tt> <a class="py-toggle" href="#" id="Bucket.lookup-toggle" onclick="return toggle('Bucket.lookup');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.s3.bucket.Bucket-class.html#lookup">lookup</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">key_name</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Bucket.lookup-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Bucket.lookup-expanded"><a name="L93"></a><tt class="py-lineno"> 93</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L94"></a><tt class="py-lineno"> 94</tt>  <tt class="py-line"><tt class="py-docstring">        Deprecated: Please use get_key method.</tt> </tt>
+<a name="L95"></a><tt class="py-lineno"> 95</tt>  <tt class="py-line"><tt class="py-docstring">        </tt> </tt>
+<a name="L96"></a><tt class="py-lineno"> 96</tt>  <tt class="py-line"><tt class="py-docstring">        @type key_name: string</tt> </tt>
+<a name="L97"></a><tt class="py-lineno"> 97</tt>  <tt class="py-line"><tt class="py-docstring">        @param key_name: The name of the key to retrieve</tt> </tt>
+<a name="L98"></a><tt class="py-lineno"> 98</tt>  <tt class="py-line"><tt class="py-docstring">        </tt> </tt>
+<a name="L99"></a><tt class="py-lineno"> 99</tt>  <tt class="py-line"><tt class="py-docstring">        @rtype: L{Key&lt;boto.s3.key.Key&gt;}</tt> </tt>
+<a name="L100"></a><tt class="py-lineno">100</tt>  <tt class="py-line"><tt class="py-docstring">        @returns: A Key object from this bucket.</tt> </tt>
+<a name="L101"></a><tt class="py-lineno">101</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L102"></a><tt class="py-lineno">102</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-53" class="py-name"><a title="boto.s3.bucket.Bucket.get_key" class="py-name" href="#" onclick="return doclink('link-53', 'get_key', 'link-47');">get_key</a></tt><tt class="py-op">(</tt><tt id="link-54" class="py-name"><a title="boto.mashups.server.Server.key_name" class="py-name" href="#" onclick="return doclink('link-54', 'key_name', 'link-48');">key_name</a></tt><tt class="py-op">)</tt> </tt>
+</div><a name="L103"></a><tt class="py-lineno">103</tt>  <tt class="py-line">         </tt>
+<a name="Bucket.get_key"></a><div id="Bucket.get_key-def"><a name="L104"></a><tt class="py-lineno">104</tt> <a class="py-toggle" href="#" id="Bucket.get_key-toggle" onclick="return toggle('Bucket.get_key');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.s3.bucket.Bucket-class.html#get_key">get_key</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">key_name</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Bucket.get_key-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Bucket.get_key-expanded"><a name="L105"></a><tt class="py-lineno">105</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L106"></a><tt class="py-lineno">106</tt>  <tt class="py-line"><tt class="py-docstring">        Check to see if a particular key exists within the bucket.  This</tt> </tt>
+<a name="L107"></a><tt class="py-lineno">107</tt>  <tt class="py-line"><tt class="py-docstring">        method uses a HEAD request to check for the existance of the key.</tt> </tt>
+<a name="L108"></a><tt class="py-lineno">108</tt>  <tt class="py-line"><tt class="py-docstring">        Returns: An instance of a Key object or None</tt> </tt>
+<a name="L109"></a><tt class="py-lineno">109</tt>  <tt class="py-line"><tt class="py-docstring">        </tt> </tt>
+<a name="L110"></a><tt class="py-lineno">110</tt>  <tt class="py-line"><tt class="py-docstring">        @type key_name: string</tt> </tt>
+<a name="L111"></a><tt class="py-lineno">111</tt>  <tt class="py-line"><tt class="py-docstring">        @param key_name: The name of the key to retrieve</tt> </tt>
+<a name="L112"></a><tt class="py-lineno">112</tt>  <tt class="py-line"><tt class="py-docstring">        </tt> </tt>
+<a name="L113"></a><tt class="py-lineno">113</tt>  <tt class="py-line"><tt class="py-docstring">        @rtype: L{Key&lt;boto.s3.key.Key&gt;}</tt> </tt>
+<a name="L114"></a><tt class="py-lineno">114</tt>  <tt class="py-line"><tt class="py-docstring">        @returns: A Key object from this bucket.</tt> </tt>
+<a name="L115"></a><tt class="py-lineno">115</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L116"></a><tt class="py-lineno">116</tt>  <tt class="py-line">        <tt class="py-name">response</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-55" class="py-name"><a title="boto.connection
+boto.ec2.connection
+boto.fps.connection
+boto.mturk.connection
+boto.s3.connection
+boto.sdb.connection
+boto.sqs.20070501.connection
+boto.sqs.connection" class="py-name" href="#" onclick="return doclink('link-55', 'connection', 'link-43');">connection</a></tt><tt class="py-op">.</tt><tt id="link-56" class="py-name" targets="Method boto.connection.AWSAuthConnection.make_request()=boto.connection.AWSAuthConnection-class.html#make_request,Method boto.connection.AWSQueryConnection.make_request()=boto.connection.AWSQueryConnection-class.html#make_request,Method boto.s3.connection.S3Connection.make_request()=boto.s3.connection.S3Connection-class.html#make_request,Method boto.sqs.20070501.connection.SQSConnection.make_request()=boto.sqs.20070501.connection.SQSConnection-class.html#make_request"><a title="boto.connection.AWSAuthConnection.make_request
+boto.connection.AWSQueryConnection.make_request
+boto.s3.connection.S3Connection.make_request
+boto.sqs.20070501.connection.SQSConnection.make_request" class="py-name" href="#" onclick="return doclink('link-56', 'make_request', 'link-56');">make_request</a></tt><tt class="py-op">(</tt><tt class="py-string">'HEAD'</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-57" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-57', 'name', 'link-41');">name</a></tt><tt class="py-op">,</tt> <tt id="link-58" class="py-name"><a title="boto.mashups.server.Server.key_name" class="py-name" href="#" onclick="return doclink('link-58', 'key_name', 'link-48');">key_name</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L117"></a><tt class="py-lineno">117</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">response</tt><tt class="py-op">.</tt><tt id="link-59" class="py-name" targets="Variable boto.mashups.server.Server.status=boto.mashups.server.Server-class.html#status,Variable boto.utils.ShellCommand.status=boto.utils.ShellCommand-class.html#status"><a title="boto.mashups.server.Server.status
+boto.utils.ShellCommand.status" class="py-name" href="#" onclick="return doclink('link-59', 'status', 'link-59');">status</a></tt> <tt class="py-op">==</tt> <tt class="py-number">200</tt><tt class="py-op">:</tt> </tt>
+<a name="L118"></a><tt class="py-lineno">118</tt>  <tt class="py-line">            <tt class="py-name">body</tt> <tt class="py-op">=</tt> <tt class="py-name">response</tt><tt class="py-op">.</tt><tt id="link-60" class="py-name" targets="Method boto.s3.key.Key.read()=boto.s3.key.Key-class.html#read,Method boto.sqs.20070501.queue.Queue.read()=boto.sqs.20070501.queue.Queue-class.html#read,Method boto.sqs.queue.Queue.read()=boto.sqs.queue.Queue-class.html#read"><a title="boto.s3.key.Key.read
+boto.sqs.20070501.queue.Queue.read
+boto.sqs.queue.Queue.read" class="py-name" href="#" onclick="return doclink('link-60', 'read', 'link-60');">read</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L119"></a><tt class="py-lineno">119</tt>  <tt class="py-line">            <tt class="py-name">k</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">key_class</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">)</tt> </tt>
+<a name="L120"></a><tt class="py-lineno">120</tt>  <tt class="py-line">            <tt class="py-name">k</tt><tt class="py-op">.</tt><tt class="py-name">metadata</tt> <tt class="py-op">=</tt> <tt id="link-61" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-61', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-62" class="py-name"><a title="boto.utils" class="py-name" href="#" onclick="return doclink('link-62', 'utils', 'link-35');">utils</a></tt><tt class="py-op">.</tt><tt class="py-name">get_aws_metadata</tt><tt class="py-op">(</tt><tt class="py-name">response</tt><tt class="py-op">.</tt><tt class="py-name">msg</tt><tt class="py-op">)</tt> </tt>
+<a name="L121"></a><tt class="py-lineno">121</tt>  <tt class="py-line">            <tt class="py-name">k</tt><tt class="py-op">.</tt><tt class="py-name">etag</tt> <tt class="py-op">=</tt> <tt class="py-name">response</tt><tt class="py-op">.</tt><tt class="py-name">getheader</tt><tt class="py-op">(</tt><tt class="py-string">'etag'</tt><tt class="py-op">)</tt> </tt>
+<a name="L122"></a><tt class="py-lineno">122</tt>  <tt class="py-line">            <tt class="py-name">k</tt><tt class="py-op">.</tt><tt class="py-name">content_type</tt> <tt class="py-op">=</tt> <tt class="py-name">response</tt><tt class="py-op">.</tt><tt class="py-name">getheader</tt><tt class="py-op">(</tt><tt class="py-string">'content-type'</tt><tt class="py-op">)</tt> </tt>
+<a name="L123"></a><tt class="py-lineno">123</tt>  <tt class="py-line">            <tt class="py-name">k</tt><tt class="py-op">.</tt><tt class="py-name">content_encoding</tt> <tt class="py-op">=</tt> <tt class="py-name">response</tt><tt class="py-op">.</tt><tt class="py-name">getheader</tt><tt class="py-op">(</tt><tt class="py-string">'content-encoding'</tt><tt class="py-op">)</tt> </tt>
+<a name="L124"></a><tt class="py-lineno">124</tt>  <tt class="py-line">            <tt class="py-name">k</tt><tt class="py-op">.</tt><tt class="py-name">last_modified</tt> <tt class="py-op">=</tt> <tt class="py-name">response</tt><tt class="py-op">.</tt><tt class="py-name">getheader</tt><tt class="py-op">(</tt><tt class="py-string">'last-modified'</tt><tt class="py-op">)</tt> </tt>
+<a name="L125"></a><tt class="py-lineno">125</tt>  <tt class="py-line">            <tt class="py-name">k</tt><tt class="py-op">.</tt><tt id="link-63" class="py-name" targets="Variable boto.sdb.db.test_db.TestBasic.size=boto.sdb.db.test_db.TestBasic-class.html#size,Variable boto.sdb.persist.test_persist.TestScalar.size=boto.sdb.persist.test_persist.TestScalar-class.html#size"><a title="boto.sdb.db.test_db.TestBasic.size
+boto.sdb.persist.test_persist.TestScalar.size" class="py-name" href="#" onclick="return doclink('link-63', 'size', 'link-63');">size</a></tt> <tt class="py-op">=</tt> <tt id="link-64" class="py-name" targets="Class int=int-class.html"><a title="int" class="py-name" href="#" onclick="return doclink('link-64', 'int', 'link-64');">int</a></tt><tt class="py-op">(</tt><tt class="py-name">response</tt><tt class="py-op">.</tt><tt class="py-name">getheader</tt><tt class="py-op">(</tt><tt class="py-string">'content-length'</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L126"></a><tt class="py-lineno">126</tt>  <tt class="py-line">            <tt class="py-name">k</tt><tt class="py-op">.</tt><tt id="link-65" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-65', 'name', 'link-41');">name</a></tt> <tt class="py-op">=</tt> <tt id="link-66" class="py-name"><a title="boto.mashups.server.Server.key_name" class="py-name" href="#" onclick="return doclink('link-66', 'key_name', 'link-48');">key_name</a></tt> </tt>
+<a name="L127"></a><tt class="py-lineno">127</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt class="py-name">k</tt> </tt>
+<a name="L128"></a><tt class="py-lineno">128</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L129"></a><tt class="py-lineno">129</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-name">response</tt><tt class="py-op">.</tt><tt id="link-67" class="py-name"><a title="boto.mashups.server.Server.status
+boto.utils.ShellCommand.status" class="py-name" href="#" onclick="return doclink('link-67', 'status', 'link-59');">status</a></tt> <tt class="py-op">==</tt> <tt class="py-number">404</tt><tt class="py-op">:</tt> </tt>
+<a name="L130"></a><tt class="py-lineno">130</tt>  <tt class="py-line">                <tt class="py-name">body</tt> <tt class="py-op">=</tt> <tt class="py-name">response</tt><tt class="py-op">.</tt><tt id="link-68" class="py-name"><a title="boto.s3.key.Key.read
+boto.sqs.20070501.queue.Queue.read
+boto.sqs.queue.Queue.read" class="py-name" href="#" onclick="return doclink('link-68', 'read', 'link-60');">read</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L131"></a><tt class="py-lineno">131</tt>  <tt class="py-line">                <tt class="py-keyword">return</tt> <tt class="py-name">None</tt> </tt>
+<a name="L132"></a><tt class="py-lineno">132</tt>  <tt class="py-line">            <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L133"></a><tt class="py-lineno">133</tt>  <tt class="py-line">                <tt class="py-keyword">raise</tt> <tt id="link-69" class="py-name"><a title="boto.exception.S3ResponseError" class="py-name" href="#" onclick="return doclink('link-69', 'S3ResponseError', 'link-27');">S3ResponseError</a></tt><tt class="py-op">(</tt><tt class="py-name">response</tt><tt class="py-op">.</tt><tt id="link-70" class="py-name"><a title="boto.mashups.server.Server.status
+boto.utils.ShellCommand.status" class="py-name" href="#" onclick="return doclink('link-70', 'status', 'link-59');">status</a></tt><tt class="py-op">,</tt> <tt class="py-name">response</tt><tt class="py-op">.</tt><tt class="py-name">reason</tt><tt class="py-op">,</tt> <tt class="py-string">''</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L134"></a><tt class="py-lineno">134</tt>  <tt class="py-line"> </tt>
+<a name="Bucket.list"></a><div id="Bucket.list-def"><a name="L135"></a><tt class="py-lineno">135</tt> <a class="py-toggle" href="#" id="Bucket.list-toggle" onclick="return toggle('Bucket.list');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.s3.bucket.Bucket-class.html#list">list</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">prefix</tt><tt class="py-op">=</tt><tt class="py-string">''</tt><tt class="py-op">,</tt> <tt class="py-param">delimiter</tt><tt class="py-op">=</tt><tt class="py-string">''</tt><tt class="py-op">,</tt> <tt class="py-param">marker</tt><tt class="py-op">=</tt><tt class="py-string">''</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Bucket.list-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Bucket.list-expanded"><a name="L136"></a><tt class="py-lineno">136</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L137"></a><tt class="py-lineno">137</tt>  <tt class="py-line"><tt class="py-docstring">        List key objects within a bucket.  This returns an instance of an</tt> </tt>
+<a name="L138"></a><tt class="py-lineno">138</tt>  <tt class="py-line"><tt class="py-docstring">        BucketListResultSet that automatically handles all of the result</tt> </tt>
+<a name="L139"></a><tt class="py-lineno">139</tt>  <tt class="py-line"><tt class="py-docstring">        paging, etc. from S3.  You just need to keep iterating until</tt> </tt>
+<a name="L140"></a><tt class="py-lineno">140</tt>  <tt class="py-line"><tt class="py-docstring">        there are no more results.</tt> </tt>
+<a name="L141"></a><tt class="py-lineno">141</tt>  <tt class="py-line"><tt class="py-docstring">        Called with no arguments, this will return an iterator object across</tt> </tt>
+<a name="L142"></a><tt class="py-lineno">142</tt>  <tt class="py-line"><tt class="py-docstring">        all keys within the bucket.</tt> </tt>
+<a name="L143"></a><tt class="py-lineno">143</tt>  <tt class="py-line"><tt class="py-docstring">        </tt> </tt>
+<a name="L144"></a><tt class="py-lineno">144</tt>  <tt class="py-line"><tt class="py-docstring">        @type prefix: string</tt> </tt>
+<a name="L145"></a><tt class="py-lineno">145</tt>  <tt class="py-line"><tt class="py-docstring">        @param prefix: allows you to limit the listing to a particular</tt> </tt>
+<a name="L146"></a><tt class="py-lineno">146</tt>  <tt class="py-line"><tt class="py-docstring">                        prefix.  For example, if you call the method with prefix='/foo/'</tt> </tt>
+<a name="L147"></a><tt class="py-lineno">147</tt>  <tt class="py-line"><tt class="py-docstring">                        then the iterator will only cycle through the keys that begin with</tt> </tt>
+<a name="L148"></a><tt class="py-lineno">148</tt>  <tt class="py-line"><tt class="py-docstring">                        the string '/foo/'.</tt> </tt>
+<a name="L149"></a><tt class="py-lineno">149</tt>  <tt class="py-line"><tt class="py-docstring">                        </tt> </tt>
+<a name="L150"></a><tt class="py-lineno">150</tt>  <tt class="py-line"><tt class="py-docstring">        @type delimiter: string</tt> </tt>
+<a name="L151"></a><tt class="py-lineno">151</tt>  <tt class="py-line"><tt class="py-docstring">        @param delimiter: can be used in conjunction with the prefix</tt> </tt>
+<a name="L152"></a><tt class="py-lineno">152</tt>  <tt class="py-line"><tt class="py-docstring">                        to allow you to organize and browse your keys hierarchically. See:</tt> </tt>
+<a name="L153"></a><tt class="py-lineno">153</tt>  <tt class="py-line"><tt class="py-docstring">                        http://docs.amazonwebservices.com/AmazonS3/2006-03-01/</tt> </tt>
+<a name="L154"></a><tt class="py-lineno">154</tt>  <tt class="py-line"><tt class="py-docstring">                        for more details.</tt> </tt>
+<a name="L155"></a><tt class="py-lineno">155</tt>  <tt class="py-line"><tt class="py-docstring">                        </tt> </tt>
+<a name="L156"></a><tt class="py-lineno">156</tt>  <tt class="py-line"><tt class="py-docstring">        @type marker: string</tt> </tt>
+<a name="L157"></a><tt class="py-lineno">157</tt>  <tt class="py-line"><tt class="py-docstring">        @param marker: The "marker" of where you are in the result set</tt> </tt>
+<a name="L158"></a><tt class="py-lineno">158</tt>  <tt class="py-line"><tt class="py-docstring">        </tt> </tt>
+<a name="L159"></a><tt class="py-lineno">159</tt>  <tt class="py-line"><tt class="py-docstring">        @rtype: L{BucketListResultSet&lt;boto.s3.bucketlistresultset.BucketListResultSet&gt;}</tt> </tt>
+<a name="L160"></a><tt class="py-lineno">160</tt>  <tt class="py-line"><tt class="py-docstring">        @return: an instance of a BucketListResultSet that handles paging, etc</tt> </tt>
+<a name="L161"></a><tt class="py-lineno">161</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L162"></a><tt class="py-lineno">162</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt id="link-71" class="py-name"><a title="boto.s3.bucketlistresultset.BucketListResultSet" class="py-name" href="#" onclick="return doclink('link-71', 'BucketListResultSet', 'link-33');">BucketListResultSet</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt> <tt id="link-72" class="py-name"><a title="boto.s3.prefix" class="py-name" href="#" onclick="return doclink('link-72', 'prefix', 'link-23');">prefix</a></tt><tt class="py-op">,</tt> <tt class="py-name">delimiter</tt><tt class="py-op">,</tt> <tt class="py-name">marker</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L163"></a><tt class="py-lineno">163</tt>  <tt class="py-line"> </tt>
+<a name="Bucket.get_all_keys"></a><div id="Bucket.get_all_keys-def"><a name="L164"></a><tt class="py-lineno">164</tt> <a class="py-toggle" href="#" id="Bucket.get_all_keys-toggle" onclick="return toggle('Bucket.get_all_keys');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.s3.bucket.Bucket-class.html#get_all_keys">get_all_keys</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">headers</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-op">**</tt><tt class="py-param">params</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Bucket.get_all_keys-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Bucket.get_all_keys-expanded"><a name="L165"></a><tt class="py-lineno">165</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L166"></a><tt class="py-lineno">166</tt>  <tt class="py-line"><tt class="py-docstring">        A lower-level method for listing contents of a bucket.  This closely models the actual S3</tt> </tt>
+<a name="L167"></a><tt class="py-lineno">167</tt>  <tt class="py-line"><tt class="py-docstring">        API and requires you to manually handle the paging of results.  For a higher-level method</tt> </tt>
+<a name="L168"></a><tt class="py-lineno">168</tt>  <tt class="py-line"><tt class="py-docstring">        that handles the details of paging for you, you can use the list method.</tt> </tt>
+<a name="L169"></a><tt class="py-lineno">169</tt>  <tt class="py-line"><tt class="py-docstring">        </tt> </tt>
+<a name="L170"></a><tt class="py-lineno">170</tt>  <tt class="py-line"><tt class="py-docstring">        @type maxkeys: int</tt> </tt>
+<a name="L171"></a><tt class="py-lineno">171</tt>  <tt class="py-line"><tt class="py-docstring">        @param maxkeys: The maximum number of keys to retrieve</tt> </tt>
+<a name="L172"></a><tt class="py-lineno">172</tt>  <tt class="py-line"><tt class="py-docstring">        </tt> </tt>
+<a name="L173"></a><tt class="py-lineno">173</tt>  <tt class="py-line"><tt class="py-docstring">        @type prefix: string</tt> </tt>
+<a name="L174"></a><tt class="py-lineno">174</tt>  <tt class="py-line"><tt class="py-docstring">        @param prefix: The prefix of the keys you want to retrieve</tt> </tt>
+<a name="L175"></a><tt class="py-lineno">175</tt>  <tt class="py-line"><tt class="py-docstring">        </tt> </tt>
+<a name="L176"></a><tt class="py-lineno">176</tt>  <tt class="py-line"><tt class="py-docstring">        @type marker: string</tt> </tt>
+<a name="L177"></a><tt class="py-lineno">177</tt>  <tt class="py-line"><tt class="py-docstring">        @param marker: The "marker" of where you are in the result set</tt> </tt>
+<a name="L178"></a><tt class="py-lineno">178</tt>  <tt class="py-line"><tt class="py-docstring">        </tt> </tt>
+<a name="L179"></a><tt class="py-lineno">179</tt>  <tt class="py-line"><tt class="py-docstring">        @type delimiter: string </tt> </tt>
+<a name="L180"></a><tt class="py-lineno">180</tt>  <tt class="py-line"><tt class="py-docstring">        @param delimiter: "If this optional, Unicode string parameter is included with your request, then keys that contain the same string between the prefix and the first occurrence of the delimiter will be rolled up into a single result element in the CommonPrefixes collection. These rolled-up keys are not returned elsewhere in the response."</tt> </tt>
+<a name="L181"></a><tt class="py-lineno">181</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L182"></a><tt class="py-lineno">182</tt>  <tt class="py-line"><tt class="py-docstring">        @rtype: ResultSet</tt> </tt>
+<a name="L183"></a><tt class="py-lineno">183</tt>  <tt class="py-line"><tt class="py-docstring">        @return: The result from S3 listing the keys requested</tt> </tt>
+<a name="L184"></a><tt class="py-lineno">184</tt>  <tt class="py-line"><tt class="py-docstring">        </tt> </tt>
+<a name="L185"></a><tt class="py-lineno">185</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L186"></a><tt class="py-lineno">186</tt>  <tt class="py-line">        <tt class="py-name">l</tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt> </tt>
+<a name="L187"></a><tt class="py-lineno">187</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt class="py-name">k</tt><tt class="py-op">,</tt><tt class="py-name">v</tt> <tt class="py-keyword">in</tt> <tt class="py-name">params</tt><tt class="py-op">.</tt><tt id="link-73" class="py-name" targets="Method boto.sqs.20070501.message.MHMessage.items()=boto.sqs.20070501.message.MHMessage-class.html#items,Method boto.sqs.message.MHMessage.items()=boto.sqs.message.MHMessage-class.html#items"><a title="boto.sqs.20070501.message.MHMessage.items
+boto.sqs.message.MHMessage.items" class="py-name" href="#" onclick="return doclink('link-73', 'items', 'link-73');">items</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L188"></a><tt class="py-lineno">188</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt>  <tt class="py-name">k</tt> <tt class="py-op">==</tt> <tt class="py-string">'maxkeys'</tt><tt class="py-op">:</tt> </tt>
+<a name="L189"></a><tt class="py-lineno">189</tt>  <tt class="py-line">                <tt class="py-name">k</tt> <tt class="py-op">=</tt> <tt class="py-string">'max-keys'</tt> </tt>
+<a name="L190"></a><tt class="py-lineno">190</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-name">isinstance</tt><tt class="py-op">(</tt><tt class="py-name">v</tt><tt class="py-op">,</tt> <tt class="py-name">unicode</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L191"></a><tt class="py-lineno">191</tt>  <tt class="py-line">                <tt class="py-name">v</tt> <tt class="py-op">=</tt> <tt class="py-name">v</tt><tt class="py-op">.</tt><tt id="link-74" class="py-name" targets="Method boto.mapreduce.lqs.LQSMessage.encode()=boto.mapreduce.lqs.LQSMessage-class.html#encode,Method boto.sdb.db.manager.pgmanager.PGConverter.encode()=boto.sdb.db.manager.pgmanager.PGConverter-class.html#encode,Method boto.sdb.db.manager.sdbmanager.SDBConverter.encode()=boto.sdb.db.manager.sdbmanager.SDBConverter-class.html#encode,Method boto.sqs.jsonmessage.JSONMessage.encode()=boto.sqs.jsonmessage.JSONMessage-class.html#encode,Method boto.sqs.message.MHMessage.encode()=boto.sqs.message.MHMessage-class.html#encode,Method boto.sqs.message.Message.encode()=boto.sqs.message.Message-class.html#encode,Method boto.sqs.message.RawMessage.encode()=boto.sqs.message.RawMessage-class.html#encode"><a title="boto.mapreduce.lqs.LQSMessage.encode
+boto.sdb.db.manager.pgmanager.PGConverter.encode
+boto.sdb.db.manager.sdbmanager.SDBConverter.encode
+boto.sqs.jsonmessage.JSONMessage.encode
+boto.sqs.message.MHMessage.encode
+boto.sqs.message.Message.encode
+boto.sqs.message.RawMessage.encode" class="py-name" href="#" onclick="return doclink('link-74', 'encode', 'link-74');">encode</a></tt><tt class="py-op">(</tt><tt class="py-string">'utf-8'</tt><tt class="py-op">)</tt> </tt>
+<a name="L192"></a><tt class="py-lineno">192</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-name">v</tt><tt class="py-op">:</tt> </tt>
+<a name="L193"></a><tt class="py-lineno">193</tt>  <tt class="py-line">                <tt class="py-name">l</tt><tt class="py-op">.</tt><tt id="link-75" class="py-name" targets="Method boto.sdb.persist.property.MultiValue.append()=boto.sdb.persist.property.MultiValue-class.html#append"><a title="boto.sdb.persist.property.MultiValue.append" class="py-name" href="#" onclick="return doclink('link-75', 'append', 'link-75');">append</a></tt><tt class="py-op">(</tt><tt class="py-string">'%s=%s'</tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt class="py-name">urllib</tt><tt class="py-op">.</tt><tt class="py-name">quote</tt><tt class="py-op">(</tt><tt class="py-name">k</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-name">urllib</tt><tt class="py-op">.</tt><tt class="py-name">quote</tt><tt class="py-op">(</tt><tt id="link-76" class="py-name" targets="Class str=str-class.html"><a title="str" class="py-name" href="#" onclick="return doclink('link-76', 'str', 'link-76');">str</a></tt><tt class="py-op">(</tt><tt class="py-name">v</tt><tt class="py-op">)</tt><tt class="py-op">)</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L194"></a><tt class="py-lineno">194</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">l</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L195"></a><tt class="py-lineno">195</tt>  <tt class="py-line">            <tt class="py-name">s</tt> <tt class="py-op">=</tt> <tt class="py-string">'&amp;'</tt><tt class="py-op">.</tt><tt class="py-name">join</tt><tt class="py-op">(</tt><tt class="py-name">l</tt><tt class="py-op">)</tt> </tt>
+<a name="L196"></a><tt class="py-lineno">196</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L197"></a><tt class="py-lineno">197</tt>  <tt class="py-line">            <tt class="py-name">s</tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+<a name="L198"></a><tt class="py-lineno">198</tt>  <tt class="py-line">        <tt class="py-name">response</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-77" class="py-name"><a title="boto.connection
+boto.ec2.connection
+boto.fps.connection
+boto.mturk.connection
+boto.s3.connection
+boto.sdb.connection
+boto.sqs.20070501.connection
+boto.sqs.connection" class="py-name" href="#" onclick="return doclink('link-77', 'connection', 'link-43');">connection</a></tt><tt class="py-op">.</tt><tt id="link-78" class="py-name"><a title="boto.connection.AWSAuthConnection.make_request
+boto.connection.AWSQueryConnection.make_request
+boto.s3.connection.S3Connection.make_request
+boto.sqs.20070501.connection.SQSConnection.make_request" class="py-name" href="#" onclick="return doclink('link-78', 'make_request', 'link-56');">make_request</a></tt><tt class="py-op">(</tt><tt class="py-string">'GET'</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-79" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-79', 'name', 'link-41');">name</a></tt><tt class="py-op">,</tt> </tt>
+<a name="L199"></a><tt class="py-lineno">199</tt>  <tt class="py-line">                <tt class="py-name">headers</tt><tt class="py-op">=</tt><tt class="py-name">headers</tt><tt class="py-op">,</tt> <tt class="py-name">query_args</tt><tt class="py-op">=</tt><tt class="py-name">s</tt><tt class="py-op">)</tt> </tt>
+<a name="L200"></a><tt class="py-lineno">200</tt>  <tt class="py-line">        <tt class="py-name">body</tt> <tt class="py-op">=</tt> <tt class="py-name">response</tt><tt class="py-op">.</tt><tt id="link-80" class="py-name"><a title="boto.s3.key.Key.read
+boto.sqs.20070501.queue.Queue.read
+boto.sqs.queue.Queue.read" class="py-name" href="#" onclick="return doclink('link-80', 'read', 'link-60');">read</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L201"></a><tt class="py-lineno">201</tt>  <tt class="py-line">        <tt id="link-81" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-81', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-82" class="py-name" targets="Variable boto.log=boto-module.html#log,Variable boto.mashups.server.Server.log=boto.mashups.server.Server-class.html#log"><a title="boto.log
+boto.mashups.server.Server.log" class="py-name" href="#" onclick="return doclink('link-82', 'log', 'link-82');">log</a></tt><tt class="py-op">.</tt><tt class="py-name">debug</tt><tt class="py-op">(</tt><tt class="py-name">body</tt><tt class="py-op">)</tt> </tt>
+<a name="L202"></a><tt class="py-lineno">202</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">response</tt><tt class="py-op">.</tt><tt id="link-83" class="py-name"><a title="boto.mashups.server.Server.status
+boto.utils.ShellCommand.status" class="py-name" href="#" onclick="return doclink('link-83', 'status', 'link-59');">status</a></tt> <tt class="py-op">==</tt> <tt class="py-number">200</tt><tt class="py-op">:</tt> </tt>
+<a name="L203"></a><tt class="py-lineno">203</tt>  <tt class="py-line">            <tt class="py-name">rs</tt> <tt class="py-op">=</tt> <tt id="link-84" class="py-name"><a title="boto.resultset.ResultSet" class="py-name" href="#" onclick="return doclink('link-84', 'ResultSet', 'link-5');">ResultSet</a></tt><tt class="py-op">(</tt><tt class="py-op">[</tt><tt class="py-op">(</tt><tt class="py-string">'Contents'</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">key_class</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> </tt>
+<a name="L204"></a><tt class="py-lineno">204</tt>  <tt class="py-line">                            <tt class="py-op">(</tt><tt class="py-string">'CommonPrefixes'</tt><tt class="py-op">,</tt> <tt id="link-85" class="py-name"><a title="boto.s3.prefix.Prefix" class="py-name" href="#" onclick="return doclink('link-85', 'Prefix', 'link-24');">Prefix</a></tt><tt class="py-op">)</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L205"></a><tt class="py-lineno">205</tt>  <tt class="py-line">            <tt class="py-name">h</tt> <tt class="py-op">=</tt> <tt id="link-86" class="py-name"><a title="boto.handler" class="py-name" href="#" onclick="return doclink('link-86', 'handler', 'link-2');">handler</a></tt><tt class="py-op">.</tt><tt id="link-87" class="py-name" targets="Class boto.handler.XmlHandler=boto.handler.XmlHandler-class.html"><a title="boto.handler.XmlHandler" class="py-name" href="#" onclick="return doclink('link-87', 'XmlHandler', 'link-87');">XmlHandler</a></tt><tt class="py-op">(</tt><tt class="py-name">rs</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">)</tt> </tt>
+<a name="L206"></a><tt class="py-lineno">206</tt>  <tt class="py-line">            <tt class="py-name">xml</tt><tt class="py-op">.</tt><tt class="py-name">sax</tt><tt class="py-op">.</tt><tt class="py-name">parseString</tt><tt class="py-op">(</tt><tt class="py-name">body</tt><tt class="py-op">,</tt> <tt class="py-name">h</tt><tt class="py-op">)</tt> </tt>
+<a name="L207"></a><tt class="py-lineno">207</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt class="py-name">rs</tt> </tt>
+<a name="L208"></a><tt class="py-lineno">208</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L209"></a><tt class="py-lineno">209</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-88" class="py-name"><a title="boto.exception.S3ResponseError" class="py-name" href="#" onclick="return doclink('link-88', 'S3ResponseError', 'link-27');">S3ResponseError</a></tt><tt class="py-op">(</tt><tt class="py-name">response</tt><tt class="py-op">.</tt><tt id="link-89" class="py-name"><a title="boto.mashups.server.Server.status
+boto.utils.ShellCommand.status" class="py-name" href="#" onclick="return doclink('link-89', 'status', 'link-59');">status</a></tt><tt class="py-op">,</tt> <tt class="py-name">response</tt><tt class="py-op">.</tt><tt class="py-name">reason</tt><tt class="py-op">,</tt> <tt class="py-name">body</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L210"></a><tt class="py-lineno">210</tt>  <tt class="py-line"> </tt>
+<a name="Bucket.new_key"></a><div id="Bucket.new_key-def"><a name="L211"></a><tt class="py-lineno">211</tt> <a class="py-toggle" href="#" id="Bucket.new_key-toggle" onclick="return toggle('Bucket.new_key');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.s3.bucket.Bucket-class.html#new_key">new_key</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">key_name</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Bucket.new_key-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Bucket.new_key-expanded"><a name="L212"></a><tt class="py-lineno">212</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L213"></a><tt class="py-lineno">213</tt>  <tt class="py-line"><tt class="py-docstring">        Creates a new key</tt> </tt>
+<a name="L214"></a><tt class="py-lineno">214</tt>  <tt class="py-line"><tt class="py-docstring">        </tt> </tt>
+<a name="L215"></a><tt class="py-lineno">215</tt>  <tt class="py-line"><tt class="py-docstring">        @type key_name: string</tt> </tt>
+<a name="L216"></a><tt class="py-lineno">216</tt>  <tt class="py-line"><tt class="py-docstring">        @param key_name: The name of the key to create</tt> </tt>
+<a name="L217"></a><tt class="py-lineno">217</tt>  <tt class="py-line"><tt class="py-docstring">        </tt> </tt>
+<a name="L218"></a><tt class="py-lineno">218</tt>  <tt class="py-line"><tt class="py-docstring">        @rtype: L{Key&lt;boto.s3.key.Key&gt;} or subclass</tt> </tt>
+<a name="L219"></a><tt class="py-lineno">219</tt>  <tt class="py-line"><tt class="py-docstring">        @returns: An instance of the newly created key object</tt> </tt>
+<a name="L220"></a><tt class="py-lineno">220</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L221"></a><tt class="py-lineno">221</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">key_class</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt> <tt id="link-90" class="py-name"><a title="boto.mashups.server.Server.key_name" class="py-name" href="#" onclick="return doclink('link-90', 'key_name', 'link-48');">key_name</a></tt><tt class="py-op">)</tt> </tt>
+</div><a name="L222"></a><tt class="py-lineno">222</tt>  <tt class="py-line"> </tt>
+<a name="Bucket.generate_url"></a><div id="Bucket.generate_url-def"><a name="L223"></a><tt class="py-lineno">223</tt> <a class="py-toggle" href="#" id="Bucket.generate_url-toggle" onclick="return toggle('Bucket.generate_url');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.s3.bucket.Bucket-class.html#generate_url">generate_url</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">expires_in</tt><tt class="py-op">,</tt> <tt class="py-param">method</tt><tt class="py-op">=</tt><tt class="py-string">'GET'</tt><tt class="py-op">,</tt> <tt class="py-param">headers</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-param">force_http</tt><tt class="py-op">=</tt><tt class="py-name">False</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Bucket.generate_url-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Bucket.generate_url-expanded"><a name="L224"></a><tt class="py-lineno">224</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-91" class="py-name"><a title="boto.connection
+boto.ec2.connection
+boto.fps.connection
+boto.mturk.connection
+boto.s3.connection
+boto.sdb.connection
+boto.sqs.20070501.connection
+boto.sqs.connection" class="py-name" href="#" onclick="return doclink('link-91', 'connection', 'link-43');">connection</a></tt><tt class="py-op">.</tt><tt id="link-92" class="py-name" targets="Method boto.s3.bucket.Bucket.generate_url()=boto.s3.bucket.Bucket-class.html#generate_url,Method boto.s3.connection.S3Connection.generate_url()=boto.s3.connection.S3Connection-class.html#generate_url,Method boto.s3.key.Key.generate_url()=boto.s3.key.Key-class.html#generate_url"><a title="boto.s3.bucket.Bucket.generate_url
+boto.s3.connection.S3Connection.generate_url
+boto.s3.key.Key.generate_url" class="py-name" href="#" onclick="return doclink('link-92', 'generate_url', 'link-92');">generate_url</a></tt><tt class="py-op">(</tt><tt class="py-name">expires_in</tt><tt class="py-op">,</tt> <tt class="py-name">method</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-93" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-93', 'name', 'link-41');">name</a></tt><tt class="py-op">,</tt> <tt class="py-name">headers</tt><tt class="py-op">=</tt><tt class="py-name">headers</tt><tt class="py-op">,</tt> </tt>
+<a name="L225"></a><tt class="py-lineno">225</tt>  <tt class="py-line">                                            <tt class="py-name">force_http</tt><tt class="py-op">=</tt><tt class="py-name">force_http</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L226"></a><tt class="py-lineno">226</tt>  <tt class="py-line"> </tt>
+<a name="Bucket.delete_key"></a><div id="Bucket.delete_key-def"><a name="L227"></a><tt class="py-lineno">227</tt> <a class="py-toggle" href="#" id="Bucket.delete_key-toggle" onclick="return toggle('Bucket.delete_key');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.s3.bucket.Bucket-class.html#delete_key">delete_key</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">key_name</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Bucket.delete_key-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Bucket.delete_key-expanded"><a name="L228"></a><tt class="py-lineno">228</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L229"></a><tt class="py-lineno">229</tt>  <tt class="py-line"><tt class="py-docstring">        Deletes a key from the bucket.</tt> </tt>
+<a name="L230"></a><tt class="py-lineno">230</tt>  <tt class="py-line"><tt class="py-docstring">        </tt> </tt>
+<a name="L231"></a><tt class="py-lineno">231</tt>  <tt class="py-line"><tt class="py-docstring">        @type key_name: string</tt> </tt>
+<a name="L232"></a><tt class="py-lineno">232</tt>  <tt class="py-line"><tt class="py-docstring">        @param key_name: The key name to delete</tt> </tt>
+<a name="L233"></a><tt class="py-lineno">233</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L234"></a><tt class="py-lineno">234</tt>  <tt class="py-line">        <tt class="py-name">response</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-94" class="py-name"><a title="boto.connection
+boto.ec2.connection
+boto.fps.connection
+boto.mturk.connection
+boto.s3.connection
+boto.sdb.connection
+boto.sqs.20070501.connection
+boto.sqs.connection" class="py-name" href="#" onclick="return doclink('link-94', 'connection', 'link-43');">connection</a></tt><tt class="py-op">.</tt><tt id="link-95" class="py-name"><a title="boto.connection.AWSAuthConnection.make_request
+boto.connection.AWSQueryConnection.make_request
+boto.s3.connection.S3Connection.make_request
+boto.sqs.20070501.connection.SQSConnection.make_request" class="py-name" href="#" onclick="return doclink('link-95', 'make_request', 'link-56');">make_request</a></tt><tt class="py-op">(</tt><tt class="py-string">'DELETE'</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-96" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-96', 'name', 'link-41');">name</a></tt><tt class="py-op">,</tt> <tt id="link-97" class="py-name"><a title="boto.mashups.server.Server.key_name" class="py-name" href="#" onclick="return doclink('link-97', 'key_name', 'link-48');">key_name</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L235"></a><tt class="py-lineno">235</tt>  <tt class="py-line">        <tt class="py-name">body</tt> <tt class="py-op">=</tt> <tt class="py-name">response</tt><tt class="py-op">.</tt><tt id="link-98" class="py-name"><a title="boto.s3.key.Key.read
+boto.sqs.20070501.queue.Queue.read
+boto.sqs.queue.Queue.read" class="py-name" href="#" onclick="return doclink('link-98', 'read', 'link-60');">read</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L236"></a><tt class="py-lineno">236</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">response</tt><tt class="py-op">.</tt><tt id="link-99" class="py-name"><a title="boto.mashups.server.Server.status
+boto.utils.ShellCommand.status" class="py-name" href="#" onclick="return doclink('link-99', 'status', 'link-59');">status</a></tt> <tt class="py-op">!=</tt> <tt class="py-number">204</tt><tt class="py-op">:</tt> </tt>
+<a name="L237"></a><tt class="py-lineno">237</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-100" class="py-name"><a title="boto.exception.S3ResponseError" class="py-name" href="#" onclick="return doclink('link-100', 'S3ResponseError', 'link-27');">S3ResponseError</a></tt><tt class="py-op">(</tt><tt class="py-name">response</tt><tt class="py-op">.</tt><tt id="link-101" class="py-name"><a title="boto.mashups.server.Server.status
+boto.utils.ShellCommand.status" class="py-name" href="#" onclick="return doclink('link-101', 'status', 'link-59');">status</a></tt><tt class="py-op">,</tt> <tt class="py-name">response</tt><tt class="py-op">.</tt><tt class="py-name">reason</tt><tt class="py-op">,</tt> <tt class="py-name">body</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L238"></a><tt class="py-lineno">238</tt>  <tt class="py-line"> </tt>
+<a name="Bucket.copy_key"></a><div id="Bucket.copy_key-def"><a name="L239"></a><tt class="py-lineno">239</tt> <a class="py-toggle" href="#" id="Bucket.copy_key-toggle" onclick="return toggle('Bucket.copy_key');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.s3.bucket.Bucket-class.html#copy_key">copy_key</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">new_key_name</tt><tt class="py-op">,</tt> <tt class="py-param">src_bucket_name</tt><tt class="py-op">,</tt> <tt class="py-param">src_key_name</tt><tt class="py-op">,</tt> <tt class="py-param">metadata</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Bucket.copy_key-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Bucket.copy_key-expanded"><a name="L240"></a><tt class="py-lineno">240</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L241"></a><tt class="py-lineno">241</tt>  <tt class="py-line"><tt class="py-docstring">        Create a new key in the bucket by copying another existing key.</tt> </tt>
+<a name="L242"></a><tt class="py-lineno">242</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L243"></a><tt class="py-lineno">243</tt>  <tt class="py-line"><tt class="py-docstring">        @type new_key_name: string</tt> </tt>
+<a name="L244"></a><tt class="py-lineno">244</tt>  <tt class="py-line"><tt class="py-docstring">        @param new_key_name: The name of the new key</tt> </tt>
+<a name="L245"></a><tt class="py-lineno">245</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L246"></a><tt class="py-lineno">246</tt>  <tt class="py-line"><tt class="py-docstring">        @type src_bucket_name: string</tt> </tt>
+<a name="L247"></a><tt class="py-lineno">247</tt>  <tt class="py-line"><tt class="py-docstring">        @param src_bucket_name: The name of the source bucket</tt> </tt>
+<a name="L248"></a><tt class="py-lineno">248</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L249"></a><tt class="py-lineno">249</tt>  <tt class="py-line"><tt class="py-docstring">        @type src_key_name: string</tt> </tt>
+<a name="L250"></a><tt class="py-lineno">250</tt>  <tt class="py-line"><tt class="py-docstring">        @param src_key_name: The name of the source key</tt> </tt>
+<a name="L251"></a><tt class="py-lineno">251</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L252"></a><tt class="py-lineno">252</tt>  <tt class="py-line"><tt class="py-docstring">        @type metadata: dict</tt> </tt>
+<a name="L253"></a><tt class="py-lineno">253</tt>  <tt class="py-line"><tt class="py-docstring">        @param metadata: Metadata to be associated with new key.</tt> </tt>
+<a name="L254"></a><tt class="py-lineno">254</tt>  <tt class="py-line"><tt class="py-docstring">                         If metadata is supplied, it will replace the</tt> </tt>
+<a name="L255"></a><tt class="py-lineno">255</tt>  <tt class="py-line"><tt class="py-docstring">                         metadata of the source key being copied.</tt> </tt>
+<a name="L256"></a><tt class="py-lineno">256</tt>  <tt class="py-line"><tt class="py-docstring">                         If no metadata is supplied, the source key's</tt> </tt>
+<a name="L257"></a><tt class="py-lineno">257</tt>  <tt class="py-line"><tt class="py-docstring">                         metadata will be copied to the new key.</tt> </tt>
+<a name="L258"></a><tt class="py-lineno">258</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L259"></a><tt class="py-lineno">259</tt>  <tt class="py-line"><tt class="py-docstring">        @rtype: L{Key&lt;boto.s3.key.Key&gt;} or subclass</tt> </tt>
+<a name="L260"></a><tt class="py-lineno">260</tt>  <tt class="py-line"><tt class="py-docstring">        @returns: An instance of the newly created key object</tt> </tt>
+<a name="L261"></a><tt class="py-lineno">261</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L262"></a><tt class="py-lineno">262</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">metadata</tt><tt class="py-op">:</tt> </tt>
+<a name="L263"></a><tt class="py-lineno">263</tt>  <tt class="py-line">            <tt class="py-name">headers</tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt><tt class="py-string">'x-amz-copy-source'</tt> <tt class="py-op">:</tt> <tt class="py-string">'%s/%s'</tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt class="py-name">src_bucket_name</tt><tt class="py-op">,</tt> <tt class="py-name">src_key_name</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> </tt>
+<a name="L264"></a><tt class="py-lineno">264</tt>  <tt class="py-line">                       <tt class="py-string">'x-amz-metadata-directive'</tt> <tt class="py-op">:</tt> <tt class="py-string">'REPLACE'</tt><tt class="py-op">}</tt> </tt>
+<a name="L265"></a><tt class="py-lineno">265</tt>  <tt class="py-line">            <tt class="py-name">headers</tt> <tt class="py-op">=</tt> <tt id="link-102" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-102', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-103" class="py-name"><a title="boto.utils" class="py-name" href="#" onclick="return doclink('link-103', 'utils', 'link-35');">utils</a></tt><tt class="py-op">.</tt><tt class="py-name">merge_meta</tt><tt class="py-op">(</tt><tt class="py-name">headers</tt><tt class="py-op">,</tt> <tt class="py-name">metadata</tt><tt class="py-op">)</tt> </tt>
+<a name="L266"></a><tt class="py-lineno">266</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L267"></a><tt class="py-lineno">267</tt>  <tt class="py-line">            <tt class="py-name">headers</tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt><tt class="py-string">'x-amz-copy-source'</tt> <tt class="py-op">:</tt> <tt class="py-string">'%s/%s'</tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt class="py-name">src_bucket_name</tt><tt class="py-op">,</tt> <tt class="py-name">src_key_name</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> </tt>
+<a name="L268"></a><tt class="py-lineno">268</tt>  <tt class="py-line">                       <tt class="py-string">'x-amz-metadata-directive'</tt> <tt class="py-op">:</tt> <tt class="py-string">'COPY'</tt><tt class="py-op">}</tt> </tt>
+<a name="L269"></a><tt class="py-lineno">269</tt>  <tt class="py-line">        <tt class="py-name">response</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-104" class="py-name"><a title="boto.connection
+boto.ec2.connection
+boto.fps.connection
+boto.mturk.connection
+boto.s3.connection
+boto.sdb.connection
+boto.sqs.20070501.connection
+boto.sqs.connection" class="py-name" href="#" onclick="return doclink('link-104', 'connection', 'link-43');">connection</a></tt><tt class="py-op">.</tt><tt id="link-105" class="py-name"><a title="boto.connection.AWSAuthConnection.make_request
+boto.connection.AWSQueryConnection.make_request
+boto.s3.connection.S3Connection.make_request
+boto.sqs.20070501.connection.SQSConnection.make_request" class="py-name" href="#" onclick="return doclink('link-105', 'make_request', 'link-56');">make_request</a></tt><tt class="py-op">(</tt><tt class="py-string">'PUT'</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-106" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-106', 'name', 'link-41');">name</a></tt><tt class="py-op">,</tt> <tt class="py-name">new_key_name</tt><tt class="py-op">,</tt> </tt>
+<a name="L270"></a><tt class="py-lineno">270</tt>  <tt class="py-line">                                                <tt class="py-name">headers</tt><tt class="py-op">=</tt><tt class="py-name">headers</tt><tt class="py-op">)</tt> </tt>
+<a name="L271"></a><tt class="py-lineno">271</tt>  <tt class="py-line">        <tt class="py-name">body</tt> <tt class="py-op">=</tt> <tt class="py-name">response</tt><tt class="py-op">.</tt><tt id="link-107" class="py-name"><a title="boto.s3.key.Key.read
+boto.sqs.20070501.queue.Queue.read
+boto.sqs.queue.Queue.read" class="py-name" href="#" onclick="return doclink('link-107', 'read', 'link-60');">read</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L272"></a><tt class="py-lineno">272</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">response</tt><tt class="py-op">.</tt><tt id="link-108" class="py-name"><a title="boto.mashups.server.Server.status
+boto.utils.ShellCommand.status" class="py-name" href="#" onclick="return doclink('link-108', 'status', 'link-59');">status</a></tt> <tt class="py-op">==</tt> <tt class="py-number">200</tt><tt class="py-op">:</tt> </tt>
+<a name="L273"></a><tt class="py-lineno">273</tt>  <tt class="py-line">            <tt id="link-109" class="py-name"><a title="boto.s3.key
+boto.sdb.db.key
+boto.sdb.db.model.Model.key
+boto.sdb.db.model.Model.key" class="py-name" href="#" onclick="return doclink('link-109', 'key', 'link-19');">key</a></tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-110" class="py-name" targets="Method boto.s3.bucket.Bucket.new_key()=boto.s3.bucket.Bucket-class.html#new_key"><a title="boto.s3.bucket.Bucket.new_key" class="py-name" href="#" onclick="return doclink('link-110', 'new_key', 'link-110');">new_key</a></tt><tt class="py-op">(</tt><tt class="py-name">new_key_name</tt><tt class="py-op">)</tt> </tt>
+<a name="L274"></a><tt class="py-lineno">274</tt>  <tt class="py-line">            <tt class="py-name">h</tt> <tt class="py-op">=</tt> <tt id="link-111" class="py-name"><a title="boto.handler" class="py-name" href="#" onclick="return doclink('link-111', 'handler', 'link-2');">handler</a></tt><tt class="py-op">.</tt><tt id="link-112" class="py-name"><a title="boto.handler.XmlHandler" class="py-name" href="#" onclick="return doclink('link-112', 'XmlHandler', 'link-87');">XmlHandler</a></tt><tt class="py-op">(</tt><tt id="link-113" class="py-name"><a title="boto.s3.key
+boto.sdb.db.key
+boto.sdb.db.model.Model.key
+boto.sdb.db.model.Model.key" class="py-name" href="#" onclick="return doclink('link-113', 'key', 'link-19');">key</a></tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">)</tt> </tt>
+<a name="L275"></a><tt class="py-lineno">275</tt>  <tt class="py-line">            <tt class="py-name">xml</tt><tt class="py-op">.</tt><tt class="py-name">sax</tt><tt class="py-op">.</tt><tt class="py-name">parseString</tt><tt class="py-op">(</tt><tt class="py-name">body</tt><tt class="py-op">,</tt> <tt class="py-name">h</tt><tt class="py-op">)</tt> </tt>
+<a name="L276"></a><tt class="py-lineno">276</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-name">hasattr</tt><tt class="py-op">(</tt><tt id="link-114" class="py-name"><a title="boto.s3.key
+boto.sdb.db.key
+boto.sdb.db.model.Model.key
+boto.sdb.db.model.Model.key" class="py-name" href="#" onclick="return doclink('link-114', 'key', 'link-19');">key</a></tt><tt class="py-op">,</tt> <tt class="py-string">'Error'</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L277"></a><tt class="py-lineno">277</tt>  <tt class="py-line">                <tt class="py-keyword">raise</tt> <tt id="link-115" class="py-name"><a title="boto.exception.S3CopyError" class="py-name" href="#" onclick="return doclink('link-115', 'S3CopyError', 'link-29');">S3CopyError</a></tt><tt class="py-op">(</tt><tt id="link-116" class="py-name"><a title="boto.s3.key
+boto.sdb.db.key
+boto.sdb.db.model.Model.key
+boto.sdb.db.model.Model.key" class="py-name" href="#" onclick="return doclink('link-116', 'key', 'link-19');">key</a></tt><tt class="py-op">.</tt><tt class="py-name">Code</tt><tt class="py-op">,</tt> <tt id="link-117" class="py-name"><a title="boto.s3.key
+boto.sdb.db.key
+boto.sdb.db.model.Model.key
+boto.sdb.db.model.Model.key" class="py-name" href="#" onclick="return doclink('link-117', 'key', 'link-19');">key</a></tt><tt class="py-op">.</tt><tt id="link-118" class="py-name" targets="Class boto.sqs.20070501.message.Message=boto.sqs.20070501.message.Message-class.html,Class boto.sqs.message.Message=boto.sqs.message.Message-class.html"><a title="boto.sqs.20070501.message.Message
+boto.sqs.message.Message" class="py-name" href="#" onclick="return doclink('link-118', 'Message', 'link-118');">Message</a></tt><tt class="py-op">,</tt> <tt class="py-name">body</tt><tt class="py-op">)</tt> </tt>
+<a name="L278"></a><tt class="py-lineno">278</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt id="link-119" class="py-name"><a title="boto.s3.key
+boto.sdb.db.key
+boto.sdb.db.model.Model.key
+boto.sdb.db.model.Model.key" class="py-name" href="#" onclick="return doclink('link-119', 'key', 'link-19');">key</a></tt> </tt>
+<a name="L279"></a><tt class="py-lineno">279</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L280"></a><tt class="py-lineno">280</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-120" class="py-name"><a title="boto.exception.S3ResponseError" class="py-name" href="#" onclick="return doclink('link-120', 'S3ResponseError', 'link-27');">S3ResponseError</a></tt><tt class="py-op">(</tt><tt class="py-name">response</tt><tt class="py-op">.</tt><tt id="link-121" class="py-name"><a title="boto.mashups.server.Server.status
+boto.utils.ShellCommand.status" class="py-name" href="#" onclick="return doclink('link-121', 'status', 'link-59');">status</a></tt><tt class="py-op">,</tt> <tt class="py-name">response</tt><tt class="py-op">.</tt><tt class="py-name">reason</tt><tt class="py-op">,</tt> <tt class="py-name">body</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L281"></a><tt class="py-lineno">281</tt>  <tt class="py-line"> </tt>
+<a name="Bucket.set_canned_acl"></a><div id="Bucket.set_canned_acl-def"><a name="L282"></a><tt class="py-lineno">282</tt> <a class="py-toggle" href="#" id="Bucket.set_canned_acl-toggle" onclick="return toggle('Bucket.set_canned_acl');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.s3.bucket.Bucket-class.html#set_canned_acl">set_canned_acl</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">acl_str</tt><tt class="py-op">,</tt> <tt class="py-param">key_name</tt><tt class="py-op">=</tt><tt class="py-string">''</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Bucket.set_canned_acl-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Bucket.set_canned_acl-expanded"><a name="L283"></a><tt class="py-lineno">283</tt>  <tt class="py-line">        <tt class="py-keyword">assert</tt> <tt class="py-name">acl_str</tt> <tt class="py-keyword">in</tt> <tt id="link-122" class="py-name"><a title="boto.s3.acl.CannedACLStrings" class="py-name" href="#" onclick="return doclink('link-122', 'CannedACLStrings', 'link-10');">CannedACLStrings</a></tt> </tt>
+<a name="L284"></a><tt class="py-lineno">284</tt>  <tt class="py-line">        <tt class="py-name">response</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-123" class="py-name"><a title="boto.connection
+boto.ec2.connection
+boto.fps.connection
+boto.mturk.connection
+boto.s3.connection
+boto.sdb.connection
+boto.sqs.20070501.connection
+boto.sqs.connection" class="py-name" href="#" onclick="return doclink('link-123', 'connection', 'link-43');">connection</a></tt><tt class="py-op">.</tt><tt id="link-124" class="py-name"><a title="boto.connection.AWSAuthConnection.make_request
+boto.connection.AWSQueryConnection.make_request
+boto.s3.connection.S3Connection.make_request
+boto.sqs.20070501.connection.SQSConnection.make_request" class="py-name" href="#" onclick="return doclink('link-124', 'make_request', 'link-56');">make_request</a></tt><tt class="py-op">(</tt><tt class="py-string">'PUT'</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-125" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-125', 'name', 'link-41');">name</a></tt><tt class="py-op">,</tt> <tt id="link-126" class="py-name"><a title="boto.mashups.server.Server.key_name" class="py-name" href="#" onclick="return doclink('link-126', 'key_name', 'link-48');">key_name</a></tt><tt class="py-op">,</tt> </tt>
+<a name="L285"></a><tt class="py-lineno">285</tt>  <tt class="py-line">                <tt class="py-name">headers</tt><tt class="py-op">=</tt><tt class="py-op">{</tt><tt class="py-string">'x-amz-acl'</tt><tt class="py-op">:</tt> <tt class="py-name">acl_str</tt><tt class="py-op">}</tt><tt class="py-op">,</tt> <tt class="py-name">query_args</tt><tt class="py-op">=</tt><tt class="py-string">'acl'</tt><tt class="py-op">)</tt> </tt>
+<a name="L286"></a><tt class="py-lineno">286</tt>  <tt class="py-line">        <tt class="py-name">body</tt> <tt class="py-op">=</tt> <tt class="py-name">response</tt><tt class="py-op">.</tt><tt id="link-127" class="py-name"><a title="boto.s3.key.Key.read
+boto.sqs.20070501.queue.Queue.read
+boto.sqs.queue.Queue.read" class="py-name" href="#" onclick="return doclink('link-127', 'read', 'link-60');">read</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L287"></a><tt class="py-lineno">287</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">response</tt><tt class="py-op">.</tt><tt id="link-128" class="py-name"><a title="boto.mashups.server.Server.status
+boto.utils.ShellCommand.status" class="py-name" href="#" onclick="return doclink('link-128', 'status', 'link-59');">status</a></tt> <tt class="py-op">!=</tt> <tt class="py-number">200</tt><tt class="py-op">:</tt> </tt>
+<a name="L288"></a><tt class="py-lineno">288</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-129" class="py-name"><a title="boto.exception.S3ResponseError" class="py-name" href="#" onclick="return doclink('link-129', 'S3ResponseError', 'link-27');">S3ResponseError</a></tt><tt class="py-op">(</tt><tt class="py-name">response</tt><tt class="py-op">.</tt><tt id="link-130" class="py-name"><a title="boto.mashups.server.Server.status
+boto.utils.ShellCommand.status" class="py-name" href="#" onclick="return doclink('link-130', 'status', 'link-59');">status</a></tt><tt class="py-op">,</tt> <tt class="py-name">response</tt><tt class="py-op">.</tt><tt class="py-name">reason</tt><tt class="py-op">,</tt> <tt class="py-name">body</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L289"></a><tt class="py-lineno">289</tt>  <tt class="py-line"> </tt>
+<a name="Bucket.get_xml_acl"></a><div id="Bucket.get_xml_acl-def"><a name="L290"></a><tt class="py-lineno">290</tt> <a class="py-toggle" href="#" id="Bucket.get_xml_acl-toggle" onclick="return toggle('Bucket.get_xml_acl');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.s3.bucket.Bucket-class.html#get_xml_acl">get_xml_acl</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">key_name</tt><tt class="py-op">=</tt><tt class="py-string">''</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Bucket.get_xml_acl-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Bucket.get_xml_acl-expanded"><a name="L291"></a><tt class="py-lineno">291</tt>  <tt class="py-line">        <tt class="py-name">response</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-131" class="py-name"><a title="boto.connection
+boto.ec2.connection
+boto.fps.connection
+boto.mturk.connection
+boto.s3.connection
+boto.sdb.connection
+boto.sqs.20070501.connection
+boto.sqs.connection" class="py-name" href="#" onclick="return doclink('link-131', 'connection', 'link-43');">connection</a></tt><tt class="py-op">.</tt><tt id="link-132" class="py-name"><a title="boto.connection.AWSAuthConnection.make_request
+boto.connection.AWSQueryConnection.make_request
+boto.s3.connection.S3Connection.make_request
+boto.sqs.20070501.connection.SQSConnection.make_request" class="py-name" href="#" onclick="return doclink('link-132', 'make_request', 'link-56');">make_request</a></tt><tt class="py-op">(</tt><tt class="py-string">'GET'</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-133" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-133', 'name', 'link-41');">name</a></tt><tt class="py-op">,</tt> <tt id="link-134" class="py-name"><a title="boto.mashups.server.Server.key_name" class="py-name" href="#" onclick="return doclink('link-134', 'key_name', 'link-48');">key_name</a></tt><tt class="py-op">,</tt> </tt>
+<a name="L292"></a><tt class="py-lineno">292</tt>  <tt class="py-line">                                                <tt class="py-name">query_args</tt><tt class="py-op">=</tt><tt class="py-string">'acl'</tt><tt class="py-op">)</tt> </tt>
+<a name="L293"></a><tt class="py-lineno">293</tt>  <tt class="py-line">        <tt class="py-name">body</tt> <tt class="py-op">=</tt> <tt class="py-name">response</tt><tt class="py-op">.</tt><tt id="link-135" class="py-name"><a title="boto.s3.key.Key.read
+boto.sqs.20070501.queue.Queue.read
+boto.sqs.queue.Queue.read" class="py-name" href="#" onclick="return doclink('link-135', 'read', 'link-60');">read</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L294"></a><tt class="py-lineno">294</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">response</tt><tt class="py-op">.</tt><tt id="link-136" class="py-name"><a title="boto.mashups.server.Server.status
+boto.utils.ShellCommand.status" class="py-name" href="#" onclick="return doclink('link-136', 'status', 'link-59');">status</a></tt> <tt class="py-op">!=</tt> <tt class="py-number">200</tt><tt class="py-op">:</tt> </tt>
+<a name="L295"></a><tt class="py-lineno">295</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-137" class="py-name"><a title="boto.exception.S3ResponseError" class="py-name" href="#" onclick="return doclink('link-137', 'S3ResponseError', 'link-27');">S3ResponseError</a></tt><tt class="py-op">(</tt><tt class="py-name">response</tt><tt class="py-op">.</tt><tt id="link-138" class="py-name"><a title="boto.mashups.server.Server.status
+boto.utils.ShellCommand.status" class="py-name" href="#" onclick="return doclink('link-138', 'status', 'link-59');">status</a></tt><tt class="py-op">,</tt> <tt class="py-name">response</tt><tt class="py-op">.</tt><tt class="py-name">reason</tt><tt class="py-op">,</tt> <tt class="py-name">body</tt><tt class="py-op">)</tt> </tt>
+<a name="L296"></a><tt class="py-lineno">296</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">body</tt> </tt>
+</div><a name="L297"></a><tt class="py-lineno">297</tt>  <tt class="py-line"> </tt>
+<a name="Bucket.set_xml_acl"></a><div id="Bucket.set_xml_acl-def"><a name="L298"></a><tt class="py-lineno">298</tt> <a class="py-toggle" href="#" id="Bucket.set_xml_acl-toggle" onclick="return toggle('Bucket.set_xml_acl');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.s3.bucket.Bucket-class.html#set_xml_acl">set_xml_acl</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">acl_str</tt><tt class="py-op">,</tt> <tt class="py-param">key_name</tt><tt class="py-op">=</tt><tt class="py-string">''</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Bucket.set_xml_acl-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Bucket.set_xml_acl-expanded"><a name="L299"></a><tt class="py-lineno">299</tt>  <tt class="py-line">        <tt class="py-name">response</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-139" class="py-name"><a title="boto.connection
+boto.ec2.connection
+boto.fps.connection
+boto.mturk.connection
+boto.s3.connection
+boto.sdb.connection
+boto.sqs.20070501.connection
+boto.sqs.connection" class="py-name" href="#" onclick="return doclink('link-139', 'connection', 'link-43');">connection</a></tt><tt class="py-op">.</tt><tt id="link-140" class="py-name"><a title="boto.connection.AWSAuthConnection.make_request
+boto.connection.AWSQueryConnection.make_request
+boto.s3.connection.S3Connection.make_request
+boto.sqs.20070501.connection.SQSConnection.make_request" class="py-name" href="#" onclick="return doclink('link-140', 'make_request', 'link-56');">make_request</a></tt><tt class="py-op">(</tt><tt class="py-string">'PUT'</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-141" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-141', 'name', 'link-41');">name</a></tt><tt class="py-op">,</tt> <tt id="link-142" class="py-name"><a title="boto.mashups.server.Server.key_name" class="py-name" href="#" onclick="return doclink('link-142', 'key_name', 'link-48');">key_name</a></tt><tt class="py-op">,</tt> </tt>
+<a name="L300"></a><tt class="py-lineno">300</tt>  <tt class="py-line">                <tt id="link-143" class="py-name" targets="Variable boto.mapreduce.partitiondb.Partition.data=boto.mapreduce.partitiondb.Partition-class.html#data"><a title="boto.mapreduce.partitiondb.Partition.data" class="py-name" href="#" onclick="return doclink('link-143', 'data', 'link-143');">data</a></tt><tt class="py-op">=</tt><tt class="py-name">acl_str</tt><tt class="py-op">,</tt> <tt class="py-name">query_args</tt><tt class="py-op">=</tt><tt class="py-string">'acl'</tt><tt class="py-op">)</tt> </tt>
+<a name="L301"></a><tt class="py-lineno">301</tt>  <tt class="py-line">        <tt class="py-name">body</tt> <tt class="py-op">=</tt> <tt class="py-name">response</tt><tt class="py-op">.</tt><tt id="link-144" class="py-name"><a title="boto.s3.key.Key.read
+boto.sqs.20070501.queue.Queue.read
+boto.sqs.queue.Queue.read" class="py-name" href="#" onclick="return doclink('link-144', 'read', 'link-60');">read</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L302"></a><tt class="py-lineno">302</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">response</tt><tt class="py-op">.</tt><tt id="link-145" class="py-name"><a title="boto.mashups.server.Server.status
+boto.utils.ShellCommand.status" class="py-name" href="#" onclick="return doclink('link-145', 'status', 'link-59');">status</a></tt> <tt class="py-op">!=</tt> <tt class="py-number">200</tt><tt class="py-op">:</tt> </tt>
+<a name="L303"></a><tt class="py-lineno">303</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-146" class="py-name"><a title="boto.exception.S3ResponseError" class="py-name" href="#" onclick="return doclink('link-146', 'S3ResponseError', 'link-27');">S3ResponseError</a></tt><tt class="py-op">(</tt><tt class="py-name">response</tt><tt class="py-op">.</tt><tt id="link-147" class="py-name"><a title="boto.mashups.server.Server.status
+boto.utils.ShellCommand.status" class="py-name" href="#" onclick="return doclink('link-147', 'status', 'link-59');">status</a></tt><tt class="py-op">,</tt> <tt class="py-name">response</tt><tt class="py-op">.</tt><tt class="py-name">reason</tt><tt class="py-op">,</tt> <tt class="py-name">body</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L304"></a><tt class="py-lineno">304</tt>  <tt class="py-line"> </tt>
+<a name="Bucket.set_acl"></a><div id="Bucket.set_acl-def"><a name="L305"></a><tt class="py-lineno">305</tt> <a class="py-toggle" href="#" id="Bucket.set_acl-toggle" onclick="return toggle('Bucket.set_acl');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.s3.bucket.Bucket-class.html#set_acl">set_acl</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">acl_or_str</tt><tt class="py-op">,</tt> <tt class="py-param">key_name</tt><tt class="py-op">=</tt><tt class="py-string">''</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Bucket.set_acl-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Bucket.set_acl-expanded"><a name="L306"></a><tt class="py-lineno">306</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">isinstance</tt><tt class="py-op">(</tt><tt class="py-name">acl_or_str</tt><tt class="py-op">,</tt> <tt id="link-148" class="py-name"><a title="boto.s3.acl.Policy" class="py-name" href="#" onclick="return doclink('link-148', 'Policy', 'link-9');">Policy</a></tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L307"></a><tt class="py-lineno">307</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-149" class="py-name" targets="Method boto.s3.bucket.Bucket.set_xml_acl()=boto.s3.bucket.Bucket-class.html#set_xml_acl,Method boto.s3.key.Key.set_xml_acl()=boto.s3.key.Key-class.html#set_xml_acl"><a title="boto.s3.bucket.Bucket.set_xml_acl
+boto.s3.key.Key.set_xml_acl" class="py-name" href="#" onclick="return doclink('link-149', 'set_xml_acl', 'link-149');">set_xml_acl</a></tt><tt class="py-op">(</tt><tt class="py-name">acl_or_str</tt><tt class="py-op">.</tt><tt id="link-150" class="py-name" targets="Method boto.cloudfront.distribution.DistributionConfig.to_xml()=boto.cloudfront.distribution.DistributionConfig-class.html#to_xml,Method boto.s3.acl.ACL.to_xml()=boto.s3.acl.ACL-class.html#to_xml,Method boto.s3.acl.Grant.to_xml()=boto.s3.acl.Grant-class.html#to_xml,Method boto.s3.acl.Policy.to_xml()=boto.s3.acl.Policy-class.html#to_xml,Method boto.s3.user.User.to_xml()=boto.s3.user.User-class.html#to_xml"><a title="boto.cloudfront.distribution.DistributionConfig.to_xml
+boto.s3.acl.ACL.to_xml
+boto.s3.acl.Grant.to_xml
+boto.s3.acl.Policy.to_xml
+boto.s3.user.User.to_xml" class="py-name" href="#" onclick="return doclink('link-150', 'to_xml', 'link-150');">to_xml</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt id="link-151" class="py-name"><a title="boto.mashups.server.Server.key_name" class="py-name" href="#" onclick="return doclink('link-151', 'key_name', 'link-48');">key_name</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L308"></a><tt class="py-lineno">308</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L309"></a><tt class="py-lineno">309</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-152" class="py-name" targets="Method boto.s3.bucket.Bucket.set_canned_acl()=boto.s3.bucket.Bucket-class.html#set_canned_acl"><a title="boto.s3.bucket.Bucket.set_canned_acl" class="py-name" href="#" onclick="return doclink('link-152', 'set_canned_acl', 'link-152');">set_canned_acl</a></tt><tt class="py-op">(</tt><tt class="py-name">acl_or_str</tt><tt class="py-op">,</tt> <tt id="link-153" class="py-name"><a title="boto.mashups.server.Server.key_name" class="py-name" href="#" onclick="return doclink('link-153', 'key_name', 'link-48');">key_name</a></tt><tt class="py-op">)</tt> </tt>
+</div><a name="L310"></a><tt class="py-lineno">310</tt>  <tt class="py-line"> </tt>
+<a name="Bucket.get_acl"></a><div id="Bucket.get_acl-def"><a name="L311"></a><tt class="py-lineno">311</tt> <a class="py-toggle" href="#" id="Bucket.get_acl-toggle" onclick="return toggle('Bucket.get_acl');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.s3.bucket.Bucket-class.html#get_acl">get_acl</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">key_name</tt><tt class="py-op">=</tt><tt class="py-string">''</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Bucket.get_acl-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Bucket.get_acl-expanded"><a name="L312"></a><tt class="py-lineno">312</tt>  <tt class="py-line">        <tt class="py-name">response</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-154" class="py-name"><a title="boto.connection
+boto.ec2.connection
+boto.fps.connection
+boto.mturk.connection
+boto.s3.connection
+boto.sdb.connection
+boto.sqs.20070501.connection
+boto.sqs.connection" class="py-name" href="#" onclick="return doclink('link-154', 'connection', 'link-43');">connection</a></tt><tt class="py-op">.</tt><tt id="link-155" class="py-name"><a title="boto.connection.AWSAuthConnection.make_request
+boto.connection.AWSQueryConnection.make_request
+boto.s3.connection.S3Connection.make_request
+boto.sqs.20070501.connection.SQSConnection.make_request" class="py-name" href="#" onclick="return doclink('link-155', 'make_request', 'link-56');">make_request</a></tt><tt class="py-op">(</tt><tt class="py-string">'GET'</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-156" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-156', 'name', 'link-41');">name</a></tt><tt class="py-op">,</tt> <tt id="link-157" class="py-name"><a title="boto.mashups.server.Server.key_name" class="py-name" href="#" onclick="return doclink('link-157', 'key_name', 'link-48');">key_name</a></tt><tt class="py-op">,</tt> </tt>
+<a name="L313"></a><tt class="py-lineno">313</tt>  <tt class="py-line">                <tt class="py-name">query_args</tt><tt class="py-op">=</tt><tt class="py-string">'acl'</tt><tt class="py-op">)</tt> </tt>
+<a name="L314"></a><tt class="py-lineno">314</tt>  <tt class="py-line">        <tt class="py-name">body</tt> <tt class="py-op">=</tt> <tt class="py-name">response</tt><tt class="py-op">.</tt><tt id="link-158" class="py-name"><a title="boto.s3.key.Key.read
+boto.sqs.20070501.queue.Queue.read
+boto.sqs.queue.Queue.read" class="py-name" href="#" onclick="return doclink('link-158', 'read', 'link-60');">read</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L315"></a><tt class="py-lineno">315</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">response</tt><tt class="py-op">.</tt><tt id="link-159" class="py-name"><a title="boto.mashups.server.Server.status
+boto.utils.ShellCommand.status" class="py-name" href="#" onclick="return doclink('link-159', 'status', 'link-59');">status</a></tt> <tt class="py-op">==</tt> <tt class="py-number">200</tt><tt class="py-op">:</tt> </tt>
+<a name="L316"></a><tt class="py-lineno">316</tt>  <tt class="py-line">            <tt class="py-name">policy</tt> <tt class="py-op">=</tt> <tt id="link-160" class="py-name"><a title="boto.s3.acl.Policy" class="py-name" href="#" onclick="return doclink('link-160', 'Policy', 'link-9');">Policy</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">)</tt> </tt>
+<a name="L317"></a><tt class="py-lineno">317</tt>  <tt class="py-line">            <tt class="py-name">h</tt> <tt class="py-op">=</tt> <tt id="link-161" class="py-name"><a title="boto.handler" class="py-name" href="#" onclick="return doclink('link-161', 'handler', 'link-2');">handler</a></tt><tt class="py-op">.</tt><tt id="link-162" class="py-name"><a title="boto.handler.XmlHandler" class="py-name" href="#" onclick="return doclink('link-162', 'XmlHandler', 'link-87');">XmlHandler</a></tt><tt class="py-op">(</tt><tt class="py-name">policy</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">)</tt> </tt>
+<a name="L318"></a><tt class="py-lineno">318</tt>  <tt class="py-line">            <tt class="py-name">xml</tt><tt class="py-op">.</tt><tt class="py-name">sax</tt><tt class="py-op">.</tt><tt class="py-name">parseString</tt><tt class="py-op">(</tt><tt class="py-name">body</tt><tt class="py-op">,</tt> <tt class="py-name">h</tt><tt class="py-op">)</tt> </tt>
+<a name="L319"></a><tt class="py-lineno">319</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt class="py-name">policy</tt> </tt>
+<a name="L320"></a><tt class="py-lineno">320</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L321"></a><tt class="py-lineno">321</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-163" class="py-name"><a title="boto.exception.S3ResponseError" class="py-name" href="#" onclick="return doclink('link-163', 'S3ResponseError', 'link-27');">S3ResponseError</a></tt><tt class="py-op">(</tt><tt class="py-name">response</tt><tt class="py-op">.</tt><tt id="link-164" class="py-name"><a title="boto.mashups.server.Server.status
+boto.utils.ShellCommand.status" class="py-name" href="#" onclick="return doclink('link-164', 'status', 'link-59');">status</a></tt><tt class="py-op">,</tt> <tt class="py-name">response</tt><tt class="py-op">.</tt><tt class="py-name">reason</tt><tt class="py-op">,</tt> <tt class="py-name">body</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L322"></a><tt class="py-lineno">322</tt>  <tt class="py-line"> </tt>
+<a name="Bucket.make_public"></a><div id="Bucket.make_public-def"><a name="L323"></a><tt class="py-lineno">323</tt> <a class="py-toggle" href="#" id="Bucket.make_public-toggle" onclick="return toggle('Bucket.make_public');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.s3.bucket.Bucket-class.html#make_public">make_public</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">recursive</tt><tt class="py-op">=</tt><tt class="py-name">False</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Bucket.make_public-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Bucket.make_public-expanded"><a name="L324"></a><tt class="py-lineno">324</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-165" class="py-name"><a title="boto.s3.bucket.Bucket.set_canned_acl" class="py-name" href="#" onclick="return doclink('link-165', 'set_canned_acl', 'link-152');">set_canned_acl</a></tt><tt class="py-op">(</tt><tt class="py-string">'public-read'</tt><tt class="py-op">)</tt> </tt>
+<a name="L325"></a><tt class="py-lineno">325</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">recursive</tt><tt class="py-op">:</tt> </tt>
+<a name="L326"></a><tt class="py-lineno">326</tt>  <tt class="py-line">            <tt class="py-keyword">for</tt> <tt id="link-166" class="py-name"><a title="boto.s3.key
+boto.sdb.db.key
+boto.sdb.db.model.Model.key
+boto.sdb.db.model.Model.key" class="py-name" href="#" onclick="return doclink('link-166', 'key', 'link-19');">key</a></tt> <tt class="py-keyword">in</tt> <tt class="py-name">self</tt><tt class="py-op">:</tt> </tt>
+<a name="L327"></a><tt class="py-lineno">327</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-167" class="py-name"><a title="boto.s3.bucket.Bucket.set_canned_acl" class="py-name" href="#" onclick="return doclink('link-167', 'set_canned_acl', 'link-152');">set_canned_acl</a></tt><tt class="py-op">(</tt><tt class="py-string">'public-read'</tt><tt class="py-op">,</tt> <tt id="link-168" class="py-name"><a title="boto.s3.key
+boto.sdb.db.key
+boto.sdb.db.model.Model.key
+boto.sdb.db.model.Model.key" class="py-name" href="#" onclick="return doclink('link-168', 'key', 'link-19');">key</a></tt><tt class="py-op">.</tt><tt id="link-169" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-169', 'name', 'link-41');">name</a></tt><tt class="py-op">)</tt> </tt>
+</div><a name="L328"></a><tt class="py-lineno">328</tt>  <tt class="py-line"> </tt>
+<a name="Bucket.add_email_grant"></a><div id="Bucket.add_email_grant-def"><a name="L329"></a><tt class="py-lineno">329</tt> <a class="py-toggle" href="#" id="Bucket.add_email_grant-toggle" onclick="return toggle('Bucket.add_email_grant');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.s3.bucket.Bucket-class.html#add_email_grant">add_email_grant</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">permission</tt><tt class="py-op">,</tt> <tt class="py-param">email_address</tt><tt class="py-op">,</tt> <tt class="py-param">recursive</tt><tt class="py-op">=</tt><tt class="py-name">False</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Bucket.add_email_grant-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Bucket.add_email_grant-expanded"><a name="L330"></a><tt class="py-lineno">330</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L331"></a><tt class="py-lineno">331</tt>  <tt class="py-line"><tt class="py-docstring">        Convenience method that provides a quick way to add an email grant to a bucket.</tt> </tt>
+<a name="L332"></a><tt class="py-lineno">332</tt>  <tt class="py-line"><tt class="py-docstring">        This method retrieves the current ACL, creates a new grant based on the parameters</tt> </tt>
+<a name="L333"></a><tt class="py-lineno">333</tt>  <tt class="py-line"><tt class="py-docstring">        passed in, adds that grant to the ACL and then PUT's the new ACL back to S3.</tt> </tt>
+<a name="L334"></a><tt class="py-lineno">334</tt>  <tt class="py-line"><tt class="py-docstring">        Inputs:</tt> </tt>
+<a name="L335"></a><tt class="py-lineno">335</tt>  <tt class="py-line"><tt class="py-docstring">            permission - The permission being granted.  Should be one of:</tt> </tt>
+<a name="L336"></a><tt class="py-lineno">336</tt>  <tt class="py-line"><tt class="py-docstring">                         READ|WRITE|READ_ACP|WRITE_ACP|FULL_CONTROL</tt> </tt>
+<a name="L337"></a><tt class="py-lineno">337</tt>  <tt class="py-line"><tt class="py-docstring">                         See http://docs.amazonwebservices.com/AmazonS3/2006-03-01/UsingAuthAccess.html</tt> </tt>
+<a name="L338"></a><tt class="py-lineno">338</tt>  <tt class="py-line"><tt class="py-docstring">                         for more details on permissions.</tt> </tt>
+<a name="L339"></a><tt class="py-lineno">339</tt>  <tt class="py-line"><tt class="py-docstring">            email_address - The email address associated with the AWS account your are granting</tt> </tt>
+<a name="L340"></a><tt class="py-lineno">340</tt>  <tt class="py-line"><tt class="py-docstring">                            the permission to.</tt> </tt>
+<a name="L341"></a><tt class="py-lineno">341</tt>  <tt class="py-line"><tt class="py-docstring">            recursive - A boolean value to controls whether the command will apply the</tt> </tt>
+<a name="L342"></a><tt class="py-lineno">342</tt>  <tt class="py-line"><tt class="py-docstring">                        grant to all keys within the bucket or not.  The default value is False.</tt> </tt>
+<a name="L343"></a><tt class="py-lineno">343</tt>  <tt class="py-line"><tt class="py-docstring">                        By passing a True value, the call will iterate through all keys in the</tt> </tt>
+<a name="L344"></a><tt class="py-lineno">344</tt>  <tt class="py-line"><tt class="py-docstring">                        bucket and apply the same grant to each key.</tt> </tt>
+<a name="L345"></a><tt class="py-lineno">345</tt>  <tt class="py-line"><tt class="py-docstring">                        CAUTION: If you have a lot of keys, this could take a long time!</tt> </tt>
+<a name="L346"></a><tt class="py-lineno">346</tt>  <tt class="py-line"><tt class="py-docstring">        Returns:</tt> </tt>
+<a name="L347"></a><tt class="py-lineno">347</tt>  <tt class="py-line"><tt class="py-docstring">            Nothing</tt> </tt>
+<a name="L348"></a><tt class="py-lineno">348</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L349"></a><tt class="py-lineno">349</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">permission</tt> <tt class="py-keyword">not</tt> <tt class="py-keyword">in</tt> <tt id="link-170" class="py-name"><a title="boto.s3.bucket.S3Permissions" class="py-name" href="#" onclick="return doclink('link-170', 'S3Permissions', 'link-36');">S3Permissions</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L350"></a><tt class="py-lineno">350</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-171" class="py-name"><a title="boto.exception.S3PermissionsError" class="py-name" href="#" onclick="return doclink('link-171', 'S3PermissionsError', 'link-28');">S3PermissionsError</a></tt><tt class="py-op">(</tt><tt class="py-string">'Unknown Permission: %s'</tt> <tt class="py-op">%</tt> <tt class="py-name">permission</tt><tt class="py-op">)</tt> </tt>
+<a name="L351"></a><tt class="py-lineno">351</tt>  <tt class="py-line">        <tt class="py-name">policy</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-172" class="py-name" targets="Method boto.s3.bucket.Bucket.get_acl()=boto.s3.bucket.Bucket-class.html#get_acl,Method boto.s3.key.Key.get_acl()=boto.s3.key.Key-class.html#get_acl"><a title="boto.s3.bucket.Bucket.get_acl
+boto.s3.key.Key.get_acl" class="py-name" href="#" onclick="return doclink('link-172', 'get_acl', 'link-172');">get_acl</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L352"></a><tt class="py-lineno">352</tt>  <tt class="py-line">        <tt class="py-name">policy</tt><tt class="py-op">.</tt><tt id="link-173" class="py-name"><a title="boto.s3.acl" class="py-name" href="#" onclick="return doclink('link-173', 'acl', 'link-8');">acl</a></tt><tt class="py-op">.</tt><tt id="link-174" class="py-name" targets="Method boto.s3.acl.ACL.add_email_grant()=boto.s3.acl.ACL-class.html#add_email_grant,Method boto.s3.bucket.Bucket.add_email_grant()=boto.s3.bucket.Bucket-class.html#add_email_grant,Method boto.s3.key.Key.add_email_grant()=boto.s3.key.Key-class.html#add_email_grant"><a title="boto.s3.acl.ACL.add_email_grant
+boto.s3.bucket.Bucket.add_email_grant
+boto.s3.key.Key.add_email_grant" class="py-name" href="#" onclick="return doclink('link-174', 'add_email_grant', 'link-174');">add_email_grant</a></tt><tt class="py-op">(</tt><tt class="py-name">permission</tt><tt class="py-op">,</tt> <tt class="py-name">email_address</tt><tt class="py-op">)</tt> </tt>
+<a name="L353"></a><tt class="py-lineno">353</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-175" class="py-name" targets="Method boto.s3.bucket.Bucket.set_acl()=boto.s3.bucket.Bucket-class.html#set_acl,Method boto.s3.key.Key.set_acl()=boto.s3.key.Key-class.html#set_acl"><a title="boto.s3.bucket.Bucket.set_acl
+boto.s3.key.Key.set_acl" class="py-name" href="#" onclick="return doclink('link-175', 'set_acl', 'link-175');">set_acl</a></tt><tt class="py-op">(</tt><tt class="py-name">policy</tt><tt class="py-op">)</tt> </tt>
+<a name="L354"></a><tt class="py-lineno">354</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">recursive</tt><tt class="py-op">:</tt> </tt>
+<a name="L355"></a><tt class="py-lineno">355</tt>  <tt class="py-line">            <tt class="py-keyword">for</tt> <tt id="link-176" class="py-name"><a title="boto.s3.key
+boto.sdb.db.key
+boto.sdb.db.model.Model.key
+boto.sdb.db.model.Model.key" class="py-name" href="#" onclick="return doclink('link-176', 'key', 'link-19');">key</a></tt> <tt class="py-keyword">in</tt> <tt class="py-name">self</tt><tt class="py-op">:</tt> </tt>
+<a name="L356"></a><tt class="py-lineno">356</tt>  <tt class="py-line">                <tt id="link-177" class="py-name"><a title="boto.s3.key
+boto.sdb.db.key
+boto.sdb.db.model.Model.key
+boto.sdb.db.model.Model.key" class="py-name" href="#" onclick="return doclink('link-177', 'key', 'link-19');">key</a></tt><tt class="py-op">.</tt><tt id="link-178" class="py-name"><a title="boto.s3.acl.ACL.add_email_grant
+boto.s3.bucket.Bucket.add_email_grant
+boto.s3.key.Key.add_email_grant" class="py-name" href="#" onclick="return doclink('link-178', 'add_email_grant', 'link-174');">add_email_grant</a></tt><tt class="py-op">(</tt><tt class="py-name">permission</tt><tt class="py-op">,</tt> <tt class="py-name">email_address</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L357"></a><tt class="py-lineno">357</tt>  <tt class="py-line"> </tt>
+<a name="Bucket.add_user_grant"></a><div id="Bucket.add_user_grant-def"><a name="L358"></a><tt class="py-lineno">358</tt> <a class="py-toggle" href="#" id="Bucket.add_user_grant-toggle" onclick="return toggle('Bucket.add_user_grant');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.s3.bucket.Bucket-class.html#add_user_grant">add_user_grant</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">permission</tt><tt class="py-op">,</tt> <tt class="py-param">user_id</tt><tt class="py-op">,</tt> <tt class="py-param">recursive</tt><tt class="py-op">=</tt><tt class="py-name">False</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Bucket.add_user_grant-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Bucket.add_user_grant-expanded"><a name="L359"></a><tt class="py-lineno">359</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L360"></a><tt class="py-lineno">360</tt>  <tt class="py-line"><tt class="py-docstring">        Convenience method that provides a quick way to add a canonical user grant to a bucket.</tt> </tt>
+<a name="L361"></a><tt class="py-lineno">361</tt>  <tt class="py-line"><tt class="py-docstring">        This method retrieves the current ACL, creates a new grant based on the parameters</tt> </tt>
+<a name="L362"></a><tt class="py-lineno">362</tt>  <tt class="py-line"><tt class="py-docstring">        passed in, adds that grant to the ACL and then PUT's the new ACL back to S3.</tt> </tt>
+<a name="L363"></a><tt class="py-lineno">363</tt>  <tt class="py-line"><tt class="py-docstring">        </tt> </tt>
+<a name="L364"></a><tt class="py-lineno">364</tt>  <tt class="py-line"><tt class="py-docstring">        @type permission: string</tt> </tt>
+<a name="L365"></a><tt class="py-lineno">365</tt>  <tt class="py-line"><tt class="py-docstring">        @param permission:  The permission being granted.  Should be one of:</tt> </tt>
+<a name="L366"></a><tt class="py-lineno">366</tt>  <tt class="py-line"><tt class="py-docstring">                            READ|WRITE|READ_ACP|WRITE_ACP|FULL_CONTROL</tt> </tt>
+<a name="L367"></a><tt class="py-lineno">367</tt>  <tt class="py-line"><tt class="py-docstring">                            See http://docs.amazonwebservices.com/AmazonS3/2006-03-01/UsingAuthAccess.html</tt> </tt>
+<a name="L368"></a><tt class="py-lineno">368</tt>  <tt class="py-line"><tt class="py-docstring">                            for more details on permissions.</tt> </tt>
+<a name="L369"></a><tt class="py-lineno">369</tt>  <tt class="py-line"><tt class="py-docstring">                            </tt> </tt>
+<a name="L370"></a><tt class="py-lineno">370</tt>  <tt class="py-line"><tt class="py-docstring">        @type user_id: string</tt> </tt>
+<a name="L371"></a><tt class="py-lineno">371</tt>  <tt class="py-line"><tt class="py-docstring">        @param user_id:     The canonical user id associated with the AWS account your are granting</tt> </tt>
+<a name="L372"></a><tt class="py-lineno">372</tt>  <tt class="py-line"><tt class="py-docstring">                            the permission to.</tt> </tt>
+<a name="L373"></a><tt class="py-lineno">373</tt>  <tt class="py-line"><tt class="py-docstring">                            </tt> </tt>
+<a name="L374"></a><tt class="py-lineno">374</tt>  <tt class="py-line"><tt class="py-docstring">        @type recursive: bool</tt> </tt>
+<a name="L375"></a><tt class="py-lineno">375</tt>  <tt class="py-line"><tt class="py-docstring">        @param recursive:   A boolean value that controls whether the command will apply the</tt> </tt>
+<a name="L376"></a><tt class="py-lineno">376</tt>  <tt class="py-line"><tt class="py-docstring">                            grant to all keys within the bucket or not.  The default value is False.</tt> </tt>
+<a name="L377"></a><tt class="py-lineno">377</tt>  <tt class="py-line"><tt class="py-docstring">                            By passing a True value, the call will iterate through all keys in the</tt> </tt>
+<a name="L378"></a><tt class="py-lineno">378</tt>  <tt class="py-line"><tt class="py-docstring">                            bucket and apply the same grant to each key.</tt> </tt>
+<a name="L379"></a><tt class="py-lineno">379</tt>  <tt class="py-line"><tt class="py-docstring">                            CAUTION: If you have a lot of keys, this could take a long time!</tt> </tt>
+<a name="L380"></a><tt class="py-lineno">380</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L381"></a><tt class="py-lineno">381</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">permission</tt> <tt class="py-keyword">not</tt> <tt class="py-keyword">in</tt> <tt id="link-179" class="py-name"><a title="boto.s3.bucket.S3Permissions" class="py-name" href="#" onclick="return doclink('link-179', 'S3Permissions', 'link-36');">S3Permissions</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L382"></a><tt class="py-lineno">382</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-180" class="py-name"><a title="boto.exception.S3PermissionsError" class="py-name" href="#" onclick="return doclink('link-180', 'S3PermissionsError', 'link-28');">S3PermissionsError</a></tt><tt class="py-op">(</tt><tt class="py-string">'Unknown Permission: %s'</tt> <tt class="py-op">%</tt> <tt class="py-name">permission</tt><tt class="py-op">)</tt> </tt>
+<a name="L383"></a><tt class="py-lineno">383</tt>  <tt class="py-line">        <tt class="py-name">policy</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-181" class="py-name"><a title="boto.s3.bucket.Bucket.get_acl
+boto.s3.key.Key.get_acl" class="py-name" href="#" onclick="return doclink('link-181', 'get_acl', 'link-172');">get_acl</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L384"></a><tt class="py-lineno">384</tt>  <tt class="py-line">        <tt class="py-name">policy</tt><tt class="py-op">.</tt><tt id="link-182" class="py-name"><a title="boto.s3.acl" class="py-name" href="#" onclick="return doclink('link-182', 'acl', 'link-8');">acl</a></tt><tt class="py-op">.</tt><tt id="link-183" class="py-name" targets="Method boto.s3.acl.ACL.add_user_grant()=boto.s3.acl.ACL-class.html#add_user_grant,Method boto.s3.bucket.Bucket.add_user_grant()=boto.s3.bucket.Bucket-class.html#add_user_grant,Method boto.s3.key.Key.add_user_grant()=boto.s3.key.Key-class.html#add_user_grant"><a title="boto.s3.acl.ACL.add_user_grant
+boto.s3.bucket.Bucket.add_user_grant
+boto.s3.key.Key.add_user_grant" class="py-name" href="#" onclick="return doclink('link-183', 'add_user_grant', 'link-183');">add_user_grant</a></tt><tt class="py-op">(</tt><tt class="py-name">permission</tt><tt class="py-op">,</tt> <tt class="py-name">user_id</tt><tt class="py-op">)</tt> </tt>
+<a name="L385"></a><tt class="py-lineno">385</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-184" class="py-name"><a title="boto.s3.bucket.Bucket.set_acl
+boto.s3.key.Key.set_acl" class="py-name" href="#" onclick="return doclink('link-184', 'set_acl', 'link-175');">set_acl</a></tt><tt class="py-op">(</tt><tt class="py-name">policy</tt><tt class="py-op">)</tt> </tt>
+<a name="L386"></a><tt class="py-lineno">386</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">recursive</tt><tt class="py-op">:</tt> </tt>
+<a name="L387"></a><tt class="py-lineno">387</tt>  <tt class="py-line">            <tt class="py-keyword">for</tt> <tt id="link-185" class="py-name"><a title="boto.s3.key
+boto.sdb.db.key
+boto.sdb.db.model.Model.key
+boto.sdb.db.model.Model.key" class="py-name" href="#" onclick="return doclink('link-185', 'key', 'link-19');">key</a></tt> <tt class="py-keyword">in</tt> <tt class="py-name">self</tt><tt class="py-op">:</tt> </tt>
+<a name="L388"></a><tt class="py-lineno">388</tt>  <tt class="py-line">                <tt id="link-186" class="py-name"><a title="boto.s3.key
+boto.sdb.db.key
+boto.sdb.db.model.Model.key
+boto.sdb.db.model.Model.key" class="py-name" href="#" onclick="return doclink('link-186', 'key', 'link-19');">key</a></tt><tt class="py-op">.</tt><tt id="link-187" class="py-name"><a title="boto.s3.acl.ACL.add_user_grant
+boto.s3.bucket.Bucket.add_user_grant
+boto.s3.key.Key.add_user_grant" class="py-name" href="#" onclick="return doclink('link-187', 'add_user_grant', 'link-183');">add_user_grant</a></tt><tt class="py-op">(</tt><tt class="py-name">permission</tt><tt class="py-op">,</tt> <tt class="py-name">user_id</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L389"></a><tt class="py-lineno">389</tt>  <tt class="py-line"> </tt>
+<a name="Bucket.list_grants"></a><div id="Bucket.list_grants-def"><a name="L390"></a><tt class="py-lineno">390</tt> <a class="py-toggle" href="#" id="Bucket.list_grants-toggle" onclick="return toggle('Bucket.list_grants');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.s3.bucket.Bucket-class.html#list_grants">list_grants</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Bucket.list_grants-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Bucket.list_grants-expanded"><a name="L391"></a><tt class="py-lineno">391</tt>  <tt class="py-line">        <tt class="py-name">policy</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-188" class="py-name"><a title="boto.s3.bucket.Bucket.get_acl
+boto.s3.key.Key.get_acl" class="py-name" href="#" onclick="return doclink('link-188', 'get_acl', 'link-172');">get_acl</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L392"></a><tt class="py-lineno">392</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">policy</tt><tt class="py-op">.</tt><tt id="link-189" class="py-name"><a title="boto.s3.acl" class="py-name" href="#" onclick="return doclink('link-189', 'acl', 'link-8');">acl</a></tt><tt class="py-op">.</tt><tt class="py-name">grants</tt> </tt>
+</div><a name="L393"></a><tt class="py-lineno">393</tt>  <tt class="py-line"> </tt>
+<a name="L394"></a><tt class="py-lineno">394</tt>  <tt class="py-line"><tt class="py-comment">#    def get_location(self):</tt> </tt>
+<a name="L395"></a><tt class="py-lineno">395</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment">#        location = _XmlInterpreter(</tt> </tt>
+<a name="L396"></a><tt class="py-lineno">396</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment">#                string_attrs={'LocationConstraint': 'location'})</tt> </tt>
+<a name="L397"></a><tt class="py-lineno">397</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment">#        body = self.connection.checked_request(location, self,</tt> </tt>
+<a name="L398"></a><tt class="py-lineno">398</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment">#                'GET', self.name, query_args='location').location</tt> </tt>
+<a name="L399"></a><tt class="py-lineno">399</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment">#        return parse_xml_string(body, location, self)</tt> </tt>
+<a name="L400"></a><tt class="py-lineno">400</tt>  <tt class="py-line"><tt class="py-comment"></tt> </tt>
+<a name="Bucket.enable_logging"></a><div id="Bucket.enable_logging-def"><a name="L401"></a><tt class="py-lineno">401</tt> <a class="py-toggle" href="#" id="Bucket.enable_logging-toggle" onclick="return toggle('Bucket.enable_logging');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.s3.bucket.Bucket-class.html#enable_logging">enable_logging</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">target_bucket</tt><tt class="py-op">,</tt> <tt class="py-param">target_prefix</tt><tt class="py-op">=</tt><tt class="py-string">''</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Bucket.enable_logging-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Bucket.enable_logging-expanded"><a name="L402"></a><tt class="py-lineno">402</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">isinstance</tt><tt class="py-op">(</tt><tt class="py-name">target_bucket</tt><tt class="py-op">,</tt> <tt id="link-190" class="py-name" targets="Class boto.s3.bucket.Bucket=boto.s3.bucket.Bucket-class.html"><a title="boto.s3.bucket.Bucket" class="py-name" href="#" onclick="return doclink('link-190', 'Bucket', 'link-190');">Bucket</a></tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L403"></a><tt class="py-lineno">403</tt>  <tt class="py-line">            <tt class="py-name">target_bucket</tt> <tt class="py-op">=</tt> <tt class="py-name">target_bucket</tt><tt class="py-op">.</tt><tt id="link-191" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-191', 'name', 'link-41');">name</a></tt> </tt>
+<a name="L404"></a><tt class="py-lineno">404</tt>  <tt class="py-line">        <tt class="py-name">body</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-192" class="py-name"><a title="boto.s3.bucket.Bucket.BucketLoggingBody" class="py-name" href="#" onclick="return doclink('link-192', 'BucketLoggingBody', 'link-37');">BucketLoggingBody</a></tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt class="py-name">target_bucket</tt><tt class="py-op">,</tt> <tt class="py-name">target_prefix</tt><tt class="py-op">)</tt> </tt>
+<a name="L405"></a><tt class="py-lineno">405</tt>  <tt class="py-line">        <tt class="py-name">response</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-193" class="py-name"><a title="boto.connection
+boto.ec2.connection
+boto.fps.connection
+boto.mturk.connection
+boto.s3.connection
+boto.sdb.connection
+boto.sqs.20070501.connection
+boto.sqs.connection" class="py-name" href="#" onclick="return doclink('link-193', 'connection', 'link-43');">connection</a></tt><tt class="py-op">.</tt><tt id="link-194" class="py-name"><a title="boto.connection.AWSAuthConnection.make_request
+boto.connection.AWSQueryConnection.make_request
+boto.s3.connection.S3Connection.make_request
+boto.sqs.20070501.connection.SQSConnection.make_request" class="py-name" href="#" onclick="return doclink('link-194', 'make_request', 'link-56');">make_request</a></tt><tt class="py-op">(</tt><tt class="py-string">'PUT'</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-195" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-195', 'name', 'link-41');">name</a></tt><tt class="py-op">,</tt> <tt id="link-196" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.data" class="py-name" href="#" onclick="return doclink('link-196', 'data', 'link-143');">data</a></tt><tt class="py-op">=</tt><tt class="py-name">body</tt><tt class="py-op">,</tt> </tt>
+<a name="L406"></a><tt class="py-lineno">406</tt>  <tt class="py-line">                <tt class="py-name">query_args</tt><tt class="py-op">=</tt><tt class="py-string">'logging'</tt><tt class="py-op">)</tt> </tt>
+<a name="L407"></a><tt class="py-lineno">407</tt>  <tt class="py-line">        <tt class="py-name">body</tt> <tt class="py-op">=</tt> <tt class="py-name">response</tt><tt class="py-op">.</tt><tt id="link-197" class="py-name"><a title="boto.s3.key.Key.read
+boto.sqs.20070501.queue.Queue.read
+boto.sqs.queue.Queue.read" class="py-name" href="#" onclick="return doclink('link-197', 'read', 'link-60');">read</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L408"></a><tt class="py-lineno">408</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">response</tt><tt class="py-op">.</tt><tt id="link-198" class="py-name"><a title="boto.mashups.server.Server.status
+boto.utils.ShellCommand.status" class="py-name" href="#" onclick="return doclink('link-198', 'status', 'link-59');">status</a></tt> <tt class="py-op">==</tt> <tt class="py-number">200</tt><tt class="py-op">:</tt> </tt>
+<a name="L409"></a><tt class="py-lineno">409</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt class="py-name">True</tt> </tt>
+<a name="L410"></a><tt class="py-lineno">410</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L411"></a><tt class="py-lineno">411</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-199" class="py-name"><a title="boto.exception.S3ResponseError" class="py-name" href="#" onclick="return doclink('link-199', 'S3ResponseError', 'link-27');">S3ResponseError</a></tt><tt class="py-op">(</tt><tt class="py-name">response</tt><tt class="py-op">.</tt><tt id="link-200" class="py-name"><a title="boto.mashups.server.Server.status
+boto.utils.ShellCommand.status" class="py-name" href="#" onclick="return doclink('link-200', 'status', 'link-59');">status</a></tt><tt class="py-op">,</tt> <tt class="py-name">response</tt><tt class="py-op">.</tt><tt class="py-name">reason</tt><tt class="py-op">,</tt> <tt class="py-name">body</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L412"></a><tt class="py-lineno">412</tt>  <tt class="py-line">         </tt>
+<a name="Bucket.disable_logging"></a><div id="Bucket.disable_logging-def"><a name="L413"></a><tt class="py-lineno">413</tt> <a class="py-toggle" href="#" id="Bucket.disable_logging-toggle" onclick="return toggle('Bucket.disable_logging');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.s3.bucket.Bucket-class.html#disable_logging">disable_logging</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Bucket.disable_logging-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Bucket.disable_logging-expanded"><a name="L414"></a><tt class="py-lineno">414</tt>  <tt class="py-line">        <tt class="py-name">body</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-201" class="py-name"><a title="boto.s3.bucket.Bucket.EmptyBucketLoggingBody" class="py-name" href="#" onclick="return doclink('link-201', 'EmptyBucketLoggingBody', 'link-38');">EmptyBucketLoggingBody</a></tt> </tt>
+<a name="L415"></a><tt class="py-lineno">415</tt>  <tt class="py-line">        <tt class="py-name">response</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-202" class="py-name"><a title="boto.connection
+boto.ec2.connection
+boto.fps.connection
+boto.mturk.connection
+boto.s3.connection
+boto.sdb.connection
+boto.sqs.20070501.connection
+boto.sqs.connection" class="py-name" href="#" onclick="return doclink('link-202', 'connection', 'link-43');">connection</a></tt><tt class="py-op">.</tt><tt id="link-203" class="py-name"><a title="boto.connection.AWSAuthConnection.make_request
+boto.connection.AWSQueryConnection.make_request
+boto.s3.connection.S3Connection.make_request
+boto.sqs.20070501.connection.SQSConnection.make_request" class="py-name" href="#" onclick="return doclink('link-203', 'make_request', 'link-56');">make_request</a></tt><tt class="py-op">(</tt><tt class="py-string">'PUT'</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-204" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-204', 'name', 'link-41');">name</a></tt><tt class="py-op">,</tt> <tt id="link-205" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.data" class="py-name" href="#" onclick="return doclink('link-205', 'data', 'link-143');">data</a></tt><tt class="py-op">=</tt><tt class="py-name">body</tt><tt class="py-op">,</tt> </tt>
+<a name="L416"></a><tt class="py-lineno">416</tt>  <tt class="py-line">                <tt class="py-name">query_args</tt><tt class="py-op">=</tt><tt class="py-string">'logging'</tt><tt class="py-op">)</tt> </tt>
+<a name="L417"></a><tt class="py-lineno">417</tt>  <tt class="py-line">        <tt class="py-name">body</tt> <tt class="py-op">=</tt> <tt class="py-name">response</tt><tt class="py-op">.</tt><tt id="link-206" class="py-name"><a title="boto.s3.key.Key.read
+boto.sqs.20070501.queue.Queue.read
+boto.sqs.queue.Queue.read" class="py-name" href="#" onclick="return doclink('link-206', 'read', 'link-60');">read</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L418"></a><tt class="py-lineno">418</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">response</tt><tt class="py-op">.</tt><tt id="link-207" class="py-name"><a title="boto.mashups.server.Server.status
+boto.utils.ShellCommand.status" class="py-name" href="#" onclick="return doclink('link-207', 'status', 'link-59');">status</a></tt> <tt class="py-op">==</tt> <tt class="py-number">200</tt><tt class="py-op">:</tt> </tt>
+<a name="L419"></a><tt class="py-lineno">419</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt class="py-name">True</tt> </tt>
+<a name="L420"></a><tt class="py-lineno">420</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L421"></a><tt class="py-lineno">421</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-208" class="py-name"><a title="boto.exception.S3ResponseError" class="py-name" href="#" onclick="return doclink('link-208', 'S3ResponseError', 'link-27');">S3ResponseError</a></tt><tt class="py-op">(</tt><tt class="py-name">response</tt><tt class="py-op">.</tt><tt id="link-209" class="py-name"><a title="boto.mashups.server.Server.status
+boto.utils.ShellCommand.status" class="py-name" href="#" onclick="return doclink('link-209', 'status', 'link-59');">status</a></tt><tt class="py-op">,</tt> <tt class="py-name">response</tt><tt class="py-op">.</tt><tt class="py-name">reason</tt><tt class="py-op">,</tt> <tt class="py-name">body</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L422"></a><tt class="py-lineno">422</tt>  <tt class="py-line"> </tt>
+<a name="Bucket.get_logging_status"></a><div id="Bucket.get_logging_status-def"><a name="L423"></a><tt class="py-lineno">423</tt> <a class="py-toggle" href="#" id="Bucket.get_logging_status-toggle" onclick="return toggle('Bucket.get_logging_status');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.s3.bucket.Bucket-class.html#get_logging_status">get_logging_status</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Bucket.get_logging_status-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Bucket.get_logging_status-expanded"><a name="L424"></a><tt class="py-lineno">424</tt>  <tt class="py-line">        <tt class="py-name">response</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-210" class="py-name"><a title="boto.connection
+boto.ec2.connection
+boto.fps.connection
+boto.mturk.connection
+boto.s3.connection
+boto.sdb.connection
+boto.sqs.20070501.connection
+boto.sqs.connection" class="py-name" href="#" onclick="return doclink('link-210', 'connection', 'link-43');">connection</a></tt><tt class="py-op">.</tt><tt id="link-211" class="py-name"><a title="boto.connection.AWSAuthConnection.make_request
+boto.connection.AWSQueryConnection.make_request
+boto.s3.connection.S3Connection.make_request
+boto.sqs.20070501.connection.SQSConnection.make_request" class="py-name" href="#" onclick="return doclink('link-211', 'make_request', 'link-56');">make_request</a></tt><tt class="py-op">(</tt><tt class="py-string">'GET'</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-212" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-212', 'name', 'link-41');">name</a></tt><tt class="py-op">,</tt> </tt>
+<a name="L425"></a><tt class="py-lineno">425</tt>  <tt class="py-line">                <tt class="py-name">query_args</tt><tt class="py-op">=</tt><tt class="py-string">'logging'</tt><tt class="py-op">)</tt> </tt>
+<a name="L426"></a><tt class="py-lineno">426</tt>  <tt class="py-line">        <tt class="py-name">body</tt> <tt class="py-op">=</tt> <tt class="py-name">response</tt><tt class="py-op">.</tt><tt id="link-213" class="py-name"><a title="boto.s3.key.Key.read
+boto.sqs.20070501.queue.Queue.read
+boto.sqs.queue.Queue.read" class="py-name" href="#" onclick="return doclink('link-213', 'read', 'link-60');">read</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L427"></a><tt class="py-lineno">427</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">response</tt><tt class="py-op">.</tt><tt id="link-214" class="py-name"><a title="boto.mashups.server.Server.status
+boto.utils.ShellCommand.status" class="py-name" href="#" onclick="return doclink('link-214', 'status', 'link-59');">status</a></tt> <tt class="py-op">==</tt> <tt class="py-number">200</tt><tt class="py-op">:</tt> </tt>
+<a name="L428"></a><tt class="py-lineno">428</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt class="py-name">body</tt> </tt>
+<a name="L429"></a><tt class="py-lineno">429</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L430"></a><tt class="py-lineno">430</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-215" class="py-name"><a title="boto.exception.S3ResponseError" class="py-name" href="#" onclick="return doclink('link-215', 'S3ResponseError', 'link-27');">S3ResponseError</a></tt><tt class="py-op">(</tt><tt class="py-name">response</tt><tt class="py-op">.</tt><tt id="link-216" class="py-name"><a title="boto.mashups.server.Server.status
+boto.utils.ShellCommand.status" class="py-name" href="#" onclick="return doclink('link-216', 'status', 'link-59');">status</a></tt><tt class="py-op">,</tt> <tt class="py-name">response</tt><tt class="py-op">.</tt><tt class="py-name">reason</tt><tt class="py-op">,</tt> <tt class="py-name">body</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L431"></a><tt class="py-lineno">431</tt>  <tt class="py-line"> </tt>
+<a name="Bucket.set_as_logging_target"></a><div id="Bucket.set_as_logging_target-def"><a name="L432"></a><tt class="py-lineno">432</tt> <a class="py-toggle" href="#" id="Bucket.set_as_logging_target-toggle" onclick="return toggle('Bucket.set_as_logging_target');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.s3.bucket.Bucket-class.html#set_as_logging_target">set_as_logging_target</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Bucket.set_as_logging_target-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Bucket.set_as_logging_target-expanded"><a name="L433"></a><tt class="py-lineno">433</tt>  <tt class="py-line">        <tt class="py-name">policy</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-217" class="py-name"><a title="boto.s3.bucket.Bucket.get_acl
+boto.s3.key.Key.get_acl" class="py-name" href="#" onclick="return doclink('link-217', 'get_acl', 'link-172');">get_acl</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L434"></a><tt class="py-lineno">434</tt>  <tt class="py-line">        <tt class="py-name">g1</tt> <tt class="py-op">=</tt> <tt id="link-218" class="py-name"><a title="boto.s3.acl.Grant" class="py-name" href="#" onclick="return doclink('link-218', 'Grant', 'link-12');">Grant</a></tt><tt class="py-op">(</tt><tt class="py-name">permission</tt><tt class="py-op">=</tt><tt class="py-string">'WRITE'</tt><tt class="py-op">,</tt> <tt class="py-name">type</tt><tt class="py-op">=</tt><tt class="py-string">'Group'</tt><tt class="py-op">,</tt> <tt class="py-name">uri</tt><tt class="py-op">=</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-219" class="py-name"><a title="boto.s3.bucket.Bucket.LoggingGroup" class="py-name" href="#" onclick="return doclink('link-219', 'LoggingGroup', 'link-39');">LoggingGroup</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L435"></a><tt class="py-lineno">435</tt>  <tt class="py-line">        <tt class="py-name">g2</tt> <tt class="py-op">=</tt> <tt id="link-220" class="py-name"><a title="boto.s3.acl.Grant" class="py-name" href="#" onclick="return doclink('link-220', 'Grant', 'link-12');">Grant</a></tt><tt class="py-op">(</tt><tt class="py-name">permission</tt><tt class="py-op">=</tt><tt class="py-string">'READ_ACP'</tt><tt class="py-op">,</tt> <tt class="py-name">type</tt><tt class="py-op">=</tt><tt class="py-string">'Group'</tt><tt class="py-op">,</tt> <tt class="py-name">uri</tt><tt class="py-op">=</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-221" class="py-name"><a title="boto.s3.bucket.Bucket.LoggingGroup" class="py-name" href="#" onclick="return doclink('link-221', 'LoggingGroup', 'link-39');">LoggingGroup</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L436"></a><tt class="py-lineno">436</tt>  <tt class="py-line">        <tt class="py-name">policy</tt><tt class="py-op">.</tt><tt id="link-222" class="py-name"><a title="boto.s3.acl" class="py-name" href="#" onclick="return doclink('link-222', 'acl', 'link-8');">acl</a></tt><tt class="py-op">.</tt><tt id="link-223" class="py-name" targets="Method boto.ec2.securitygroup.IPPermissions.add_grant()=boto.ec2.securitygroup.IPPermissions-class.html#add_grant,Method boto.s3.acl.ACL.add_grant()=boto.s3.acl.ACL-class.html#add_grant,Method boto.sqs.20070501.connection.SQSConnection.add_grant()=boto.sqs.20070501.connection.SQSConnection-class.html#add_grant,Method boto.sqs.20070501.connection.SQSQueryConnection.add_grant()=boto.sqs.20070501.connection.SQSQueryConnection-class.html#add_grant,Method boto.sqs.20070501.queue.Queue.add_grant()=boto.sqs.20070501.queue.Queue-class.html#add_grant"><a title="boto.ec2.securitygroup.IPPermissions.add_grant
+boto.s3.acl.ACL.add_grant
+boto.sqs.20070501.connection.SQSConnection.add_grant
+boto.sqs.20070501.connection.SQSQueryConnection.add_grant
+boto.sqs.20070501.queue.Queue.add_grant" class="py-name" href="#" onclick="return doclink('link-223', 'add_grant', 'link-223');">add_grant</a></tt><tt class="py-op">(</tt><tt class="py-name">g1</tt><tt class="py-op">)</tt> </tt>
+<a name="L437"></a><tt class="py-lineno">437</tt>  <tt class="py-line">        <tt class="py-name">policy</tt><tt class="py-op">.</tt><tt id="link-224" class="py-name"><a title="boto.s3.acl" class="py-name" href="#" onclick="return doclink('link-224', 'acl', 'link-8');">acl</a></tt><tt class="py-op">.</tt><tt id="link-225" class="py-name"><a title="boto.ec2.securitygroup.IPPermissions.add_grant
+boto.s3.acl.ACL.add_grant
+boto.sqs.20070501.connection.SQSConnection.add_grant
+boto.sqs.20070501.connection.SQSQueryConnection.add_grant
+boto.sqs.20070501.queue.Queue.add_grant" class="py-name" href="#" onclick="return doclink('link-225', 'add_grant', 'link-223');">add_grant</a></tt><tt class="py-op">(</tt><tt class="py-name">g2</tt><tt class="py-op">)</tt> </tt>
+<a name="L438"></a><tt class="py-lineno">438</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-226" class="py-name"><a title="boto.s3.bucket.Bucket.set_acl
+boto.s3.key.Key.set_acl" class="py-name" href="#" onclick="return doclink('link-226', 'set_acl', 'link-175');">set_acl</a></tt><tt class="py-op">(</tt><tt class="py-name">policy</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L439"></a><tt class="py-lineno">439</tt>  <tt class="py-line"> </tt>
+<a name="Bucket.delete"></a><div id="Bucket.delete-def"><a name="L440"></a><tt class="py-lineno">440</tt> <a class="py-toggle" href="#" id="Bucket.delete-toggle" onclick="return toggle('Bucket.delete');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.s3.bucket.Bucket-class.html#delete">delete</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Bucket.delete-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Bucket.delete-expanded"><a name="L441"></a><tt class="py-lineno">441</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-227" class="py-name"><a title="boto.connection
+boto.ec2.connection
+boto.fps.connection
+boto.mturk.connection
+boto.s3.connection
+boto.sdb.connection
+boto.sqs.20070501.connection
+boto.sqs.connection" class="py-name" href="#" onclick="return doclink('link-227', 'connection', 'link-43');">connection</a></tt><tt class="py-op">.</tt><tt id="link-228" class="py-name" targets="Method boto.s3.connection.S3Connection.delete_bucket()=boto.s3.connection.S3Connection-class.html#delete_bucket"><a title="boto.s3.connection.S3Connection.delete_bucket" class="py-name" href="#" onclick="return doclink('link-228', 'delete_bucket', 'link-228');">delete_bucket</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-229" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-229', 'name', 'link-41');">name</a></tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L442"></a><tt class="py-lineno">442</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="boto-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0beta1 on Fri Feb 20 11:45:20 2009
+    </td>
+    <td align="right" class="footer">
+      <a href="http://epydoc.sourceforge.net">http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie()
+  // -->
+</script>
+  
+</body>
+</html>

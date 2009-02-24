@@ -1,0 +1,625 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>boto.s3.connection.S3Connection</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="boto-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="boto-module.html">Package&nbsp;boto</a> ::
+        <a href="boto.s3-module.html">Package&nbsp;s3</a> ::
+        <a href="boto.s3.connection-module.html">Module&nbsp;connection</a> ::
+        Class&nbsp;S3Connection
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="boto.s3.connection.S3Connection-class.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class S3Connection</h1><span class="codelink"><a href="boto.s3.connection-pysrc.html#S3Connection">source&nbsp;code</a></span><br /><br />
+<pre class="base-tree">
+<a href="boto.connection.AWSAuthConnection-class.html">connection.AWSAuthConnection</a> --+
+                               |
+                              <strong class="uidshort">S3Connection</strong>
+</pre>
+
+<hr />
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Instance Methods</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-InstanceMethods"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="boto.s3.connection.S3Connection-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">aws_access_key_id</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">aws_secret_access_key</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">is_secure</span>=<span class="summary-sig-default">True</span>,
+        <span class="summary-sig-arg">port</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">proxy</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">proxy_port</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">host</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">s3.amazonaws.com</code><code class="variable-quote">'</code></span>,
+        <span class="summary-sig-arg">debug</span>=<span class="summary-sig-default">0</span>,
+        <span class="summary-sig-arg">https_connection_factory</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">calling_format</span>=<span class="summary-sig-default">SubdomainCallingFormat()</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="boto.s3.connection-pysrc.html#S3Connection.__init__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__iter__"></a><span class="summary-sig-name">__iter__</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="boto.s3.connection-pysrc.html#S3Connection.__iter__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__contains__"></a><span class="summary-sig-name">__contains__</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">bucket_name</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="boto.s3.connection-pysrc.html#S3Connection.__contains__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="build_post_policy"></a><span class="summary-sig-name">build_post_policy</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">expiration_time</span>,
+        <span class="summary-sig-arg">conditions</span>)</span><br />
+      Taken from the AWS book Python examples and modified for use with 
+      boto</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="boto.s3.connection-pysrc.html#S3Connection.build_post_policy">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">dict</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="boto.s3.connection.S3Connection-class.html#build_post_form_args" class="summary-sig-name">build_post_form_args</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">bucket_name</span>,
+        <span class="summary-sig-arg">key</span>,
+        <span class="summary-sig-arg">expires_in</span>=<span class="summary-sig-default">6000</span>,
+        <span class="summary-sig-arg">acl</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">success_action_redirect</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">max_content_length</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">http_method</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">http</code><code class="variable-quote">'</code></span>)</span><br />
+      Taken from the AWS book Python examples and modified for use with 
+      boto This only returns the arguments required for the post form, not 
+      the actual form This does not return the file input field which also 
+      needs to be added</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="boto.s3.connection-pysrc.html#S3Connection.build_post_form_args">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="generate_url"></a><span class="summary-sig-name">generate_url</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">expires_in</span>,
+        <span class="summary-sig-arg">method</span>,
+        <span class="summary-sig-arg">bucket</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string"></code><code class="variable-quote">'</code></span>,
+        <span class="summary-sig-arg">key</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string"></code><code class="variable-quote">'</code></span>,
+        <span class="summary-sig-arg">headers</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">query_auth</span>=<span class="summary-sig-default">True</span>,
+        <span class="summary-sig-arg">force_http</span>=<span class="summary-sig-default">True</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="boto.s3.connection-pysrc.html#S3Connection.generate_url">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_all_buckets"></a><span class="summary-sig-name">get_all_buckets</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="boto.s3.connection-pysrc.html#S3Connection.get_all_buckets">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">string</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="boto.s3.connection.S3Connection-class.html#get_canonical_user_id" class="summary-sig-name">get_canonical_user_id</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Convenience method that returns the &quot;CanonicalUserID&quot; of
+      the user who's credentials are associated with the connection.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="boto.s3.connection-pysrc.html#S3Connection.get_canonical_user_id">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_bucket"></a><span class="summary-sig-name">get_bucket</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">bucket_name</span>,
+        <span class="summary-sig-arg">validate</span>=<span class="summary-sig-default">True</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="boto.s3.connection-pysrc.html#S3Connection.get_bucket">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="lookup"></a><span class="summary-sig-name">lookup</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">bucket_name</span>,
+        <span class="summary-sig-arg">validate</span>=<span class="summary-sig-default">True</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="boto.s3.connection-pysrc.html#S3Connection.lookup">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="boto.s3.connection.S3Connection-class.html#create_bucket" class="summary-sig-name">create_bucket</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">bucket_name</span>,
+        <span class="summary-sig-arg">headers</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">location</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string"></code><code class="variable-quote">'</code></span>,
+        <span class="summary-sig-arg">policy</span>=<span class="summary-sig-default">None</span>)</span><br />
+      Creates a new located bucket.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="boto.s3.connection-pysrc.html#S3Connection.create_bucket">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="delete_bucket"></a><span class="summary-sig-name">delete_bucket</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">bucket</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="boto.s3.connection-pysrc.html#S3Connection.delete_bucket">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="boto.s3.connection.S3Connection-class.html#make_request" class="summary-sig-name">make_request</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">method</span>,
+        <span class="summary-sig-arg">bucket</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string"></code><code class="variable-quote">'</code></span>,
+        <span class="summary-sig-arg">key</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string"></code><code class="variable-quote">'</code></span>,
+        <span class="summary-sig-arg">headers</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">data</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string"></code><code class="variable-quote">'</code></span>,
+        <span class="summary-sig-arg">query_args</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">sender</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="boto.s3.connection-pysrc.html#S3Connection.make_request">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="boto.connection.AWSAuthConnection-class.html">connection.AWSAuthConnection</a></code></b>:
+      <code><a href="boto.connection.AWSAuthConnection-class.html#add_aws_auth_header">add_aws_auth_header</a></code>,
+      <code><a href="boto.connection.AWSAuthConnection-class.html#get_http_connection">get_http_connection</a></code>,
+      <code><a href="boto.connection.AWSAuthConnection-class.html#get_proxy_auth_header">get_proxy_auth_header</a></code>,
+      <code><a href="boto.connection.AWSAuthConnection-class.html#handle_proxy">handle_proxy</a></code>,
+      <code><a href="boto.connection.AWSAuthConnection-class.html#prefix_proxy_to_path">prefix_proxy_to_path</a></code>,
+      <code><a href="boto.connection.AWSAuthConnection-class.html#refresh_http_connection">refresh_http_connection</a></code>
+      </p>
+    <div class="private">    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="boto.connection.AWSAuthConnection-class.html">connection.AWSAuthConnection</a></code></b> (private):
+      <code><a href="boto.connection.AWSAuthConnection-class.html#_mexe">_mexe</a></code>
+      </p></div>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS VARIABLES ==================== -->
+<a name="section-ClassVariables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Class Variables</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-ClassVariables"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="DefaultHost"></a><span class="summary-name">DefaultHost</span> = <code title="'s3.amazonaws.com'"><code class="variable-quote">'</code><code class="variable-string">s3.amazonaws.com</code><code class="variable-quote">'</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="QueryString"></a><span class="summary-name">QueryString</span> = <code title="'Signature=%s&amp;Expires=%d&amp;AWSAccessKeyId=%s'"><code class="variable-quote">'</code><code class="variable-string">Signature=%s&amp;Expires=%d&amp;AWSAccessKeyId=%s</code><code class="variable-quote">'</code></code>
+    </td>
+  </tr>
+</table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Method Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-MethodDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="__init__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">aws_access_key_id</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">aws_secret_access_key</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">is_secure</span>=<span class="sig-default">True</span>,
+        <span class="sig-arg">port</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">proxy</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">proxy_port</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">host</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string">s3.amazonaws.com</code><code class="variable-quote">'</code></span>,
+        <span class="sig-arg">debug</span>=<span class="sig-default">0</span>,
+        <span class="sig-arg">https_connection_factory</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">calling_format</span>=<span class="sig-default">SubdomainCallingFormat()</span>)</span>
+    <br /><em class="fname">(Constructor)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="boto.s3.connection-pysrc.html#S3Connection.__init__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </table>
+  
+  
+  <dl class="fields">
+    <dt>Overrides:
+      <a href="boto.connection.AWSAuthConnection-class.html#__init__">connection.AWSAuthConnection.__init__</a>
+        <dd><em class="note">(inherited documentation)</em></dd>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="build_post_form_args"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">build_post_form_args</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">bucket_name</span>,
+        <span class="sig-arg">key</span>,
+        <span class="sig-arg">expires_in</span>=<span class="sig-default">6000</span>,
+        <span class="sig-arg">acl</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">success_action_redirect</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">max_content_length</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">http_method</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string">http</code><code class="variable-quote">'</code></span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="boto.s3.connection-pysrc.html#S3Connection.build_post_form_args">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </table>
+  
+  Taken from the AWS book Python examples and modified for use with boto
+  This only returns the arguments required for the post form, not the 
+  actual form This does not return the file input field which also needs to
+  be added
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>bucket_name</code></strong> - Bucket to submit to</li>
+        <li><strong class="pname"><code>key</code></strong> - Key name, optionally add ${filename} to the end to attach the 
+          submitted filename</li>
+        <li><strong class="pname"><code>expires_in</code></strong> - Time (in seconds) before this expires, defaults to 6000</li>
+        <li><strong class="pname"><code>acl</code></strong> - ACL rule to use, if any</li>
+        <li><strong class="pname"><code>success_action_redirect</code></strong> - URL to redirect to on success</li>
+        <li><strong class="pname"><code>max_content_length</code></strong> - Maximum size for this file</li>
+        <li><strong class="pname"><code>http_method</code></strong> - HTTP Method to use, &quot;http&quot; or &quot;https&quot;</li>
+    </ul></dd>
+    <dt>Returns: dict</dt>
+        <dd>{&quot;action&quot;: action_url_to_post_to, 
+          &quot;fields&quot;: [ {&quot;name&quot;: field_name, 
+          &quot;value&quot;:  field_value}, {&quot;name&quot;: field_name2,
+          &quot;value&quot;: field_value2} ] }</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="get_canonical_user_id"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_canonical_user_id</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="boto.s3.connection-pysrc.html#S3Connection.get_canonical_user_id">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </table>
+  
+  Convenience method that returns the &quot;CanonicalUserID&quot; of the
+  user who's credentials are associated with the connection.  The only way 
+  to get this value is to do a GET request on the service which returns all
+  buckets associated with the account.  As part of that response, the 
+  canonical userid is returned.  This method simply does all of that and 
+  then returns just the user id.
+  <dl class="fields">
+    <dt>Returns: string</dt>
+        <dd>A string containing the canonical user id.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="create_bucket"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">create_bucket</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">bucket_name</span>,
+        <span class="sig-arg">headers</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">location</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string"></code><code class="variable-quote">'</code></span>,
+        <span class="sig-arg">policy</span>=<span class="sig-default">None</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="boto.s3.connection-pysrc.html#S3Connection.create_bucket">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </table>
+  
+  Creates a new located bucket. By default it's in the USA. You can pass
+  Location.EU to create an European bucket.
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>bucket_name</code></strong> (string) - The name of the new bucket</li>
+        <li><strong class="pname"><code>headers</code></strong> (dict) - Additional headers to pass along with the request to AWS.</li>
+        <li><strong class="pname"><code>location</code></strong> (<a href="boto.s3.connection.Location-class.html" 
+          class="link">Location</a>) - The location of the new bucket</li>
+        <li><strong class="pname"><code>policy</code></strong> (<a href="boto.s3.acl-module.html#CannedACLStrings" 
+          class="link">CannedACLString</a>) - A canned ACL policy that will be applied to the new key in 
+          S3.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="make_request"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">make_request</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">method</span>,
+        <span class="sig-arg">bucket</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string"></code><code class="variable-quote">'</code></span>,
+        <span class="sig-arg">key</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string"></code><code class="variable-quote">'</code></span>,
+        <span class="sig-arg">headers</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">data</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string"></code><code class="variable-quote">'</code></span>,
+        <span class="sig-arg">query_args</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">sender</span>=<span class="sig-default">None</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="boto.s3.connection-pysrc.html#S3Connection.make_request">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </table>
+  
+  
+  <dl class="fields">
+    <dt>Overrides:
+      <a href="boto.connection.AWSAuthConnection-class.html#make_request">connection.AWSAuthConnection.make_request</a>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="boto-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0beta1 on Fri Feb 20 11:45:19 2009
+    </td>
+    <td align="right" class="footer">
+      <a href="http://epydoc.sourceforge.net">http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie()
+  // -->
+</script>
+  
+</body>
+</html>

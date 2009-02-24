@@ -1,0 +1,429 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>boto.tests.test_s3connection</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="boto-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="boto-module.html">Package&nbsp;boto</a> ::
+        <a href="boto.tests-module.html">Package&nbsp;tests</a> ::
+        Module&nbsp;test_s3connection
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="boto.tests.test_s3connection-pysrc.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="boto.tests.test_s3connection-module.html">Module boto.tests.test_s3connection</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno">  1</tt>  <tt class="py-line"><tt class="py-comment">#!/usr/bin/env python</tt> </tt>
+<a name="L2"></a><tt class="py-lineno">  2</tt>  <tt class="py-line"><tt class="py-comment"></tt> </tt>
+<a name="L3"></a><tt class="py-lineno">  3</tt>  <tt class="py-line"><tt class="py-comment"># Copyright (c) 2006,2007 Mitch Garnaat http://garnaat.org/</tt> </tt>
+<a name="L4"></a><tt class="py-lineno">  4</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment">#</tt> </tt>
+<a name="L5"></a><tt class="py-lineno">  5</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># Permission is hereby granted, free of charge, to any person obtaining a</tt> </tt>
+<a name="L6"></a><tt class="py-lineno">  6</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># copy of this software and associated documentation files (the</tt> </tt>
+<a name="L7"></a><tt class="py-lineno">  7</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># "Software"), to deal in the Software without restriction, including</tt> </tt>
+<a name="L8"></a><tt class="py-lineno">  8</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># without limitation the rights to use, copy, modify, merge, publish, dis-</tt> </tt>
+<a name="L9"></a><tt class="py-lineno">  9</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># tribute, sublicense, and/or sell copies of the Software, and to permit</tt> </tt>
+<a name="L10"></a><tt class="py-lineno"> 10</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># persons to whom the Software is furnished to do so, subject to the fol-</tt> </tt>
+<a name="L11"></a><tt class="py-lineno"> 11</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># lowing conditions:</tt> </tt>
+<a name="L12"></a><tt class="py-lineno"> 12</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment">#</tt> </tt>
+<a name="L13"></a><tt class="py-lineno"> 13</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># The above copyright notice and this permission notice shall be included</tt> </tt>
+<a name="L14"></a><tt class="py-lineno"> 14</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># in all copies or substantial portions of the Software.</tt> </tt>
+<a name="L15"></a><tt class="py-lineno"> 15</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment">#</tt> </tt>
+<a name="L16"></a><tt class="py-lineno"> 16</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS</tt> </tt>
+<a name="L17"></a><tt class="py-lineno"> 17</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABIL-</tt> </tt>
+<a name="L18"></a><tt class="py-lineno"> 18</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># ITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT</tt> </tt>
+<a name="L19"></a><tt class="py-lineno"> 19</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># SHALL THE AUTHOR BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, </tt> </tt>
+<a name="L20"></a><tt class="py-lineno"> 20</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</tt> </tt>
+<a name="L21"></a><tt class="py-lineno"> 21</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS</tt> </tt>
+<a name="L22"></a><tt class="py-lineno"> 22</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># IN THE SOFTWARE.</tt> </tt>
+<a name="L23"></a><tt class="py-lineno"> 23</tt>  <tt class="py-line"><tt class="py-comment"></tt> </tt>
+<a name="L24"></a><tt class="py-lineno"> 24</tt>  <tt class="py-line"><tt class="py-docstring">"""</tt> </tt>
+<a name="L25"></a><tt class="py-lineno"> 25</tt>  <tt class="py-line"><tt class="py-docstring">Some unit tests for the S3Connection</tt> </tt>
+<a name="L26"></a><tt class="py-lineno"> 26</tt>  <tt class="py-line"><tt class="py-docstring">"""</tt> </tt>
+<a name="L27"></a><tt class="py-lineno"> 27</tt>  <tt class="py-line"> </tt>
+<a name="L28"></a><tt class="py-lineno"> 28</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">unittest</tt> </tt>
+<a name="L29"></a><tt class="py-lineno"> 29</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">time</tt> </tt>
+<a name="L30"></a><tt class="py-lineno"> 30</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">os</tt> </tt>
+<a name="L31"></a><tt class="py-lineno"> 31</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-0" class="py-name" targets="Package boto=boto-module.html"><a title="boto" class="py-name" href="#" onclick="return doclink('link-0', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-1" class="py-name" targets="Package boto.s3=boto.s3-module.html"><a title="boto.s3" class="py-name" href="#" onclick="return doclink('link-1', 's3', 'link-1');">s3</a></tt><tt class="py-op">.</tt><tt id="link-2" class="py-name" targets="Module boto.connection=boto.connection-module.html,Module boto.ec2.connection=boto.ec2.connection-module.html,Module boto.fps.connection=boto.fps.connection-module.html,Module boto.mturk.connection=boto.mturk.connection-module.html,Module boto.s3.connection=boto.s3.connection-module.html,Module boto.sdb.connection=boto.sdb.connection-module.html,Module boto.sqs.20070501.connection=boto.sqs.20070501.connection-module.html,Module boto.sqs.connection=boto.sqs.connection-module.html"><a title="boto.connection
+boto.ec2.connection
+boto.fps.connection
+boto.mturk.connection
+boto.s3.connection
+boto.sdb.connection
+boto.sqs.20070501.connection
+boto.sqs.connection" class="py-name" href="#" onclick="return doclink('link-2', 'connection', 'link-2');">connection</a></tt> <tt class="py-keyword">import</tt> <tt id="link-3" class="py-name" targets="Class boto.s3.connection.S3Connection=boto.s3.connection.S3Connection-class.html"><a title="boto.s3.connection.S3Connection" class="py-name" href="#" onclick="return doclink('link-3', 'S3Connection', 'link-3');">S3Connection</a></tt> </tt>
+<a name="L32"></a><tt class="py-lineno"> 32</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-4" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-4', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-5" class="py-name" targets="Module boto.cloudfront.exception=boto.cloudfront.exception-module.html,Module boto.exception=boto.exception-module.html"><a title="boto.cloudfront.exception
+boto.exception" class="py-name" href="#" onclick="return doclink('link-5', 'exception', 'link-5');">exception</a></tt> <tt class="py-keyword">import</tt> <tt id="link-6" class="py-name" targets="Class boto.exception.S3PermissionsError=boto.exception.S3PermissionsError-class.html"><a title="boto.exception.S3PermissionsError" class="py-name" href="#" onclick="return doclink('link-6', 'S3PermissionsError', 'link-6');">S3PermissionsError</a></tt> </tt>
+<a name="L33"></a><tt class="py-lineno"> 33</tt>  <tt class="py-line"> </tt>
+<a name="S3ConnectionTest"></a><div id="S3ConnectionTest-def"><a name="L34"></a><tt class="py-lineno"> 34</tt> <a class="py-toggle" href="#" id="S3ConnectionTest-toggle" onclick="return toggle('S3ConnectionTest');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="boto.tests.test_s3connection.S3ConnectionTest-class.html">S3ConnectionTest</a> <tt class="py-op">(</tt><tt class="py-base-class">unittest</tt><tt class="py-op">.</tt><tt class="py-base-class">TestCase</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="S3ConnectionTest-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="S3ConnectionTest-expanded"><a name="L35"></a><tt class="py-lineno"> 35</tt>  <tt class="py-line"> </tt>
+<a name="S3ConnectionTest.test_1_basic"></a><div id="S3ConnectionTest.test_1_basic-def"><a name="L36"></a><tt class="py-lineno"> 36</tt> <a class="py-toggle" href="#" id="S3ConnectionTest.test_1_basic-toggle" onclick="return toggle('S3ConnectionTest.test_1_basic');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.tests.test_s3connection.S3ConnectionTest-class.html#test_1_basic">test_1_basic</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="S3ConnectionTest.test_1_basic-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="S3ConnectionTest.test_1_basic-expanded"><a name="L37"></a><tt class="py-lineno"> 37</tt>  <tt class="py-line">        <tt class="py-keyword">print</tt> <tt class="py-string">'--- running S3Connection tests ---'</tt> </tt>
+<a name="L38"></a><tt class="py-lineno"> 38</tt>  <tt class="py-line">        <tt class="py-name">c</tt> <tt class="py-op">=</tt> <tt id="link-7" class="py-name"><a title="boto.s3.connection.S3Connection" class="py-name" href="#" onclick="return doclink('link-7', 'S3Connection', 'link-3');">S3Connection</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L39"></a><tt class="py-lineno"> 39</tt>  <tt class="py-line">        <tt class="py-comment"># create a new, empty bucket</tt> </tt>
+<a name="L40"></a><tt class="py-lineno"> 40</tt>  <tt class="py-line"><tt class="py-comment"></tt>        <tt id="link-8" class="py-name" targets="Variable boto.mapreduce.partitiondb.PartitionDB.bucket_name=boto.mapreduce.partitiondb.PartitionDB-class.html#bucket_name"><a title="boto.mapreduce.partitiondb.PartitionDB.bucket_name" class="py-name" href="#" onclick="return doclink('link-8', 'bucket_name', 'link-8');">bucket_name</a></tt> <tt class="py-op">=</tt> <tt class="py-string">'test-%d'</tt> <tt class="py-op">%</tt> <tt id="link-9" class="py-name" targets="Class int=int-class.html"><a title="int" class="py-name" href="#" onclick="return doclink('link-9', 'int', 'link-9');">int</a></tt><tt class="py-op">(</tt><tt class="py-name">time</tt><tt class="py-op">.</tt><tt class="py-name">time</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L41"></a><tt class="py-lineno"> 41</tt>  <tt class="py-line">        <tt id="link-10" class="py-name" targets="Module boto.s3.bucket=boto.s3.bucket-module.html"><a title="boto.s3.bucket" class="py-name" href="#" onclick="return doclink('link-10', 'bucket', 'link-10');">bucket</a></tt> <tt class="py-op">=</tt> <tt class="py-name">c</tt><tt class="py-op">.</tt><tt id="link-11" class="py-name" targets="Method boto.s3.connection.S3Connection.create_bucket()=boto.s3.connection.S3Connection-class.html#create_bucket"><a title="boto.s3.connection.S3Connection.create_bucket" class="py-name" href="#" onclick="return doclink('link-11', 'create_bucket', 'link-11');">create_bucket</a></tt><tt class="py-op">(</tt><tt id="link-12" class="py-name"><a title="boto.mapreduce.partitiondb.PartitionDB.bucket_name" class="py-name" href="#" onclick="return doclink('link-12', 'bucket_name', 'link-8');">bucket_name</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L42"></a><tt class="py-lineno"> 42</tt>  <tt class="py-line">        <tt class="py-comment"># now try a get_bucket call and see if it's really there</tt> </tt>
+<a name="L43"></a><tt class="py-lineno"> 43</tt>  <tt class="py-line"><tt class="py-comment"></tt>        <tt id="link-13" class="py-name"><a title="boto.s3.bucket" class="py-name" href="#" onclick="return doclink('link-13', 'bucket', 'link-10');">bucket</a></tt> <tt class="py-op">=</tt> <tt class="py-name">c</tt><tt class="py-op">.</tt><tt id="link-14" class="py-name" targets="Method boto.s3.connection.S3Connection.get_bucket()=boto.s3.connection.S3Connection-class.html#get_bucket"><a title="boto.s3.connection.S3Connection.get_bucket" class="py-name" href="#" onclick="return doclink('link-14', 'get_bucket', 'link-14');">get_bucket</a></tt><tt class="py-op">(</tt><tt id="link-15" class="py-name"><a title="boto.mapreduce.partitiondb.PartitionDB.bucket_name" class="py-name" href="#" onclick="return doclink('link-15', 'bucket_name', 'link-8');">bucket_name</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L44"></a><tt class="py-lineno"> 44</tt>  <tt class="py-line">        <tt class="py-comment"># create a new key and store it's content from a string</tt> </tt>
+<a name="L45"></a><tt class="py-lineno"> 45</tt>  <tt class="py-line"><tt class="py-comment"></tt>        <tt class="py-name">k</tt> <tt class="py-op">=</tt> <tt id="link-16" class="py-name"><a title="boto.s3.bucket" class="py-name" href="#" onclick="return doclink('link-16', 'bucket', 'link-10');">bucket</a></tt><tt class="py-op">.</tt><tt id="link-17" class="py-name" targets="Method boto.s3.bucket.Bucket.new_key()=boto.s3.bucket.Bucket-class.html#new_key"><a title="boto.s3.bucket.Bucket.new_key" class="py-name" href="#" onclick="return doclink('link-17', 'new_key', 'link-17');">new_key</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L46"></a><tt class="py-lineno"> 46</tt>  <tt class="py-line">        <tt class="py-name">k</tt><tt class="py-op">.</tt><tt id="link-18" class="py-name" targets="Variable boto.mapreduce.partitiondb.Partition.name=boto.mapreduce.partitiondb.Partition-class.html#name,Variable boto.mapreduce.partitiondb.PartitionDB.name=boto.mapreduce.partitiondb.PartitionDB-class.html#name,Variable boto.mapreduce.partitiondb.Version.name=boto.mapreduce.partitiondb.Version-class.html#name,Variable boto.mashups.server.Server.name=boto.mashups.server.Server-class.html#name,Method boto.sdb.db.key.Key.name()=boto.sdb.db.key.Key-class.html#name,Variable boto.sdb.db.property.Property.name=boto.sdb.db.property.Property-class.html#name,Variable boto.sdb.db.test_db.TestBasic.name=boto.sdb.db.test_db.TestBasic-class.html#name,Variable boto.sdb.db.test_db.TestList.name=boto.sdb.db.test_db.TestList-class.html#name,Variable boto.sdb.db.test_db.TestListReference.name=boto.sdb.db.test_db.TestListReference-class.html#name,Variable boto.sdb.db.test_db.TestUnique.name=boto.sdb.db.test_db.TestUnique-class.html#name,Variable boto.sdb.persist.test_persist.TestRef.name=boto.sdb.persist.test_persist.TestRef-class.html#name,Variable boto.sdb.persist.test_persist.TestScalar.name=boto.sdb.persist.test_persist.TestScalar-class.html#name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-18', 'name', 'link-18');">name</a></tt> <tt class="py-op">=</tt> <tt class="py-string">'foobar'</tt> </tt>
+<a name="L47"></a><tt class="py-lineno"> 47</tt>  <tt class="py-line">        <tt class="py-name">s1</tt> <tt class="py-op">=</tt> <tt class="py-string">'This is a test of file upload and download'</tt> </tt>
+<a name="L48"></a><tt class="py-lineno"> 48</tt>  <tt class="py-line">        <tt class="py-name">s2</tt> <tt class="py-op">=</tt> <tt class="py-string">'This is a second string to test file upload and download'</tt> </tt>
+<a name="L49"></a><tt class="py-lineno"> 49</tt>  <tt class="py-line">        <tt class="py-name">k</tt><tt class="py-op">.</tt><tt id="link-19" class="py-name" targets="Method boto.s3.key.Key.set_contents_from_string()=boto.s3.key.Key-class.html#set_contents_from_string"><a title="boto.s3.key.Key.set_contents_from_string" class="py-name" href="#" onclick="return doclink('link-19', 'set_contents_from_string', 'link-19');">set_contents_from_string</a></tt><tt class="py-op">(</tt><tt class="py-name">s1</tt><tt class="py-op">)</tt> </tt>
+<a name="L50"></a><tt class="py-lineno"> 50</tt>  <tt class="py-line">        <tt class="py-name">fp</tt> <tt class="py-op">=</tt> <tt id="link-20" class="py-name" targets="Method boto.s3.key.Key.open()=boto.s3.key.Key-class.html#open"><a title="boto.s3.key.Key.open" class="py-name" href="#" onclick="return doclink('link-20', 'open', 'link-20');">open</a></tt><tt class="py-op">(</tt><tt class="py-string">'foobar'</tt><tt class="py-op">,</tt> <tt class="py-string">'wb'</tt><tt class="py-op">)</tt> </tt>
+<a name="L51"></a><tt class="py-lineno"> 51</tt>  <tt class="py-line">        <tt class="py-comment"># now get the contents from s3 to a local file</tt> </tt>
+<a name="L52"></a><tt class="py-lineno"> 52</tt>  <tt class="py-line"><tt class="py-comment"></tt>        <tt class="py-name">k</tt><tt class="py-op">.</tt><tt id="link-21" class="py-name" targets="Method boto.s3.key.Key.get_contents_to_file()=boto.s3.key.Key-class.html#get_contents_to_file"><a title="boto.s3.key.Key.get_contents_to_file" class="py-name" href="#" onclick="return doclink('link-21', 'get_contents_to_file', 'link-21');">get_contents_to_file</a></tt><tt class="py-op">(</tt><tt class="py-name">fp</tt><tt class="py-op">)</tt> </tt>
+<a name="L53"></a><tt class="py-lineno"> 53</tt>  <tt class="py-line">        <tt class="py-name">fp</tt><tt class="py-op">.</tt><tt id="link-22" class="py-name" targets="Method boto.mapreduce.queuetools.LQSClient.close()=boto.mapreduce.queuetools.LQSClient-class.html#close,Method boto.mapreduce.queuetools.SQSClient.close()=boto.mapreduce.queuetools.SQSClient-class.html#close,Method boto.s3.key.Key.close()=boto.s3.key.Key-class.html#close"><a title="boto.mapreduce.queuetools.LQSClient.close
+boto.mapreduce.queuetools.SQSClient.close
+boto.s3.key.Key.close" class="py-name" href="#" onclick="return doclink('link-22', 'close', 'link-22');">close</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L54"></a><tt class="py-lineno"> 54</tt>  <tt class="py-line">        <tt class="py-name">fp</tt> <tt class="py-op">=</tt> <tt id="link-23" class="py-name"><a title="boto.s3.key.Key.open" class="py-name" href="#" onclick="return doclink('link-23', 'open', 'link-20');">open</a></tt><tt class="py-op">(</tt><tt class="py-string">'foobar'</tt><tt class="py-op">)</tt> </tt>
+<a name="L55"></a><tt class="py-lineno"> 55</tt>  <tt class="py-line">        <tt class="py-comment"># check to make sure content read from s3 is identical to original</tt> </tt>
+<a name="L56"></a><tt class="py-lineno"> 56</tt>  <tt class="py-line"><tt class="py-comment"></tt>        <tt class="py-keyword">assert</tt> <tt class="py-name">s1</tt> <tt class="py-op">==</tt> <tt class="py-name">fp</tt><tt class="py-op">.</tt><tt id="link-24" class="py-name" targets="Method boto.s3.key.Key.read()=boto.s3.key.Key-class.html#read,Method boto.sqs.20070501.queue.Queue.read()=boto.sqs.20070501.queue.Queue-class.html#read,Method boto.sqs.queue.Queue.read()=boto.sqs.queue.Queue-class.html#read"><a title="boto.s3.key.Key.read
+boto.sqs.20070501.queue.Queue.read
+boto.sqs.queue.Queue.read" class="py-name" href="#" onclick="return doclink('link-24', 'read', 'link-24');">read</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-string">'corrupted file'</tt> </tt>
+<a name="L57"></a><tt class="py-lineno"> 57</tt>  <tt class="py-line">        <tt class="py-name">fp</tt><tt class="py-op">.</tt><tt id="link-25" class="py-name"><a title="boto.mapreduce.queuetools.LQSClient.close
+boto.mapreduce.queuetools.SQSClient.close
+boto.s3.key.Key.close" class="py-name" href="#" onclick="return doclink('link-25', 'close', 'link-22');">close</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L58"></a><tt class="py-lineno"> 58</tt>  <tt class="py-line">        <tt id="link-26" class="py-name"><a title="boto.s3.bucket" class="py-name" href="#" onclick="return doclink('link-26', 'bucket', 'link-10');">bucket</a></tt><tt class="py-op">.</tt><tt id="link-27" class="py-name" targets="Method boto.s3.bucket.Bucket.delete_key()=boto.s3.bucket.Bucket-class.html#delete_key"><a title="boto.s3.bucket.Bucket.delete_key" class="py-name" href="#" onclick="return doclink('link-27', 'delete_key', 'link-27');">delete_key</a></tt><tt class="py-op">(</tt><tt class="py-name">k</tt><tt class="py-op">)</tt> </tt>
+<a name="L59"></a><tt class="py-lineno"> 59</tt>  <tt class="py-line">        <tt class="py-comment"># test a few variations on get_all_keys - first load some data</tt> </tt>
+<a name="L60"></a><tt class="py-lineno"> 60</tt>  <tt class="py-line"><tt class="py-comment"></tt>        <tt class="py-comment"># for the first one, let's override the content type</tt> </tt>
+<a name="L61"></a><tt class="py-lineno"> 61</tt>  <tt class="py-line"><tt class="py-comment"></tt>        <tt class="py-name">phony_mimetype</tt> <tt class="py-op">=</tt> <tt class="py-string">'application/x-boto-test'</tt> </tt>
+<a name="L62"></a><tt class="py-lineno"> 62</tt>  <tt class="py-line">        <tt class="py-name">headers</tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt><tt class="py-string">'Content-Type'</tt><tt class="py-op">:</tt> <tt class="py-name">phony_mimetype</tt><tt class="py-op">}</tt> </tt>
+<a name="L63"></a><tt class="py-lineno"> 63</tt>  <tt class="py-line">        <tt class="py-name">k</tt><tt class="py-op">.</tt><tt id="link-28" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-28', 'name', 'link-18');">name</a></tt> <tt class="py-op">=</tt> <tt class="py-string">'foo/bar'</tt> </tt>
+<a name="L64"></a><tt class="py-lineno"> 64</tt>  <tt class="py-line">        <tt class="py-name">k</tt><tt class="py-op">.</tt><tt id="link-29" class="py-name"><a title="boto.s3.key.Key.set_contents_from_string" class="py-name" href="#" onclick="return doclink('link-29', 'set_contents_from_string', 'link-19');">set_contents_from_string</a></tt><tt class="py-op">(</tt><tt class="py-name">s1</tt><tt class="py-op">,</tt> <tt class="py-name">headers</tt><tt class="py-op">)</tt> </tt>
+<a name="L65"></a><tt class="py-lineno"> 65</tt>  <tt class="py-line">        <tt class="py-name">k</tt><tt class="py-op">.</tt><tt id="link-30" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-30', 'name', 'link-18');">name</a></tt> <tt class="py-op">=</tt> <tt class="py-string">'foo/bas'</tt> </tt>
+<a name="L66"></a><tt class="py-lineno"> 66</tt>  <tt class="py-line">        <tt class="py-name">k</tt><tt class="py-op">.</tt><tt id="link-31" class="py-name" targets="Method boto.s3.key.Key.set_contents_from_filename()=boto.s3.key.Key-class.html#set_contents_from_filename"><a title="boto.s3.key.Key.set_contents_from_filename" class="py-name" href="#" onclick="return doclink('link-31', 'set_contents_from_filename', 'link-31');">set_contents_from_filename</a></tt><tt class="py-op">(</tt><tt class="py-string">'foobar'</tt><tt class="py-op">)</tt> </tt>
+<a name="L67"></a><tt class="py-lineno"> 67</tt>  <tt class="py-line">        <tt class="py-name">k</tt><tt class="py-op">.</tt><tt id="link-32" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-32', 'name', 'link-18');">name</a></tt> <tt class="py-op">=</tt> <tt class="py-string">'foo/bat'</tt> </tt>
+<a name="L68"></a><tt class="py-lineno"> 68</tt>  <tt class="py-line">        <tt class="py-name">k</tt><tt class="py-op">.</tt><tt id="link-33" class="py-name"><a title="boto.s3.key.Key.set_contents_from_string" class="py-name" href="#" onclick="return doclink('link-33', 'set_contents_from_string', 'link-19');">set_contents_from_string</a></tt><tt class="py-op">(</tt><tt class="py-name">s1</tt><tt class="py-op">)</tt> </tt>
+<a name="L69"></a><tt class="py-lineno"> 69</tt>  <tt class="py-line">        <tt class="py-name">k</tt><tt class="py-op">.</tt><tt id="link-34" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-34', 'name', 'link-18');">name</a></tt> <tt class="py-op">=</tt> <tt class="py-string">'fie/bar'</tt> </tt>
+<a name="L70"></a><tt class="py-lineno"> 70</tt>  <tt class="py-line">        <tt class="py-name">k</tt><tt class="py-op">.</tt><tt id="link-35" class="py-name"><a title="boto.s3.key.Key.set_contents_from_string" class="py-name" href="#" onclick="return doclink('link-35', 'set_contents_from_string', 'link-19');">set_contents_from_string</a></tt><tt class="py-op">(</tt><tt class="py-name">s1</tt><tt class="py-op">)</tt> </tt>
+<a name="L71"></a><tt class="py-lineno"> 71</tt>  <tt class="py-line">        <tt class="py-name">k</tt><tt class="py-op">.</tt><tt id="link-36" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-36', 'name', 'link-18');">name</a></tt> <tt class="py-op">=</tt> <tt class="py-string">'fie/bas'</tt> </tt>
+<a name="L72"></a><tt class="py-lineno"> 72</tt>  <tt class="py-line">        <tt class="py-name">k</tt><tt class="py-op">.</tt><tt id="link-37" class="py-name"><a title="boto.s3.key.Key.set_contents_from_string" class="py-name" href="#" onclick="return doclink('link-37', 'set_contents_from_string', 'link-19');">set_contents_from_string</a></tt><tt class="py-op">(</tt><tt class="py-name">s1</tt><tt class="py-op">)</tt> </tt>
+<a name="L73"></a><tt class="py-lineno"> 73</tt>  <tt class="py-line">        <tt class="py-name">k</tt><tt class="py-op">.</tt><tt id="link-38" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-38', 'name', 'link-18');">name</a></tt> <tt class="py-op">=</tt> <tt class="py-string">'fie/bat'</tt> </tt>
+<a name="L74"></a><tt class="py-lineno"> 74</tt>  <tt class="py-line">        <tt class="py-name">k</tt><tt class="py-op">.</tt><tt id="link-39" class="py-name"><a title="boto.s3.key.Key.set_contents_from_string" class="py-name" href="#" onclick="return doclink('link-39', 'set_contents_from_string', 'link-19');">set_contents_from_string</a></tt><tt class="py-op">(</tt><tt class="py-name">s1</tt><tt class="py-op">)</tt> </tt>
+<a name="L75"></a><tt class="py-lineno"> 75</tt>  <tt class="py-line">        <tt class="py-comment"># try resetting the contents to another value</tt> </tt>
+<a name="L76"></a><tt class="py-lineno"> 76</tt>  <tt class="py-line"><tt class="py-comment"></tt>        <tt class="py-name">md5</tt> <tt class="py-op">=</tt> <tt class="py-name">k</tt><tt class="py-op">.</tt><tt class="py-name">md5</tt> </tt>
+<a name="L77"></a><tt class="py-lineno"> 77</tt>  <tt class="py-line">        <tt class="py-name">k</tt><tt class="py-op">.</tt><tt id="link-40" class="py-name"><a title="boto.s3.key.Key.set_contents_from_string" class="py-name" href="#" onclick="return doclink('link-40', 'set_contents_from_string', 'link-19');">set_contents_from_string</a></tt><tt class="py-op">(</tt><tt class="py-name">s2</tt><tt class="py-op">)</tt> </tt>
+<a name="L78"></a><tt class="py-lineno"> 78</tt>  <tt class="py-line">        <tt class="py-keyword">assert</tt> <tt class="py-name">k</tt><tt class="py-op">.</tt><tt class="py-name">md5</tt> <tt class="py-op">!=</tt> <tt class="py-name">md5</tt> </tt>
+<a name="L79"></a><tt class="py-lineno"> 79</tt>  <tt class="py-line">        <tt class="py-name">os</tt><tt class="py-op">.</tt><tt class="py-name">unlink</tt><tt class="py-op">(</tt><tt class="py-string">'foobar'</tt><tt class="py-op">)</tt> </tt>
+<a name="L80"></a><tt class="py-lineno"> 80</tt>  <tt class="py-line">        <tt id="link-41" class="py-name" targets="Class Method boto.sdb.db.model.Model.all()=boto.sdb.db.model.Model-class.html#all,Class Method boto.sdb.db.model.Model.all()=boto.sdb.db.model.Model-class.html#all"><a title="boto.sdb.db.model.Model.all
+boto.sdb.db.model.Model.all" class="py-name" href="#" onclick="return doclink('link-41', 'all', 'link-41');">all</a></tt> <tt class="py-op">=</tt> <tt id="link-42" class="py-name"><a title="boto.s3.bucket" class="py-name" href="#" onclick="return doclink('link-42', 'bucket', 'link-10');">bucket</a></tt><tt class="py-op">.</tt><tt id="link-43" class="py-name" targets="Method boto.s3.bucket.Bucket.get_all_keys()=boto.s3.bucket.Bucket-class.html#get_all_keys"><a title="boto.s3.bucket.Bucket.get_all_keys" class="py-name" href="#" onclick="return doclink('link-43', 'get_all_keys', 'link-43');">get_all_keys</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L81"></a><tt class="py-lineno"> 81</tt>  <tt class="py-line">        <tt class="py-keyword">assert</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt id="link-44" class="py-name"><a title="boto.sdb.db.model.Model.all
+boto.sdb.db.model.Model.all" class="py-name" href="#" onclick="return doclink('link-44', 'all', 'link-41');">all</a></tt><tt class="py-op">)</tt> <tt class="py-op">==</tt> <tt class="py-number">6</tt> </tt>
+<a name="L82"></a><tt class="py-lineno"> 82</tt>  <tt class="py-line">        <tt class="py-name">rs</tt> <tt class="py-op">=</tt> <tt id="link-45" class="py-name"><a title="boto.s3.bucket" class="py-name" href="#" onclick="return doclink('link-45', 'bucket', 'link-10');">bucket</a></tt><tt class="py-op">.</tt><tt id="link-46" class="py-name"><a title="boto.s3.bucket.Bucket.get_all_keys" class="py-name" href="#" onclick="return doclink('link-46', 'get_all_keys', 'link-43');">get_all_keys</a></tt><tt class="py-op">(</tt><tt id="link-47" class="py-name" targets="Module boto.s3.prefix=boto.s3.prefix-module.html"><a title="boto.s3.prefix" class="py-name" href="#" onclick="return doclink('link-47', 'prefix', 'link-47');">prefix</a></tt><tt class="py-op">=</tt><tt class="py-string">'foo'</tt><tt class="py-op">)</tt> </tt>
+<a name="L83"></a><tt class="py-lineno"> 83</tt>  <tt class="py-line">        <tt class="py-keyword">assert</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">rs</tt><tt class="py-op">)</tt> <tt class="py-op">==</tt> <tt class="py-number">3</tt> </tt>
+<a name="L84"></a><tt class="py-lineno"> 84</tt>  <tt class="py-line">        <tt class="py-name">rs</tt> <tt class="py-op">=</tt> <tt id="link-48" class="py-name"><a title="boto.s3.bucket" class="py-name" href="#" onclick="return doclink('link-48', 'bucket', 'link-10');">bucket</a></tt><tt class="py-op">.</tt><tt id="link-49" class="py-name"><a title="boto.s3.bucket.Bucket.get_all_keys" class="py-name" href="#" onclick="return doclink('link-49', 'get_all_keys', 'link-43');">get_all_keys</a></tt><tt class="py-op">(</tt><tt id="link-50" class="py-name"><a title="boto.s3.prefix" class="py-name" href="#" onclick="return doclink('link-50', 'prefix', 'link-47');">prefix</a></tt><tt class="py-op">=</tt><tt class="py-string">''</tt><tt class="py-op">,</tt> <tt class="py-name">delimiter</tt><tt class="py-op">=</tt><tt class="py-string">'/'</tt><tt class="py-op">)</tt> </tt>
+<a name="L85"></a><tt class="py-lineno"> 85</tt>  <tt class="py-line">        <tt class="py-keyword">assert</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">rs</tt><tt class="py-op">)</tt> <tt class="py-op">==</tt> <tt class="py-number">2</tt> </tt>
+<a name="L86"></a><tt class="py-lineno"> 86</tt>  <tt class="py-line">        <tt class="py-name">rs</tt> <tt class="py-op">=</tt> <tt id="link-51" class="py-name"><a title="boto.s3.bucket" class="py-name" href="#" onclick="return doclink('link-51', 'bucket', 'link-10');">bucket</a></tt><tt class="py-op">.</tt><tt id="link-52" class="py-name"><a title="boto.s3.bucket.Bucket.get_all_keys" class="py-name" href="#" onclick="return doclink('link-52', 'get_all_keys', 'link-43');">get_all_keys</a></tt><tt class="py-op">(</tt><tt class="py-name">maxkeys</tt><tt class="py-op">=</tt><tt class="py-number">5</tt><tt class="py-op">)</tt> </tt>
+<a name="L87"></a><tt class="py-lineno"> 87</tt>  <tt class="py-line">        <tt class="py-keyword">assert</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">rs</tt><tt class="py-op">)</tt> <tt class="py-op">==</tt> <tt class="py-number">5</tt> </tt>
+<a name="L88"></a><tt class="py-lineno"> 88</tt>  <tt class="py-line">        <tt class="py-comment"># test the lookup method</tt> </tt>
+<a name="L89"></a><tt class="py-lineno"> 89</tt>  <tt class="py-line"><tt class="py-comment"></tt>        <tt class="py-name">k</tt> <tt class="py-op">=</tt> <tt id="link-53" class="py-name"><a title="boto.s3.bucket" class="py-name" href="#" onclick="return doclink('link-53', 'bucket', 'link-10');">bucket</a></tt><tt class="py-op">.</tt><tt id="link-54" class="py-name" targets="Function boto.lookup()=boto-module.html#lookup,Method boto.s3.bucket.Bucket.lookup()=boto.s3.bucket.Bucket-class.html#lookup,Method boto.s3.connection.S3Connection.lookup()=boto.s3.connection.S3Connection-class.html#lookup,Method boto.sdb.connection.SDBConnection.lookup()=boto.sdb.connection.SDBConnection-class.html#lookup,Method boto.sdb.db.manager.pgmanager.PGManager.lookup()=boto.sdb.db.manager.pgmanager.PGManager-class.html#lookup,Class Method boto.sdb.db.model.Model.lookup()=boto.sdb.db.model.Model-class.html#lookup,Class Method boto.sdb.db.model.Model.lookup()=boto.sdb.db.model.Model-class.html#lookup"><a title="boto.lookup
+boto.s3.bucket.Bucket.lookup
+boto.s3.connection.S3Connection.lookup
+boto.sdb.connection.SDBConnection.lookup
+boto.sdb.db.manager.pgmanager.PGManager.lookup
+boto.sdb.db.model.Model.lookup
+boto.sdb.db.model.Model.lookup" class="py-name" href="#" onclick="return doclink('link-54', 'lookup', 'link-54');">lookup</a></tt><tt class="py-op">(</tt><tt class="py-string">'foo/bar'</tt><tt class="py-op">)</tt> </tt>
+<a name="L90"></a><tt class="py-lineno"> 90</tt>  <tt class="py-line">        <tt class="py-keyword">assert</tt> <tt class="py-name">isinstance</tt><tt class="py-op">(</tt><tt class="py-name">k</tt><tt class="py-op">,</tt> <tt id="link-55" class="py-name"><a title="boto.s3.bucket" class="py-name" href="#" onclick="return doclink('link-55', 'bucket', 'link-10');">bucket</a></tt><tt class="py-op">.</tt><tt class="py-name">key_class</tt><tt class="py-op">)</tt> </tt>
+<a name="L91"></a><tt class="py-lineno"> 91</tt>  <tt class="py-line">        <tt class="py-keyword">assert</tt> <tt class="py-name">k</tt><tt class="py-op">.</tt><tt class="py-name">content_type</tt> <tt class="py-op">==</tt> <tt class="py-name">phony_mimetype</tt> </tt>
+<a name="L92"></a><tt class="py-lineno"> 92</tt>  <tt class="py-line">        <tt class="py-name">k</tt> <tt class="py-op">=</tt> <tt id="link-56" class="py-name"><a title="boto.s3.bucket" class="py-name" href="#" onclick="return doclink('link-56', 'bucket', 'link-10');">bucket</a></tt><tt class="py-op">.</tt><tt id="link-57" class="py-name"><a title="boto.lookup
+boto.s3.bucket.Bucket.lookup
+boto.s3.connection.S3Connection.lookup
+boto.sdb.connection.SDBConnection.lookup
+boto.sdb.db.manager.pgmanager.PGManager.lookup
+boto.sdb.db.model.Model.lookup
+boto.sdb.db.model.Model.lookup" class="py-name" href="#" onclick="return doclink('link-57', 'lookup', 'link-54');">lookup</a></tt><tt class="py-op">(</tt><tt class="py-string">'notthere'</tt><tt class="py-op">)</tt> </tt>
+<a name="L93"></a><tt class="py-lineno"> 93</tt>  <tt class="py-line">        <tt class="py-keyword">assert</tt> <tt class="py-name">k</tt> <tt class="py-op">==</tt> <tt class="py-name">None</tt> </tt>
+<a name="L94"></a><tt class="py-lineno"> 94</tt>  <tt class="py-line">        <tt class="py-comment"># try some metadata stuff</tt> </tt>
+<a name="L95"></a><tt class="py-lineno"> 95</tt>  <tt class="py-line"><tt class="py-comment"></tt>        <tt class="py-name">k</tt> <tt class="py-op">=</tt> <tt id="link-58" class="py-name"><a title="boto.s3.bucket" class="py-name" href="#" onclick="return doclink('link-58', 'bucket', 'link-10');">bucket</a></tt><tt class="py-op">.</tt><tt id="link-59" class="py-name"><a title="boto.s3.bucket.Bucket.new_key" class="py-name" href="#" onclick="return doclink('link-59', 'new_key', 'link-17');">new_key</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L96"></a><tt class="py-lineno"> 96</tt>  <tt class="py-line">        <tt class="py-name">k</tt><tt class="py-op">.</tt><tt id="link-60" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-60', 'name', 'link-18');">name</a></tt> <tt class="py-op">=</tt> <tt class="py-string">'has_metadata'</tt> </tt>
+<a name="L97"></a><tt class="py-lineno"> 97</tt>  <tt class="py-line">        <tt class="py-name">mdkey1</tt> <tt class="py-op">=</tt> <tt class="py-string">'meta1'</tt> </tt>
+<a name="L98"></a><tt class="py-lineno"> 98</tt>  <tt class="py-line">        <tt class="py-name">mdval1</tt> <tt class="py-op">=</tt> <tt class="py-string">'This is the first metadata value'</tt> </tt>
+<a name="L99"></a><tt class="py-lineno"> 99</tt>  <tt class="py-line">        <tt class="py-name">k</tt><tt class="py-op">.</tt><tt id="link-61" class="py-name" targets="Method boto.s3.key.Key.set_metadata()=boto.s3.key.Key-class.html#set_metadata"><a title="boto.s3.key.Key.set_metadata" class="py-name" href="#" onclick="return doclink('link-61', 'set_metadata', 'link-61');">set_metadata</a></tt><tt class="py-op">(</tt><tt class="py-name">mdkey1</tt><tt class="py-op">,</tt> <tt class="py-name">mdval1</tt><tt class="py-op">)</tt> </tt>
+<a name="L100"></a><tt class="py-lineno">100</tt>  <tt class="py-line">        <tt class="py-name">mdkey2</tt> <tt class="py-op">=</tt> <tt class="py-string">'meta2'</tt> </tt>
+<a name="L101"></a><tt class="py-lineno">101</tt>  <tt class="py-line">        <tt class="py-name">mdval2</tt> <tt class="py-op">=</tt> <tt class="py-string">'This is the second metadata value'</tt> </tt>
+<a name="L102"></a><tt class="py-lineno">102</tt>  <tt class="py-line">        <tt class="py-name">k</tt><tt class="py-op">.</tt><tt id="link-62" class="py-name"><a title="boto.s3.key.Key.set_metadata" class="py-name" href="#" onclick="return doclink('link-62', 'set_metadata', 'link-61');">set_metadata</a></tt><tt class="py-op">(</tt><tt class="py-name">mdkey2</tt><tt class="py-op">,</tt> <tt class="py-name">mdval2</tt><tt class="py-op">)</tt> </tt>
+<a name="L103"></a><tt class="py-lineno">103</tt>  <tt class="py-line">        <tt class="py-name">k</tt><tt class="py-op">.</tt><tt id="link-63" class="py-name"><a title="boto.s3.key.Key.set_contents_from_string" class="py-name" href="#" onclick="return doclink('link-63', 'set_contents_from_string', 'link-19');">set_contents_from_string</a></tt><tt class="py-op">(</tt><tt class="py-name">s1</tt><tt class="py-op">)</tt> </tt>
+<a name="L104"></a><tt class="py-lineno">104</tt>  <tt class="py-line">        <tt class="py-name">k</tt> <tt class="py-op">=</tt> <tt id="link-64" class="py-name"><a title="boto.s3.bucket" class="py-name" href="#" onclick="return doclink('link-64', 'bucket', 'link-10');">bucket</a></tt><tt class="py-op">.</tt><tt id="link-65" class="py-name"><a title="boto.lookup
+boto.s3.bucket.Bucket.lookup
+boto.s3.connection.S3Connection.lookup
+boto.sdb.connection.SDBConnection.lookup
+boto.sdb.db.manager.pgmanager.PGManager.lookup
+boto.sdb.db.model.Model.lookup
+boto.sdb.db.model.Model.lookup" class="py-name" href="#" onclick="return doclink('link-65', 'lookup', 'link-54');">lookup</a></tt><tt class="py-op">(</tt><tt class="py-string">'has_metadata'</tt><tt class="py-op">)</tt> </tt>
+<a name="L105"></a><tt class="py-lineno">105</tt>  <tt class="py-line">        <tt class="py-keyword">assert</tt> <tt class="py-name">k</tt><tt class="py-op">.</tt><tt id="link-66" class="py-name" targets="Method boto.s3.key.Key.get_metadata()=boto.s3.key.Key-class.html#get_metadata,Method boto.sdb.domain.Domain.get_metadata()=boto.sdb.domain.Domain-class.html#get_metadata"><a title="boto.s3.key.Key.get_metadata
+boto.sdb.domain.Domain.get_metadata" class="py-name" href="#" onclick="return doclink('link-66', 'get_metadata', 'link-66');">get_metadata</a></tt><tt class="py-op">(</tt><tt class="py-name">mdkey1</tt><tt class="py-op">)</tt> <tt class="py-op">==</tt> <tt class="py-name">mdval1</tt> </tt>
+<a name="L106"></a><tt class="py-lineno">106</tt>  <tt class="py-line">        <tt class="py-keyword">assert</tt> <tt class="py-name">k</tt><tt class="py-op">.</tt><tt id="link-67" class="py-name"><a title="boto.s3.key.Key.get_metadata
+boto.sdb.domain.Domain.get_metadata" class="py-name" href="#" onclick="return doclink('link-67', 'get_metadata', 'link-66');">get_metadata</a></tt><tt class="py-op">(</tt><tt class="py-name">mdkey2</tt><tt class="py-op">)</tt> <tt class="py-op">==</tt> <tt class="py-name">mdval2</tt> </tt>
+<a name="L107"></a><tt class="py-lineno">107</tt>  <tt class="py-line">        <tt class="py-name">k</tt> <tt class="py-op">=</tt> <tt id="link-68" class="py-name"><a title="boto.s3.bucket" class="py-name" href="#" onclick="return doclink('link-68', 'bucket', 'link-10');">bucket</a></tt><tt class="py-op">.</tt><tt id="link-69" class="py-name"><a title="boto.s3.bucket.Bucket.new_key" class="py-name" href="#" onclick="return doclink('link-69', 'new_key', 'link-17');">new_key</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L108"></a><tt class="py-lineno">108</tt>  <tt class="py-line">        <tt class="py-name">k</tt><tt class="py-op">.</tt><tt id="link-70" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-70', 'name', 'link-18');">name</a></tt> <tt class="py-op">=</tt> <tt class="py-string">'has_metadata'</tt> </tt>
+<a name="L109"></a><tt class="py-lineno">109</tt>  <tt class="py-line">        <tt class="py-name">k</tt><tt class="py-op">.</tt><tt id="link-71" class="py-name" targets="Method boto.s3.key.Key.get_contents_as_string()=boto.s3.key.Key-class.html#get_contents_as_string"><a title="boto.s3.key.Key.get_contents_as_string" class="py-name" href="#" onclick="return doclink('link-71', 'get_contents_as_string', 'link-71');">get_contents_as_string</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L110"></a><tt class="py-lineno">110</tt>  <tt class="py-line">        <tt class="py-keyword">assert</tt> <tt class="py-name">k</tt><tt class="py-op">.</tt><tt id="link-72" class="py-name"><a title="boto.s3.key.Key.get_metadata
+boto.sdb.domain.Domain.get_metadata" class="py-name" href="#" onclick="return doclink('link-72', 'get_metadata', 'link-66');">get_metadata</a></tt><tt class="py-op">(</tt><tt class="py-name">mdkey1</tt><tt class="py-op">)</tt> <tt class="py-op">==</tt> <tt class="py-name">mdval1</tt> </tt>
+<a name="L111"></a><tt class="py-lineno">111</tt>  <tt class="py-line">        <tt class="py-keyword">assert</tt> <tt class="py-name">k</tt><tt class="py-op">.</tt><tt id="link-73" class="py-name"><a title="boto.s3.key.Key.get_metadata
+boto.sdb.domain.Domain.get_metadata" class="py-name" href="#" onclick="return doclink('link-73', 'get_metadata', 'link-66');">get_metadata</a></tt><tt class="py-op">(</tt><tt class="py-name">mdkey2</tt><tt class="py-op">)</tt> <tt class="py-op">==</tt> <tt class="py-name">mdval2</tt> </tt>
+<a name="L112"></a><tt class="py-lineno">112</tt>  <tt class="py-line">        <tt id="link-74" class="py-name"><a title="boto.s3.bucket" class="py-name" href="#" onclick="return doclink('link-74', 'bucket', 'link-10');">bucket</a></tt><tt class="py-op">.</tt><tt id="link-75" class="py-name"><a title="boto.s3.bucket.Bucket.delete_key" class="py-name" href="#" onclick="return doclink('link-75', 'delete_key', 'link-27');">delete_key</a></tt><tt class="py-op">(</tt><tt class="py-name">k</tt><tt class="py-op">)</tt> </tt>
+<a name="L113"></a><tt class="py-lineno">113</tt>  <tt class="py-line">        <tt class="py-comment"># try a key with a funny character</tt> </tt>
+<a name="L114"></a><tt class="py-lineno">114</tt>  <tt class="py-line"><tt class="py-comment"></tt>        <tt class="py-name">rs</tt> <tt class="py-op">=</tt> <tt id="link-76" class="py-name"><a title="boto.s3.bucket" class="py-name" href="#" onclick="return doclink('link-76', 'bucket', 'link-10');">bucket</a></tt><tt class="py-op">.</tt><tt id="link-77" class="py-name"><a title="boto.s3.bucket.Bucket.get_all_keys" class="py-name" href="#" onclick="return doclink('link-77', 'get_all_keys', 'link-43');">get_all_keys</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L115"></a><tt class="py-lineno">115</tt>  <tt class="py-line">        <tt class="py-name">num_keys</tt> <tt class="py-op">=</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">rs</tt><tt class="py-op">)</tt> </tt>
+<a name="L116"></a><tt class="py-lineno">116</tt>  <tt class="py-line">        <tt class="py-name">k</tt> <tt class="py-op">=</tt> <tt id="link-78" class="py-name"><a title="boto.s3.bucket" class="py-name" href="#" onclick="return doclink('link-78', 'bucket', 'link-10');">bucket</a></tt><tt class="py-op">.</tt><tt id="link-79" class="py-name"><a title="boto.s3.bucket.Bucket.new_key" class="py-name" href="#" onclick="return doclink('link-79', 'new_key', 'link-17');">new_key</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L117"></a><tt class="py-lineno">117</tt>  <tt class="py-line">        <tt class="py-name">k</tt><tt class="py-op">.</tt><tt id="link-80" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-80', 'name', 'link-18');">name</a></tt> <tt class="py-op">=</tt> <tt class="py-string">'testnewline\n'</tt> </tt>
+<a name="L118"></a><tt class="py-lineno">118</tt>  <tt class="py-line">        <tt class="py-name">k</tt><tt class="py-op">.</tt><tt id="link-81" class="py-name"><a title="boto.s3.key.Key.set_contents_from_string" class="py-name" href="#" onclick="return doclink('link-81', 'set_contents_from_string', 'link-19');">set_contents_from_string</a></tt><tt class="py-op">(</tt><tt class="py-string">'This is a test'</tt><tt class="py-op">)</tt> </tt>
+<a name="L119"></a><tt class="py-lineno">119</tt>  <tt class="py-line">        <tt class="py-name">rs</tt> <tt class="py-op">=</tt> <tt id="link-82" class="py-name"><a title="boto.s3.bucket" class="py-name" href="#" onclick="return doclink('link-82', 'bucket', 'link-10');">bucket</a></tt><tt class="py-op">.</tt><tt id="link-83" class="py-name"><a title="boto.s3.bucket.Bucket.get_all_keys" class="py-name" href="#" onclick="return doclink('link-83', 'get_all_keys', 'link-43');">get_all_keys</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L120"></a><tt class="py-lineno">120</tt>  <tt class="py-line">        <tt class="py-keyword">assert</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">rs</tt><tt class="py-op">)</tt> <tt class="py-op">==</tt> <tt class="py-name">num_keys</tt> <tt class="py-op">+</tt> <tt class="py-number">1</tt> </tt>
+<a name="L121"></a><tt class="py-lineno">121</tt>  <tt class="py-line">        <tt id="link-84" class="py-name"><a title="boto.s3.bucket" class="py-name" href="#" onclick="return doclink('link-84', 'bucket', 'link-10');">bucket</a></tt><tt class="py-op">.</tt><tt id="link-85" class="py-name"><a title="boto.s3.bucket.Bucket.delete_key" class="py-name" href="#" onclick="return doclink('link-85', 'delete_key', 'link-27');">delete_key</a></tt><tt class="py-op">(</tt><tt class="py-name">k</tt><tt class="py-op">)</tt> </tt>
+<a name="L122"></a><tt class="py-lineno">122</tt>  <tt class="py-line">        <tt class="py-name">rs</tt> <tt class="py-op">=</tt> <tt id="link-86" class="py-name"><a title="boto.s3.bucket" class="py-name" href="#" onclick="return doclink('link-86', 'bucket', 'link-10');">bucket</a></tt><tt class="py-op">.</tt><tt id="link-87" class="py-name"><a title="boto.s3.bucket.Bucket.get_all_keys" class="py-name" href="#" onclick="return doclink('link-87', 'get_all_keys', 'link-43');">get_all_keys</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L123"></a><tt class="py-lineno">123</tt>  <tt class="py-line">        <tt class="py-keyword">assert</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">rs</tt><tt class="py-op">)</tt> <tt class="py-op">==</tt> <tt class="py-name">num_keys</tt> </tt>
+<a name="L124"></a><tt class="py-lineno">124</tt>  <tt class="py-line">        <tt class="py-comment"># try some acl stuff</tt> </tt>
+<a name="L125"></a><tt class="py-lineno">125</tt>  <tt class="py-line"><tt class="py-comment"></tt>        <tt id="link-88" class="py-name"><a title="boto.s3.bucket" class="py-name" href="#" onclick="return doclink('link-88', 'bucket', 'link-10');">bucket</a></tt><tt class="py-op">.</tt><tt id="link-89" class="py-name" targets="Method boto.s3.bucket.Bucket.set_acl()=boto.s3.bucket.Bucket-class.html#set_acl,Method boto.s3.key.Key.set_acl()=boto.s3.key.Key-class.html#set_acl"><a title="boto.s3.bucket.Bucket.set_acl
+boto.s3.key.Key.set_acl" class="py-name" href="#" onclick="return doclink('link-89', 'set_acl', 'link-89');">set_acl</a></tt><tt class="py-op">(</tt><tt class="py-string">'public-read'</tt><tt class="py-op">)</tt> </tt>
+<a name="L126"></a><tt class="py-lineno">126</tt>  <tt class="py-line">        <tt class="py-name">policy</tt> <tt class="py-op">=</tt> <tt id="link-90" class="py-name"><a title="boto.s3.bucket" class="py-name" href="#" onclick="return doclink('link-90', 'bucket', 'link-10');">bucket</a></tt><tt class="py-op">.</tt><tt id="link-91" class="py-name" targets="Method boto.s3.bucket.Bucket.get_acl()=boto.s3.bucket.Bucket-class.html#get_acl,Method boto.s3.key.Key.get_acl()=boto.s3.key.Key-class.html#get_acl"><a title="boto.s3.bucket.Bucket.get_acl
+boto.s3.key.Key.get_acl" class="py-name" href="#" onclick="return doclink('link-91', 'get_acl', 'link-91');">get_acl</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L127"></a><tt class="py-lineno">127</tt>  <tt class="py-line">        <tt class="py-keyword">assert</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">policy</tt><tt class="py-op">.</tt><tt id="link-92" class="py-name" targets="Module boto.s3.acl=boto.s3.acl-module.html"><a title="boto.s3.acl" class="py-name" href="#" onclick="return doclink('link-92', 'acl', 'link-92');">acl</a></tt><tt class="py-op">.</tt><tt class="py-name">grants</tt><tt class="py-op">)</tt> <tt class="py-op">==</tt> <tt class="py-number">2</tt> </tt>
+<a name="L128"></a><tt class="py-lineno">128</tt>  <tt class="py-line">        <tt id="link-93" class="py-name"><a title="boto.s3.bucket" class="py-name" href="#" onclick="return doclink('link-93', 'bucket', 'link-10');">bucket</a></tt><tt class="py-op">.</tt><tt id="link-94" class="py-name"><a title="boto.s3.bucket.Bucket.set_acl
+boto.s3.key.Key.set_acl" class="py-name" href="#" onclick="return doclink('link-94', 'set_acl', 'link-89');">set_acl</a></tt><tt class="py-op">(</tt><tt class="py-string">'private'</tt><tt class="py-op">)</tt> </tt>
+<a name="L129"></a><tt class="py-lineno">129</tt>  <tt class="py-line">        <tt class="py-name">policy</tt> <tt class="py-op">=</tt> <tt id="link-95" class="py-name"><a title="boto.s3.bucket" class="py-name" href="#" onclick="return doclink('link-95', 'bucket', 'link-10');">bucket</a></tt><tt class="py-op">.</tt><tt id="link-96" class="py-name"><a title="boto.s3.bucket.Bucket.get_acl
+boto.s3.key.Key.get_acl" class="py-name" href="#" onclick="return doclink('link-96', 'get_acl', 'link-91');">get_acl</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L130"></a><tt class="py-lineno">130</tt>  <tt class="py-line">        <tt class="py-keyword">assert</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">policy</tt><tt class="py-op">.</tt><tt id="link-97" class="py-name"><a title="boto.s3.acl" class="py-name" href="#" onclick="return doclink('link-97', 'acl', 'link-92');">acl</a></tt><tt class="py-op">.</tt><tt class="py-name">grants</tt><tt class="py-op">)</tt> <tt class="py-op">==</tt> <tt class="py-number">1</tt> </tt>
+<a name="L131"></a><tt class="py-lineno">131</tt>  <tt class="py-line">        <tt class="py-name">k</tt> <tt class="py-op">=</tt> <tt id="link-98" class="py-name"><a title="boto.s3.bucket" class="py-name" href="#" onclick="return doclink('link-98', 'bucket', 'link-10');">bucket</a></tt><tt class="py-op">.</tt><tt id="link-99" class="py-name"><a title="boto.lookup
+boto.s3.bucket.Bucket.lookup
+boto.s3.connection.S3Connection.lookup
+boto.sdb.connection.SDBConnection.lookup
+boto.sdb.db.manager.pgmanager.PGManager.lookup
+boto.sdb.db.model.Model.lookup
+boto.sdb.db.model.Model.lookup" class="py-name" href="#" onclick="return doclink('link-99', 'lookup', 'link-54');">lookup</a></tt><tt class="py-op">(</tt><tt class="py-string">'foo/bar'</tt><tt class="py-op">)</tt> </tt>
+<a name="L132"></a><tt class="py-lineno">132</tt>  <tt class="py-line">        <tt class="py-name">k</tt><tt class="py-op">.</tt><tt id="link-100" class="py-name"><a title="boto.s3.bucket.Bucket.set_acl
+boto.s3.key.Key.set_acl" class="py-name" href="#" onclick="return doclink('link-100', 'set_acl', 'link-89');">set_acl</a></tt><tt class="py-op">(</tt><tt class="py-string">'public-read'</tt><tt class="py-op">)</tt> </tt>
+<a name="L133"></a><tt class="py-lineno">133</tt>  <tt class="py-line">        <tt class="py-name">policy</tt> <tt class="py-op">=</tt> <tt class="py-name">k</tt><tt class="py-op">.</tt><tt id="link-101" class="py-name"><a title="boto.s3.bucket.Bucket.get_acl
+boto.s3.key.Key.get_acl" class="py-name" href="#" onclick="return doclink('link-101', 'get_acl', 'link-91');">get_acl</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L134"></a><tt class="py-lineno">134</tt>  <tt class="py-line">        <tt class="py-keyword">assert</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">policy</tt><tt class="py-op">.</tt><tt id="link-102" class="py-name"><a title="boto.s3.acl" class="py-name" href="#" onclick="return doclink('link-102', 'acl', 'link-92');">acl</a></tt><tt class="py-op">.</tt><tt class="py-name">grants</tt><tt class="py-op">)</tt> <tt class="py-op">==</tt> <tt class="py-number">2</tt> </tt>
+<a name="L135"></a><tt class="py-lineno">135</tt>  <tt class="py-line">        <tt class="py-name">k</tt><tt class="py-op">.</tt><tt id="link-103" class="py-name"><a title="boto.s3.bucket.Bucket.set_acl
+boto.s3.key.Key.set_acl" class="py-name" href="#" onclick="return doclink('link-103', 'set_acl', 'link-89');">set_acl</a></tt><tt class="py-op">(</tt><tt class="py-string">'private'</tt><tt class="py-op">)</tt> </tt>
+<a name="L136"></a><tt class="py-lineno">136</tt>  <tt class="py-line">        <tt class="py-name">policy</tt> <tt class="py-op">=</tt> <tt class="py-name">k</tt><tt class="py-op">.</tt><tt id="link-104" class="py-name"><a title="boto.s3.bucket.Bucket.get_acl
+boto.s3.key.Key.get_acl" class="py-name" href="#" onclick="return doclink('link-104', 'get_acl', 'link-91');">get_acl</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L137"></a><tt class="py-lineno">137</tt>  <tt class="py-line">        <tt class="py-keyword">assert</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">policy</tt><tt class="py-op">.</tt><tt id="link-105" class="py-name"><a title="boto.s3.acl" class="py-name" href="#" onclick="return doclink('link-105', 'acl', 'link-92');">acl</a></tt><tt class="py-op">.</tt><tt class="py-name">grants</tt><tt class="py-op">)</tt> <tt class="py-op">==</tt> <tt class="py-number">1</tt> </tt>
+<a name="L138"></a><tt class="py-lineno">138</tt>  <tt class="py-line">        <tt class="py-comment"># try the convenience methods for grants</tt> </tt>
+<a name="L139"></a><tt class="py-lineno">139</tt>  <tt class="py-line"><tt class="py-comment"></tt>        <tt id="link-106" class="py-name"><a title="boto.s3.bucket" class="py-name" href="#" onclick="return doclink('link-106', 'bucket', 'link-10');">bucket</a></tt><tt class="py-op">.</tt><tt id="link-107" class="py-name" targets="Method boto.s3.acl.ACL.add_user_grant()=boto.s3.acl.ACL-class.html#add_user_grant,Method boto.s3.bucket.Bucket.add_user_grant()=boto.s3.bucket.Bucket-class.html#add_user_grant,Method boto.s3.key.Key.add_user_grant()=boto.s3.key.Key-class.html#add_user_grant"><a title="boto.s3.acl.ACL.add_user_grant
+boto.s3.bucket.Bucket.add_user_grant
+boto.s3.key.Key.add_user_grant" class="py-name" href="#" onclick="return doclink('link-107', 'add_user_grant', 'link-107');">add_user_grant</a></tt><tt class="py-op">(</tt><tt class="py-string">'FULL_CONTROL'</tt><tt class="py-op">,</tt> </tt>
+<a name="L140"></a><tt class="py-lineno">140</tt>  <tt class="py-line">                              <tt class="py-string">'c1e724fbfa0979a4448393c59a8c055011f739b6d102fb37a65f26414653cd67'</tt><tt class="py-op">)</tt> </tt>
+<a name="L141"></a><tt class="py-lineno">141</tt>  <tt class="py-line">        <tt class="py-keyword">try</tt><tt class="py-op">:</tt> </tt>
+<a name="L142"></a><tt class="py-lineno">142</tt>  <tt class="py-line">            <tt id="link-108" class="py-name"><a title="boto.s3.bucket" class="py-name" href="#" onclick="return doclink('link-108', 'bucket', 'link-10');">bucket</a></tt><tt class="py-op">.</tt><tt id="link-109" class="py-name" targets="Method boto.s3.acl.ACL.add_email_grant()=boto.s3.acl.ACL-class.html#add_email_grant,Method boto.s3.bucket.Bucket.add_email_grant()=boto.s3.bucket.Bucket-class.html#add_email_grant,Method boto.s3.key.Key.add_email_grant()=boto.s3.key.Key-class.html#add_email_grant"><a title="boto.s3.acl.ACL.add_email_grant
+boto.s3.bucket.Bucket.add_email_grant
+boto.s3.key.Key.add_email_grant" class="py-name" href="#" onclick="return doclink('link-109', 'add_email_grant', 'link-109');">add_email_grant</a></tt><tt class="py-op">(</tt><tt class="py-string">'foobar'</tt><tt class="py-op">,</tt> <tt class="py-string">'foo@bar.com'</tt><tt class="py-op">)</tt> </tt>
+<a name="L143"></a><tt class="py-lineno">143</tt>  <tt class="py-line">        <tt class="py-keyword">except</tt> <tt id="link-110" class="py-name"><a title="boto.exception.S3PermissionsError" class="py-name" href="#" onclick="return doclink('link-110', 'S3PermissionsError', 'link-6');">S3PermissionsError</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L144"></a><tt class="py-lineno">144</tt>  <tt class="py-line">            <tt class="py-keyword">pass</tt> </tt>
+<a name="L145"></a><tt class="py-lineno">145</tt>  <tt class="py-line">        <tt class="py-comment"># now delete all keys in bucket</tt> </tt>
+<a name="L146"></a><tt class="py-lineno">146</tt>  <tt class="py-line"><tt class="py-comment"></tt>        <tt class="py-keyword">for</tt> <tt class="py-name">k</tt> <tt class="py-keyword">in</tt> <tt id="link-111" class="py-name"><a title="boto.sdb.db.model.Model.all
+boto.sdb.db.model.Model.all" class="py-name" href="#" onclick="return doclink('link-111', 'all', 'link-41');">all</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L147"></a><tt class="py-lineno">147</tt>  <tt class="py-line">            <tt id="link-112" class="py-name"><a title="boto.s3.bucket" class="py-name" href="#" onclick="return doclink('link-112', 'bucket', 'link-10');">bucket</a></tt><tt class="py-op">.</tt><tt id="link-113" class="py-name"><a title="boto.s3.bucket.Bucket.delete_key" class="py-name" href="#" onclick="return doclink('link-113', 'delete_key', 'link-27');">delete_key</a></tt><tt class="py-op">(</tt><tt class="py-name">k</tt><tt class="py-op">)</tt> </tt>
+<a name="L148"></a><tt class="py-lineno">148</tt>  <tt class="py-line">        <tt class="py-comment"># now delete bucket</tt> </tt>
+<a name="L149"></a><tt class="py-lineno">149</tt>  <tt class="py-line"><tt class="py-comment"></tt>        <tt class="py-name">c</tt><tt class="py-op">.</tt><tt id="link-114" class="py-name" targets="Method boto.s3.connection.S3Connection.delete_bucket()=boto.s3.connection.S3Connection-class.html#delete_bucket"><a title="boto.s3.connection.S3Connection.delete_bucket" class="py-name" href="#" onclick="return doclink('link-114', 'delete_bucket', 'link-114');">delete_bucket</a></tt><tt class="py-op">(</tt><tt id="link-115" class="py-name"><a title="boto.s3.bucket" class="py-name" href="#" onclick="return doclink('link-115', 'bucket', 'link-10');">bucket</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L150"></a><tt class="py-lineno">150</tt>  <tt class="py-line">        <tt class="py-keyword">print</tt> <tt class="py-string">'--- tests completed ---'</tt> </tt>
+</div></div><a name="L151"></a><tt class="py-lineno">151</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="boto-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0beta1 on Fri Feb 20 11:45:20 2009
+    </td>
+    <td align="right" class="footer">
+      <a href="http://epydoc.sourceforge.net">http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie()
+  // -->
+</script>
+  
+</body>
+</html>

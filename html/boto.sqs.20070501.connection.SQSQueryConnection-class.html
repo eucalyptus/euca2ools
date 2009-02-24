@@ -1,0 +1,499 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>boto.sqs.20070501.connection.SQSQueryConnection</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="boto-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="boto-module.html">Package&nbsp;boto</a> ::
+        <a href="boto.sqs-module.html">Package&nbsp;sqs</a> ::
+        <a href="boto.sqs.20070501-module.html">Package&nbsp;20070501</a> ::
+        <a href="boto.sqs.20070501.connection-module.html">Module&nbsp;connection</a> ::
+        Class&nbsp;SQSQueryConnection
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="boto.sqs.20070501.connection.SQSQueryConnection-class.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class SQSQueryConnection</h1><span class="codelink"><a href="boto.sqs.20070501.connection-pysrc.html#SQSQueryConnection">source&nbsp;code</a></span><br /><br />
+<pre class="base-tree">
+<a href="boto.connection.AWSAuthConnection-class.html">connection.AWSAuthConnection</a> --+    
+                               |    
+   <a href="boto.connection.AWSQueryConnection-class.html">connection.AWSQueryConnection</a> --+
+                                   |
+                                  <strong class="uidshort">SQSQueryConnection</strong>
+</pre>
+
+<hr />
+This class uses the Query API (boo!) to SQS to access some of the new 
+  features which have not yet been added to the REST api (yeah!).<br /><br />
+
+<!-- ==================== NESTED CLASSES ==================== -->
+<a name="section-NestedClasses"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Nested Classes</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-NestedClasses"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="boto.connection.AWSQueryConnection-class.html">connection.AWSQueryConnection</a></code></b>:
+      <code><a href="boto.exception.BotoServerError-class.html">ResponseError</a></code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Instance Methods</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-InstanceMethods"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="boto.sqs.20070501.connection.SQSQueryConnection-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">aws_access_key_id</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">aws_secret_access_key</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">is_secure</span>=<span class="summary-sig-default">True</span>,
+        <span class="summary-sig-arg">port</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">proxy</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">proxy_port</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">host</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">queue.amazonaws.com</code><code class="variable-quote">'</code></span>,
+        <span class="summary-sig-arg">debug</span>=<span class="summary-sig-default">0</span>,
+        <span class="summary-sig-arg">https_connection_factory</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="boto.sqs.20070501.connection-pysrc.html#SQSQueryConnection.__init__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_queue_attributes"></a><span class="summary-sig-name">get_queue_attributes</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">queue_url</span>,
+        <span class="summary-sig-arg">attribute</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">All</code><code class="variable-quote">'</code></span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="boto.sqs.20070501.connection-pysrc.html#SQSQueryConnection.get_queue_attributes">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="set_queue_attribute"></a><span class="summary-sig-name">set_queue_attribute</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">queue_url</span>,
+        <span class="summary-sig-arg">attribute</span>,
+        <span class="summary-sig-arg">value</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="boto.sqs.20070501.connection-pysrc.html#SQSQueryConnection.set_queue_attribute">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="change_message_visibility"></a><span class="summary-sig-name">change_message_visibility</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">queue_url</span>,
+        <span class="summary-sig-arg">message_id</span>,
+        <span class="summary-sig-arg">vtimeout</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="boto.sqs.20070501.connection-pysrc.html#SQSQueryConnection.change_message_visibility">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="add_grant"></a><span class="summary-sig-name">add_grant</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">queue_url</span>,
+        <span class="summary-sig-arg">permission</span>,
+        <span class="summary-sig-arg">email_address</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">user_id</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="boto.sqs.20070501.connection-pysrc.html#SQSQueryConnection.add_grant">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="remove_grant"></a><span class="summary-sig-name">remove_grant</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">queue_url</span>,
+        <span class="summary-sig-arg">permission</span>,
+        <span class="summary-sig-arg">email_address</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">user_id</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="boto.sqs.20070501.connection-pysrc.html#SQSQueryConnection.remove_grant">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="list_grants"></a><span class="summary-sig-name">list_grants</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">queue_url</span>,
+        <span class="summary-sig-arg">permission</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">email_address</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">user_id</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="boto.sqs.20070501.connection-pysrc.html#SQSQueryConnection.list_grants">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="boto.sqs.20070501.connection.SQSQueryConnection-class.html#receive_message" class="summary-sig-name">receive_message</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">queue_url</span>,
+        <span class="summary-sig-arg">number_messages</span>=<span class="summary-sig-default">1</span>,
+        <span class="summary-sig-arg">visibility_timeout</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">message_class</span>=<span class="summary-sig-default">&lt;class boto.sqs.message.Message at 0x1168470&gt;</span>)</span><br />
+      This provides the same functionality as the read and get_messages 
+      methods of the queue object.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="boto.sqs.20070501.connection-pysrc.html#SQSQueryConnection.receive_message">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="delete_message"></a><span class="summary-sig-name">delete_message</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">queue_url</span>,
+        <span class="summary-sig-arg">message_id</span>)</span><br />
+      Because we have to use the Query interface to read messages from 
+      queues that we don't own, we also have to provide a way to delete 
+      those messages via Query.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="boto.sqs.20070501.connection-pysrc.html#SQSQueryConnection.delete_message">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="boto.connection.AWSQueryConnection-class.html">connection.AWSQueryConnection</a></code></b>:
+      <code><a href="boto.connection.AWSQueryConnection-class.html#build_list_params">build_list_params</a></code>,
+      <code><a href="boto.connection.AWSQueryConnection-class.html#calc_signature_0">calc_signature_0</a></code>,
+      <code><a href="boto.connection.AWSQueryConnection-class.html#calc_signature_1">calc_signature_1</a></code>,
+      <code><a href="boto.connection.AWSQueryConnection-class.html#calc_signature_2">calc_signature_2</a></code>,
+      <code><a href="boto.connection.AWSQueryConnection-class.html#get_list">get_list</a></code>,
+      <code><a href="boto.connection.AWSQueryConnection-class.html#get_object">get_object</a></code>,
+      <code><a href="boto.connection.AWSQueryConnection-class.html#get_signature">get_signature</a></code>,
+      <code><a href="boto.connection.AWSQueryConnection-class.html#get_status">get_status</a></code>,
+      <code><a href="boto.connection.AWSQueryConnection-class.html#get_utf8_value">get_utf8_value</a></code>,
+      <code><a href="boto.connection.AWSQueryConnection-class.html#make_request">make_request</a></code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="boto.connection.AWSAuthConnection-class.html">connection.AWSAuthConnection</a></code></b>:
+      <code><a href="boto.connection.AWSAuthConnection-class.html#add_aws_auth_header">add_aws_auth_header</a></code>,
+      <code><a href="boto.connection.AWSAuthConnection-class.html#get_http_connection">get_http_connection</a></code>,
+      <code><a href="boto.connection.AWSAuthConnection-class.html#get_proxy_auth_header">get_proxy_auth_header</a></code>,
+      <code><a href="boto.connection.AWSAuthConnection-class.html#handle_proxy">handle_proxy</a></code>,
+      <code><a href="boto.connection.AWSAuthConnection-class.html#prefix_proxy_to_path">prefix_proxy_to_path</a></code>,
+      <code><a href="boto.connection.AWSAuthConnection-class.html#refresh_http_connection">refresh_http_connection</a></code>
+      </p>
+    <div class="private">    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="boto.connection.AWSAuthConnection-class.html">connection.AWSAuthConnection</a></code></b> (private):
+      <code><a href="boto.connection.AWSAuthConnection-class.html#_mexe">_mexe</a></code>
+      </p></div>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS VARIABLES ==================== -->
+<a name="section-ClassVariables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Class Variables</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-ClassVariables"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="DefaultHost"></a><span class="summary-name">DefaultHost</span> = <code title="'queue.amazonaws.com'"><code class="variable-quote">'</code><code class="variable-string">queue.amazonaws.com</code><code class="variable-quote">'</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="APIVersion"></a><span class="summary-name">APIVersion</span> = <code title="'2007-05-01'"><code class="variable-quote">'</code><code class="variable-string">2007-05-01</code><code class="variable-quote">'</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="SignatureVersion"></a><span class="summary-name">SignatureVersion</span> = <code title="'1'">'1'</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="DefaultContentType"></a><span class="summary-name">DefaultContentType</span> = <code title="'text/plain'"><code class="variable-quote">'</code><code class="variable-string">text/plain</code><code class="variable-quote">'</code></code>
+    </td>
+  </tr>
+</table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Method Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-MethodDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="__init__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">aws_access_key_id</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">aws_secret_access_key</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">is_secure</span>=<span class="sig-default">True</span>,
+        <span class="sig-arg">port</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">proxy</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">proxy_port</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">host</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string">queue.amazonaws.com</code><code class="variable-quote">'</code></span>,
+        <span class="sig-arg">debug</span>=<span class="sig-default">0</span>,
+        <span class="sig-arg">https_connection_factory</span>=<span class="sig-default">None</span>)</span>
+    <br /><em class="fname">(Constructor)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="boto.sqs.20070501.connection-pysrc.html#SQSQueryConnection.__init__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </table>
+  
+  
+  <dl class="fields">
+    <dt>Overrides:
+      <a href="boto.connection.AWSQueryConnection-class.html#__init__">connection.AWSQueryConnection.__init__</a>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="receive_message"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">receive_message</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">queue_url</span>,
+        <span class="sig-arg">number_messages</span>=<span class="sig-default">1</span>,
+        <span class="sig-arg">visibility_timeout</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">message_class</span>=<span class="sig-default">&lt;class boto.sqs.message.Message at 0x1168470&gt;</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="boto.sqs.20070501.connection-pysrc.html#SQSQueryConnection.receive_message">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </table>
+  
+  This provides the same functionality as the read and get_messages 
+  methods of the queue object.  The only reason this is included here is 
+  that there is currently a bug in SQS that makes it impossible to read a 
+  message from a queue owned by someone else (even if you have been granted
+  appropriate permissions) via the REST interface.  As it turns out, I need
+  to be able to do this so until the REST interface gets fixed this is the 
+  workaround.
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="boto-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0beta1 on Fri Feb 20 11:45:19 2009
+    </td>
+    <td align="right" class="footer">
+      <a href="http://epydoc.sourceforge.net">http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie()
+  // -->
+</script>
+  
+</body>
+</html>

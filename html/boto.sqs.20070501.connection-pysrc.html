@@ -1,0 +1,1010 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>boto.sqs.20070501.connection</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="boto-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="boto-module.html">Package&nbsp;boto</a> ::
+        <a href="boto.sqs-module.html">Package&nbsp;sqs</a> ::
+        <a href="boto.sqs.20070501-module.html">Package&nbsp;20070501</a> ::
+        Module&nbsp;connection
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="boto.sqs.20070501.connection-pysrc.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="boto.sqs.20070501.connection-module.html">Module boto.sqs.20070501.connection</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno">  1</tt>  <tt class="py-line"><tt class="py-comment"># Copyright (c) 2006,2007 Mitch Garnaat http://garnaat.org/</tt> </tt>
+<a name="L2"></a><tt class="py-lineno">  2</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment">#</tt> </tt>
+<a name="L3"></a><tt class="py-lineno">  3</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># Permission is hereby granted, free of charge, to any person obtaining a</tt> </tt>
+<a name="L4"></a><tt class="py-lineno">  4</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># copy of this software and associated documentation files (the</tt> </tt>
+<a name="L5"></a><tt class="py-lineno">  5</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># "Software"), to deal in the Software without restriction, including</tt> </tt>
+<a name="L6"></a><tt class="py-lineno">  6</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># without limitation the rights to use, copy, modify, merge, publish, dis-</tt> </tt>
+<a name="L7"></a><tt class="py-lineno">  7</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># tribute, sublicense, and/or sell copies of the Software, and to permit</tt> </tt>
+<a name="L8"></a><tt class="py-lineno">  8</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># persons to whom the Software is furnished to do so, subject to the fol-</tt> </tt>
+<a name="L9"></a><tt class="py-lineno">  9</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># lowing conditions:</tt> </tt>
+<a name="L10"></a><tt class="py-lineno"> 10</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment">#</tt> </tt>
+<a name="L11"></a><tt class="py-lineno"> 11</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># The above copyright notice and this permission notice shall be included</tt> </tt>
+<a name="L12"></a><tt class="py-lineno"> 12</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># in all copies or substantial portions of the Software.</tt> </tt>
+<a name="L13"></a><tt class="py-lineno"> 13</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment">#</tt> </tt>
+<a name="L14"></a><tt class="py-lineno"> 14</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS</tt> </tt>
+<a name="L15"></a><tt class="py-lineno"> 15</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABIL-</tt> </tt>
+<a name="L16"></a><tt class="py-lineno"> 16</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># ITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT</tt> </tt>
+<a name="L17"></a><tt class="py-lineno"> 17</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># SHALL THE AUTHOR BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, </tt> </tt>
+<a name="L18"></a><tt class="py-lineno"> 18</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</tt> </tt>
+<a name="L19"></a><tt class="py-lineno"> 19</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS</tt> </tt>
+<a name="L20"></a><tt class="py-lineno"> 20</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># IN THE SOFTWARE.</tt> </tt>
+<a name="L21"></a><tt class="py-lineno"> 21</tt>  <tt class="py-line"><tt class="py-comment"></tt> </tt>
+<a name="L22"></a><tt class="py-lineno"> 22</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-0" class="py-name" targets="Package boto=boto-module.html"><a title="boto" class="py-name" href="#" onclick="return doclink('link-0', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-1" class="py-name" targets="Module boto.connection=boto.connection-module.html,Module boto.ec2.connection=boto.ec2.connection-module.html,Module boto.fps.connection=boto.fps.connection-module.html,Module boto.mturk.connection=boto.mturk.connection-module.html,Module boto.s3.connection=boto.s3.connection-module.html,Module boto.sdb.connection=boto.sdb.connection-module.html,Module boto.sqs.20070501.connection=boto.sqs.20070501.connection-module.html,Module boto.sqs.connection=boto.sqs.connection-module.html"><a title="boto.connection
+boto.ec2.connection
+boto.fps.connection
+boto.mturk.connection
+boto.s3.connection
+boto.sdb.connection
+boto.sqs.20070501.connection
+boto.sqs.connection" class="py-name" href="#" onclick="return doclink('link-1', 'connection', 'link-1');">connection</a></tt> <tt class="py-keyword">import</tt> <tt id="link-2" class="py-name" targets="Class boto.connection.AWSAuthConnection=boto.connection.AWSAuthConnection-class.html"><a title="boto.connection.AWSAuthConnection" class="py-name" href="#" onclick="return doclink('link-2', 'AWSAuthConnection', 'link-2');">AWSAuthConnection</a></tt><tt class="py-op">,</tt> <tt id="link-3" class="py-name" targets="Class boto.connection.AWSQueryConnection=boto.connection.AWSQueryConnection-class.html"><a title="boto.connection.AWSQueryConnection" class="py-name" href="#" onclick="return doclink('link-3', 'AWSQueryConnection', 'link-3');">AWSQueryConnection</a></tt> </tt>
+<a name="L23"></a><tt class="py-lineno"> 23</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">xml</tt><tt class="py-op">.</tt><tt class="py-name">sax</tt> </tt>
+<a name="L24"></a><tt class="py-lineno"> 24</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-4" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-4', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-5" class="py-name" targets="Package boto.sqs=boto.sqs-module.html"><a title="boto.sqs" class="py-name" href="#" onclick="return doclink('link-5', 'sqs', 'link-5');">sqs</a></tt><tt class="py-op">.</tt><tt id="link-6" class="py-name" targets="Module boto.sqs.20070501.queue=boto.sqs.20070501.queue-module.html,Module boto.sqs.queue=boto.sqs.queue-module.html"><a title="boto.sqs.20070501.queue
+boto.sqs.queue" class="py-name" href="#" onclick="return doclink('link-6', 'queue', 'link-6');">queue</a></tt> <tt class="py-keyword">import</tt> <tt id="link-7" class="py-name" targets="Class boto.sqs.20070501.queue.Queue=boto.sqs.20070501.queue.Queue-class.html,Class boto.sqs.queue.Queue=boto.sqs.queue.Queue-class.html"><a title="boto.sqs.20070501.queue.Queue
+boto.sqs.queue.Queue" class="py-name" href="#" onclick="return doclink('link-7', 'Queue', 'link-7');">Queue</a></tt> </tt>
+<a name="L25"></a><tt class="py-lineno"> 25</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-8" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-8', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-9" class="py-name"><a title="boto.sqs" class="py-name" href="#" onclick="return doclink('link-9', 'sqs', 'link-5');">sqs</a></tt><tt class="py-op">.</tt><tt id="link-10" class="py-name" targets="Module boto.services.message=boto.services.message-module.html,Module boto.sqs.20070501.message=boto.sqs.20070501.message-module.html,Module boto.sqs.message=boto.sqs.message-module.html"><a title="boto.services.message
+boto.sqs.20070501.message
+boto.sqs.message" class="py-name" href="#" onclick="return doclink('link-10', 'message', 'link-10');">message</a></tt> <tt class="py-keyword">import</tt> <tt id="link-11" class="py-name" targets="Class boto.sqs.20070501.message.Message=boto.sqs.20070501.message.Message-class.html,Class boto.sqs.message.Message=boto.sqs.message.Message-class.html"><a title="boto.sqs.20070501.message.Message
+boto.sqs.message.Message" class="py-name" href="#" onclick="return doclink('link-11', 'Message', 'link-11');">Message</a></tt> </tt>
+<a name="L26"></a><tt class="py-lineno"> 26</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-12" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-12', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-13" class="py-name"><a title="boto.sqs" class="py-name" href="#" onclick="return doclink('link-13', 'sqs', 'link-5');">sqs</a></tt><tt class="py-op">.</tt><tt id="link-14" class="py-name" targets="Module boto.sqs.20070501.attributes=boto.sqs.20070501.attributes-module.html,Module boto.sqs.attributes=boto.sqs.attributes-module.html"><a title="boto.sqs.20070501.attributes
+boto.sqs.attributes" class="py-name" href="#" onclick="return doclink('link-14', 'attributes', 'link-14');">attributes</a></tt> <tt class="py-keyword">import</tt> <tt id="link-15" class="py-name" targets="Class boto.sqs.20070501.attributes.Attributes=boto.sqs.20070501.attributes.Attributes-class.html,Class boto.sqs.attributes.Attributes=boto.sqs.attributes.Attributes-class.html"><a title="boto.sqs.20070501.attributes.Attributes
+boto.sqs.attributes.Attributes" class="py-name" href="#" onclick="return doclink('link-15', 'Attributes', 'link-15');">Attributes</a></tt> </tt>
+<a name="L27"></a><tt class="py-lineno"> 27</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-16" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-16', 'boto', 'link-0');">boto</a></tt> <tt class="py-keyword">import</tt> <tt id="link-17" class="py-name" targets="Module boto.handler=boto.handler-module.html"><a title="boto.handler" class="py-name" href="#" onclick="return doclink('link-17', 'handler', 'link-17');">handler</a></tt> </tt>
+<a name="L28"></a><tt class="py-lineno"> 28</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-18" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-18', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-19" class="py-name" targets="Module boto.resultset=boto.resultset-module.html"><a title="boto.resultset" class="py-name" href="#" onclick="return doclink('link-19', 'resultset', 'link-19');">resultset</a></tt> <tt class="py-keyword">import</tt> <tt id="link-20" class="py-name" targets="Class boto.resultset.ResultSet=boto.resultset.ResultSet-class.html"><a title="boto.resultset.ResultSet" class="py-name" href="#" onclick="return doclink('link-20', 'ResultSet', 'link-20');">ResultSet</a></tt> </tt>
+<a name="L29"></a><tt class="py-lineno"> 29</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-21" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-21', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-22" class="py-name" targets="Module boto.cloudfront.exception=boto.cloudfront.exception-module.html,Module boto.exception=boto.exception-module.html"><a title="boto.cloudfront.exception
+boto.exception" class="py-name" href="#" onclick="return doclink('link-22', 'exception', 'link-22');">exception</a></tt> <tt class="py-keyword">import</tt> <tt id="link-23" class="py-name" targets="Class boto.exception.SQSError=boto.exception.SQSError-class.html"><a title="boto.exception.SQSError" class="py-name" href="#" onclick="return doclink('link-23', 'SQSError', 'link-23');">SQSError</a></tt> </tt>
+<a name="L30"></a><tt class="py-lineno"> 30</tt>  <tt class="py-line"> </tt>
+<a name="L31"></a><tt class="py-lineno"> 31</tt>  <tt class="py-line"><tt id="link-24" class="py-name" targets="Variable boto.sqs.20070501.connection.PERM_ReceiveMessage=boto.sqs.20070501.connection-module.html#PERM_ReceiveMessage,Variable boto.sqs.connection.PERM_ReceiveMessage=boto.sqs.connection-module.html#PERM_ReceiveMessage"><a title="boto.sqs.20070501.connection.PERM_ReceiveMessage
+boto.sqs.connection.PERM_ReceiveMessage" class="py-name" href="#" onclick="return doclink('link-24', 'PERM_ReceiveMessage', 'link-24');">PERM_ReceiveMessage</a></tt> <tt class="py-op">=</tt> <tt class="py-string">'ReceiveMessage'</tt> </tt>
+<a name="L32"></a><tt class="py-lineno"> 32</tt>  <tt class="py-line"><tt id="link-25" class="py-name" targets="Variable boto.sqs.20070501.connection.PERM_SendMessage=boto.sqs.20070501.connection-module.html#PERM_SendMessage,Variable boto.sqs.connection.PERM_SendMessage=boto.sqs.connection-module.html#PERM_SendMessage"><a title="boto.sqs.20070501.connection.PERM_SendMessage
+boto.sqs.connection.PERM_SendMessage" class="py-name" href="#" onclick="return doclink('link-25', 'PERM_SendMessage', 'link-25');">PERM_SendMessage</a></tt> <tt class="py-op">=</tt> <tt class="py-string">'SendMessage'</tt> </tt>
+<a name="L33"></a><tt class="py-lineno"> 33</tt>  <tt class="py-line"><tt id="link-26" class="py-name" targets="Variable boto.sqs.20070501.connection.PERM_FullControl=boto.sqs.20070501.connection-module.html#PERM_FullControl,Variable boto.sqs.connection.PERM_FullControl=boto.sqs.connection-module.html#PERM_FullControl"><a title="boto.sqs.20070501.connection.PERM_FullControl
+boto.sqs.connection.PERM_FullControl" class="py-name" href="#" onclick="return doclink('link-26', 'PERM_FullControl', 'link-26');">PERM_FullControl</a></tt> <tt class="py-op">=</tt> <tt class="py-string">'FullControl'</tt> </tt>
+<a name="L34"></a><tt class="py-lineno"> 34</tt>  <tt class="py-line"> </tt>
+<a name="L35"></a><tt class="py-lineno"> 35</tt>  <tt class="py-line"><tt id="link-27" class="py-name" targets="Variable boto.sqs.20070501.connection.AllPermissions=boto.sqs.20070501.connection-module.html#AllPermissions,Variable boto.sqs.connection.AllPermissions=boto.sqs.connection-module.html#AllPermissions"><a title="boto.sqs.20070501.connection.AllPermissions
+boto.sqs.connection.AllPermissions" class="py-name" href="#" onclick="return doclink('link-27', 'AllPermissions', 'link-27');">AllPermissions</a></tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt id="link-28" class="py-name"><a title="boto.sqs.20070501.connection.PERM_ReceiveMessage
+boto.sqs.connection.PERM_ReceiveMessage" class="py-name" href="#" onclick="return doclink('link-28', 'PERM_ReceiveMessage', 'link-24');">PERM_ReceiveMessage</a></tt><tt class="py-op">,</tt> <tt id="link-29" class="py-name"><a title="boto.sqs.20070501.connection.PERM_SendMessage
+boto.sqs.connection.PERM_SendMessage" class="py-name" href="#" onclick="return doclink('link-29', 'PERM_SendMessage', 'link-25');">PERM_SendMessage</a></tt><tt class="py-op">,</tt> <tt id="link-30" class="py-name"><a title="boto.sqs.20070501.connection.PERM_FullControl
+boto.sqs.connection.PERM_FullControl" class="py-name" href="#" onclick="return doclink('link-30', 'PERM_FullControl', 'link-26');">PERM_FullControl</a></tt><tt class="py-op">]</tt> </tt>
+<a name="L36"></a><tt class="py-lineno"> 36</tt>  <tt class="py-line">                  </tt>
+<a name="SQSQueryConnection"></a><div id="SQSQueryConnection-def"><a name="L37"></a><tt class="py-lineno"> 37</tt> <a class="py-toggle" href="#" id="SQSQueryConnection-toggle" onclick="return toggle('SQSQueryConnection');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="boto.sqs.20070501.connection.SQSQueryConnection-class.html">SQSQueryConnection</a><tt class="py-op">(</tt><tt class="py-base-class">AWSQueryConnection</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SQSQueryConnection-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="SQSQueryConnection-expanded"><a name="L38"></a><tt class="py-lineno"> 38</tt>  <tt class="py-line"> </tt>
+<a name="L39"></a><tt class="py-lineno"> 39</tt>  <tt class="py-line">    <tt class="py-docstring">"""</tt> </tt>
+<a name="L40"></a><tt class="py-lineno"> 40</tt>  <tt class="py-line"><tt class="py-docstring">    This class uses the Query API (boo!) to SQS to access some of the</tt> </tt>
+<a name="L41"></a><tt class="py-lineno"> 41</tt>  <tt class="py-line"><tt class="py-docstring">    new features which have not yet been added to the REST api (yeah!).</tt> </tt>
+<a name="L42"></a><tt class="py-lineno"> 42</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
+<a name="L43"></a><tt class="py-lineno"> 43</tt>  <tt class="py-line">     </tt>
+<a name="L44"></a><tt class="py-lineno"> 44</tt>  <tt class="py-line">    <tt id="link-31" class="py-name" targets="Variable boto.cloudfront.CloudFrontConnection.DefaultHost=boto.cloudfront.CloudFrontConnection-class.html#DefaultHost,Variable boto.s3.connection.S3Connection.DefaultHost=boto.s3.connection.S3Connection-class.html#DefaultHost,Variable boto.sqs.20070501.connection.SQSConnection.DefaultHost=boto.sqs.20070501.connection.SQSConnection-class.html#DefaultHost,Variable boto.sqs.20070501.connection.SQSQueryConnection.DefaultHost=boto.sqs.20070501.connection.SQSQueryConnection-class.html#DefaultHost,Variable boto.sqs.connection.SQSConnection.DefaultHost=boto.sqs.connection.SQSConnection-class.html#DefaultHost"><a title="boto.cloudfront.CloudFrontConnection.DefaultHost
+boto.s3.connection.S3Connection.DefaultHost
+boto.sqs.20070501.connection.SQSConnection.DefaultHost
+boto.sqs.20070501.connection.SQSQueryConnection.DefaultHost
+boto.sqs.connection.SQSConnection.DefaultHost" class="py-name" href="#" onclick="return doclink('link-31', 'DefaultHost', 'link-31');">DefaultHost</a></tt> <tt class="py-op">=</tt> <tt class="py-string">'queue.amazonaws.com'</tt> </tt>
+<a name="L45"></a><tt class="py-lineno"> 45</tt>  <tt class="py-line">    <tt id="link-32" class="py-name" targets="Variable boto.connection.AWSQueryConnection.APIVersion=boto.connection.AWSQueryConnection-class.html#APIVersion,Variable boto.ec2.connection.EC2Connection.APIVersion=boto.ec2.connection.EC2Connection-class.html#APIVersion,Variable boto.fps.connection.FPSConnection.APIVersion=boto.fps.connection.FPSConnection-class.html#APIVersion,Variable boto.mturk.connection.MTurkConnection.APIVersion=boto.mturk.connection.MTurkConnection-class.html#APIVersion,Variable boto.sdb.connection.SDBConnection.APIVersion=boto.sdb.connection.SDBConnection-class.html#APIVersion,Variable boto.sqs.20070501.connection.SQSConnection.APIVersion=boto.sqs.20070501.connection.SQSConnection-class.html#APIVersion,Variable boto.sqs.20070501.connection.SQSQueryConnection.APIVersion=boto.sqs.20070501.connection.SQSQueryConnection-class.html#APIVersion,Variable boto.sqs.connection.SQSConnection.APIVersion=boto.sqs.connection.SQSConnection-class.html#APIVersion"><a title="boto.connection.AWSQueryConnection.APIVersion
+boto.ec2.connection.EC2Connection.APIVersion
+boto.fps.connection.FPSConnection.APIVersion
+boto.mturk.connection.MTurkConnection.APIVersion
+boto.sdb.connection.SDBConnection.APIVersion
+boto.sqs.20070501.connection.SQSConnection.APIVersion
+boto.sqs.20070501.connection.SQSQueryConnection.APIVersion
+boto.sqs.connection.SQSConnection.APIVersion" class="py-name" href="#" onclick="return doclink('link-32', 'APIVersion', 'link-32');">APIVersion</a></tt> <tt class="py-op">=</tt> <tt class="py-string">'2007-05-01'</tt> </tt>
+<a name="L46"></a><tt class="py-lineno"> 46</tt>  <tt class="py-line">    <tt id="link-33" class="py-name" targets="Variable boto.connection.AWSQueryConnection.SignatureVersion=boto.connection.AWSQueryConnection-class.html#SignatureVersion,Variable boto.ec2.connection.EC2Connection.SignatureVersion=boto.ec2.connection.EC2Connection-class.html#SignatureVersion,Variable boto.fps.connection.FPSConnection.SignatureVersion=boto.fps.connection.FPSConnection-class.html#SignatureVersion,Variable boto.mturk.connection.MTurkConnection.SignatureVersion=boto.mturk.connection.MTurkConnection-class.html#SignatureVersion,Variable boto.sdb.connection.SDBConnection.SignatureVersion=boto.sdb.connection.SDBConnection-class.html#SignatureVersion,Variable boto.sqs.20070501.connection.SQSQueryConnection.SignatureVersion=boto.sqs.20070501.connection.SQSQueryConnection-class.html#SignatureVersion,Variable boto.sqs.connection.SQSConnection.SignatureVersion=boto.sqs.connection.SQSConnection-class.html#SignatureVersion"><a title="boto.connection.AWSQueryConnection.SignatureVersion
+boto.ec2.connection.EC2Connection.SignatureVersion
+boto.fps.connection.FPSConnection.SignatureVersion
+boto.mturk.connection.MTurkConnection.SignatureVersion
+boto.sdb.connection.SDBConnection.SignatureVersion
+boto.sqs.20070501.connection.SQSQueryConnection.SignatureVersion
+boto.sqs.connection.SQSConnection.SignatureVersion" class="py-name" href="#" onclick="return doclink('link-33', 'SignatureVersion', 'link-33');">SignatureVersion</a></tt> <tt class="py-op">=</tt> <tt class="py-string">'1'</tt> </tt>
+<a name="L47"></a><tt class="py-lineno"> 47</tt>  <tt class="py-line">    <tt id="link-34" class="py-name" targets="Variable boto.s3.key.Key.DefaultContentType=boto.s3.key.Key-class.html#DefaultContentType,Variable boto.sqs.20070501.connection.SQSConnection.DefaultContentType=boto.sqs.20070501.connection.SQSConnection-class.html#DefaultContentType,Variable boto.sqs.20070501.connection.SQSQueryConnection.DefaultContentType=boto.sqs.20070501.connection.SQSQueryConnection-class.html#DefaultContentType,Variable boto.sqs.connection.SQSConnection.DefaultContentType=boto.sqs.connection.SQSConnection-class.html#DefaultContentType"><a title="boto.s3.key.Key.DefaultContentType
+boto.sqs.20070501.connection.SQSConnection.DefaultContentType
+boto.sqs.20070501.connection.SQSQueryConnection.DefaultContentType
+boto.sqs.connection.SQSConnection.DefaultContentType" class="py-name" href="#" onclick="return doclink('link-34', 'DefaultContentType', 'link-34');">DefaultContentType</a></tt> <tt class="py-op">=</tt> <tt class="py-string">'text/plain'</tt> </tt>
+<a name="L48"></a><tt class="py-lineno"> 48</tt>  <tt class="py-line">     </tt>
+<a name="SQSQueryConnection.__init__"></a><div id="SQSQueryConnection.__init__-def"><a name="L49"></a><tt class="py-lineno"> 49</tt> <a class="py-toggle" href="#" id="SQSQueryConnection.__init__-toggle" onclick="return toggle('SQSQueryConnection.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sqs.20070501.connection.SQSQueryConnection-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">aws_access_key_id</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-param">aws_secret_access_key</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> </tt>
+<a name="L50"></a><tt class="py-lineno"> 50</tt>  <tt class="py-line">                 <tt class="py-param">is_secure</tt><tt class="py-op">=</tt><tt class="py-name">False</tt><tt class="py-op">,</tt> <tt class="py-param">port</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-param">proxy</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-param">proxy_port</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> </tt>
+<a name="L51"></a><tt class="py-lineno"> 51</tt>  <tt class="py-line">                 <tt class="py-param">host</tt><tt class="py-op">=</tt><tt id="link-35" class="py-name"><a title="boto.cloudfront.CloudFrontConnection.DefaultHost
+boto.s3.connection.S3Connection.DefaultHost
+boto.sqs.20070501.connection.SQSConnection.DefaultHost
+boto.sqs.20070501.connection.SQSQueryConnection.DefaultHost
+boto.sqs.connection.SQSConnection.DefaultHost" class="py-name" href="#" onclick="return doclink('link-35', 'DefaultHost', 'link-31');">DefaultHost</a></tt><tt class="py-op">,</tt> <tt class="py-param">debug</tt><tt class="py-op">=</tt><tt class="py-number">0</tt><tt class="py-op">,</tt> <tt class="py-param">https_connection_factory</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SQSQueryConnection.__init__-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="SQSQueryConnection.__init__-expanded"><a name="L52"></a><tt class="py-lineno"> 52</tt>  <tt class="py-line">        <tt id="link-36" class="py-name"><a title="boto.connection.AWSQueryConnection" class="py-name" href="#" onclick="return doclink('link-36', 'AWSQueryConnection', 'link-3');">AWSQueryConnection</a></tt><tt class="py-op">.</tt><tt id="link-37" class="py-name" targets="Method boto.cloudfront.CloudFrontConnection.__init__()=boto.cloudfront.CloudFrontConnection-class.html#__init__,Method boto.cloudfront.distribution.Distribution.__init__()=boto.cloudfront.distribution.Distribution-class.html#__init__,Method boto.cloudfront.distribution.DistributionConfig.__init__()=boto.cloudfront.distribution.DistributionConfig-class.html#__init__,Method boto.cloudfront.distribution.DistributionSummary.__init__()=boto.cloudfront.distribution.DistributionSummary-class.html#__init__,Method boto.connection.AWSAuthConnection.__init__()=boto.connection.AWSAuthConnection-class.html#__init__,Method boto.connection.AWSQueryConnection.__init__()=boto.connection.AWSQueryConnection-class.html#__init__,Method boto.contrib.ymlmessage.YAMLMessage.__init__()=boto.contrib.ymlmessage.YAMLMessage-class.html#__init__,Method boto.ec2.address.Address.__init__()=boto.ec2.address.Address-class.html#__init__,Method boto.ec2.connection.EC2Connection.__init__()=boto.ec2.connection.EC2Connection-class.html#__init__,Method boto.ec2.ec2object.EC2Object.__init__()=boto.ec2.ec2object.EC2Object-class.html#__init__,Method boto.ec2.image.Image.__init__()=boto.ec2.image.Image-class.html#__init__,Method boto.ec2.image.ImageAttribute.__init__()=boto.ec2.image.ImageAttribute-class.html#__init__,Method boto.ec2.instance.ConsoleOutput.__init__()=boto.ec2.instance.ConsoleOutput-class.html#__init__,Method boto.ec2.instance.Group.__init__()=boto.ec2.instance.Group-class.html#__init__,Method boto.ec2.instance.Instance.__init__()=boto.ec2.instance.Instance-class.html#__init__,Method boto.ec2.instance.Reservation.__init__()=boto.ec2.instance.Reservation-class.html#__init__,Method boto.ec2.keypair.KeyPair.__init__()=boto.ec2.keypair.KeyPair-class.html#__init__,Method boto.ec2.regioninfo.RegionInfo.__init__()=boto.ec2.regioninfo.RegionInfo-class.html#__init__,Method boto.ec2.securitygroup.GroupOrCIDR.__init__()=boto.ec2.securitygroup.GroupOrCIDR-class.html#__init__,Method boto.ec2.securitygroup.IPPermissions.__init__()=boto.ec2.securitygroup.IPPermissions-class.html#__init__,Method boto.ec2.securitygroup.SecurityGroup.__init__()=boto.ec2.securitygroup.SecurityGroup-class.html#__init__,Method boto.ec2.snapshot.Snapshot.__init__()=boto.ec2.snapshot.Snapshot-class.html#__init__,Method boto.ec2.volume.Volume.__init__()=boto.ec2.volume.Volume-class.html#__init__,Method boto.ec2.zone.Zone.__init__()=boto.ec2.zone.Zone-class.html#__init__,Method boto.exception.BotoClientError.__init__()=boto.exception.BotoClientError-class.html#__init__,Method boto.exception.BotoServerError.__init__()=boto.exception.BotoServerError-class.html#__init__,Method boto.exception.ConsoleOutput.__init__()=boto.exception.ConsoleOutput-class.html#__init__,Method boto.exception.EC2ResponseError.__init__()=boto.exception.EC2ResponseError-class.html#__init__,Method boto.exception.S3ResponseError.__init__()=boto.exception.S3ResponseError-class.html#__init__,Method boto.exception.SQSError.__init__()=boto.exception.SQSError-class.html#__init__,Method boto.exception._EC2Error.__init__()=boto.exception._EC2Error-class.html#__init__,Method boto.fps.connection.FPSConnection.__init__()=boto.fps.connection.FPSConnection-class.html#__init__,Method boto.handler.XmlHandler.__init__()=boto.handler.XmlHandler-class.html#__init__,Method boto.mapreduce.lqs.LQSCommand.__init__()=boto.mapreduce.lqs.LQSCommand-class.html#__init__,Method boto.mapreduce.lqs.LQSMessage.__init__()=boto.mapreduce.lqs.LQSMessage-class.html#__init__,Method boto.mapreduce.lqs.LQSServer.__init__()=boto.mapreduce.lqs.LQSServer-class.html#__init__,Method boto.mapreduce.partitiondb.Partition.__init__()=boto.mapreduce.partitiondb.Partition-class.html#__init__,Method boto.mapreduce.partitiondb.PartitionDB.__init__()=boto.mapreduce.partitiondb.PartitionDB-class.html#__init__,Method boto.mapreduce.partitiondb.Version.__init__()=boto.mapreduce.partitiondb.Version-class.html#__init__,Method boto.mapreduce.queuetools.LQSClient.__init__()=boto.mapreduce.queuetools.LQSClient-class.html#__init__,Method boto.mapreduce.queuetools.SQSClient.__init__()=boto.mapreduce.queuetools.SQSClient-class.html#__init__,Method boto.mashups.order.Item.__init__()=boto.mashups.order.Item-class.html#__init__,Method boto.mashups.order.Order.__init__()=boto.mashups.order.Order-class.html#__init__,Method boto.mashups.server.Server.__init__()=boto.mashups.server.Server-class.html#__init__,Method boto.mturk.connection.Assignment.__init__()=boto.mturk.connection.Assignment-class.html#__init__,Method boto.mturk.connection.BaseAutoResultElement.__init__()=boto.mturk.connection.BaseAutoResultElement-class.html#__init__,Method boto.mturk.connection.MTurkConnection.__init__()=boto.mturk.connection.MTurkConnection-class.html#__init__,Method boto.mturk.notification.Event.__init__()=boto.mturk.notification.Event-class.html#__init__,Method boto.mturk.notification.NotificationMessage.__init__()=boto.mturk.notification.NotificationMessage-class.html#__init__,Method boto.mturk.price.Price.__init__()=boto.mturk.price.Price-class.html#__init__,Method boto.mturk.qualification.PercentAssignmentsAbandonedRequirement.__init__()=boto.mturk.qualification.PercentAssignmentsAbandonedRequirement-class.html#__init__,Method boto.mturk.qualification.PercentAssignmentsApprovedRequirement.__init__()=boto.mturk.qualification.PercentAssignmentsApprovedRequirement-class.html#__init__,Method boto.mturk.qualification.PercentAssignmentsRejectedRequirement.__init__()=boto.mturk.qualification.PercentAssignmentsRejectedRequirement-class.html#__init__,Method boto.mturk.qualification.PercentAssignmentsReturnedRequirement.__init__()=boto.mturk.qualification.PercentAssignmentsReturnedRequirement-class.html#__init__,Method boto.mturk.qualification.PercentAssignmentsSubmittedRequirement.__init__()=boto.mturk.qualification.PercentAssignmentsSubmittedRequirement-class.html#__init__,Method boto.mturk.qualification.Qualifications.__init__()=boto.mturk.qualification.Qualifications-class.html#__init__,Method boto.mturk.qualification.Requirement.__init__()=boto.mturk.qualification.Requirement-class.html#__init__,Method boto.mturk.question.AnswerSpecification.__init__()=boto.mturk.question.AnswerSpecification-class.html#__init__,Method boto.mturk.question.ExternalQuestion.__init__()=boto.mturk.question.ExternalQuestion-class.html#__init__,Method boto.mturk.question.FileUploadAnswer.__init__()=boto.mturk.question.FileUploadAnswer-class.html#__init__,Method boto.mturk.question.FreeTextAnswer.__init__()=boto.mturk.question.FreeTextAnswer-class.html#__init__,Method boto.mturk.question.Question.__init__()=boto.mturk.question.Question-class.html#__init__,Method boto.mturk.question.QuestionContent.__init__()=boto.mturk.question.QuestionContent-class.html#__init__,Method boto.mturk.question.QuestionForm.__init__()=boto.mturk.question.QuestionForm-class.html#__init__,Method boto.mturk.question.SelectionAnswer.__init__()=boto.mturk.question.SelectionAnswer-class.html#__init__,Method boto.pyami.bootstrap.Bootstrap.__init__()=boto.pyami.bootstrap.Bootstrap-class.html#__init__,Method boto.pyami.config.Config.__init__()=boto.pyami.config.Config-class.html#__init__,Method boto.pyami.copybot.CopyBot.__init__()=boto.pyami.copybot.CopyBot-class.html#__init__,Method boto.pyami.scriptbase.ScriptBase.__init__()=boto.pyami.scriptbase.ScriptBase-class.html#__init__,Method boto.resultset.ResultSet.__init__()=boto.resultset.ResultSet-class.html#__init__,Method boto.s3.acl.ACL.__init__()=boto.s3.acl.ACL-class.html#__init__,Method boto.s3.acl.Grant.__init__()=boto.s3.acl.Grant-class.html#__init__,Method boto.s3.acl.Policy.__init__()=boto.s3.acl.Policy-class.html#__init__,Method boto.s3.bucket.Bucket.__init__()=boto.s3.bucket.Bucket-class.html#__init__,Method boto.s3.bucketlistresultset.BucketListResultSet.__init__()=boto.s3.bucketlistresultset.BucketListResultSet-class.html#__init__,Method boto.s3.connection.S3Connection.__init__()=boto.s3.connection.S3Connection-class.html#__init__,Method boto.s3.key.Key.__init__()=boto.s3.key.Key-class.html#__init__,Method boto.s3.prefix.Prefix.__init__()=boto.s3.prefix.Prefix-class.html#__init__,Method boto.s3.user.User.__init__()=boto.s3.user.User-class.html#__init__,Method boto.sdb.connection.ItemThread.__init__()=boto.sdb.connection.ItemThread-class.html#__init__,Method boto.sdb.connection.SDBConnection.__init__()=boto.sdb.connection.SDBConnection-class.html#__init__,Method boto.sdb.db.key.Key.__init__()=boto.sdb.db.key.Key-class.html#__init__,Method boto.sdb.db.manager.pgmanager.PGConverter.__init__()=boto.sdb.db.manager.pgmanager.PGConverter-class.html#__init__,Method boto.sdb.db.manager.pgmanager.PGManager.__init__()=boto.sdb.db.manager.pgmanager.PGManager-class.html#__init__,Method boto.sdb.db.manager.sdbmanager.SDBConverter.__init__()=boto.sdb.db.manager.sdbmanager.SDBConverter-class.html#__init__,Method boto.sdb.db.manager.sdbmanager.SDBManager.__init__()=boto.sdb.db.manager.sdbmanager.SDBManager-class.html#__init__,Method boto.sdb.db.model.Model.__init__()=boto.sdb.db.model.Model-class.html#__init__,Method boto.sdb.db.model.Model.__init__()=boto.sdb.db.model.Model-class.html#__init__,Method boto.sdb.db.model.ModelMeta.__init__()=boto.sdb.db.model.ModelMeta-class.html#__init__,Method boto.sdb.db.model.ModelMeta.__init__()=boto.sdb.db.model.ModelMeta-class.html#__init__,Method boto.sdb.db.property.BooleanProperty.__init__()=boto.sdb.db.property.BooleanProperty-class.html#__init__,Method boto.sdb.db.property.CalculatedProperty.__init__()=boto.sdb.db.property.CalculatedProperty-class.html#__init__,Method boto.sdb.db.property.DateTimeProperty.__init__()=boto.sdb.db.property.DateTimeProperty-class.html#__init__,Method boto.sdb.db.property.IntegerProperty.__init__()=boto.sdb.db.property.IntegerProperty-class.html#__init__,Method boto.sdb.db.property.ListProperty.__init__()=boto.sdb.db.property.ListProperty-class.html#__init__,Method boto.sdb.db.property.LongProperty.__init__()=boto.sdb.db.property.LongProperty-class.html#__init__,Method boto.sdb.db.property.PasswordProperty.__init__()=boto.sdb.db.property.PasswordProperty-class.html#__init__,Method boto.sdb.db.property.Property.__init__()=boto.sdb.db.property.Property-class.html#__init__,Method boto.sdb.db.property.ReferenceProperty.__init__()=boto.sdb.db.property.ReferenceProperty-class.html#__init__,Method boto.sdb.db.property.S3KeyProperty.__init__()=boto.sdb.db.property.S3KeyProperty-class.html#__init__,Method boto.sdb.db.property.StringProperty.__init__()=boto.sdb.db.property.StringProperty-class.html#__init__,Method boto.sdb.db.property.TextProperty.__init__()=boto.sdb.db.property.TextProperty-class.html#__init__,Method boto.sdb.db.property._ReverseReferenceProperty.__init__()=boto.sdb.db.property._ReverseReferenceProperty-class.html#__init__,Method boto.sdb.db.query.Query.__init__()=boto.sdb.db.query.Query-class.html#__init__,Method boto.sdb.domain.Domain.__init__()=boto.sdb.domain.Domain-class.html#__init__,Method boto.sdb.domain.DomainMetaData.__init__()=boto.sdb.domain.DomainMetaData-class.html#__init__,Method boto.sdb.item.Item.__init__()=boto.sdb.item.Item-class.html#__init__,Method boto.sdb.persist.Manager.__init__()=boto.sdb.persist.Manager-class.html#__init__,Method boto.sdb.persist.checker.BooleanChecker.__init__()=boto.sdb.persist.checker.BooleanChecker-class.html#__init__,Method boto.sdb.persist.checker.DateTimeChecker.__init__()=boto.sdb.persist.checker.DateTimeChecker-class.html#__init__,Method boto.sdb.persist.checker.IntegerChecker.__init__()=boto.sdb.persist.checker.IntegerChecker-class.html#__init__,Method boto.sdb.persist.checker.ObjectChecker.__init__()=boto.sdb.persist.checker.ObjectChecker-class.html#__init__,Method boto.sdb.persist.checker.S3BucketChecker.__init__()=boto.sdb.persist.checker.S3BucketChecker-class.html#__init__,Method boto.sdb.persist.checker.S3KeyChecker.__init__()=boto.sdb.persist.checker.S3KeyChecker-class.html#__init__,Method boto.sdb.persist.checker.StringChecker.__init__()=boto.sdb.persist.checker.StringChecker-class.html#__init__,Method boto.sdb.persist.object.SDBBase.__init__()=boto.sdb.persist.object.SDBBase-class.html#__init__,Method boto.sdb.persist.object.SDBObject.__init__()=boto.sdb.persist.object.SDBObject-class.html#__init__,Method boto.sdb.persist.property.BooleanListProperty.__init__()=boto.sdb.persist.property.BooleanListProperty-class.html#__init__,Method boto.sdb.persist.property.BooleanProperty.__init__()=boto.sdb.persist.property.BooleanProperty-class.html#__init__,Method boto.sdb.persist.property.DateTimeProperty.__init__()=boto.sdb.persist.property.DateTimeProperty-class.html#__init__,Method boto.sdb.persist.property.IntegerListProperty.__init__()=boto.sdb.persist.property.IntegerListProperty-class.html#__init__,Method boto.sdb.persist.property.IntegerProperty.__init__()=boto.sdb.persist.property.IntegerProperty-class.html#__init__,Method boto.sdb.persist.property.LargeIntegerListProperty.__init__()=boto.sdb.persist.property.LargeIntegerListProperty-class.html#__init__,Method boto.sdb.persist.property.LargeIntegerProperty.__init__()=boto.sdb.persist.property.LargeIntegerProperty-class.html#__init__,Method boto.sdb.persist.property.LargePositiveIntegerListProperty.__init__()=boto.sdb.persist.property.LargePositiveIntegerListProperty-class.html#__init__,Method boto.sdb.persist.property.LargePositiveIntegerProperty.__init__()=boto.sdb.persist.property.LargePositiveIntegerProperty-class.html#__init__,Method boto.sdb.persist.property.MultiValue.__init__()=boto.sdb.persist.property.MultiValue-class.html#__init__,Method boto.sdb.persist.property.MultiValueProperty.__init__()=boto.sdb.persist.property.MultiValueProperty-class.html#__init__,Method boto.sdb.persist.property.ObjectListProperty.__init__()=boto.sdb.persist.property.ObjectListProperty-class.html#__init__,Method boto.sdb.persist.property.ObjectProperty.__init__()=boto.sdb.persist.property.ObjectProperty-class.html#__init__,Method boto.sdb.persist.property.PasswordProperty.__init__()=boto.sdb.persist.property.PasswordProperty-class.html#__init__,Method boto.sdb.persist.property.PositiveIntegerListProperty.__init__()=boto.sdb.persist.property.PositiveIntegerListProperty-class.html#__init__,Method boto.sdb.persist.property.PositiveIntegerProperty.__init__()=boto.sdb.persist.property.PositiveIntegerProperty-class.html#__init__,Method boto.sdb.persist.property.Property.__init__()=boto.sdb.persist.property.Property-class.html#__init__,Method boto.sdb.persist.property.S3BucketProperty.__init__()=boto.sdb.persist.property.S3BucketProperty-class.html#__init__,Method boto.sdb.persist.property.S3KeyProperty.__init__()=boto.sdb.persist.property.S3KeyProperty-class.html#__init__,Method boto.sdb.persist.property.SmallIntegerListProperty.__init__()=boto.sdb.persist.property.SmallIntegerListProperty-class.html#__init__,Method boto.sdb.persist.property.SmallIntegerProperty.__init__()=boto.sdb.persist.property.SmallIntegerProperty-class.html#__init__,Method boto.sdb.persist.property.SmallPositiveIntegerListProperty.__init__()=boto.sdb.persist.property.SmallPositiveIntegerListProperty-class.html#__init__,Method boto.sdb.persist.property.SmallPositiveIntegerProperty.__init__()=boto.sdb.persist.property.SmallPositiveIntegerProperty-class.html#__init__,Method boto.sdb.persist.property.StringListProperty.__init__()=boto.sdb.persist.property.StringListProperty-class.html#__init__,Method boto.sdb.persist.property.StringProperty.__init__()=boto.sdb.persist.property.StringProperty-class.html#__init__,Method boto.sdb.queryresultset.QueryResultSet.__init__()=boto.sdb.queryresultset.QueryResultSet-class.html#__init__,Method boto.services.bs.BS.__init__()=boto.services.bs.BS-class.html#__init__,Method boto.services.result.ResultProcessor.__init__()=boto.services.result.ResultProcessor-class.html#__init__,Method boto.services.service.Service.__init__()=boto.services.service.Service-class.html#__init__,Method boto.services.servicedef.ServiceDef.__init__()=boto.services.servicedef.ServiceDef-class.html#__init__,Method boto.services.sonofmmm.SonOfMMM.__init__()=boto.services.sonofmmm.SonOfMMM-class.html#__init__,Method boto.services.submit.Submitter.__init__()=boto.services.submit.Submitter-class.html#__init__,Method boto.sqs.20070501.attributes.Attributes.__init__()=boto.sqs.20070501.attributes.Attributes-class.html#__init__,Method boto.sqs.20070501.connection.SQSConnection.__init__()=boto.sqs.20070501.connection.SQSConnection-class.html#__init__,Method boto.sqs.20070501.connection.SQSQueryConnection.__init__()=boto.sqs.20070501.connection.SQSQueryConnection-class.html#__init__,Method boto.sqs.20070501.message.MHMessage.__init__()=boto.sqs.20070501.message.MHMessage-class.html#__init__,Method boto.sqs.20070501.message.RawMessage.__init__()=boto.sqs.20070501.message.RawMessage-class.html#__init__,Method boto.sqs.20070501.queue.Queue.__init__()=boto.sqs.20070501.queue.Queue-class.html#__init__,Method boto.sqs.attributes.Attributes.__init__()=boto.sqs.attributes.Attributes-class.html#__init__,Method boto.sqs.connection.SQSConnection.__init__()=boto.sqs.connection.SQSConnection-class.html#__init__,Method boto.sqs.message.MHMessage.__init__()=boto.sqs.message.MHMessage-class.html#__init__,Method boto.sqs.message.RawMessage.__init__()=boto.sqs.message.RawMessage-class.html#__init__,Method boto.sqs.queue.Queue.__init__()=boto.sqs.queue.Queue-class.html#__init__,Method boto.utils.AuthSMTPHandler.__init__()=boto.utils.AuthSMTPHandler-class.html#__init__,Method boto.utils.LRUCache._Item.__init__()=boto.utils.LRUCache._Item-class.html#__init__,Method boto.utils.LRUCache.__init__()=boto.utils.LRUCache-class.html#__init__,Method boto.utils.Password.__init__()=boto.utils.Password-class.html#__init__,Method boto.utils.ShellCommand.__init__()=boto.utils.ShellCommand-class.html#__init__"><a title="boto.cloudfront.CloudFrontConnection.__init__
+boto.cloudfront.distribution.Distribution.__init__
+boto.cloudfront.distribution.DistributionConfig.__init__
+boto.cloudfront.distribution.DistributionSummary.__init__
+boto.connection.AWSAuthConnection.__init__
+boto.connection.AWSQueryConnection.__init__
+boto.contrib.ymlmessage.YAMLMessage.__init__
+boto.ec2.address.Address.__init__
+boto.ec2.connection.EC2Connection.__init__
+boto.ec2.ec2object.EC2Object.__init__
+boto.ec2.image.Image.__init__
+boto.ec2.image.ImageAttribute.__init__
+boto.ec2.instance.ConsoleOutput.__init__
+boto.ec2.instance.Group.__init__
+boto.ec2.instance.Instance.__init__
+boto.ec2.instance.Reservation.__init__
+boto.ec2.keypair.KeyPair.__init__
+boto.ec2.regioninfo.RegionInfo.__init__
+boto.ec2.securitygroup.GroupOrCIDR.__init__
+boto.ec2.securitygroup.IPPermissions.__init__
+boto.ec2.securitygroup.SecurityGroup.__init__
+boto.ec2.snapshot.Snapshot.__init__
+boto.ec2.volume.Volume.__init__
+boto.ec2.zone.Zone.__init__
+boto.exception.BotoClientError.__init__
+boto.exception.BotoServerError.__init__
+boto.exception.ConsoleOutput.__init__
+boto.exception.EC2ResponseError.__init__
+boto.exception.S3ResponseError.__init__
+boto.exception.SQSError.__init__
+boto.exception._EC2Error.__init__
+boto.fps.connection.FPSConnection.__init__
+boto.handler.XmlHandler.__init__
+boto.mapreduce.lqs.LQSCommand.__init__
+boto.mapreduce.lqs.LQSMessage.__init__
+boto.mapreduce.lqs.LQSServer.__init__
+boto.mapreduce.partitiondb.Partition.__init__
+boto.mapreduce.partitiondb.PartitionDB.__init__
+boto.mapreduce.partitiondb.Version.__init__
+boto.mapreduce.queuetools.LQSClient.__init__
+boto.mapreduce.queuetools.SQSClient.__init__
+boto.mashups.order.Item.__init__
+boto.mashups.order.Order.__init__
+boto.mashups.server.Server.__init__
+boto.mturk.connection.Assignment.__init__
+boto.mturk.connection.BaseAutoResultElement.__init__
+boto.mturk.connection.MTurkConnection.__init__
+boto.mturk.notification.Event.__init__
+boto.mturk.notification.NotificationMessage.__init__
+boto.mturk.price.Price.__init__
+boto.mturk.qualification.PercentAssignmentsAbandonedRequirement.__init__
+boto.mturk.qualification.PercentAssignmentsApprovedRequirement.__init__
+boto.mturk.qualification.PercentAssignmentsRejectedRequirement.__init__
+boto.mturk.qualification.PercentAssignmentsReturnedRequirement.__init__
+boto.mturk.qualification.PercentAssignmentsSubmittedRequirement.__init__
+boto.mturk.qualification.Qualifications.__init__
+boto.mturk.qualification.Requirement.__init__
+boto.mturk.question.AnswerSpecification.__init__
+boto.mturk.question.ExternalQuestion.__init__
+boto.mturk.question.FileUploadAnswer.__init__
+boto.mturk.question.FreeTextAnswer.__init__
+boto.mturk.question.Question.__init__
+boto.mturk.question.QuestionContent.__init__
+boto.mturk.question.QuestionForm.__init__
+boto.mturk.question.SelectionAnswer.__init__
+boto.pyami.bootstrap.Bootstrap.__init__
+boto.pyami.config.Config.__init__
+boto.pyami.copybot.CopyBot.__init__
+boto.pyami.scriptbase.ScriptBase.__init__
+boto.resultset.ResultSet.__init__
+boto.s3.acl.ACL.__init__
+boto.s3.acl.Grant.__init__
+boto.s3.acl.Policy.__init__
+boto.s3.bucket.Bucket.__init__
+boto.s3.bucketlistresultset.BucketListResultSet.__init__
+boto.s3.connection.S3Connection.__init__
+boto.s3.key.Key.__init__
+boto.s3.prefix.Prefix.__init__
+boto.s3.user.User.__init__
+boto.sdb.connection.ItemThread.__init__
+boto.sdb.connection.SDBConnection.__init__
+boto.sdb.db.key.Key.__init__
+boto.sdb.db.manager.pgmanager.PGConverter.__init__
+boto.sdb.db.manager.pgmanager.PGManager.__init__
+boto.sdb.db.manager.sdbmanager.SDBConverter.__init__
+boto.sdb.db.manager.sdbmanager.SDBManager.__init__
+boto.sdb.db.model.Model.__init__
+boto.sdb.db.model.Model.__init__
+boto.sdb.db.model.ModelMeta.__init__
+boto.sdb.db.model.ModelMeta.__init__
+boto.sdb.db.property.BooleanProperty.__init__
+boto.sdb.db.property.CalculatedProperty.__init__
+boto.sdb.db.property.DateTimeProperty.__init__
+boto.sdb.db.property.IntegerProperty.__init__
+boto.sdb.db.property.ListProperty.__init__
+boto.sdb.db.property.LongProperty.__init__
+boto.sdb.db.property.PasswordProperty.__init__
+boto.sdb.db.property.Property.__init__
+boto.sdb.db.property.ReferenceProperty.__init__
+boto.sdb.db.property.S3KeyProperty.__init__
+boto.sdb.db.property.StringProperty.__init__
+boto.sdb.db.property.TextProperty.__init__
+boto.sdb.db.property._ReverseReferenceProperty.__init__
+boto.sdb.db.query.Query.__init__
+boto.sdb.domain.Domain.__init__
+boto.sdb.domain.DomainMetaData.__init__
+boto.sdb.item.Item.__init__
+boto.sdb.persist.Manager.__init__
+boto.sdb.persist.checker.BooleanChecker.__init__
+boto.sdb.persist.checker.DateTimeChecker.__init__
+boto.sdb.persist.checker.IntegerChecker.__init__
+boto.sdb.persist.checker.ObjectChecker.__init__
+boto.sdb.persist.checker.S3BucketChecker.__init__
+boto.sdb.persist.checker.S3KeyChecker.__init__
+boto.sdb.persist.checker.StringChecker.__init__
+boto.sdb.persist.object.SDBBase.__init__
+boto.sdb.persist.object.SDBObject.__init__
+boto.sdb.persist.property.BooleanListProperty.__init__
+boto.sdb.persist.property.BooleanProperty.__init__
+boto.sdb.persist.property.DateTimeProperty.__init__
+boto.sdb.persist.property.IntegerListProperty.__init__
+boto.sdb.persist.property.IntegerProperty.__init__
+boto.sdb.persist.property.LargeIntegerListProperty.__init__
+boto.sdb.persist.property.LargeIntegerProperty.__init__
+boto.sdb.persist.property.LargePositiveIntegerListProperty.__init__
+boto.sdb.persist.property.LargePositiveIntegerProperty.__init__
+boto.sdb.persist.property.MultiValue.__init__
+boto.sdb.persist.property.MultiValueProperty.__init__
+boto.sdb.persist.property.ObjectListProperty.__init__
+boto.sdb.persist.property.ObjectProperty.__init__
+boto.sdb.persist.property.PasswordProperty.__init__
+boto.sdb.persist.property.PositiveIntegerListProperty.__init__
+boto.sdb.persist.property.PositiveIntegerProperty.__init__
+boto.sdb.persist.property.Property.__init__
+boto.sdb.persist.property.S3BucketProperty.__init__
+boto.sdb.persist.property.S3KeyProperty.__init__
+boto.sdb.persist.property.SmallIntegerListProperty.__init__
+boto.sdb.persist.property.SmallIntegerProperty.__init__
+boto.sdb.persist.property.SmallPositiveIntegerListProperty.__init__
+boto.sdb.persist.property.SmallPositiveIntegerProperty.__init__
+boto.sdb.persist.property.StringListProperty.__init__
+boto.sdb.persist.property.StringProperty.__init__
+boto.sdb.queryresultset.QueryResultSet.__init__
+boto.services.bs.BS.__init__
+boto.services.result.ResultProcessor.__init__
+boto.services.service.Service.__init__
+boto.services.servicedef.ServiceDef.__init__
+boto.services.sonofmmm.SonOfMMM.__init__
+boto.services.submit.Submitter.__init__
+boto.sqs.20070501.attributes.Attributes.__init__
+boto.sqs.20070501.connection.SQSConnection.__init__
+boto.sqs.20070501.connection.SQSQueryConnection.__init__
+boto.sqs.20070501.message.MHMessage.__init__
+boto.sqs.20070501.message.RawMessage.__init__
+boto.sqs.20070501.queue.Queue.__init__
+boto.sqs.attributes.Attributes.__init__
+boto.sqs.connection.SQSConnection.__init__
+boto.sqs.message.MHMessage.__init__
+boto.sqs.message.RawMessage.__init__
+boto.sqs.queue.Queue.__init__
+boto.utils.AuthSMTPHandler.__init__
+boto.utils.LRUCache._Item.__init__
+boto.utils.LRUCache.__init__
+boto.utils.Password.__init__
+boto.utils.ShellCommand.__init__" class="py-name" href="#" onclick="return doclink('link-37', '__init__', 'link-37');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt> <tt class="py-name">aws_access_key_id</tt><tt class="py-op">,</tt> </tt>
+<a name="L53"></a><tt class="py-lineno"> 53</tt>  <tt class="py-line">                                    <tt class="py-name">aws_secret_access_key</tt><tt class="py-op">,</tt> </tt>
+<a name="L54"></a><tt class="py-lineno"> 54</tt>  <tt class="py-line">                                    <tt class="py-name">is_secure</tt><tt class="py-op">,</tt> <tt class="py-name">port</tt><tt class="py-op">,</tt> <tt class="py-name">proxy</tt><tt class="py-op">,</tt> <tt class="py-name">proxy_port</tt><tt class="py-op">,</tt> </tt>
+<a name="L55"></a><tt class="py-lineno"> 55</tt>  <tt class="py-line">                                    <tt class="py-name">host</tt><tt class="py-op">,</tt> <tt class="py-name">debug</tt><tt class="py-op">,</tt> <tt id="link-38" class="py-name" targets="Function boto.contrib.m2helpers.https_connection_factory()=boto.contrib.m2helpers-module.html#https_connection_factory"><a title="boto.contrib.m2helpers.https_connection_factory" class="py-name" href="#" onclick="return doclink('link-38', 'https_connection_factory', 'link-38');">https_connection_factory</a></tt><tt class="py-op">)</tt> </tt>
+</div><a name="L56"></a><tt class="py-lineno"> 56</tt>  <tt class="py-line"> </tt>
+<a name="SQSQueryConnection.get_queue_attributes"></a><div id="SQSQueryConnection.get_queue_attributes-def"><a name="L57"></a><tt class="py-lineno"> 57</tt> <a class="py-toggle" href="#" id="SQSQueryConnection.get_queue_attributes-toggle" onclick="return toggle('SQSQueryConnection.get_queue_attributes');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sqs.20070501.connection.SQSQueryConnection-class.html#get_queue_attributes">get_queue_attributes</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">queue_url</tt><tt class="py-op">,</tt> <tt class="py-param">attribute</tt><tt class="py-op">=</tt><tt class="py-string">'All'</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SQSQueryConnection.get_queue_attributes-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="SQSQueryConnection.get_queue_attributes-expanded"><a name="L58"></a><tt class="py-lineno"> 58</tt>  <tt class="py-line">        <tt class="py-name">params</tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt><tt class="py-string">'Attribute'</tt> <tt class="py-op">:</tt> <tt class="py-name">attribute</tt><tt class="py-op">}</tt> </tt>
+<a name="L59"></a><tt class="py-lineno"> 59</tt>  <tt class="py-line">        <tt class="py-name">response</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-39" class="py-name" targets="Method boto.connection.AWSAuthConnection.make_request()=boto.connection.AWSAuthConnection-class.html#make_request,Method boto.connection.AWSQueryConnection.make_request()=boto.connection.AWSQueryConnection-class.html#make_request,Method boto.s3.connection.S3Connection.make_request()=boto.s3.connection.S3Connection-class.html#make_request,Method boto.sqs.20070501.connection.SQSConnection.make_request()=boto.sqs.20070501.connection.SQSConnection-class.html#make_request"><a title="boto.connection.AWSAuthConnection.make_request
+boto.connection.AWSQueryConnection.make_request
+boto.s3.connection.S3Connection.make_request
+boto.sqs.20070501.connection.SQSConnection.make_request" class="py-name" href="#" onclick="return doclink('link-39', 'make_request', 'link-39');">make_request</a></tt><tt class="py-op">(</tt><tt class="py-string">'GetQueueAttributes'</tt><tt class="py-op">,</tt> <tt class="py-name">params</tt><tt class="py-op">,</tt> <tt class="py-name">queue_url</tt><tt class="py-op">)</tt> </tt>
+<a name="L60"></a><tt class="py-lineno"> 60</tt>  <tt class="py-line">        <tt class="py-name">body</tt> <tt class="py-op">=</tt> <tt class="py-name">response</tt><tt class="py-op">.</tt><tt id="link-40" class="py-name" targets="Method boto.s3.key.Key.read()=boto.s3.key.Key-class.html#read,Method boto.sqs.20070501.queue.Queue.read()=boto.sqs.20070501.queue.Queue-class.html#read,Method boto.sqs.queue.Queue.read()=boto.sqs.queue.Queue-class.html#read"><a title="boto.s3.key.Key.read
+boto.sqs.20070501.queue.Queue.read
+boto.sqs.queue.Queue.read" class="py-name" href="#" onclick="return doclink('link-40', 'read', 'link-40');">read</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L61"></a><tt class="py-lineno"> 61</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">response</tt><tt class="py-op">.</tt><tt id="link-41" class="py-name" targets="Variable boto.mashups.server.Server.status=boto.mashups.server.Server-class.html#status,Variable boto.utils.ShellCommand.status=boto.utils.ShellCommand-class.html#status"><a title="boto.mashups.server.Server.status
+boto.utils.ShellCommand.status" class="py-name" href="#" onclick="return doclink('link-41', 'status', 'link-41');">status</a></tt> <tt class="py-op">==</tt> <tt class="py-number">200</tt><tt class="py-op">:</tt> </tt>
+<a name="L62"></a><tt class="py-lineno"> 62</tt>  <tt class="py-line">            <tt class="py-name">attrs</tt> <tt class="py-op">=</tt> <tt id="link-42" class="py-name"><a title="boto.sqs.20070501.attributes.Attributes
+boto.sqs.attributes.Attributes" class="py-name" href="#" onclick="return doclink('link-42', 'Attributes', 'link-15');">Attributes</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L63"></a><tt class="py-lineno"> 63</tt>  <tt class="py-line">            <tt class="py-name">h</tt> <tt class="py-op">=</tt> <tt id="link-43" class="py-name"><a title="boto.handler" class="py-name" href="#" onclick="return doclink('link-43', 'handler', 'link-17');">handler</a></tt><tt class="py-op">.</tt><tt id="link-44" class="py-name" targets="Class boto.handler.XmlHandler=boto.handler.XmlHandler-class.html"><a title="boto.handler.XmlHandler" class="py-name" href="#" onclick="return doclink('link-44', 'XmlHandler', 'link-44');">XmlHandler</a></tt><tt class="py-op">(</tt><tt class="py-name">attrs</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">)</tt> </tt>
+<a name="L64"></a><tt class="py-lineno"> 64</tt>  <tt class="py-line">            <tt class="py-name">xml</tt><tt class="py-op">.</tt><tt class="py-name">sax</tt><tt class="py-op">.</tt><tt class="py-name">parseString</tt><tt class="py-op">(</tt><tt class="py-name">body</tt><tt class="py-op">,</tt> <tt class="py-name">h</tt><tt class="py-op">)</tt> </tt>
+<a name="L65"></a><tt class="py-lineno"> 65</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt class="py-name">attrs</tt> </tt>
+<a name="L66"></a><tt class="py-lineno"> 66</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L67"></a><tt class="py-lineno"> 67</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-45" class="py-name"><a title="boto.exception.SQSError" class="py-name" href="#" onclick="return doclink('link-45', 'SQSError', 'link-23');">SQSError</a></tt><tt class="py-op">(</tt><tt class="py-name">response</tt><tt class="py-op">.</tt><tt id="link-46" class="py-name"><a title="boto.mashups.server.Server.status
+boto.utils.ShellCommand.status" class="py-name" href="#" onclick="return doclink('link-46', 'status', 'link-41');">status</a></tt><tt class="py-op">,</tt> <tt class="py-name">response</tt><tt class="py-op">.</tt><tt class="py-name">reason</tt><tt class="py-op">,</tt> <tt class="py-name">body</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L68"></a><tt class="py-lineno"> 68</tt>  <tt class="py-line"> </tt>
+<a name="SQSQueryConnection.set_queue_attribute"></a><div id="SQSQueryConnection.set_queue_attribute-def"><a name="L69"></a><tt class="py-lineno"> 69</tt> <a class="py-toggle" href="#" id="SQSQueryConnection.set_queue_attribute-toggle" onclick="return toggle('SQSQueryConnection.set_queue_attribute');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sqs.20070501.connection.SQSQueryConnection-class.html#set_queue_attribute">set_queue_attribute</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">queue_url</tt><tt class="py-op">,</tt> <tt class="py-param">attribute</tt><tt class="py-op">,</tt> <tt class="py-param">value</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SQSQueryConnection.set_queue_attribute-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="SQSQueryConnection.set_queue_attribute-expanded"><a name="L70"></a><tt class="py-lineno"> 70</tt>  <tt class="py-line">        <tt class="py-name">params</tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt><tt class="py-string">'Attribute'</tt> <tt class="py-op">:</tt> <tt class="py-name">attribute</tt><tt class="py-op">,</tt> <tt class="py-string">'Value'</tt> <tt class="py-op">:</tt> <tt class="py-name">value</tt><tt class="py-op">}</tt> </tt>
+<a name="L71"></a><tt class="py-lineno"> 71</tt>  <tt class="py-line">        <tt class="py-name">response</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-47" class="py-name"><a title="boto.connection.AWSAuthConnection.make_request
+boto.connection.AWSQueryConnection.make_request
+boto.s3.connection.S3Connection.make_request
+boto.sqs.20070501.connection.SQSConnection.make_request" class="py-name" href="#" onclick="return doclink('link-47', 'make_request', 'link-39');">make_request</a></tt><tt class="py-op">(</tt><tt class="py-string">'SetQueueAttributes'</tt><tt class="py-op">,</tt> <tt class="py-name">params</tt><tt class="py-op">,</tt> <tt class="py-name">queue_url</tt><tt class="py-op">)</tt> </tt>
+<a name="L72"></a><tt class="py-lineno"> 72</tt>  <tt class="py-line">        <tt class="py-name">body</tt> <tt class="py-op">=</tt> <tt class="py-name">response</tt><tt class="py-op">.</tt><tt id="link-48" class="py-name"><a title="boto.s3.key.Key.read
+boto.sqs.20070501.queue.Queue.read
+boto.sqs.queue.Queue.read" class="py-name" href="#" onclick="return doclink('link-48', 'read', 'link-40');">read</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L73"></a><tt class="py-lineno"> 73</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">response</tt><tt class="py-op">.</tt><tt id="link-49" class="py-name"><a title="boto.mashups.server.Server.status
+boto.utils.ShellCommand.status" class="py-name" href="#" onclick="return doclink('link-49', 'status', 'link-41');">status</a></tt> <tt class="py-op">==</tt> <tt class="py-number">200</tt><tt class="py-op">:</tt> </tt>
+<a name="L74"></a><tt class="py-lineno"> 74</tt>  <tt class="py-line">            <tt class="py-name">rs</tt> <tt class="py-op">=</tt> <tt id="link-50" class="py-name"><a title="boto.resultset.ResultSet" class="py-name" href="#" onclick="return doclink('link-50', 'ResultSet', 'link-20');">ResultSet</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L75"></a><tt class="py-lineno"> 75</tt>  <tt class="py-line">            <tt class="py-name">h</tt> <tt class="py-op">=</tt> <tt id="link-51" class="py-name"><a title="boto.handler" class="py-name" href="#" onclick="return doclink('link-51', 'handler', 'link-17');">handler</a></tt><tt class="py-op">.</tt><tt id="link-52" class="py-name"><a title="boto.handler.XmlHandler" class="py-name" href="#" onclick="return doclink('link-52', 'XmlHandler', 'link-44');">XmlHandler</a></tt><tt class="py-op">(</tt><tt class="py-name">rs</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">)</tt> </tt>
+<a name="L76"></a><tt class="py-lineno"> 76</tt>  <tt class="py-line">            <tt class="py-name">xml</tt><tt class="py-op">.</tt><tt class="py-name">sax</tt><tt class="py-op">.</tt><tt class="py-name">parseString</tt><tt class="py-op">(</tt><tt class="py-name">body</tt><tt class="py-op">,</tt> <tt class="py-name">h</tt><tt class="py-op">)</tt> </tt>
+<a name="L77"></a><tt class="py-lineno"> 77</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt class="py-name">rs</tt><tt class="py-op">.</tt><tt id="link-53" class="py-name"><a title="boto.mashups.server.Server.status
+boto.utils.ShellCommand.status" class="py-name" href="#" onclick="return doclink('link-53', 'status', 'link-41');">status</a></tt> </tt>
+<a name="L78"></a><tt class="py-lineno"> 78</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L79"></a><tt class="py-lineno"> 79</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-54" class="py-name"><a title="boto.exception.SQSError" class="py-name" href="#" onclick="return doclink('link-54', 'SQSError', 'link-23');">SQSError</a></tt><tt class="py-op">(</tt><tt class="py-name">response</tt><tt class="py-op">.</tt><tt id="link-55" class="py-name"><a title="boto.mashups.server.Server.status
+boto.utils.ShellCommand.status" class="py-name" href="#" onclick="return doclink('link-55', 'status', 'link-41');">status</a></tt><tt class="py-op">,</tt> <tt class="py-name">response</tt><tt class="py-op">.</tt><tt class="py-name">reason</tt><tt class="py-op">,</tt> <tt class="py-name">body</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L80"></a><tt class="py-lineno"> 80</tt>  <tt class="py-line"> </tt>
+<a name="SQSQueryConnection.change_message_visibility"></a><div id="SQSQueryConnection.change_message_visibility-def"><a name="L81"></a><tt class="py-lineno"> 81</tt> <a class="py-toggle" href="#" id="SQSQueryConnection.change_message_visibility-toggle" onclick="return toggle('SQSQueryConnection.change_message_visibility');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sqs.20070501.connection.SQSQueryConnection-class.html#change_message_visibility">change_message_visibility</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">queue_url</tt><tt class="py-op">,</tt> <tt class="py-param">message_id</tt><tt class="py-op">,</tt> <tt class="py-param">vtimeout</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SQSQueryConnection.change_message_visibility-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="SQSQueryConnection.change_message_visibility-expanded"><a name="L82"></a><tt class="py-lineno"> 82</tt>  <tt class="py-line">        <tt class="py-name">params</tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt><tt class="py-string">'MessageId'</tt> <tt class="py-op">:</tt> <tt class="py-name">message_id</tt><tt class="py-op">,</tt> </tt>
+<a name="L83"></a><tt class="py-lineno"> 83</tt>  <tt class="py-line">                  <tt class="py-string">'VisibilityTimeout'</tt> <tt class="py-op">:</tt> <tt class="py-name">vtimeout</tt><tt class="py-op">}</tt> </tt>
+<a name="L84"></a><tt class="py-lineno"> 84</tt>  <tt class="py-line">        <tt class="py-name">response</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-56" class="py-name"><a title="boto.connection.AWSAuthConnection.make_request
+boto.connection.AWSQueryConnection.make_request
+boto.s3.connection.S3Connection.make_request
+boto.sqs.20070501.connection.SQSConnection.make_request" class="py-name" href="#" onclick="return doclink('link-56', 'make_request', 'link-39');">make_request</a></tt><tt class="py-op">(</tt><tt class="py-string">'ChangeMessageVisibility'</tt><tt class="py-op">,</tt> <tt class="py-name">params</tt><tt class="py-op">,</tt> </tt>
+<a name="L85"></a><tt class="py-lineno"> 85</tt>  <tt class="py-line">                                     <tt class="py-name">queue_url</tt><tt class="py-op">)</tt> </tt>
+<a name="L86"></a><tt class="py-lineno"> 86</tt>  <tt class="py-line">        <tt class="py-name">body</tt> <tt class="py-op">=</tt> <tt class="py-name">response</tt><tt class="py-op">.</tt><tt id="link-57" class="py-name"><a title="boto.s3.key.Key.read
+boto.sqs.20070501.queue.Queue.read
+boto.sqs.queue.Queue.read" class="py-name" href="#" onclick="return doclink('link-57', 'read', 'link-40');">read</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L87"></a><tt class="py-lineno"> 87</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">response</tt><tt class="py-op">.</tt><tt id="link-58" class="py-name"><a title="boto.mashups.server.Server.status
+boto.utils.ShellCommand.status" class="py-name" href="#" onclick="return doclink('link-58', 'status', 'link-41');">status</a></tt> <tt class="py-op">==</tt> <tt class="py-number">200</tt><tt class="py-op">:</tt> </tt>
+<a name="L88"></a><tt class="py-lineno"> 88</tt>  <tt class="py-line">            <tt class="py-name">rs</tt> <tt class="py-op">=</tt> <tt id="link-59" class="py-name"><a title="boto.resultset.ResultSet" class="py-name" href="#" onclick="return doclink('link-59', 'ResultSet', 'link-20');">ResultSet</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L89"></a><tt class="py-lineno"> 89</tt>  <tt class="py-line">            <tt class="py-name">h</tt> <tt class="py-op">=</tt> <tt id="link-60" class="py-name"><a title="boto.handler" class="py-name" href="#" onclick="return doclink('link-60', 'handler', 'link-17');">handler</a></tt><tt class="py-op">.</tt><tt id="link-61" class="py-name"><a title="boto.handler.XmlHandler" class="py-name" href="#" onclick="return doclink('link-61', 'XmlHandler', 'link-44');">XmlHandler</a></tt><tt class="py-op">(</tt><tt class="py-name">rs</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">)</tt> </tt>
+<a name="L90"></a><tt class="py-lineno"> 90</tt>  <tt class="py-line">            <tt class="py-name">xml</tt><tt class="py-op">.</tt><tt class="py-name">sax</tt><tt class="py-op">.</tt><tt class="py-name">parseString</tt><tt class="py-op">(</tt><tt class="py-name">body</tt><tt class="py-op">,</tt> <tt class="py-name">h</tt><tt class="py-op">)</tt> </tt>
+<a name="L91"></a><tt class="py-lineno"> 91</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt class="py-name">rs</tt><tt class="py-op">.</tt><tt id="link-62" class="py-name"><a title="boto.mashups.server.Server.status
+boto.utils.ShellCommand.status" class="py-name" href="#" onclick="return doclink('link-62', 'status', 'link-41');">status</a></tt> </tt>
+<a name="L92"></a><tt class="py-lineno"> 92</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L93"></a><tt class="py-lineno"> 93</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-63" class="py-name"><a title="boto.exception.SQSError" class="py-name" href="#" onclick="return doclink('link-63', 'SQSError', 'link-23');">SQSError</a></tt><tt class="py-op">(</tt><tt class="py-name">response</tt><tt class="py-op">.</tt><tt id="link-64" class="py-name"><a title="boto.mashups.server.Server.status
+boto.utils.ShellCommand.status" class="py-name" href="#" onclick="return doclink('link-64', 'status', 'link-41');">status</a></tt><tt class="py-op">,</tt> <tt class="py-name">response</tt><tt class="py-op">.</tt><tt class="py-name">reason</tt><tt class="py-op">,</tt> <tt class="py-name">body</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L94"></a><tt class="py-lineno"> 94</tt>  <tt class="py-line">         </tt>
+<a name="SQSQueryConnection.add_grant"></a><div id="SQSQueryConnection.add_grant-def"><a name="L95"></a><tt class="py-lineno"> 95</tt> <a class="py-toggle" href="#" id="SQSQueryConnection.add_grant-toggle" onclick="return toggle('SQSQueryConnection.add_grant');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sqs.20070501.connection.SQSQueryConnection-class.html#add_grant">add_grant</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">queue_url</tt><tt class="py-op">,</tt> <tt class="py-param">permission</tt><tt class="py-op">,</tt> <tt class="py-param">email_address</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-param">user_id</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SQSQueryConnection.add_grant-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="SQSQueryConnection.add_grant-expanded"><a name="L96"></a><tt class="py-lineno"> 96</tt>  <tt class="py-line">        <tt class="py-name">params</tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt><tt class="py-string">'Permission'</tt> <tt class="py-op">:</tt> <tt class="py-name">permission</tt><tt class="py-op">}</tt> </tt>
+<a name="L97"></a><tt class="py-lineno"> 97</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">user_id</tt><tt class="py-op">:</tt> </tt>
+<a name="L98"></a><tt class="py-lineno"> 98</tt>  <tt class="py-line">            <tt class="py-name">params</tt><tt class="py-op">[</tt><tt class="py-string">'Grantee.ID'</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">user_id</tt> </tt>
+<a name="L99"></a><tt class="py-lineno"> 99</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">email_address</tt><tt class="py-op">:</tt> </tt>
+<a name="L100"></a><tt class="py-lineno">100</tt>  <tt class="py-line">            <tt class="py-name">params</tt><tt class="py-op">[</tt><tt class="py-string">'Grantee.EmailAddress'</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">email_address</tt> </tt>
+<a name="L101"></a><tt class="py-lineno">101</tt>  <tt class="py-line">        <tt class="py-name">response</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-65" class="py-name"><a title="boto.connection.AWSAuthConnection.make_request
+boto.connection.AWSQueryConnection.make_request
+boto.s3.connection.S3Connection.make_request
+boto.sqs.20070501.connection.SQSConnection.make_request" class="py-name" href="#" onclick="return doclink('link-65', 'make_request', 'link-39');">make_request</a></tt><tt class="py-op">(</tt><tt class="py-string">'AddGrant'</tt><tt class="py-op">,</tt> <tt class="py-name">params</tt><tt class="py-op">,</tt> <tt class="py-name">queue_url</tt><tt class="py-op">)</tt> </tt>
+<a name="L102"></a><tt class="py-lineno">102</tt>  <tt class="py-line">        <tt class="py-name">body</tt> <tt class="py-op">=</tt> <tt class="py-name">response</tt><tt class="py-op">.</tt><tt id="link-66" class="py-name"><a title="boto.s3.key.Key.read
+boto.sqs.20070501.queue.Queue.read
+boto.sqs.queue.Queue.read" class="py-name" href="#" onclick="return doclink('link-66', 'read', 'link-40');">read</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L103"></a><tt class="py-lineno">103</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">response</tt><tt class="py-op">.</tt><tt id="link-67" class="py-name"><a title="boto.mashups.server.Server.status
+boto.utils.ShellCommand.status" class="py-name" href="#" onclick="return doclink('link-67', 'status', 'link-41');">status</a></tt> <tt class="py-op">==</tt> <tt class="py-number">200</tt><tt class="py-op">:</tt> </tt>
+<a name="L104"></a><tt class="py-lineno">104</tt>  <tt class="py-line">            <tt class="py-name">rs</tt> <tt class="py-op">=</tt> <tt id="link-68" class="py-name"><a title="boto.resultset.ResultSet" class="py-name" href="#" onclick="return doclink('link-68', 'ResultSet', 'link-20');">ResultSet</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L105"></a><tt class="py-lineno">105</tt>  <tt class="py-line">            <tt class="py-name">h</tt> <tt class="py-op">=</tt> <tt id="link-69" class="py-name"><a title="boto.handler" class="py-name" href="#" onclick="return doclink('link-69', 'handler', 'link-17');">handler</a></tt><tt class="py-op">.</tt><tt id="link-70" class="py-name"><a title="boto.handler.XmlHandler" class="py-name" href="#" onclick="return doclink('link-70', 'XmlHandler', 'link-44');">XmlHandler</a></tt><tt class="py-op">(</tt><tt class="py-name">rs</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">)</tt> </tt>
+<a name="L106"></a><tt class="py-lineno">106</tt>  <tt class="py-line">            <tt class="py-name">xml</tt><tt class="py-op">.</tt><tt class="py-name">sax</tt><tt class="py-op">.</tt><tt class="py-name">parseString</tt><tt class="py-op">(</tt><tt class="py-name">body</tt><tt class="py-op">,</tt> <tt class="py-name">h</tt><tt class="py-op">)</tt> </tt>
+<a name="L107"></a><tt class="py-lineno">107</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt class="py-name">rs</tt><tt class="py-op">.</tt><tt id="link-71" class="py-name"><a title="boto.mashups.server.Server.status
+boto.utils.ShellCommand.status" class="py-name" href="#" onclick="return doclink('link-71', 'status', 'link-41');">status</a></tt> </tt>
+<a name="L108"></a><tt class="py-lineno">108</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L109"></a><tt class="py-lineno">109</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-72" class="py-name"><a title="boto.exception.SQSError" class="py-name" href="#" onclick="return doclink('link-72', 'SQSError', 'link-23');">SQSError</a></tt><tt class="py-op">(</tt><tt class="py-name">response</tt><tt class="py-op">.</tt><tt id="link-73" class="py-name"><a title="boto.mashups.server.Server.status
+boto.utils.ShellCommand.status" class="py-name" href="#" onclick="return doclink('link-73', 'status', 'link-41');">status</a></tt><tt class="py-op">,</tt> <tt class="py-name">response</tt><tt class="py-op">.</tt><tt class="py-name">reason</tt><tt class="py-op">,</tt> <tt class="py-name">body</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L110"></a><tt class="py-lineno">110</tt>  <tt class="py-line">         </tt>
+<a name="SQSQueryConnection.remove_grant"></a><div id="SQSQueryConnection.remove_grant-def"><a name="L111"></a><tt class="py-lineno">111</tt> <a class="py-toggle" href="#" id="SQSQueryConnection.remove_grant-toggle" onclick="return toggle('SQSQueryConnection.remove_grant');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sqs.20070501.connection.SQSQueryConnection-class.html#remove_grant">remove_grant</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">queue_url</tt><tt class="py-op">,</tt> <tt class="py-param">permission</tt><tt class="py-op">,</tt> <tt class="py-param">email_address</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-param">user_id</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SQSQueryConnection.remove_grant-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="SQSQueryConnection.remove_grant-expanded"><a name="L112"></a><tt class="py-lineno">112</tt>  <tt class="py-line">        <tt class="py-name">params</tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt><tt class="py-string">'Permission'</tt> <tt class="py-op">:</tt> <tt class="py-name">permission</tt><tt class="py-op">}</tt> </tt>
+<a name="L113"></a><tt class="py-lineno">113</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">user_id</tt><tt class="py-op">:</tt> </tt>
+<a name="L114"></a><tt class="py-lineno">114</tt>  <tt class="py-line">            <tt class="py-name">params</tt><tt class="py-op">[</tt><tt class="py-string">'Grantee.ID'</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">user_id</tt> </tt>
+<a name="L115"></a><tt class="py-lineno">115</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">email_address</tt><tt class="py-op">:</tt> </tt>
+<a name="L116"></a><tt class="py-lineno">116</tt>  <tt class="py-line">            <tt class="py-name">params</tt><tt class="py-op">[</tt><tt class="py-string">'Grantee.EmailAddress'</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">email_address</tt> </tt>
+<a name="L117"></a><tt class="py-lineno">117</tt>  <tt class="py-line">        <tt class="py-name">response</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-74" class="py-name"><a title="boto.connection.AWSAuthConnection.make_request
+boto.connection.AWSQueryConnection.make_request
+boto.s3.connection.S3Connection.make_request
+boto.sqs.20070501.connection.SQSConnection.make_request" class="py-name" href="#" onclick="return doclink('link-74', 'make_request', 'link-39');">make_request</a></tt><tt class="py-op">(</tt><tt class="py-string">'RemoveGrant'</tt><tt class="py-op">,</tt> <tt class="py-name">params</tt><tt class="py-op">,</tt> <tt class="py-name">queue_url</tt><tt class="py-op">)</tt> </tt>
+<a name="L118"></a><tt class="py-lineno">118</tt>  <tt class="py-line">        <tt class="py-name">body</tt> <tt class="py-op">=</tt> <tt class="py-name">response</tt><tt class="py-op">.</tt><tt id="link-75" class="py-name"><a title="boto.s3.key.Key.read
+boto.sqs.20070501.queue.Queue.read
+boto.sqs.queue.Queue.read" class="py-name" href="#" onclick="return doclink('link-75', 'read', 'link-40');">read</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L119"></a><tt class="py-lineno">119</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">response</tt><tt class="py-op">.</tt><tt id="link-76" class="py-name"><a title="boto.mashups.server.Server.status
+boto.utils.ShellCommand.status" class="py-name" href="#" onclick="return doclink('link-76', 'status', 'link-41');">status</a></tt> <tt class="py-op">==</tt> <tt class="py-number">200</tt><tt class="py-op">:</tt> </tt>
+<a name="L120"></a><tt class="py-lineno">120</tt>  <tt class="py-line">            <tt class="py-name">rs</tt> <tt class="py-op">=</tt> <tt id="link-77" class="py-name"><a title="boto.resultset.ResultSet" class="py-name" href="#" onclick="return doclink('link-77', 'ResultSet', 'link-20');">ResultSet</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L121"></a><tt class="py-lineno">121</tt>  <tt class="py-line">            <tt class="py-name">h</tt> <tt class="py-op">=</tt> <tt id="link-78" class="py-name"><a title="boto.handler" class="py-name" href="#" onclick="return doclink('link-78', 'handler', 'link-17');">handler</a></tt><tt class="py-op">.</tt><tt id="link-79" class="py-name"><a title="boto.handler.XmlHandler" class="py-name" href="#" onclick="return doclink('link-79', 'XmlHandler', 'link-44');">XmlHandler</a></tt><tt class="py-op">(</tt><tt class="py-name">rs</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">)</tt> </tt>
+<a name="L122"></a><tt class="py-lineno">122</tt>  <tt class="py-line">            <tt class="py-name">xml</tt><tt class="py-op">.</tt><tt class="py-name">sax</tt><tt class="py-op">.</tt><tt class="py-name">parseString</tt><tt class="py-op">(</tt><tt class="py-name">body</tt><tt class="py-op">,</tt> <tt class="py-name">h</tt><tt class="py-op">)</tt> </tt>
+<a name="L123"></a><tt class="py-lineno">123</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt class="py-name">rs</tt><tt class="py-op">.</tt><tt id="link-80" class="py-name"><a title="boto.mashups.server.Server.status
+boto.utils.ShellCommand.status" class="py-name" href="#" onclick="return doclink('link-80', 'status', 'link-41');">status</a></tt> </tt>
+<a name="L124"></a><tt class="py-lineno">124</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L125"></a><tt class="py-lineno">125</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-81" class="py-name"><a title="boto.exception.SQSError" class="py-name" href="#" onclick="return doclink('link-81', 'SQSError', 'link-23');">SQSError</a></tt><tt class="py-op">(</tt><tt class="py-name">response</tt><tt class="py-op">.</tt><tt id="link-82" class="py-name"><a title="boto.mashups.server.Server.status
+boto.utils.ShellCommand.status" class="py-name" href="#" onclick="return doclink('link-82', 'status', 'link-41');">status</a></tt><tt class="py-op">,</tt> <tt class="py-name">response</tt><tt class="py-op">.</tt><tt class="py-name">reason</tt><tt class="py-op">,</tt> <tt class="py-name">body</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L126"></a><tt class="py-lineno">126</tt>  <tt class="py-line">         </tt>
+<a name="SQSQueryConnection.list_grants"></a><div id="SQSQueryConnection.list_grants-def"><a name="L127"></a><tt class="py-lineno">127</tt> <a class="py-toggle" href="#" id="SQSQueryConnection.list_grants-toggle" onclick="return toggle('SQSQueryConnection.list_grants');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sqs.20070501.connection.SQSQueryConnection-class.html#list_grants">list_grants</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">queue_url</tt><tt class="py-op">,</tt> <tt class="py-param">permission</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-param">email_address</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-param">user_id</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SQSQueryConnection.list_grants-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="SQSQueryConnection.list_grants-expanded"><a name="L128"></a><tt class="py-lineno">128</tt>  <tt class="py-line">        <tt class="py-name">params</tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt><tt class="py-op">}</tt> </tt>
+<a name="L129"></a><tt class="py-lineno">129</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">user_id</tt><tt class="py-op">:</tt> </tt>
+<a name="L130"></a><tt class="py-lineno">130</tt>  <tt class="py-line">            <tt class="py-name">params</tt><tt class="py-op">[</tt><tt class="py-string">'Grantee.ID'</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">user_id</tt> </tt>
+<a name="L131"></a><tt class="py-lineno">131</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">email_address</tt><tt class="py-op">:</tt> </tt>
+<a name="L132"></a><tt class="py-lineno">132</tt>  <tt class="py-line">            <tt class="py-name">params</tt><tt class="py-op">[</tt><tt class="py-string">'Grantee.EmailAddress'</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">email_address</tt> </tt>
+<a name="L133"></a><tt class="py-lineno">133</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">permission</tt><tt class="py-op">:</tt> </tt>
+<a name="L134"></a><tt class="py-lineno">134</tt>  <tt class="py-line">            <tt class="py-name">params</tt><tt class="py-op">[</tt><tt class="py-string">'Permission'</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">permission</tt> </tt>
+<a name="L135"></a><tt class="py-lineno">135</tt>  <tt class="py-line">        <tt class="py-name">response</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-83" class="py-name"><a title="boto.connection.AWSAuthConnection.make_request
+boto.connection.AWSQueryConnection.make_request
+boto.s3.connection.S3Connection.make_request
+boto.sqs.20070501.connection.SQSConnection.make_request" class="py-name" href="#" onclick="return doclink('link-83', 'make_request', 'link-39');">make_request</a></tt><tt class="py-op">(</tt><tt class="py-string">'ListGrants'</tt><tt class="py-op">,</tt> <tt class="py-name">params</tt><tt class="py-op">,</tt> <tt class="py-name">queue_url</tt><tt class="py-op">)</tt> </tt>
+<a name="L136"></a><tt class="py-lineno">136</tt>  <tt class="py-line">        <tt class="py-name">body</tt> <tt class="py-op">=</tt> <tt class="py-name">response</tt><tt class="py-op">.</tt><tt id="link-84" class="py-name"><a title="boto.s3.key.Key.read
+boto.sqs.20070501.queue.Queue.read
+boto.sqs.queue.Queue.read" class="py-name" href="#" onclick="return doclink('link-84', 'read', 'link-40');">read</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L137"></a><tt class="py-lineno">137</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">response</tt><tt class="py-op">.</tt><tt id="link-85" class="py-name"><a title="boto.mashups.server.Server.status
+boto.utils.ShellCommand.status" class="py-name" href="#" onclick="return doclink('link-85', 'status', 'link-41');">status</a></tt> <tt class="py-op">==</tt> <tt class="py-number">200</tt><tt class="py-op">:</tt> </tt>
+<a name="L138"></a><tt class="py-lineno">138</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt class="py-name">body</tt> </tt>
+<a name="L139"></a><tt class="py-lineno">139</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L140"></a><tt class="py-lineno">140</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-86" class="py-name"><a title="boto.exception.SQSError" class="py-name" href="#" onclick="return doclink('link-86', 'SQSError', 'link-23');">SQSError</a></tt><tt class="py-op">(</tt><tt class="py-name">response</tt><tt class="py-op">.</tt><tt id="link-87" class="py-name"><a title="boto.mashups.server.Server.status
+boto.utils.ShellCommand.status" class="py-name" href="#" onclick="return doclink('link-87', 'status', 'link-41');">status</a></tt><tt class="py-op">,</tt> <tt class="py-name">response</tt><tt class="py-op">.</tt><tt class="py-name">reason</tt><tt class="py-op">,</tt> <tt class="py-name">body</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L141"></a><tt class="py-lineno">141</tt>  <tt class="py-line"> </tt>
+<a name="SQSQueryConnection.receive_message"></a><div id="SQSQueryConnection.receive_message-def"><a name="L142"></a><tt class="py-lineno">142</tt> <a class="py-toggle" href="#" id="SQSQueryConnection.receive_message-toggle" onclick="return toggle('SQSQueryConnection.receive_message');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sqs.20070501.connection.SQSQueryConnection-class.html#receive_message">receive_message</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">queue_url</tt><tt class="py-op">,</tt> <tt class="py-param">number_messages</tt><tt class="py-op">=</tt><tt class="py-number">1</tt><tt class="py-op">,</tt> </tt>
+<a name="L143"></a><tt class="py-lineno">143</tt>  <tt class="py-line">                        <tt class="py-param">visibility_timeout</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-param">message_class</tt><tt class="py-op">=</tt><tt id="link-88" class="py-name"><a title="boto.sqs.20070501.message.Message
+boto.sqs.message.Message" class="py-name" href="#" onclick="return doclink('link-88', 'Message', 'link-11');">Message</a></tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SQSQueryConnection.receive_message-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="SQSQueryConnection.receive_message-expanded"><a name="L144"></a><tt class="py-lineno">144</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L145"></a><tt class="py-lineno">145</tt>  <tt class="py-line"><tt class="py-docstring">        This provides the same functionality as the read and get_messages methods</tt> </tt>
+<a name="L146"></a><tt class="py-lineno">146</tt>  <tt class="py-line"><tt class="py-docstring">        of the queue object.  The only reason this is included here is that there is</tt> </tt>
+<a name="L147"></a><tt class="py-lineno">147</tt>  <tt class="py-line"><tt class="py-docstring">        currently a bug in SQS that makes it impossible to read a message from a queue</tt> </tt>
+<a name="L148"></a><tt class="py-lineno">148</tt>  <tt class="py-line"><tt class="py-docstring">        owned by someone else (even if you have been granted appropriate permissions)</tt> </tt>
+<a name="L149"></a><tt class="py-lineno">149</tt>  <tt class="py-line"><tt class="py-docstring">        via the REST interface.  As it turns out, I need to be able to do this so until</tt> </tt>
+<a name="L150"></a><tt class="py-lineno">150</tt>  <tt class="py-line"><tt class="py-docstring">        the REST interface gets fixed this is the workaround.</tt> </tt>
+<a name="L151"></a><tt class="py-lineno">151</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L152"></a><tt class="py-lineno">152</tt>  <tt class="py-line">        <tt class="py-name">params</tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt><tt class="py-string">'NumberOfMessages'</tt> <tt class="py-op">:</tt> <tt class="py-name">number_messages</tt><tt class="py-op">}</tt> </tt>
+<a name="L153"></a><tt class="py-lineno">153</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">visibility_timeout</tt><tt class="py-op">:</tt> </tt>
+<a name="L154"></a><tt class="py-lineno">154</tt>  <tt class="py-line">            <tt class="py-name">params</tt><tt class="py-op">[</tt><tt class="py-string">'VisibilityTimeout'</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">visibility_timeout</tt> </tt>
+<a name="L155"></a><tt class="py-lineno">155</tt>  <tt class="py-line">        <tt class="py-name">response</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-89" class="py-name"><a title="boto.connection.AWSAuthConnection.make_request
+boto.connection.AWSQueryConnection.make_request
+boto.s3.connection.S3Connection.make_request
+boto.sqs.20070501.connection.SQSConnection.make_request" class="py-name" href="#" onclick="return doclink('link-89', 'make_request', 'link-39');">make_request</a></tt><tt class="py-op">(</tt><tt class="py-string">'ReceiveMessage'</tt><tt class="py-op">,</tt> <tt class="py-name">params</tt><tt class="py-op">,</tt> <tt class="py-name">queue_url</tt><tt class="py-op">)</tt> </tt>
+<a name="L156"></a><tt class="py-lineno">156</tt>  <tt class="py-line">        <tt class="py-name">body</tt> <tt class="py-op">=</tt> <tt class="py-name">response</tt><tt class="py-op">.</tt><tt id="link-90" class="py-name"><a title="boto.s3.key.Key.read
+boto.sqs.20070501.queue.Queue.read
+boto.sqs.queue.Queue.read" class="py-name" href="#" onclick="return doclink('link-90', 'read', 'link-40');">read</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L157"></a><tt class="py-lineno">157</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">response</tt><tt class="py-op">.</tt><tt id="link-91" class="py-name"><a title="boto.mashups.server.Server.status
+boto.utils.ShellCommand.status" class="py-name" href="#" onclick="return doclink('link-91', 'status', 'link-41');">status</a></tt> <tt class="py-op">==</tt> <tt class="py-number">200</tt><tt class="py-op">:</tt> </tt>
+<a name="L158"></a><tt class="py-lineno">158</tt>  <tt class="py-line">            <tt class="py-name">rs</tt> <tt class="py-op">=</tt> <tt id="link-92" class="py-name"><a title="boto.resultset.ResultSet" class="py-name" href="#" onclick="return doclink('link-92', 'ResultSet', 'link-20');">ResultSet</a></tt><tt class="py-op">(</tt><tt class="py-op">[</tt><tt class="py-op">(</tt><tt class="py-string">'Message'</tt><tt class="py-op">,</tt> <tt class="py-name">message_class</tt><tt class="py-op">)</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L159"></a><tt class="py-lineno">159</tt>  <tt class="py-line">            <tt class="py-name">h</tt> <tt class="py-op">=</tt> <tt id="link-93" class="py-name"><a title="boto.handler" class="py-name" href="#" onclick="return doclink('link-93', 'handler', 'link-17');">handler</a></tt><tt class="py-op">.</tt><tt id="link-94" class="py-name"><a title="boto.handler.XmlHandler" class="py-name" href="#" onclick="return doclink('link-94', 'XmlHandler', 'link-44');">XmlHandler</a></tt><tt class="py-op">(</tt><tt class="py-name">rs</tt><tt class="py-op">,</tt> <tt class="py-name">queue_url</tt><tt class="py-op">)</tt> </tt>
+<a name="L160"></a><tt class="py-lineno">160</tt>  <tt class="py-line">            <tt class="py-name">xml</tt><tt class="py-op">.</tt><tt class="py-name">sax</tt><tt class="py-op">.</tt><tt class="py-name">parseString</tt><tt class="py-op">(</tt><tt class="py-name">body</tt><tt class="py-op">,</tt> <tt class="py-name">h</tt><tt class="py-op">)</tt> </tt>
+<a name="L161"></a><tt class="py-lineno">161</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">rs</tt><tt class="py-op">)</tt> <tt class="py-op">==</tt> <tt class="py-number">1</tt><tt class="py-op">:</tt> </tt>
+<a name="L162"></a><tt class="py-lineno">162</tt>  <tt class="py-line">                <tt class="py-keyword">return</tt> <tt class="py-name">rs</tt><tt class="py-op">[</tt><tt class="py-number">0</tt><tt class="py-op">]</tt> </tt>
+<a name="L163"></a><tt class="py-lineno">163</tt>  <tt class="py-line">            <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L164"></a><tt class="py-lineno">164</tt>  <tt class="py-line">                <tt class="py-keyword">return</tt> <tt class="py-name">rs</tt> </tt>
+<a name="L165"></a><tt class="py-lineno">165</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L166"></a><tt class="py-lineno">166</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-95" class="py-name"><a title="boto.exception.SQSError" class="py-name" href="#" onclick="return doclink('link-95', 'SQSError', 'link-23');">SQSError</a></tt><tt class="py-op">(</tt><tt class="py-name">response</tt><tt class="py-op">.</tt><tt id="link-96" class="py-name"><a title="boto.mashups.server.Server.status
+boto.utils.ShellCommand.status" class="py-name" href="#" onclick="return doclink('link-96', 'status', 'link-41');">status</a></tt><tt class="py-op">,</tt> <tt class="py-name">response</tt><tt class="py-op">.</tt><tt class="py-name">reason</tt><tt class="py-op">,</tt> <tt class="py-name">body</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L167"></a><tt class="py-lineno">167</tt>  <tt class="py-line"> </tt>
+<a name="SQSQueryConnection.delete_message"></a><div id="SQSQueryConnection.delete_message-def"><a name="L168"></a><tt class="py-lineno">168</tt> <a class="py-toggle" href="#" id="SQSQueryConnection.delete_message-toggle" onclick="return toggle('SQSQueryConnection.delete_message');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sqs.20070501.connection.SQSQueryConnection-class.html#delete_message">delete_message</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">queue_url</tt><tt class="py-op">,</tt> <tt class="py-param">message_id</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SQSQueryConnection.delete_message-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="SQSQueryConnection.delete_message-expanded"><a name="L169"></a><tt class="py-lineno">169</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L170"></a><tt class="py-lineno">170</tt>  <tt class="py-line"><tt class="py-docstring">        Because we have to use the Query interface to read messages from queues that</tt> </tt>
+<a name="L171"></a><tt class="py-lineno">171</tt>  <tt class="py-line"><tt class="py-docstring">        we don't own, we also have to provide a way to delete those messages via Query.</tt> </tt>
+<a name="L172"></a><tt class="py-lineno">172</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L173"></a><tt class="py-lineno">173</tt>  <tt class="py-line">        <tt class="py-name">params</tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt><tt class="py-string">'MessageId'</tt> <tt class="py-op">:</tt> <tt class="py-name">message_id</tt><tt class="py-op">}</tt> </tt>
+<a name="L174"></a><tt class="py-lineno">174</tt>  <tt class="py-line">        <tt class="py-name">response</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-97" class="py-name"><a title="boto.connection.AWSAuthConnection.make_request
+boto.connection.AWSQueryConnection.make_request
+boto.s3.connection.S3Connection.make_request
+boto.sqs.20070501.connection.SQSConnection.make_request" class="py-name" href="#" onclick="return doclink('link-97', 'make_request', 'link-39');">make_request</a></tt><tt class="py-op">(</tt><tt class="py-string">'DeleteMessage'</tt><tt class="py-op">,</tt> <tt class="py-name">params</tt><tt class="py-op">,</tt> <tt class="py-name">queue_url</tt><tt class="py-op">)</tt> </tt>
+<a name="L175"></a><tt class="py-lineno">175</tt>  <tt class="py-line">        <tt class="py-name">body</tt> <tt class="py-op">=</tt> <tt class="py-name">response</tt><tt class="py-op">.</tt><tt id="link-98" class="py-name"><a title="boto.s3.key.Key.read
+boto.sqs.20070501.queue.Queue.read
+boto.sqs.queue.Queue.read" class="py-name" href="#" onclick="return doclink('link-98', 'read', 'link-40');">read</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L176"></a><tt class="py-lineno">176</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">response</tt><tt class="py-op">.</tt><tt id="link-99" class="py-name"><a title="boto.mashups.server.Server.status
+boto.utils.ShellCommand.status" class="py-name" href="#" onclick="return doclink('link-99', 'status', 'link-41');">status</a></tt> <tt class="py-op">==</tt> <tt class="py-number">200</tt><tt class="py-op">:</tt> </tt>
+<a name="L177"></a><tt class="py-lineno">177</tt>  <tt class="py-line">            <tt class="py-name">rs</tt> <tt class="py-op">=</tt> <tt id="link-100" class="py-name"><a title="boto.resultset.ResultSet" class="py-name" href="#" onclick="return doclink('link-100', 'ResultSet', 'link-20');">ResultSet</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L178"></a><tt class="py-lineno">178</tt>  <tt class="py-line">            <tt class="py-name">h</tt> <tt class="py-op">=</tt> <tt id="link-101" class="py-name"><a title="boto.handler" class="py-name" href="#" onclick="return doclink('link-101', 'handler', 'link-17');">handler</a></tt><tt class="py-op">.</tt><tt id="link-102" class="py-name"><a title="boto.handler.XmlHandler" class="py-name" href="#" onclick="return doclink('link-102', 'XmlHandler', 'link-44');">XmlHandler</a></tt><tt class="py-op">(</tt><tt class="py-name">rs</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">)</tt> </tt>
+<a name="L179"></a><tt class="py-lineno">179</tt>  <tt class="py-line">            <tt class="py-name">xml</tt><tt class="py-op">.</tt><tt class="py-name">sax</tt><tt class="py-op">.</tt><tt class="py-name">parseString</tt><tt class="py-op">(</tt><tt class="py-name">body</tt><tt class="py-op">,</tt> <tt class="py-name">h</tt><tt class="py-op">)</tt> </tt>
+<a name="L180"></a><tt class="py-lineno">180</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt class="py-name">rs</tt><tt class="py-op">.</tt><tt id="link-103" class="py-name"><a title="boto.mashups.server.Server.status
+boto.utils.ShellCommand.status" class="py-name" href="#" onclick="return doclink('link-103', 'status', 'link-41');">status</a></tt> </tt>
+<a name="L181"></a><tt class="py-lineno">181</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L182"></a><tt class="py-lineno">182</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-104" class="py-name"><a title="boto.exception.SQSError" class="py-name" href="#" onclick="return doclink('link-104', 'SQSError', 'link-23');">SQSError</a></tt><tt class="py-op">(</tt><tt class="py-name">response</tt><tt class="py-op">.</tt><tt id="link-105" class="py-name"><a title="boto.mashups.server.Server.status
+boto.utils.ShellCommand.status" class="py-name" href="#" onclick="return doclink('link-105', 'status', 'link-41');">status</a></tt><tt class="py-op">,</tt> <tt class="py-name">response</tt><tt class="py-op">.</tt><tt class="py-name">reason</tt><tt class="py-op">,</tt> <tt class="py-name">body</tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L183"></a><tt class="py-lineno">183</tt>  <tt class="py-line">         </tt>
+<a name="SQSConnection"></a><div id="SQSConnection-def"><a name="L184"></a><tt class="py-lineno">184</tt> <a class="py-toggle" href="#" id="SQSConnection-toggle" onclick="return toggle('SQSConnection');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="boto.sqs.20070501.connection.SQSConnection-class.html">SQSConnection</a><tt class="py-op">(</tt><tt class="py-base-class">AWSAuthConnection</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SQSConnection-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="SQSConnection-expanded"><a name="L185"></a><tt class="py-lineno">185</tt>  <tt class="py-line">     </tt>
+<a name="L186"></a><tt class="py-lineno">186</tt>  <tt class="py-line">    <tt id="link-106" class="py-name"><a title="boto.cloudfront.CloudFrontConnection.DefaultHost
+boto.s3.connection.S3Connection.DefaultHost
+boto.sqs.20070501.connection.SQSConnection.DefaultHost
+boto.sqs.20070501.connection.SQSQueryConnection.DefaultHost
+boto.sqs.connection.SQSConnection.DefaultHost" class="py-name" href="#" onclick="return doclink('link-106', 'DefaultHost', 'link-31');">DefaultHost</a></tt> <tt class="py-op">=</tt> <tt class="py-string">'queue.amazonaws.com'</tt> </tt>
+<a name="L187"></a><tt class="py-lineno">187</tt>  <tt class="py-line">    <tt id="link-107" class="py-name"><a title="boto.connection.AWSQueryConnection.APIVersion
+boto.ec2.connection.EC2Connection.APIVersion
+boto.fps.connection.FPSConnection.APIVersion
+boto.mturk.connection.MTurkConnection.APIVersion
+boto.sdb.connection.SDBConnection.APIVersion
+boto.sqs.20070501.connection.SQSConnection.APIVersion
+boto.sqs.20070501.connection.SQSQueryConnection.APIVersion
+boto.sqs.connection.SQSConnection.APIVersion" class="py-name" href="#" onclick="return doclink('link-107', 'APIVersion', 'link-32');">APIVersion</a></tt> <tt class="py-op">=</tt> <tt class="py-string">'2007-05-01'</tt> </tt>
+<a name="L188"></a><tt class="py-lineno">188</tt>  <tt class="py-line">    <tt id="link-108" class="py-name"><a title="boto.s3.key.Key.DefaultContentType
+boto.sqs.20070501.connection.SQSConnection.DefaultContentType
+boto.sqs.20070501.connection.SQSQueryConnection.DefaultContentType
+boto.sqs.connection.SQSConnection.DefaultContentType" class="py-name" href="#" onclick="return doclink('link-108', 'DefaultContentType', 'link-34');">DefaultContentType</a></tt> <tt class="py-op">=</tt> <tt class="py-string">'text/plain'</tt> </tt>
+<a name="L189"></a><tt class="py-lineno">189</tt>  <tt class="py-line">     </tt>
+<a name="SQSConnection.__init__"></a><div id="SQSConnection.__init__-def"><a name="L190"></a><tt class="py-lineno">190</tt> <a class="py-toggle" href="#" id="SQSConnection.__init__-toggle" onclick="return toggle('SQSConnection.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sqs.20070501.connection.SQSConnection-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">aws_access_key_id</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-param">aws_secret_access_key</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> </tt>
+<a name="L191"></a><tt class="py-lineno">191</tt>  <tt class="py-line">                 <tt class="py-param">is_secure</tt><tt class="py-op">=</tt><tt class="py-name">False</tt><tt class="py-op">,</tt> <tt class="py-param">port</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-param">proxy</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-param">proxy_port</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> </tt>
+<a name="L192"></a><tt class="py-lineno">192</tt>  <tt class="py-line">                 <tt class="py-param">host</tt><tt class="py-op">=</tt><tt id="link-109" class="py-name"><a title="boto.cloudfront.CloudFrontConnection.DefaultHost
+boto.s3.connection.S3Connection.DefaultHost
+boto.sqs.20070501.connection.SQSConnection.DefaultHost
+boto.sqs.20070501.connection.SQSQueryConnection.DefaultHost
+boto.sqs.connection.SQSConnection.DefaultHost" class="py-name" href="#" onclick="return doclink('link-109', 'DefaultHost', 'link-31');">DefaultHost</a></tt><tt class="py-op">,</tt> <tt class="py-param">debug</tt><tt class="py-op">=</tt><tt class="py-number">0</tt><tt class="py-op">,</tt> <tt class="py-param">https_connection_factory</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SQSConnection.__init__-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="SQSConnection.__init__-expanded"><a name="L193"></a><tt class="py-lineno">193</tt>  <tt class="py-line">        <tt id="link-110" class="py-name"><a title="boto.connection.AWSAuthConnection" class="py-name" href="#" onclick="return doclink('link-110', 'AWSAuthConnection', 'link-2');">AWSAuthConnection</a></tt><tt class="py-op">.</tt><tt id="link-111" class="py-name"><a title="boto.cloudfront.CloudFrontConnection.__init__
+boto.cloudfront.distribution.Distribution.__init__
+boto.cloudfront.distribution.DistributionConfig.__init__
+boto.cloudfront.distribution.DistributionSummary.__init__
+boto.connection.AWSAuthConnection.__init__
+boto.connection.AWSQueryConnection.__init__
+boto.contrib.ymlmessage.YAMLMessage.__init__
+boto.ec2.address.Address.__init__
+boto.ec2.connection.EC2Connection.__init__
+boto.ec2.ec2object.EC2Object.__init__
+boto.ec2.image.Image.__init__
+boto.ec2.image.ImageAttribute.__init__
+boto.ec2.instance.ConsoleOutput.__init__
+boto.ec2.instance.Group.__init__
+boto.ec2.instance.Instance.__init__
+boto.ec2.instance.Reservation.__init__
+boto.ec2.keypair.KeyPair.__init__
+boto.ec2.regioninfo.RegionInfo.__init__
+boto.ec2.securitygroup.GroupOrCIDR.__init__
+boto.ec2.securitygroup.IPPermissions.__init__
+boto.ec2.securitygroup.SecurityGroup.__init__
+boto.ec2.snapshot.Snapshot.__init__
+boto.ec2.volume.Volume.__init__
+boto.ec2.zone.Zone.__init__
+boto.exception.BotoClientError.__init__
+boto.exception.BotoServerError.__init__
+boto.exception.ConsoleOutput.__init__
+boto.exception.EC2ResponseError.__init__
+boto.exception.S3ResponseError.__init__
+boto.exception.SQSError.__init__
+boto.exception._EC2Error.__init__
+boto.fps.connection.FPSConnection.__init__
+boto.handler.XmlHandler.__init__
+boto.mapreduce.lqs.LQSCommand.__init__
+boto.mapreduce.lqs.LQSMessage.__init__
+boto.mapreduce.lqs.LQSServer.__init__
+boto.mapreduce.partitiondb.Partition.__init__
+boto.mapreduce.partitiondb.PartitionDB.__init__
+boto.mapreduce.partitiondb.Version.__init__
+boto.mapreduce.queuetools.LQSClient.__init__
+boto.mapreduce.queuetools.SQSClient.__init__
+boto.mashups.order.Item.__init__
+boto.mashups.order.Order.__init__
+boto.mashups.server.Server.__init__
+boto.mturk.connection.Assignment.__init__
+boto.mturk.connection.BaseAutoResultElement.__init__
+boto.mturk.connection.MTurkConnection.__init__
+boto.mturk.notification.Event.__init__
+boto.mturk.notification.NotificationMessage.__init__
+boto.mturk.price.Price.__init__
+boto.mturk.qualification.PercentAssignmentsAbandonedRequirement.__init__
+boto.mturk.qualification.PercentAssignmentsApprovedRequirement.__init__
+boto.mturk.qualification.PercentAssignmentsRejectedRequirement.__init__
+boto.mturk.qualification.PercentAssignmentsReturnedRequirement.__init__
+boto.mturk.qualification.PercentAssignmentsSubmittedRequirement.__init__
+boto.mturk.qualification.Qualifications.__init__
+boto.mturk.qualification.Requirement.__init__
+boto.mturk.question.AnswerSpecification.__init__
+boto.mturk.question.ExternalQuestion.__init__
+boto.mturk.question.FileUploadAnswer.__init__
+boto.mturk.question.FreeTextAnswer.__init__
+boto.mturk.question.Question.__init__
+boto.mturk.question.QuestionContent.__init__
+boto.mturk.question.QuestionForm.__init__
+boto.mturk.question.SelectionAnswer.__init__
+boto.pyami.bootstrap.Bootstrap.__init__
+boto.pyami.config.Config.__init__
+boto.pyami.copybot.CopyBot.__init__
+boto.pyami.scriptbase.ScriptBase.__init__
+boto.resultset.ResultSet.__init__
+boto.s3.acl.ACL.__init__
+boto.s3.acl.Grant.__init__
+boto.s3.acl.Policy.__init__
+boto.s3.bucket.Bucket.__init__
+boto.s3.bucketlistresultset.BucketListResultSet.__init__
+boto.s3.connection.S3Connection.__init__
+boto.s3.key.Key.__init__
+boto.s3.prefix.Prefix.__init__
+boto.s3.user.User.__init__
+boto.sdb.connection.ItemThread.__init__
+boto.sdb.connection.SDBConnection.__init__
+boto.sdb.db.key.Key.__init__
+boto.sdb.db.manager.pgmanager.PGConverter.__init__
+boto.sdb.db.manager.pgmanager.PGManager.__init__
+boto.sdb.db.manager.sdbmanager.SDBConverter.__init__
+boto.sdb.db.manager.sdbmanager.SDBManager.__init__
+boto.sdb.db.model.Model.__init__
+boto.sdb.db.model.Model.__init__
+boto.sdb.db.model.ModelMeta.__init__
+boto.sdb.db.model.ModelMeta.__init__
+boto.sdb.db.property.BooleanProperty.__init__
+boto.sdb.db.property.CalculatedProperty.__init__
+boto.sdb.db.property.DateTimeProperty.__init__
+boto.sdb.db.property.IntegerProperty.__init__
+boto.sdb.db.property.ListProperty.__init__
+boto.sdb.db.property.LongProperty.__init__
+boto.sdb.db.property.PasswordProperty.__init__
+boto.sdb.db.property.Property.__init__
+boto.sdb.db.property.ReferenceProperty.__init__
+boto.sdb.db.property.S3KeyProperty.__init__
+boto.sdb.db.property.StringProperty.__init__
+boto.sdb.db.property.TextProperty.__init__
+boto.sdb.db.property._ReverseReferenceProperty.__init__
+boto.sdb.db.query.Query.__init__
+boto.sdb.domain.Domain.__init__
+boto.sdb.domain.DomainMetaData.__init__
+boto.sdb.item.Item.__init__
+boto.sdb.persist.Manager.__init__
+boto.sdb.persist.checker.BooleanChecker.__init__
+boto.sdb.persist.checker.DateTimeChecker.__init__
+boto.sdb.persist.checker.IntegerChecker.__init__
+boto.sdb.persist.checker.ObjectChecker.__init__
+boto.sdb.persist.checker.S3BucketChecker.__init__
+boto.sdb.persist.checker.S3KeyChecker.__init__
+boto.sdb.persist.checker.StringChecker.__init__
+boto.sdb.persist.object.SDBBase.__init__
+boto.sdb.persist.object.SDBObject.__init__
+boto.sdb.persist.property.BooleanListProperty.__init__
+boto.sdb.persist.property.BooleanProperty.__init__
+boto.sdb.persist.property.DateTimeProperty.__init__
+boto.sdb.persist.property.IntegerListProperty.__init__
+boto.sdb.persist.property.IntegerProperty.__init__
+boto.sdb.persist.property.LargeIntegerListProperty.__init__
+boto.sdb.persist.property.LargeIntegerProperty.__init__
+boto.sdb.persist.property.LargePositiveIntegerListProperty.__init__
+boto.sdb.persist.property.LargePositiveIntegerProperty.__init__
+boto.sdb.persist.property.MultiValue.__init__
+boto.sdb.persist.property.MultiValueProperty.__init__
+boto.sdb.persist.property.ObjectListProperty.__init__
+boto.sdb.persist.property.ObjectProperty.__init__
+boto.sdb.persist.property.PasswordProperty.__init__
+boto.sdb.persist.property.PositiveIntegerListProperty.__init__
+boto.sdb.persist.property.PositiveIntegerProperty.__init__
+boto.sdb.persist.property.Property.__init__
+boto.sdb.persist.property.S3BucketProperty.__init__
+boto.sdb.persist.property.S3KeyProperty.__init__
+boto.sdb.persist.property.SmallIntegerListProperty.__init__
+boto.sdb.persist.property.SmallIntegerProperty.__init__
+boto.sdb.persist.property.SmallPositiveIntegerListProperty.__init__
+boto.sdb.persist.property.SmallPositiveIntegerProperty.__init__
+boto.sdb.persist.property.StringListProperty.__init__
+boto.sdb.persist.property.StringProperty.__init__
+boto.sdb.queryresultset.QueryResultSet.__init__
+boto.services.bs.BS.__init__
+boto.services.result.ResultProcessor.__init__
+boto.services.service.Service.__init__
+boto.services.servicedef.ServiceDef.__init__
+boto.services.sonofmmm.SonOfMMM.__init__
+boto.services.submit.Submitter.__init__
+boto.sqs.20070501.attributes.Attributes.__init__
+boto.sqs.20070501.connection.SQSConnection.__init__
+boto.sqs.20070501.connection.SQSQueryConnection.__init__
+boto.sqs.20070501.message.MHMessage.__init__
+boto.sqs.20070501.message.RawMessage.__init__
+boto.sqs.20070501.queue.Queue.__init__
+boto.sqs.attributes.Attributes.__init__
+boto.sqs.connection.SQSConnection.__init__
+boto.sqs.message.MHMessage.__init__
+boto.sqs.message.RawMessage.__init__
+boto.sqs.queue.Queue.__init__
+boto.utils.AuthSMTPHandler.__init__
+boto.utils.LRUCache._Item.__init__
+boto.utils.LRUCache.__init__
+boto.utils.Password.__init__
+boto.utils.ShellCommand.__init__" class="py-name" href="#" onclick="return doclink('link-111', '__init__', 'link-37');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt> <tt class="py-name">host</tt><tt class="py-op">,</tt> </tt>
+<a name="L194"></a><tt class="py-lineno">194</tt>  <tt class="py-line">                                   <tt class="py-name">aws_access_key_id</tt><tt class="py-op">,</tt> <tt class="py-name">aws_secret_access_key</tt><tt class="py-op">,</tt> </tt>
+<a name="L195"></a><tt class="py-lineno">195</tt>  <tt class="py-line">                                   <tt class="py-name">is_secure</tt><tt class="py-op">,</tt> <tt class="py-name">port</tt><tt class="py-op">,</tt> <tt class="py-name">proxy</tt><tt class="py-op">,</tt> <tt class="py-name">proxy_port</tt><tt class="py-op">,</tt> <tt class="py-name">debug</tt><tt class="py-op">,</tt> </tt>
+<a name="L196"></a><tt class="py-lineno">196</tt>  <tt class="py-line">                                   <tt id="link-112" class="py-name"><a title="boto.contrib.m2helpers.https_connection_factory" class="py-name" href="#" onclick="return doclink('link-112', 'https_connection_factory', 'link-38');">https_connection_factory</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L197"></a><tt class="py-lineno">197</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">query_conn</tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+</div><a name="L198"></a><tt class="py-lineno">198</tt>  <tt class="py-line"> </tt>
+<a name="SQSConnection.make_request"></a><div id="SQSConnection.make_request-def"><a name="L199"></a><tt class="py-lineno">199</tt> <a class="py-toggle" href="#" id="SQSConnection.make_request-toggle" onclick="return toggle('SQSConnection.make_request');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sqs.20070501.connection.SQSConnection-class.html#make_request">make_request</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">method</tt><tt class="py-op">,</tt> <tt class="py-param">path</tt><tt class="py-op">,</tt> <tt class="py-param">headers</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-param">data</tt><tt class="py-op">=</tt><tt class="py-string">''</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SQSConnection.make_request-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="SQSConnection.make_request-expanded"><a name="L200"></a><tt class="py-lineno">200</tt>  <tt class="py-line">        <tt class="py-comment"># add auth header</tt> </tt>
+<a name="L201"></a><tt class="py-lineno">201</tt>  <tt class="py-line"><tt class="py-comment"></tt>        <tt class="py-keyword">if</tt> <tt class="py-name">headers</tt> <tt class="py-op">==</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L202"></a><tt class="py-lineno">202</tt>  <tt class="py-line">            <tt class="py-name">headers</tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt><tt class="py-op">}</tt> </tt>
+<a name="L203"></a><tt class="py-lineno">203</tt>  <tt class="py-line"> </tt>
+<a name="L204"></a><tt class="py-lineno">204</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-keyword">not</tt> <tt class="py-name">headers</tt><tt class="py-op">.</tt><tt id="link-113" class="py-name" targets="Method boto.sqs.20070501.message.MHMessage.has_key()=boto.sqs.20070501.message.MHMessage-class.html#has_key,Method boto.sqs.message.MHMessage.has_key()=boto.sqs.message.MHMessage-class.html#has_key"><a title="boto.sqs.20070501.message.MHMessage.has_key
+boto.sqs.message.MHMessage.has_key" class="py-name" href="#" onclick="return doclink('link-113', 'has_key', 'link-113');">has_key</a></tt><tt class="py-op">(</tt><tt class="py-string">'AWS-Version'</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L205"></a><tt class="py-lineno">205</tt>  <tt class="py-line">            <tt class="py-name">headers</tt><tt class="py-op">[</tt><tt class="py-string">'AWS-Version'</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-114" class="py-name"><a title="boto.connection.AWSQueryConnection.APIVersion
+boto.ec2.connection.EC2Connection.APIVersion
+boto.fps.connection.FPSConnection.APIVersion
+boto.mturk.connection.MTurkConnection.APIVersion
+boto.sdb.connection.SDBConnection.APIVersion
+boto.sqs.20070501.connection.SQSConnection.APIVersion
+boto.sqs.20070501.connection.SQSQueryConnection.APIVersion
+boto.sqs.connection.SQSConnection.APIVersion" class="py-name" href="#" onclick="return doclink('link-114', 'APIVersion', 'link-32');">APIVersion</a></tt> </tt>
+<a name="L206"></a><tt class="py-lineno">206</tt>  <tt class="py-line"> </tt>
+<a name="L207"></a><tt class="py-lineno">207</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-keyword">not</tt> <tt class="py-name">headers</tt><tt class="py-op">.</tt><tt id="link-115" class="py-name"><a title="boto.sqs.20070501.message.MHMessage.has_key
+boto.sqs.message.MHMessage.has_key" class="py-name" href="#" onclick="return doclink('link-115', 'has_key', 'link-113');">has_key</a></tt><tt class="py-op">(</tt><tt class="py-string">'Content-Type'</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L208"></a><tt class="py-lineno">208</tt>  <tt class="py-line">            <tt class="py-name">headers</tt><tt class="py-op">[</tt><tt class="py-string">'Content-Type'</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-116" class="py-name"><a title="boto.s3.key.Key.DefaultContentType
+boto.sqs.20070501.connection.SQSConnection.DefaultContentType
+boto.sqs.20070501.connection.SQSQueryConnection.DefaultContentType
+boto.sqs.connection.SQSConnection.DefaultContentType" class="py-name" href="#" onclick="return doclink('link-116', 'DefaultContentType', 'link-34');">DefaultContentType</a></tt> </tt>
+<a name="L209"></a><tt class="py-lineno">209</tt>  <tt class="py-line"> </tt>
+<a name="L210"></a><tt class="py-lineno">210</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt id="link-117" class="py-name"><a title="boto.connection.AWSAuthConnection" class="py-name" href="#" onclick="return doclink('link-117', 'AWSAuthConnection', 'link-2');">AWSAuthConnection</a></tt><tt class="py-op">.</tt><tt id="link-118" class="py-name"><a title="boto.connection.AWSAuthConnection.make_request
+boto.connection.AWSQueryConnection.make_request
+boto.s3.connection.S3Connection.make_request
+boto.sqs.20070501.connection.SQSConnection.make_request" class="py-name" href="#" onclick="return doclink('link-118', 'make_request', 'link-39');">make_request</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt> <tt class="py-name">method</tt><tt class="py-op">,</tt> <tt class="py-name">path</tt><tt class="py-op">,</tt> </tt>
+<a name="L211"></a><tt class="py-lineno">211</tt>  <tt class="py-line">                                              <tt class="py-name">headers</tt><tt class="py-op">,</tt> <tt id="link-119" class="py-name" targets="Variable boto.mapreduce.partitiondb.Partition.data=boto.mapreduce.partitiondb.Partition-class.html#data"><a title="boto.mapreduce.partitiondb.Partition.data" class="py-name" href="#" onclick="return doclink('link-119', 'data', 'link-119');">data</a></tt><tt class="py-op">)</tt> </tt>
+</div><a name="L212"></a><tt class="py-lineno">212</tt>  <tt class="py-line"> </tt>
+<a name="SQSConnection.get_query_connection"></a><div id="SQSConnection.get_query_connection-def"><a name="L213"></a><tt class="py-lineno">213</tt> <a class="py-toggle" href="#" id="SQSConnection.get_query_connection-toggle" onclick="return toggle('SQSConnection.get_query_connection');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sqs.20070501.connection.SQSConnection-class.html#get_query_connection">get_query_connection</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SQSConnection.get_query_connection-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="SQSConnection.get_query_connection-expanded"><a name="L214"></a><tt class="py-lineno">214</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-keyword">not</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">query_conn</tt><tt class="py-op">:</tt> </tt>
+<a name="L215"></a><tt class="py-lineno">215</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">query_conn</tt> <tt class="py-op">=</tt> <tt id="link-120" class="py-name" targets="Class boto.sqs.20070501.connection.SQSQueryConnection=boto.sqs.20070501.connection.SQSQueryConnection-class.html"><a title="boto.sqs.20070501.connection.SQSQueryConnection" class="py-name" href="#" onclick="return doclink('link-120', 'SQSQueryConnection', 'link-120');">SQSQueryConnection</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">aws_access_key_id</tt><tt class="py-op">,</tt> </tt>
+<a name="L216"></a><tt class="py-lineno">216</tt>  <tt class="py-line">                                                 <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">aws_secret_access_key</tt><tt class="py-op">,</tt> </tt>
+<a name="L217"></a><tt class="py-lineno">217</tt>  <tt class="py-line">                                                 <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">is_secure</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">port</tt><tt class="py-op">,</tt> </tt>
+<a name="L218"></a><tt class="py-lineno">218</tt>  <tt class="py-line">                                                 <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">proxy</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">proxy_port</tt><tt class="py-op">,</tt> </tt>
+<a name="L219"></a><tt class="py-lineno">219</tt>  <tt class="py-line">                                                 <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-121" class="py-name" targets="Module boto.mashups.server=boto.mashups.server-module.html"><a title="boto.mashups.server" class="py-name" href="#" onclick="return doclink('link-121', 'server', 'link-121');">server</a></tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">debug</tt><tt class="py-op">,</tt> </tt>
+<a name="L220"></a><tt class="py-lineno">220</tt>  <tt class="py-line">                                                 <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-122" class="py-name"><a title="boto.contrib.m2helpers.https_connection_factory" class="py-name" href="#" onclick="return doclink('link-122', 'https_connection_factory', 'link-38');">https_connection_factory</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L221"></a><tt class="py-lineno">221</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">query_conn</tt> </tt>
+</div><a name="L222"></a><tt class="py-lineno">222</tt>  <tt class="py-line"> </tt>
+<a name="SQSConnection.get_all_queues"></a><div id="SQSConnection.get_all_queues-def"><a name="L223"></a><tt class="py-lineno">223</tt> <a class="py-toggle" href="#" id="SQSConnection.get_all_queues-toggle" onclick="return toggle('SQSConnection.get_all_queues');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sqs.20070501.connection.SQSConnection-class.html#get_all_queues">get_all_queues</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">prefix</tt><tt class="py-op">=</tt><tt class="py-string">''</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SQSConnection.get_all_queues-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="SQSConnection.get_all_queues-expanded"><a name="L224"></a><tt class="py-lineno">224</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt id="link-123" class="py-name" targets="Module boto.s3.prefix=boto.s3.prefix-module.html"><a title="boto.s3.prefix" class="py-name" href="#" onclick="return doclink('link-123', 'prefix', 'link-123');">prefix</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L225"></a><tt class="py-lineno">225</tt>  <tt class="py-line">            <tt class="py-name">path</tt> <tt class="py-op">=</tt> <tt class="py-string">'/?QueueNamePrefix=%s'</tt> <tt class="py-op">%</tt> <tt id="link-124" class="py-name"><a title="boto.s3.prefix" class="py-name" href="#" onclick="return doclink('link-124', 'prefix', 'link-123');">prefix</a></tt> </tt>
+<a name="L226"></a><tt class="py-lineno">226</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L227"></a><tt class="py-lineno">227</tt>  <tt class="py-line">            <tt class="py-name">path</tt> <tt class="py-op">=</tt> <tt class="py-string">'/'</tt> </tt>
+<a name="L228"></a><tt class="py-lineno">228</tt>  <tt class="py-line">        <tt class="py-name">response</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-125" class="py-name"><a title="boto.connection.AWSAuthConnection.make_request
+boto.connection.AWSQueryConnection.make_request
+boto.s3.connection.S3Connection.make_request
+boto.sqs.20070501.connection.SQSConnection.make_request" class="py-name" href="#" onclick="return doclink('link-125', 'make_request', 'link-39');">make_request</a></tt><tt class="py-op">(</tt><tt class="py-string">'GET'</tt><tt class="py-op">,</tt> <tt class="py-name">path</tt><tt class="py-op">)</tt> </tt>
+<a name="L229"></a><tt class="py-lineno">229</tt>  <tt class="py-line">        <tt class="py-name">body</tt> <tt class="py-op">=</tt> <tt class="py-name">response</tt><tt class="py-op">.</tt><tt id="link-126" class="py-name"><a title="boto.s3.key.Key.read
+boto.sqs.20070501.queue.Queue.read
+boto.sqs.queue.Queue.read" class="py-name" href="#" onclick="return doclink('link-126', 'read', 'link-40');">read</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L230"></a><tt class="py-lineno">230</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">response</tt><tt class="py-op">.</tt><tt id="link-127" class="py-name"><a title="boto.mashups.server.Server.status
+boto.utils.ShellCommand.status" class="py-name" href="#" onclick="return doclink('link-127', 'status', 'link-41');">status</a></tt> <tt class="py-op">&gt;=</tt> <tt class="py-number">300</tt><tt class="py-op">:</tt> </tt>
+<a name="L231"></a><tt class="py-lineno">231</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-128" class="py-name"><a title="boto.exception.SQSError" class="py-name" href="#" onclick="return doclink('link-128', 'SQSError', 'link-23');">SQSError</a></tt><tt class="py-op">(</tt><tt class="py-name">response</tt><tt class="py-op">.</tt><tt id="link-129" class="py-name"><a title="boto.mashups.server.Server.status
+boto.utils.ShellCommand.status" class="py-name" href="#" onclick="return doclink('link-129', 'status', 'link-41');">status</a></tt><tt class="py-op">,</tt> <tt class="py-name">response</tt><tt class="py-op">.</tt><tt class="py-name">reason</tt><tt class="py-op">,</tt> <tt class="py-name">body</tt><tt class="py-op">)</tt> </tt>
+<a name="L232"></a><tt class="py-lineno">232</tt>  <tt class="py-line">        <tt class="py-name">rs</tt> <tt class="py-op">=</tt> <tt id="link-130" class="py-name"><a title="boto.resultset.ResultSet" class="py-name" href="#" onclick="return doclink('link-130', 'ResultSet', 'link-20');">ResultSet</a></tt><tt class="py-op">(</tt><tt class="py-op">[</tt><tt class="py-op">(</tt><tt class="py-string">'QueueUrl'</tt><tt class="py-op">,</tt> <tt id="link-131" class="py-name"><a title="boto.sqs.20070501.queue.Queue
+boto.sqs.queue.Queue" class="py-name" href="#" onclick="return doclink('link-131', 'Queue', 'link-7');">Queue</a></tt><tt class="py-op">)</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L233"></a><tt class="py-lineno">233</tt>  <tt class="py-line">        <tt class="py-name">h</tt> <tt class="py-op">=</tt> <tt id="link-132" class="py-name"><a title="boto.handler" class="py-name" href="#" onclick="return doclink('link-132', 'handler', 'link-17');">handler</a></tt><tt class="py-op">.</tt><tt id="link-133" class="py-name"><a title="boto.handler.XmlHandler" class="py-name" href="#" onclick="return doclink('link-133', 'XmlHandler', 'link-44');">XmlHandler</a></tt><tt class="py-op">(</tt><tt class="py-name">rs</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">)</tt> </tt>
+<a name="L234"></a><tt class="py-lineno">234</tt>  <tt class="py-line">        <tt class="py-name">xml</tt><tt class="py-op">.</tt><tt class="py-name">sax</tt><tt class="py-op">.</tt><tt class="py-name">parseString</tt><tt class="py-op">(</tt><tt class="py-name">body</tt><tt class="py-op">,</tt> <tt class="py-name">h</tt><tt class="py-op">)</tt> </tt>
+<a name="L235"></a><tt class="py-lineno">235</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">rs</tt> </tt>
+</div><a name="L236"></a><tt class="py-lineno">236</tt>  <tt class="py-line"> </tt>
+<a name="SQSConnection.get_queue"></a><div id="SQSConnection.get_queue-def"><a name="L237"></a><tt class="py-lineno">237</tt> <a class="py-toggle" href="#" id="SQSConnection.get_queue-toggle" onclick="return toggle('SQSConnection.get_queue');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sqs.20070501.connection.SQSConnection-class.html#get_queue">get_queue</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">queue_name</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SQSConnection.get_queue-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="SQSConnection.get_queue-expanded"><a name="L238"></a><tt class="py-lineno">238</tt>  <tt class="py-line">        <tt class="py-name">i</tt> <tt class="py-op">=</tt> <tt class="py-number">0</tt> </tt>
+<a name="L239"></a><tt class="py-lineno">239</tt>  <tt class="py-line">        <tt class="py-name">rs</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-134" class="py-name" targets="Method boto.sqs.20070501.connection.SQSConnection.get_all_queues()=boto.sqs.20070501.connection.SQSConnection-class.html#get_all_queues,Method boto.sqs.connection.SQSConnection.get_all_queues()=boto.sqs.connection.SQSConnection-class.html#get_all_queues"><a title="boto.sqs.20070501.connection.SQSConnection.get_all_queues
+boto.sqs.connection.SQSConnection.get_all_queues" class="py-name" href="#" onclick="return doclink('link-134', 'get_all_queues', 'link-134');">get_all_queues</a></tt><tt class="py-op">(</tt><tt class="py-name">queue_name</tt><tt class="py-op">)</tt> </tt>
+<a name="L240"></a><tt class="py-lineno">240</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt class="py-name">q</tt> <tt class="py-keyword">in</tt> <tt class="py-name">rs</tt><tt class="py-op">:</tt> </tt>
+<a name="L241"></a><tt class="py-lineno">241</tt>  <tt class="py-line">            <tt class="py-name">i</tt> <tt class="py-op">+=</tt> <tt class="py-number">1</tt> </tt>
+<a name="L242"></a><tt class="py-lineno">242</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">i</tt> <tt class="py-op">!=</tt> <tt class="py-number">1</tt><tt class="py-op">:</tt> </tt>
+<a name="L243"></a><tt class="py-lineno">243</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt class="py-name">None</tt> </tt>
+<a name="L244"></a><tt class="py-lineno">244</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L245"></a><tt class="py-lineno">245</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt class="py-name">q</tt> </tt>
+</div><a name="L246"></a><tt class="py-lineno">246</tt>  <tt class="py-line"> </tt>
+<a name="SQSConnection.get_queue_attributes"></a><div id="SQSConnection.get_queue_attributes-def"><a name="L247"></a><tt class="py-lineno">247</tt> <a class="py-toggle" href="#" id="SQSConnection.get_queue_attributes-toggle" onclick="return toggle('SQSConnection.get_queue_attributes');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sqs.20070501.connection.SQSConnection-class.html#get_queue_attributes">get_queue_attributes</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">queue_url</tt><tt class="py-op">,</tt> <tt class="py-param">attribute</tt><tt class="py-op">=</tt><tt class="py-string">'All'</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SQSConnection.get_queue_attributes-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="SQSConnection.get_queue_attributes-expanded"><a name="L248"></a><tt class="py-lineno">248</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L249"></a><tt class="py-lineno">249</tt>  <tt class="py-line"><tt class="py-docstring">        Performs a GetQueueAttributes request and returns an Attributes</tt> </tt>
+<a name="L250"></a><tt class="py-lineno">250</tt>  <tt class="py-line"><tt class="py-docstring">        instance (subclass of a Dictionary) holding the requested</tt> </tt>
+<a name="L251"></a><tt class="py-lineno">251</tt>  <tt class="py-line"><tt class="py-docstring">        attribute name/value pairs.</tt> </tt>
+<a name="L252"></a><tt class="py-lineno">252</tt>  <tt class="py-line"><tt class="py-docstring">        Inputs:</tt> </tt>
+<a name="L253"></a><tt class="py-lineno">253</tt>  <tt class="py-line"><tt class="py-docstring">            queue_url - the URL of the desired SQS queue</tt> </tt>
+<a name="L254"></a><tt class="py-lineno">254</tt>  <tt class="py-line"><tt class="py-docstring">            attribute - All|ApproximateNumberOfMessages|VisibilityTimeout</tt> </tt>
+<a name="L255"></a><tt class="py-lineno">255</tt>  <tt class="py-line"><tt class="py-docstring">                        Default value is "All"</tt> </tt>
+<a name="L256"></a><tt class="py-lineno">256</tt>  <tt class="py-line"><tt class="py-docstring">        Returns:</tt> </tt>
+<a name="L257"></a><tt class="py-lineno">257</tt>  <tt class="py-line"><tt class="py-docstring">            An Attribute object which is a mapping type holding the</tt> </tt>
+<a name="L258"></a><tt class="py-lineno">258</tt>  <tt class="py-line"><tt class="py-docstring">            requested name/value pairs</tt> </tt>
+<a name="L259"></a><tt class="py-lineno">259</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L260"></a><tt class="py-lineno">260</tt>  <tt class="py-line">        <tt class="py-name">qc</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-135" class="py-name" targets="Method boto.sqs.20070501.connection.SQSConnection.get_query_connection()=boto.sqs.20070501.connection.SQSConnection-class.html#get_query_connection"><a title="boto.sqs.20070501.connection.SQSConnection.get_query_connection" class="py-name" href="#" onclick="return doclink('link-135', 'get_query_connection', 'link-135');">get_query_connection</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L261"></a><tt class="py-lineno">261</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">qc</tt><tt class="py-op">.</tt><tt id="link-136" class="py-name" targets="Method boto.sqs.20070501.connection.SQSConnection.get_queue_attributes()=boto.sqs.20070501.connection.SQSConnection-class.html#get_queue_attributes,Method boto.sqs.20070501.connection.SQSQueryConnection.get_queue_attributes()=boto.sqs.20070501.connection.SQSQueryConnection-class.html#get_queue_attributes,Method boto.sqs.connection.SQSConnection.get_queue_attributes()=boto.sqs.connection.SQSConnection-class.html#get_queue_attributes"><a title="boto.sqs.20070501.connection.SQSConnection.get_queue_attributes
+boto.sqs.20070501.connection.SQSQueryConnection.get_queue_attributes
+boto.sqs.connection.SQSConnection.get_queue_attributes" class="py-name" href="#" onclick="return doclink('link-136', 'get_queue_attributes', 'link-136');">get_queue_attributes</a></tt><tt class="py-op">(</tt><tt class="py-name">queue_url</tt><tt class="py-op">,</tt> <tt class="py-name">attribute</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L262"></a><tt class="py-lineno">262</tt>  <tt class="py-line">     </tt>
+<a name="SQSConnection.set_queue_attribute"></a><div id="SQSConnection.set_queue_attribute-def"><a name="L263"></a><tt class="py-lineno">263</tt> <a class="py-toggle" href="#" id="SQSConnection.set_queue_attribute-toggle" onclick="return toggle('SQSConnection.set_queue_attribute');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sqs.20070501.connection.SQSConnection-class.html#set_queue_attribute">set_queue_attribute</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">queue_url</tt><tt class="py-op">,</tt> <tt class="py-param">attribute</tt><tt class="py-op">,</tt> <tt class="py-param">value</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SQSConnection.set_queue_attribute-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="SQSConnection.set_queue_attribute-expanded"><a name="L264"></a><tt class="py-lineno">264</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L265"></a><tt class="py-lineno">265</tt>  <tt class="py-line"><tt class="py-docstring">        Performs a SetQueueAttributes request.</tt> </tt>
+<a name="L266"></a><tt class="py-lineno">266</tt>  <tt class="py-line"><tt class="py-docstring">        Inputs:</tt> </tt>
+<a name="L267"></a><tt class="py-lineno">267</tt>  <tt class="py-line"><tt class="py-docstring">            queue_url - The URL of the desired SQS queue</tt> </tt>
+<a name="L268"></a><tt class="py-lineno">268</tt>  <tt class="py-line"><tt class="py-docstring">            attribute - The name of the attribute you want to set.  The</tt> </tt>
+<a name="L269"></a><tt class="py-lineno">269</tt>  <tt class="py-line"><tt class="py-docstring">                        only valid value at this time is: VisibilityTimeout</tt> </tt>
+<a name="L270"></a><tt class="py-lineno">270</tt>  <tt class="py-line"><tt class="py-docstring">                value - The new value for the attribute.</tt> </tt>
+<a name="L271"></a><tt class="py-lineno">271</tt>  <tt class="py-line"><tt class="py-docstring">                        For VisibilityTimeout the value must be an</tt> </tt>
+<a name="L272"></a><tt class="py-lineno">272</tt>  <tt class="py-line"><tt class="py-docstring">                        integer number of seconds from 0 to 86400.</tt> </tt>
+<a name="L273"></a><tt class="py-lineno">273</tt>  <tt class="py-line"><tt class="py-docstring">        Returns:</tt> </tt>
+<a name="L274"></a><tt class="py-lineno">274</tt>  <tt class="py-line"><tt class="py-docstring">            Boolean True if successful, otherwise False.</tt> </tt>
+<a name="L275"></a><tt class="py-lineno">275</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L276"></a><tt class="py-lineno">276</tt>  <tt class="py-line">        <tt class="py-name">qc</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-137" class="py-name"><a title="boto.sqs.20070501.connection.SQSConnection.get_query_connection" class="py-name" href="#" onclick="return doclink('link-137', 'get_query_connection', 'link-135');">get_query_connection</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L277"></a><tt class="py-lineno">277</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">qc</tt><tt class="py-op">.</tt><tt id="link-138" class="py-name" targets="Method boto.sqs.20070501.connection.SQSConnection.set_queue_attribute()=boto.sqs.20070501.connection.SQSConnection-class.html#set_queue_attribute,Method boto.sqs.20070501.connection.SQSQueryConnection.set_queue_attribute()=boto.sqs.20070501.connection.SQSQueryConnection-class.html#set_queue_attribute,Method boto.sqs.connection.SQSConnection.set_queue_attribute()=boto.sqs.connection.SQSConnection-class.html#set_queue_attribute"><a title="boto.sqs.20070501.connection.SQSConnection.set_queue_attribute
+boto.sqs.20070501.connection.SQSQueryConnection.set_queue_attribute
+boto.sqs.connection.SQSConnection.set_queue_attribute" class="py-name" href="#" onclick="return doclink('link-138', 'set_queue_attribute', 'link-138');">set_queue_attribute</a></tt><tt class="py-op">(</tt><tt class="py-name">queue_url</tt><tt class="py-op">,</tt> <tt class="py-name">attribute</tt><tt class="py-op">,</tt> <tt class="py-name">value</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L278"></a><tt class="py-lineno">278</tt>  <tt class="py-line"> </tt>
+<a name="SQSConnection.change_message_visibility"></a><div id="SQSConnection.change_message_visibility-def"><a name="L279"></a><tt class="py-lineno">279</tt> <a class="py-toggle" href="#" id="SQSConnection.change_message_visibility-toggle" onclick="return toggle('SQSConnection.change_message_visibility');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sqs.20070501.connection.SQSConnection-class.html#change_message_visibility">change_message_visibility</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">queue_url</tt><tt class="py-op">,</tt> <tt class="py-param">message_id</tt><tt class="py-op">,</tt> <tt class="py-param">vtimeout</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SQSConnection.change_message_visibility-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="SQSConnection.change_message_visibility-expanded"><a name="L280"></a><tt class="py-lineno">280</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L281"></a><tt class="py-lineno">281</tt>  <tt class="py-line"><tt class="py-docstring">        Change the VisibilityTimeout for an individual message.</tt> </tt>
+<a name="L282"></a><tt class="py-lineno">282</tt>  <tt class="py-line"><tt class="py-docstring">        Inputs:</tt> </tt>
+<a name="L283"></a><tt class="py-lineno">283</tt>  <tt class="py-line"><tt class="py-docstring">            queue_url - The URL of the desired SQS queue</tt> </tt>
+<a name="L284"></a><tt class="py-lineno">284</tt>  <tt class="py-line"><tt class="py-docstring">            message_id - The ID of the message whose timeout will be changed</tt> </tt>
+<a name="L285"></a><tt class="py-lineno">285</tt>  <tt class="py-line"><tt class="py-docstring">            vtimeout - The new VisibilityTimeout value, in seconds</tt> </tt>
+<a name="L286"></a><tt class="py-lineno">286</tt>  <tt class="py-line"><tt class="py-docstring">        Returns:</tt> </tt>
+<a name="L287"></a><tt class="py-lineno">287</tt>  <tt class="py-line"><tt class="py-docstring">            Boolean True if successful, otherwise False</tt> </tt>
+<a name="L288"></a><tt class="py-lineno">288</tt>  <tt class="py-line"><tt class="py-docstring">        Note: This functionality is also available as a method of the</tt> </tt>
+<a name="L289"></a><tt class="py-lineno">289</tt>  <tt class="py-line"><tt class="py-docstring">              Message object.</tt> </tt>
+<a name="L290"></a><tt class="py-lineno">290</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L291"></a><tt class="py-lineno">291</tt>  <tt class="py-line">        <tt class="py-name">qc</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-139" class="py-name"><a title="boto.sqs.20070501.connection.SQSConnection.get_query_connection" class="py-name" href="#" onclick="return doclink('link-139', 'get_query_connection', 'link-135');">get_query_connection</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L292"></a><tt class="py-lineno">292</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">qc</tt><tt class="py-op">.</tt><tt id="link-140" class="py-name" targets="Method boto.sqs.20070501.connection.SQSConnection.change_message_visibility()=boto.sqs.20070501.connection.SQSConnection-class.html#change_message_visibility,Method boto.sqs.20070501.connection.SQSQueryConnection.change_message_visibility()=boto.sqs.20070501.connection.SQSQueryConnection-class.html#change_message_visibility"><a title="boto.sqs.20070501.connection.SQSConnection.change_message_visibility
+boto.sqs.20070501.connection.SQSQueryConnection.change_message_visibility" class="py-name" href="#" onclick="return doclink('link-140', 'change_message_visibility', 'link-140');">change_message_visibility</a></tt><tt class="py-op">(</tt><tt class="py-name">queue_url</tt><tt class="py-op">,</tt> <tt class="py-name">message_id</tt><tt class="py-op">,</tt> <tt class="py-name">vtimeout</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L293"></a><tt class="py-lineno">293</tt>  <tt class="py-line"> </tt>
+<a name="SQSConnection.add_grant"></a><div id="SQSConnection.add_grant-def"><a name="L294"></a><tt class="py-lineno">294</tt> <a class="py-toggle" href="#" id="SQSConnection.add_grant-toggle" onclick="return toggle('SQSConnection.add_grant');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sqs.20070501.connection.SQSConnection-class.html#add_grant">add_grant</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">queue_url</tt><tt class="py-op">,</tt> <tt class="py-param">permission</tt><tt class="py-op">,</tt> <tt class="py-param">email_address</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-param">user_id</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SQSConnection.add_grant-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="SQSConnection.add_grant-expanded"><a name="L295"></a><tt class="py-lineno">295</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L296"></a><tt class="py-lineno">296</tt>  <tt class="py-line"><tt class="py-docstring">        Add a grant to a queue.</tt> </tt>
+<a name="L297"></a><tt class="py-lineno">297</tt>  <tt class="py-line"><tt class="py-docstring">        Inputs:</tt> </tt>
+<a name="L298"></a><tt class="py-lineno">298</tt>  <tt class="py-line"><tt class="py-docstring">            queue_url - The URL of the desired SQS queue</tt> </tt>
+<a name="L299"></a><tt class="py-lineno">299</tt>  <tt class="py-line"><tt class="py-docstring">            permission - The permission being granted.  One of "ReceiveMessage", "SendMessage" or "FullControl"</tt> </tt>
+<a name="L300"></a><tt class="py-lineno">300</tt>  <tt class="py-line"><tt class="py-docstring">            email_address - the email address of the grantee.  If email_address is supplied, user_id should be None</tt> </tt>
+<a name="L301"></a><tt class="py-lineno">301</tt>  <tt class="py-line"><tt class="py-docstring">            user_id - The ID of the grantee.  If user_id is supplied, email_address should be None</tt> </tt>
+<a name="L302"></a><tt class="py-lineno">302</tt>  <tt class="py-line"><tt class="py-docstring">        Returns:</tt> </tt>
+<a name="L303"></a><tt class="py-lineno">303</tt>  <tt class="py-line"><tt class="py-docstring">            Boolean True if successful, otherwise False</tt> </tt>
+<a name="L304"></a><tt class="py-lineno">304</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L305"></a><tt class="py-lineno">305</tt>  <tt class="py-line">        <tt class="py-name">qc</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-141" class="py-name"><a title="boto.sqs.20070501.connection.SQSConnection.get_query_connection" class="py-name" href="#" onclick="return doclink('link-141', 'get_query_connection', 'link-135');">get_query_connection</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L306"></a><tt class="py-lineno">306</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">qc</tt><tt class="py-op">.</tt><tt id="link-142" class="py-name" targets="Method boto.ec2.securitygroup.IPPermissions.add_grant()=boto.ec2.securitygroup.IPPermissions-class.html#add_grant,Method boto.s3.acl.ACL.add_grant()=boto.s3.acl.ACL-class.html#add_grant,Method boto.sqs.20070501.connection.SQSConnection.add_grant()=boto.sqs.20070501.connection.SQSConnection-class.html#add_grant,Method boto.sqs.20070501.connection.SQSQueryConnection.add_grant()=boto.sqs.20070501.connection.SQSQueryConnection-class.html#add_grant,Method boto.sqs.20070501.queue.Queue.add_grant()=boto.sqs.20070501.queue.Queue-class.html#add_grant"><a title="boto.ec2.securitygroup.IPPermissions.add_grant
+boto.s3.acl.ACL.add_grant
+boto.sqs.20070501.connection.SQSConnection.add_grant
+boto.sqs.20070501.connection.SQSQueryConnection.add_grant
+boto.sqs.20070501.queue.Queue.add_grant" class="py-name" href="#" onclick="return doclink('link-142', 'add_grant', 'link-142');">add_grant</a></tt><tt class="py-op">(</tt><tt class="py-name">queue_url</tt><tt class="py-op">,</tt> <tt class="py-name">permission</tt><tt class="py-op">,</tt> <tt class="py-name">email_address</tt><tt class="py-op">,</tt> <tt class="py-name">user_id</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L307"></a><tt class="py-lineno">307</tt>  <tt class="py-line"> </tt>
+<a name="SQSConnection.remove_grant"></a><div id="SQSConnection.remove_grant-def"><a name="L308"></a><tt class="py-lineno">308</tt> <a class="py-toggle" href="#" id="SQSConnection.remove_grant-toggle" onclick="return toggle('SQSConnection.remove_grant');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sqs.20070501.connection.SQSConnection-class.html#remove_grant">remove_grant</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">queue_url</tt><tt class="py-op">,</tt> <tt class="py-param">permission</tt><tt class="py-op">,</tt> <tt class="py-param">email_address</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-param">user_id</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SQSConnection.remove_grant-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="SQSConnection.remove_grant-expanded"><a name="L309"></a><tt class="py-lineno">309</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L310"></a><tt class="py-lineno">310</tt>  <tt class="py-line"><tt class="py-docstring">        Remove a grant from a queue.</tt> </tt>
+<a name="L311"></a><tt class="py-lineno">311</tt>  <tt class="py-line"><tt class="py-docstring">        Inputs:</tt> </tt>
+<a name="L312"></a><tt class="py-lineno">312</tt>  <tt class="py-line"><tt class="py-docstring">            queue_url - The URL of the desired SQS queue</tt> </tt>
+<a name="L313"></a><tt class="py-lineno">313</tt>  <tt class="py-line"><tt class="py-docstring">            permission - The permission being removed.  One of "ReceiveMessage", "SendMessage" or "FullControl"</tt> </tt>
+<a name="L314"></a><tt class="py-lineno">314</tt>  <tt class="py-line"><tt class="py-docstring">            email_address - the email address of the grantee.  If email_address is supplied, user_id should be None</tt> </tt>
+<a name="L315"></a><tt class="py-lineno">315</tt>  <tt class="py-line"><tt class="py-docstring">            user_id - The ID of the grantee.  If user_id is supplied, email_address should be None</tt> </tt>
+<a name="L316"></a><tt class="py-lineno">316</tt>  <tt class="py-line"><tt class="py-docstring">        Returns:</tt> </tt>
+<a name="L317"></a><tt class="py-lineno">317</tt>  <tt class="py-line"><tt class="py-docstring">            Boolean True if successful, otherwise False</tt> </tt>
+<a name="L318"></a><tt class="py-lineno">318</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L319"></a><tt class="py-lineno">319</tt>  <tt class="py-line">        <tt class="py-name">qc</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-143" class="py-name"><a title="boto.sqs.20070501.connection.SQSConnection.get_query_connection" class="py-name" href="#" onclick="return doclink('link-143', 'get_query_connection', 'link-135');">get_query_connection</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L320"></a><tt class="py-lineno">320</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">qc</tt><tt class="py-op">.</tt><tt id="link-144" class="py-name" targets="Method boto.sqs.20070501.connection.SQSConnection.remove_grant()=boto.sqs.20070501.connection.SQSConnection-class.html#remove_grant,Method boto.sqs.20070501.connection.SQSQueryConnection.remove_grant()=boto.sqs.20070501.connection.SQSQueryConnection-class.html#remove_grant,Method boto.sqs.20070501.queue.Queue.remove_grant()=boto.sqs.20070501.queue.Queue-class.html#remove_grant"><a title="boto.sqs.20070501.connection.SQSConnection.remove_grant
+boto.sqs.20070501.connection.SQSQueryConnection.remove_grant
+boto.sqs.20070501.queue.Queue.remove_grant" class="py-name" href="#" onclick="return doclink('link-144', 'remove_grant', 'link-144');">remove_grant</a></tt><tt class="py-op">(</tt><tt class="py-name">queue_url</tt><tt class="py-op">,</tt> <tt class="py-name">permission</tt><tt class="py-op">,</tt> <tt class="py-name">email_address</tt><tt class="py-op">,</tt> <tt class="py-name">user_id</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L321"></a><tt class="py-lineno">321</tt>  <tt class="py-line"> </tt>
+<a name="SQSConnection.list_grants"></a><div id="SQSConnection.list_grants-def"><a name="L322"></a><tt class="py-lineno">322</tt> <a class="py-toggle" href="#" id="SQSConnection.list_grants-toggle" onclick="return toggle('SQSConnection.list_grants');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sqs.20070501.connection.SQSConnection-class.html#list_grants">list_grants</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">queue_url</tt><tt class="py-op">,</tt> <tt class="py-param">permission</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-param">email_address</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-param">user_id</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SQSConnection.list_grants-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="SQSConnection.list_grants-expanded"><a name="L323"></a><tt class="py-lineno">323</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L324"></a><tt class="py-lineno">324</tt>  <tt class="py-line"><tt class="py-docstring">        List the grants to a queue.</tt> </tt>
+<a name="L325"></a><tt class="py-lineno">325</tt>  <tt class="py-line"><tt class="py-docstring">        Inputs:</tt> </tt>
+<a name="L326"></a><tt class="py-lineno">326</tt>  <tt class="py-line"><tt class="py-docstring">            queue_url - The URL of the desired SQS queue</tt> </tt>
+<a name="L327"></a><tt class="py-lineno">327</tt>  <tt class="py-line"><tt class="py-docstring">            permission - The permission granted.  One of "ReceiveMessage", "SendMessage" or "FullControl".</tt> </tt>
+<a name="L328"></a><tt class="py-lineno">328</tt>  <tt class="py-line"><tt class="py-docstring">                         If supplied, only grants that allow this permission will be returned.</tt> </tt>
+<a name="L329"></a><tt class="py-lineno">329</tt>  <tt class="py-line"><tt class="py-docstring">            email_address - the email address of the grantee.  If supplied, only grants related to this email</tt> </tt>
+<a name="L330"></a><tt class="py-lineno">330</tt>  <tt class="py-line"><tt class="py-docstring">                            address will be returned</tt> </tt>
+<a name="L331"></a><tt class="py-lineno">331</tt>  <tt class="py-line"><tt class="py-docstring">            user_id - The ID of the grantee.  If supplied, only grants related to his user_id will be returned.</tt> </tt>
+<a name="L332"></a><tt class="py-lineno">332</tt>  <tt class="py-line"><tt class="py-docstring">        Returns:</tt> </tt>
+<a name="L333"></a><tt class="py-lineno">333</tt>  <tt class="py-line"><tt class="py-docstring">            A string containing the XML Response elements describing the grants.</tt> </tt>
+<a name="L334"></a><tt class="py-lineno">334</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L335"></a><tt class="py-lineno">335</tt>  <tt class="py-line">        <tt class="py-name">qc</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-145" class="py-name"><a title="boto.sqs.20070501.connection.SQSConnection.get_query_connection" class="py-name" href="#" onclick="return doclink('link-145', 'get_query_connection', 'link-135');">get_query_connection</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L336"></a><tt class="py-lineno">336</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">qc</tt><tt class="py-op">.</tt><tt id="link-146" class="py-name" targets="Method boto.s3.bucket.Bucket.list_grants()=boto.s3.bucket.Bucket-class.html#list_grants,Method boto.sqs.20070501.connection.SQSConnection.list_grants()=boto.sqs.20070501.connection.SQSConnection-class.html#list_grants,Method boto.sqs.20070501.connection.SQSQueryConnection.list_grants()=boto.sqs.20070501.connection.SQSQueryConnection-class.html#list_grants,Method boto.sqs.20070501.queue.Queue.list_grants()=boto.sqs.20070501.queue.Queue-class.html#list_grants"><a title="boto.s3.bucket.Bucket.list_grants
+boto.sqs.20070501.connection.SQSConnection.list_grants
+boto.sqs.20070501.connection.SQSQueryConnection.list_grants
+boto.sqs.20070501.queue.Queue.list_grants" class="py-name" href="#" onclick="return doclink('link-146', 'list_grants', 'link-146');">list_grants</a></tt><tt class="py-op">(</tt><tt class="py-name">queue_url</tt><tt class="py-op">,</tt> <tt class="py-name">permission</tt><tt class="py-op">,</tt> <tt class="py-name">email_address</tt><tt class="py-op">,</tt> <tt class="py-name">user_id</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L337"></a><tt class="py-lineno">337</tt>  <tt class="py-line"> </tt>
+<a name="SQSConnection.create_queue"></a><div id="SQSConnection.create_queue-def"><a name="L338"></a><tt class="py-lineno">338</tt> <a class="py-toggle" href="#" id="SQSConnection.create_queue-toggle" onclick="return toggle('SQSConnection.create_queue');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sqs.20070501.connection.SQSConnection-class.html#create_queue">create_queue</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">queue_name</tt><tt class="py-op">,</tt> <tt class="py-param">visibility_timeout</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SQSConnection.create_queue-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="SQSConnection.create_queue-expanded"><a name="L339"></a><tt class="py-lineno">339</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L340"></a><tt class="py-lineno">340</tt>  <tt class="py-line"><tt class="py-docstring">        Create a new queue.</tt> </tt>
+<a name="L341"></a><tt class="py-lineno">341</tt>  <tt class="py-line"><tt class="py-docstring">        Inputs:</tt> </tt>
+<a name="L342"></a><tt class="py-lineno">342</tt>  <tt class="py-line"><tt class="py-docstring">            queue_name - The name of the new queue</tt> </tt>
+<a name="L343"></a><tt class="py-lineno">343</tt>  <tt class="py-line"><tt class="py-docstring">            visibility_timeout - (Optional) The default visibility</tt> </tt>
+<a name="L344"></a><tt class="py-lineno">344</tt>  <tt class="py-line"><tt class="py-docstring">                                 timeout for the new queue.</tt> </tt>
+<a name="L345"></a><tt class="py-lineno">345</tt>  <tt class="py-line"><tt class="py-docstring">        Returns:</tt> </tt>
+<a name="L346"></a><tt class="py-lineno">346</tt>  <tt class="py-line"><tt class="py-docstring">            A new Queue object representing the newly created queue.</tt> </tt>
+<a name="L347"></a><tt class="py-lineno">347</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L348"></a><tt class="py-lineno">348</tt>  <tt class="py-line">        <tt class="py-name">path</tt> <tt class="py-op">=</tt> <tt class="py-string">'/?QueueName=%s'</tt> <tt class="py-op">%</tt> <tt class="py-name">queue_name</tt> </tt>
+<a name="L349"></a><tt class="py-lineno">349</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">visibility_timeout</tt><tt class="py-op">:</tt> </tt>
+<a name="L350"></a><tt class="py-lineno">350</tt>  <tt class="py-line">            <tt class="py-name">path</tt> <tt class="py-op">=</tt> <tt class="py-name">path</tt> <tt class="py-op">+</tt> <tt class="py-string">'&amp;DefaultVisibilityTimeout=%d'</tt> <tt class="py-op">%</tt> <tt class="py-name">visibility_timeout</tt> </tt>
+<a name="L351"></a><tt class="py-lineno">351</tt>  <tt class="py-line">        <tt class="py-name">response</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-147" class="py-name"><a title="boto.connection.AWSAuthConnection.make_request
+boto.connection.AWSQueryConnection.make_request
+boto.s3.connection.S3Connection.make_request
+boto.sqs.20070501.connection.SQSConnection.make_request" class="py-name" href="#" onclick="return doclink('link-147', 'make_request', 'link-39');">make_request</a></tt><tt class="py-op">(</tt><tt class="py-string">'POST'</tt><tt class="py-op">,</tt> <tt class="py-name">path</tt><tt class="py-op">)</tt> </tt>
+<a name="L352"></a><tt class="py-lineno">352</tt>  <tt class="py-line">        <tt class="py-name">body</tt> <tt class="py-op">=</tt> <tt class="py-name">response</tt><tt class="py-op">.</tt><tt id="link-148" class="py-name"><a title="boto.s3.key.Key.read
+boto.sqs.20070501.queue.Queue.read
+boto.sqs.queue.Queue.read" class="py-name" href="#" onclick="return doclink('link-148', 'read', 'link-40');">read</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L353"></a><tt class="py-lineno">353</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">response</tt><tt class="py-op">.</tt><tt id="link-149" class="py-name"><a title="boto.mashups.server.Server.status
+boto.utils.ShellCommand.status" class="py-name" href="#" onclick="return doclink('link-149', 'status', 'link-41');">status</a></tt> <tt class="py-op">&gt;=</tt> <tt class="py-number">300</tt><tt class="py-op">:</tt> </tt>
+<a name="L354"></a><tt class="py-lineno">354</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-150" class="py-name"><a title="boto.exception.SQSError" class="py-name" href="#" onclick="return doclink('link-150', 'SQSError', 'link-23');">SQSError</a></tt><tt class="py-op">(</tt><tt class="py-name">response</tt><tt class="py-op">.</tt><tt id="link-151" class="py-name"><a title="boto.mashups.server.Server.status
+boto.utils.ShellCommand.status" class="py-name" href="#" onclick="return doclink('link-151', 'status', 'link-41');">status</a></tt><tt class="py-op">,</tt> <tt class="py-name">response</tt><tt class="py-op">.</tt><tt class="py-name">reason</tt><tt class="py-op">,</tt> <tt class="py-name">body</tt><tt class="py-op">)</tt> </tt>
+<a name="L355"></a><tt class="py-lineno">355</tt>  <tt class="py-line">        <tt class="py-name">q</tt> <tt class="py-op">=</tt> <tt id="link-152" class="py-name"><a title="boto.sqs.20070501.queue.Queue
+boto.sqs.queue.Queue" class="py-name" href="#" onclick="return doclink('link-152', 'Queue', 'link-7');">Queue</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">)</tt> </tt>
+<a name="L356"></a><tt class="py-lineno">356</tt>  <tt class="py-line">        <tt class="py-name">h</tt> <tt class="py-op">=</tt> <tt id="link-153" class="py-name"><a title="boto.handler" class="py-name" href="#" onclick="return doclink('link-153', 'handler', 'link-17');">handler</a></tt><tt class="py-op">.</tt><tt id="link-154" class="py-name"><a title="boto.handler.XmlHandler" class="py-name" href="#" onclick="return doclink('link-154', 'XmlHandler', 'link-44');">XmlHandler</a></tt><tt class="py-op">(</tt><tt class="py-name">q</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">)</tt> </tt>
+<a name="L357"></a><tt class="py-lineno">357</tt>  <tt class="py-line">        <tt class="py-name">xml</tt><tt class="py-op">.</tt><tt class="py-name">sax</tt><tt class="py-op">.</tt><tt class="py-name">parseString</tt><tt class="py-op">(</tt><tt class="py-name">body</tt><tt class="py-op">,</tt> <tt class="py-name">h</tt><tt class="py-op">)</tt> </tt>
+<a name="L358"></a><tt class="py-lineno">358</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">q</tt> </tt>
+</div><a name="L359"></a><tt class="py-lineno">359</tt>  <tt class="py-line"> </tt>
+<a name="SQSConnection.delete_queue"></a><div id="SQSConnection.delete_queue-def"><a name="L360"></a><tt class="py-lineno">360</tt> <a class="py-toggle" href="#" id="SQSConnection.delete_queue-toggle" onclick="return toggle('SQSConnection.delete_queue');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sqs.20070501.connection.SQSConnection-class.html#delete_queue">delete_queue</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">queue</tt><tt class="py-op">,</tt> <tt class="py-param">force_deletion</tt><tt class="py-op">=</tt><tt class="py-name">False</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SQSConnection.delete_queue-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="SQSConnection.delete_queue-expanded"><a name="L361"></a><tt class="py-lineno">361</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L362"></a><tt class="py-lineno">362</tt>  <tt class="py-line"><tt class="py-docstring">        Delete an SQS Queue.</tt> </tt>
+<a name="L363"></a><tt class="py-lineno">363</tt>  <tt class="py-line"><tt class="py-docstring">        Inputs:</tt> </tt>
+<a name="L364"></a><tt class="py-lineno">364</tt>  <tt class="py-line"><tt class="py-docstring">            queue - a Queue object representing the SQS queue to be deleted.</tt> </tt>
+<a name="L365"></a><tt class="py-lineno">365</tt>  <tt class="py-line"><tt class="py-docstring">            force_deletion - (Optional) Normally, SQS will not delete a</tt> </tt>
+<a name="L366"></a><tt class="py-lineno">366</tt>  <tt class="py-line"><tt class="py-docstring">                             queue that contains messages.  However, if</tt> </tt>
+<a name="L367"></a><tt class="py-lineno">367</tt>  <tt class="py-line"><tt class="py-docstring">                             the force_deletion argument is True, the</tt> </tt>
+<a name="L368"></a><tt class="py-lineno">368</tt>  <tt class="py-line"><tt class="py-docstring">                             queue will be deleted regardless of whether</tt> </tt>
+<a name="L369"></a><tt class="py-lineno">369</tt>  <tt class="py-line"><tt class="py-docstring">                             there are messages in the queue or not.</tt> </tt>
+<a name="L370"></a><tt class="py-lineno">370</tt>  <tt class="py-line"><tt class="py-docstring">                             USE WITH CAUTION.  This will delete all</tt> </tt>
+<a name="L371"></a><tt class="py-lineno">371</tt>  <tt class="py-line"><tt class="py-docstring">                             messages in the queue as well.</tt> </tt>
+<a name="L372"></a><tt class="py-lineno">372</tt>  <tt class="py-line"><tt class="py-docstring">        Returns:</tt> </tt>
+<a name="L373"></a><tt class="py-lineno">373</tt>  <tt class="py-line"><tt class="py-docstring">            An empty ResultSet object.  Not sure why, actually.  It</tt> </tt>
+<a name="L374"></a><tt class="py-lineno">374</tt>  <tt class="py-line"><tt class="py-docstring">            should probably return a Boolean indicating success or</tt> </tt>
+<a name="L375"></a><tt class="py-lineno">375</tt>  <tt class="py-line"><tt class="py-docstring">            failure.</tt> </tt>
+<a name="L376"></a><tt class="py-lineno">376</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L377"></a><tt class="py-lineno">377</tt>  <tt class="py-line">        <tt class="py-name">method</tt> <tt class="py-op">=</tt> <tt class="py-string">'DELETE'</tt> </tt>
+<a name="L378"></a><tt class="py-lineno">378</tt>  <tt class="py-line">        <tt class="py-name">path</tt> <tt class="py-op">=</tt> <tt id="link-155" class="py-name"><a title="boto.sqs.20070501.queue
+boto.sqs.queue" class="py-name" href="#" onclick="return doclink('link-155', 'queue', 'link-6');">queue</a></tt><tt class="py-op">.</tt><tt id="link-156" class="py-name" targets="Method boto.sdb.db.key.Key.id()=boto.sdb.db.key.Key-class.html#id"><a title="boto.sdb.db.key.Key.id" class="py-name" href="#" onclick="return doclink('link-156', 'id', 'link-156');">id</a></tt> </tt>
+<a name="L379"></a><tt class="py-lineno">379</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">force_deletion</tt><tt class="py-op">:</tt> </tt>
+<a name="L380"></a><tt class="py-lineno">380</tt>  <tt class="py-line">            <tt class="py-name">path</tt> <tt class="py-op">=</tt> <tt class="py-name">path</tt> <tt class="py-op">+</tt> <tt class="py-string">'?ForceDeletion=true'</tt> </tt>
+<a name="L381"></a><tt class="py-lineno">381</tt>  <tt class="py-line">        <tt class="py-name">response</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-157" class="py-name"><a title="boto.connection.AWSAuthConnection.make_request
+boto.connection.AWSQueryConnection.make_request
+boto.s3.connection.S3Connection.make_request
+boto.sqs.20070501.connection.SQSConnection.make_request" class="py-name" href="#" onclick="return doclink('link-157', 'make_request', 'link-39');">make_request</a></tt><tt class="py-op">(</tt><tt class="py-name">method</tt><tt class="py-op">,</tt> <tt class="py-name">path</tt><tt class="py-op">)</tt> </tt>
+<a name="L382"></a><tt class="py-lineno">382</tt>  <tt class="py-line">        <tt class="py-name">body</tt> <tt class="py-op">=</tt> <tt class="py-name">response</tt><tt class="py-op">.</tt><tt id="link-158" class="py-name"><a title="boto.s3.key.Key.read
+boto.sqs.20070501.queue.Queue.read
+boto.sqs.queue.Queue.read" class="py-name" href="#" onclick="return doclink('link-158', 'read', 'link-40');">read</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L383"></a><tt class="py-lineno">383</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">response</tt><tt class="py-op">.</tt><tt id="link-159" class="py-name"><a title="boto.mashups.server.Server.status
+boto.utils.ShellCommand.status" class="py-name" href="#" onclick="return doclink('link-159', 'status', 'link-41');">status</a></tt> <tt class="py-op">&gt;=</tt> <tt class="py-number">300</tt><tt class="py-op">:</tt> </tt>
+<a name="L384"></a><tt class="py-lineno">384</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-160" class="py-name"><a title="boto.exception.SQSError" class="py-name" href="#" onclick="return doclink('link-160', 'SQSError', 'link-23');">SQSError</a></tt><tt class="py-op">(</tt><tt class="py-name">response</tt><tt class="py-op">.</tt><tt id="link-161" class="py-name"><a title="boto.mashups.server.Server.status
+boto.utils.ShellCommand.status" class="py-name" href="#" onclick="return doclink('link-161', 'status', 'link-41');">status</a></tt><tt class="py-op">,</tt> <tt class="py-name">response</tt><tt class="py-op">.</tt><tt class="py-name">reason</tt><tt class="py-op">,</tt> <tt class="py-name">body</tt><tt class="py-op">)</tt> </tt>
+<a name="L385"></a><tt class="py-lineno">385</tt>  <tt class="py-line">        <tt class="py-name">rs</tt> <tt class="py-op">=</tt> <tt id="link-162" class="py-name"><a title="boto.resultset.ResultSet" class="py-name" href="#" onclick="return doclink('link-162', 'ResultSet', 'link-20');">ResultSet</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L386"></a><tt class="py-lineno">386</tt>  <tt class="py-line">        <tt class="py-name">h</tt> <tt class="py-op">=</tt> <tt id="link-163" class="py-name"><a title="boto.handler" class="py-name" href="#" onclick="return doclink('link-163', 'handler', 'link-17');">handler</a></tt><tt class="py-op">.</tt><tt id="link-164" class="py-name"><a title="boto.handler.XmlHandler" class="py-name" href="#" onclick="return doclink('link-164', 'XmlHandler', 'link-44');">XmlHandler</a></tt><tt class="py-op">(</tt><tt class="py-name">rs</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">)</tt> </tt>
+<a name="L387"></a><tt class="py-lineno">387</tt>  <tt class="py-line">        <tt class="py-name">xml</tt><tt class="py-op">.</tt><tt class="py-name">sax</tt><tt class="py-op">.</tt><tt class="py-name">parseString</tt><tt class="py-op">(</tt><tt class="py-name">body</tt><tt class="py-op">,</tt> <tt class="py-name">h</tt><tt class="py-op">)</tt> </tt>
+<a name="L388"></a><tt class="py-lineno">388</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">rs</tt> </tt>
+</div></div><a name="L389"></a><tt class="py-lineno">389</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="boto-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0beta1 on Fri Feb 20 11:45:22 2009
+    </td>
+    <td align="right" class="footer">
+      <a href="http://epydoc.sourceforge.net">http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie()
+  // -->
+</script>
+  
+</body>
+</html>

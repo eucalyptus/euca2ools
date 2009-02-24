@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>boto.sdb.persist</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="boto-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="boto-module.html">Package&nbsp;boto</a> ::
+        <a href="boto.sdb-module.html">Package&nbsp;sdb</a> ::
+        Package&nbsp;persist
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="boto.sdb.persist-pysrc.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="boto.sdb.persist-module.html">Package boto.sdb.persist</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno"> 1</tt>  <tt class="py-line"><tt class="py-comment"># Copyright (c) 2006,2007,2008 Mitch Garnaat http://garnaat.org/</tt> </tt>
+<a name="L2"></a><tt class="py-lineno"> 2</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment">#</tt> </tt>
+<a name="L3"></a><tt class="py-lineno"> 3</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># Permission is hereby granted, free of charge, to any person obtaining a</tt> </tt>
+<a name="L4"></a><tt class="py-lineno"> 4</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># copy of this software and associated documentation files (the</tt> </tt>
+<a name="L5"></a><tt class="py-lineno"> 5</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># "Software"), to deal in the Software without restriction, including</tt> </tt>
+<a name="L6"></a><tt class="py-lineno"> 6</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># without limitation the rights to use, copy, modify, merge, publish, dis-</tt> </tt>
+<a name="L7"></a><tt class="py-lineno"> 7</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># tribute, sublicense, and/or sell copies of the Software, and to permit</tt> </tt>
+<a name="L8"></a><tt class="py-lineno"> 8</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># persons to whom the Software is furnished to do so, subject to the fol-</tt> </tt>
+<a name="L9"></a><tt class="py-lineno"> 9</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># lowing conditions:</tt> </tt>
+<a name="L10"></a><tt class="py-lineno">10</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment">#</tt> </tt>
+<a name="L11"></a><tt class="py-lineno">11</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># The above copyright notice and this permission notice shall be included</tt> </tt>
+<a name="L12"></a><tt class="py-lineno">12</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># in all copies or substantial portions of the Software.</tt> </tt>
+<a name="L13"></a><tt class="py-lineno">13</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment">#</tt> </tt>
+<a name="L14"></a><tt class="py-lineno">14</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS</tt> </tt>
+<a name="L15"></a><tt class="py-lineno">15</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABIL-</tt> </tt>
+<a name="L16"></a><tt class="py-lineno">16</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># ITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT</tt> </tt>
+<a name="L17"></a><tt class="py-lineno">17</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># SHALL THE AUTHOR BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, </tt> </tt>
+<a name="L18"></a><tt class="py-lineno">18</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</tt> </tt>
+<a name="L19"></a><tt class="py-lineno">19</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS</tt> </tt>
+<a name="L20"></a><tt class="py-lineno">20</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># IN THE SOFTWARE.</tt> </tt>
+<a name="L21"></a><tt class="py-lineno">21</tt>  <tt class="py-line"><tt class="py-comment"></tt> </tt>
+<a name="L22"></a><tt class="py-lineno">22</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt id="link-0" class="py-name" targets="Package boto=boto-module.html"><a title="boto" class="py-name" href="#" onclick="return doclink('link-0', 'boto', 'link-0');">boto</a></tt> </tt>
+<a name="L23"></a><tt class="py-lineno">23</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-1" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-1', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-2" class="py-name" targets="Module boto.utils=boto.utils-module.html"><a title="boto.utils" class="py-name" href="#" onclick="return doclink('link-2', 'utils', 'link-2');">utils</a></tt> <tt class="py-keyword">import</tt> <tt class="py-name">find_class</tt> </tt>
+<a name="L24"></a><tt class="py-lineno">24</tt>  <tt class="py-line"> </tt>
+<a name="Manager"></a><div id="Manager-def"><a name="L25"></a><tt class="py-lineno">25</tt> <a class="py-toggle" href="#" id="Manager-toggle" onclick="return toggle('Manager');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="boto.sdb.persist.Manager-class.html">Manager</a><tt class="py-op">(</tt><tt class="py-base-class">object</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Manager-collapsed" style="display:none;" pad="++" indent="++++"></div><div id="Manager-expanded"><a name="L26"></a><tt class="py-lineno">26</tt>  <tt class="py-line"> </tt>
+<a name="L27"></a><tt class="py-lineno">27</tt>  <tt class="py-line">    <tt id="link-3" class="py-name" targets="Variable boto.sdb.persist.Manager.DefaultDomainName=boto.sdb.persist.Manager-class.html#DefaultDomainName"><a title="boto.sdb.persist.Manager.DefaultDomainName" class="py-name" href="#" onclick="return doclink('link-3', 'DefaultDomainName', 'link-3');">DefaultDomainName</a></tt> <tt class="py-op">=</tt> <tt id="link-4" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-4', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-5" class="py-name" targets="Variable boto.config=boto-module.html#config,Variable boto.mashups.server.Server.config=boto.mashups.server.Server-class.html#config,Module boto.pyami.config=boto.pyami.config-module.html"><a title="boto.config
+boto.mashups.server.Server.config
+boto.pyami.config" class="py-name" href="#" onclick="return doclink('link-5', 'config', 'link-5');">config</a></tt><tt class="py-op">.</tt><tt id="link-6" class="py-name" targets="Method boto.mapreduce.queuetools.LQSClient.get()=boto.mapreduce.queuetools.LQSClient-class.html#get,Method boto.mapreduce.queuetools.SQSClient.get()=boto.mapreduce.queuetools.SQSClient-class.html#get,Method boto.pyami.config.Config.get()=boto.pyami.config.Config-class.html#get,Class Method boto.sdb.persist.object.SDBObject.get()=boto.sdb.persist.object.SDBObject-class.html#get,Method boto.services.servicedef.ServiceDef.get()=boto.services.servicedef.ServiceDef-class.html#get,Method boto.sqs.20070501.message.MHMessage.get()=boto.sqs.20070501.message.MHMessage-class.html#get,Method boto.sqs.message.MHMessage.get()=boto.sqs.message.MHMessage-class.html#get"><a title="boto.mapreduce.queuetools.LQSClient.get
+boto.mapreduce.queuetools.SQSClient.get
+boto.pyami.config.Config.get
+boto.sdb.persist.object.SDBObject.get
+boto.services.servicedef.ServiceDef.get
+boto.sqs.20070501.message.MHMessage.get
+boto.sqs.message.MHMessage.get" class="py-name" href="#" onclick="return doclink('link-6', 'get', 'link-6');">get</a></tt><tt class="py-op">(</tt><tt class="py-string">'Persist'</tt><tt class="py-op">,</tt> <tt class="py-string">'default_domain'</tt><tt class="py-op">,</tt> <tt class="py-name">None</tt><tt class="py-op">)</tt> </tt>
+<a name="L28"></a><tt class="py-lineno">28</tt>  <tt class="py-line"> </tt>
+<a name="Manager.__init__"></a><div id="Manager.__init__-def"><a name="L29"></a><tt class="py-lineno">29</tt> <a class="py-toggle" href="#" id="Manager.__init__-toggle" onclick="return toggle('Manager.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sdb.persist.Manager-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">domain_name</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-param">aws_access_key_id</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-param">aws_secret_access_key</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-param">debug</tt><tt class="py-op">=</tt><tt class="py-number">0</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Manager.__init__-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="Manager.__init__-expanded"><a name="L30"></a><tt class="py-lineno">30</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">domain_name</tt> <tt class="py-op">=</tt> <tt class="py-name">domain_name</tt> </tt>
+<a name="L31"></a><tt class="py-lineno">31</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">aws_access_key_id</tt> <tt class="py-op">=</tt> <tt class="py-name">aws_access_key_id</tt> </tt>
+<a name="L32"></a><tt class="py-lineno">32</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">aws_secret_access_key</tt> <tt class="py-op">=</tt> <tt class="py-name">aws_secret_access_key</tt> </tt>
+<a name="L33"></a><tt class="py-lineno">33</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-7" class="py-name" targets="Module boto.sdb.domain=boto.sdb.domain-module.html"><a title="boto.sdb.domain" class="py-name" href="#" onclick="return doclink('link-7', 'domain', 'link-7');">domain</a></tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+<a name="L34"></a><tt class="py-lineno">34</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-8" class="py-name" targets="Package boto.sdb=boto.sdb-module.html"><a title="boto.sdb" class="py-name" href="#" onclick="return doclink('link-8', 'sdb', 'link-8');">sdb</a></tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+<a name="L35"></a><tt class="py-lineno">35</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-9" class="py-name" targets="Package boto.s3=boto.s3-module.html"><a title="boto.s3" class="py-name" href="#" onclick="return doclink('link-9', 's3', 'link-9');">s3</a></tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+<a name="L36"></a><tt class="py-lineno">36</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-keyword">not</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">domain_name</tt><tt class="py-op">:</tt> </tt>
+<a name="L37"></a><tt class="py-lineno">37</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">domain_name</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-10" class="py-name"><a title="boto.sdb.persist.Manager.DefaultDomainName" class="py-name" href="#" onclick="return doclink('link-10', 'DefaultDomainName', 'link-3');">DefaultDomainName</a></tt> </tt>
+<a name="L38"></a><tt class="py-lineno">38</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">domain_name</tt><tt class="py-op">:</tt> </tt>
+<a name="L39"></a><tt class="py-lineno">39</tt>  <tt class="py-line">                <tt id="link-11" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-11', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-12" class="py-name" targets="Variable boto.log=boto-module.html#log,Variable boto.mashups.server.Server.log=boto.mashups.server.Server-class.html#log"><a title="boto.log
+boto.mashups.server.Server.log" class="py-name" href="#" onclick="return doclink('link-12', 'log', 'link-12');">log</a></tt><tt class="py-op">.</tt><tt class="py-name">info</tt><tt class="py-op">(</tt><tt class="py-string">'No SimpleDB domain set, using default_domain: %s'</tt> <tt class="py-op">%</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">domain_name</tt><tt class="py-op">)</tt> </tt>
+<a name="L40"></a><tt class="py-lineno">40</tt>  <tt class="py-line">            <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L41"></a><tt class="py-lineno">41</tt>  <tt class="py-line">                <tt id="link-13" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-13', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-14" class="py-name"><a title="boto.log
+boto.mashups.server.Server.log" class="py-name" href="#" onclick="return doclink('link-14', 'log', 'link-12');">log</a></tt><tt class="py-op">.</tt><tt class="py-name">warning</tt><tt class="py-op">(</tt><tt class="py-string">'No SimpleDB domain set, persistance is disabled'</tt><tt class="py-op">)</tt> </tt>
+<a name="L42"></a><tt class="py-lineno">42</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">domain_name</tt><tt class="py-op">:</tt> </tt>
+<a name="L43"></a><tt class="py-lineno">43</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-15" class="py-name"><a title="boto.sdb" class="py-name" href="#" onclick="return doclink('link-15', 'sdb', 'link-8');">sdb</a></tt> <tt class="py-op">=</tt> <tt id="link-16" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-16', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-17" class="py-name" targets="Function boto.connect_sdb()=boto-module.html#connect_sdb"><a title="boto.connect_sdb" class="py-name" href="#" onclick="return doclink('link-17', 'connect_sdb', 'link-17');">connect_sdb</a></tt><tt class="py-op">(</tt><tt class="py-name">aws_access_key_id</tt><tt class="py-op">=</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">aws_access_key_id</tt><tt class="py-op">,</tt> </tt>
+<a name="L44"></a><tt class="py-lineno">44</tt>  <tt class="py-line">                                        <tt class="py-name">aws_secret_access_key</tt><tt class="py-op">=</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">aws_secret_access_key</tt><tt class="py-op">,</tt> </tt>
+<a name="L45"></a><tt class="py-lineno">45</tt>  <tt class="py-line">                                        <tt class="py-name">debug</tt><tt class="py-op">=</tt><tt class="py-name">debug</tt><tt class="py-op">)</tt> </tt>
+<a name="L46"></a><tt class="py-lineno">46</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-18" class="py-name"><a title="boto.sdb.domain" class="py-name" href="#" onclick="return doclink('link-18', 'domain', 'link-7');">domain</a></tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-19" class="py-name"><a title="boto.sdb" class="py-name" href="#" onclick="return doclink('link-19', 'sdb', 'link-8');">sdb</a></tt><tt class="py-op">.</tt><tt id="link-20" class="py-name" targets="Function boto.lookup()=boto-module.html#lookup,Method boto.s3.bucket.Bucket.lookup()=boto.s3.bucket.Bucket-class.html#lookup,Method boto.s3.connection.S3Connection.lookup()=boto.s3.connection.S3Connection-class.html#lookup,Method boto.sdb.connection.SDBConnection.lookup()=boto.sdb.connection.SDBConnection-class.html#lookup,Method boto.sdb.db.manager.pgmanager.PGManager.lookup()=boto.sdb.db.manager.pgmanager.PGManager-class.html#lookup,Class Method boto.sdb.db.model.Model.lookup()=boto.sdb.db.model.Model-class.html#lookup,Class Method boto.sdb.db.model.Model.lookup()=boto.sdb.db.model.Model-class.html#lookup"><a title="boto.lookup
+boto.s3.bucket.Bucket.lookup
+boto.s3.connection.S3Connection.lookup
+boto.sdb.connection.SDBConnection.lookup
+boto.sdb.db.manager.pgmanager.PGManager.lookup
+boto.sdb.db.model.Model.lookup
+boto.sdb.db.model.Model.lookup" class="py-name" href="#" onclick="return doclink('link-20', 'lookup', 'link-20');">lookup</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">domain_name</tt><tt class="py-op">)</tt> </tt>
+<a name="L47"></a><tt class="py-lineno">47</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-keyword">not</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-21" class="py-name"><a title="boto.sdb.domain" class="py-name" href="#" onclick="return doclink('link-21', 'domain', 'link-7');">domain</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L48"></a><tt class="py-lineno">48</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-22" class="py-name"><a title="boto.sdb.domain" class="py-name" href="#" onclick="return doclink('link-22', 'domain', 'link-7');">domain</a></tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-23" class="py-name"><a title="boto.sdb" class="py-name" href="#" onclick="return doclink('link-23', 'sdb', 'link-8');">sdb</a></tt><tt class="py-op">.</tt><tt id="link-24" class="py-name" targets="Method boto.sdb.connection.SDBConnection.create_domain()=boto.sdb.connection.SDBConnection-class.html#create_domain"><a title="boto.sdb.connection.SDBConnection.create_domain" class="py-name" href="#" onclick="return doclink('link-24', 'create_domain', 'link-24');">create_domain</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">domain_name</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L49"></a><tt class="py-lineno">49</tt>  <tt class="py-line"> </tt>
+<a name="Manager.get_s3_connection"></a><div id="Manager.get_s3_connection-def"><a name="L50"></a><tt class="py-lineno">50</tt> <a class="py-toggle" href="#" id="Manager.get_s3_connection-toggle" onclick="return toggle('Manager.get_s3_connection');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sdb.persist.Manager-class.html#get_s3_connection">get_s3_connection</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Manager.get_s3_connection-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="Manager.get_s3_connection-expanded"><a name="L51"></a><tt class="py-lineno">51</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-keyword">not</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-25" class="py-name"><a title="boto.s3" class="py-name" href="#" onclick="return doclink('link-25', 's3', 'link-9');">s3</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L52"></a><tt class="py-lineno">52</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-26" class="py-name"><a title="boto.s3" class="py-name" href="#" onclick="return doclink('link-26', 's3', 'link-9');">s3</a></tt> <tt class="py-op">=</tt> <tt id="link-27" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-27', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-28" class="py-name" targets="Function boto.connect_s3()=boto-module.html#connect_s3"><a title="boto.connect_s3" class="py-name" href="#" onclick="return doclink('link-28', 'connect_s3', 'link-28');">connect_s3</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">aws_access_key_id</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">aws_secret_access_key</tt><tt class="py-op">)</tt> </tt>
+<a name="L53"></a><tt class="py-lineno">53</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-29" class="py-name"><a title="boto.s3" class="py-name" href="#" onclick="return doclink('link-29', 's3', 'link-9');">s3</a></tt> </tt>
+</div></div><a name="L54"></a><tt class="py-lineno">54</tt>  <tt class="py-line"> </tt>
+<a name="get_manager"></a><div id="get_manager-def"><a name="L55"></a><tt class="py-lineno">55</tt> <a class="py-toggle" href="#" id="get_manager-toggle" onclick="return toggle('get_manager');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sdb.persist-module.html#get_manager">get_manager</a><tt class="py-op">(</tt><tt class="py-param">domain_name</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-param">aws_access_key_id</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-param">aws_secret_access_key</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-param">debug</tt><tt class="py-op">=</tt><tt class="py-number">0</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="get_manager-collapsed" style="display:none;" pad="++" indent="++++"></div><div id="get_manager-expanded"><a name="L56"></a><tt class="py-lineno">56</tt>  <tt class="py-line">    <tt class="py-keyword">return</tt> <tt id="link-30" class="py-name" targets="Class boto.sdb.persist.Manager=boto.sdb.persist.Manager-class.html"><a title="boto.sdb.persist.Manager" class="py-name" href="#" onclick="return doclink('link-30', 'Manager', 'link-30');">Manager</a></tt><tt class="py-op">(</tt><tt class="py-name">domain_name</tt><tt class="py-op">,</tt> <tt class="py-name">aws_access_key_id</tt><tt class="py-op">,</tt> <tt class="py-name">aws_secret_access_key</tt><tt class="py-op">,</tt> <tt class="py-name">debug</tt><tt class="py-op">=</tt><tt class="py-name">debug</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L57"></a><tt class="py-lineno">57</tt>  <tt class="py-line"> </tt>
+<a name="set_domain"></a><div id="set_domain-def"><a name="L58"></a><tt class="py-lineno">58</tt> <a class="py-toggle" href="#" id="set_domain-toggle" onclick="return toggle('set_domain');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sdb.persist-module.html#set_domain">set_domain</a><tt class="py-op">(</tt><tt class="py-param">domain_name</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="set_domain-collapsed" style="display:none;" pad="++" indent="++++"></div><div id="set_domain-expanded"><a name="L59"></a><tt class="py-lineno">59</tt>  <tt class="py-line">    <tt id="link-31" class="py-name"><a title="boto.sdb.persist.Manager" class="py-name" href="#" onclick="return doclink('link-31', 'Manager', 'link-30');">Manager</a></tt><tt class="py-op">.</tt><tt id="link-32" class="py-name"><a title="boto.sdb.persist.Manager.DefaultDomainName" class="py-name" href="#" onclick="return doclink('link-32', 'DefaultDomainName', 'link-3');">DefaultDomainName</a></tt> <tt class="py-op">=</tt> <tt class="py-name">domain_name</tt> </tt>
+</div><a name="L60"></a><tt class="py-lineno">60</tt>  <tt class="py-line"> </tt>
+<a name="get_domain"></a><div id="get_domain-def"><a name="L61"></a><tt class="py-lineno">61</tt> <a class="py-toggle" href="#" id="get_domain-toggle" onclick="return toggle('get_domain');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sdb.persist-module.html#get_domain">get_domain</a><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="get_domain-collapsed" style="display:none;" pad="++" indent="++++"></div><div id="get_domain-expanded"><a name="L62"></a><tt class="py-lineno">62</tt>  <tt class="py-line">    <tt class="py-keyword">return</tt> <tt id="link-33" class="py-name"><a title="boto.sdb.persist.Manager" class="py-name" href="#" onclick="return doclink('link-33', 'Manager', 'link-30');">Manager</a></tt><tt class="py-op">.</tt><tt id="link-34" class="py-name"><a title="boto.sdb.persist.Manager.DefaultDomainName" class="py-name" href="#" onclick="return doclink('link-34', 'DefaultDomainName', 'link-3');">DefaultDomainName</a></tt> </tt>
+</div><a name="L63"></a><tt class="py-lineno">63</tt>  <tt class="py-line"> </tt>
+<a name="revive_object_from_id"></a><div id="revive_object_from_id-def"><a name="L64"></a><tt class="py-lineno">64</tt> <a class="py-toggle" href="#" id="revive_object_from_id-toggle" onclick="return toggle('revive_object_from_id');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sdb.persist-module.html#revive_object_from_id">revive_object_from_id</a><tt class="py-op">(</tt><tt class="py-param">id</tt><tt class="py-op">,</tt> <tt class="py-param">manager</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="revive_object_from_id-collapsed" style="display:none;" pad="++" indent="++++"></div><div id="revive_object_from_id-expanded"><a name="L65"></a><tt class="py-lineno">65</tt>  <tt class="py-line">    <tt class="py-keyword">if</tt> <tt class="py-keyword">not</tt> <tt id="link-35" class="py-name" targets="Package boto.sdb.db.manager=boto.sdb.db.manager-module.html"><a title="boto.sdb.db.manager" class="py-name" href="#" onclick="return doclink('link-35', 'manager', 'link-35');">manager</a></tt><tt class="py-op">.</tt><tt id="link-36" class="py-name"><a title="boto.sdb.domain" class="py-name" href="#" onclick="return doclink('link-36', 'domain', 'link-7');">domain</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L66"></a><tt class="py-lineno">66</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">None</tt> </tt>
+<a name="L67"></a><tt class="py-lineno">67</tt>  <tt class="py-line">    <tt class="py-name">attrs</tt> <tt class="py-op">=</tt> <tt id="link-37" class="py-name"><a title="boto.sdb.db.manager" class="py-name" href="#" onclick="return doclink('link-37', 'manager', 'link-35');">manager</a></tt><tt class="py-op">.</tt><tt id="link-38" class="py-name"><a title="boto.sdb.domain" class="py-name" href="#" onclick="return doclink('link-38', 'domain', 'link-7');">domain</a></tt><tt class="py-op">.</tt><tt id="link-39" class="py-name" targets="Method boto.sdb.connection.SDBConnection.get_attributes()=boto.sdb.connection.SDBConnection-class.html#get_attributes,Method boto.sdb.domain.Domain.get_attributes()=boto.sdb.domain.Domain-class.html#get_attributes,Method boto.sqs.20070501.queue.Queue.get_attributes()=boto.sqs.20070501.queue.Queue-class.html#get_attributes,Method boto.sqs.queue.Queue.get_attributes()=boto.sqs.queue.Queue-class.html#get_attributes"><a title="boto.sdb.connection.SDBConnection.get_attributes
+boto.sdb.domain.Domain.get_attributes
+boto.sqs.20070501.queue.Queue.get_attributes
+boto.sqs.queue.Queue.get_attributes" class="py-name" href="#" onclick="return doclink('link-39', 'get_attributes', 'link-39');">get_attributes</a></tt><tt class="py-op">(</tt><tt id="link-40" class="py-name" targets="Method boto.sdb.db.key.Key.id()=boto.sdb.db.key.Key-class.html#id"><a title="boto.sdb.db.key.Key.id" class="py-name" href="#" onclick="return doclink('link-40', 'id', 'link-40');">id</a></tt><tt class="py-op">,</tt> <tt class="py-op">[</tt><tt class="py-string">'__module__'</tt><tt class="py-op">,</tt> <tt class="py-string">'__type__'</tt><tt class="py-op">,</tt> <tt class="py-string">'__lineage__'</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L68"></a><tt class="py-lineno">68</tt>  <tt class="py-line">    <tt class="py-keyword">try</tt><tt class="py-op">:</tt> </tt>
+<a name="L69"></a><tt class="py-lineno">69</tt>  <tt class="py-line">        <tt class="py-name">cls</tt> <tt class="py-op">=</tt> <tt class="py-name">find_class</tt><tt class="py-op">(</tt><tt class="py-name">attrs</tt><tt class="py-op">[</tt><tt class="py-string">'__module__'</tt><tt class="py-op">]</tt><tt class="py-op">,</tt> <tt class="py-name">attrs</tt><tt class="py-op">[</tt><tt class="py-string">'__type__'</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L70"></a><tt class="py-lineno">70</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">cls</tt><tt class="py-op">(</tt><tt id="link-41" class="py-name"><a title="boto.sdb.db.key.Key.id" class="py-name" href="#" onclick="return doclink('link-41', 'id', 'link-40');">id</a></tt><tt class="py-op">,</tt> <tt id="link-42" class="py-name"><a title="boto.sdb.db.manager" class="py-name" href="#" onclick="return doclink('link-42', 'manager', 'link-35');">manager</a></tt><tt class="py-op">=</tt><tt id="link-43" class="py-name"><a title="boto.sdb.db.manager" class="py-name" href="#" onclick="return doclink('link-43', 'manager', 'link-35');">manager</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L71"></a><tt class="py-lineno">71</tt>  <tt class="py-line">    <tt class="py-keyword">except</tt> <tt class="py-name">ImportError</tt><tt class="py-op">:</tt> </tt>
+<a name="L72"></a><tt class="py-lineno">72</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">None</tt> </tt>
+</div><a name="L73"></a><tt class="py-lineno">73</tt>  <tt class="py-line"> </tt>
+<a name="object_lister"></a><div id="object_lister-def"><a name="L74"></a><tt class="py-lineno">74</tt> <a class="py-toggle" href="#" id="object_lister-toggle" onclick="return toggle('object_lister');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.sdb.persist-module.html#object_lister">object_lister</a><tt class="py-op">(</tt><tt class="py-param">cls</tt><tt class="py-op">,</tt> <tt class="py-param">query_lister</tt><tt class="py-op">,</tt> <tt class="py-param">manager</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="object_lister-collapsed" style="display:none;" pad="++" indent="++++"></div><div id="object_lister-expanded"><a name="L75"></a><tt class="py-lineno">75</tt>  <tt class="py-line">    <tt class="py-keyword">for</tt> <tt id="link-44" class="py-name" targets="Module boto.sdb.item=boto.sdb.item-module.html"><a title="boto.sdb.item" class="py-name" href="#" onclick="return doclink('link-44', 'item', 'link-44');">item</a></tt> <tt class="py-keyword">in</tt> <tt id="link-45" class="py-name" targets="Function boto.sdb.queryresultset.query_lister()=boto.sdb.queryresultset-module.html#query_lister"><a title="boto.sdb.queryresultset.query_lister" class="py-name" href="#" onclick="return doclink('link-45', 'query_lister', 'link-45');">query_lister</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L76"></a><tt class="py-lineno">76</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">cls</tt><tt class="py-op">:</tt> </tt>
+<a name="L77"></a><tt class="py-lineno">77</tt>  <tt class="py-line">            <tt class="py-keyword">yield</tt> <tt class="py-name">cls</tt><tt class="py-op">(</tt><tt id="link-46" class="py-name"><a title="boto.sdb.item" class="py-name" href="#" onclick="return doclink('link-46', 'item', 'link-44');">item</a></tt><tt class="py-op">.</tt><tt id="link-47" class="py-name" targets="Variable boto.mapreduce.partitiondb.Partition.name=boto.mapreduce.partitiondb.Partition-class.html#name,Variable boto.mapreduce.partitiondb.PartitionDB.name=boto.mapreduce.partitiondb.PartitionDB-class.html#name,Variable boto.mapreduce.partitiondb.Version.name=boto.mapreduce.partitiondb.Version-class.html#name,Variable boto.mashups.server.Server.name=boto.mashups.server.Server-class.html#name,Method boto.sdb.db.key.Key.name()=boto.sdb.db.key.Key-class.html#name,Variable boto.sdb.db.property.Property.name=boto.sdb.db.property.Property-class.html#name,Variable boto.sdb.db.test_db.TestBasic.name=boto.sdb.db.test_db.TestBasic-class.html#name,Variable boto.sdb.db.test_db.TestList.name=boto.sdb.db.test_db.TestList-class.html#name,Variable boto.sdb.db.test_db.TestListReference.name=boto.sdb.db.test_db.TestListReference-class.html#name,Variable boto.sdb.db.test_db.TestUnique.name=boto.sdb.db.test_db.TestUnique-class.html#name,Variable boto.sdb.persist.test_persist.TestRef.name=boto.sdb.persist.test_persist.TestRef-class.html#name,Variable boto.sdb.persist.test_persist.TestScalar.name=boto.sdb.persist.test_persist.TestScalar-class.html#name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-47', 'name', 'link-47');">name</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L78"></a><tt class="py-lineno">78</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L79"></a><tt class="py-lineno">79</tt>  <tt class="py-line">            <tt class="py-name">o</tt> <tt class="py-op">=</tt> <tt id="link-48" class="py-name" targets="Function boto.sdb.persist.revive_object_from_id()=boto.sdb.persist-module.html#revive_object_from_id"><a title="boto.sdb.persist.revive_object_from_id" class="py-name" href="#" onclick="return doclink('link-48', 'revive_object_from_id', 'link-48');">revive_object_from_id</a></tt><tt class="py-op">(</tt><tt id="link-49" class="py-name"><a title="boto.sdb.item" class="py-name" href="#" onclick="return doclink('link-49', 'item', 'link-44');">item</a></tt><tt class="py-op">.</tt><tt id="link-50" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-50', 'name', 'link-47');">name</a></tt><tt class="py-op">,</tt> <tt id="link-51" class="py-name"><a title="boto.sdb.db.manager" class="py-name" href="#" onclick="return doclink('link-51', 'manager', 'link-35');">manager</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L80"></a><tt class="py-lineno">80</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-name">o</tt><tt class="py-op">:</tt> </tt>
+<a name="L81"></a><tt class="py-lineno">81</tt>  <tt class="py-line">                <tt class="py-keyword">yield</tt> <tt class="py-name">o</tt> </tt>
+</div><a name="L82"></a><tt class="py-lineno">82</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="boto-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0beta1 on Fri Feb 20 11:45:22 2009
+    </td>
+    <td align="right" class="footer">
+      <a href="http://epydoc.sourceforge.net">http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie()
+  // -->
+</script>
+  
+</body>
+</html>

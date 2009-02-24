@@ -1,0 +1,525 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>boto.fps.connection</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="boto-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="boto-module.html">Package&nbsp;boto</a> ::
+        <a href="boto.fps-module.html">Package&nbsp;fps</a> ::
+        Module&nbsp;connection
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="boto.fps.connection-pysrc.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="boto.fps.connection-module.html">Module boto.fps.connection</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno">  1</tt>  <tt class="py-line"><tt class="py-comment"># Copyright (c) 2008 Chris Moyer http://coredumped.org/</tt> </tt>
+<a name="L2"></a><tt class="py-lineno">  2</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment">#</tt> </tt>
+<a name="L3"></a><tt class="py-lineno">  3</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># Permission is hereby granted, free of charge, to any person obtaining a</tt> </tt>
+<a name="L4"></a><tt class="py-lineno">  4</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># copy of this software and associated documentation files (the</tt> </tt>
+<a name="L5"></a><tt class="py-lineno">  5</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># "Software"), to deal in the Software without restriction, including</tt> </tt>
+<a name="L6"></a><tt class="py-lineno">  6</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># without limitation the rights to use, copy, modify, merge, publish, dis-</tt> </tt>
+<a name="L7"></a><tt class="py-lineno">  7</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># tribute, sublicense, and/or sell copies of the Software, and to permit</tt> </tt>
+<a name="L8"></a><tt class="py-lineno">  8</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># persons to whom the Software is furnished to do so, subject to the fol-</tt> </tt>
+<a name="L9"></a><tt class="py-lineno">  9</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># lowing conditions:</tt> </tt>
+<a name="L10"></a><tt class="py-lineno"> 10</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment">#</tt> </tt>
+<a name="L11"></a><tt class="py-lineno"> 11</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># The above copyright notice and this permission notice shall be included</tt> </tt>
+<a name="L12"></a><tt class="py-lineno"> 12</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># in all copies or substantial portions of the Software.</tt> </tt>
+<a name="L13"></a><tt class="py-lineno"> 13</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment">#</tt> </tt>
+<a name="L14"></a><tt class="py-lineno"> 14</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS</tt> </tt>
+<a name="L15"></a><tt class="py-lineno"> 15</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABIL-</tt> </tt>
+<a name="L16"></a><tt class="py-lineno"> 16</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># ITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT</tt> </tt>
+<a name="L17"></a><tt class="py-lineno"> 17</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># SHALL THE AUTHOR BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, </tt> </tt>
+<a name="L18"></a><tt class="py-lineno"> 18</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</tt> </tt>
+<a name="L19"></a><tt class="py-lineno"> 19</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS</tt> </tt>
+<a name="L20"></a><tt class="py-lineno"> 20</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># IN THE SOFTWARE.</tt> </tt>
+<a name="L21"></a><tt class="py-lineno"> 21</tt>  <tt class="py-line"><tt class="py-comment"></tt> </tt>
+<a name="L22"></a><tt class="py-lineno"> 22</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">urllib</tt> </tt>
+<a name="L23"></a><tt class="py-lineno"> 23</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">xml</tt><tt class="py-op">.</tt><tt class="py-name">sax</tt> </tt>
+<a name="L24"></a><tt class="py-lineno"> 24</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">uuid</tt> </tt>
+<a name="L25"></a><tt class="py-lineno"> 25</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt id="link-0" class="py-name" targets="Package boto=boto-module.html"><a title="boto" class="py-name" href="#" onclick="return doclink('link-0', 'boto', 'link-0');">boto</a></tt> </tt>
+<a name="L26"></a><tt class="py-lineno"> 26</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt id="link-1" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-1', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-2" class="py-name" targets="Module boto.utils=boto.utils-module.html"><a title="boto.utils" class="py-name" href="#" onclick="return doclink('link-2', 'utils', 'link-2');">utils</a></tt> </tt>
+<a name="L27"></a><tt class="py-lineno"> 27</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">urllib</tt> </tt>
+<a name="L28"></a><tt class="py-lineno"> 28</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-3" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-3', 'boto', 'link-0');">boto</a></tt> <tt class="py-keyword">import</tt> <tt id="link-4" class="py-name" targets="Module boto.handler=boto.handler-module.html"><a title="boto.handler" class="py-name" href="#" onclick="return doclink('link-4', 'handler', 'link-4');">handler</a></tt> </tt>
+<a name="L29"></a><tt class="py-lineno"> 29</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-5" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-5', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-6" class="py-name" targets="Module boto.connection=boto.connection-module.html,Module boto.ec2.connection=boto.ec2.connection-module.html,Module boto.fps.connection=boto.fps.connection-module.html,Module boto.mturk.connection=boto.mturk.connection-module.html,Module boto.s3.connection=boto.s3.connection-module.html,Module boto.sdb.connection=boto.sdb.connection-module.html,Module boto.sqs.20070501.connection=boto.sqs.20070501.connection-module.html,Module boto.sqs.connection=boto.sqs.connection-module.html"><a title="boto.connection
+boto.ec2.connection
+boto.fps.connection
+boto.mturk.connection
+boto.s3.connection
+boto.sdb.connection
+boto.sqs.20070501.connection
+boto.sqs.connection" class="py-name" href="#" onclick="return doclink('link-6', 'connection', 'link-6');">connection</a></tt> <tt class="py-keyword">import</tt> <tt id="link-7" class="py-name" targets="Class boto.connection.AWSQueryConnection=boto.connection.AWSQueryConnection-class.html"><a title="boto.connection.AWSQueryConnection" class="py-name" href="#" onclick="return doclink('link-7', 'AWSQueryConnection', 'link-7');">AWSQueryConnection</a></tt> </tt>
+<a name="L30"></a><tt class="py-lineno"> 30</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-8" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-8', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-9" class="py-name" targets="Module boto.resultset=boto.resultset-module.html"><a title="boto.resultset" class="py-name" href="#" onclick="return doclink('link-9', 'resultset', 'link-9');">resultset</a></tt> <tt class="py-keyword">import</tt> <tt id="link-10" class="py-name" targets="Class boto.resultset.ResultSet=boto.resultset.ResultSet-class.html"><a title="boto.resultset.ResultSet" class="py-name" href="#" onclick="return doclink('link-10', 'ResultSet', 'link-10');">ResultSet</a></tt> </tt>
+<a name="L31"></a><tt class="py-lineno"> 31</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-11" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-11', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-12" class="py-name" targets="Module boto.cloudfront.exception=boto.cloudfront.exception-module.html,Module boto.exception=boto.exception-module.html"><a title="boto.cloudfront.exception
+boto.exception" class="py-name" href="#" onclick="return doclink('link-12', 'exception', 'link-12');">exception</a></tt> <tt class="py-keyword">import</tt> <tt id="link-13" class="py-name" targets="Class boto.exception.FPSResponseError=boto.exception.FPSResponseError-class.html"><a title="boto.exception.FPSResponseError" class="py-name" href="#" onclick="return doclink('link-13', 'FPSResponseError', 'link-13');">FPSResponseError</a></tt> </tt>
+<a name="L32"></a><tt class="py-lineno"> 32</tt>  <tt class="py-line"> </tt>
+<a name="FPSConnection"></a><div id="FPSConnection-def"><a name="L33"></a><tt class="py-lineno"> 33</tt> <a class="py-toggle" href="#" id="FPSConnection-toggle" onclick="return toggle('FPSConnection');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="boto.fps.connection.FPSConnection-class.html">FPSConnection</a><tt class="py-op">(</tt><tt class="py-base-class">AWSQueryConnection</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="FPSConnection-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="FPSConnection-expanded"><a name="L34"></a><tt class="py-lineno"> 34</tt>  <tt class="py-line"> </tt>
+<a name="L35"></a><tt class="py-lineno"> 35</tt>  <tt class="py-line">        <tt id="link-14" class="py-name" targets="Variable boto.connection.AWSQueryConnection.APIVersion=boto.connection.AWSQueryConnection-class.html#APIVersion,Variable boto.ec2.connection.EC2Connection.APIVersion=boto.ec2.connection.EC2Connection-class.html#APIVersion,Variable boto.fps.connection.FPSConnection.APIVersion=boto.fps.connection.FPSConnection-class.html#APIVersion,Variable boto.mturk.connection.MTurkConnection.APIVersion=boto.mturk.connection.MTurkConnection-class.html#APIVersion,Variable boto.sdb.connection.SDBConnection.APIVersion=boto.sdb.connection.SDBConnection-class.html#APIVersion,Variable boto.sqs.20070501.connection.SQSConnection.APIVersion=boto.sqs.20070501.connection.SQSConnection-class.html#APIVersion,Variable boto.sqs.20070501.connection.SQSQueryConnection.APIVersion=boto.sqs.20070501.connection.SQSQueryConnection-class.html#APIVersion,Variable boto.sqs.connection.SQSConnection.APIVersion=boto.sqs.connection.SQSConnection-class.html#APIVersion"><a title="boto.connection.AWSQueryConnection.APIVersion
+boto.ec2.connection.EC2Connection.APIVersion
+boto.fps.connection.FPSConnection.APIVersion
+boto.mturk.connection.MTurkConnection.APIVersion
+boto.sdb.connection.SDBConnection.APIVersion
+boto.sqs.20070501.connection.SQSConnection.APIVersion
+boto.sqs.20070501.connection.SQSQueryConnection.APIVersion
+boto.sqs.connection.SQSConnection.APIVersion" class="py-name" href="#" onclick="return doclink('link-14', 'APIVersion', 'link-14');">APIVersion</a></tt> <tt class="py-op">=</tt> <tt class="py-string">'2007-01-08'</tt> </tt>
+<a name="L36"></a><tt class="py-lineno"> 36</tt>  <tt class="py-line">        <tt id="link-15" class="py-name" targets="Variable boto.connection.AWSQueryConnection.SignatureVersion=boto.connection.AWSQueryConnection-class.html#SignatureVersion,Variable boto.ec2.connection.EC2Connection.SignatureVersion=boto.ec2.connection.EC2Connection-class.html#SignatureVersion,Variable boto.fps.connection.FPSConnection.SignatureVersion=boto.fps.connection.FPSConnection-class.html#SignatureVersion,Variable boto.mturk.connection.MTurkConnection.SignatureVersion=boto.mturk.connection.MTurkConnection-class.html#SignatureVersion,Variable boto.sdb.connection.SDBConnection.SignatureVersion=boto.sdb.connection.SDBConnection-class.html#SignatureVersion,Variable boto.sqs.20070501.connection.SQSQueryConnection.SignatureVersion=boto.sqs.20070501.connection.SQSQueryConnection-class.html#SignatureVersion,Variable boto.sqs.connection.SQSConnection.SignatureVersion=boto.sqs.connection.SQSConnection-class.html#SignatureVersion"><a title="boto.connection.AWSQueryConnection.SignatureVersion
+boto.ec2.connection.EC2Connection.SignatureVersion
+boto.fps.connection.FPSConnection.SignatureVersion
+boto.mturk.connection.MTurkConnection.SignatureVersion
+boto.sdb.connection.SDBConnection.SignatureVersion
+boto.sqs.20070501.connection.SQSQueryConnection.SignatureVersion
+boto.sqs.connection.SQSConnection.SignatureVersion" class="py-name" href="#" onclick="return doclink('link-15', 'SignatureVersion', 'link-15');">SignatureVersion</a></tt> <tt class="py-op">=</tt> <tt class="py-string">'1'</tt> </tt>
+<a name="L37"></a><tt class="py-lineno"> 37</tt>  <tt class="py-line"> </tt>
+<a name="FPSConnection.__init__"></a><div id="FPSConnection.__init__-def"><a name="L38"></a><tt class="py-lineno"> 38</tt> <a class="py-toggle" href="#" id="FPSConnection.__init__-toggle" onclick="return toggle('FPSConnection.__init__');">-</a><tt class="py-line">        <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.fps.connection.FPSConnection-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">aws_access_key_id</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-param">aws_secret_access_key</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> </tt>
+<a name="L39"></a><tt class="py-lineno"> 39</tt>  <tt class="py-line">                                                <tt class="py-param">is_secure</tt><tt class="py-op">=</tt><tt class="py-name">True</tt><tt class="py-op">,</tt> <tt class="py-param">port</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-param">proxy</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-param">proxy_port</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> </tt>
+<a name="L40"></a><tt class="py-lineno"> 40</tt>  <tt class="py-line">                                                <tt class="py-param">host</tt><tt class="py-op">=</tt><tt class="py-string">'fps.sandbox.amazonaws.com'</tt><tt class="py-op">,</tt> <tt class="py-param">debug</tt><tt class="py-op">=</tt><tt class="py-number">0</tt><tt class="py-op">,</tt> </tt>
+<a name="L41"></a><tt class="py-lineno"> 41</tt>  <tt class="py-line">                                                <tt class="py-param">https_connection_factory</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="FPSConnection.__init__-collapsed" style="display:none;" pad="+++" indent="++++++++++++"></div><div id="FPSConnection.__init__-expanded"><a name="L42"></a><tt class="py-lineno"> 42</tt>  <tt class="py-line">                <tt id="link-16" class="py-name"><a title="boto.connection.AWSQueryConnection" class="py-name" href="#" onclick="return doclink('link-16', 'AWSQueryConnection', 'link-7');">AWSQueryConnection</a></tt><tt class="py-op">.</tt><tt id="link-17" class="py-name" targets="Method boto.cloudfront.CloudFrontConnection.__init__()=boto.cloudfront.CloudFrontConnection-class.html#__init__,Method boto.cloudfront.distribution.Distribution.__init__()=boto.cloudfront.distribution.Distribution-class.html#__init__,Method boto.cloudfront.distribution.DistributionConfig.__init__()=boto.cloudfront.distribution.DistributionConfig-class.html#__init__,Method boto.cloudfront.distribution.DistributionSummary.__init__()=boto.cloudfront.distribution.DistributionSummary-class.html#__init__,Method boto.connection.AWSAuthConnection.__init__()=boto.connection.AWSAuthConnection-class.html#__init__,Method boto.connection.AWSQueryConnection.__init__()=boto.connection.AWSQueryConnection-class.html#__init__,Method boto.contrib.ymlmessage.YAMLMessage.__init__()=boto.contrib.ymlmessage.YAMLMessage-class.html#__init__,Method boto.ec2.address.Address.__init__()=boto.ec2.address.Address-class.html#__init__,Method boto.ec2.connection.EC2Connection.__init__()=boto.ec2.connection.EC2Connection-class.html#__init__,Method boto.ec2.ec2object.EC2Object.__init__()=boto.ec2.ec2object.EC2Object-class.html#__init__,Method boto.ec2.image.Image.__init__()=boto.ec2.image.Image-class.html#__init__,Method boto.ec2.image.ImageAttribute.__init__()=boto.ec2.image.ImageAttribute-class.html#__init__,Method boto.ec2.instance.ConsoleOutput.__init__()=boto.ec2.instance.ConsoleOutput-class.html#__init__,Method boto.ec2.instance.Group.__init__()=boto.ec2.instance.Group-class.html#__init__,Method boto.ec2.instance.Instance.__init__()=boto.ec2.instance.Instance-class.html#__init__,Method boto.ec2.instance.Reservation.__init__()=boto.ec2.instance.Reservation-class.html#__init__,Method boto.ec2.keypair.KeyPair.__init__()=boto.ec2.keypair.KeyPair-class.html#__init__,Method boto.ec2.regioninfo.RegionInfo.__init__()=boto.ec2.regioninfo.RegionInfo-class.html#__init__,Method boto.ec2.securitygroup.GroupOrCIDR.__init__()=boto.ec2.securitygroup.GroupOrCIDR-class.html#__init__,Method boto.ec2.securitygroup.IPPermissions.__init__()=boto.ec2.securitygroup.IPPermissions-class.html#__init__,Method boto.ec2.securitygroup.SecurityGroup.__init__()=boto.ec2.securitygroup.SecurityGroup-class.html#__init__,Method boto.ec2.snapshot.Snapshot.__init__()=boto.ec2.snapshot.Snapshot-class.html#__init__,Method boto.ec2.volume.Volume.__init__()=boto.ec2.volume.Volume-class.html#__init__,Method boto.ec2.zone.Zone.__init__()=boto.ec2.zone.Zone-class.html#__init__,Method boto.exception.BotoClientError.__init__()=boto.exception.BotoClientError-class.html#__init__,Method boto.exception.BotoServerError.__init__()=boto.exception.BotoServerError-class.html#__init__,Method boto.exception.ConsoleOutput.__init__()=boto.exception.ConsoleOutput-class.html#__init__,Method boto.exception.EC2ResponseError.__init__()=boto.exception.EC2ResponseError-class.html#__init__,Method boto.exception.S3ResponseError.__init__()=boto.exception.S3ResponseError-class.html#__init__,Method boto.exception.SQSError.__init__()=boto.exception.SQSError-class.html#__init__,Method boto.exception._EC2Error.__init__()=boto.exception._EC2Error-class.html#__init__,Method boto.fps.connection.FPSConnection.__init__()=boto.fps.connection.FPSConnection-class.html#__init__,Method boto.handler.XmlHandler.__init__()=boto.handler.XmlHandler-class.html#__init__,Method boto.mapreduce.lqs.LQSCommand.__init__()=boto.mapreduce.lqs.LQSCommand-class.html#__init__,Method boto.mapreduce.lqs.LQSMessage.__init__()=boto.mapreduce.lqs.LQSMessage-class.html#__init__,Method boto.mapreduce.lqs.LQSServer.__init__()=boto.mapreduce.lqs.LQSServer-class.html#__init__,Method boto.mapreduce.partitiondb.Partition.__init__()=boto.mapreduce.partitiondb.Partition-class.html#__init__,Method boto.mapreduce.partitiondb.PartitionDB.__init__()=boto.mapreduce.partitiondb.PartitionDB-class.html#__init__,Method boto.mapreduce.partitiondb.Version.__init__()=boto.mapreduce.partitiondb.Version-class.html#__init__,Method boto.mapreduce.queuetools.LQSClient.__init__()=boto.mapreduce.queuetools.LQSClient-class.html#__init__,Method boto.mapreduce.queuetools.SQSClient.__init__()=boto.mapreduce.queuetools.SQSClient-class.html#__init__,Method boto.mashups.order.Item.__init__()=boto.mashups.order.Item-class.html#__init__,Method boto.mashups.order.Order.__init__()=boto.mashups.order.Order-class.html#__init__,Method boto.mashups.server.Server.__init__()=boto.mashups.server.Server-class.html#__init__,Method boto.mturk.connection.Assignment.__init__()=boto.mturk.connection.Assignment-class.html#__init__,Method boto.mturk.connection.BaseAutoResultElement.__init__()=boto.mturk.connection.BaseAutoResultElement-class.html#__init__,Method boto.mturk.connection.MTurkConnection.__init__()=boto.mturk.connection.MTurkConnection-class.html#__init__,Method boto.mturk.notification.Event.__init__()=boto.mturk.notification.Event-class.html#__init__,Method boto.mturk.notification.NotificationMessage.__init__()=boto.mturk.notification.NotificationMessage-class.html#__init__,Method boto.mturk.price.Price.__init__()=boto.mturk.price.Price-class.html#__init__,Method boto.mturk.qualification.PercentAssignmentsAbandonedRequirement.__init__()=boto.mturk.qualification.PercentAssignmentsAbandonedRequirement-class.html#__init__,Method boto.mturk.qualification.PercentAssignmentsApprovedRequirement.__init__()=boto.mturk.qualification.PercentAssignmentsApprovedRequirement-class.html#__init__,Method boto.mturk.qualification.PercentAssignmentsRejectedRequirement.__init__()=boto.mturk.qualification.PercentAssignmentsRejectedRequirement-class.html#__init__,Method boto.mturk.qualification.PercentAssignmentsReturnedRequirement.__init__()=boto.mturk.qualification.PercentAssignmentsReturnedRequirement-class.html#__init__,Method boto.mturk.qualification.PercentAssignmentsSubmittedRequirement.__init__()=boto.mturk.qualification.PercentAssignmentsSubmittedRequirement-class.html#__init__,Method boto.mturk.qualification.Qualifications.__init__()=boto.mturk.qualification.Qualifications-class.html#__init__,Method boto.mturk.qualification.Requirement.__init__()=boto.mturk.qualification.Requirement-class.html#__init__,Method boto.mturk.question.AnswerSpecification.__init__()=boto.mturk.question.AnswerSpecification-class.html#__init__,Method boto.mturk.question.ExternalQuestion.__init__()=boto.mturk.question.ExternalQuestion-class.html#__init__,Method boto.mturk.question.FileUploadAnswer.__init__()=boto.mturk.question.FileUploadAnswer-class.html#__init__,Method boto.mturk.question.FreeTextAnswer.__init__()=boto.mturk.question.FreeTextAnswer-class.html#__init__,Method boto.mturk.question.Question.__init__()=boto.mturk.question.Question-class.html#__init__,Method boto.mturk.question.QuestionContent.__init__()=boto.mturk.question.QuestionContent-class.html#__init__,Method boto.mturk.question.QuestionForm.__init__()=boto.mturk.question.QuestionForm-class.html#__init__,Method boto.mturk.question.SelectionAnswer.__init__()=boto.mturk.question.SelectionAnswer-class.html#__init__,Method boto.pyami.bootstrap.Bootstrap.__init__()=boto.pyami.bootstrap.Bootstrap-class.html#__init__,Method boto.pyami.config.Config.__init__()=boto.pyami.config.Config-class.html#__init__,Method boto.pyami.copybot.CopyBot.__init__()=boto.pyami.copybot.CopyBot-class.html#__init__,Method boto.pyami.scriptbase.ScriptBase.__init__()=boto.pyami.scriptbase.ScriptBase-class.html#__init__,Method boto.resultset.ResultSet.__init__()=boto.resultset.ResultSet-class.html#__init__,Method boto.s3.acl.ACL.__init__()=boto.s3.acl.ACL-class.html#__init__,Method boto.s3.acl.Grant.__init__()=boto.s3.acl.Grant-class.html#__init__,Method boto.s3.acl.Policy.__init__()=boto.s3.acl.Policy-class.html#__init__,Method boto.s3.bucket.Bucket.__init__()=boto.s3.bucket.Bucket-class.html#__init__,Method boto.s3.bucketlistresultset.BucketListResultSet.__init__()=boto.s3.bucketlistresultset.BucketListResultSet-class.html#__init__,Method boto.s3.connection.S3Connection.__init__()=boto.s3.connection.S3Connection-class.html#__init__,Method boto.s3.key.Key.__init__()=boto.s3.key.Key-class.html#__init__,Method boto.s3.prefix.Prefix.__init__()=boto.s3.prefix.Prefix-class.html#__init__,Method boto.s3.user.User.__init__()=boto.s3.user.User-class.html#__init__,Method boto.sdb.connection.ItemThread.__init__()=boto.sdb.connection.ItemThread-class.html#__init__,Method boto.sdb.connection.SDBConnection.__init__()=boto.sdb.connection.SDBConnection-class.html#__init__,Method boto.sdb.db.key.Key.__init__()=boto.sdb.db.key.Key-class.html#__init__,Method boto.sdb.db.manager.pgmanager.PGConverter.__init__()=boto.sdb.db.manager.pgmanager.PGConverter-class.html#__init__,Method boto.sdb.db.manager.pgmanager.PGManager.__init__()=boto.sdb.db.manager.pgmanager.PGManager-class.html#__init__,Method boto.sdb.db.manager.sdbmanager.SDBConverter.__init__()=boto.sdb.db.manager.sdbmanager.SDBConverter-class.html#__init__,Method boto.sdb.db.manager.sdbmanager.SDBManager.__init__()=boto.sdb.db.manager.sdbmanager.SDBManager-class.html#__init__,Method boto.sdb.db.model.Model.__init__()=boto.sdb.db.model.Model-class.html#__init__,Method boto.sdb.db.model.Model.__init__()=boto.sdb.db.model.Model-class.html#__init__,Method boto.sdb.db.model.ModelMeta.__init__()=boto.sdb.db.model.ModelMeta-class.html#__init__,Method boto.sdb.db.model.ModelMeta.__init__()=boto.sdb.db.model.ModelMeta-class.html#__init__,Method boto.sdb.db.property.BooleanProperty.__init__()=boto.sdb.db.property.BooleanProperty-class.html#__init__,Method boto.sdb.db.property.CalculatedProperty.__init__()=boto.sdb.db.property.CalculatedProperty-class.html#__init__,Method boto.sdb.db.property.DateTimeProperty.__init__()=boto.sdb.db.property.DateTimeProperty-class.html#__init__,Method boto.sdb.db.property.IntegerProperty.__init__()=boto.sdb.db.property.IntegerProperty-class.html#__init__,Method boto.sdb.db.property.ListProperty.__init__()=boto.sdb.db.property.ListProperty-class.html#__init__,Method boto.sdb.db.property.LongProperty.__init__()=boto.sdb.db.property.LongProperty-class.html#__init__,Method boto.sdb.db.property.PasswordProperty.__init__()=boto.sdb.db.property.PasswordProperty-class.html#__init__,Method boto.sdb.db.property.Property.__init__()=boto.sdb.db.property.Property-class.html#__init__,Method boto.sdb.db.property.ReferenceProperty.__init__()=boto.sdb.db.property.ReferenceProperty-class.html#__init__,Method boto.sdb.db.property.S3KeyProperty.__init__()=boto.sdb.db.property.S3KeyProperty-class.html#__init__,Method boto.sdb.db.property.StringProperty.__init__()=boto.sdb.db.property.StringProperty-class.html#__init__,Method boto.sdb.db.property.TextProperty.__init__()=boto.sdb.db.property.TextProperty-class.html#__init__,Method boto.sdb.db.property._ReverseReferenceProperty.__init__()=boto.sdb.db.property._ReverseReferenceProperty-class.html#__init__,Method boto.sdb.db.query.Query.__init__()=boto.sdb.db.query.Query-class.html#__init__,Method boto.sdb.domain.Domain.__init__()=boto.sdb.domain.Domain-class.html#__init__,Method boto.sdb.domain.DomainMetaData.__init__()=boto.sdb.domain.DomainMetaData-class.html#__init__,Method boto.sdb.item.Item.__init__()=boto.sdb.item.Item-class.html#__init__,Method boto.sdb.persist.Manager.__init__()=boto.sdb.persist.Manager-class.html#__init__,Method boto.sdb.persist.checker.BooleanChecker.__init__()=boto.sdb.persist.checker.BooleanChecker-class.html#__init__,Method boto.sdb.persist.checker.DateTimeChecker.__init__()=boto.sdb.persist.checker.DateTimeChecker-class.html#__init__,Method boto.sdb.persist.checker.IntegerChecker.__init__()=boto.sdb.persist.checker.IntegerChecker-class.html#__init__,Method boto.sdb.persist.checker.ObjectChecker.__init__()=boto.sdb.persist.checker.ObjectChecker-class.html#__init__,Method boto.sdb.persist.checker.S3BucketChecker.__init__()=boto.sdb.persist.checker.S3BucketChecker-class.html#__init__,Method boto.sdb.persist.checker.S3KeyChecker.__init__()=boto.sdb.persist.checker.S3KeyChecker-class.html#__init__,Method boto.sdb.persist.checker.StringChecker.__init__()=boto.sdb.persist.checker.StringChecker-class.html#__init__,Method boto.sdb.persist.object.SDBBase.__init__()=boto.sdb.persist.object.SDBBase-class.html#__init__,Method boto.sdb.persist.object.SDBObject.__init__()=boto.sdb.persist.object.SDBObject-class.html#__init__,Method boto.sdb.persist.property.BooleanListProperty.__init__()=boto.sdb.persist.property.BooleanListProperty-class.html#__init__,Method boto.sdb.persist.property.BooleanProperty.__init__()=boto.sdb.persist.property.BooleanProperty-class.html#__init__,Method boto.sdb.persist.property.DateTimeProperty.__init__()=boto.sdb.persist.property.DateTimeProperty-class.html#__init__,Method boto.sdb.persist.property.IntegerListProperty.__init__()=boto.sdb.persist.property.IntegerListProperty-class.html#__init__,Method boto.sdb.persist.property.IntegerProperty.__init__()=boto.sdb.persist.property.IntegerProperty-class.html#__init__,Method boto.sdb.persist.property.LargeIntegerListProperty.__init__()=boto.sdb.persist.property.LargeIntegerListProperty-class.html#__init__,Method boto.sdb.persist.property.LargeIntegerProperty.__init__()=boto.sdb.persist.property.LargeIntegerProperty-class.html#__init__,Method boto.sdb.persist.property.LargePositiveIntegerListProperty.__init__()=boto.sdb.persist.property.LargePositiveIntegerListProperty-class.html#__init__,Method boto.sdb.persist.property.LargePositiveIntegerProperty.__init__()=boto.sdb.persist.property.LargePositiveIntegerProperty-class.html#__init__,Method boto.sdb.persist.property.MultiValue.__init__()=boto.sdb.persist.property.MultiValue-class.html#__init__,Method boto.sdb.persist.property.MultiValueProperty.__init__()=boto.sdb.persist.property.MultiValueProperty-class.html#__init__,Method boto.sdb.persist.property.ObjectListProperty.__init__()=boto.sdb.persist.property.ObjectListProperty-class.html#__init__,Method boto.sdb.persist.property.ObjectProperty.__init__()=boto.sdb.persist.property.ObjectProperty-class.html#__init__,Method boto.sdb.persist.property.PasswordProperty.__init__()=boto.sdb.persist.property.PasswordProperty-class.html#__init__,Method boto.sdb.persist.property.PositiveIntegerListProperty.__init__()=boto.sdb.persist.property.PositiveIntegerListProperty-class.html#__init__,Method boto.sdb.persist.property.PositiveIntegerProperty.__init__()=boto.sdb.persist.property.PositiveIntegerProperty-class.html#__init__,Method boto.sdb.persist.property.Property.__init__()=boto.sdb.persist.property.Property-class.html#__init__,Method boto.sdb.persist.property.S3BucketProperty.__init__()=boto.sdb.persist.property.S3BucketProperty-class.html#__init__,Method boto.sdb.persist.property.S3KeyProperty.__init__()=boto.sdb.persist.property.S3KeyProperty-class.html#__init__,Method boto.sdb.persist.property.SmallIntegerListProperty.__init__()=boto.sdb.persist.property.SmallIntegerListProperty-class.html#__init__,Method boto.sdb.persist.property.SmallIntegerProperty.__init__()=boto.sdb.persist.property.SmallIntegerProperty-class.html#__init__,Method boto.sdb.persist.property.SmallPositiveIntegerListProperty.__init__()=boto.sdb.persist.property.SmallPositiveIntegerListProperty-class.html#__init__,Method boto.sdb.persist.property.SmallPositiveIntegerProperty.__init__()=boto.sdb.persist.property.SmallPositiveIntegerProperty-class.html#__init__,Method boto.sdb.persist.property.StringListProperty.__init__()=boto.sdb.persist.property.StringListProperty-class.html#__init__,Method boto.sdb.persist.property.StringProperty.__init__()=boto.sdb.persist.property.StringProperty-class.html#__init__,Method boto.sdb.queryresultset.QueryResultSet.__init__()=boto.sdb.queryresultset.QueryResultSet-class.html#__init__,Method boto.services.bs.BS.__init__()=boto.services.bs.BS-class.html#__init__,Method boto.services.result.ResultProcessor.__init__()=boto.services.result.ResultProcessor-class.html#__init__,Method boto.services.service.Service.__init__()=boto.services.service.Service-class.html#__init__,Method boto.services.servicedef.ServiceDef.__init__()=boto.services.servicedef.ServiceDef-class.html#__init__,Method boto.services.sonofmmm.SonOfMMM.__init__()=boto.services.sonofmmm.SonOfMMM-class.html#__init__,Method boto.services.submit.Submitter.__init__()=boto.services.submit.Submitter-class.html#__init__,Method boto.sqs.20070501.attributes.Attributes.__init__()=boto.sqs.20070501.attributes.Attributes-class.html#__init__,Method boto.sqs.20070501.connection.SQSConnection.__init__()=boto.sqs.20070501.connection.SQSConnection-class.html#__init__,Method boto.sqs.20070501.connection.SQSQueryConnection.__init__()=boto.sqs.20070501.connection.SQSQueryConnection-class.html#__init__,Method boto.sqs.20070501.message.MHMessage.__init__()=boto.sqs.20070501.message.MHMessage-class.html#__init__,Method boto.sqs.20070501.message.RawMessage.__init__()=boto.sqs.20070501.message.RawMessage-class.html#__init__,Method boto.sqs.20070501.queue.Queue.__init__()=boto.sqs.20070501.queue.Queue-class.html#__init__,Method boto.sqs.attributes.Attributes.__init__()=boto.sqs.attributes.Attributes-class.html#__init__,Method boto.sqs.connection.SQSConnection.__init__()=boto.sqs.connection.SQSConnection-class.html#__init__,Method boto.sqs.message.MHMessage.__init__()=boto.sqs.message.MHMessage-class.html#__init__,Method boto.sqs.message.RawMessage.__init__()=boto.sqs.message.RawMessage-class.html#__init__,Method boto.sqs.queue.Queue.__init__()=boto.sqs.queue.Queue-class.html#__init__,Method boto.utils.AuthSMTPHandler.__init__()=boto.utils.AuthSMTPHandler-class.html#__init__,Method boto.utils.LRUCache._Item.__init__()=boto.utils.LRUCache._Item-class.html#__init__,Method boto.utils.LRUCache.__init__()=boto.utils.LRUCache-class.html#__init__,Method boto.utils.Password.__init__()=boto.utils.Password-class.html#__init__,Method boto.utils.ShellCommand.__init__()=boto.utils.ShellCommand-class.html#__init__"><a title="boto.cloudfront.CloudFrontConnection.__init__
+boto.cloudfront.distribution.Distribution.__init__
+boto.cloudfront.distribution.DistributionConfig.__init__
+boto.cloudfront.distribution.DistributionSummary.__init__
+boto.connection.AWSAuthConnection.__init__
+boto.connection.AWSQueryConnection.__init__
+boto.contrib.ymlmessage.YAMLMessage.__init__
+boto.ec2.address.Address.__init__
+boto.ec2.connection.EC2Connection.__init__
+boto.ec2.ec2object.EC2Object.__init__
+boto.ec2.image.Image.__init__
+boto.ec2.image.ImageAttribute.__init__
+boto.ec2.instance.ConsoleOutput.__init__
+boto.ec2.instance.Group.__init__
+boto.ec2.instance.Instance.__init__
+boto.ec2.instance.Reservation.__init__
+boto.ec2.keypair.KeyPair.__init__
+boto.ec2.regioninfo.RegionInfo.__init__
+boto.ec2.securitygroup.GroupOrCIDR.__init__
+boto.ec2.securitygroup.IPPermissions.__init__
+boto.ec2.securitygroup.SecurityGroup.__init__
+boto.ec2.snapshot.Snapshot.__init__
+boto.ec2.volume.Volume.__init__
+boto.ec2.zone.Zone.__init__
+boto.exception.BotoClientError.__init__
+boto.exception.BotoServerError.__init__
+boto.exception.ConsoleOutput.__init__
+boto.exception.EC2ResponseError.__init__
+boto.exception.S3ResponseError.__init__
+boto.exception.SQSError.__init__
+boto.exception._EC2Error.__init__
+boto.fps.connection.FPSConnection.__init__
+boto.handler.XmlHandler.__init__
+boto.mapreduce.lqs.LQSCommand.__init__
+boto.mapreduce.lqs.LQSMessage.__init__
+boto.mapreduce.lqs.LQSServer.__init__
+boto.mapreduce.partitiondb.Partition.__init__
+boto.mapreduce.partitiondb.PartitionDB.__init__
+boto.mapreduce.partitiondb.Version.__init__
+boto.mapreduce.queuetools.LQSClient.__init__
+boto.mapreduce.queuetools.SQSClient.__init__
+boto.mashups.order.Item.__init__
+boto.mashups.order.Order.__init__
+boto.mashups.server.Server.__init__
+boto.mturk.connection.Assignment.__init__
+boto.mturk.connection.BaseAutoResultElement.__init__
+boto.mturk.connection.MTurkConnection.__init__
+boto.mturk.notification.Event.__init__
+boto.mturk.notification.NotificationMessage.__init__
+boto.mturk.price.Price.__init__
+boto.mturk.qualification.PercentAssignmentsAbandonedRequirement.__init__
+boto.mturk.qualification.PercentAssignmentsApprovedRequirement.__init__
+boto.mturk.qualification.PercentAssignmentsRejectedRequirement.__init__
+boto.mturk.qualification.PercentAssignmentsReturnedRequirement.__init__
+boto.mturk.qualification.PercentAssignmentsSubmittedRequirement.__init__
+boto.mturk.qualification.Qualifications.__init__
+boto.mturk.qualification.Requirement.__init__
+boto.mturk.question.AnswerSpecification.__init__
+boto.mturk.question.ExternalQuestion.__init__
+boto.mturk.question.FileUploadAnswer.__init__
+boto.mturk.question.FreeTextAnswer.__init__
+boto.mturk.question.Question.__init__
+boto.mturk.question.QuestionContent.__init__
+boto.mturk.question.QuestionForm.__init__
+boto.mturk.question.SelectionAnswer.__init__
+boto.pyami.bootstrap.Bootstrap.__init__
+boto.pyami.config.Config.__init__
+boto.pyami.copybot.CopyBot.__init__
+boto.pyami.scriptbase.ScriptBase.__init__
+boto.resultset.ResultSet.__init__
+boto.s3.acl.ACL.__init__
+boto.s3.acl.Grant.__init__
+boto.s3.acl.Policy.__init__
+boto.s3.bucket.Bucket.__init__
+boto.s3.bucketlistresultset.BucketListResultSet.__init__
+boto.s3.connection.S3Connection.__init__
+boto.s3.key.Key.__init__
+boto.s3.prefix.Prefix.__init__
+boto.s3.user.User.__init__
+boto.sdb.connection.ItemThread.__init__
+boto.sdb.connection.SDBConnection.__init__
+boto.sdb.db.key.Key.__init__
+boto.sdb.db.manager.pgmanager.PGConverter.__init__
+boto.sdb.db.manager.pgmanager.PGManager.__init__
+boto.sdb.db.manager.sdbmanager.SDBConverter.__init__
+boto.sdb.db.manager.sdbmanager.SDBManager.__init__
+boto.sdb.db.model.Model.__init__
+boto.sdb.db.model.Model.__init__
+boto.sdb.db.model.ModelMeta.__init__
+boto.sdb.db.model.ModelMeta.__init__
+boto.sdb.db.property.BooleanProperty.__init__
+boto.sdb.db.property.CalculatedProperty.__init__
+boto.sdb.db.property.DateTimeProperty.__init__
+boto.sdb.db.property.IntegerProperty.__init__
+boto.sdb.db.property.ListProperty.__init__
+boto.sdb.db.property.LongProperty.__init__
+boto.sdb.db.property.PasswordProperty.__init__
+boto.sdb.db.property.Property.__init__
+boto.sdb.db.property.ReferenceProperty.__init__
+boto.sdb.db.property.S3KeyProperty.__init__
+boto.sdb.db.property.StringProperty.__init__
+boto.sdb.db.property.TextProperty.__init__
+boto.sdb.db.property._ReverseReferenceProperty.__init__
+boto.sdb.db.query.Query.__init__
+boto.sdb.domain.Domain.__init__
+boto.sdb.domain.DomainMetaData.__init__
+boto.sdb.item.Item.__init__
+boto.sdb.persist.Manager.__init__
+boto.sdb.persist.checker.BooleanChecker.__init__
+boto.sdb.persist.checker.DateTimeChecker.__init__
+boto.sdb.persist.checker.IntegerChecker.__init__
+boto.sdb.persist.checker.ObjectChecker.__init__
+boto.sdb.persist.checker.S3BucketChecker.__init__
+boto.sdb.persist.checker.S3KeyChecker.__init__
+boto.sdb.persist.checker.StringChecker.__init__
+boto.sdb.persist.object.SDBBase.__init__
+boto.sdb.persist.object.SDBObject.__init__
+boto.sdb.persist.property.BooleanListProperty.__init__
+boto.sdb.persist.property.BooleanProperty.__init__
+boto.sdb.persist.property.DateTimeProperty.__init__
+boto.sdb.persist.property.IntegerListProperty.__init__
+boto.sdb.persist.property.IntegerProperty.__init__
+boto.sdb.persist.property.LargeIntegerListProperty.__init__
+boto.sdb.persist.property.LargeIntegerProperty.__init__
+boto.sdb.persist.property.LargePositiveIntegerListProperty.__init__
+boto.sdb.persist.property.LargePositiveIntegerProperty.__init__
+boto.sdb.persist.property.MultiValue.__init__
+boto.sdb.persist.property.MultiValueProperty.__init__
+boto.sdb.persist.property.ObjectListProperty.__init__
+boto.sdb.persist.property.ObjectProperty.__init__
+boto.sdb.persist.property.PasswordProperty.__init__
+boto.sdb.persist.property.PositiveIntegerListProperty.__init__
+boto.sdb.persist.property.PositiveIntegerProperty.__init__
+boto.sdb.persist.property.Property.__init__
+boto.sdb.persist.property.S3BucketProperty.__init__
+boto.sdb.persist.property.S3KeyProperty.__init__
+boto.sdb.persist.property.SmallIntegerListProperty.__init__
+boto.sdb.persist.property.SmallIntegerProperty.__init__
+boto.sdb.persist.property.SmallPositiveIntegerListProperty.__init__
+boto.sdb.persist.property.SmallPositiveIntegerProperty.__init__
+boto.sdb.persist.property.StringListProperty.__init__
+boto.sdb.persist.property.StringProperty.__init__
+boto.sdb.queryresultset.QueryResultSet.__init__
+boto.services.bs.BS.__init__
+boto.services.result.ResultProcessor.__init__
+boto.services.service.Service.__init__
+boto.services.servicedef.ServiceDef.__init__
+boto.services.sonofmmm.SonOfMMM.__init__
+boto.services.submit.Submitter.__init__
+boto.sqs.20070501.attributes.Attributes.__init__
+boto.sqs.20070501.connection.SQSConnection.__init__
+boto.sqs.20070501.connection.SQSQueryConnection.__init__
+boto.sqs.20070501.message.MHMessage.__init__
+boto.sqs.20070501.message.RawMessage.__init__
+boto.sqs.20070501.queue.Queue.__init__
+boto.sqs.attributes.Attributes.__init__
+boto.sqs.connection.SQSConnection.__init__
+boto.sqs.message.MHMessage.__init__
+boto.sqs.message.RawMessage.__init__
+boto.sqs.queue.Queue.__init__
+boto.utils.AuthSMTPHandler.__init__
+boto.utils.LRUCache._Item.__init__
+boto.utils.LRUCache.__init__
+boto.utils.Password.__init__
+boto.utils.ShellCommand.__init__" class="py-name" href="#" onclick="return doclink('link-17', '__init__', 'link-17');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt> <tt class="py-name">aws_access_key_id</tt><tt class="py-op">,</tt> </tt>
+<a name="L43"></a><tt class="py-lineno"> 43</tt>  <tt class="py-line">                                                                                                <tt class="py-name">aws_secret_access_key</tt><tt class="py-op">,</tt> </tt>
+<a name="L44"></a><tt class="py-lineno"> 44</tt>  <tt class="py-line">                                                                                                <tt class="py-name">is_secure</tt><tt class="py-op">,</tt> <tt class="py-name">port</tt><tt class="py-op">,</tt> <tt class="py-name">proxy</tt><tt class="py-op">,</tt> <tt class="py-name">proxy_port</tt><tt class="py-op">,</tt> </tt>
+<a name="L45"></a><tt class="py-lineno"> 45</tt>  <tt class="py-line">                                                                                                <tt class="py-name">host</tt><tt class="py-op">,</tt> <tt class="py-name">debug</tt><tt class="py-op">,</tt> <tt id="link-18" class="py-name" targets="Function boto.contrib.m2helpers.https_connection_factory()=boto.contrib.m2helpers-module.html#https_connection_factory"><a title="boto.contrib.m2helpers.https_connection_factory" class="py-name" href="#" onclick="return doclink('link-18', 'https_connection_factory', 'link-18');">https_connection_factory</a></tt><tt class="py-op">)</tt> </tt>
+</div><a name="L46"></a><tt class="py-lineno"> 46</tt>  <tt class="py-line">         </tt>
+<a name="FPSConnection.install_payment_instruction"></a><div id="FPSConnection.install_payment_instruction-def"><a name="L47"></a><tt class="py-lineno"> 47</tt> <a class="py-toggle" href="#" id="FPSConnection.install_payment_instruction-toggle" onclick="return toggle('FPSConnection.install_payment_instruction');">-</a><tt class="py-line">        <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.fps.connection.FPSConnection-class.html#install_payment_instruction">install_payment_instruction</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">instruction</tt><tt class="py-op">,</tt> <tt class="py-param">token_type</tt><tt class="py-op">=</tt><tt class="py-string">"Unrestricted"</tt><tt class="py-op">,</tt> <tt class="py-param">transaction_id</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="FPSConnection.install_payment_instruction-collapsed" style="display:none;" pad="+++" indent="++++++++++++"></div><div id="FPSConnection.install_payment_instruction-expanded"><a name="L48"></a><tt class="py-lineno"> 48</tt>  <tt class="py-line">                <tt class="py-docstring">"""</tt> </tt>
+<a name="L49"></a><tt class="py-lineno"> 49</tt>  <tt class="py-line"><tt class="py-docstring">                InstallPaymentInstruction</tt> </tt>
+<a name="L50"></a><tt class="py-lineno"> 50</tt>  <tt class="py-line"><tt class="py-docstring">                instruction: The PaymentInstruction to send, for example: </tt> </tt>
+<a name="L51"></a><tt class="py-lineno"> 51</tt>  <tt class="py-line"><tt class="py-docstring">                        MyRole=='Caller' orSay 'Roles do not match';</tt> </tt>
+<a name="L52"></a><tt class="py-lineno"> 52</tt>  <tt class="py-line"><tt class="py-docstring">                token_type: Defaults to "Unrestricted"</tt> </tt>
+<a name="L53"></a><tt class="py-lineno"> 53</tt>  <tt class="py-line"><tt class="py-docstring">                transaction_id: Defaults to a new ID</tt> </tt>
+<a name="L54"></a><tt class="py-lineno"> 54</tt>  <tt class="py-line"><tt class="py-docstring">                """</tt> </tt>
+<a name="L55"></a><tt class="py-lineno"> 55</tt>  <tt class="py-line"> </tt>
+<a name="L56"></a><tt class="py-lineno"> 56</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt><tt class="py-op">(</tt><tt class="py-name">transaction_id</tt> <tt class="py-op">==</tt> <tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L57"></a><tt class="py-lineno"> 57</tt>  <tt class="py-line">                        <tt class="py-name">transaction_id</tt> <tt class="py-op">=</tt> <tt class="py-name">uuid</tt><tt class="py-op">.</tt><tt class="py-name">uuid4</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L58"></a><tt class="py-lineno"> 58</tt>  <tt class="py-line">                <tt class="py-name">params</tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt><tt class="py-op">}</tt> </tt>
+<a name="L59"></a><tt class="py-lineno"> 59</tt>  <tt class="py-line">                <tt class="py-name">params</tt><tt class="py-op">[</tt><tt class="py-string">'PaymentInstruction'</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">instruction</tt> </tt>
+<a name="L60"></a><tt class="py-lineno"> 60</tt>  <tt class="py-line">                <tt class="py-name">params</tt><tt class="py-op">[</tt><tt class="py-string">'TokenType'</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">token_type</tt> </tt>
+<a name="L61"></a><tt class="py-lineno"> 61</tt>  <tt class="py-line">                <tt class="py-name">params</tt><tt class="py-op">[</tt><tt class="py-string">'CallerReference'</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">transaction_id</tt> </tt>
+<a name="L62"></a><tt class="py-lineno"> 62</tt>  <tt class="py-line">                <tt class="py-name">response</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-19" class="py-name" targets="Method boto.connection.AWSAuthConnection.make_request()=boto.connection.AWSAuthConnection-class.html#make_request,Method boto.connection.AWSQueryConnection.make_request()=boto.connection.AWSQueryConnection-class.html#make_request,Method boto.s3.connection.S3Connection.make_request()=boto.s3.connection.S3Connection-class.html#make_request,Method boto.sqs.20070501.connection.SQSConnection.make_request()=boto.sqs.20070501.connection.SQSConnection-class.html#make_request"><a title="boto.connection.AWSAuthConnection.make_request
+boto.connection.AWSQueryConnection.make_request
+boto.s3.connection.S3Connection.make_request
+boto.sqs.20070501.connection.SQSConnection.make_request" class="py-name" href="#" onclick="return doclink('link-19', 'make_request', 'link-19');">make_request</a></tt><tt class="py-op">(</tt><tt class="py-string">"InstallPaymentInstruction"</tt><tt class="py-op">,</tt> <tt class="py-name">params</tt><tt class="py-op">)</tt> </tt>
+<a name="L63"></a><tt class="py-lineno"> 63</tt>  <tt class="py-line">                <tt class="py-keyword">return</tt> <tt class="py-name">response</tt> </tt>
+</div><a name="L64"></a><tt class="py-lineno"> 64</tt>  <tt class="py-line">         </tt>
+<a name="FPSConnection.install_caller_instruction"></a><div id="FPSConnection.install_caller_instruction-def"><a name="L65"></a><tt class="py-lineno"> 65</tt> <a class="py-toggle" href="#" id="FPSConnection.install_caller_instruction-toggle" onclick="return toggle('FPSConnection.install_caller_instruction');">-</a><tt class="py-line">        <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.fps.connection.FPSConnection-class.html#install_caller_instruction">install_caller_instruction</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">token_type</tt><tt class="py-op">=</tt><tt class="py-string">"Unrestricted"</tt><tt class="py-op">,</tt> <tt class="py-param">transaction_id</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="FPSConnection.install_caller_instruction-collapsed" style="display:none;" pad="+++" indent="++++++++++++"></div><div id="FPSConnection.install_caller_instruction-expanded"><a name="L66"></a><tt class="py-lineno"> 66</tt>  <tt class="py-line">                <tt class="py-docstring">"""</tt> </tt>
+<a name="L67"></a><tt class="py-lineno"> 67</tt>  <tt class="py-line"><tt class="py-docstring">                Set us up as a caller</tt> </tt>
+<a name="L68"></a><tt class="py-lineno"> 68</tt>  <tt class="py-line"><tt class="py-docstring">                This will install a new caller_token into the FPS section.</tt> </tt>
+<a name="L69"></a><tt class="py-lineno"> 69</tt>  <tt class="py-line"><tt class="py-docstring">                This should really only be called to regenerate the caller token.</tt> </tt>
+<a name="L70"></a><tt class="py-lineno"> 70</tt>  <tt class="py-line"><tt class="py-docstring">                """</tt> </tt>
+<a name="L71"></a><tt class="py-lineno"> 71</tt>  <tt class="py-line">                <tt class="py-name">response</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-20" class="py-name" targets="Method boto.fps.connection.FPSConnection.install_payment_instruction()=boto.fps.connection.FPSConnection-class.html#install_payment_instruction"><a title="boto.fps.connection.FPSConnection.install_payment_instruction" class="py-name" href="#" onclick="return doclink('link-20', 'install_payment_instruction', 'link-20');">install_payment_instruction</a></tt><tt class="py-op">(</tt><tt class="py-string">"MyRole=='Caller';"</tt><tt class="py-op">,</tt> <tt class="py-name">token_type</tt><tt class="py-op">=</tt><tt class="py-name">token_type</tt><tt class="py-op">,</tt> <tt class="py-name">transaction_id</tt><tt class="py-op">=</tt><tt class="py-name">transaction_id</tt><tt class="py-op">)</tt> </tt>
+<a name="L72"></a><tt class="py-lineno"> 72</tt>  <tt class="py-line">                <tt class="py-name">body</tt> <tt class="py-op">=</tt> <tt class="py-name">response</tt><tt class="py-op">.</tt><tt id="link-21" class="py-name" targets="Method boto.s3.key.Key.read()=boto.s3.key.Key-class.html#read,Method boto.sqs.20070501.queue.Queue.read()=boto.sqs.20070501.queue.Queue-class.html#read,Method boto.sqs.queue.Queue.read()=boto.sqs.queue.Queue-class.html#read"><a title="boto.s3.key.Key.read
+boto.sqs.20070501.queue.Queue.read
+boto.sqs.queue.Queue.read" class="py-name" href="#" onclick="return doclink('link-21', 'read', 'link-21');">read</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L73"></a><tt class="py-lineno"> 73</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt><tt class="py-op">(</tt><tt class="py-name">response</tt><tt class="py-op">.</tt><tt id="link-22" class="py-name" targets="Variable boto.mashups.server.Server.status=boto.mashups.server.Server-class.html#status,Variable boto.utils.ShellCommand.status=boto.utils.ShellCommand-class.html#status"><a title="boto.mashups.server.Server.status
+boto.utils.ShellCommand.status" class="py-name" href="#" onclick="return doclink('link-22', 'status', 'link-22');">status</a></tt> <tt class="py-op">==</tt> <tt class="py-number">200</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L74"></a><tt class="py-lineno"> 74</tt>  <tt class="py-line">                        <tt class="py-name">rs</tt> <tt class="py-op">=</tt> <tt id="link-23" class="py-name"><a title="boto.resultset.ResultSet" class="py-name" href="#" onclick="return doclink('link-23', 'ResultSet', 'link-10');">ResultSet</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L75"></a><tt class="py-lineno"> 75</tt>  <tt class="py-line">                        <tt class="py-name">h</tt> <tt class="py-op">=</tt> <tt id="link-24" class="py-name"><a title="boto.handler" class="py-name" href="#" onclick="return doclink('link-24', 'handler', 'link-4');">handler</a></tt><tt class="py-op">.</tt><tt id="link-25" class="py-name" targets="Class boto.handler.XmlHandler=boto.handler.XmlHandler-class.html"><a title="boto.handler.XmlHandler" class="py-name" href="#" onclick="return doclink('link-25', 'XmlHandler', 'link-25');">XmlHandler</a></tt><tt class="py-op">(</tt><tt class="py-name">rs</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">)</tt> </tt>
+<a name="L76"></a><tt class="py-lineno"> 76</tt>  <tt class="py-line">                        <tt class="py-name">xml</tt><tt class="py-op">.</tt><tt class="py-name">sax</tt><tt class="py-op">.</tt><tt class="py-name">parseString</tt><tt class="py-op">(</tt><tt class="py-name">body</tt><tt class="py-op">,</tt> <tt class="py-name">h</tt><tt class="py-op">)</tt> </tt>
+<a name="L77"></a><tt class="py-lineno"> 77</tt>  <tt class="py-line">                        <tt class="py-name">caller_token</tt> <tt class="py-op">=</tt> <tt class="py-name">rs</tt><tt class="py-op">.</tt><tt class="py-name">TokenId</tt> </tt>
+<a name="L78"></a><tt class="py-lineno"> 78</tt>  <tt class="py-line">                        <tt class="py-keyword">try</tt><tt class="py-op">:</tt> </tt>
+<a name="L79"></a><tt class="py-lineno"> 79</tt>  <tt class="py-line">                                <tt id="link-26" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-26', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-27" class="py-name" targets="Variable boto.config=boto-module.html#config,Variable boto.mashups.server.Server.config=boto.mashups.server.Server-class.html#config,Module boto.pyami.config=boto.pyami.config-module.html"><a title="boto.config
+boto.mashups.server.Server.config
+boto.pyami.config" class="py-name" href="#" onclick="return doclink('link-27', 'config', 'link-27');">config</a></tt><tt class="py-op">.</tt><tt id="link-28" class="py-name" targets="Method boto.pyami.config.Config.save_system_option()=boto.pyami.config.Config-class.html#save_system_option"><a title="boto.pyami.config.Config.save_system_option" class="py-name" href="#" onclick="return doclink('link-28', 'save_system_option', 'link-28');">save_system_option</a></tt><tt class="py-op">(</tt><tt class="py-string">"FPS"</tt><tt class="py-op">,</tt> <tt class="py-string">"caller_token"</tt><tt class="py-op">,</tt> <tt class="py-name">caller_token</tt><tt class="py-op">)</tt> </tt>
+<a name="L80"></a><tt class="py-lineno"> 80</tt>  <tt class="py-line">                        <tt class="py-keyword">except</tt><tt class="py-op">(</tt><tt class="py-name">IOError</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L81"></a><tt class="py-lineno"> 81</tt>  <tt class="py-line">                                <tt id="link-29" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-29', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-30" class="py-name"><a title="boto.config
+boto.mashups.server.Server.config
+boto.pyami.config" class="py-name" href="#" onclick="return doclink('link-30', 'config', 'link-27');">config</a></tt><tt class="py-op">.</tt><tt id="link-31" class="py-name" targets="Method boto.pyami.config.Config.save_user_option()=boto.pyami.config.Config-class.html#save_user_option"><a title="boto.pyami.config.Config.save_user_option" class="py-name" href="#" onclick="return doclink('link-31', 'save_user_option', 'link-31');">save_user_option</a></tt><tt class="py-op">(</tt><tt class="py-string">"FPS"</tt><tt class="py-op">,</tt> <tt class="py-string">"caller_token"</tt><tt class="py-op">,</tt> <tt class="py-name">caller_token</tt><tt class="py-op">)</tt> </tt>
+<a name="L82"></a><tt class="py-lineno"> 82</tt>  <tt class="py-line">                        <tt class="py-keyword">return</tt> <tt class="py-name">caller_token</tt> </tt>
+<a name="L83"></a><tt class="py-lineno"> 83</tt>  <tt class="py-line">                <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L84"></a><tt class="py-lineno"> 84</tt>  <tt class="py-line">                        <tt class="py-keyword">raise</tt> <tt id="link-32" class="py-name"><a title="boto.exception.FPSResponseError" class="py-name" href="#" onclick="return doclink('link-32', 'FPSResponseError', 'link-13');">FPSResponseError</a></tt><tt class="py-op">(</tt><tt class="py-name">response</tt><tt class="py-op">.</tt><tt id="link-33" class="py-name"><a title="boto.mashups.server.Server.status
+boto.utils.ShellCommand.status" class="py-name" href="#" onclick="return doclink('link-33', 'status', 'link-22');">status</a></tt><tt class="py-op">,</tt> <tt class="py-name">respons</tt><tt class="py-op">.</tt><tt class="py-name">reason</tt><tt class="py-op">,</tt> <tt class="py-name">body</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L85"></a><tt class="py-lineno"> 85</tt>  <tt class="py-line"> </tt>
+<a name="FPSConnection.install_recipient_instruction"></a><div id="FPSConnection.install_recipient_instruction-def"><a name="L86"></a><tt class="py-lineno"> 86</tt> <a class="py-toggle" href="#" id="FPSConnection.install_recipient_instruction-toggle" onclick="return toggle('FPSConnection.install_recipient_instruction');">-</a><tt class="py-line">        <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.fps.connection.FPSConnection-class.html#install_recipient_instruction">install_recipient_instruction</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">token_type</tt><tt class="py-op">=</tt><tt class="py-string">"Unrestricted"</tt><tt class="py-op">,</tt> <tt class="py-param">transaction_id</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="FPSConnection.install_recipient_instruction-collapsed" style="display:none;" pad="+++" indent="++++++++++++"></div><div id="FPSConnection.install_recipient_instruction-expanded"><a name="L87"></a><tt class="py-lineno"> 87</tt>  <tt class="py-line">                <tt class="py-docstring">"""</tt> </tt>
+<a name="L88"></a><tt class="py-lineno"> 88</tt>  <tt class="py-line"><tt class="py-docstring">                Set us up as a Recipient</tt> </tt>
+<a name="L89"></a><tt class="py-lineno"> 89</tt>  <tt class="py-line"><tt class="py-docstring">                This will install a new caller_token into the FPS section.</tt> </tt>
+<a name="L90"></a><tt class="py-lineno"> 90</tt>  <tt class="py-line"><tt class="py-docstring">                This should really only be called to regenerate the recipient token.</tt> </tt>
+<a name="L91"></a><tt class="py-lineno"> 91</tt>  <tt class="py-line"><tt class="py-docstring">                """</tt> </tt>
+<a name="L92"></a><tt class="py-lineno"> 92</tt>  <tt class="py-line">                <tt class="py-name">response</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-34" class="py-name"><a title="boto.fps.connection.FPSConnection.install_payment_instruction" class="py-name" href="#" onclick="return doclink('link-34', 'install_payment_instruction', 'link-20');">install_payment_instruction</a></tt><tt class="py-op">(</tt><tt class="py-string">"MyRole=='Recipient';"</tt><tt class="py-op">,</tt> <tt class="py-name">token_type</tt><tt class="py-op">=</tt><tt class="py-name">token_type</tt><tt class="py-op">,</tt> <tt class="py-name">transaction_id</tt><tt class="py-op">=</tt><tt class="py-name">transaction_id</tt><tt class="py-op">)</tt> </tt>
+<a name="L93"></a><tt class="py-lineno"> 93</tt>  <tt class="py-line">                <tt class="py-name">body</tt> <tt class="py-op">=</tt> <tt class="py-name">response</tt><tt class="py-op">.</tt><tt id="link-35" class="py-name"><a title="boto.s3.key.Key.read
+boto.sqs.20070501.queue.Queue.read
+boto.sqs.queue.Queue.read" class="py-name" href="#" onclick="return doclink('link-35', 'read', 'link-21');">read</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L94"></a><tt class="py-lineno"> 94</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt><tt class="py-op">(</tt><tt class="py-name">response</tt><tt class="py-op">.</tt><tt id="link-36" class="py-name"><a title="boto.mashups.server.Server.status
+boto.utils.ShellCommand.status" class="py-name" href="#" onclick="return doclink('link-36', 'status', 'link-22');">status</a></tt> <tt class="py-op">==</tt> <tt class="py-number">200</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L95"></a><tt class="py-lineno"> 95</tt>  <tt class="py-line">                        <tt class="py-name">rs</tt> <tt class="py-op">=</tt> <tt id="link-37" class="py-name"><a title="boto.resultset.ResultSet" class="py-name" href="#" onclick="return doclink('link-37', 'ResultSet', 'link-10');">ResultSet</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L96"></a><tt class="py-lineno"> 96</tt>  <tt class="py-line">                        <tt class="py-name">h</tt> <tt class="py-op">=</tt> <tt id="link-38" class="py-name"><a title="boto.handler" class="py-name" href="#" onclick="return doclink('link-38', 'handler', 'link-4');">handler</a></tt><tt class="py-op">.</tt><tt id="link-39" class="py-name"><a title="boto.handler.XmlHandler" class="py-name" href="#" onclick="return doclink('link-39', 'XmlHandler', 'link-25');">XmlHandler</a></tt><tt class="py-op">(</tt><tt class="py-name">rs</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">)</tt> </tt>
+<a name="L97"></a><tt class="py-lineno"> 97</tt>  <tt class="py-line">                        <tt class="py-name">xml</tt><tt class="py-op">.</tt><tt class="py-name">sax</tt><tt class="py-op">.</tt><tt class="py-name">parseString</tt><tt class="py-op">(</tt><tt class="py-name">body</tt><tt class="py-op">,</tt> <tt class="py-name">h</tt><tt class="py-op">)</tt> </tt>
+<a name="L98"></a><tt class="py-lineno"> 98</tt>  <tt class="py-line">                        <tt class="py-name">recipient_token</tt> <tt class="py-op">=</tt> <tt class="py-name">rs</tt><tt class="py-op">.</tt><tt class="py-name">TokenId</tt> </tt>
+<a name="L99"></a><tt class="py-lineno"> 99</tt>  <tt class="py-line">                        <tt class="py-keyword">try</tt><tt class="py-op">:</tt> </tt>
+<a name="L100"></a><tt class="py-lineno">100</tt>  <tt class="py-line">                                <tt id="link-40" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-40', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-41" class="py-name"><a title="boto.config
+boto.mashups.server.Server.config
+boto.pyami.config" class="py-name" href="#" onclick="return doclink('link-41', 'config', 'link-27');">config</a></tt><tt class="py-op">.</tt><tt id="link-42" class="py-name"><a title="boto.pyami.config.Config.save_system_option" class="py-name" href="#" onclick="return doclink('link-42', 'save_system_option', 'link-28');">save_system_option</a></tt><tt class="py-op">(</tt><tt class="py-string">"FPS"</tt><tt class="py-op">,</tt> <tt class="py-string">"recipient_token"</tt><tt class="py-op">,</tt> <tt class="py-name">recipient_token</tt><tt class="py-op">)</tt> </tt>
+<a name="L101"></a><tt class="py-lineno">101</tt>  <tt class="py-line">                        <tt class="py-keyword">except</tt><tt class="py-op">(</tt><tt class="py-name">IOError</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L102"></a><tt class="py-lineno">102</tt>  <tt class="py-line">                                <tt id="link-43" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-43', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-44" class="py-name"><a title="boto.config
+boto.mashups.server.Server.config
+boto.pyami.config" class="py-name" href="#" onclick="return doclink('link-44', 'config', 'link-27');">config</a></tt><tt class="py-op">.</tt><tt id="link-45" class="py-name"><a title="boto.pyami.config.Config.save_user_option" class="py-name" href="#" onclick="return doclink('link-45', 'save_user_option', 'link-31');">save_user_option</a></tt><tt class="py-op">(</tt><tt class="py-string">"FPS"</tt><tt class="py-op">,</tt> <tt class="py-string">"recipient_token"</tt><tt class="py-op">,</tt> <tt class="py-name">recipient_token</tt><tt class="py-op">)</tt> </tt>
+<a name="L103"></a><tt class="py-lineno">103</tt>  <tt class="py-line"> </tt>
+<a name="L104"></a><tt class="py-lineno">104</tt>  <tt class="py-line">                        <tt class="py-keyword">return</tt> <tt class="py-name">recipient_token</tt> </tt>
+<a name="L105"></a><tt class="py-lineno">105</tt>  <tt class="py-line">                <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L106"></a><tt class="py-lineno">106</tt>  <tt class="py-line">                        <tt class="py-keyword">raise</tt> <tt id="link-46" class="py-name"><a title="boto.exception.FPSResponseError" class="py-name" href="#" onclick="return doclink('link-46', 'FPSResponseError', 'link-13');">FPSResponseError</a></tt><tt class="py-op">(</tt><tt class="py-name">response</tt><tt class="py-op">.</tt><tt id="link-47" class="py-name"><a title="boto.mashups.server.Server.status
+boto.utils.ShellCommand.status" class="py-name" href="#" onclick="return doclink('link-47', 'status', 'link-22');">status</a></tt><tt class="py-op">,</tt> <tt class="py-name">respons</tt><tt class="py-op">.</tt><tt class="py-name">reason</tt><tt class="py-op">,</tt> <tt class="py-name">body</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L107"></a><tt class="py-lineno">107</tt>  <tt class="py-line"> </tt>
+<a name="FPSConnection.make_url"></a><div id="FPSConnection.make_url-def"><a name="L108"></a><tt class="py-lineno">108</tt> <a class="py-toggle" href="#" id="FPSConnection.make_url-toggle" onclick="return toggle('FPSConnection.make_url');">-</a><tt class="py-line">        <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.fps.connection.FPSConnection-class.html#make_url">make_url</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">returnURL</tt><tt class="py-op">,</tt> <tt class="py-param">paymentReason</tt><tt class="py-op">,</tt> <tt class="py-param">pipelineName</tt><tt class="py-op">,</tt> <tt class="py-op">**</tt><tt class="py-param">params</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="FPSConnection.make_url-collapsed" style="display:none;" pad="+++" indent="++++++++++++"></div><div id="FPSConnection.make_url-expanded"><a name="L109"></a><tt class="py-lineno">109</tt>  <tt class="py-line">                <tt class="py-docstring">"""</tt> </tt>
+<a name="L110"></a><tt class="py-lineno">110</tt>  <tt class="py-line"><tt class="py-docstring">                Generate the URL with the signature required for a transaction</tt> </tt>
+<a name="L111"></a><tt class="py-lineno">111</tt>  <tt class="py-line"><tt class="py-docstring">                """</tt> </tt>
+<a name="L112"></a><tt class="py-lineno">112</tt>  <tt class="py-line">                <tt class="py-name">params</tt><tt class="py-op">[</tt><tt class="py-string">'callerKey'</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt id="link-48" class="py-name" targets="Class str=str-class.html"><a title="str" class="py-name" href="#" onclick="return doclink('link-48', 'str', 'link-48');">str</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">aws_access_key_id</tt><tt class="py-op">)</tt> </tt>
+<a name="L113"></a><tt class="py-lineno">113</tt>  <tt class="py-line">                <tt class="py-name">params</tt><tt class="py-op">[</tt><tt class="py-string">'returnURL'</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt id="link-49" class="py-name"><a title="str" class="py-name" href="#" onclick="return doclink('link-49', 'str', 'link-48');">str</a></tt><tt class="py-op">(</tt><tt class="py-name">returnURL</tt><tt class="py-op">)</tt> </tt>
+<a name="L114"></a><tt class="py-lineno">114</tt>  <tt class="py-line">                <tt class="py-name">params</tt><tt class="py-op">[</tt><tt class="py-string">'paymentReason'</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt id="link-50" class="py-name"><a title="str" class="py-name" href="#" onclick="return doclink('link-50', 'str', 'link-48');">str</a></tt><tt class="py-op">(</tt><tt class="py-name">paymentReason</tt><tt class="py-op">)</tt> </tt>
+<a name="L115"></a><tt class="py-lineno">115</tt>  <tt class="py-line">                <tt class="py-name">params</tt><tt class="py-op">[</tt><tt class="py-string">'pipelineName'</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">pipelineName</tt> </tt>
+<a name="L116"></a><tt class="py-lineno">116</tt>  <tt class="py-line"> </tt>
+<a name="L117"></a><tt class="py-lineno">117</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt><tt class="py-op">(</tt><tt class="py-keyword">not</tt> <tt class="py-name">params</tt><tt class="py-op">.</tt><tt id="link-51" class="py-name" targets="Method boto.sqs.20070501.message.MHMessage.has_key()=boto.sqs.20070501.message.MHMessage-class.html#has_key,Method boto.sqs.message.MHMessage.has_key()=boto.sqs.message.MHMessage-class.html#has_key"><a title="boto.sqs.20070501.message.MHMessage.has_key
+boto.sqs.message.MHMessage.has_key" class="py-name" href="#" onclick="return doclink('link-51', 'has_key', 'link-51');">has_key</a></tt><tt class="py-op">(</tt><tt class="py-string">'callerReference'</tt><tt class="py-op">)</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L118"></a><tt class="py-lineno">118</tt>  <tt class="py-line">                        <tt class="py-name">params</tt><tt class="py-op">[</tt><tt class="py-string">'callerReference'</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt id="link-52" class="py-name"><a title="str" class="py-name" href="#" onclick="return doclink('link-52', 'str', 'link-48');">str</a></tt><tt class="py-op">(</tt><tt class="py-name">uuid</tt><tt class="py-op">.</tt><tt class="py-name">uuid4</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L119"></a><tt class="py-lineno">119</tt>  <tt class="py-line"> </tt>
+<a name="L120"></a><tt class="py-lineno">120</tt>  <tt class="py-line">                <tt class="py-name">url</tt> <tt class="py-op">=</tt> <tt class="py-string">""</tt> </tt>
+<a name="L121"></a><tt class="py-lineno">121</tt>  <tt class="py-line">                <tt id="link-53" class="py-name" targets="Method boto.sdb.item.Item.keys()=boto.sdb.item.Item-class.html#keys,Method boto.sqs.20070501.message.MHMessage.keys()=boto.sqs.20070501.message.MHMessage-class.html#keys,Method boto.sqs.message.MHMessage.keys()=boto.sqs.message.MHMessage-class.html#keys"><a title="boto.sdb.item.Item.keys
+boto.sqs.20070501.message.MHMessage.keys
+boto.sqs.message.MHMessage.keys" class="py-name" href="#" onclick="return doclink('link-53', 'keys', 'link-53');">keys</a></tt> <tt class="py-op">=</tt> <tt class="py-name">params</tt><tt class="py-op">.</tt><tt id="link-54" class="py-name"><a title="boto.sdb.item.Item.keys
+boto.sqs.20070501.message.MHMessage.keys
+boto.sqs.message.MHMessage.keys" class="py-name" href="#" onclick="return doclink('link-54', 'keys', 'link-53');">keys</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L122"></a><tt class="py-lineno">122</tt>  <tt class="py-line">                <tt id="link-55" class="py-name"><a title="boto.sdb.item.Item.keys
+boto.sqs.20070501.message.MHMessage.keys
+boto.sqs.message.MHMessage.keys" class="py-name" href="#" onclick="return doclink('link-55', 'keys', 'link-53');">keys</a></tt><tt class="py-op">.</tt><tt class="py-name">sort</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L123"></a><tt class="py-lineno">123</tt>  <tt class="py-line">                <tt class="py-keyword">for</tt> <tt class="py-name">k</tt> <tt class="py-keyword">in</tt> <tt id="link-56" class="py-name"><a title="boto.sdb.item.Item.keys
+boto.sqs.20070501.message.MHMessage.keys
+boto.sqs.message.MHMessage.keys" class="py-name" href="#" onclick="return doclink('link-56', 'keys', 'link-53');">keys</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L124"></a><tt class="py-lineno">124</tt>  <tt class="py-line">                        <tt class="py-name">url</tt> <tt class="py-op">+=</tt> <tt class="py-string">"&amp;%s=%s"</tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt class="py-name">k</tt><tt class="py-op">,</tt> <tt class="py-name">urllib</tt><tt class="py-op">.</tt><tt class="py-name">quote_plus</tt><tt class="py-op">(</tt><tt id="link-57" class="py-name"><a title="str" class="py-name" href="#" onclick="return doclink('link-57', 'str', 'link-48');">str</a></tt><tt class="py-op">(</tt><tt class="py-name">params</tt><tt class="py-op">[</tt><tt class="py-name">k</tt><tt class="py-op">]</tt><tt class="py-op">)</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L125"></a><tt class="py-lineno">125</tt>  <tt class="py-line"> </tt>
+<a name="L126"></a><tt class="py-lineno">126</tt>  <tt class="py-line">                <tt class="py-name">url</tt> <tt class="py-op">=</tt> <tt class="py-string">"/cobranded-ui/actions/start?%s"</tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt> <tt class="py-name">url</tt><tt class="py-op">[</tt><tt class="py-number">1</tt><tt class="py-op">:</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L127"></a><tt class="py-lineno">127</tt>  <tt class="py-line">                <tt class="py-name">signature</tt><tt class="py-op">=</tt> <tt id="link-58" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-58', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-59" class="py-name"><a title="boto.utils" class="py-name" href="#" onclick="return doclink('link-59', 'utils', 'link-2');">utils</a></tt><tt class="py-op">.</tt><tt id="link-60" class="py-name" targets="Method boto.mapreduce.lqs.LQSMessage.encode()=boto.mapreduce.lqs.LQSMessage-class.html#encode,Method boto.sdb.db.manager.pgmanager.PGConverter.encode()=boto.sdb.db.manager.pgmanager.PGConverter-class.html#encode,Method boto.sdb.db.manager.sdbmanager.SDBConverter.encode()=boto.sdb.db.manager.sdbmanager.SDBConverter-class.html#encode,Method boto.sqs.jsonmessage.JSONMessage.encode()=boto.sqs.jsonmessage.JSONMessage-class.html#encode,Method boto.sqs.message.MHMessage.encode()=boto.sqs.message.MHMessage-class.html#encode,Method boto.sqs.message.Message.encode()=boto.sqs.message.Message-class.html#encode,Method boto.sqs.message.RawMessage.encode()=boto.sqs.message.RawMessage-class.html#encode"><a title="boto.mapreduce.lqs.LQSMessage.encode
+boto.sdb.db.manager.pgmanager.PGConverter.encode
+boto.sdb.db.manager.sdbmanager.SDBConverter.encode
+boto.sqs.jsonmessage.JSONMessage.encode
+boto.sqs.message.MHMessage.encode
+boto.sqs.message.Message.encode
+boto.sqs.message.RawMessage.encode" class="py-name" href="#" onclick="return doclink('link-60', 'encode', 'link-60');">encode</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">aws_secret_access_key</tt><tt class="py-op">,</tt> <tt class="py-name">url</tt><tt class="py-op">,</tt> <tt class="py-name">True</tt><tt class="py-op">)</tt> </tt>
+<a name="L128"></a><tt class="py-lineno">128</tt>  <tt class="py-line">                <tt class="py-keyword">return</tt> <tt class="py-string">"https://authorize.payments-sandbox.amazon.com%s&amp;awsSignature=%s"</tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt class="py-name">url</tt><tt class="py-op">,</tt> <tt class="py-name">signature</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L129"></a><tt class="py-lineno">129</tt>  <tt class="py-line"> </tt>
+<a name="FPSConnection.make_payment"></a><div id="FPSConnection.make_payment-def"><a name="L130"></a><tt class="py-lineno">130</tt> <a class="py-toggle" href="#" id="FPSConnection.make_payment-toggle" onclick="return toggle('FPSConnection.make_payment');">-</a><tt class="py-line">        <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.fps.connection.FPSConnection-class.html#make_payment">make_payment</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">amount</tt><tt class="py-op">,</tt> <tt class="py-param">sender_token</tt><tt class="py-op">,</tt> <tt class="py-param">charge_fee_to</tt><tt class="py-op">=</tt><tt class="py-string">"Recipient"</tt><tt class="py-op">,</tt> <tt class="py-param">reference</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-param">senderReference</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-param">recipientReference</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-param">senderDescription</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-param">recipientDescription</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-param">callerDescription</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-param">metadata</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-param">transactionDate</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="FPSConnection.make_payment-collapsed" style="display:none;" pad="+++" indent="++++++++++++"></div><div id="FPSConnection.make_payment-expanded"><a name="L131"></a><tt class="py-lineno">131</tt>  <tt class="py-line">                <tt class="py-docstring">"""</tt> </tt>
+<a name="L132"></a><tt class="py-lineno">132</tt>  <tt class="py-line"><tt class="py-docstring">                Make a payment transaction</tt> </tt>
+<a name="L133"></a><tt class="py-lineno">133</tt>  <tt class="py-line"><tt class="py-docstring">                You must specify the amount and the sender token.</tt> </tt>
+<a name="L134"></a><tt class="py-lineno">134</tt>  <tt class="py-line"><tt class="py-docstring">                """</tt> </tt>
+<a name="L135"></a><tt class="py-lineno">135</tt>  <tt class="py-line">                <tt class="py-name">params</tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt><tt class="py-op">}</tt> </tt>
+<a name="L136"></a><tt class="py-lineno">136</tt>  <tt class="py-line">                <tt class="py-name">params</tt><tt class="py-op">[</tt><tt class="py-string">'RecipientTokenId'</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt id="link-61" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-61', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-62" class="py-name"><a title="boto.config
+boto.mashups.server.Server.config
+boto.pyami.config" class="py-name" href="#" onclick="return doclink('link-62', 'config', 'link-27');">config</a></tt><tt class="py-op">.</tt><tt id="link-63" class="py-name" targets="Method boto.mapreduce.queuetools.LQSClient.get()=boto.mapreduce.queuetools.LQSClient-class.html#get,Method boto.mapreduce.queuetools.SQSClient.get()=boto.mapreduce.queuetools.SQSClient-class.html#get,Method boto.pyami.config.Config.get()=boto.pyami.config.Config-class.html#get,Class Method boto.sdb.persist.object.SDBObject.get()=boto.sdb.persist.object.SDBObject-class.html#get,Method boto.services.servicedef.ServiceDef.get()=boto.services.servicedef.ServiceDef-class.html#get,Method boto.sqs.20070501.message.MHMessage.get()=boto.sqs.20070501.message.MHMessage-class.html#get,Method boto.sqs.message.MHMessage.get()=boto.sqs.message.MHMessage-class.html#get"><a title="boto.mapreduce.queuetools.LQSClient.get
+boto.mapreduce.queuetools.SQSClient.get
+boto.pyami.config.Config.get
+boto.sdb.persist.object.SDBObject.get
+boto.services.servicedef.ServiceDef.get
+boto.sqs.20070501.message.MHMessage.get
+boto.sqs.message.MHMessage.get" class="py-name" href="#" onclick="return doclink('link-63', 'get', 'link-63');">get</a></tt><tt class="py-op">(</tt><tt class="py-string">"FPS"</tt><tt class="py-op">,</tt> <tt class="py-string">"recipient_token"</tt><tt class="py-op">)</tt> </tt>
+<a name="L137"></a><tt class="py-lineno">137</tt>  <tt class="py-line">                <tt class="py-name">params</tt><tt class="py-op">[</tt><tt class="py-string">'CallerTokenId'</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt id="link-64" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-64', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-65" class="py-name"><a title="boto.config
+boto.mashups.server.Server.config
+boto.pyami.config" class="py-name" href="#" onclick="return doclink('link-65', 'config', 'link-27');">config</a></tt><tt class="py-op">.</tt><tt id="link-66" class="py-name"><a title="boto.mapreduce.queuetools.LQSClient.get
+boto.mapreduce.queuetools.SQSClient.get
+boto.pyami.config.Config.get
+boto.sdb.persist.object.SDBObject.get
+boto.services.servicedef.ServiceDef.get
+boto.sqs.20070501.message.MHMessage.get
+boto.sqs.message.MHMessage.get" class="py-name" href="#" onclick="return doclink('link-66', 'get', 'link-63');">get</a></tt><tt class="py-op">(</tt><tt class="py-string">"FPS"</tt><tt class="py-op">,</tt> <tt class="py-string">"caller_token"</tt><tt class="py-op">)</tt> </tt>
+<a name="L138"></a><tt class="py-lineno">138</tt>  <tt class="py-line">                <tt class="py-name">params</tt><tt class="py-op">[</tt><tt class="py-string">'SenderTokenId'</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">sender_token</tt> </tt>
+<a name="L139"></a><tt class="py-lineno">139</tt>  <tt class="py-line">                <tt class="py-name">params</tt><tt class="py-op">[</tt><tt class="py-string">'TransactionAmount.Amount'</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt id="link-67" class="py-name"><a title="str" class="py-name" href="#" onclick="return doclink('link-67', 'str', 'link-48');">str</a></tt><tt class="py-op">(</tt><tt class="py-name">amount</tt><tt class="py-op">)</tt> </tt>
+<a name="L140"></a><tt class="py-lineno">140</tt>  <tt class="py-line">                <tt class="py-name">params</tt><tt class="py-op">[</tt><tt class="py-string">'TransactionAmount.CurrencyCode'</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-string">"USD"</tt> </tt>
+<a name="L141"></a><tt class="py-lineno">141</tt>  <tt class="py-line">                <tt class="py-name">params</tt><tt class="py-op">[</tt><tt class="py-string">'ChargeFeeTo'</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">charge_fee_to</tt> </tt>
+<a name="L142"></a><tt class="py-lineno">142</tt>  <tt class="py-line"> </tt>
+<a name="L143"></a><tt class="py-lineno">143</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt><tt class="py-op">(</tt><tt class="py-name">transactionDate</tt> <tt class="py-op">!=</tt> <tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L144"></a><tt class="py-lineno">144</tt>  <tt class="py-line">                        <tt class="py-name">params</tt><tt class="py-op">[</tt><tt class="py-string">'TransactionDate'</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">transactionDate</tt> </tt>
+<a name="L145"></a><tt class="py-lineno">145</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt><tt class="py-op">(</tt><tt class="py-name">senderReference</tt> <tt class="py-op">!=</tt> <tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L146"></a><tt class="py-lineno">146</tt>  <tt class="py-line">                        <tt class="py-name">params</tt><tt class="py-op">[</tt><tt class="py-string">'SenderReference'</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">senderReference</tt> </tt>
+<a name="L147"></a><tt class="py-lineno">147</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt><tt class="py-op">(</tt><tt class="py-name">recipientReference</tt> <tt class="py-op">!=</tt> <tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L148"></a><tt class="py-lineno">148</tt>  <tt class="py-line">                        <tt class="py-name">params</tt><tt class="py-op">[</tt><tt class="py-string">'RecipientReference'</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">recipientReference</tt> </tt>
+<a name="L149"></a><tt class="py-lineno">149</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt><tt class="py-op">(</tt><tt class="py-name">senderDescription</tt> <tt class="py-op">!=</tt> <tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L150"></a><tt class="py-lineno">150</tt>  <tt class="py-line">                        <tt class="py-name">params</tt><tt class="py-op">[</tt><tt class="py-string">'SenderDescription'</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">senderDescription</tt> </tt>
+<a name="L151"></a><tt class="py-lineno">151</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt><tt class="py-op">(</tt><tt class="py-name">recipientDescription</tt> <tt class="py-op">!=</tt> <tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L152"></a><tt class="py-lineno">152</tt>  <tt class="py-line">                        <tt class="py-name">params</tt><tt class="py-op">[</tt><tt class="py-string">'RecipientDescription'</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">recipientDescription</tt> </tt>
+<a name="L153"></a><tt class="py-lineno">153</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt><tt class="py-op">(</tt><tt class="py-name">callerDescription</tt> <tt class="py-op">!=</tt> <tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L154"></a><tt class="py-lineno">154</tt>  <tt class="py-line">                        <tt class="py-name">params</tt><tt class="py-op">[</tt><tt class="py-string">'CallerDescription'</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">callerDescription</tt> </tt>
+<a name="L155"></a><tt class="py-lineno">155</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt><tt class="py-op">(</tt><tt class="py-name">metadata</tt> <tt class="py-op">!=</tt> <tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L156"></a><tt class="py-lineno">156</tt>  <tt class="py-line">                        <tt class="py-name">params</tt><tt class="py-op">[</tt><tt class="py-string">'MetaData'</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">metadata</tt> </tt>
+<a name="L157"></a><tt class="py-lineno">157</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt><tt class="py-op">(</tt><tt class="py-name">transactionDate</tt> <tt class="py-op">!=</tt> <tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L158"></a><tt class="py-lineno">158</tt>  <tt class="py-line">                        <tt class="py-name">params</tt><tt class="py-op">[</tt><tt class="py-string">'TransactionDate'</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">transactionDate</tt> </tt>
+<a name="L159"></a><tt class="py-lineno">159</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt><tt class="py-op">(</tt><tt class="py-name">reference</tt> <tt class="py-op">==</tt> <tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L160"></a><tt class="py-lineno">160</tt>  <tt class="py-line">                        <tt class="py-name">reference</tt> <tt class="py-op">=</tt> <tt class="py-name">uuid</tt><tt class="py-op">.</tt><tt class="py-name">uuid4</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L161"></a><tt class="py-lineno">161</tt>  <tt class="py-line">                <tt class="py-name">params</tt><tt class="py-op">[</tt><tt class="py-string">'CallerReference'</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">reference</tt> </tt>
+<a name="L162"></a><tt class="py-lineno">162</tt>  <tt class="py-line"> </tt>
+<a name="L163"></a><tt class="py-lineno">163</tt>  <tt class="py-line">                <tt class="py-name">response</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-68" class="py-name"><a title="boto.connection.AWSAuthConnection.make_request
+boto.connection.AWSQueryConnection.make_request
+boto.s3.connection.S3Connection.make_request
+boto.sqs.20070501.connection.SQSConnection.make_request" class="py-name" href="#" onclick="return doclink('link-68', 'make_request', 'link-19');">make_request</a></tt><tt class="py-op">(</tt><tt class="py-string">"Pay"</tt><tt class="py-op">,</tt> <tt class="py-name">params</tt><tt class="py-op">)</tt> </tt>
+<a name="L164"></a><tt class="py-lineno">164</tt>  <tt class="py-line">                <tt class="py-name">body</tt> <tt class="py-op">=</tt> <tt class="py-name">response</tt><tt class="py-op">.</tt><tt id="link-69" class="py-name"><a title="boto.s3.key.Key.read
+boto.sqs.20070501.queue.Queue.read
+boto.sqs.queue.Queue.read" class="py-name" href="#" onclick="return doclink('link-69', 'read', 'link-21');">read</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L165"></a><tt class="py-lineno">165</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt><tt class="py-op">(</tt><tt class="py-name">response</tt><tt class="py-op">.</tt><tt id="link-70" class="py-name"><a title="boto.mashups.server.Server.status
+boto.utils.ShellCommand.status" class="py-name" href="#" onclick="return doclink('link-70', 'status', 'link-22');">status</a></tt> <tt class="py-op">==</tt> <tt class="py-number">200</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L166"></a><tt class="py-lineno">166</tt>  <tt class="py-line">                        <tt class="py-name">rs</tt> <tt class="py-op">=</tt> <tt id="link-71" class="py-name"><a title="boto.resultset.ResultSet" class="py-name" href="#" onclick="return doclink('link-71', 'ResultSet', 'link-10');">ResultSet</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L167"></a><tt class="py-lineno">167</tt>  <tt class="py-line">                        <tt class="py-name">h</tt> <tt class="py-op">=</tt> <tt id="link-72" class="py-name"><a title="boto.handler" class="py-name" href="#" onclick="return doclink('link-72', 'handler', 'link-4');">handler</a></tt><tt class="py-op">.</tt><tt id="link-73" class="py-name"><a title="boto.handler.XmlHandler" class="py-name" href="#" onclick="return doclink('link-73', 'XmlHandler', 'link-25');">XmlHandler</a></tt><tt class="py-op">(</tt><tt class="py-name">rs</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">)</tt> </tt>
+<a name="L168"></a><tt class="py-lineno">168</tt>  <tt class="py-line">                        <tt class="py-name">xml</tt><tt class="py-op">.</tt><tt class="py-name">sax</tt><tt class="py-op">.</tt><tt class="py-name">parseString</tt><tt class="py-op">(</tt><tt class="py-name">body</tt><tt class="py-op">,</tt> <tt class="py-name">h</tt><tt class="py-op">)</tt> </tt>
+<a name="L169"></a><tt class="py-lineno">169</tt>  <tt class="py-line">                        <tt class="py-keyword">return</tt> <tt class="py-name">rs</tt> </tt>
+<a name="L170"></a><tt class="py-lineno">170</tt>  <tt class="py-line">                <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L171"></a><tt class="py-lineno">171</tt>  <tt class="py-line">                        <tt class="py-keyword">raise</tt> <tt id="link-74" class="py-name"><a title="boto.exception.FPSResponseError" class="py-name" href="#" onclick="return doclink('link-74', 'FPSResponseError', 'link-13');">FPSResponseError</a></tt><tt class="py-op">(</tt><tt class="py-name">response</tt><tt class="py-op">.</tt><tt id="link-75" class="py-name"><a title="boto.mashups.server.Server.status
+boto.utils.ShellCommand.status" class="py-name" href="#" onclick="return doclink('link-75', 'status', 'link-22');">status</a></tt><tt class="py-op">,</tt> <tt class="py-name">response</tt><tt class="py-op">.</tt><tt class="py-name">reason</tt><tt class="py-op">,</tt> <tt class="py-name">body</tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L172"></a><tt class="py-lineno">172</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="boto-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0beta1 on Fri Feb 20 11:45:22 2009
+    </td>
+    <td align="right" class="footer">
+      <a href="http://epydoc.sourceforge.net">http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie()
+  // -->
+</script>
+  
+</body>
+</html>

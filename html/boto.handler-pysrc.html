@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>boto.handler</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="boto-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="boto-module.html">Package&nbsp;boto</a> ::
+        Module&nbsp;handler
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="boto.handler-pysrc.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="boto.handler-module.html">Module boto.handler</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno"> 1</tt>  <tt class="py-line"><tt class="py-comment"># Copyright (c) 2006,2007 Mitch Garnaat http://garnaat.org/</tt> </tt>
+<a name="L2"></a><tt class="py-lineno"> 2</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment">#</tt> </tt>
+<a name="L3"></a><tt class="py-lineno"> 3</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># Permission is hereby granted, free of charge, to any person obtaining a</tt> </tt>
+<a name="L4"></a><tt class="py-lineno"> 4</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># copy of this software and associated documentation files (the</tt> </tt>
+<a name="L5"></a><tt class="py-lineno"> 5</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># "Software"), to deal in the Software without restriction, including</tt> </tt>
+<a name="L6"></a><tt class="py-lineno"> 6</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># without limitation the rights to use, copy, modify, merge, publish, dis-</tt> </tt>
+<a name="L7"></a><tt class="py-lineno"> 7</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># tribute, sublicense, and/or sell copies of the Software, and to permit</tt> </tt>
+<a name="L8"></a><tt class="py-lineno"> 8</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># persons to whom the Software is furnished to do so, subject to the fol-</tt> </tt>
+<a name="L9"></a><tt class="py-lineno"> 9</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># lowing conditions:</tt> </tt>
+<a name="L10"></a><tt class="py-lineno">10</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment">#</tt> </tt>
+<a name="L11"></a><tt class="py-lineno">11</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># The above copyright notice and this permission notice shall be included</tt> </tt>
+<a name="L12"></a><tt class="py-lineno">12</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># in all copies or substantial portions of the Software.</tt> </tt>
+<a name="L13"></a><tt class="py-lineno">13</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment">#</tt> </tt>
+<a name="L14"></a><tt class="py-lineno">14</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS</tt> </tt>
+<a name="L15"></a><tt class="py-lineno">15</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABIL-</tt> </tt>
+<a name="L16"></a><tt class="py-lineno">16</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># ITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT</tt> </tt>
+<a name="L17"></a><tt class="py-lineno">17</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># SHALL THE AUTHOR BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, </tt> </tt>
+<a name="L18"></a><tt class="py-lineno">18</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</tt> </tt>
+<a name="L19"></a><tt class="py-lineno">19</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS</tt> </tt>
+<a name="L20"></a><tt class="py-lineno">20</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># IN THE SOFTWARE.</tt> </tt>
+<a name="L21"></a><tt class="py-lineno">21</tt>  <tt class="py-line"><tt class="py-comment"></tt> </tt>
+<a name="L22"></a><tt class="py-lineno">22</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">xml</tt><tt class="py-op">.</tt><tt class="py-name">sax</tt> </tt>
+<a name="L23"></a><tt class="py-lineno">23</tt>  <tt class="py-line"> </tt>
+<a name="XmlHandler"></a><div id="XmlHandler-def"><a name="L24"></a><tt class="py-lineno">24</tt> <a class="py-toggle" href="#" id="XmlHandler-toggle" onclick="return toggle('XmlHandler');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="boto.handler.XmlHandler-class.html">XmlHandler</a><tt class="py-op">(</tt><tt class="py-base-class">xml</tt><tt class="py-op">.</tt><tt class="py-base-class">sax</tt><tt class="py-op">.</tt><tt class="py-base-class">ContentHandler</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="XmlHandler-collapsed" style="display:none;" pad="++" indent="++++"></div><div id="XmlHandler-expanded"><a name="L25"></a><tt class="py-lineno">25</tt>  <tt class="py-line"> </tt>
+<a name="XmlHandler.__init__"></a><div id="XmlHandler.__init__-def"><a name="L26"></a><tt class="py-lineno">26</tt> <a class="py-toggle" href="#" id="XmlHandler.__init__-toggle" onclick="return toggle('XmlHandler.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.handler.XmlHandler-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">root_node</tt><tt class="py-op">,</tt> <tt class="py-param">connection</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="XmlHandler.__init__-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="XmlHandler.__init__-expanded"><a name="L27"></a><tt class="py-lineno">27</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-0" class="py-name" targets="Module boto.connection=boto.connection-module.html,Module boto.ec2.connection=boto.ec2.connection-module.html,Module boto.fps.connection=boto.fps.connection-module.html,Module boto.mturk.connection=boto.mturk.connection-module.html,Module boto.s3.connection=boto.s3.connection-module.html,Module boto.sdb.connection=boto.sdb.connection-module.html,Module boto.sqs.20070501.connection=boto.sqs.20070501.connection-module.html,Module boto.sqs.connection=boto.sqs.connection-module.html"><a title="boto.connection
+boto.ec2.connection
+boto.fps.connection
+boto.mturk.connection
+boto.s3.connection
+boto.sdb.connection
+boto.sqs.20070501.connection
+boto.sqs.connection" class="py-name" href="#" onclick="return doclink('link-0', 'connection', 'link-0');">connection</a></tt> <tt class="py-op">=</tt> <tt id="link-1" class="py-name"><a title="boto.connection
+boto.ec2.connection
+boto.fps.connection
+boto.mturk.connection
+boto.s3.connection
+boto.sdb.connection
+boto.sqs.20070501.connection
+boto.sqs.connection" class="py-name" href="#" onclick="return doclink('link-1', 'connection', 'link-0');">connection</a></tt> </tt>
+<a name="L28"></a><tt class="py-lineno">28</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">nodes</tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-op">(</tt><tt class="py-string">'root'</tt><tt class="py-op">,</tt> <tt class="py-name">root_node</tt><tt class="py-op">)</tt><tt class="py-op">]</tt> </tt>
+<a name="L29"></a><tt class="py-lineno">29</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">current_text</tt> <tt class="py-op">=</tt> <tt class="py-string">''</tt> </tt>
+</div><a name="L30"></a><tt class="py-lineno">30</tt>  <tt class="py-line"> </tt>
+<a name="XmlHandler.startElement"></a><div id="XmlHandler.startElement-def"><a name="L31"></a><tt class="py-lineno">31</tt> <a class="py-toggle" href="#" id="XmlHandler.startElement-toggle" onclick="return toggle('XmlHandler.startElement');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.handler.XmlHandler-class.html#startElement">startElement</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">name</tt><tt class="py-op">,</tt> <tt class="py-param">attrs</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="XmlHandler.startElement-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="XmlHandler.startElement-expanded"><a name="L32"></a><tt class="py-lineno">32</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">current_text</tt> <tt class="py-op">=</tt> <tt class="py-string">''</tt> </tt>
+<a name="L33"></a><tt class="py-lineno">33</tt>  <tt class="py-line">        <tt class="py-name">new_node</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">nodes</tt><tt class="py-op">[</tt><tt class="py-op">-</tt><tt class="py-number">1</tt><tt class="py-op">]</tt><tt class="py-op">[</tt><tt class="py-number">1</tt><tt class="py-op">]</tt><tt class="py-op">.</tt><tt id="link-2" class="py-name" targets="Method boto.cloudfront.distribution.Distribution.startElement()=boto.cloudfront.distribution.Distribution-class.html#startElement,Method boto.cloudfront.distribution.DistributionConfig.startElement()=boto.cloudfront.distribution.DistributionConfig-class.html#startElement,Method boto.cloudfront.distribution.DistributionSummary.startElement()=boto.cloudfront.distribution.DistributionSummary-class.html#startElement,Method boto.ec2.ec2object.EC2Object.startElement()=boto.ec2.ec2object.EC2Object-class.html#startElement,Method boto.ec2.image.ImageAttribute.startElement()=boto.ec2.image.ImageAttribute-class.html#startElement,Method boto.ec2.instance.ConsoleOutput.startElement()=boto.ec2.instance.ConsoleOutput-class.html#startElement,Method boto.ec2.instance.Group.startElement()=boto.ec2.instance.Group-class.html#startElement,Method boto.ec2.instance.Reservation.startElement()=boto.ec2.instance.Reservation-class.html#startElement,Method boto.ec2.regioninfo.RegionInfo.startElement()=boto.ec2.regioninfo.RegionInfo-class.html#startElement,Method boto.ec2.securitygroup.GroupOrCIDR.startElement()=boto.ec2.securitygroup.GroupOrCIDR-class.html#startElement,Method boto.ec2.securitygroup.IPPermissions.startElement()=boto.ec2.securitygroup.IPPermissions-class.html#startElement,Method boto.ec2.securitygroup.SecurityGroup.startElement()=boto.ec2.securitygroup.SecurityGroup-class.html#startElement,Method boto.exception.BotoServerError.startElement()=boto.exception.BotoServerError-class.html#startElement,Method boto.exception.ConsoleOutput.startElement()=boto.exception.ConsoleOutput-class.html#startElement,Method boto.exception.EC2ResponseError.startElement()=boto.exception.EC2ResponseError-class.html#startElement,Method boto.exception.S3ResponseError.startElement()=boto.exception.S3ResponseError-class.html#startElement,Method boto.exception.SQSError.startElement()=boto.exception.SQSError-class.html#startElement,Method boto.exception._EC2Error.startElement()=boto.exception._EC2Error-class.html#startElement,Method boto.handler.XmlHandler.startElement()=boto.handler.XmlHandler-class.html#startElement,Method boto.mturk.connection.BaseAutoResultElement.startElement()=boto.mturk.connection.BaseAutoResultElement-class.html#startElement,Method boto.mturk.price.Price.startElement()=boto.mturk.price.Price-class.html#startElement,Method boto.resultset.ResultSet.startElement()=boto.resultset.ResultSet-class.html#startElement,Method boto.s3.acl.ACL.startElement()=boto.s3.acl.ACL-class.html#startElement,Method boto.s3.acl.Grant.startElement()=boto.s3.acl.Grant-class.html#startElement,Method boto.s3.acl.Policy.startElement()=boto.s3.acl.Policy-class.html#startElement,Method boto.s3.bucket.Bucket.startElement()=boto.s3.bucket.Bucket-class.html#startElement,Method boto.s3.key.Key.startElement()=boto.s3.key.Key-class.html#startElement,Method boto.s3.prefix.Prefix.startElement()=boto.s3.prefix.Prefix-class.html#startElement,Method boto.s3.user.User.startElement()=boto.s3.user.User-class.html#startElement,Method boto.sdb.domain.Domain.startElement()=boto.sdb.domain.Domain-class.html#startElement,Method boto.sdb.domain.DomainMetaData.startElement()=boto.sdb.domain.DomainMetaData-class.html#startElement,Method boto.sdb.item.Item.startElement()=boto.sdb.item.Item-class.html#startElement,Method boto.sqs.20070501.attributes.Attributes.startElement()=boto.sqs.20070501.attributes.Attributes-class.html#startElement,Method boto.sqs.20070501.message.RawMessage.startElement()=boto.sqs.20070501.message.RawMessage-class.html#startElement,Method boto.sqs.20070501.queue.Queue.startElement()=boto.sqs.20070501.queue.Queue-class.html#startElement,Method boto.sqs.attributes.Attributes.startElement()=boto.sqs.attributes.Attributes-class.html#startElement,Method boto.sqs.message.RawMessage.startElement()=boto.sqs.message.RawMessage-class.html#startElement,Method boto.sqs.queue.Queue.startElement()=boto.sqs.queue.Queue-class.html#startElement"><a title="boto.cloudfront.distribution.Distribution.startElement
+boto.cloudfront.distribution.DistributionConfig.startElement
+boto.cloudfront.distribution.DistributionSummary.startElement
+boto.ec2.ec2object.EC2Object.startElement
+boto.ec2.image.ImageAttribute.startElement
+boto.ec2.instance.ConsoleOutput.startElement
+boto.ec2.instance.Group.startElement
+boto.ec2.instance.Reservation.startElement
+boto.ec2.regioninfo.RegionInfo.startElement
+boto.ec2.securitygroup.GroupOrCIDR.startElement
+boto.ec2.securitygroup.IPPermissions.startElement
+boto.ec2.securitygroup.SecurityGroup.startElement
+boto.exception.BotoServerError.startElement
+boto.exception.ConsoleOutput.startElement
+boto.exception.EC2ResponseError.startElement
+boto.exception.S3ResponseError.startElement
+boto.exception.SQSError.startElement
+boto.exception._EC2Error.startElement
+boto.handler.XmlHandler.startElement
+boto.mturk.connection.BaseAutoResultElement.startElement
+boto.mturk.price.Price.startElement
+boto.resultset.ResultSet.startElement
+boto.s3.acl.ACL.startElement
+boto.s3.acl.Grant.startElement
+boto.s3.acl.Policy.startElement
+boto.s3.bucket.Bucket.startElement
+boto.s3.key.Key.startElement
+boto.s3.prefix.Prefix.startElement
+boto.s3.user.User.startElement
+boto.sdb.domain.Domain.startElement
+boto.sdb.domain.DomainMetaData.startElement
+boto.sdb.item.Item.startElement
+boto.sqs.20070501.attributes.Attributes.startElement
+boto.sqs.20070501.message.RawMessage.startElement
+boto.sqs.20070501.queue.Queue.startElement
+boto.sqs.attributes.Attributes.startElement
+boto.sqs.message.RawMessage.startElement
+boto.sqs.queue.Queue.startElement" class="py-name" href="#" onclick="return doclink('link-2', 'startElement', 'link-2');">startElement</a></tt><tt class="py-op">(</tt><tt id="link-3" class="py-name" targets="Variable boto.mapreduce.partitiondb.Partition.name=boto.mapreduce.partitiondb.Partition-class.html#name,Variable boto.mapreduce.partitiondb.PartitionDB.name=boto.mapreduce.partitiondb.PartitionDB-class.html#name,Variable boto.mapreduce.partitiondb.Version.name=boto.mapreduce.partitiondb.Version-class.html#name,Variable boto.mashups.server.Server.name=boto.mashups.server.Server-class.html#name,Method boto.sdb.db.key.Key.name()=boto.sdb.db.key.Key-class.html#name,Variable boto.sdb.db.property.Property.name=boto.sdb.db.property.Property-class.html#name,Variable boto.sdb.db.test_db.TestBasic.name=boto.sdb.db.test_db.TestBasic-class.html#name,Variable boto.sdb.db.test_db.TestList.name=boto.sdb.db.test_db.TestList-class.html#name,Variable boto.sdb.db.test_db.TestListReference.name=boto.sdb.db.test_db.TestListReference-class.html#name,Variable boto.sdb.db.test_db.TestUnique.name=boto.sdb.db.test_db.TestUnique-class.html#name,Variable boto.sdb.persist.test_persist.TestRef.name=boto.sdb.persist.test_persist.TestRef-class.html#name,Variable boto.sdb.persist.test_persist.TestScalar.name=boto.sdb.persist.test_persist.TestScalar-class.html#name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-3', 'name', 'link-3');">name</a></tt><tt class="py-op">,</tt> <tt class="py-name">attrs</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-4" class="py-name"><a title="boto.connection
+boto.ec2.connection
+boto.fps.connection
+boto.mturk.connection
+boto.s3.connection
+boto.sdb.connection
+boto.sqs.20070501.connection
+boto.sqs.connection" class="py-name" href="#" onclick="return doclink('link-4', 'connection', 'link-0');">connection</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L34"></a><tt class="py-lineno">34</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">new_node</tt> <tt class="py-op">!=</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L35"></a><tt class="py-lineno">35</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">nodes</tt><tt class="py-op">.</tt><tt id="link-5" class="py-name" targets="Method boto.sdb.persist.property.MultiValue.append()=boto.sdb.persist.property.MultiValue-class.html#append"><a title="boto.sdb.persist.property.MultiValue.append" class="py-name" href="#" onclick="return doclink('link-5', 'append', 'link-5');">append</a></tt><tt class="py-op">(</tt><tt class="py-op">(</tt><tt id="link-6" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-6', 'name', 'link-3');">name</a></tt><tt class="py-op">,</tt> <tt class="py-name">new_node</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L36"></a><tt class="py-lineno">36</tt>  <tt class="py-line"> </tt>
+<a name="XmlHandler.endElement"></a><div id="XmlHandler.endElement-def"><a name="L37"></a><tt class="py-lineno">37</tt> <a class="py-toggle" href="#" id="XmlHandler.endElement-toggle" onclick="return toggle('XmlHandler.endElement');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.handler.XmlHandler-class.html#endElement">endElement</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">name</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="XmlHandler.endElement-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="XmlHandler.endElement-expanded"><a name="L38"></a><tt class="py-lineno">38</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">nodes</tt><tt class="py-op">[</tt><tt class="py-op">-</tt><tt class="py-number">1</tt><tt class="py-op">]</tt><tt class="py-op">[</tt><tt class="py-number">1</tt><tt class="py-op">]</tt><tt class="py-op">.</tt><tt id="link-7" class="py-name" targets="Method boto.cloudfront.distribution.Distribution.endElement()=boto.cloudfront.distribution.Distribution-class.html#endElement,Method boto.cloudfront.distribution.DistributionConfig.endElement()=boto.cloudfront.distribution.DistributionConfig-class.html#endElement,Method boto.cloudfront.distribution.DistributionSummary.endElement()=boto.cloudfront.distribution.DistributionSummary-class.html#endElement,Method boto.ec2.address.Address.endElement()=boto.ec2.address.Address-class.html#endElement,Method boto.ec2.ec2object.EC2Object.endElement()=boto.ec2.ec2object.EC2Object-class.html#endElement,Method boto.ec2.image.Image.endElement()=boto.ec2.image.Image-class.html#endElement,Method boto.ec2.image.ImageAttribute.endElement()=boto.ec2.image.ImageAttribute-class.html#endElement,Method boto.ec2.instance.ConsoleOutput.endElement()=boto.ec2.instance.ConsoleOutput-class.html#endElement,Method boto.ec2.instance.Group.endElement()=boto.ec2.instance.Group-class.html#endElement,Method boto.ec2.instance.Instance.endElement()=boto.ec2.instance.Instance-class.html#endElement,Method boto.ec2.instance.Reservation.endElement()=boto.ec2.instance.Reservation-class.html#endElement,Method boto.ec2.keypair.KeyPair.endElement()=boto.ec2.keypair.KeyPair-class.html#endElement,Method boto.ec2.regioninfo.RegionInfo.endElement()=boto.ec2.regioninfo.RegionInfo-class.html#endElement,Method boto.ec2.securitygroup.GroupOrCIDR.endElement()=boto.ec2.securitygroup.GroupOrCIDR-class.html#endElement,Method boto.ec2.securitygroup.IPPermissions.endElement()=boto.ec2.securitygroup.IPPermissions-class.html#endElement,Method boto.ec2.securitygroup.SecurityGroup.endElement()=boto.ec2.securitygroup.SecurityGroup-class.html#endElement,Method boto.ec2.snapshot.Snapshot.endElement()=boto.ec2.snapshot.Snapshot-class.html#endElement,Method boto.ec2.volume.Volume.endElement()=boto.ec2.volume.Volume-class.html#endElement,Method boto.ec2.zone.Zone.endElement()=boto.ec2.zone.Zone-class.html#endElement,Method boto.exception.BotoServerError.endElement()=boto.exception.BotoServerError-class.html#endElement,Method boto.exception.ConsoleOutput.endElement()=boto.exception.ConsoleOutput-class.html#endElement,Method boto.exception.EC2ResponseError.endElement()=boto.exception.EC2ResponseError-class.html#endElement,Method boto.exception.S3ResponseError.endElement()=boto.exception.S3ResponseError-class.html#endElement,Method boto.exception.SQSError.endElement()=boto.exception.SQSError-class.html#endElement,Method boto.exception._EC2Error.endElement()=boto.exception._EC2Error-class.html#endElement,Method boto.handler.XmlHandler.endElement()=boto.handler.XmlHandler-class.html#endElement,Method boto.mturk.connection.Assignment.endElement()=boto.mturk.connection.Assignment-class.html#endElement,Method boto.mturk.connection.BaseAutoResultElement.endElement()=boto.mturk.connection.BaseAutoResultElement-class.html#endElement,Method boto.mturk.price.Price.endElement()=boto.mturk.price.Price-class.html#endElement,Method boto.resultset.ResultSet.endElement()=boto.resultset.ResultSet-class.html#endElement,Method boto.s3.acl.ACL.endElement()=boto.s3.acl.ACL-class.html#endElement,Method boto.s3.acl.Grant.endElement()=boto.s3.acl.Grant-class.html#endElement,Method boto.s3.acl.Policy.endElement()=boto.s3.acl.Policy-class.html#endElement,Method boto.s3.bucket.Bucket.endElement()=boto.s3.bucket.Bucket-class.html#endElement,Method boto.s3.key.Key.endElement()=boto.s3.key.Key-class.html#endElement,Method boto.s3.prefix.Prefix.endElement()=boto.s3.prefix.Prefix-class.html#endElement,Method boto.s3.user.User.endElement()=boto.s3.user.User-class.html#endElement,Method boto.sdb.domain.Domain.endElement()=boto.sdb.domain.Domain-class.html#endElement,Method boto.sdb.domain.DomainMetaData.endElement()=boto.sdb.domain.DomainMetaData-class.html#endElement,Method boto.sdb.item.Item.endElement()=boto.sdb.item.Item-class.html#endElement,Method boto.sqs.20070501.attributes.Attributes.endElement()=boto.sqs.20070501.attributes.Attributes-class.html#endElement,Method boto.sqs.20070501.message.Message.endElement()=boto.sqs.20070501.message.Message-class.html#endElement,Method boto.sqs.20070501.message.RawMessage.endElement()=boto.sqs.20070501.message.RawMessage-class.html#endElement,Method boto.sqs.20070501.queue.Queue.endElement()=boto.sqs.20070501.queue.Queue-class.html#endElement,Method boto.sqs.attributes.Attributes.endElement()=boto.sqs.attributes.Attributes-class.html#endElement,Method boto.sqs.message.RawMessage.endElement()=boto.sqs.message.RawMessage-class.html#endElement,Method boto.sqs.queue.Queue.endElement()=boto.sqs.queue.Queue-class.html#endElement"><a title="boto.cloudfront.distribution.Distribution.endElement
+boto.cloudfront.distribution.DistributionConfig.endElement
+boto.cloudfront.distribution.DistributionSummary.endElement
+boto.ec2.address.Address.endElement
+boto.ec2.ec2object.EC2Object.endElement
+boto.ec2.image.Image.endElement
+boto.ec2.image.ImageAttribute.endElement
+boto.ec2.instance.ConsoleOutput.endElement
+boto.ec2.instance.Group.endElement
+boto.ec2.instance.Instance.endElement
+boto.ec2.instance.Reservation.endElement
+boto.ec2.keypair.KeyPair.endElement
+boto.ec2.regioninfo.RegionInfo.endElement
+boto.ec2.securitygroup.GroupOrCIDR.endElement
+boto.ec2.securitygroup.IPPermissions.endElement
+boto.ec2.securitygroup.SecurityGroup.endElement
+boto.ec2.snapshot.Snapshot.endElement
+boto.ec2.volume.Volume.endElement
+boto.ec2.zone.Zone.endElement
+boto.exception.BotoServerError.endElement
+boto.exception.ConsoleOutput.endElement
+boto.exception.EC2ResponseError.endElement
+boto.exception.S3ResponseError.endElement
+boto.exception.SQSError.endElement
+boto.exception._EC2Error.endElement
+boto.handler.XmlHandler.endElement
+boto.mturk.connection.Assignment.endElement
+boto.mturk.connection.BaseAutoResultElement.endElement
+boto.mturk.price.Price.endElement
+boto.resultset.ResultSet.endElement
+boto.s3.acl.ACL.endElement
+boto.s3.acl.Grant.endElement
+boto.s3.acl.Policy.endElement
+boto.s3.bucket.Bucket.endElement
+boto.s3.key.Key.endElement
+boto.s3.prefix.Prefix.endElement
+boto.s3.user.User.endElement
+boto.sdb.domain.Domain.endElement
+boto.sdb.domain.DomainMetaData.endElement
+boto.sdb.item.Item.endElement
+boto.sqs.20070501.attributes.Attributes.endElement
+boto.sqs.20070501.message.Message.endElement
+boto.sqs.20070501.message.RawMessage.endElement
+boto.sqs.20070501.queue.Queue.endElement
+boto.sqs.attributes.Attributes.endElement
+boto.sqs.message.RawMessage.endElement
+boto.sqs.queue.Queue.endElement" class="py-name" href="#" onclick="return doclink('link-7', 'endElement', 'link-7');">endElement</a></tt><tt class="py-op">(</tt><tt id="link-8" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-8', 'name', 'link-3');">name</a></tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">current_text</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-9" class="py-name"><a title="boto.connection
+boto.ec2.connection
+boto.fps.connection
+boto.mturk.connection
+boto.s3.connection
+boto.sdb.connection
+boto.sqs.20070501.connection
+boto.sqs.connection" class="py-name" href="#" onclick="return doclink('link-9', 'connection', 'link-0');">connection</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L39"></a><tt class="py-lineno">39</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">nodes</tt><tt class="py-op">[</tt><tt class="py-op">-</tt><tt class="py-number">1</tt><tt class="py-op">]</tt><tt class="py-op">[</tt><tt class="py-number">0</tt><tt class="py-op">]</tt> <tt class="py-op">==</tt> <tt id="link-10" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-10', 'name', 'link-3');">name</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L40"></a><tt class="py-lineno">40</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">nodes</tt><tt class="py-op">.</tt><tt class="py-name">pop</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L41"></a><tt class="py-lineno">41</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">current_text</tt> <tt class="py-op">=</tt> <tt class="py-string">''</tt> </tt>
+</div><a name="L42"></a><tt class="py-lineno">42</tt>  <tt class="py-line"> </tt>
+<a name="XmlHandler.characters"></a><div id="XmlHandler.characters-def"><a name="L43"></a><tt class="py-lineno">43</tt> <a class="py-toggle" href="#" id="XmlHandler.characters-toggle" onclick="return toggle('XmlHandler.characters');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.handler.XmlHandler-class.html#characters">characters</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">content</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="XmlHandler.characters-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="XmlHandler.characters-expanded"><a name="L44"></a><tt class="py-lineno">44</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">current_text</tt> <tt class="py-op">+=</tt> <tt class="py-name">content</tt> </tt>
+</div></div><a name="L45"></a><tt class="py-lineno">45</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="boto-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0beta1 on Fri Feb 20 11:45:19 2009
+    </td>
+    <td align="right" class="footer">
+      <a href="http://epydoc.sourceforge.net">http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie()
+  // -->
+</script>
+  
+</body>
+</html>

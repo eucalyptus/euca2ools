@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>boto.services.message</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="boto-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="boto-module.html">Package&nbsp;boto</a> ::
+        <a href="boto.services-module.html">Package&nbsp;services</a> ::
+        Module&nbsp;message
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="boto.services.message-pysrc.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="boto.services.message-module.html">Module boto.services.message</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno"> 1</tt>  <tt class="py-line"><tt class="py-comment"># Copyright (c) 2006,2007 Mitch Garnaat http://garnaat.org/</tt> </tt>
+<a name="L2"></a><tt class="py-lineno"> 2</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment">#</tt> </tt>
+<a name="L3"></a><tt class="py-lineno"> 3</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># Permission is hereby granted, free of charge, to any person obtaining a</tt> </tt>
+<a name="L4"></a><tt class="py-lineno"> 4</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># copy of this software and associated documentation files (the</tt> </tt>
+<a name="L5"></a><tt class="py-lineno"> 5</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># "Software"), to deal in the Software without restriction, including</tt> </tt>
+<a name="L6"></a><tt class="py-lineno"> 6</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># without limitation the rights to use, copy, modify, merge, publish, dis-</tt> </tt>
+<a name="L7"></a><tt class="py-lineno"> 7</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># tribute, sublicense, and/or sell copies of the Software, and to permit</tt> </tt>
+<a name="L8"></a><tt class="py-lineno"> 8</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># persons to whom the Software is furnished to do so, subject to the fol-</tt> </tt>
+<a name="L9"></a><tt class="py-lineno"> 9</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># lowing conditions:</tt> </tt>
+<a name="L10"></a><tt class="py-lineno">10</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment">#</tt> </tt>
+<a name="L11"></a><tt class="py-lineno">11</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># The above copyright notice and this permission notice shall be included</tt> </tt>
+<a name="L12"></a><tt class="py-lineno">12</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># in all copies or substantial portions of the Software.</tt> </tt>
+<a name="L13"></a><tt class="py-lineno">13</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment">#</tt> </tt>
+<a name="L14"></a><tt class="py-lineno">14</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS</tt> </tt>
+<a name="L15"></a><tt class="py-lineno">15</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABIL-</tt> </tt>
+<a name="L16"></a><tt class="py-lineno">16</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># ITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT</tt> </tt>
+<a name="L17"></a><tt class="py-lineno">17</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># SHALL THE AUTHOR BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, </tt> </tt>
+<a name="L18"></a><tt class="py-lineno">18</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</tt> </tt>
+<a name="L19"></a><tt class="py-lineno">19</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS</tt> </tt>
+<a name="L20"></a><tt class="py-lineno">20</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># IN THE SOFTWARE.</tt> </tt>
+<a name="L21"></a><tt class="py-lineno">21</tt>  <tt class="py-line"><tt class="py-comment"></tt> </tt>
+<a name="L22"></a><tt class="py-lineno">22</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt id="link-0" class="py-name" targets="Package boto=boto-module.html"><a title="boto" class="py-name" href="#" onclick="return doclink('link-0', 'boto', 'link-0');">boto</a></tt> </tt>
+<a name="L23"></a><tt class="py-lineno">23</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-1" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-1', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-2" class="py-name" targets="Package boto.sqs=boto.sqs-module.html"><a title="boto.sqs" class="py-name" href="#" onclick="return doclink('link-2', 'sqs', 'link-2');">sqs</a></tt><tt class="py-op">.</tt><tt id="link-3" class="py-name" targets="Module boto.services.message=boto.services.message-module.html,Module boto.sqs.20070501.message=boto.sqs.20070501.message-module.html,Module boto.sqs.message=boto.sqs.message-module.html"><a title="boto.services.message
+boto.sqs.20070501.message
+boto.sqs.message" class="py-name" href="#" onclick="return doclink('link-3', 'message', 'link-3');">message</a></tt> <tt class="py-keyword">import</tt> <tt id="link-4" class="py-name" targets="Class boto.sqs.20070501.message.MHMessage=boto.sqs.20070501.message.MHMessage-class.html,Class boto.sqs.message.MHMessage=boto.sqs.message.MHMessage-class.html"><a title="boto.sqs.20070501.message.MHMessage
+boto.sqs.message.MHMessage" class="py-name" href="#" onclick="return doclink('link-4', 'MHMessage', 'link-4');">MHMessage</a></tt> </tt>
+<a name="L24"></a><tt class="py-lineno">24</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-5" class="py-name"><a title="boto" class="py-name" href="#" onclick="return doclink('link-5', 'boto', 'link-0');">boto</a></tt><tt class="py-op">.</tt><tt id="link-6" class="py-name" targets="Module boto.utils=boto.utils-module.html"><a title="boto.utils" class="py-name" href="#" onclick="return doclink('link-6', 'utils', 'link-6');">utils</a></tt> <tt class="py-keyword">import</tt> <tt class="py-name">get_ts</tt> </tt>
+<a name="L25"></a><tt class="py-lineno">25</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-name">socket</tt> <tt class="py-keyword">import</tt> <tt class="py-name">gethostname</tt> </tt>
+<a name="L26"></a><tt class="py-lineno">26</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">os</tt><tt class="py-op">,</tt> <tt class="py-name">mimetypes</tt><tt class="py-op">,</tt> <tt class="py-name">time</tt> </tt>
+<a name="L27"></a><tt class="py-lineno">27</tt>  <tt class="py-line"> </tt>
+<a name="ServiceMessage"></a><div id="ServiceMessage-def"><a name="L28"></a><tt class="py-lineno">28</tt> <a class="py-toggle" href="#" id="ServiceMessage-toggle" onclick="return toggle('ServiceMessage');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="boto.services.message.ServiceMessage-class.html">ServiceMessage</a><tt class="py-op">(</tt><tt class="py-base-class">MHMessage</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ServiceMessage-collapsed" style="display:none;" pad="++" indent="++++"></div><div id="ServiceMessage-expanded"><a name="L29"></a><tt class="py-lineno">29</tt>  <tt class="py-line"> </tt>
+<a name="ServiceMessage.for_key"></a><div id="ServiceMessage.for_key-def"><a name="L30"></a><tt class="py-lineno">30</tt> <a class="py-toggle" href="#" id="ServiceMessage.for_key-toggle" onclick="return toggle('ServiceMessage.for_key');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="boto.services.message.ServiceMessage-class.html#for_key">for_key</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">key</tt><tt class="py-op">,</tt> <tt class="py-param">params</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-param">bucket_name</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ServiceMessage.for_key-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="ServiceMessage.for_key-expanded"><a name="L31"></a><tt class="py-lineno">31</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">params</tt><tt class="py-op">:</tt> </tt>
+<a name="L32"></a><tt class="py-lineno">32</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-7" class="py-name" targets="Method boto.cloudfront.distribution.Distribution.update()=boto.cloudfront.distribution.Distribution-class.html#update,Method boto.ec2.instance.Instance.update()=boto.ec2.instance.Instance-class.html#update,Method boto.ec2.snapshot.Snapshot.update()=boto.ec2.snapshot.Snapshot-class.html#update,Method boto.sqs.20070501.message.MHMessage.update()=boto.sqs.20070501.message.MHMessage-class.html#update,Method boto.sqs.message.MHMessage.update()=boto.sqs.message.MHMessage-class.html#update"><a title="boto.cloudfront.distribution.Distribution.update
+boto.ec2.instance.Instance.update
+boto.ec2.snapshot.Snapshot.update
+boto.sqs.20070501.message.MHMessage.update
+boto.sqs.message.MHMessage.update" class="py-name" href="#" onclick="return doclink('link-7', 'update', 'link-7');">update</a></tt><tt class="py-op">(</tt><tt class="py-name">params</tt><tt class="py-op">)</tt> </tt>
+<a name="L33"></a><tt class="py-lineno">33</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt id="link-8" class="py-name" targets="Module boto.s3.key=boto.s3.key-module.html,Module boto.sdb.db.key=boto.sdb.db.key-module.html,Method boto.sdb.db.model.Model.key()=boto.sdb.db.model.Model-class.html#key,Method boto.sdb.db.model.Model.key()=boto.sdb.db.model.Model-class.html#key"><a title="boto.s3.key
+boto.sdb.db.key
+boto.sdb.db.model.Model.key
+boto.sdb.db.model.Model.key" class="py-name" href="#" onclick="return doclink('link-8', 'key', 'link-8');">key</a></tt><tt class="py-op">.</tt><tt class="py-name">path</tt><tt class="py-op">:</tt> </tt>
+<a name="L34"></a><tt class="py-lineno">34</tt>  <tt class="py-line">            <tt class="py-name">t</tt> <tt class="py-op">=</tt> <tt class="py-name">os</tt><tt class="py-op">.</tt><tt class="py-name">path</tt><tt class="py-op">.</tt><tt class="py-name">split</tt><tt class="py-op">(</tt><tt id="link-9" class="py-name"><a title="boto.s3.key
+boto.sdb.db.key
+boto.sdb.db.model.Model.key
+boto.sdb.db.model.Model.key" class="py-name" href="#" onclick="return doclink('link-9', 'key', 'link-8');">key</a></tt><tt class="py-op">.</tt><tt class="py-name">path</tt><tt class="py-op">)</tt> </tt>
+<a name="L35"></a><tt class="py-lineno">35</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">[</tt><tt class="py-string">'OriginalLocation'</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">t</tt><tt class="py-op">[</tt><tt class="py-number">0</tt><tt class="py-op">]</tt> </tt>
+<a name="L36"></a><tt class="py-lineno">36</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">[</tt><tt class="py-string">'OriginalFileName'</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">t</tt><tt class="py-op">[</tt><tt class="py-number">1</tt><tt class="py-op">]</tt> </tt>
+<a name="L37"></a><tt class="py-lineno">37</tt>  <tt class="py-line">            <tt class="py-name">mime_type</tt> <tt class="py-op">=</tt> <tt class="py-name">mimetypes</tt><tt class="py-op">.</tt><tt class="py-name">guess_type</tt><tt class="py-op">(</tt><tt class="py-name">t</tt><tt class="py-op">[</tt><tt class="py-number">1</tt><tt class="py-op">]</tt><tt class="py-op">)</tt><tt class="py-op">[</tt><tt class="py-number">0</tt><tt class="py-op">]</tt> </tt>
+<a name="L38"></a><tt class="py-lineno">38</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-name">mime_type</tt> <tt class="py-op">==</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L39"></a><tt class="py-lineno">39</tt>  <tt class="py-line">                <tt class="py-name">mime_type</tt> <tt class="py-op">=</tt> <tt class="py-string">'application/octet-stream'</tt> </tt>
+<a name="L40"></a><tt class="py-lineno">40</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">[</tt><tt class="py-string">'Content-Type'</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">mime_type</tt> </tt>
+<a name="L41"></a><tt class="py-lineno">41</tt>  <tt class="py-line">            <tt class="py-name">s</tt> <tt class="py-op">=</tt> <tt class="py-name">os</tt><tt class="py-op">.</tt><tt class="py-name">stat</tt><tt class="py-op">(</tt><tt id="link-10" class="py-name"><a title="boto.s3.key
+boto.sdb.db.key
+boto.sdb.db.model.Model.key
+boto.sdb.db.model.Model.key" class="py-name" href="#" onclick="return doclink('link-10', 'key', 'link-8');">key</a></tt><tt class="py-op">.</tt><tt class="py-name">path</tt><tt class="py-op">)</tt> </tt>
+<a name="L42"></a><tt class="py-lineno">42</tt>  <tt class="py-line">            <tt class="py-name">t</tt> <tt class="py-op">=</tt> <tt class="py-name">time</tt><tt class="py-op">.</tt><tt class="py-name">gmtime</tt><tt class="py-op">(</tt><tt class="py-name">s</tt><tt class="py-op">[</tt><tt class="py-number">7</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L43"></a><tt class="py-lineno">43</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">[</tt><tt class="py-string">'FileAccessedDate'</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">get_ts</tt><tt class="py-op">(</tt><tt class="py-name">t</tt><tt class="py-op">)</tt> </tt>
+<a name="L44"></a><tt class="py-lineno">44</tt>  <tt class="py-line">            <tt class="py-name">t</tt> <tt class="py-op">=</tt> <tt class="py-name">time</tt><tt class="py-op">.</tt><tt class="py-name">gmtime</tt><tt class="py-op">(</tt><tt class="py-name">s</tt><tt class="py-op">[</tt><tt class="py-number">8</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L45"></a><tt class="py-lineno">45</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">[</tt><tt class="py-string">'FileModifiedDate'</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">get_ts</tt><tt class="py-op">(</tt><tt class="py-name">t</tt><tt class="py-op">)</tt> </tt>
+<a name="L46"></a><tt class="py-lineno">46</tt>  <tt class="py-line">            <tt class="py-name">t</tt> <tt class="py-op">=</tt> <tt class="py-name">time</tt><tt class="py-op">.</tt><tt class="py-name">gmtime</tt><tt class="py-op">(</tt><tt class="py-name">s</tt><tt class="py-op">[</tt><tt class="py-number">9</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L47"></a><tt class="py-lineno">47</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">[</tt><tt class="py-string">'FileCreateDate'</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">get_ts</tt><tt class="py-op">(</tt><tt class="py-name">t</tt><tt class="py-op">)</tt> </tt>
+<a name="L48"></a><tt class="py-lineno">48</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L49"></a><tt class="py-lineno">49</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">[</tt><tt class="py-string">'OriginalFileName'</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt id="link-11" class="py-name"><a title="boto.s3.key
+boto.sdb.db.key
+boto.sdb.db.model.Model.key
+boto.sdb.db.model.Model.key" class="py-name" href="#" onclick="return doclink('link-11', 'key', 'link-8');">key</a></tt><tt class="py-op">.</tt><tt id="link-12" class="py-name" targets="Variable boto.mapreduce.partitiondb.Partition.name=boto.mapreduce.partitiondb.Partition-class.html#name,Variable boto.mapreduce.partitiondb.PartitionDB.name=boto.mapreduce.partitiondb.PartitionDB-class.html#name,Variable boto.mapreduce.partitiondb.Version.name=boto.mapreduce.partitiondb.Version-class.html#name,Variable boto.mashups.server.Server.name=boto.mashups.server.Server-class.html#name,Method boto.sdb.db.key.Key.name()=boto.sdb.db.key.Key-class.html#name,Variable boto.sdb.db.property.Property.name=boto.sdb.db.property.Property-class.html#name,Variable boto.sdb.db.test_db.TestBasic.name=boto.sdb.db.test_db.TestBasic-class.html#name,Variable boto.sdb.db.test_db.TestList.name=boto.sdb.db.test_db.TestList-class.html#name,Variable boto.sdb.db.test_db.TestListReference.name=boto.sdb.db.test_db.TestListReference-class.html#name,Variable boto.sdb.db.test_db.TestUnique.name=boto.sdb.db.test_db.TestUnique-class.html#name,Variable boto.sdb.persist.test_persist.TestRef.name=boto.sdb.persist.test_persist.TestRef-class.html#name,Variable boto.sdb.persist.test_persist.TestScalar.name=boto.sdb.persist.test_persist.TestScalar-class.html#name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-12', 'name', 'link-12');">name</a></tt> </tt>
+<a name="L50"></a><tt class="py-lineno">50</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">[</tt><tt class="py-string">'OriginalLocation'</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt id="link-13" class="py-name"><a title="boto.s3.key
+boto.sdb.db.key
+boto.sdb.db.model.Model.key
+boto.sdb.db.model.Model.key" class="py-name" href="#" onclick="return doclink('link-13', 'key', 'link-8');">key</a></tt><tt class="py-op">.</tt><tt id="link-14" class="py-name" targets="Module boto.s3.bucket=boto.s3.bucket-module.html"><a title="boto.s3.bucket" class="py-name" href="#" onclick="return doclink('link-14', 'bucket', 'link-14');">bucket</a></tt><tt class="py-op">.</tt><tt id="link-15" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-15', 'name', 'link-12');">name</a></tt> </tt>
+<a name="L51"></a><tt class="py-lineno">51</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">[</tt><tt class="py-string">'ContentType'</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt id="link-16" class="py-name"><a title="boto.s3.key
+boto.sdb.db.key
+boto.sdb.db.model.Model.key
+boto.sdb.db.model.Model.key" class="py-name" href="#" onclick="return doclink('link-16', 'key', 'link-8');">key</a></tt><tt class="py-op">.</tt><tt class="py-name">content_type</tt> </tt>
+<a name="L52"></a><tt class="py-lineno">52</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">[</tt><tt class="py-string">'Host'</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">gethostname</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L53"></a><tt class="py-lineno">53</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt id="link-17" class="py-name" targets="Variable boto.mapreduce.partitiondb.PartitionDB.bucket_name=boto.mapreduce.partitiondb.PartitionDB-class.html#bucket_name"><a title="boto.mapreduce.partitiondb.PartitionDB.bucket_name" class="py-name" href="#" onclick="return doclink('link-17', 'bucket_name', 'link-17');">bucket_name</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L54"></a><tt class="py-lineno">54</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">[</tt><tt class="py-string">'Bucket'</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt id="link-18" class="py-name"><a title="boto.mapreduce.partitiondb.PartitionDB.bucket_name" class="py-name" href="#" onclick="return doclink('link-18', 'bucket_name', 'link-17');">bucket_name</a></tt> </tt>
+<a name="L55"></a><tt class="py-lineno">55</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L56"></a><tt class="py-lineno">56</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">[</tt><tt class="py-string">'Bucket'</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt id="link-19" class="py-name"><a title="boto.s3.key
+boto.sdb.db.key
+boto.sdb.db.model.Model.key
+boto.sdb.db.model.Model.key" class="py-name" href="#" onclick="return doclink('link-19', 'key', 'link-8');">key</a></tt><tt class="py-op">.</tt><tt id="link-20" class="py-name"><a title="boto.s3.bucket" class="py-name" href="#" onclick="return doclink('link-20', 'bucket', 'link-14');">bucket</a></tt><tt class="py-op">.</tt><tt id="link-21" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-21', 'name', 'link-12');">name</a></tt> </tt>
+<a name="L57"></a><tt class="py-lineno">57</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">[</tt><tt class="py-string">'InputKey'</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt id="link-22" class="py-name"><a title="boto.s3.key
+boto.sdb.db.key
+boto.sdb.db.model.Model.key
+boto.sdb.db.model.Model.key" class="py-name" href="#" onclick="return doclink('link-22', 'key', 'link-8');">key</a></tt><tt class="py-op">.</tt><tt id="link-23" class="py-name"><a title="boto.mapreduce.partitiondb.Partition.name
+boto.mapreduce.partitiondb.PartitionDB.name
+boto.mapreduce.partitiondb.Version.name
+boto.mashups.server.Server.name
+boto.sdb.db.key.Key.name
+boto.sdb.db.property.Property.name
+boto.sdb.db.test_db.TestBasic.name
+boto.sdb.db.test_db.TestList.name
+boto.sdb.db.test_db.TestListReference.name
+boto.sdb.db.test_db.TestUnique.name
+boto.sdb.persist.test_persist.TestRef.name
+boto.sdb.persist.test_persist.TestScalar.name" class="py-name" href="#" onclick="return doclink('link-23', 'name', 'link-12');">name</a></tt> </tt>
+<a name="L58"></a><tt class="py-lineno">58</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">[</tt><tt class="py-string">'Size'</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt id="link-24" class="py-name"><a title="boto.s3.key
+boto.sdb.db.key
+boto.sdb.db.model.Model.key
+boto.sdb.db.model.Model.key" class="py-name" href="#" onclick="return doclink('link-24', 'key', 'link-8');">key</a></tt><tt class="py-op">.</tt><tt id="link-25" class="py-name" targets="Variable boto.sdb.db.test_db.TestBasic.size=boto.sdb.db.test_db.TestBasic-class.html#size,Variable boto.sdb.persist.test_persist.TestScalar.size=boto.sdb.persist.test_persist.TestScalar-class.html#size"><a title="boto.sdb.db.test_db.TestBasic.size
+boto.sdb.persist.test_persist.TestScalar.size" class="py-name" href="#" onclick="return doclink('link-25', 'size', 'link-25');">size</a></tt> </tt>
+</div></div><a name="L59"></a><tt class="py-lineno">59</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="boto-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0beta1 on Fri Feb 20 11:45:22 2009
+    </td>
+    <td align="right" class="footer">
+      <a href="http://epydoc.sourceforge.net">http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie()
+  // -->
+</script>
+  
+</body>
+</html>
