@@ -1,5 +1,37 @@
 #!/usr/bin/env python
 
+# Software License Agreement (BSD License)
+#
+# Copyright (c) 2008, Regents of the University of California
+# All rights reserved.
+#
+# Redistribution and use of this software in source and binary forms, with or
+# without modification, are permitted provided that the following conditions
+# are met:
+#
+#   Redistributions of source code must retain the above
+#   copyright notice, this list of conditions and the
+#   following disclaimer.
+#
+#   Redistributions in binary form must reproduce the above
+#   copyright notice, this list of conditions and the
+#   following disclaimer in the documentation and/or other
+#   materials provided with the distribution.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+# ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+# LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE.
+#
+# Author: Sunil Soman sunils@cs.ucsb.edu
+
 import getopt, sys, os
 
 usage_string = """
@@ -27,13 +59,99 @@ USAGE
 	target_architecture - Target architecture ['x86_64' or 'i386'].
 	-b, --batch - Run in non-interactive mode.
 """
+
+version_string = """    euca-bundle-image version: 1.0 (BSD)"""
+
 def usage():
     print usage_string
     sys.exit()
-  
-def main():
-    print usage()
 
+def version():
+    print version_string
+    sys.exit()
+
+def tar_image(): 
+    print 'tarring image'
+
+def zip_image():
+    print 'zipping image'
+ 
+def encrypt_image():
+    print 'encrypting image'
+
+def split_image(): 
+    print 'splitting image'  
+
+def generate_manifest():
+    print 'generating manifest'
+
+def main():
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], 'i:c:k:u:hB:d:br:',
+                                   ['image', 'cert', 'privatekey', 'user', 'help',
+                                    'kernel', 'ramdisk', 'block-device-mapping', 'destination', 'ec2cert', 'arch', 'batch', 'version', 'debug'])
+    except:
+	print 'except'
+        usage()
+  
+    debug=False 
+    image_path=None
+    kernel=None
+    user=None
+    ramdisk=None
+    cert_path=None
+    private_key_path=None
+    prefix=None
+    destination_path=None
+    ec2cert_path=None
+    target_arch=None
+    batch=False
+    
+    for name, value in opts:
+        if name in ('-h', '--help'):
+            usage()
+        if name in ('-i', '--image'):
+            image_path = value
+        if name in ('-c', '--cert'):
+            cert_path = value
+        if name in ('-k', '--privatekey'):
+            private_key_path = value
+        if name in ('-u', '--user'):
+            user = value
+        if name in ('--kernel'):
+            kernel = value
+        if name in ('--ramdisk'):
+            ramdisk = value
+        if name in ('-p', '--prefix'):
+            prefix = value
+        if name in ('-d', '--destination'):
+            destination_path = value
+        if name in ('--ec2cert'):
+            ec2cert_path = value
+        if name in ('-r', '--arch'):
+            target_arch = value
+	    print target_arch
+	    if target_arch != 'i386' and target_arch != 'x86_64':
+		print 'target architecture must be i386 or x86_64'
+		usage()
+	if name in ('--batch'):
+	    batch = True
+	if name in ('--version'):
+	    version()
+	if name in ('--debug'):
+	    debug = True
+
+    if image_path and cert_path and private_key_path and user:
+   	print 'running command'
+	tar_image()
+	zip_image()
+	encrypt_image()
+	split_image()
+	generate_manifest()
+    else:
+	print 'image, cert, privatekey and user MUST be specified.'
+	usage()
 if __name__ == "__main__":
     main()
-        
+       
+
