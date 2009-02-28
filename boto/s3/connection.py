@@ -297,12 +297,13 @@ class S3Connection(AWSAuthConnection):
             key = key.name
         path = self.calling_format.build_path_base(bucket, key)
 	if self.service:
-	    path = '%s/%s' % (self.service, path)
+	    path = '%s%s' % (self.service, path)
         auth_path = self.calling_format.build_auth_path(bucket, key)
 	if virtual_hosting:
             host = self.calling_format.build_host(self.server, bucket)
 	else:
 	    host = self.server
+	    path = '%s%s' % (path, bucket)
         if query_args:
             path += '?' + query_args
             auth_path += '?' + query_args

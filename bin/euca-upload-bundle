@@ -1,0 +1,181 @@
+#!/usr/bin/env python
+
+# Software License Agreement (BSD License)
+#
+# Copyright (c) 2008, Regents of the University of California
+# All rights reserved.
+#
+# Redistribution and use of this software in source and binary forms, with or
+# without modification, are permitted provided that the following conditions
+# are met:
+#
+#   Redistributions of source code must retain the above
+#   copyright notice, this list of conditions and the
+#   following disclaimer.
+#
+#   Redistributions in binary form must reproduce the above
+#   copyright notice, this list of conditions and the
+#   following disclaimer in the documentation and/or other
+#   materials provided with the distribution.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+# ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+# LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE.
+#
+# Author: Sunil Soman sunils@cs.ucsb.edu
+
+import getopt, sys, os
+from xml.dom import minidom
+import boto
+from boto.exception import S3ResponseError
+from boto.s3 import Connection
+
+usage_string = """
+USAGE
+    euca-upload-bundle -b, --bucket bucket -m, --manifest manifest_path -a, --access-key access_key_id 
+	  -s, --secret-key secret_key
+	  [--acl canned_acl] [--ec2cert ec2cert_path] [-d, --directory bundle_path] [--debug]
+	  [--part part] [--url url] [--retry] [--skipmanifest] [--ssl] [-h, --help]
+	  [--version]
+
+    Where
+        bucket - The name of the bucket to upload to. Bucket will be created if it does not exist.
+	manifest_path - The path to the manifest file.
+	access_key_id - The user's AWS access key or Query ID.
+	secret_key - The user's secret key.
+
+	cannel_acl - Canned access control policy (defaults to "aws-exec-read").
+	ec2cert_path - The path to the Cloud's X509 public key certificate.
+	bundle_path - The directory containing the bundled image to upload (default to the directory containing the manifest).
+	part - Uploads specified part and all subsequent parts.
+	url - URL for the service (defaults to http://localhost:8773/services/Walrus).
+	--retry - Retry if failed.
+	--skipmanifest - Do not upload the manifest file.
+	--ssl - Use secure http
+	-h, --help - Display this help message.
+"""
+
+version_string = """    euca-upload-bundle version: 1.0 (BSD)"""
+
+def usage():
+    print usage_string
+    sys.exit()
+
+def version():
+    print version_string
+    sys.exit()
+
+def create_bucket(connection, bucket):
+    print 'creating bucket:', bucket
+    connection.create_bucket(bucket)
+
+def ensure_bucket(connection, bucket):
+    print 'ensuring bucket'
+    create_bucket(connection, bucket) 
+ 
+def get_parts(manifest_filename):
+    parts = []
+    dom = minidom.parse(manifest_filename) 
+    manifest_elem = dom.getElementsByTagName('manifest')[0]
+    parts_list = manifest_elem.getElementsByTagName('part')
+    for part_elem in parts_list:
+	nodes = part_elem.childNodes
+	for node in nodes:
+            if node.nodeType == node.TEXT_NODE:
+                parts.append(node.data)
+    return parts
+
+def upload_manifest(connection, manifest_filename):
+    print 'uploading manifest file'
+
+def upload_parts(connection, bucket, parts):
+    print 'uploading parts'
+    for part in parts:
+        print 'part:', part
+
+def main():
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], 'b:m:a:s:hd:',
+                                   ['bucket=', 'manifest=', 'access-key=', 'secret-key=', 'help',
+                                    'acl=', 'ec2cert=', 'directory=', 'part=', 'url=', 'retry', 'skipmanifest', 'version', 'debug', 'ssl'])
+    except:
+        usage()
+ 
+    bucket=None
+    manifest_path = None
+    access_key = None
+    secret_key = None
+    ec2cert_path = None
+    directory = None
+    part = None
+    canned_acl = None
+    url = 'http://localhost:8773/services/Walrus'
+    retry = False
+    skipmanifest = False
+    debug = False
+    ssl = False
+
+    for name, value in opts:
+        if name in ('-h', '--help'):
+            usage()
+        if name in ('-b', '--bucket'):
+            bucket = value
+        if name in ('-m', '--manifest'):
+            manifest_path = value
+        if name in ('-a', '--access-key'):
+            access_key = value
+	    print 'access_key:', access_key
+        if name in ('-s', '--secret-key'):
+            secret_key = value
+        if name in ('--ec2cert'):
+            ec2cert_path = value
+        if name in ('--acl'):
+            canned_acl = value
+        if name in ('-d', '--directory'):
+            directory = value
+        if name in ('--part'):
+            part = value
+        if name in ('--url'):
+            url = value
+	if name in ('--retry'):
+	    retry = True
+	if name in ('--skipmanifest'):
+	    skipmanifest = True
+	if name in ('--version'):
+	    version()
+	if name in ('--debug'):
+	    debug = True
+	if name in ('--ssl'):
+	    ssl = True
+    host = 'localhost'
+    port = 8773
+
+    print 'bucket:', bucket, 'manifest_path:', manifest_path, 'access_key:', access_key, 'secret_key:', secret_key
+    if bucket and manifest_path and access_key and secret_key:
+        conn = Connection(aws_access_key_id=access_key,
+                            aws_secret_access_key=secret_key,
+                            is_secure=ssl,
+                            host=host,
+                            port=port,
+                            service='/services/Walrus')
+
+	ensure_bucket(conn, bucket)
+	parts = get_parts(manifest_path)
+	if not skipmanifest:
+	    upload_manifest(conn, manifest_path)
+	upload_parts(conn, bucket, parts)
+    else:
+	print 'bucket, manifest, access-key and secret-key MUST be specified.'	
+        usage()
+
+if __name__ == "__main__":
+    main()
+ 

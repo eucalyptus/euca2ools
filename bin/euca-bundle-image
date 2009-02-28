@@ -201,7 +201,6 @@ def main():
                                    ['image=', 'cert=', 'privatekey=', 'user=', 'help',
                                     'kernel=', 'ramdisk=', 'block-device-mapping=', 'destination=', 'ec2cert=', 'arch=', 'batch', 'version', 'debug'])
     except:
-	print 'except'
         usage()
   
     debug=False 
