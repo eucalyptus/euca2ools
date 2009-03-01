@@ -41,7 +41,7 @@ class Key:
 
     def __init__(self, bucket=None, name=None):
         self.bucket = bucket
-        self.name = name
+	self.name = name
         self.metadata = {}
         self.content_type = self.DefaultContentType
         self.content_encoding = None
@@ -339,7 +339,7 @@ class Key:
                 return response
             elif response.status >= 200 and response.status <= 299:
                 self.etag = response.getheader('etag')
-                if self.etag != '"%s"'  % self.md5:
+                if self.etag != '%s'  % self.md5:
                     raise S3DataError('ETag from S3 did not match computed MD5')
                 return response
             else:
@@ -350,7 +350,8 @@ class Key:
         else:
             headers = headers.copy()
         headers['User-Agent'] = UserAgent
-        headers['Content-MD5'] = self.base64md5
+	if self.base64md5:
+            headers['Content-MD5'] = self.base64md5
         if headers.has_key('Content-Type'):
             self.content_type = headers['Content-Type']
         elif self.path:
@@ -360,7 +361,8 @@ class Key:
             headers['Content-Type'] = self.content_type
         else:
             headers['Content-Type'] = self.content_type
-        headers['Content-Length'] = self.size
+	if self.size:
+            headers['Content-Length'] = self.size
         headers['Expect'] = '100-Continue'
         headers = boto.utils.merge_meta(headers, self.metadata)
         return self.bucket.connection.make_request('PUT', self.bucket.name,

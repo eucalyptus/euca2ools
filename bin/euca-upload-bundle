@@ -37,6 +37,7 @@ from xml.dom import minidom
 import boto
 from boto.exception import S3ResponseError
 from boto.s3 import Connection
+from boto.s3.key import Key
 
 usage_string = """
 USAGE
@@ -75,11 +76,11 @@ def version():
 
 def create_bucket(connection, bucket):
     print 'creating bucket:', bucket
-    connection.create_bucket(bucket)
+    return connection.create_bucket(bucket)
 
 def ensure_bucket(connection, bucket):
     print 'ensuring bucket'
-    create_bucket(connection, bucket) 
+    return create_bucket(connection, bucket) 
  
 def get_parts(manifest_filename):
     parts = []
@@ -93,19 +94,27 @@ def get_parts(manifest_filename):
                 parts.append(node.data)
     return parts
 
-def upload_manifest(connection, manifest_filename):
+def upload_manifest(bucket_instance, manifest_filename):
     print 'uploading manifest file'
+    k = Key(bucket_instance)
+    k.key = manifest_filename
+    manifest_file = open(manifest_filename, "rb")
+    k.set_contents_from_file(manifest_file)
 
-def upload_parts(connection, bucket, parts):
+def upload_parts(bucket_instance, parts):
     print 'uploading parts'
     for part in parts:
         print 'part:', part
+        k = Key(bucket_instance)
+        k.key = part
+        part_file = open(part, "rb")
+        k.set_contents_from_file(part_file)
 
 def main():
     try:
-        opts, args = getopt.getopt(sys.argv[1:], 'b:m:a:s:hd:',
+        opts, args = getopt.getopt(sys.argv[1:], 'b:m:a:s:hSd:',
                                    ['bucket=', 'manifest=', 'access-key=', 'secret-key=', 'help',
-                                    'acl=', 'ec2cert=', 'directory=', 'part=', 'url=', 'retry', 'skipmanifest', 'version', 'debug', 'ssl'])
+                                    'acl=', 'ec2cert=', 'directory=', 'part=', 'url=', 'retry', 'skipmanifest', 'version', 'debug'])
     except:
         usage()
  
@@ -132,7 +141,6 @@ def main():
             manifest_path = value
         if name in ('-a', '--access-key'):
             access_key = value
-	    print 'access_key:', access_key
         if name in ('-s', '--secret-key'):
             secret_key = value
         if name in ('--ec2cert'):
@@ -153,12 +161,12 @@ def main():
 	    version()
 	if name in ('--debug'):
 	    debug = True
-	if name in ('--ssl'):
+	if name in ('-S'):
 	    ssl = True
     host = 'localhost'
     port = 8773
 
-    print 'bucket:', bucket, 'manifest_path:', manifest_path, 'access_key:', access_key, 'secret_key:', secret_key
+    skipmanifest = False
     if bucket and manifest_path and access_key and secret_key:
         conn = Connection(aws_access_key_id=access_key,
                             aws_secret_access_key=secret_key,
@@ -167,11 +175,13 @@ def main():
                             port=port,
                             service='/services/Walrus')
 
-	ensure_bucket(conn, bucket)
+	print 'checking bucket'
+	bucket_instance = conn.get_bucket(bucket)
+	#bucket_instance = ensure_bucket(conn, bucket)
 	parts = get_parts(manifest_path)
 	if not skipmanifest:
-	    upload_manifest(conn, manifest_path)
-	upload_parts(conn, bucket, parts)
+	    upload_manifest(bucket_instance, manifest_path)
+	upload_parts(bucket_instance, parts)
     else:
 	print 'bucket, manifest, access-key and secret-key MUST be specified.'	
         usage()

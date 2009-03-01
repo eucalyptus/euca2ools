@@ -100,7 +100,6 @@ class AWSAuthConnection:
         @param port: The port to use to connect
         """
       
-	print 'HOST', server 
         self.num_retries = 0 
         self.is_secure = is_secure
         self.handle_proxy(proxy, proxy_port, proxy_user, proxy_pass)
@@ -218,7 +217,6 @@ class AWSAuthConnection:
         else:
 	    if self.port:
 		host = '%s:%d' % (host, int(self.port))
-	    print 'trying connection to', host, ' secure', is_secure
             connection = httplib.HTTPConnection(host)
         if self.debug > 1:
             connection.set_debuglevel(self.debug)
@@ -266,7 +264,6 @@ class AWSAuthConnection:
                 if callable(sender):
                     response = sender(connection, method, path, data, headers)
                 else:
-		    print 'host: ', host, ' request: method: ', method, ' path: ', path, ' data: ', data, ' headers: ', headers
                     connection.request(method, path, data, headers)
                     response = connection.getresponse()
                 location = response.getheader('location')
@@ -316,8 +313,8 @@ class AWSAuthConnection:
             raise BotoClientError('Please report this exception as a Boto Issue!')
 
     def make_request(self, method, path, headers=None, data='', host=None,
-            auth_path=None, sender=None):
-        if headers == None:
+            auth_path=None, sender=None, virtual_hosting=False):
+	if headers == None:
             headers = {'User-Agent' : UserAgent}
         else:
             headers = headers.copy()
@@ -327,7 +324,10 @@ class AWSAuthConnection:
             path = self.prefix_proxy_to_path(path, host)
             if self.proxy_user and self.proxy_pass:
                 headers.update(self.get_proxy_auth_header())
-        self.add_aws_auth_header(headers, method, auth_path or path)
+	request_string = path
+	if virtual_hosting:
+	   request_string = auth_path 
+	self.add_aws_auth_header(headers, method, request_string)
         return self._mexe(method, path, data, headers, host, sender)
 
     def add_aws_auth_header(self, headers, method, path):
@@ -336,7 +336,7 @@ class AWSAuthConnection:
                                             time.gmtime())
 
         c_string = boto.utils.canonical_string(method, path, headers)
-        boto.log.debug('Canonical: %s' % c_string)
+	boto.log.debug('Canonical: %s' % c_string)
         hmac = self.hmac.copy()
         hmac.update(c_string)
         b64_hmac = base64.encodestring(hmac.digest()).strip()

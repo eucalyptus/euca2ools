@@ -59,8 +59,11 @@ class _CallingFormat:
             path = '/' + bucket
         return path + '/%s' % urllib.quote(key)
 
-    def build_path_base(self, bucket, key=''):
-        return '/%s' % urllib.quote(key)
+    def build_path_base(self, bucket, key='', virtual_hosting=False):
+	if virtual_hosting:
+            return '/%s' % urllib.quote(key)
+	else:
+	    return '%s/%s' % (bucket, urllib.quote(key))
 
 class SubdomainCallingFormat(_CallingFormat):
     @assert_case_insensitive
@@ -172,7 +175,7 @@ class S3Connection(AWSAuthConnection):
         hmac_copy = self.hmac.copy()
         hmac_copy.update(policy_b64)
         signature = base64.encodestring(hmac_copy.digest()).strip()
-        fields.append({"name": "signature", "value": signature})
+	fields.append({"name": "signature", "value": signature})
         fields.append({"name": "key", "value": key})
 
         # HTTPS protocol will be used if the secure HTTP option is enabled.
@@ -295,15 +298,14 @@ class S3Connection(AWSAuthConnection):
             bucket = bucket.name
         if isinstance(key, Key):
             key = key.name
-        path = self.calling_format.build_path_base(bucket, key)
-	if self.service:
-	    path = '%s%s' % (self.service, path)
+        path = self.calling_format.build_path_base(bucket, key, virtual_hosting)
+   	if self.service:
+	        path = '%s/%s' % (self.service, path)
         auth_path = self.calling_format.build_auth_path(bucket, key)
 	if virtual_hosting:
             host = self.calling_format.build_host(self.server, bucket)
 	else:
 	    host = self.server
-	    path = '%s%s' % (path, bucket)
         if query_args:
             path += '?' + query_args
             auth_path += '?' + query_args

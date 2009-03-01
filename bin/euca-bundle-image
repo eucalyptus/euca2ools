@@ -80,6 +80,7 @@ def version():
     sys.exit()
 
 def split_file(file, chunk_size):
+    print 'splitting image file'
     parts = []
     file_size = os.path.getsize(file)
     in_file = open(file, "rb")
@@ -88,6 +89,7 @@ def split_file(file, chunk_size):
     bytes_read = 0
     for i in range(0, number_parts, 1):
 	filename = '%s.%d' % (file, i)
+	print 'part:', filename
 	file_part = open(filename, "wb")
 	part_bytes_written = 0
 	while part_bytes_written < IMAGE_SPLIT_CHUNK:
@@ -159,7 +161,6 @@ def encrypt_image(file):
     cipher_type = CipherType('AES-128', 'CBC')
     pool = RandomPool()
     pool.stir()
-    print 'ivlength:', cipher_type.ivLength()
     key=hex(number.getRandomNumber(cipher_type.keyLength() * 8, pool.get_bytes))[2:34]
     iv=hex(number.getRandomNumber(cipher_type.ivLength() * 8, pool.get_bytes))[2:34]
     print 'key:', key, ' iv:', iv 
