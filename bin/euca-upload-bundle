@@ -177,7 +177,7 @@ def main():
 
 	print 'checking bucket'
 	bucket_instance = conn.get_bucket(bucket)
-	#bucket_instance = ensure_bucket(conn, bucket)
+	bucket_instance = ensure_bucket(conn, bucket)
 	parts = get_parts(manifest_path)
 	if not skipmanifest:
 	    upload_manifest(bucket_instance, manifest_path)

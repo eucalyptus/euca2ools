@@ -39,6 +39,13 @@ from ncrypt.cipher import *
 from Crypto.Util.randpool import RandomPool
 from Crypto.Util import * 
 from xml.dom.minidom import Document
+import sha
+from M2Crypto import EVP, RSA, util, Rand, m2, X509
+from binascii import hexlify, unhexlify
+
+VERSION = "2007-10-10"
+BUNDLER_NAME = "euca-tools"
+BUNDLER_VERSION = "1.0"
 
 usage_string = """
 USAGE
@@ -134,16 +141,24 @@ def hexToBytes(hexString):
 
     return ''.join( bytes )
 
+def encrypt_file(cipher, in_file, out_file) :
+    while 1:
+        buf=in_file.read()
+        if not buf:
+           break
+        out_file.write(cipher.update(buf))
+    out_file.write(cipher.final())
+  
 
-def encrypt_file( cipherType, key, iv, in_file, out_file ) :
-    enc = EncryptCipher( cipherType, key, iv )
-    while 1 :
-        data = in_file.read(IMAGE_IO_CHUNK)
-        if not data : break
-        out_data = enc.update( data )
-        out_file.write( out_data )
-    final_data = enc.finish()
-    out_file.write( final_data )
+#def encrypt_file0( cipherType, key, iv, in_file, out_file ) :
+#    enc = EncryptCipher( cipherType, key, iv )
+#    while 1 :
+#        data = in_file.read(IMAGE_IO_CHUNK)
+#        if not data : break
+#        out_data = enc.update( data )
+#        out_file.write( out_data )
+#    final_data = enc.finish()
+#    out_file.write( final_data )
 
 def decrypt_file( cipherType, key, iv, in_file, out_file ) :
     dec = DecryptCipher( cipherType, key, iv )
@@ -165,35 +180,83 @@ def encrypt_image(file):
     iv=hex(number.getRandomNumber(cipher_type.ivLength() * 8, pool.get_bytes))[2:34]
     print 'key:', key, ' iv:', iv 
 
+    k=EVP.Cipher(alg='aes_128_cbc', key=(key), iv=unhexlify(iv), op=1)
+
     in_file = open(file)
     out_file = open(enc_file, "wb")
-    encrypt_file(cipher_type, hexToBytes(key), hexToBytes(iv), in_file, out_file)
+#    encrypt_file(cipher_type, hexToBytes(key), hexToBytes(iv), in_file, out_file)
+    encrypt_file(k, in_file, out_file)
     in_file.close()
     out_file.close()
-    return enc_file
+    return enc_file, key, iv
 
 def split_image(file): 
     print 'splitting image'  
     return split_file(file, IMAGE_SPLIT_CHUNK) 
 
-def generate_manifest(parts, file):
+def generate_manifest(parts, file, key, iv, cert_path, ec2cert_path, private_key_path, target_arch):
     print 'generating manifest'
+    
+    #version
+
+    #digest of the image
+
+
+    x509_user = X509.load_cert(cert_path)
+    user_pub_key = x509_user.get_pubkey().get_rsa()
+
+    encrypted_key = user_pub_key.public_encrypt(key, RSA.pkcs1_padding)
+    print '%s' % (hexlify(encrypted_key))
+
+    encrypted_iv = user_pub_key.public_encrypt(iv, RSA.pkcs1_padding)
+    print '%s' % (hexlify(encrypted_iv))
+
+    user_priv_key = RSA.load_key(private_key_path)
+
     manifest_file = '%s.manifest.xml' % (file)
     manifest_out_file = open(manifest_file, "wb")
     doc = Document()
-
+    
     manifest_elem = doc.createElement("manifest")
     doc.appendChild(manifest_elem)
 
-    # Create the main <card> element
+    #version
+    version_elem = doc.createElement("version")
+    version_value = doc.createTextNode(VERSION)
+    version_elem.appendChild(version_value)
+    manifest_elem.appendChild(version_elem)
+ 
+    #bundler info
+    bundler_elem = doc.createElement("bundler")
+    bundler_name_elem = doc.createElement("name")
+    bundler_name_value = doc.createTextNode(BUNDLER_NAME)
+    bundler_name_elem.appendChild(bundler_name_value)
+    bundler_version_elem = doc.createElement("version")
+    bundler_version_value = doc.createTextNode(BUNDLER_VERSION)
+    bundler_version_elem.appendChild(bundler_version_value)
+    bundler_elem.appendChild(bundler_name_elem)
+    bundler_elem.appendChild(bundler_version_elem)
+    manifest_elem.appendChild(bundler_elem) 
+
+    #machine config
+    machine_config_elem = doc.createElement("machine_configuration")
+    target_arch_elem = doc.createElement("architecture")
+    target_arch_value = doc.createTextNode(target_arch)
+    target_arch_elem.appendChild(target_arch_value)
+    machine_config_elem.appendChild(target_arch_elem)
+    manifest_elem.appendChild(machine_config_elem)
+
+    #parts
     for part in parts:
 	part_elem = doc.createElement("part")
 	part_value = doc.createTextNode(part)
 	part_elem.appendChild(part_value)
 	manifest_elem.appendChild(part_elem)
 
-    manifest_out_file.write(doc.toxml())
+    manifest_out = doc.toxml()
+    manifest_out_file.write(manifest_out)
 
+    print 'sig: %s' %(hexlify(user_priv_key.sign(sha.sha(manifest_out).digest())))
     manifest_out_file.close() 
 
 def main():
@@ -214,7 +277,7 @@ def main():
     prefix=None
     destination_path=None
     ec2cert_path=None
-    target_arch=None
+    target_arch='x86_64'
     batch=False
     
     for name, value in opts:
@@ -256,10 +319,10 @@ def main():
 	tar_file = tar_image(image_path)
 	zip_file = zip_image(tar_file)
 	os.remove(tar_file)
-	encrypted_file = encrypt_image(zip_file)
+	encrypted_file, key, iv = encrypt_image(zip_file)
 	os.remove(zip_file)
 	parts = split_image(encrypted_file)
-	generate_manifest(parts, image_path)
+	generate_manifest(parts, image_path, key, iv, cert_path, ec2cert_path, private_key_path, target_arch)
     else:
 	print 'image, cert, privatekey and user MUST be specified.'
 	usage()
