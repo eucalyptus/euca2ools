@@ -46,6 +46,7 @@ from binascii import hexlify, unhexlify
 VERSION = "2007-10-10"
 BUNDLER_NAME = "euca-tools"
 BUNDLER_VERSION = "1.0"
+AES = 'AES-128-CBC'
 
 usage_string = """
 USAGE
@@ -112,8 +113,9 @@ def split_file(file, chunk_size):
     in_file.close()
     return parts
  
-def check_image():
+def check_image(image_file):
     print 'checking image'
+    return os.path.getsize(image_file)
 
 def tar_image(file): 
     print 'tarring image'
@@ -184,7 +186,7 @@ def encrypt_image(file):
 
     in_file = open(file)
     out_file = open(enc_file, "wb")
-#    encrypt_file(cipher_type, hexToBytes(key), hexToBytes(iv), in_file, out_file)
+#    encrypt_file0(cipher_type, hexToBytes(key), hexToBytes(iv), in_file, out_file)
     encrypt_file(k, in_file, out_file)
     in_file.close()
     out_file.close()
@@ -194,22 +196,17 @@ def split_image(file):
     print 'splitting image'  
     return split_file(file, IMAGE_SPLIT_CHUNK) 
 
-def generate_manifest(parts, file, key, iv, cert_path, ec2cert_path, private_key_path, target_arch):
+def generate_manifest(parts, file, key, iv, cert_path, ec2cert_path, private_key_path, target_arch, image_size, user):
     print 'generating manifest'
-    
-    #version
 
-    #digest of the image
+    user_pub_key = X509.load_cert(cert_path).get_pubkey().get_rsa()
+    cloud_pub_key = X509.load_cert(ec2cert_path).get_pubkey().get_rsa()
 
+    user_encrypted_key = hexlify(user_pub_key.public_encrypt(key, RSA.pkcs1_padding))
+    user_encrypted_iv = hexlify(user_pub_key.public_encrypt(iv, RSA.pkcs1_padding))
 
-    x509_user = X509.load_cert(cert_path)
-    user_pub_key = x509_user.get_pubkey().get_rsa()
-
-    encrypted_key = user_pub_key.public_encrypt(key, RSA.pkcs1_padding)
-    print '%s' % (hexlify(encrypted_key))
-
-    encrypted_iv = user_pub_key.public_encrypt(iv, RSA.pkcs1_padding)
-    print '%s' % (hexlify(encrypted_iv))
+    cloud_encrypted_key = hexlify(cloud_pub_key.public_encrypt(key, RSA.pkcs1_padding))
+    cloud_encrypted_iv = hexlify(cloud_pub_key.public_encrypt(iv, RSA.pkcs1_padding))
 
     user_priv_key = RSA.load_key(private_key_path)
 
@@ -246,17 +243,86 @@ def generate_manifest(parts, file, key, iv, cert_path, ec2cert_path, private_key
     machine_config_elem.appendChild(target_arch_elem)
     manifest_elem.appendChild(machine_config_elem)
 
+    image_elem = doc.createElement("image")
+    manifest_elem.appendChild(image_elem)
+
+    #name
+    image_name_elem = doc.createElement("name") 
+    image_name_value = doc.createTextNode(file)
+    image_name_elem.appendChild(image_name_value)
+    image_elem.appendChild(image_name_elem)
+ 
+    #user
+    user_elem = doc.createElement("user")
+    user_value = doc.createTextNode("%s" % (user))
+    user_elem.appendChild(user_value)
+    image_elem.appendChild(user_elem)
+    
+    #type
+    #TODO: fixme
+    image_type_elem = doc.createElement("type")
+    image_type_value = doc.createTextNode("machine")
+    image_type_elem.appendChild(image_type_value)
+    image_elem.appendChild(image_type_elem) 
+    #digest
+ 
+    #size
+    image_size_elem = doc.createElement("size")
+    image_size_value = doc.createTextNode("%s" % (image_size))
+    image_size_elem.appendChild(image_size_value)
+    image_elem.appendChild(image_size_elem)
+
+    #bundled size
+
+    #key, iv
+    cloud_encrypted_key_elem = doc.createElement("ec2_encrypted_key")
+    cloud_encrypted_key_value = doc.createTextNode("%s" % (cloud_encrypted_key))
+    cloud_encrypted_key_elem.appendChild(cloud_encrypted_key_value)
+    cloud_encrypted_key_elem.setAttribute("algorithm", AES)
+    image_elem.appendChild(cloud_encrypted_key_elem)
+    
+    user_encrypted_key_elem = doc.createElement("user_encrypted_key")
+    user_encrypted_key_value = doc.createTextNode("%s" % (user_encrypted_key))
+    user_encrypted_key_elem.appendChild(user_encrypted_key_value)
+    user_encrypted_key_elem.setAttribute("algorithm", AES)
+    image_elem.appendChild(user_encrypted_key_elem) 
+
+    cloud_encrypted_iv_elem = doc.createElement("ec2_encrypted_iv")
+    cloud_encrypted_iv_value = doc.createTextNode("%s" % (cloud_encrypted_iv))
+    cloud_encrypted_iv_elem.appendChild(cloud_encrypted_iv_value)
+    cloud_encrypted_iv_elem.setAttribute("algorithm", AES)
+    image_elem.appendChild(cloud_encrypted_iv_elem)
+
+    user_encrypted_iv_elem = doc.createElement("user_encrypted_iv")
+    user_encrypted_iv_value = doc.createTextNode("%s" % (user_encrypted_iv))
+    user_encrypted_iv_elem.appendChild(user_encrypted_iv_value)
+    user_encrypted_iv_elem.setAttribute("algorithm", AES)
+    image_elem.appendChild(user_encrypted_iv_elem) 
+
     #parts
+    parts_elem = doc.createElement("parts")
+    parts_elem.setAttribute("count", '%s' % (len(parts)))
+    part_number = 0
     for part in parts:
 	part_elem = doc.createElement("part")
-	part_value = doc.createTextNode(part)
-	part_elem.appendChild(part_value)
-	manifest_elem.appendChild(part_elem)
+	filename_elem = doc.createElement("filename")
+	filename_value = doc.createTextNode(part)
+	filename_elem.appendChild(filename_value)
+	part_elem.appendChild(filename_elem)
 
-    manifest_out = doc.toxml()
-    manifest_out_file.write(manifest_out)
+        #digest
+	part_elem.setAttribute("index", '%s' % (part_number))
+	parts_elem.appendChild(part_elem)
+        part_number += 1
+    image_elem.appendChild(parts_elem)
 
-    print 'sig: %s' %(hexlify(user_priv_key.sign(sha.sha(manifest_out).digest())))
+    manifest_string = doc.toxml()
+
+    signature_elem = doc.createElement("signature")
+    signature_value = doc.createTextNode("%s" % (hexlify(user_priv_key.sign(sha.sha(manifest_string).digest()))))
+    signature_elem.appendChild(signature_value)
+    manifest_elem.appendChild(signature_elem)
+    manifest_out_file.write(doc.toxml())
     manifest_out_file.close() 
 
 def main():
@@ -315,14 +381,14 @@ def main():
 	    debug = True
 
     if image_path and cert_path and private_key_path and user:
-	check_image()
+	image_size = check_image(image_path)
 	tar_file = tar_image(image_path)
 	zip_file = zip_image(tar_file)
 	os.remove(tar_file)
 	encrypted_file, key, iv = encrypt_image(zip_file)
 	os.remove(zip_file)
 	parts = split_image(encrypted_file)
-	generate_manifest(parts, image_path, key, iv, cert_path, ec2cert_path, private_key_path, target_arch)
+	generate_manifest(parts, image_path, key, iv, cert_path, ec2cert_path, private_key_path, target_arch, image_size, user)
     else:
 	print 'image, cert, privatekey and user MUST be specified.'
 	usage()
