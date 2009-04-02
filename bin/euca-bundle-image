@@ -88,8 +88,8 @@ def version():
     sys.exit()
 
 def split_file(file, chunk_size):
-    print 'splitting image file'
     parts = []
+    parts_digest = []
     file_size = os.path.getsize(file)
     in_file = open(file, "rb")
     number_parts = int(file_size / chunk_size)
@@ -97,25 +97,35 @@ def split_file(file, chunk_size):
     bytes_read = 0
     for i in range(0, number_parts, 1):
 	filename = '%s.%d' % (file, i)
-	print 'part:', filename
+	part_digest = sha.new()
 	file_part = open(filename, "wb")
 	part_bytes_written = 0
 	while part_bytes_written < IMAGE_SPLIT_CHUNK:
 	    data = in_file.read(IMAGE_IO_CHUNK)
 	    file_part.write(data)
+	    part_digest.update(data)
 	    data_len = len(data)
 	    part_bytes_written += data_len    	    		
 	    bytes_read += data_len
 	    if bytes_read >= file_size: break
 	file_part.close()			
-	parts.append(filename)	
+	parts.append(filename)
+	parts_digest.append(hexlify(part_digest.digest()))	
 
     in_file.close()
-    return parts
+    return parts, parts_digest
  
 def check_image(image_file):
     print 'checking image'
-    return os.path.getsize(image_file)
+    image_size = os.path.getsize(image_file)
+    in_file = open(image_file, "rb")
+    sha_image = sha.new()
+    while 1:
+        buf=in_file.read()
+        if not buf:
+           break
+	sha_image.update(buf)
+    return image_size, hexlify(sha_image.digest())
 
 def tar_image(file): 
     print 'tarring image'
@@ -180,7 +190,6 @@ def encrypt_image(file):
     pool.stir()
     key=hex(number.getRandomNumber(cipher_type.keyLength() * 8, pool.get_bytes))[2:34]
     iv=hex(number.getRandomNumber(cipher_type.ivLength() * 8, pool.get_bytes))[2:34]
-    print 'key:', key, ' iv:', iv 
 
     k=EVP.Cipher(alg='aes_128_cbc', key=(key), iv=unhexlify(iv), op=1)
 
@@ -196,7 +205,18 @@ def split_image(file):
     print 'splitting image'  
     return split_file(file, IMAGE_SPLIT_CHUNK) 
 
-def generate_manifest(parts, file, key, iv, cert_path, ec2cert_path, private_key_path, target_arch, image_size, user):
+def get_verification_string(manifest_string):
+    start_mc = manifest_string.find('<machine_configuration>')
+    end_mc = manifest_string.find('</machine_configuration>')
+    mc_config_string = manifest_string[start_mc:end_mc + 23]
+    start_image = manifest_string.find('<image>')
+    end_image = manifest_string.find('</image>')
+    image_string = manifest_string[start_image:end_image + 8]
+
+    return mc_config_string + image_string
+    
+
+def generate_manifest(parts, parts_digest, file, key, iv, cert_path, ec2cert_path, private_key_path, target_arch, image_size, image_digest, user):
     print 'generating manifest'
 
     user_pub_key = X509.load_cert(cert_path).get_pubkey().get_rsa()
@@ -265,7 +285,12 @@ def generate_manifest(parts, file, key, iv, cert_path, ec2cert_path, private_key
     image_type_elem.appendChild(image_type_value)
     image_elem.appendChild(image_type_elem) 
     #digest
- 
+
+    image_digest_elem = doc.createElement("digest")
+    image_digest_elem.setAttribute('algorithm', 'SHA1')
+    image_digest_value = doc.createTextNode('%s' % (image_digest))
+    image_digest_elem.appendChild(image_digest_value)
+    image_elem.appendChild(image_digest_elem) 
     #size
     image_size_elem = doc.createElement("size")
     image_size_value = doc.createTextNode("%s" % (image_size))
@@ -309,8 +334,12 @@ def generate_manifest(parts, file, key, iv, cert_path, ec2cert_path, private_key
 	filename_value = doc.createTextNode(part)
 	filename_elem.appendChild(filename_value)
 	part_elem.appendChild(filename_elem)
-
         #digest
+	part_digest_elem = doc.createElement("digest")
+	part_digest_elem.setAttribute('algorithm', 'SHA1')
+	part_digest_value = doc.createTextNode(parts_digest[part_number])
+	part_digest_elem.appendChild(part_digest_value)
+	part_elem.appendChild(part_digest_elem)
 	part_elem.setAttribute("index", '%s' % (part_number))
 	parts_elem.appendChild(part_elem)
         part_number += 1
@@ -318,8 +347,9 @@ def generate_manifest(parts, file, key, iv, cert_path, ec2cert_path, private_key
 
     manifest_string = doc.toxml()
 
+    string_to_sign = get_verification_string(manifest_string)
     signature_elem = doc.createElement("signature")
-    signature_value = doc.createTextNode("%s" % (hexlify(user_priv_key.sign(sha.sha(manifest_string).digest()))))
+    signature_value = doc.createTextNode("%s" % (hexlify(user_priv_key.sign(sha.sha(string_to_sign).digest()))))
     signature_elem.appendChild(signature_value)
     manifest_elem.appendChild(signature_elem)
     manifest_out_file.write(doc.toxml())
@@ -381,14 +411,14 @@ def main():
 	    debug = True
 
     if image_path and cert_path and private_key_path and user:
-	image_size = check_image(image_path)
+	image_size, sha_image_digest = check_image(image_path)
 	tar_file = tar_image(image_path)
 	zip_file = zip_image(tar_file)
 	os.remove(tar_file)
 	encrypted_file, key, iv = encrypt_image(zip_file)
 	os.remove(zip_file)
-	parts = split_image(encrypted_file)
-	generate_manifest(parts, image_path, key, iv, cert_path, ec2cert_path, private_key_path, target_arch, image_size, user)
+	parts, parts_digest = split_image(encrypted_file)
+	generate_manifest(parts, parts_digest, image_path, key, iv, cert_path, ec2cert_path, private_key_path, target_arch, image_size, sha_image_digest, user)
     else:
 	print 'image, cert, privatekey and user MUST be specified.'
 	usage()
