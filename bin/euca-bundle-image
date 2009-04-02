@@ -35,12 +35,9 @@
 import getopt, sys, os
 import tarfile
 import gzip
-from ncrypt.cipher import *
-from Crypto.Util.randpool import RandomPool
-from Crypto.Util import * 
 from xml.dom.minidom import Document
 import sha
-from M2Crypto import EVP, RSA, util, Rand, m2, X509
+from M2Crypto import BN, EVP, RSA, util, Rand, m2, X509
 from binascii import hexlify, unhexlify
 
 VERSION = "2007-10-10"
@@ -185,11 +182,11 @@ def decrypt_file( cipherType, key, iv, in_file, out_file ) :
 def encrypt_image(file):
     print 'encrypting image'
     enc_file = '%s.enc' % (file)
-    cipher_type = CipherType('AES-128', 'CBC')
-    pool = RandomPool()
-    pool.stir()
-    key=hex(number.getRandomNumber(cipher_type.keyLength() * 8, pool.get_bytes))[2:34]
-    iv=hex(number.getRandomNumber(cipher_type.ivLength() * 8, pool.get_bytes))[2:34]
+
+    key = hex(BN.rand(16 * 8))[2:34]
+    print 'key: %s' % (key)
+    iv = hex(BN.rand(16 * 8))[2:34]
+    print 'iv: %s' % (iv)
 
     k=EVP.Cipher(alg='aes_128_cbc', key=(key), iv=unhexlify(iv), op=1)
 
