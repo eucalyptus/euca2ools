@@ -1,0 +1,28 @@
+--- configure.zcml.org	Mon Sep 27 16:10:47 2004
++++ configure.zcml	Mon Sep 27 16:11:42 2004
+@@ -5,6 +5,12 @@
+       provides="zope.app.applicationcontrol.interfaces.IServerControl" />
+ 
+   <utility
++      name="HTTPS"
++      component=".https.https"
++      provides=".servertype.IServerType"
++      />
++
++  <utility
+       name="HTTP"
+       component=".http.http"
+       provides=".servertype.IServerType"
+@@ -13,6 +19,12 @@
+   <utility
+       name="PostmortemDebuggingHTTP"
+       component=".http.pmhttp"
++      provides=".servertype.IServerType"
++      />
++
++  <utility
++      name="PostmortemDebuggingHTTPS"
++      component=".https.pmhttps"
+       provides=".servertype.IServerType"
+       />
+ 

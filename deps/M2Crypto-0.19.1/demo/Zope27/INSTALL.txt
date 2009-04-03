@@ -1,0 +1,200 @@
+=========================================
+ ZServerSSL for Zope 2.7.0b2
+=========================================
+
+:Author: Ng Pheng Siong
+:Id: $Id$
+:Date: $Date$
+:Web-Site: http://sandbox.rulemaker.net/ngps/zope/zssl/
+
+.. contents::
+
+
+Directories
+-----------------------
+
+This distribution is contained in ``m2crypto-0.12/demo/Zope27/``. Its
+directory structure assumes the following:
+
+- Zope 2.7.0b2 is installed in <install-dir>.
+- An instance has been created in <instance-home>.
+
+
+<install-dir>
+-----------------------
+
+The following files are to be copied to the corresponding directories
+in your <install-dir>:
+
+- install_dir/lib/python/ZServer/HTTPS_Server.py
+- install_dir/lib/python/ZServer/medusa/https_server.py
+
+The following patch files are to be applied to the corresponding
+directories in your <install-dir>:
+
+- install_dir/lib/python/ZServer/__init__.py.patch
+- install_dir/lib/python/ZServer/component.xml.patch
+- install_dir/lib/python/ZServer/datatypes.py.patch
+
+
+<instance-home>
+-----------------------
+
+The following files are to be copied to the corresponding directories
+in your <instance-home>:
+
+- instance_home/ssl/ca.pem
+- instance_home/ssl/server.pem
+- instance_home/ssl/dh1024.pem
+
+These are example files. For more information on them, consult the
+ZServerSSL HOWTO for Zope 2.6.
+
+The following patch files are to be applied to the corresponding
+directories in your <instance-home>:
+
+- instance_home/README.txt.patch
+- instance_home/etc/zope.conf.patch
+
+(Patching README.txt is optional.)
+
+There appears to be a bug in Zope 2.7.0b2, where INSTANCE_HOME in a
+running Zope points to <install-dir>, not <instance-home>. Workaround
+this with the following:
+
+::
+
+    $ (cd <install-dir>; ln -s <instance-home>/ssl)
+
+
+Launch ZServerSSL
+-------------------
+
+::
+
+    $ <instance-home>/bin/runzope
+
+
+Testing
+---------
+
+Below, we assume your Zope server is running on ``localhost``.
+
+
+HTTPS
+~~~~~~~
+
+This testing is done with Mozilla 1.1 on FreeBSD.
+
+1. With a browser, connect to https://localhost:8443/. Browse
+   around. Check out your browser's HTTPS informational screens.
+
+2. Connect to https://localhost:8443/manage. Verify that you can
+   access Zope's management functionality.
+
+
+WebDAV-over-HTTPS
+~~~~~~~~~~~~~~~~~~~
+
+This testing is done with Cadaver 0.21.0 on FreeBSD.
+
+::
+
+    $ cadaver https://localhost:8443/
+    WARNING: Untrusted server certificate presented:
+    Issued to: M2Crypto, SG
+    Issued by: M2Crypto, SG
+    Do you wish to accept the certificate? (y/n) y
+    Authentication required for Zope on server `localhost':
+    Username: admin
+    Password: 
+    dav:/> ls
+    Listing collection `/': succeeded.
+    Coll:   Control_Panel                          0  Sep 28 00:38
+    Coll:   temp_folder                            0  Sep 28 17:30
+            acl_users                              0  Sep 28 00:38
+            browser_id_manager                     0  Sep 28 00:38
+            error_log                              0  Sep 28 00:38
+            index_html                            28  Sep 28 00:39
+            session_data_manager                   0  Sep 28 00:38
+            standard_error_message              1189  Sep 28 00:39
+            standard_html_footer                  18  Sep 28 00:39
+            standard_html_header                  82  Sep 28 00:39
+            standard_template.pt                 282  Sep 28 00:39
+    dav:/> quit
+    Connection to `localhost' closed.
+    $ 
+
+
+Python with M2Crypto 
+~~~~~~~~~~~~~~~~~~~~~~
+
+This testing is done with M2Crypto 0.12 and Python 2.2.3 on FreeBSD.
+
+HTTPS
+```````
+
+>>> from M2Crypto import Rand, SSL, m2urllib
+>>> url = m2urllib.FancyURLopener()
+>>> url.addheader('Connection', 'close')
+>>> u = url.open('https://127.0.0.1:8443/')
+send: 'GET / HTTP/1.1\r\nHost: 127.0.0.1:8443\r\nAccept-Encoding: identity\r\nUser-agent: Python-urllib/1.15\r\nConnection: close\r\n\r\n'
+reply: 'HTTP/1.1 200 OK\r\n'
+header: Server: ZServerSSL/0.12
+header: Date: Sun, 28 Sep 2003 09:40:14 GMT
+header: Content-Length: 3055
+header: Etag: 
+header: Content-Type: text/html
+header: Connection: close
+>>> while 1:
+... 	data = u.read()
+... 	if not data: break
+... 	print data
+... 
+
+::
+
+    [blah blah blah]
+    
+    <p>
+    Go directly to the <a href="/manage" target="_top">
+    Zope Management Interface</a> if you'd like to start working with Zope 
+    right away.  <strong>NOTE:  Some versions of Microsoft Internet Explorer,
+    (specifically IE 5.01 and early versions of IE 5.5) may have problems
+    displaying Zope management pages.  If you cannot view the management pages,
+    try upgrading your IE installation to the latest release version, or use
+    a different browser.</strong>
+    </p>
+    </li>
+    
+    <li>
+    <p>
+    Find out about <a href="http://www.zope.com/" target="_new">Zope 
+    Corporation</a>, the publishers of Zope.
+    </p>
+    </li>
+    
+    </ul>
+    
+    </body>
+    </html>
+
+>>> u.close()
+>>> 
+
+
+XMLRPC-over-HTTPS
+```````````````````
+
+>>> from M2Crypto.m2xmlrpclib import Server, SSL_Transport
+>>> zs = Server('https://127.0.0.1:8443/', SSL_Transport())
+>>> print zs.propertyMap()
+[{'type': 'string', 'id': 'title', 'mode': 'w'}]
+>>> 
+
+
+Conclusion
+------------
+
+Yes, it works! ;-)
+

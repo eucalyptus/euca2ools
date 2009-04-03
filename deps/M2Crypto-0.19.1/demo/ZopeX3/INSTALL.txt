@@ -1,0 +1,73 @@
+=========================================
+ ZServerSSL for ZopeX3.0.0 
+=========================================
+
+:Author: Ng Pheng Siong
+:Id: $Id: INSTALL.txt 354 2006-02-25 00:13:15Z heikki $
+:Date: $Date$
+:Web-Site: http://sandbox.rulemaker.net/ngps/zope/zssl/
+
+.. contents::
+
+
+Directories
+-----------------------
+
+Directory structure assumes the following:
+
+- ZopeX3.0.0 is installed in <install-dir>.
+- An instance has been created in <instance-home>.
+
+
+<install-dir>
+-----------------------
+
+The following files are to be copied to the corresponding directories
+in your <install-dir>:
+
+- install_dir/lib/python/zope/server/http/https_server.py
+- install_dir/lib/python/zope/server/http/https_serverchannel.py
+- install_dir/lib/python/zope/server/http/publisherhttps_server.py
+- install_dir/lib/python/zope/app/server/https.py
+
+
+<instance-home>
+-----------------------
+
+The following files are to be copied to the corresponding directories
+in your <instance-home>:
+
+- instance_home/ssl/ca.pem
+- instance_home/ssl/server.pem
+- instance_home/ssl/dh1024.pem
+
+These are example files. For more information on them, consult the
+ZServerSSL HOWTO for Zope 2.6.
+
+The following patch files are to be applied to the corresponding
+directories:
+
+- install_dir/lib/python/zope/app/server/configure.zcml.patch
+- instance_home/etc/zope.conf.patch
+
+
+Launch ZServerSSL
+-------------------
+
+::
+
+    $ <instance-home>/bin/runzope
+
+
+Testing
+---------
+
+This section TDB. I have tested ZServerSSL for Zope 3 with 'openssl
+s_client' and 'openssl s_client -nbio' successfully.
+
+
+Conclusion
+------------
+
+Yes, it works! ;-)
+

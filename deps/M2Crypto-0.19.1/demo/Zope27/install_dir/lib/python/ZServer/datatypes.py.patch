@@ -1,0 +1,59 @@
+--- datatypes.py.org	Sat Sep 27 20:21:15 2003
++++ datatypes.py	Sun Oct 26 21:19:58 2003
+@@ -72,7 +72,56 @@
+ 
+     def createHandler(self):
+         from ZServer import HTTPServer
++        try:
++            del self.cgienv['HTTPS']
++        except KeyError:
++            pass
+         return HTTPServer.zhttp_handler(self.module, '', self.cgienv)
++
++
++class HTTPS_ServerFactory(HTTPServerFactory):
++    def __init__(self, section):
++        HTTPServerFactory.__init__(self, section)
++        self.x509_remote_user = section.x509_remote_user
++        from M2Crypto import Rand, SSL
++        Rand.load_file('%s/randpool.dat' % INSTANCE_HOME, -1)
++        ssl_ctx = SSL.Context('sslv23')
++        ssl_ctx.load_cert_chain('%s/ssl/server.pem' % INSTANCE_HOME)
++        ssl_ctx.load_verify_locations('%s/ssl/ca.pem' % INSTANCE_HOME,'')
++        ssl_ctx.load_client_CA('%s/ssl/ca.pem' % INSTANCE_HOME)
++        ssl_ctx.set_session_id_ctx('Zope 2.7.0b2')
++        ssl_ctx.set_tmp_dh('%s/ssl/dh1024.pem' % INSTANCE_HOME)
++        if self.x509_remote_user:
++            ssl_ctx.set_verify(SSL.verify_peer, 10)
++        else:
++            ssl_ctx.set_verify(SSL.verify_none, 10)
++        self.ssl_ctx = ssl_ctx
++
++    def create(self):
++        from ZServer import HTTPS_Server
++        from ZServer.AccessLogger import access_logger
++        handler = self.createHandler()
++        handler._force_connection_close = self.force_connection_close
++        if self.webdav_source_clients:
++            handler.set_webdav_source_clients(self.webdav_source_clients)
++        server = HTTPS_Server.zhttps_server(ip=self.host, port=self.port,
++                                            ssl_ctx=self.ssl_ctx,
++                                            resolver=self.dnsresolver,
++                                            logger_object=access_logger)
++        server.install_handler(handler)
++        return server
++
++    def createHandler(self):
++        from ZServer import HTTPS_Server
++        try:
++            del self.cgienv['HTTP']
++        except KeyError:
++            pass
++        self.cgienv['HTTPS'] = 'ON'
++        if self.x509_remote_user:
++            return HTTPS_Server.zhttps_handler(self.module, '', self.cgienv)
++        else:
++            return HTTPS_Server.zhttps0_handler(self.module, '', self.cgienv)
+ 
+ 
+ class WebDAVSourceServerFactory(HTTPServerFactory):

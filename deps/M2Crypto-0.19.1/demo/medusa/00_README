@@ -1,0 +1,32 @@
+
+ 19 Sep 2001
+-------------
+
+M2Crypto HTTPS and FTP/TLS servers
+
+All the files in this directory are from the Apr 2001 release 
+of Medusa, except for the following:
+
+- 00_README (this file)
+- server.pem, the server's certificate
+- ca.pem, my CA certificate
+- https_server.py
+- ftps_server.py
+- START.py
+- START_xmlrpc.py
+- index.html, a sample HTML file
+- poison_handler.py, a webpoison clone
+
+By default, http_server listens on port 9080 and https_server port 9443.
+Document root is current directory, and serves up index.html. 
+
+The xmlrpc server is accessible below '/RPC2'. It requires Fredrik Lundh's
+xmlrpc_handler on PYTHONPATH.
+
+The FTP/TLS server listens on port 9021 by default. I've only tested it with
+the 'anonymous' authentication handler.
+
+Medusa files are copyright Sam Rushing. My files are copyright me.
+
+
+

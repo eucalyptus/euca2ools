@@ -1,0 +1,54 @@
+ 29 Nov 2000
+-------------
+- test.py works.
+
+- makesmime.py is sendsmime.py modified to not send
+  SMTP, because I do not now have an SMTP server handy.
+
+- sendsmime.py should still work, because makesmime.py 
+  does.
+
+- unsmime.py doesn't work, possibly because the certificates
+  used to generate the tested PKCS7 objects are no longer
+  available. 
+
+
+
+ 20 Nov 2000
+-------------
+
+This directory contains various programs and supporting files 
+demonstrating M2Crypto's S/MIME functionality.
+
+- test.py exercises the various S/MIME functionality. 
+- sendsmime.py (optionally) signs and/or encrypts a message, 
+    then sends the output via SMTP.
+- makesmime.py is exactly like sendsmime.py, except it writes
+    its output to sys.stdout.
+- unsmime.py decrypts and verifies an S/MIME SignedAndEnveloped 
+    message. It handles the S/MIME output of Netscape Messenger 
+    successfully.
+
+- ca.pem is M2Crypto's test CA certificate.
+- client.pem and client2.pem contain user certificates and their 
+    corresponding private keys.
+
+- clear.p7 is a clear-signed S/MIME message.
+- opaque.p7 is a signed S/MIME message.
+- ns.p7 is a clear-signed S/MIME message produced by Messenger.
+- ns.se.p7 is a signed-then-encrypted S/MIME message produced 
+    by Messenger.
+- m2.se.p7 is a signed-then-encrypted S/MIME message produced 
+    by sendsmime.py.
+
+
+I tested with export and strong versions of Netscape Communicator 
+4.7x.
+
+I have also done some interoperability testing with Sampo Kellomaki's 
+smime tool.
+
+I am interested in interoperability testing with Outlook and other 
+S/MIME tools. Write me <ngps@post1.com> if you want to collaborate.
+
+

@@ -1,0 +1,64 @@
+From dave@pythonapocrypha.com  Wed Dec 11 07:57:55 2002
+Date: Tue, 10 Dec 2002 15:05:26 -0800 (PST)
+From: Dave Brueck <dave@pythonapocrypha.com>
+To: ngps@netmemetic.com
+Subject: M2Crypto problem with asynch sockets
+
+Hi and thanks for M2Crypto - great stuff!
+
+I wrote an asynchronous socket layer and decided to use M2Crypto to add 
+SSL support to it. Unfortunately, I've found a small problem in 
+_m2crypto_wrap.c - hopefully I'm just not understanding something.
+
+The ssl_connect, ssl_read_nbio, etc. calls don't differentiate between 
+SSL_ERROR_WANT_WRITE and SSL_ERROR_WANT_READ when a non-blocking call 
+couldn't finish. But without this information, I don't know whether the 
+socket needs to do more reading or more writing before a subsequent 
+attempt will work without blocking. The demo applications (e.g. 
+echod-async.py) don't seem to care about this but they get around it by 
+simply trying the operation over and over again, which I can't do for 
+performance reasons.
+
+Am I missing something? I thought about just calling SSL_get_error when 
+the above calls return None (indicating WANT_READ or WANT_WRITE), but by 
+then the error has already been removed from the SSL error queue.
+
+Any help or suggestions would be appreciated. I'd be happy to submit a 
+patch fixing those calls, but by not returning None they would break 
+existing code.
+
+Thanks again for M2Crypto though!
+
+-Dave
+
+
+From dave@pythonapocrypha.com  Fri Dec 13 00:46:39 2002
+Date: Thu, 12 Dec 2002 09:52:08 -0800 (PST)
+From: Dave Brueck <dave@pythonapocrypha.com>
+To: ngps@netmemetic.com
+Subject: Re: M2Crypto problem with asynch sockets
+
+Hello again,
+
+Here is a patch to M2Crypto's _ssl.i that illustrates the fix I had in 
+mind in my previous message. You might not want to use it as is since it 
+changes the error semantics of the affected functions (they now raise an 
+exception that contains the SSL_WANT_READ or SSL_WANT_WRITE flag instead 
+of returning None or whatever), but if you tell me how you'd like it 
+instead then I'd be happy to fix the patch and send it back to you.
+
+Just to refresh your memory, this patch fixes the problem where a 
+non-blocking call to accept/connect/etc results in an SSL_NEED_READ/WRITE; 
+currently there's no way for the caller to know _which_ of the two 
+occurred and so it must try again once the socket has become readable OR 
+writeable, instead of waiting specifically for one or the other. For many 
+people this won't matter because their performance requirements are low 
+enough that trying the ssl_accept/etc call again prematurely won't hurt 
+too much, but for servers with lots of connections or high throughput it's 
+much more critical to wait until you know the SSL call has a better chance 
+of success.
+
+Thanks!
+-Dave Brueck
+
+

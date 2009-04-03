@@ -1,0 +1,18 @@
+This is Isaac Salzberg's application of Mihai Ibanescu's patch
+(available on SF) that allows HTTPS tunneling through an
+authenticating proxy.
+
+This one's a double whammy: it works with IIS through the 
+authenticating proxy, whereas the one on SF, which uses Python's
+built-in SSL, doesn't.
+
+This code is not folded into the main distribution because:
+
+1. Apparently Mihai is still working on it.
+2. Mihai uses Python's built-in SSL. Isaac patched it to use
+   M2Crypto.SSL. The stuff is essentially #ifdef'ed code.
+3. I don't have an authenticating proxy nor an IIS server to test
+   against, so I can't clean up the code. Volunteers welcome. ;-)
+
+Thanks Isaac.
+

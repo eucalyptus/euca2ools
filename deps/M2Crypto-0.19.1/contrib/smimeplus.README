@@ -1,0 +1,3 @@
+Contributed by Bernard Yue: A high level smime interface. "It works
+for Python 2.2 and above, and requires the email module from Python
+2.2.3 to work on Python 2.1.

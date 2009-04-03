@@ -1,0 +1,30 @@
+Date: Thu, 31 May 2001 17:11:45 +0400 (MSD)
+From: Ilya Etingof <ilya@glas.net>
+To: ngps@post1.com
+Cc: Ilya Etingof <ilya@glas.net>
+Subject: Another kind of non-blocking SSL dispatcher
+
+--1922505501-409592217-991314705=:1995
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+
+
+Hi,
+
+Thanks for writing M2Crypto!
+
+I've been trying to use the ssl_dispatcher.py though I felt like the
+bundled version is not absolutely non-blocking. Precisely, it looks
+like the Connection.connect() method does not handle the case when
+socket.connect() returns the WOULDBLOCK error. Another suspicious thing 
+is that there seems to be no SSL "want read" and "want write" error
+return codes of SSL read and write functions.
+
+The attached [quick and dirty] code hopefully fixes these two
+problems. Please, let me know if I'm missing some important clue about all
+this.
+
+Thanks,
+ilya
+
+--1922505501-409592217-991314705=:1995
+

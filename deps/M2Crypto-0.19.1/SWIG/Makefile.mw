@@ -1,0 +1,34 @@
+# $Id: Makefile.mw 299 2005-06-09 17:32:28Z heikki $
+
+# Python
+PYFLAGS=-D__WIN32__ -DHAVE_CONFIG_H -Ic:/pkg/py23/include
+PYLIB=c:/pkg/py23/libs/libpython23.a
+PYINCLUDE=-Ic:/pkg/py23/include
+
+# OpenSSL
+SSLINCLUDE=-Ic:/pkg/openssl/include
+SSLLIB=c:/pkg/openssl/lib/libssl32.a c:/pkg/openssl/lib/libeay32.a
+
+# Windoze
+INCLUDE=$(PYINCLUDE) $(SSLINCLUDE) -I.
+LIBS=$(PYLIB) $(SSLLIB)
+
+SWIG=c:/pkg/swig/swig.exe
+SWIGFLAGS=-shadow -python #-verbose
+
+CP=cp
+
+all:	swig
+
+swig: _m2crypto.i
+	$(SWIG) $(SWIGFLAGS) _m2crypto.i
+	gcc -c -DTHREADING -g $(INCLUDE) _m2crypto_wrap.c
+	dllwrap --dllname __m2crypto.pyd --driver-name gcc \
+            --def _m2crypto.def -o __m2crypto.pyd _m2crypto_wrap.o \
+            -s --entry _DllMain@12 --target=i386-mingw32 $(LIBS)
+	$(CP) _m2crypto.py ..\M2Crypto
+	$(CP) __m2crypto.pyd ..\M2Crypto
+
+clean:
+	del *wrap* *.o *.dll *.exp *.ilk *.pdb *.lib _*.py *.pyc
+

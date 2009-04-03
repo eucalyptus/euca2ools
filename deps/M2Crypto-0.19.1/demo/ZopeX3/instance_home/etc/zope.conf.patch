@@ -1,0 +1,26 @@
+--- zope.conf.org	Tue Sep 28 09:49:02 2004
++++ zope.conf	Tue Sep 28 09:49:27 2004
+@@ -20,6 +20,11 @@
+   address 8080
+ </server>
+ 
++<server>
++  type HTTPS
++  address 8443
++</server>
++
+ # For debugging purposes, you can use this publisher instead/as well
+ # (obviously if it's as well, use a different port number). If there's
+ # an exception, Zope will drop into pdb at the point of the exception.
+@@ -27,6 +32,11 @@
+ #<server>
+ #  type PostmortemDebuggingHTTP
+ #  address 8080
++#</server>
++#
++#<server>
++#  type PostmortemDebuggingHTTPS
++#  address 8443
+ #</server>
+ 
+ <server>

@@ -1,0 +1,180 @@
+--- _ssl.i.orig	Tue Sep 18 06:06:34 2001
++++ _ssl.i	Thu Dec 12 08:57:39 2002
+@@ -238,9 +238,18 @@
+     return ret;
+ }
+ 
++void SetWantRWError(int which) {
++    PyObject *o = Py_BuildValue("(is)", which, 
++                                
+ERR_reason_error_string(ERR_get_error()));
++    if (o != NULL) {
++        PyErr_SetObject(_ssl_err, o);
++        Py_DECREF(o);
++    }
++}
++
+ PyObject *ssl_accept(SSL *ssl) {
+     PyObject *obj;
+-    int r, err;
++    int r, err, which;
+     PyThreadState *_save;
+ 
+     if (thread_mode) {
+@@ -252,14 +261,15 @@
+         _save = (PyThreadState *)SSL_get_app_data(ssl);
+         PyEval_RestoreThread(_save);
+     }
+-    switch (SSL_get_error(ssl, r)) {
++    switch ((which = SSL_get_error(ssl, r))) {
+         case SSL_ERROR_NONE:
+         case SSL_ERROR_ZERO_RETURN:
+             obj = PyInt_FromLong((long)1);
+             break;
+         case SSL_ERROR_WANT_WRITE:
+         case SSL_ERROR_WANT_READ:
+-            obj = PyInt_FromLong((long)0);
++            SetWantRWError(which);
++            obj = NULL;
+             break;
+         case SSL_ERROR_SSL:
+             PyErr_SetString(_ssl_err, 
+ERR_reason_error_string(ERR_get_error()));
+@@ -281,7 +291,7 @@
+ 
+ PyObject *ssl_connect(SSL *ssl) {
+     PyObject *obj;
+-    int r, err;
++    int r, err, which;
+     PyThreadState *_save;
+ 
+     if (thread_mode) {
+@@ -293,14 +303,15 @@
+         _save = (PyThreadState *)SSL_get_app_data(ssl);
+         PyEval_RestoreThread(_save);
+     }
+-    switch (SSL_get_error(ssl, r)) {
++    switch ((which = SSL_get_error(ssl, r))) {
+         case SSL_ERROR_NONE:
+         case SSL_ERROR_ZERO_RETURN:
+             obj = PyInt_FromLong((long)1);
+             break;
+         case SSL_ERROR_WANT_WRITE:
+         case SSL_ERROR_WANT_READ:
+-            obj = PyInt_FromLong((long)0);
++            SetWantRWError(which);
++            obj = NULL;
+             break;
+         case SSL_ERROR_SSL:
+             PyErr_SetString(_ssl_err, 
+ERR_reason_error_string(ERR_get_error()));
+@@ -327,7 +338,7 @@
+ PyObject *ssl_read(SSL *ssl, int num) {
+     PyObject *obj;
+     void *buf;
+-    int r, err;
++    int r, err, which;
+     PyThreadState *_save;
+ 
+     if (!(buf = PyMem_Malloc(num))) {
+@@ -343,7 +354,7 @@
+         _save = (PyThreadState *)SSL_get_app_data(ssl);
+         PyEval_RestoreThread(_save);
+     }
+-    switch (SSL_get_error(ssl, r)) {
++    switch ((which = SSL_get_error(ssl, r))) {
+         case SSL_ERROR_NONE:
+         case SSL_ERROR_ZERO_RETURN:
+             buf = PyMem_Realloc(buf, r);
+@@ -352,8 +363,8 @@
+         case SSL_ERROR_WANT_WRITE:
+         case SSL_ERROR_WANT_READ:
+         case SSL_ERROR_WANT_X509_LOOKUP:
+-            Py_INCREF(Py_None);
+-            obj = Py_None;
++            SetWantRWError(which);
++            obj = NULL;
+             break;
+         case SSL_ERROR_SSL:
+             PyErr_SetString(_ssl_err, 
+ERR_reason_error_string(ERR_get_error()));
+@@ -377,14 +388,14 @@
+ PyObject *ssl_read_nbio(SSL *ssl, int num) {
+     PyObject *obj;
+     void *buf;
+-    int r, err;
++    int r, err, which;
+ 
+     if (!(buf = PyMem_Malloc(num))) {
+         PyErr_SetString(PyExc_MemoryError, "ssl_read");
+         return NULL;
+     }
+     r = SSL_read(ssl, buf, num);
+-    switch (SSL_get_error(ssl, r)) {
++    switch ((which = SSL_get_error(ssl, r))) {
+         case SSL_ERROR_NONE:
+         case SSL_ERROR_ZERO_RETURN:
+             buf = PyMem_Realloc(buf, r);
+@@ -392,6 +403,9 @@
+             break;
+         case SSL_ERROR_WANT_WRITE:
+         case SSL_ERROR_WANT_READ:
++            SetWantRWError(which);
++            obj = NULL;
++            break;
+         case SSL_ERROR_WANT_X509_LOOKUP:
+             Py_INCREF(Py_None);
+             obj = Py_None;
+@@ -417,7 +431,7 @@
+ 
+ int ssl_write(SSL *ssl, PyObject *blob) {
+     const void *buf;
+-    int len, r, err;
++    int len, r, err, which;
+     PyThreadState *_save;
+ 
+ #if PYTHON_API_VERSION >= 1009
+@@ -440,12 +454,14 @@
+         _save = (PyThreadState *)SSL_get_app_data(ssl);
+         PyEval_RestoreThread(_save);
+     }
+-    switch (SSL_get_error(ssl, r)) {
++    switch ((which = SSL_get_error(ssl, r))) {
+         case SSL_ERROR_NONE:
+         case SSL_ERROR_ZERO_RETURN:
+             return r;
+         case SSL_ERROR_WANT_WRITE:
+         case SSL_ERROR_WANT_READ:
++            SetWantRWError(which);
++            return -1;
+         case SSL_ERROR_WANT_X509_LOOKUP:
+             return -1;
+         case SSL_ERROR_SSL:
+@@ -466,7 +482,7 @@
+ 
+ int ssl_write_nbio(SSL *ssl, PyObject *blob) {
+     const void *buf;
+-    int len, r, err;
++    int len, r, err, which;
+ 
+ #if PYTHON_API_VERSION >= 1009
+     if (PyObject_AsReadBuffer(blob, &buf, &len) == -1)
+@@ -480,12 +496,14 @@
+     buf = (const void *)PyString_AsString(blob);
+ #endif
+     r = SSL_write(ssl, buf, len);
+-    switch (SSL_get_error(ssl, r)) {
++    switch ((which = SSL_get_error(ssl, r))) {
+         case SSL_ERROR_NONE:
+         case SSL_ERROR_ZERO_RETURN:
+             return r;
+         case SSL_ERROR_WANT_WRITE:
+         case SSL_ERROR_WANT_READ:
++            SetWantRWError(which);
++            return -1;
+         case SSL_ERROR_WANT_X509_LOOKUP:
+             return -1;
+         case SSL_ERROR_SSL:
+
+
+

@@ -1,0 +1,7 @@
+--- README.txt.org	Sat Sep 27 20:56:11 2003
++++ README.txt	Sat Sep 27 20:56:44 2003
+@@ -7,3 +7,4 @@
+   log/         Log files
+   Products/    Installed products specific to the instance
+   var/         Run-time data files, including the object database
++  ssl/	       ZServerSSL data files

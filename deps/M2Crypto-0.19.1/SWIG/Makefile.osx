@@ -1,0 +1,32 @@
+# $Id: Makefile.osx 299 2005-06-09 17:32:28Z heikki $
+
+# 2003-10-26, ngps: Beware any mixup of tabs and spaces caused by me.
+
+WHICHOPENSSL = /usr/local
+
+CFLAGS	   = -DTHREADING -DHAVE_CONFIG -g -O2
+INCLUDE	   = -I. -I/Library/Frameworks/Python.framework/Headers
+LIBS       = $(WHICHOPENSSL)/lib/libssl.a      \
+		$(WHICHOPENSSL)/lib/libcrypto.a   \
+		/Library/Frameworks/Python.framework/python
+
+all:	__m2crypto.so
+
+_m2crypto_wrap.c: _m2crypto.i
+	swig -shadow -python _m2crypto.i
+
+_m2crypto_wrap.o: _m2crypto_wrap.c
+	cc  -c  $(CFLAGS)  $(INCLUDES)  _m2crypto_wrap.c
+
+__m2crypto.so: _m2crypto_wrap.o
+	cc -bundle _m2crypto_wrap.o $(LIBS) -lcc_dynamic -o __m2crypto.so 
+	cp __m2crypto.so ../M2Crypto
+
+clean:
+	rm -f *_wrap* *.o *.so _*.py *.pyc
+
+versions:
+	python -c "import sys, os;                               \
+		print os.popen('gcc --version').readlines()[0],;     \
+	  	print 'Python '+sys.version.split()[0];              \
+		print os.popen('$(WHICHOPENSSL)/bin/openssl version').readlines()[0]"
