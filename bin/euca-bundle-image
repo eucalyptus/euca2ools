@@ -159,16 +159,6 @@ def encrypt_file(cipher, in_file, out_file) :
     out_file.write(cipher.final())
   
 
-#def encrypt_file0( cipherType, key, iv, in_file, out_file ) :
-#    enc = EncryptCipher( cipherType, key, iv )
-#    while 1 :
-#        data = in_file.read(IMAGE_IO_CHUNK)
-#        if not data : break
-#        out_data = enc.update( data )
-#        out_file.write( out_data )
-#    final_data = enc.finish()
-#    out_file.write( final_data )
-
 def decrypt_file( cipherType, key, iv, in_file, out_file ) :
     dec = DecryptCipher( cipherType, key, iv )
     while 1 :
@@ -192,7 +182,6 @@ def encrypt_image(file):
 
     in_file = open(file)
     out_file = open(enc_file, "wb")
-#    encrypt_file0(cipher_type, hexToBytes(key), hexToBytes(iv), in_file, out_file)
     encrypt_file(k, in_file, out_file)
     in_file.close()
     out_file.close()
@@ -211,7 +200,6 @@ def get_verification_string(manifest_string):
     image_string = manifest_string[start_image:end_image + 8]
 
     return mc_config_string + image_string
-    
 
 def generate_manifest(parts, parts_digest, file, key, iv, cert_path, ec2cert_path, private_key_path, target_arch, image_size, image_digest, user):
     print 'generating manifest'
