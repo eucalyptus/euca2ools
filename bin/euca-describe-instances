@@ -37,25 +37,20 @@ import boto
 
 usage_string = """
 DESCRIPTION
-    Shows information about machine images.
+    Shows information about instances.
 
 USAGE
-    euca-describe-images [image1 image2 ... imageN] [-a] [-o owner] [-x user] 
+    euca-describe-instances [instance1 instance2... instanceN] 
 	  [-h, --help] [--version] [--debug]
 
     Where
-	image1 image2 ... imageN - images to describe. 
-	-a - Show all images that the user has access to.
-        -o - Show only images owned by the owner specified are displayed.
-        owner - owner of the image (string).
-        -x - Show only images that the specified user is permitted to launch.
-        user - username (string).
+	instance1 instance2...instanceN - instances to describe. 
 	-h, --help - Display this help message.
 	--version - Display the version of this tool.
         --debug - Turn on debugging.
 """
 
-version_string = """    euca-describe-images version: 1.0 (BSD)"""
+version_string = """    euca-describe-instances version: 1.0 (BSD)"""
 
 def usage():
     print usage_string
@@ -66,10 +61,10 @@ def version():
     sys.exit()
 
 def process_args(args):
-    image_ids = []
+    instance_ids = []
     for arg in args:
-        image_ids.append(arg)
-    return image_ids
+        instance_ids.append(arg)
+    return instance_ids 
 
 def parse_url(url):
     host = None
@@ -85,35 +80,33 @@ def parse_url(url):
 	    service_path = path_parts[1]
     return host, port, service_path	
   
-def display_images(images, owner, image_ids):
-    check_image_ids = False
-    if(len(image_ids) > 0):
-	check_image_ids = True
-    for image in images:
-	if owner:
-	    if image.ownerId != owner:
-		continue
-        if check_image_ids:
-	    if not image.id in image_ids:
-	        continue
-	image_string = '%s\t%s\t%s\t%s' % (image.id, image.location, image.ownerId, image.state)
-	if image.is_public:
-  	    image_string += '\tpublic'
-  	image_string += '\t%s\t%s' % (image.architecture, image.type)	
-	print 'IMAGE\t%s' % (image_string)
-
+def display_reservations(reservations, instance_ids):
+    check_instance_ids = False
+    if(len(instance_ids) > 0):
+	check_instance_ids = True
+    for reservation in reservations:
+ 	for instance in reservation.instances:
+            if check_instance_ids:
+	        if not instance.id in instance_ids:
+	            continue
+        reservation_string = '%s\t%s' % (reservation.id, reservation.owner_id)
+	group_delim = '\t'
+	for group in reservation.groups:
+	    reservation_string += '%s%s' % (group_delim, group.id)
+	    group_delim = ', '
+	print 'RESERVATION\t%s' % (reservation_string) 
+	for instance in reservation.instances:
+	    instance_string = '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s' % (instance.id, instance.image_id, instance.public_dns_name, instance.private_dns_name, instance.state, instance.key_name, instance.launch_time, instance.kernel, instance.ramdisk)
+	    print 'INSTANCE\t%s' % (instance_string)
 
 def main():
     try:
-        opts, args = getopt.getopt(sys.argv[1:], 'ao:x:h',
+        opts, args = getopt.getopt(sys.argv[1:], 'h',
                                    ['help', 'version', 'debug'])
     except:
         usage()
  
     debug = False
-    show_all = False
-    executable_by = None 
-    owner = None
     ec2_user_access_key = None
     ec2_user_secret_key = None 
     default_ec2_url = 'http://localhost:8773/services/Eucalyptus'
@@ -121,12 +114,6 @@ def main():
     for name, value in opts:
         if name in ('-h', '--help'):
             usage()
-	if name in ('-x'):
-	    executable_by = value
-	if name in ('-o'):
-	    owner = value	     
-        if name in ('-a'):
-            show_all = True 
 	if name in ('--version'):
 	    version()
 	if name in ('--debug'):
@@ -154,11 +141,10 @@ def main():
 				port=port,
 				service=service)
 
-    image_ids = process_args(args)
-    #This is workaround for an issue with the front end (does not return an image set when an image id is specified LP:356389)
-    images = ec2_conn.get_all_images()
-    #TODO: DescribeImageAttributes from boto currently fails. Need to figure out incompatibility.
-    display_images(images, owner, image_ids)
+    instance_ids = process_args(args)
+    #This is workaround for an issue with the front end (does not return the correct instances when an instance id is specified LP:356580)
+    reservations = ec2_conn.get_all_instances(instance_ids)
+    display_reservations(reservations, instance_ids)
 if __name__ == "__main__":
     main()
  
