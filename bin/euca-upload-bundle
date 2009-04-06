@@ -53,7 +53,7 @@ USAGE
 	access_key_id - The user's AWS access key or Query ID.
 	secret_key - The user's secret key.
 
-	cannel_acl - Canned access control policy (defaults to "aws-exec-read").
+	canned_acl - Canned access control policy (defaults to "aws-exec-read").
 	ec2cert_path - The path to the Cloud's X509 public key certificate.
 	bundle_path - The directory containing the bundled image to upload (default to the directory containing the manifest).
 	part - Uploads specified part and all subsequent parts.

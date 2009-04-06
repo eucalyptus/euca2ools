@@ -269,13 +269,14 @@ def generate_manifest(parts, parts_digest, file, key, iv, cert_path, ec2cert_pat
     image_type_value = doc.createTextNode("machine")
     image_type_elem.appendChild(image_type_value)
     image_elem.appendChild(image_type_elem) 
+    
     #digest
-
     image_digest_elem = doc.createElement("digest")
     image_digest_elem.setAttribute('algorithm', 'SHA1')
     image_digest_value = doc.createTextNode('%s' % (image_digest))
     image_digest_elem.appendChild(image_digest_value)
     image_elem.appendChild(image_digest_elem) 
+    
     #size
     image_size_elem = doc.createElement("size")
     image_size_value = doc.createTextNode("%s" % (image_size))

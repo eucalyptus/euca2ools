@@ -125,10 +125,8 @@ class AWSAuthConnection:
             self.port = port
         else:
             self.port = PORTS_BY_SECURITY[is_secure]
-        if self.port == 80:
+	if server:
             self.server_name = server
-        else:
-            self.server_name = '%s:%d' % (server, self.port)
         
         if aws_access_key_id:
             self.aws_access_key_id = aws_access_key_id
@@ -196,7 +194,7 @@ class AWSAuthConnection:
 
     def get_http_connection(self, host, is_secure):
         if host is None:
-            host = self.server_name
+            host = '%s:%d' % (self.server_name, int(self.port))
         cached_name = is_secure and 'https://' or 'http://'
         cached_name += host
         if cached_name in self._cache:
@@ -207,8 +205,9 @@ class AWSAuthConnection:
         if self.use_proxy:
             host = '%s:%d' % (self.proxy, int(self.proxy_port))
         if host is None:
-            host = self.server_name
+            host = '%s:%d' % (self.server_name, int(self.port))
 	boto.log.debug('establishing HTTP connection')
+	print 'trying http connection to %s:%d' %(host, self.port)
         if is_secure:
             if self.https_connection_factory:
                 connection = self.https_connection_factory(host)
@@ -314,6 +313,8 @@ class AWSAuthConnection:
 
     def make_request(self, method, path, headers=None, data='', host=None,
             auth_path=None, sender=None, virtual_hosting=False):
+	if self.service:
+	    path = '/%s/%s' % (self.service, path)
 	if headers == None:
             headers = {'User-Agent' : UserAgent}
         else:
@@ -349,12 +350,12 @@ class AWSQueryConnection(AWSAuthConnection):
     ResponseError = BotoServerError
 
     def __init__(self, aws_access_key_id=None, aws_secret_access_key=None,
-                 is_secure=True, port=None, proxy=None, proxy_port=None,
-                 proxy_user=None, proxy_pass=None, host=None, debug=0,
-                 https_connection_factory=None):
+                 is_secure=True, host=None, port=None, proxy=None, proxy_port=None,
+                 proxy_user=None, proxy_pass=None, region=None, debug=0,
+                 https_connection_factory=None, service=None):
         AWSAuthConnection.__init__(self, host, aws_access_key_id, aws_secret_access_key,
                                    is_secure, port, proxy, proxy_port, proxy_user, proxy_pass,
-                                   debug,  https_connection_factory)
+                                   debug, https_connection_factory, service)
 
     def get_utf8_value(self, value):
         if not isinstance(value, str) and not isinstance(value, unicode):
@@ -394,7 +395,7 @@ class AWSQueryConnection(AWSAuthConnection):
 
     def calc_signature_2(self, params, verb, path):
         boto.log.debug('using calc_signature_2')
-        string_to_sign = '%s\n%s\n%s\n' % (verb, self.server_name.lower(),
+	string_to_sign = '%s\n%s\n%s\n' % (verb, self.server_name.lower(),
                                            path or '/')
         if self.hmac_256:
             hmac = self.hmac_256.copy()
@@ -430,6 +431,8 @@ class AWSQueryConnection(AWSAuthConnection):
         headers = {'User-Agent' : UserAgent}
         if path == None:
             path = '/'
+	if self.service:
+	    path = '/%s/%s' % (self.service, path)
         if params == None:
             params = {}
         params['Action'] = action
