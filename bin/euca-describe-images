@@ -65,12 +65,37 @@ def version():
     print version_string
     sys.exit()
 
-def display_images(images, owner):
+def process_args(args):
+    image_ids = []
+    for arg in args:
+        image_ids.append(arg)
+    return image_ids
+
+def parse_url(url):
+    host = None
+    port = None
+    service_path = None
+    url = url.replace('http://', '')
+    url_parts = url.split(':')
+    if (len(url_parts) > 1):
+        host = url_parts[0]
+        path_parts = url_parts[1].split('/', 1)
+	if (len(path_parts) > 1):
+	    port = int(path_parts[0])
+	    service_path = path_parts[1]
+    return host, port, service_path	
+  
+def display_images(images, owner, image_ids):
+    check_image_ids = False
+    if(len(image_ids) > 0):
+	check_image_ids = True
     for image in images:
 	if owner:
 	    if image.ownerId != owner:
 		continue
-	print image.get_launch_permissions()
+        if check_image_ids:
+	    if not image.id in image_ids:
+	        continue
 	image_string = '%s\t%s\t%s\t%s' % (image.id, image.location, image.ownerId, image.state)
 	if image.is_public:
   	    image_string += '\tpublic'
@@ -106,7 +131,7 @@ def main():
 	    version()
 	if name in ('--debug'):
 	    debug = True
-     
+    
     ec2_user_access_key = os.getenv('EC2_ACCESS_KEY')
     if not ec2_user_access_key:
         print 'EC2_ACCESS_KEY environment variable must be set.'
@@ -121,16 +146,19 @@ def main():
     if not ec2_url:
 	ec2_url = default_ec2_url
 
+    host, port, service = parse_url(ec2_url)
     ec2_conn = boto.connect_ec2(aws_access_key_id=ec2_user_access_key, 
 			        aws_secret_access_key=ec2_user_secret_key,
 				is_secure=False,
-				host='128.111.179.133',
-				port=8773,
-				service='services/Eucalyptus')
+				host=host,
+				port=port,
+				service=service)
 
+    image_ids = process_args(args)
+    #This is workaround for an issue with the front end (does not return an image set when an image id is specified)
     images = ec2_conn.get_all_images()
     #TODO: DescribeImageAttributes from boto currently fails. Need to figure out incompatibility.
-    display_images(images, owner)
+    display_images(images, owner, image_ids)
 if __name__ == "__main__":
     main()
  
