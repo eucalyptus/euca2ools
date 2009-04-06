@@ -85,17 +85,23 @@ def display_reservations(reservations, instance_ids):
     if(len(instance_ids) > 0):
 	check_instance_ids = True
     for reservation in reservations:
+        dont_display = False
+	instances = []
  	for instance in reservation.instances:
             if check_instance_ids:
-	        if not instance.id in instance_ids:
-	            continue
+	        if instance.id in instance_ids:
+		    instances.append(instance)
+	    else:
+		instances = reservation.instances
+	if (len(instances) == 0):
+ 	    continue
         reservation_string = '%s\t%s' % (reservation.id, reservation.owner_id)
 	group_delim = '\t'
 	for group in reservation.groups:
 	    reservation_string += '%s%s' % (group_delim, group.id)
 	    group_delim = ', '
 	print 'RESERVATION\t%s' % (reservation_string) 
-	for instance in reservation.instances:
+	for instance in instances:
 	    instance_string = '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s' % (instance.id, instance.image_id, instance.public_dns_name, instance.private_dns_name, instance.state, instance.key_name, instance.launch_time, instance.kernel, instance.ramdisk)
 	    print 'INSTANCE\t%s' % (instance_string)
 
