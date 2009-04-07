@@ -34,7 +34,9 @@ class Volume(EC2Object):
         self.size = None
         self.create_time = None
         self.attach_time = None
-
+	self.status = None
+	self.device = None
+    
     def __repr__(self):
         return 'Volume:%s' % self.id
 
@@ -51,6 +53,11 @@ class Volume(EC2Object):
             self.attach_time = value
         elif name == 'size':
             self.size = int(value)
+	elif name == 'status':
+	    if value != '':
+	        self.status = value
+	elif name == 'device':
+	    self.device = value
         else:
             setattr(self, name, value)
 
