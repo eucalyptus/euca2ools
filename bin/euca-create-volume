@@ -141,7 +141,6 @@ def main():
 				host=host,
 				port=port,
 				service=service)
-    print size, snapshot_id, zone
     if (size or snapshot_id) and zone:
 	volume = ec2_conn.create_volume(size, zone, snapshot_id)
 	display_volume(volume)

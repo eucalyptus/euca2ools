@@ -37,20 +37,20 @@ import boto
 
 usage_string = """
 DESCRIPTION
-    Deletes a volume.
+    Deletes a snapshot.
 
 USAGE
-    euca-delete-volume volume_id
+    euca-delete-snapshot snapshot_id
 	  [-h, --help] [--version] [--debug]
 
     Where
-	volume_id - unique identifier for the volume to be deleted.
+	snapshot_id - unique identifier for the snapshot to be deleted.
 	-h, --help - Display this help message.
 	--version - Display the version of this tool.
         --debug - Turn on debugging.
 """
 
-version_string = """    euca-delete-volume version: 1.0 (BSD)"""
+version_string = """    euca-delete-snapshot version: 1.0 (BSD)"""
 
 def usage():
     print usage_string
@@ -82,7 +82,7 @@ def main():
         usage()
  
     debug = False
-    volume_id = None
+    snapshot_id = None
     ec2_user_access_key = None
     ec2_user_secret_key = None 
     default_ec2_url = 'http://localhost:8773/services/Eucalyptus'
@@ -111,7 +111,7 @@ def main():
 
     host, port, service = parse_url(ec2_url)
     for arg in args:
-	volume_id = arg
+	snapshot_id = arg
 	break
 
     ec2_conn = boto.connect_ec2(aws_access_key_id=ec2_user_access_key, 
@@ -120,12 +120,12 @@ def main():
 				host=host,
 				port=port,
 				service=service)
-    if volume_id:
-	return_code = ec2_conn.delete_volume(volume_id)
+    if snapshot_id:
+	return_code = ec2_conn.delete_snapshot(snapshot_id)
 	if return_code:
-	    print 'VOLUME\t%s' % (volume_id)
+	    print 'SNAPSHOT\t%s' % (snapshot_id)
     else:
-    	print 'volume_id must be specified'
+    	print 'snapshot_id must be specified'
 	usage()
 if __name__ == "__main__":
     main()
