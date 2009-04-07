@@ -37,20 +37,20 @@ import boto
 
 usage_string = """
 DESCRIPTION
-    Shows information about availability zones.
+    Shows information about keypairs.
 
 USAGE
-    euca-describe-availability-zones [zone1 zone2...zoneN] 
+    euca-describe-keypairs [keypair1 keypair2...keypairN] 
 	  [-h, --help] [--version] [--debug]
 
     Where
-	zone1 zone2...zoneN - zones to describe. 
+	keypair1 keypair2...keypairN - keypairs to describe. 
 	-h, --help - Display this help message.
 	--version - Display the version of this tool.
         --debug - Turn on debugging.
 """
 
-version_string = """    euca-describe-availability-zones version: 1.0 (BSD)"""
+version_string = """    euca-describe-key-pairs version: 1.0 (BSD)"""
 
 def usage():
     print usage_string
@@ -61,10 +61,10 @@ def version():
     sys.exit()
 
 def process_args(args):
-    zone_ids = []
+    key_ids = []
     for arg in args:
-        zone_ids.append(arg)
-    return zone_ids 
+        key_ids.append(arg)
+    return key_ids 
 
 def parse_url(url):
     host = None
@@ -80,16 +80,16 @@ def parse_url(url):
 	    service_path = path_parts[1]
     return host, port, service_path	
   
-def display_zones(zones, zone_ids):
-    check_zone_ids = False
-    if(len(zone_ids) > 0) and (not 'verbose' in zone_ids):
-	check_zone_ids = True
-    for zone in zones:
-	if check_zone_ids:
-	    if not zone.name in zone_ids:
+def display_keypairs(keypairs, keypair_ids):
+    check_keypair_ids = False
+    if(len(keypair_ids) > 0):
+	check_keypair_ids = True
+    for keypair in keypairs:
+	if check_keypair_ids:
+	    if not keypair.name in keypair_ids:
 	        continue
-        zone_string = '%s\t%s' % (zone.name, zone.state)
-	print 'AVAILABILITYZONE\t%s' % (zone_string)
+        keypair_string = '%s\t%s' % (keypair.name, keypair.fingerprint)
+	print 'KEYPAIR\t%s' % (keypair_string)
 
 def main():
     try:
@@ -133,12 +133,9 @@ def main():
 				port=port,
 				service=service)
 
-    zone_ids = process_args(args)
-    if 'verbose' in zone_ids:
-	zones = ec2_conn.get_all_zones('verbose')
-    else:
-        zones = ec2_conn.get_all_zones()
-    display_zones(zones, zone_ids)
+    keypair_ids = process_args(args)
+    keypairs = ec2_conn.get_all_key_pairs()
+    display_keypairs(keypairs, keypair_ids)
 if __name__ == "__main__":
     main()
  
