@@ -37,23 +37,20 @@ import boto
 
 usage_string = """
 DESCRIPTION
-    Creates a volume in a specified availability zone.
+    Detaches a volume from an instance.
 
 USAGE
-    euca-create-volume -s size | --snapshot snapshot_id -z zone
+    euca-detach-volume volume_id
 	  [-h, --help] [--version] [--debug]
 
     Where
-	-s - size of the volume (in GiB). 
-	--snapshot - create volume from a snapshot.
-	-z - availability zone to create the volume in
-	snapshot_id - unique id for a snapshot to create the volume from.
+	volume_id - unique id for a volume to detach.
 	-h, --help - Display this help message.
 	--version - Display the version of this tool.
         --debug - Turn on debugging.
 """
 
-version_string = """    euca-create-volume version: 1.0 (BSD)"""
+version_string = """    euca-detach-volume version: 1.0 (BSD)"""
 
 def usage():
     print usage_string
@@ -77,36 +74,33 @@ def parse_url(url):
 	    service_path = path_parts[1]
     return host, port, service_path	
   
-def display_volume(volume):
-        
-    volume_string = '%s\t%d' % (volume.id, volume.size)
-    if volume.snapshot_id:
-	    volume_string += '\t%s' % (volume.snapshot_id)
-    volume_string += '\t%s\t%s' % (volume.status, volume.create_time)
-    print 'VOLUME\t%s' % (volume_string)
-
+def get_volume_params(volumes, volume_id):
+    for volume in volumes:
+	if volume.id == volume_id:
+	    if volume.status == 'in-use':
+		return volume.instance_id, volume.device
+    return '', ''
+    
 def main():
     try:
-        opts, args = getopt.getopt(sys.argv[1:], 's:z:h',
-                                   ['zone', 'snapshot', 'help', 'version', 'debug'])
+        opts, args = getopt.getopt(sys.argv[1:], 'hi:d:',
+                                   ['instance', 'device', 'help', 'version', 'debug'])
     except:
         usage()
- 
+
     debug = False
-    size = None 
-    zone = None
-    snapshot_id = None
+    volume_id = None
+    instance_id = None
+    device = None
     ec2_user_access_key = None
     ec2_user_secret_key = None 
     default_ec2_url = 'http://localhost:8773/services/Eucalyptus'
 
     for name, value in opts:
-        if name in ('-s'):
-            size = int(value) 
-        elif name in ('-z'):
-            zone = value 
-        elif name in ('--snapshot'):
-            snapshot_id = value 
+        if name in ('-i', '--instance'):
+            instance_id = value 
+        elif name in ('-d', '--device'):
+            device = value 
         elif name in ('-h', '--help'):
             usage()
 	elif name in ('--version'):
@@ -127,6 +121,10 @@ def main():
     ec2_url = os.getenv('EC2_URL')
     if not ec2_url:
 	ec2_url = default_ec2_url
+   
+    for arg in args:
+  	volume_id = arg
+	break
 
     host, port, service = parse_url(ec2_url)
     ec2_conn = boto.connect_ec2(aws_access_key_id=ec2_user_access_key, 
@@ -135,11 +133,16 @@ def main():
 				host=host,
 				port=port,
 				service=service)
-    if (size or snapshot_id) and zone:
-	volume = ec2_conn.create_volume(size, zone, snapshot_id)
-	display_volume(volume)
+    if volume_id:
+        volumes = ec2_conn.get_all_volumes()
+	instance_id, device = get_volume_params(volumes, volume_id)
+	return_code = ec2_conn.detach_volume(volume_id = volume_id, 
+					     instance_id = instance_id,
+					     device = device) 
+	if return_code:
+	    print 'VOLUME\t%s' % (volume_id)
     else:
-    	print 'availability zone and size (or snapshot id) must be specified'
+    	print 'volume_id must be specified'
 	usage()
 if __name__ == "__main__":
     main()
