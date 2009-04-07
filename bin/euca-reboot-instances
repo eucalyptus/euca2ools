@@ -37,20 +37,20 @@ import boto
 
 usage_string = """
 DESCRIPTION
-    Stops specified instances.
+    Reboots specified instances.
 
 USAGE
-    euca-terminate-instances [instance1 instance2... instanceN] 
+    euca-reboot-instances [instance1 instance2... instanceN] 
 	  [-h, --help] [--version] [--debug]
 
     Where
-	instance1 instance2...instanceN - instances to terminate. 
+	instance1 instance2...instanceN - instances to reboot. 
 	-h, --help - Display this help message.
 	--version - Display the version of this tool.
         --debug - Turn on debugging.
 """
 
-version_string = """    euca-terminate-instances version: 1.0 (BSD)"""
+version_string = """    euca-reboot-instances version: 1.0 (BSD)"""
 
 def usage():
     print usage_string
@@ -80,10 +80,6 @@ def parse_url(url):
 	    service_path = path_parts[1]
     return host, port, service_path	
   
-def display_instances(instances, instance_ids):
-    for instance in instances:
-	    print 'INSTANCE\t%s' % (instance.id)
-
 def main():
     try:
         opts, args = getopt.getopt(sys.argv[1:], 'h',
@@ -128,8 +124,10 @@ def main():
 
     instance_ids = process_args(args)
     if (len(instance_ids) > 0):
-        instances = ec2_conn.terminate_instances(instance_ids)
-        display_instances(instances, instance_ids)
+        return_code = ec2_conn.reboot_instances(instance_ids)
+	if return_code:
+	    for instance_id in instance_ids:
+		print 'INSTANCE\t%s' % (instance_id)
     else:
 	print 'instance id(s) must be specified.'
 	usage()
