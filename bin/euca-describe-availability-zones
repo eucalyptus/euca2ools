@@ -37,20 +37,20 @@ import boto
 
 usage_string = """
 DESCRIPTION
-    Shows information about snapshots.
+    Shows information about availability zones.
 
 USAGE
-    euca-describe-snapshots [snapshot1 snapshot2...snapshotN] 
+    euca-describe-availability-zones [zone1 zone2...zoneN] 
 	  [-h, --help] [--version] [--debug]
 
     Where
-	snapshot1 snapshot2...snapshotN - snapshots to describe. 
+	zone1 zone2...zoneN - zones to describe. 
 	-h, --help - Display this help message.
 	--version - Display the version of this tool.
         --debug - Turn on debugging.
 """
 
-version_string = """    euca-describe-snapshot version: 1.0 (BSD)"""
+version_string = """    euca-describe-availability-zones version: 1.0 (BSD)"""
 
 def usage():
     print usage_string
@@ -61,10 +61,10 @@ def version():
     sys.exit()
 
 def process_args(args):
-    snapshot_ids = []
+    zone_ids = []
     for arg in args:
-        snapshot_ids.append(arg)
-    return snapshot_ids 
+        zone_ids.append(arg)
+    return zone_ids 
 
 def parse_url(url):
     host = None
@@ -80,17 +80,17 @@ def parse_url(url):
 	    service_path = path_parts[1]
     return host, port, service_path	
   
-def display_snapshots(snapshots, snapshot_ids):
-    check_snapshot_ids = False
-    if(len(snapshot_ids) > 0):
-	check_snapshot_ids = True
+def display_zones(zones, zone_ids):
+    check_zone_ids = False
+    if(len(zone_ids) > 0) and (not 'verbose' in zone_ids):
+	check_zone_ids = True
 
-    for snapshot in snapshots:
-	if check_snapshot_ids:
-	    if not snapshot.id in snapshot_ids:
+    for zone in zones:
+	if check_zone_ids:
+	    if not zone.id in zone_ids:
 	        continue
-        snapshot_string = '%s\t%s\t%s\t%s\t%s' % (snapshot.id, snapshot.volume_id, snapshot.status, snapshot.start_time, snapshot.progress)
-	print 'SNAPSHOT\t%s' % (snapshot_string)
+        zone_string = '%s\t%s' % (zone.name, zone.state)
+	print 'AVAILABILITYZONE\t%s' % (zone_string)
 
 def main():
     try:
@@ -134,9 +134,12 @@ def main():
 				port=port,
 				service=service)
 
-    snapshot_ids = process_args(args)
-    snapshots = ec2_conn.get_all_snapshots()
-    display_snapshots(snapshots, snapshot_ids)
+    zone_ids = process_args(args)
+    if 'verbose' in zone_ids:
+	zones = ec2_conn.get_all_zones('verbose')
+    else:
+        zones = ec2_conn.get_all_zones()
+    display_zones(zones, zone_ids)
 if __name__ == "__main__":
     main()
  
