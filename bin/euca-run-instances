@@ -41,7 +41,7 @@ DESCRIPTION
 
 USAGE
     euca-run-instances [-B | --block-device-mappings mappings] [-n | --instance-count count] 
-          [-g | --group group_name] [-k | --keypair keyname] [-d | --user-data data_file] 
+          [-g | --group group_name] [-k | --keypair keyname] [-d | --user-data data] 
 	  [--addressing addressing] [-t | --instance-type instance_type] [-z | --availability-zone zone] 
 	  [--kernel kernel_id] [--ramdisk ramdisk_id] image_id 
 	  [-h, --help] [--version] [--debug]
@@ -96,8 +96,9 @@ def display_reservations(reservation):
 
 def main():
     try:
-        opts, args = getopt.getopt(sys.argv[1:], 'hk:n:t:',
-                                   ['key', 'kernel=', 'ramdisk=', 'instance-count=', 'instance_type=', 
+        opts, args = getopt.getopt(sys.argv[1:], 'hk:n:t:g:d:z:',
+                                   ['key=', 'kernel=', 'ramdisk=', 'instance-count=', 'instance_type=', 
+				    'group=', 'user-data=', 'addressing=', 'availability-zone=',
 				    'help', 'version', 'debug'])
     except:
         usage()
@@ -110,16 +111,17 @@ def main():
     min_count = 1
     max_count = 1
     instance_type = 'm1.small' 
-    group_name = None
+    group_names = [] 
+    user_data = None
+    addressing_type = None
+    zone = None
     ec2_user_access_key = None
     ec2_user_secret_key = None 
     default_ec2_url = 'http://localhost:8773/services/Eucalyptus'
-    print opts
     for name, value in opts:
         if name in ('-k', '--key'):
 	    keyname = value
 	elif name in ('--kernel'):
-	    print value
 	    kernel_id = value
 	elif name in ('--ramdisk'):
 	    ramdisk_id = value
@@ -132,6 +134,14 @@ def main():
 		min_count = max_count = int(counts[0])
 	elif name in ('-t', '--instance-type'):
 	    instance_type = value
+	elif name in ('-g', '--group'):
+	    group_names.append(value)
+	elif name in ('-d', '--user-data'):
+	    user_data = value
+	elif name in ('--addressing'):
+	    addressing_type = value
+	elif name in ('-z', '--availability-zone'):
+	     zone = value
         elif name in ('-h', '--help'):
             usage()
 	elif name in ('--version'):
@@ -169,7 +179,11 @@ def main():
 					      min_count = min_count,
 					      max_count = max_count,
 					      key_name = keyname,
+					      security_groups = group_names,
+					      user_data = user_data,
+					      addressing_type = addressing_type,
 					      instance_type = instance_type,
+					      placement = zone,
 					      kernel_id = kernel_id,
 					      ramdisk_id = ramdisk_id)
         display_reservations(reservation)
