@@ -1,0 +1,166 @@
+#!/usr/bin/env python
+
+# Software License Agreement (BSD License)
+#
+# Copyright (c) 2008, Regents of the University of California
+# All rights reserved.
+#
+# Redistribution and use of this software in source and binary forms, with or
+# without modification, are permitted provided that the following conditions
+# are met:
+#
+#   Redistributions of source code must retain the above
+#   copyright notice, this list of conditions and the
+#   following disclaimer.
+#
+#   Redistributions in binary form must reproduce the above
+#   copyright notice, this list of conditions and the
+#   following disclaimer in the documentation and/or other
+#   materials provided with the distribution.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+# ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+# LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE.
+#
+# Author: Sunil Soman sunils@cs.ucsb.edu
+
+import getopt, sys, os
+import boto
+
+usage_string = """
+DESCRIPTION
+    Add a new rule for a security group.
+
+USAGE
+    euca-authorize [-P | --protocol protocol] [-p | --port-range port_range] 
+	  [-t | --icmp-type-code type:code] [-o | --source-group source_group]
+	  [-u | --source-group-user source_group_user] [-s | --source-subnet source_subnet]
+	  group_name 
+	  [-h, --help] [--version] [--debug]
+
+    Where
+	group_name - name of the group to add the rule to.
+	-h, --help - Display this help message.
+	--version - Display the version of this tool.
+        --debug - Turn on debugging.
+"""
+
+version_string = """    euca-authorize version: 1.0 (BSD)"""
+
+def usage():
+    print usage_string
+    sys.exit()
+
+def version():
+    print version_string
+    sys.exit()
+
+def parse_url(url):
+    host = None
+    port = None
+    service_path = None
+    url = url.replace('http://', '')
+    url_parts = url.split(':')
+    if (len(url_parts) > 1):
+        host = url_parts[0]
+        path_parts = url_parts[1].split('/', 1)
+	if (len(path_parts) > 1):
+	    port = int(path_parts[0])
+	    service_path = path_parts[1]
+    return host, port, service_path	
+  
+def main():
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], 'hP:p:o:u:s:',
+                                   ['protocol=', 'port-range=', 'source-group=',
+				    'source-group-user=', 'source-subnet=',
+				    'help', 'version', 'debug'])
+    except:
+        usage()
+ 
+    debug = False
+    ec2_user_access_key = None
+    ec2_user_secret_key = None 
+    group_name = None
+    protocol = None
+    from_port = None
+    to_port = None
+    source_group_name = None
+    source_group_owner_id = None
+    cidr_ip = None
+    default_ec2_url = 'http://localhost:8773/services/Eucalyptus'
+
+    for name, value in opts:
+	if name in ('-P', '--protocol'):
+	    protocol = value
+	elif name in ('-p', '--port-range'):
+	    ports = value.split('-')
+	    if (len(ports) > 1):
+		from_port = int(ports[0])
+		to_port = int(ports[1])
+	    else:
+		from_port = to_port = int(ports[0])
+	elif name in ('-o', '--source-group'):
+	    source_group_name = value
+	elif name in ('-u', '--source-group-user'):
+	    source_group_owner_id = value  
+	elif name in ('-s', '--source-subnet'):
+	    cidr_ip = value
+        elif name in ('-h', '--help'):
+            usage()
+	elif name in ('--version'):
+	    version()
+	elif name in ('--debug'):
+	    debug = True
+    
+    ec2_user_access_key = os.getenv('EC2_ACCESS_KEY')
+    if not ec2_user_access_key:
+        print 'EC2_ACCESS_KEY environment variable must be set.'
+	usage()
+ 
+    ec2_user_secret_key = os.getenv('EC2_SECRET_KEY')
+    if not ec2_user_secret_key:
+        print 'EC2_SECRET_KEY environment variable must be set.'
+	usage()
+
+    ec2_url = os.getenv('EC2_URL')
+    if not ec2_url:
+	ec2_url = default_ec2_url
+  
+    for arg in args:
+	group_name = arg
+	break
+ 
+    host, port, service = parse_url(ec2_url)
+    ec2_conn = boto.connect_ec2(aws_access_key_id=ec2_user_access_key, 
+			        aws_secret_access_key=ec2_user_secret_key,
+				is_secure=False,
+				host=host,
+				port=port,
+				service=service)
+
+    if group_name:
+        return_code = ec2_conn.authorize_security_group(group_name = group_name,
+							src_security_group_name = source_group_name,
+							src_security_group_owner_id = source_group_owner_id,
+							ip_protocol = protocol,
+							from_port = from_port,
+							to_port = to_port,
+							cidr_ip = cidr_ip)
+        if return_code:
+	    print 'GROUP\t%s' % (group_name)
+    else:
+	print 'group_name must be specified'
+	usage()
+
+if __name__ == "__main__":
+    main()
+ 
