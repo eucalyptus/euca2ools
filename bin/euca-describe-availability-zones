@@ -129,7 +129,7 @@ def main():
     host, port, service = parse_url(ec2_url)
     ec2_conn = boto.connect_ec2(aws_access_key_id=ec2_user_access_key, 
 			        aws_secret_access_key=ec2_user_secret_key,
-				is_secure=True,
+				is_secure=False,
 				host=host,
 				port=port,
 				service=service)
