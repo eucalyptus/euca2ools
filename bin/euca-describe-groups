@@ -90,6 +90,19 @@ def display_groups(groups, group_ids):
 	        continue
         group_string = '%s\t%s\t%s' % (group.owner_id, group.name, group.description)
 	print 'GROUP\t%s' % (group_string)
+	for rule in group.rules:
+	    permission_string = '%s\t%s\tALLOWS\t%s\t%s\t%s' % (group.owner_id, group.name, rule.ip_protocol, rule.from_port, rule.to_port)
+	    for grant in rule.grants:
+		grant_string = '\tFROM'
+		if grant.owner_id or grant.name:
+		    if grant.owner_id:
+		        grant_string = '\tUSER\t%s' % (grant.owner_id)
+		    if grant.name:
+		        grant_string = '\tGRPNAME\t%s' % (grant.name)
+                else:
+	            grant_string += '\tCIDR\t%s' % (grant.cidr_ip)
+		permission_string += grant_string
+	        print 'PERMISSION\t%s' % (permission_string)
 
 def main():
     try:
