@@ -37,20 +37,20 @@ import boto
 
 usage_string = """
 DESCRIPTION
-    Modify attributes for an image.
+    Reset attributes for an image.
 
 USAGE
-    euca-modify-image-attribute -l [-a | --add entity ] [-r | --remove entity]
+    euca-reset-image-attribute -l 
 	  [-h, --help] [--version] [--debug] image_id 
 
     Where
-	image_id - unique identifier for the image that you want to modify the attributes for. 
+	image_id - unique identifier for the image that you want to reset the attributes for. 
 	-h, --help - Display this help message.
 	--version - Display the version of this tool.
         --debug - Turn on debugging.
 """
 
-version_string = """    euca-modify-image-attribute version: 1.0 (BSD)"""
+version_string = """    euca-reset-image-attribute version: 1.0 (BSD)"""
 
 def usage():
     print usage_string
@@ -100,30 +100,15 @@ def main():
  
     debug = False
     image_id = None
-    code = None
-    entity = None
     ec2_user_access_key = None
     ec2_user_secret_key = None 
     image_attribute = None
-    operation_type = None
-    user_ids = []
-    groups = []
     default_ec2_url = 'http://localhost:8773/services/Eucalyptus'
 
     for name, value in opts:
-	if name in ('-p', '--product-code'):
-	    if not image_attribute:
-	        image_attribute = 'productCodes'
-	        code = value
-	elif name in ('-l', '--launch-permission'):
+	if name in ('-l', '--launch-permission'):
 	    if not image_attribute:
 		image_attribute = 'launchPermission'
-	elif name in ('-a', '--add'):
-	    entity = value
-	    operation_type = 'add' 	
-	elif name in ('-r', '--remove'):
-	    entity = value 	
-	    operation_type = 'remove'
         elif name in ('-h', '--help'):
             usage()
 	elif name in ('--version'):
@@ -149,12 +134,6 @@ def main():
         image_id = arg
 	break
 
-    if image_attribute == 'launchPermission':
-	if entity == 'all':
-	    groups.append(entity)
-	else:
-	    user_ids.append(entity)
-
     host, port, service = parse_url(ec2_url)
     ec2_conn = boto.connect_ec2(aws_access_key_id=ec2_user_access_key, 
 			        aws_secret_access_key=ec2_user_secret_key,
@@ -163,11 +142,8 @@ def main():
 				port=port,
 				service=service)
     if image_id:
-	return_code = ec2_conn.modify_image_attribute(image_id = image_id,
- 						       attribute = image_attribute,
-						       operation = operation_type,
-						       user_ids = user_ids,
-						       groups = groups)
+	return_code = ec2_conn.reset_image_attribute(image_id = image_id,
+ 						       attribute = image_attribute)
 	if return_code:
 	    print 'IMAGE\t%s' % (image_id)
     else:
