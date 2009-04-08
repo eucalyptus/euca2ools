@@ -37,20 +37,20 @@ import boto
 
 usage_string = """
 DESCRIPTION
-    Shows information about availability zones.
+    Show image attributes.
 
 USAGE
-    euca-describe-availability-zones [zone1 zone2...zoneN] 
-	  [-h, --help] [--version] [--debug]
+    euca-describe-image-attribute -l | -p | -B | --kernel | --ramdisk
+	  [-h, --help] [--version] [--debug] image_id 
 
     Where
-	zone1 zone2...zoneN - zones to describe. 
+	image_id - unique identifier for the image that you want to retrieve the attributes for. 
 	-h, --help - Display this help message.
 	--version - Display the version of this tool.
         --debug - Turn on debugging.
 """
 
-version_string = """    euca-describe-availability-zones version: 1.0 (BSD)"""
+version_string = """    euca-describe-image-attribute version: 1.0 (BSD)"""
 
 def usage():
     print usage_string
@@ -60,18 +60,11 @@ def version():
     print version_string
     sys.exit()
 
-def process_args(args):
-    zone_ids = []
-    for arg in args:
-        zone_ids.append(arg)
-    return zone_ids 
-
 def parse_url(url):
-    host = url 
+    host = None
     port = None
-    service_path = '/'
+    service_path = None
     url = url.replace('http://', '')
-    url = url.replace('https://', '')
     url_parts = url.split(':')
     if (len(url_parts) > 1):
         host = url_parts[0]
@@ -80,36 +73,59 @@ def parse_url(url):
 	    port = int(path_parts[0])
 	    service_path = path_parts[1]
     return host, port, service_path	
-  
-def display_zones(zones, zone_ids):
-    check_zone_ids = False
-    if(len(zone_ids) > 0) and (not 'verbose' in zone_ids):
-	check_zone_ids = True
-    for zone in zones:
-	if check_zone_ids:
-	    if not zone.name in zone_ids:
-	        continue
-        zone_string = '%s\t%s' % (zone.name, zone.state)
-	print 'AVAILABILITYZONE\t%s' % (zone_string)
+ 
+def display_image_attribute(image_attribute):
+    if image_attribute.name == 'launch_permission':
+        if image_attribute.attrs.has_key('groups'):
+	    for group in image_attribute.attrs['groups']:
+		print 'launchPermission\t%s\tgroup\t%s' % (image_attribute.image_id, group)
+	if image_attribute.attrs.has_key('user_ids'):
+	    for userid in image_attribute.attrs['user_ids']:
+		print 'launchPermission\t%s\tuserId\t%s' % (image_attribute.image_id, userid)
+    if image_attribute.attrs.has_key('product_codes'):
+	for product_code in image_attribute.attrs['product_codes']:
+	    print 'productCodes\t%s\tproductCode\t%s' % (image_attribute.image_id, product_code)
+    if image_attribute.kernel:
+	print 'kernel\t%s\tkernel\t%s' % (image_attribute.image_id, image_attribute.kernel)
+    if image_attribute.ramdisk:
+	print 'ramdisk\t%s\tramdisk\t%s' % (image_attribute.image_id, image_attribute.ramdisk)
 
 def main():
     try:
-        opts, args = getopt.getopt(sys.argv[1:], 'h',
-                                   ['help', 'version', 'debug'])
+        opts, args = getopt.getopt(sys.argv[1:], 'hlpB',
+                                   ['block-device-mapping', 'launch-permission', 'product-code',
+				    'kernel', 'ramdisk', 'help', 'version', 'debug'])
     except:
         usage()
  
     debug = False
+    image_id = None
     ec2_user_access_key = None
     ec2_user_secret_key = None 
+    image_attribute = None
     default_ec2_url = 'http://localhost:8773/services/Eucalyptus'
 
     for name, value in opts:
-        if name in ('-h', '--help'):
+	if name in ('-p', '--product-code'):
+	    if not image_attribute:
+	        image_attribute = 'productCodes'
+	elif name in ('-l', '--launch-permission'):
+	    if not image_attribute:
+		image_attribute = 'launchPermission'
+	elif name in ('-B', '--block-device-mapping'):
+	    if not image_attribute:
+		image_attribute = 'blockDeviceMapping'
+	elif name in ('--kernel'):
+	    if not image_attribute:
+		image_attribute = 'kernel'
+	elif name in ('--ramdisk'):
+	    if not image_attribute:
+		image_attribute = 'ramdisk'
+        elif name in ('-h', '--help'):
             usage()
-	if name in ('--version'):
+	elif name in ('--version'):
 	    version()
-	if name in ('--debug'):
+	elif name in ('--debug'):
 	    debug = True
     
     ec2_user_access_key = os.getenv('EC2_ACCESS_KEY')
@@ -126,20 +142,25 @@ def main():
     if not ec2_url:
 	ec2_url = default_ec2_url
 
+    for arg in args:
+        image_id = arg
+	break
+
     host, port, service = parse_url(ec2_url)
     ec2_conn = boto.connect_ec2(aws_access_key_id=ec2_user_access_key, 
 			        aws_secret_access_key=ec2_user_secret_key,
-				is_secure=True,
+				is_secure=False,
 				host=host,
 				port=port,
 				service=service)
-
-    zone_ids = process_args(args)
-    if 'verbose' in zone_ids:
-	zones = ec2_conn.get_all_zones('verbose')
+    if image_id:
+	image_attribute = ec2_conn.get_image_attribute(image_id = image_id,
+						     attribute = image_attribute)
+	if image_attribute:
+	    display_image_attribute(image_attribute)
     else:
-        zones = ec2_conn.get_all_zones()
-    display_zones(zones, zone_ids)
+    	print 'image_id must be specified'
+	usage()
 if __name__ == "__main__":
     main()
  
