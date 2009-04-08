@@ -82,7 +82,7 @@ def display_group(group):
 def main():
     try:
         opts, args = getopt.getopt(sys.argv[1:], 'd:h',
-                                   ['description', 'help', 'version', 'debug'])
+                                   ['description=', 'help', 'version', 'debug'])
     except:
         usage()
  

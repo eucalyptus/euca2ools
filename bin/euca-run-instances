@@ -83,37 +83,60 @@ def parse_url(url):
 	    service_path = path_parts[1]
     return host, port, service_path	
   
-def display_reservations(reservations):
-    for reservation in reservations:
-        reservation_string = '%s\t%s' % (reservation.id, reservation.owner_id)
-	group_delim = '\t'
-	for group in reservation.groups:
-	    reservation_string += '%s%s' % (group_delim, group.id)
-	    group_delim = ', '
-	print 'RESERVATION\t%s' % (reservation_string) 
-	for instance in reservation.instances:
-	    instance_string = '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s' % (instance.id, instance.image_id, instance.public_dns_name, instance.private_dns_name, instance.state, instance.key_name, instance.launch_time, instance.kernel, instance.ramdisk)
-	    print 'INSTANCE\t%s' % (instance_string)
+def display_reservations(reservation):
+    reservation_string = '%s\t%s' % (reservation.id, reservation.owner_id)
+    group_delim = '\t'
+    for group in reservation.groups:
+	reservation_string += '%s%s' % (group_delim, group.id)
+	group_delim = ', '
+    print 'RESERVATION\t%s' % (reservation_string) 
+    for instance in reservation.instances:
+	instance_string = '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s' % (instance.id, instance.image_id, instance.public_dns_name, instance.private_dns_name, instance.state, instance.key_name, instance.launch_time, instance.kernel, instance.ramdisk)
+	print 'INSTANCE\t%s' % (instance_string)
 
 def main():
     try:
-        opts, args = getopt.getopt(sys.argv[1:], 'h',
-                                   ['help', 'version', 'debug'])
+        opts, args = getopt.getopt(sys.argv[1:], 'hk:n:t:',
+                                   ['key', 'kernel=', 'ramdisk=', 'instance-count=', 'instance_type=', 
+				    'help', 'version', 'debug'])
     except:
         usage()
  
     debug = False
     image_id = None
+    keyname = None
+    kernel_id = None
+    ramdisk_id = None
+    min_count = 1
+    max_count = 1
+    instance_type = 'm1.small' 
+    group_name = None
     ec2_user_access_key = None
     ec2_user_secret_key = None 
     default_ec2_url = 'http://localhost:8773/services/Eucalyptus'
-
+    print opts
     for name, value in opts:
-        if name in ('-h', '--help'):
+        if name in ('-k', '--key'):
+	    keyname = value
+	elif name in ('--kernel'):
+	    print value
+	    kernel_id = value
+	elif name in ('--ramdisk'):
+	    ramdisk_id = value
+	elif name in ('-n', '--instance-count'):
+	    counts = value.split('-')
+	    if (len(counts) > 1):
+		min_count = int(counts[0])
+		max_count = int(counts[1])
+	    else:
+		min_count = max_count = int(counts[0])
+	elif name in ('-t', '--instance-type'):
+	    instance_type = value
+        elif name in ('-h', '--help'):
             usage()
-	if name in ('--version'):
+	elif name in ('--version'):
 	    version()
-	if name in ('--debug'):
+	elif name in ('--debug'):
 	    debug = True
     
     ec2_user_access_key = os.getenv('EC2_ACCESS_KEY')
@@ -141,10 +164,15 @@ def main():
 				host=host,
 				port=port,
 				service=service)
-
     if image_id:
-        reservations = ec2_conn.run_instances(image_id = image_id)
-        display_reservations(reservations)
+        reservation = ec2_conn.run_instances(image_id = image_id,
+					      min_count = min_count,
+					      max_count = max_count,
+					      key_name = keyname,
+					      instance_type = instance_type,
+					      kernel_id = kernel_id,
+					      ramdisk_id = ramdisk_id)
+        display_reservations(reservation)
     else:
 	print 'image_id must be specified'
 	usage()

@@ -88,7 +88,7 @@ def display_volume(volume):
 def main():
     try:
         opts, args = getopt.getopt(sys.argv[1:], 's:z:h',
-                                   ['zone', 'snapshot', 'help', 'version', 'debug'])
+                                   ['zone=', 'snapshot=', 'help', 'version', 'debug'])
     except:
         usage()
  
@@ -103,7 +103,7 @@ def main():
     for name, value in opts:
         if name in ('-s'):
             size = int(value) 
-        elif name in ('-z'):
+        elif name in ('-z', '--zone'):
             zone = value 
         elif name in ('--snapshot'):
             snapshot_id = value 

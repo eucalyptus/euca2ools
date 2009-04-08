@@ -79,7 +79,7 @@ def parse_url(url):
 def main():
     try:
         opts, args = getopt.getopt(sys.argv[1:], 'hi:d:',
-                                   ['instance', 'device', 'help', 'version', 'debug'])
+                                   ['instance=', 'device=', 'help', 'version', 'debug'])
     except:
         usage()
 
