@@ -84,6 +84,10 @@ def version():
     print version_string
     sys.exit()
 
+def get_absolute_filename(filename):
+    f_parts = filename.split('/')
+    return f_parts[len(f_parts) - 1]
+
 def split_file(file, chunk_size):
     parts = []
     parts_digest = []
@@ -105,8 +109,8 @@ def split_file(file, chunk_size):
 	    part_bytes_written += data_len    	    		
 	    bytes_read += data_len
 	    if bytes_read >= file_size: break
-	file_part.close()			
-	parts.append(filename)
+	file_part.close()
+	parts.append(get_absolute_filename(filename))
 	parts_digest.append(hexlify(part_digest.digest()))	
 
     in_file.close()
@@ -185,7 +189,8 @@ def encrypt_image(file):
     encrypt_file(k, in_file, out_file)
     in_file.close()
     out_file.close()
-    return enc_file, key, iv
+    bundled_size = os.path.getsize(enc_file)
+    return enc_file, key, iv, bundled_size
 
 def split_image(file): 
     print 'splitting image'  
@@ -194,14 +199,14 @@ def split_image(file):
 def get_verification_string(manifest_string):
     start_mc = manifest_string.find('<machine_configuration>')
     end_mc = manifest_string.find('</machine_configuration>')
-    mc_config_string = manifest_string[start_mc:end_mc + 23]
+    mc_config_string = manifest_string[start_mc:end_mc + len('</machine_configuration>')]
     start_image = manifest_string.find('<image>')
     end_image = manifest_string.find('</image>')
-    image_string = manifest_string[start_image:end_image + 8]
+    image_string = manifest_string[start_image:end_image + len('</image>')]
 
     return mc_config_string + image_string
 
-def generate_manifest(parts, parts_digest, file, key, iv, cert_path, ec2cert_path, private_key_path, target_arch, image_size, image_digest, user):
+def generate_manifest(parts, parts_digest, file, key, iv, cert_path, ec2cert_path, private_key_path, target_arch, image_size, bundled_size, image_digest, user):
     print 'generating manifest'
 
     user_pub_key = X509.load_cert(cert_path).get_pubkey().get_rsa()
@@ -253,7 +258,7 @@ def generate_manifest(parts, parts_digest, file, key, iv, cert_path, ec2cert_pat
 
     #name
     image_name_elem = doc.createElement("name") 
-    image_name_value = doc.createTextNode(file)
+    image_name_value = doc.createTextNode(get_absolute_filename(file))
     image_name_elem.appendChild(image_name_value)
     image_elem.appendChild(image_name_elem)
  
@@ -284,6 +289,10 @@ def generate_manifest(parts, parts_digest, file, key, iv, cert_path, ec2cert_pat
     image_elem.appendChild(image_size_elem)
 
     #bundled size
+    bundled_size_elem = doc.createElement("bundled_size")
+    bundled_size_value = doc.createTextNode("%s" % (bundled_size))
+    image_size_elem.appendChild(bundled_size_value)
+    image_elem.appendChild(image_size_elem)
 
     #key, iv
     cloud_encrypted_key_elem = doc.createElement("ec2_encrypted_key")
@@ -401,10 +410,10 @@ def main():
 	tar_file = tar_image(image_path)
 	zip_file = zip_image(tar_file)
 	os.remove(tar_file)
-	encrypted_file, key, iv = encrypt_image(zip_file)
+	encrypted_file, key, iv, bundled_size = encrypt_image(zip_file)
 	os.remove(zip_file)
 	parts, parts_digest = split_image(encrypted_file)
-	generate_manifest(parts, parts_digest, image_path, key, iv, cert_path, ec2cert_path, private_key_path, target_arch, image_size, sha_image_digest, user)
+	generate_manifest(parts, parts_digest, image_path, key, iv, cert_path, ec2cert_path, private_key_path, target_arch, image_size, bundled_size, sha_image_digest, user)
     else:
 	print 'image, cert, privatekey and user MUST be specified.'
 	usage()
