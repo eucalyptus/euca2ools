@@ -54,7 +54,6 @@ version_string = """    euca-describe-availability-zones version: 1.0 (BSD)"""
 
 def usage():
     print usage_string
-    sys.exit()
 
 def version():
     print version_string
@@ -79,48 +78,28 @@ def display_zones(zones, zone_ids):
 
 def main():
     try:
-        opts, args = getopt.getopt(sys.argv[1:], 'h',
-                                   ['help', 'version', 'debug'])
+        opts, args = getopt.getopt(sys.argv[1:], 'hK:S:U:',
+                                   ['access-key=', 'secret-key=', 'url=', 'help', 'version', 'debug'])
     except:
         usage()
+	euca_tool.usage()
+	sys.exit()
 
-    euca = euca_tool.EucaTool()
-    euca.print_all()
     debug = False
-    ec2_user_access_key = None
-    ec2_user_secret_key = None 
-    default_ec2_url = 'http://localhost:8773/services/Eucalyptus'
 
     for name, value in opts:
         if name in ('-h', '--help'):
             usage()
+	    euca_tool.usage()
+	    sys.exit()
+
 	if name in ('--version'):
 	    version()
 	if name in ('--debug'):
 	    debug = True
     
-    ec2_user_access_key = os.getenv('EC2_ACCESS_KEY')
-    if not ec2_user_access_key:
-        print 'EC2_ACCESS_KEY environment variable must be set.'
-	usage()
- 
-    ec2_user_secret_key = os.getenv('EC2_SECRET_KEY')
-    if not ec2_user_secret_key:
-        print 'EC2_SECRET_KEY environment variable must be set.'
-	usage()
-
-    ec2_url = os.getenv('EC2_URL')
-    if not ec2_url:
-	ec2_url = default_ec2_url
-
-    host, port, service = euca_tool.parse_url(ec2_url)
-    ec2_conn = euca_tool.make_connection(ec2_user_access_key, 
-			                 ec2_user_secret_key,
-				         False,
-					 host,
-					 port,
-					 service)
-
+    euca = euca_tool.EucaTool(opts)
+    ec2_conn = euca.make_connection()
     zone_ids = process_args(args)
     if 'verbose' in zone_ids:
 	zones = ec2_conn.get_all_zones('verbose')

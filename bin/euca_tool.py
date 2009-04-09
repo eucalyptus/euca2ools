@@ -1,4 +1,3 @@
-import boto
 # Software License Agreement (BSD License)
 #
 # Copyright (c) 2008, Regents of the University of California
@@ -34,47 +33,84 @@ import boto
 import getopt, sys, os
 import boto
 
-def parse_url(url):
-    host = url 
-    port = None
-    service_path = '/'
-    url = url.replace('http://', '')
-    url = url.replace('https://', '')
-    url_parts = url.split(':')
-    if (len(url_parts) > 1):
-        host = url_parts[0]
-        path_parts = url_parts[1].split('/', 1)
-	if (len(path_parts) > 1):
-	    port = int(path_parts[0])
-	    service_path = path_parts[1]
-    return host, port, service_path	
+usage_string = """
+        -K, --access-key - user's Access Key ID.
+	-S, --secret-key - user's Secret Key.
+	-U, --url - Cloud URL.
+"""     
 
-def make_connection(ec2_user_access_key=None, ec2_user_secret_key=None, is_secure=False, host=None, 
-		    port=None, service=None): 
-    return boto.connect_ec2(aws_access_key_id=ec2_user_access_key, 
-			        aws_secret_access_key=ec2_user_secret_key,
-				is_secure=False,
-				host=host,
-				port=port,
-				service=service)
+def usage():
+    print usage_string
+
 
 
 class EucaTool:
-    def __init__(self):
-        opts, args = getopt.getopt(sys.argv[1:], 'h',
-                                   ['help', 'version', 'debug'])
+    default_ec2_url = 'http://localhost:8773/services/Eucalyptus'
 
-        self.ec2_user_access_key = os.getenv('EC2_ACCESS_KEY')
-        if not self.ec2_user_access_key:
-            print 'EC2_ACCESS_KEY environment variable must be set.'
+    def parse_url(self):
+        self.host = self.url 
+        self.port = None
+        self.service_path = '/'
+        url = url.replace('http://', '')
+        url = url.replace('https://', '')
+        url_parts = url.split(':')
+        if (len(url_parts) > 1):
+            self.host = url_parts[0]
+            path_parts = url_parts[1].split('/', 1)
+    	    if (len(path_parts) > 1):
+	        self.port = int(path_parts[0])
+	        self.service_path = path_parts[1]
  
-        self.ec2_user_secret_key = os.getenv('EC2_SECRET_KEY')
-        if not self.ec2_user_secret_key:
-            print 'EC2_SECRET_KEY environment variable must be set.'
+    def __init__(self, opts):
 
-        self.ec2_url = os.getenv('EC2_URL')
+	self.ec2_user_access_key = None
+	self.ec2_user_secret_key = None
+	self.ec2_url = None
+        for name, value in opts:
+            if name in ('-K', '--access-key'):
+ 		self.ec2_user_access_key = value
+	    elif name in ('-S', '--secret-key'):
+		self.ec2_user_secret_key = value
+	    elif name in ('-U', '--url'):
+		self.ec2_url = value
+	
+        if not self.ec2_user_access_key:
+            self.ec2_user_access_key = os.getenv('EC2_ACCESS_KEY')
+ 	    if not self.ec2_user_access_key:
+                print 'EC2_ACCESS_KEY environment variable must be set.'
+     		sys.exit()
+ 
+	if not self.ec2_user_secret_key:
+            self.ec2_user_secret_key = os.getenv('EC2_SECRET_KEY')
+            if not self.ec2_user_secret_key:
+                print 'EC2_SECRET_KEY environment variable must be set.'
+		sys.exit()
+
         if not self.ec2_url:
-	    print 'EC2_URL must be set.'
-	    
-    def print_all(self):
-	print self.ec2_user_access_key 
+            self.ec2_url = os.getenv('EC2_URL')
+            if not self.ec2_url:
+	        self.ec2_url = default_ec2_url
+		print 'EC2_URL not specified. Trying %s' % (self.ec2_url)
+
+        self.host = self.ec2_url 
+	url = self.ec2_url
+        self.port = None
+        self.service_path = '/'
+        url = url.replace('http://', '')
+        url = url.replace('https://', '')
+        url_parts = url.split(':')
+        if (len(url_parts) > 1):
+            self.host = url_parts[0]
+            path_parts = url_parts[1].split('/', 1)
+    	    if (len(path_parts) > 1):
+	        self.port = int(path_parts[0])
+	        self.service_path = path_parts[1]
+ 
+    def make_connection(self, is_secure=False):
+        return boto.connect_ec2(aws_access_key_id=self.ec2_user_access_key, 
+			        aws_secret_access_key=self.ec2_user_secret_key,
+				is_secure=is_secure,
+				host=self.host,
+				port=self.port,
+				service=self.service_path)
+
