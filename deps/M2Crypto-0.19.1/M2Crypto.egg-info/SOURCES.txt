@@ -33,6 +33,7 @@ M2Crypto/util.py
 M2Crypto.egg-info/PKG-INFO
 M2Crypto.egg-info/SOURCES.txt
 M2Crypto.egg-info/dependency_links.txt
+M2Crypto.egg-info/native_libs.txt
 M2Crypto.egg-info/top_level.txt
 M2Crypto/PGP/PublicKey.py
 M2Crypto/PGP/PublicKeyRing.py
