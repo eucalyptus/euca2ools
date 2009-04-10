@@ -116,13 +116,13 @@ def upload_manifest(bucket_instance, manifest_filename):
     manifest_file = open(manifest_filename, "rb")
     k.set_contents_from_file(manifest_file)
 
-def upload_parts(bucket_instance, parts):
+def upload_parts(bucket_instance, directory, parts):
     print 'uploading parts'
     for part in parts:
         print 'part:', part
         k = Key(bucket_instance)
         k.key = part
-        part_file = open(part, "rb")
+        part_file = open(directory + "/" + part, "rb")
         k.set_contents_from_file(part_file)
 
 def main():
@@ -191,9 +191,12 @@ def main():
                             service='services/Walrus')
 	bucket_instance = ensure_bucket(conn, bucket)
 	parts = get_parts(manifest_path)
+        if not directory:
+	    manifest_path_parts = manifest_path.split('/')
+	    directory = manifest_path.replace(manifest_path_parts[len(manifest_path_parts) - 1], '')
 	if not skipmanifest:
 	    upload_manifest(bucket_instance, manifest_path)
-	upload_parts(bucket_instance, parts)
+	upload_parts(bucket_instance, directory, parts)
     else:
 	print 'bucket, manifest, access-key and secret-key MUST be specified.'	
         usage()
