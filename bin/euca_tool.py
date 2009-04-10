@@ -56,20 +56,6 @@ class EucaTool:
             ids.append(arg)
         return ids 
 
-    def parse_url(self):
-        self.host = self.url 
-        self.port = None
-        self.service_path = '/'
-        url = url.replace('http://', '')
-        url = url.replace('https://', '')
-        url_parts = url.split(':')
-        if (len(url_parts) > 1):
-            self.host = url_parts[0]
-            path_parts = url_parts[1].split('/', 1)
-    	    if (len(path_parts) > 1):
-	        self.port = int(path_parts[0])
-	        self.service_path = path_parts[1]
- 
     def __init__(self, short_opts=None, long_opts=None):
 
 	self.ec2_user_access_key = None
@@ -113,24 +99,29 @@ class EucaTool:
 	        self.ec2_url = default_ec2_url
 		print 'EC2_URL not specified. Trying %s' % (self.ec2_url)
 
-        self.host = self.ec2_url 
-	url = self.ec2_url
         self.port = None
         self.service_path = '/'
-        url = url.replace('http://', '')
-        url = url.replace('https://', '')
-        url_parts = url.split(':')
+	if (self.ec2_url.find('https://') >= 0):
+            self.ec2_url = self.ec2_url.replace('https://', '')
+	    self.is_secure = True
+ 	else:
+            self.ec2_url = self.ec2_url.replace('http://', '')
+	    self.is_secure = False
+        self.host = self.ec2_url 
+        url_parts = self.ec2_url.split(':')
         if (len(url_parts) > 1):
             self.host = url_parts[0]
             path_parts = url_parts[1].split('/', 1)
     	    if (len(path_parts) > 1):
 	        self.port = int(path_parts[0])
 	        self.service_path = path_parts[1]
- 
-    def make_connection(self, is_secure=False):
+	    else:
+		self.port = int(url_parts[1])
+
+    def make_connection(self):
         return boto.connect_ec2(aws_access_key_id=self.ec2_user_access_key, 
 			        aws_secret_access_key=self.ec2_user_secret_key,
-				is_secure=is_secure,
+				is_secure=self.is_secure,
 				host=self.host,
 				port=self.port,
 				service=self.service_path)

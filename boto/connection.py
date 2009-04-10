@@ -207,7 +207,7 @@ class AWSAuthConnection:
         if host is None:
             host = '%s:%d' % (self.server_name, int(self.port))
 	boto.log.debug('establishing HTTP connection')
-	print 'trying http connection to %s:%d' %(host, self.port)
+	#print 'trying http connection to %s:%d' %(host, self.port)
         if is_secure:
             if self.https_connection_factory:
                 connection = self.https_connection_factory(host)
