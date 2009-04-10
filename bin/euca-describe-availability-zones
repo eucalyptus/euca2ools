@@ -45,9 +45,6 @@ USAGE
 
     Where
 	zone1 zone2...zoneN - zones to describe. 
-	-h, --help - Display this help message.
-	--version - Display the version of this tool.
-        --debug - Turn on debugging.
 """
 
 version_string = """    euca-describe-availability-zones version: 1.0 (BSD)"""
@@ -72,15 +69,15 @@ def display_zones(zones, zone_ids):
 	print 'AVAILABILITYZONE\t%s' % (zone_string)
 
 def main():
+    euca = None
     try:
-        opts, args = getopt.getopt(sys.argv[1:], 'hK:S:U:',
-                                   ['access-key=', 'secret-key=', 'url=', 'help', 'version', 'debug'])
+        euca = euca_tool.EucaTool() 
     except:
         usage()
 
     debug = False
 
-    for name, value in opts:
+    for name, value in euca.opts:
         if name in ('-h', '--help'):
             usage()
 
@@ -89,9 +86,8 @@ def main():
 	if name in ('--debug'):
 	    debug = True
     
-    euca = euca_tool.EucaTool(opts)
     ec2_conn = euca.make_connection()
-    zone_ids = euca.process_args(args)
+    zone_ids = euca.process_args()
     if 'verbose' in zone_ids:
 	zones = ec2_conn.get_all_zones('verbose')
     else:

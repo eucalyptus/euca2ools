@@ -34,9 +34,12 @@ import getopt, sys, os
 import boto
 
 usage_string = """
-        -K, --access-key - user's Access Key ID.
-	-S, --secret-key - user's Secret Key.
+	-K, --access-key - user's Access Key ID.
+ 	-S, --secret-key - user's Secret Key.
 	-U, --url - Cloud URL.
+	-h, --help - Display this help message.
+	--version - Display the version of this tool.
+	--debug - Turn on debugging.
 """     
 
 def usage():
@@ -47,9 +50,9 @@ def usage():
 class EucaTool:
     default_ec2_url = 'http://localhost:8773/services/Eucalyptus'
    
-    def process_args(self, args):
+    def process_args(self):
         ids = []
-        for arg in args:
+        for arg in self.args:
             ids.append(arg)
         return ids 
 
@@ -67,11 +70,21 @@ class EucaTool:
 	        self.port = int(path_parts[0])
 	        self.service_path = path_parts[1]
  
-    def __init__(self, opts):
+    def __init__(self, short_opts=None, long_opts=None):
 
 	self.ec2_user_access_key = None
 	self.ec2_user_secret_key = None
 	self.ec2_url = None
+	if not short_opts:
+	    short_opts = ''
+	if not long_opts:
+	    long_opts = ['']
+	short_opts += 'hK:S:U:'
+	long_opts += ['access-key=', 'secret-key=', 'url=', 'help', 'version', 'debug']
+        opts, args = getopt.getopt(sys.argv[1:], short_opts,
+                                  long_opts)
+	self.opts = opts
+	self.args = args
         for name, value in opts:
             if name in ('-K', '--access-key'):
  		self.ec2_user_access_key = value
@@ -79,8 +92,10 @@ class EucaTool:
 		self.ec2_user_secret_key = value
 	    elif name in ('-U', '--url'):
 		self.ec2_url = value
-	
-        if not self.ec2_user_access_key:
+	    elif name in ('--debug'):
+		self.debug = True
+        
+	if not self.ec2_user_access_key:
             self.ec2_user_access_key = os.getenv('EC2_ACCESS_KEY')
  	    if not self.ec2_user_access_key:
                 print 'EC2_ACCESS_KEY environment variable must be set.'

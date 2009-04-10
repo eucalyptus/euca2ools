@@ -33,7 +33,7 @@
 # Author: Sunil Soman sunils@cs.ucsb.edu
 
 import getopt, sys, os
-import boto
+import euca_tool
 
 usage_string = """
 DESCRIPTION
@@ -48,41 +48,18 @@ USAGE
 
     Where
 	image_id - identifier for the image to run. 
-	-h, --help - Display this help message.
-	--version - Display the version of this tool.
-        --debug - Turn on debugging.
 """
 
 version_string = """    euca-run-instances version: 1.0 (BSD)"""
 
 def usage():
     print usage_string
-    sys.exit()
+    euca_tool.usage()
 
 def version():
     print version_string
     sys.exit()
 
-def process_args(args):
-    instance_ids = []
-    for arg in args:
-        instance_ids.append(arg)
-    return instance_ids 
-
-def parse_url(url):
-    host = None
-    port = None
-    service_path = None
-    url = url.replace('http://', '')
-    url_parts = url.split(':')
-    if (len(url_parts) > 1):
-        host = url_parts[0]
-        path_parts = url_parts[1].split('/', 1)
-	if (len(path_parts) > 1):
-	    port = int(path_parts[0])
-	    service_path = path_parts[1]
-    return host, port, service_path	
-  
 def display_reservations(reservation):
     reservation_string = '%s\t%s' % (reservation.id, reservation.owner_id)
     group_delim = '\t'
@@ -95,15 +72,14 @@ def display_reservations(reservation):
 	print 'INSTANCE\t%s' % (instance_string)
 
 def main():
+    euca = None
     try:
-        opts, args = getopt.getopt(sys.argv[1:], 'hk:n:t:g:d:z:',
+        euca = euca_tool.EucaTool('k:n:t:g:d:z:',
                                    ['key=', 'kernel=', 'ramdisk=', 'instance-count=', 'instance_type=', 
-				    'group=', 'user-data=', 'addressing=', 'availability-zone=',
-				    'help', 'version', 'debug'])
+				    'group=', 'user-data=', 'addressing=', 'availability-zone='])
     except:
         usage()
  
-    debug = False
     image_id = None
     keyname = None
     kernel_id = None
@@ -115,10 +91,7 @@ def main():
     user_data = None
     addressing_type = None
     zone = None
-    ec2_user_access_key = None
-    ec2_user_secret_key = None 
-    default_ec2_url = 'http://localhost:8773/services/Eucalyptus'
-    for name, value in opts:
+    for name, value in euca.opts:
         if name in ('-k', '--key'):
 	    keyname = value
 	elif name in ('--kernel'):
@@ -146,34 +119,12 @@ def main():
             usage()
 	elif name in ('--version'):
 	    version()
-	elif name in ('--debug'):
-	    debug = True
-    
-    ec2_user_access_key = os.getenv('EC2_ACCESS_KEY')
-    if not ec2_user_access_key:
-        print 'EC2_ACCESS_KEY environment variable must be set.'
-	usage()
- 
-    ec2_user_secret_key = os.getenv('EC2_SECRET_KEY')
-    if not ec2_user_secret_key:
-        print 'EC2_SECRET_KEY environment variable must be set.'
-	usage()
 
-    ec2_url = os.getenv('EC2_URL')
-    if not ec2_url:
-	ec2_url = default_ec2_url
-
-    for arg in args:
+    for arg in euca.args:
 	image_id = arg
 	break
 
-    host, port, service = parse_url(ec2_url)
-    ec2_conn = boto.connect_ec2(aws_access_key_id=ec2_user_access_key, 
-			        aws_secret_access_key=ec2_user_secret_key,
-				is_secure=False,
-				host=host,
-				port=port,
-				service=service)
+    ec2_conn = euca.make_connection()
     if image_id:
         reservation = ec2_conn.run_instances(image_id = image_id,
 					      min_count = min_count,

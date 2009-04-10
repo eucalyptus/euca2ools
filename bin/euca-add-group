@@ -46,9 +46,6 @@ USAGE
     Where
 	group_name - unique name for the group to create.
 	group_description - description of this group.
-	-h, --help - Display this help message.
-	--version - Display the version of this tool.
-        --debug - Turn on debugging.
 """
 
 version_string = """    euca-add-group version: 1.0 (BSD)"""
@@ -61,53 +58,31 @@ def version():
     print version_string
     sys.exit()
 
-def parse_url(url):
-    host = None
-    port = None
-    service_path = None
-    url = url.replace('http://', '')
-    url_parts = url.split(':')
-    if (len(url_parts) > 1):
-        host = url_parts[0]
-        path_parts = url_parts[1].split('/', 1)
-	if (len(path_parts) > 1):
-	    port = int(path_parts[0])
-	    service_path = path_parts[1]
-    return host, port, service_path	
-  
 def display_group(group):
     group_string = '%s\t%s' % (group.name, group.description)
     print 'GROUP\t%s' % (group_string)
 
 def main():
+    euca = None
     try:
-        opts, args = getopt.getopt(sys.argv[1:], 'd:hK:S:U:',
-                                   ['access-key=', 'secret-key=', 'url=', 'description=', 'help', 'version', 'debug'])
+        euca = euca_tool.EucaTool('d:', ['description='])
     except:
         usage()
  
-    debug = False
     group_name = None
     group_description = None
-    ec2_user_access_key = None
-    ec2_user_secret_key = None 
-    default_ec2_url = 'http://localhost:8773/services/Eucalyptus'
 
-    for name, value in opts:
+    for name, value in euca.opts:
         if name in ('-d', '--description'):
             group_description = value 
         elif name in ('-h', '--help'):
             usage()
-	
 	elif name in ('--version'):
 	    version()
-	elif name in ('--debug'):
-	    debug = True
     
-    euca = euca_tool.EucaTool(opts)
     ec2_conn = euca.make_connection()
  
-    for arg in args:
+    for arg in euca.args:
         group_name = arg
 	break
     if group_name and group_description:

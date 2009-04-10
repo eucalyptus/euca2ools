@@ -33,7 +33,7 @@
 # Author: Sunil Soman sunils@cs.ucsb.edu
 
 import getopt, sys, os
-import boto
+import euca_tool
 
 usage_string = """
 DESCRIPTION
@@ -45,35 +45,18 @@ USAGE
 
     Where
 	image_id - unique identifier for the image that you want to reset the attributes for. 
-	-h, --help - Display this help message.
-	--version - Display the version of this tool.
-        --debug - Turn on debugging.
 """
 
 version_string = """    euca-reset-image-attribute version: 1.0 (BSD)"""
 
 def usage():
     print usage_string
-    sys.exit()
+    euca_tool.usage()
 
 def version():
     print version_string
     sys.exit()
 
-def parse_url(url):
-    host = None
-    port = None
-    service_path = None
-    url = url.replace('http://', '')
-    url_parts = url.split(':')
-    if (len(url_parts) > 1):
-        host = url_parts[0]
-        path_parts = url_parts[1].split('/', 1)
-	if (len(path_parts) > 1):
-	    port = int(path_parts[0])
-	    service_path = path_parts[1]
-    return host, port, service_path	
- 
 def display_image_attribute(image_attribute):
     if image_attribute.name == 'launch_permission':
         if image_attribute.attrs.has_key('groups'):
@@ -91,21 +74,18 @@ def display_image_attribute(image_attribute):
 	print 'ramdisk\t%s\tramdisk\t%s' % (image_attribute.image_id, image_attribute.ramdisk)
 
 def main():
+    euca = None
     try:
-        opts, args = getopt.getopt(sys.argv[1:], 'hlpi:a:r:',
+        euca = euca_tool.EucaTool('lpi:a:r:',
                                    ['launch-permission', 'product-code=', 'add=', 'remove=',
-				    'kernel', 'ramdisk', 'help', 'version', 'debug'])
+				    'kernel', 'ramdisk'])
     except:
         usage()
  
-    debug = False
     image_id = None
-    ec2_user_access_key = None
-    ec2_user_secret_key = None 
     image_attribute = None
-    default_ec2_url = 'http://localhost:8773/services/Eucalyptus'
 
-    for name, value in opts:
+    for name, value in euca.opts:
 	if name in ('-l', '--launch-permission'):
 	    if not image_attribute:
 		image_attribute = 'launchPermission'
@@ -113,34 +93,12 @@ def main():
             usage()
 	elif name in ('--version'):
 	    version()
-	elif name in ('--debug'):
-	    debug = True
-    
-    ec2_user_access_key = os.getenv('EC2_ACCESS_KEY')
-    if not ec2_user_access_key:
-        print 'EC2_ACCESS_KEY environment variable must be set.'
-	usage()
- 
-    ec2_user_secret_key = os.getenv('EC2_SECRET_KEY')
-    if not ec2_user_secret_key:
-        print 'EC2_SECRET_KEY environment variable must be set.'
-	usage()
 
-    ec2_url = os.getenv('EC2_URL')
-    if not ec2_url:
-	ec2_url = default_ec2_url
-
-    for arg in args:
+    for arg in euca.args:
         image_id = arg
 	break
 
-    host, port, service = parse_url(ec2_url)
-    ec2_conn = boto.connect_ec2(aws_access_key_id=ec2_user_access_key, 
-			        aws_secret_access_key=ec2_user_secret_key,
-				is_secure=False,
-				host=host,
-				port=port,
-				service=service)
+    ec2_conn = euca.make_connection()
     if image_id:
 	return_code = ec2_conn.reset_image_attribute(image_id = image_id,
  						       attribute = image_attribute)

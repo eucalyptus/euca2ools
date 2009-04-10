@@ -386,7 +386,7 @@ def main():
     target_arch='x86_64'
     batch=False
     
-    for name, value in opts:
+    for name, value in euca.opts:
         if name in ('-h', '--help'):
             usage()
         elif name in ('-i', '--image'):
