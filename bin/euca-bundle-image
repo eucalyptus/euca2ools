@@ -110,7 +110,7 @@ def split_file(file, chunk_size):
 	    bytes_read += data_len
 	    if bytes_read >= file_size: break
 	file_part.close()
-	parts.append(get_absolute_filename(filename))
+	parts.append(filename)
 	parts_digest.append(hexlify(part_digest.digest()))	
 
     in_file.close()
@@ -128,9 +128,9 @@ def check_image(image_file):
 	sha_image.update(buf)
     return image_size, hexlify(sha_image.digest())
 
-def tar_image(file): 
+def tar_image(file, path): 
     print 'tarring image'
-    tar_file = '%s.tar' % (file)
+    tar_file = '%s.tar' % (path + "/" + file)
     tar = tarfile.open(tar_file, "w")
     tar.add(file)
     tar.close()
@@ -206,7 +206,7 @@ def get_verification_string(manifest_string):
 
     return mc_config_string + image_string
 
-def generate_manifest(parts, parts_digest, file, key, iv, cert_path, ec2cert_path, private_key_path, target_arch, image_size, bundled_size, image_digest, user):
+def generate_manifest(path, parts, parts_digest, file, key, iv, cert_path, ec2cert_path, private_key_path, target_arch, image_size, bundled_size, image_digest, user, kernel, ramdisk):
     print 'generating manifest'
 
     user_pub_key = X509.load_cert(cert_path).get_pubkey().get_rsa()
@@ -220,7 +220,7 @@ def generate_manifest(parts, parts_digest, file, key, iv, cert_path, ec2cert_pat
 
     user_priv_key = RSA.load_key(private_key_path)
 
-    manifest_file = '%s.manifest.xml' % (file)
+    manifest_file = '%s.manifest.xml' % (path + "/" + file)
     manifest_out_file = open(manifest_file, "wb")
     doc = Document()
     
@@ -252,6 +252,19 @@ def generate_manifest(parts, parts_digest, file, key, iv, cert_path, ec2cert_pat
     target_arch_elem.appendChild(target_arch_value)
     machine_config_elem.appendChild(target_arch_elem)
     manifest_elem.appendChild(machine_config_elem)
+
+    #kernel and ramdisk
+    if kernel:
+	kernel_id_elem = doc.createElement("kernel_id")
+	kernel_id_value = doc.createTextNode(kernel)
+	kernel_id_elem.appendChild(kernel_id_value)
+	machine_config_elem.appendChild(kernel_id_elem)
+
+    if ramdisk:
+	ramdisk_id_elem = doc.createElement("ramdisk_id")
+	ramdisk_id_value = doc.createTextNode(ramdisk)
+	ramdisk_id_elem.appendChild(ramdisk_id_value)
+	machine_config_elem.appendChild(ramdisk_id_elem)
 
     image_elem = doc.createElement("image")
     manifest_elem.appendChild(image_elem)
@@ -326,7 +339,7 @@ def generate_manifest(parts, parts_digest, file, key, iv, cert_path, ec2cert_pat
     for part in parts:
 	part_elem = doc.createElement("part")
 	filename_elem = doc.createElement("filename")
-	filename_value = doc.createTextNode(part)
+	filename_value = doc.createTextNode(get_absolute_filename(part))
 	filename_elem.appendChild(filename_value)
 	part_elem.appendChild(filename_elem)
         #digest
@@ -366,7 +379,7 @@ def main():
     cert_path=None
     private_key_path=None
     prefix=None
-    destination_path=None
+    destination_path='/tmp'
     ec2cert_path=None
     target_arch='x86_64'
     batch=False
@@ -374,48 +387,48 @@ def main():
     for name, value in opts:
         if name in ('-h', '--help'):
             usage()
-        if name in ('-i', '--image'):
+        elif name in ('-i', '--image'):
             image_path = value
-        if name in ('-c', '--cert'):
+        elif name in ('-c', '--cert'):
             cert_path = value
-        if name in ('-k', '--privatekey'):
+        elif name in ('-k', '--privatekey'):
             private_key_path = value
-        if name in ('-u', '--user'):
+        elif name in ('-u', '--user'):
             user = value
-        if name in ('--kernel'):
+        elif name in ('--kernel'):
             kernel = value
-        if name in ('--ramdisk'):
+        elif name in ('--ramdisk'):
             ramdisk = value
-        if name in ('-p', '--prefix'):
+        elif name in ('-p', '--prefix'):
             prefix = value
-        if name in ('-d', '--destination'):
+        elif name in ('-d', '--destination'):
             destination_path = value
-        if name in ('--ec2cert'):
+        elif name in ('--ec2cert'):
             ec2cert_path = value
-        if name in ('-r', '--arch'):
+        elif name in ('-r', '--arch'):
             target_arch = value
 	    print target_arch
 	    if target_arch != 'i386' and target_arch != 'x86_64':
 		print 'target architecture must be i386 or x86_64'
 		usage()
-	if name in ('--batch'):
+	elif name in ('--batch'):
 	    batch = True
-	if name in ('--version'):
+	elif name in ('--version'):
 	    version()
-	if name in ('--debug'):
+	elif name in ('--debug'):
 	    debug = True
 
-    if image_path and cert_path and private_key_path and user:
+    if image_path and cert_path and private_key_path and user and ec2cert_path:
 	image_size, sha_image_digest = check_image(image_path)
-	tar_file = tar_image(image_path)
+	tar_file = tar_image(image_path, destination_path)
 	zip_file = zip_image(tar_file)
 	os.remove(tar_file)
 	encrypted_file, key, iv, bundled_size = encrypt_image(zip_file)
 	os.remove(zip_file)
 	parts, parts_digest = split_image(encrypted_file)
-	generate_manifest(parts, parts_digest, image_path, key, iv, cert_path, ec2cert_path, private_key_path, target_arch, image_size, bundled_size, sha_image_digest, user)
+	generate_manifest(destination_path, parts, parts_digest, image_path, key, iv, cert_path, ec2cert_path, private_key_path, target_arch, image_size, bundled_size, sha_image_digest, user, kernel, ramdisk)
     else:
-	print 'image, cert, privatekey and user MUST be specified.'
+	print 'image, cert, privatekey, user and ec2cert_path MUST be specified.'
 	usage()
 if __name__ == "__main__":
     main()
