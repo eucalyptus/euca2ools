@@ -116,8 +116,10 @@ def split_file(file, chunk_size):
     in_file.close()
     return parts, parts_digest
  
-def check_image(image_file):
+def check_image(image_file, path):
     print 'checking image'
+    if not os.path.exists(path):
+        os.makedirs(path)
     image_size = os.path.getsize(image_file)
     in_file = open(image_file, "rb")
     sha_image = sha.new()
@@ -175,7 +177,7 @@ def decrypt_file( cipherType, key, iv, in_file, out_file ) :
  
 def encrypt_image(file):
     print 'encrypting image'
-    enc_file = '%s.enc' % (file)
+    enc_file = '%s.part' % (file.replace('.tar.gz', ''))
 
     key = hex(BN.rand(16 * 8))[2:34]
     print 'key: %s' % (key)
@@ -419,7 +421,7 @@ def main():
 	    debug = True
 
     if image_path and cert_path and private_key_path and user and ec2cert_path:
-	image_size, sha_image_digest = check_image(image_path)
+	image_size, sha_image_digest = check_image(image_path, destination_path)
 	tar_file = tar_image(image_path, destination_path)
 	zip_file = zip_image(tar_file)
 	os.remove(tar_file)
@@ -427,6 +429,7 @@ def main():
 	os.remove(zip_file)
 	parts, parts_digest = split_image(encrypted_file)
 	generate_manifest(destination_path, parts, parts_digest, image_path, key, iv, cert_path, ec2cert_path, private_key_path, target_arch, image_size, bundled_size, sha_image_digest, user, kernel, ramdisk)
+        os.remove(encrypted_file)
     else:
 	print 'image, cert, privatekey, user and ec2cert_path MUST be specified.'
 	usage()
