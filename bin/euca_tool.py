@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2008, Regents of the University of California
+# Copyright (c) 2009, Regents of the University of California
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -41,11 +41,17 @@ usage_string = """
 
 def usage():
     print usage_string
-
+    sys.exit()
 
 
 class EucaTool:
     default_ec2_url = 'http://localhost:8773/services/Eucalyptus'
+   
+    def process_args(self, args):
+        ids = []
+        for arg in args:
+            ids.append(arg)
+        return ids 
 
     def parse_url(self):
         self.host = self.url 

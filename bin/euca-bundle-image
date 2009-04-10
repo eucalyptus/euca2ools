@@ -2,7 +2,7 @@
 
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2008, Regents of the University of California
+# Copyright (c) 2009, Regents of the University of California
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -182,7 +182,7 @@ def encrypt_image(file):
     iv = hex(BN.rand(16 * 8))[2:34]
     print 'iv: %s' % (iv)
 
-    k=EVP.Cipher(alg='aes_128_cbc', key=(key), iv=unhexlify(iv), op=1)
+    k=EVP.Cipher(alg='aes_128_cbc', key=unhexlify(key), iv=unhexlify(iv), op=1)
 
     in_file = open(file)
     out_file = open(enc_file, "wb")
@@ -291,8 +291,8 @@ def generate_manifest(parts, parts_digest, file, key, iv, cert_path, ec2cert_pat
     #bundled size
     bundled_size_elem = doc.createElement("bundled_size")
     bundled_size_value = doc.createTextNode("%s" % (bundled_size))
-    image_size_elem.appendChild(bundled_size_value)
-    image_elem.appendChild(image_size_elem)
+    bundled_size_elem.appendChild(bundled_size_value)
+    image_elem.appendChild(bundled_size_elem)
 
     #key, iv
     cloud_encrypted_key_elem = doc.createElement("ec2_encrypted_key")
