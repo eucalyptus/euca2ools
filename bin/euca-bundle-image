@@ -49,13 +49,13 @@ usage_string = """
 USAGE
     euca-bundle-image -i, --image image_path -c, --cert cert_path -k, --privatekey private_key_path 
 	  -u, --user user 
-          [-p, --prefix prefix] [--kernel kernel_id] [--ramdisk ramdisk_id] 
-	  [-B, --block-device-mapping mapping] [-d, --destination destination_path] 
-	  [--ec2cert ec2cert_path] [-h, --help] [-m, --manual] [-r, --arch target_architecture] 
-	  [-b, --batch] [--version]
+	[-p, --prefix prefix] [--kernel kernel_id] [--ramdisk ramdisk_id] 
+	[-B, --block-device-mapping mapping] [-d, --destination destination_path] 
+	[--ec2cert ec2cert_path] [-h, --help] [-m, --manual] [-r, --arch target_architecture] 
+	[-b, --batch] [--version]
 
     Where
-        image_path - The path to the file system image to bundle.
+	image_path - The path to the file system image to bundle.
 	cert_path - The path to the user's PEM encoded RSA public key certificate file.
 	private_key_path - The path to the user's PEM encoded RSA private key file.
 	user -  The user's EC2 user ID (not the Access Key/Query Key ID).
@@ -378,15 +378,15 @@ def main():
     kernel=None
     user=None
     ramdisk=None
-    cert_path=None
-    private_key_path=None
+    cert_path=os.getenv('EC2_CERT')
+    private_key_path=os.getenv('EC2_PRIVATE_KEY')
     prefix=None
     destination_path='/tmp'
     ec2cert_path=None
     target_arch='x86_64'
     batch=False
-    
-    for name, value in euca.opts:
+         
+    for name, value in opts:
         if name in ('-h', '--help'):
             usage()
         elif name in ('-i', '--image'):

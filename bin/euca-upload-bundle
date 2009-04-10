@@ -135,8 +135,8 @@ def main():
  
     bucket=None
     manifest_path = None
-    access_key = None
-    secret_key = None
+    access_key = os.getenv('EC2_ACCESS_KEY') 
+    secret_key = os.getenv('EC2_SECRET_KEY') 
     ec2cert_path = None
     directory = None
     part = None
@@ -147,7 +147,7 @@ def main():
     debug = False
     ssl = False
 
-    for name, value in euca.opts:
+    for name, value in opts:
         if name in ('-h', '--help'):
             usage()
         if name in ('-b', '--bucket'):
