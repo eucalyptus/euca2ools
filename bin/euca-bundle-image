@@ -132,7 +132,7 @@ def check_image(image_file, path):
 
 def tar_image(file, path): 
     print 'tarring image'
-    tar_file = '%s.tar' % (path + "/" + file)
+    tar_file = '%s.tar' % (path + "/" + get_absolute_filename(file))
     tar = tarfile.open(tar_file, "w")
     tar.add(file)
     tar.close()
@@ -179,9 +179,9 @@ def encrypt_image(file):
     print 'encrypting image'
     enc_file = '%s.part' % (file.replace('.tar.gz', ''))
 
-    key = hex(BN.rand(16 * 8))[2:34]
+    key = (hex(BN.rand(16 * 8))[2:34]).replace('L', 'c')
     print 'key: %s' % (key)
-    iv = hex(BN.rand(16 * 8))[2:34]
+    iv = (hex(BN.rand(16 * 8))[2:34]).replace('L', 'c')
     print 'iv: %s' % (iv)
 
     k=EVP.Cipher(alg='aes_128_cbc', key=unhexlify(key), iv=unhexlify(iv), op=1)
@@ -222,7 +222,7 @@ def generate_manifest(path, parts, parts_digest, file, key, iv, cert_path, ec2ce
 
     user_priv_key = RSA.load_key(private_key_path)
 
-    manifest_file = '%s.manifest.xml' % (path + "/" + file)
+    manifest_file = '%s.manifest.xml' % (path + "/" + get_absolute_filename(file))
     manifest_out_file = open(manifest_file, "wb")
     doc = Document()
     
