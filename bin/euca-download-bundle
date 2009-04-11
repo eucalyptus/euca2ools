@@ -1,0 +1,154 @@
+#!/usr/bin/env python
+
+# Software License Agreement (BSD License)
+#
+# Copyright (c) 2009, Regents of the University of California
+# All rights reserved.
+#
+# Redistribution and use of this software in source and binary forms, with or
+# without modification, are permitted provided that the following conditions
+# are met:
+#
+#   Redistributions of source code must retain the above
+#   copyright notice, this list of conditions and the
+#   following disclaimer.
+#
+#   Redistributions in binary form must reproduce the above
+#   copyright notice, this list of conditions and the
+#   following disclaimer in the documentation and/or other
+#   materials provided with the distribution.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+# ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+# LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE.
+#
+# Author: Sunil Soman sunils@cs.ucsb.edu
+
+import getopt, sys, os
+from xml.dom import minidom
+import euca_tool
+from boto.exception import S3ResponseError
+from boto.s3 import Connection
+from boto.s3.key import Key
+import euca_tool
+
+usage_string = """
+USAGE
+    euca-download-bundle -b, --bucket bucket [-m, --manifest manifest_path] [-d, --directory directory]
+ 
+    Where
+	bucket - The name of the bucket to download to. Bucket will be created if it does not exist.
+	manifest_path - The path to the manifest file.
+	directory - The name of the directory to download the bundled parts to.
+"""
+
+version_string = """    euca-download-bundle version: 1.0 (BSD)"""
+
+def usage():
+    print usage_string
+    euca_tool.usage()
+
+def version():
+    print version_string
+    sys.exit()
+
+def ensure_bucket(connection, bucket):
+    bucket_instance = None
+    try:
+	bucket_instance = connection.get_bucket(bucket)
+    except S3ResponseError as s3error:
+	print 'Unable to get bucket %s' % (bucket)
+	sys.exit()
+    return bucket_instance
+ 
+def get_parts(manifest_filename):
+    parts = []
+    dom = minidom.parse(manifest_filename) 
+    manifest_elem = dom.getElementsByTagName('manifest')[0]
+    parts_list = manifest_elem.getElementsByTagName('filename')
+    for part_elem in parts_list:
+	nodes = part_elem.childNodes
+	for node in nodes:
+            if node.nodeType == node.TEXT_NODE:
+                parts.append(node.data)
+    return parts
+
+def get_absolute_filename(filename):
+    f_parts = filename.split('/')
+    return f_parts[len(f_parts) - 1]
+
+def get_manifests(bucket):
+    manifests = []
+    keys = bucket.get_all_keys()
+    for k in keys:
+	if k.name:
+	    if(k.name.find('manifest') >= 0):
+		manifests.append(k.name)
+    return manifests
+
+def download_manifests(bucket, manifests, directory):
+    if (len(manifests) > 0):
+	if not os.path.exists(directory):
+	    os.makedirs(directory)
+    for manifest in manifests:
+	k = Key(bucket)
+	k.key = manifest
+	manifest_file = open(directory + "/" + manifest, "wb")
+	k.get_contents_to_file(manifest_file)
+	manifest_file.close()
+
+def download_parts(bucket, manifests, directory):
+    for manifest in manifests:
+	manifest_filename = directory + "/" + manifest
+	parts = get_parts(manifest_filename)
+	for part in parts:
+	    k = Key(bucket)
+	    k.key = part 
+	    part_file = open(directory + "/" + part, "wb")
+  	    k.get_contents_to_file(part_file)
+	    part_file.close()
+
+def main():
+    euca = None
+    try:
+        euca = euca_tool.EucaTool('b:m:d:',
+                                  ['bucket=', 'manifest=', 'directory='],
+				  is_s3=True)
+    except:
+        usage()
+ 
+    bucket=None
+    manifest_path = None
+    directory = None
+
+    for name, value in euca.opts:
+        if name in ('-h', '--help'):
+            usage()
+	if name in ('-d', '--directory'):
+	    directory = value
+        elif name in ('-b', '--bucket'):
+            bucket = value
+        elif name in ('-m', '--manifest'):
+            manifest_path = value
+
+    if bucket:
+	conn = euca.make_connection()
+        bucket_instance = ensure_bucket(conn, bucket)
+	manifests = get_manifests(bucket_instance)
+	download_manifests(bucket_instance, manifests, directory)
+	download_parts(bucket_instance, manifests, directory)
+    else:
+	print 'bucket MUST be specified.'	
+        usage()
+
+if __name__ == "__main__":
+    main()
+ 

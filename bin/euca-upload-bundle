@@ -68,7 +68,7 @@ version_string = """    euca-upload-bundle version: 1.0 (BSD)"""
 
 def usage():
     print usage_string
-    sys.exit()
+    euca_tool.usage()
 
 def version():
     print version_string
@@ -89,7 +89,7 @@ def ensure_bucket(connection, bucket):
 	    try:
                 bucket_instance = create_bucket(connection, bucket) 
 	    except S3CreateError:
-		print 'Unable to create bucket %s', bucket
+		print 'Unable to create bucket %s' % (bucket)
 		sys.exit()
     return bucket_instance
  
