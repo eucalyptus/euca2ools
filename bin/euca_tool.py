@@ -48,19 +48,19 @@ def usage():
 
 
 class EucaTool:
-    default_ec2_url = 'http://localhost:8773/services/Eucalyptus'
-   
     def process_args(self):
         ids = []
         for arg in self.args:
             ids.append(arg)
         return ids 
 
-    def __init__(self, short_opts=None, long_opts=None):
+    def __init__(self, short_opts=None, long_opts=None, is_s3=False):
 
 	self.ec2_user_access_key = None
 	self.ec2_user_secret_key = None
 	self.ec2_url = None
+	self.s3_url = None
+	self.is_s3 = is_s3
 	if not short_opts:
 	    short_opts = ''
 	if not long_opts:
@@ -93,11 +93,18 @@ class EucaTool:
                 print 'EC2_SECRET_KEY environment variable must be set.'
 		sys.exit()
 
-        if not self.ec2_url:
-            self.ec2_url = os.getenv('EC2_URL')
+        if not self.is_s3:
             if not self.ec2_url:
-	        self.ec2_url = default_ec2_url
-		print 'EC2_URL not specified. Trying %s' % (self.ec2_url)
+                self.ec2_url = os.getenv('EC2_URL')
+                if not self.ec2_url:
+	            self.ec2_url = 'http://localhost:8773/services/Eucalyptus' 
+    		    print 'EC2_URL not specified. Trying %s' % (self.ec2_url)
+	else:
+	    if not self.ec2_url:
+                self.ec2_url = os.getenv('S3_URL')
+                if not self.ec2_url:
+	            self.ec2_url = 'http://localhost:8773/services/Walrus' 
+		    print 'S3_URL not specified. Trying %s' % (self.ec2_url)
 
         self.port = None
         self.service_path = '/'
@@ -119,10 +126,18 @@ class EucaTool:
 		self.port = int(url_parts[1])
 
     def make_connection(self):
-        return boto.connect_ec2(aws_access_key_id=self.ec2_user_access_key, 
+	if not self.is_s3:
+            return boto.connect_ec2(aws_access_key_id=self.ec2_user_access_key, 
 			        aws_secret_access_key=self.ec2_user_secret_key,
 				is_secure=self.is_secure,
 				host=self.host,
 				port=self.port,
 				service=self.service_path)
+	else:
+	    return boto.s3.Connection(aws_access_key_id=self.ec2_user_access_key,
+                            aws_secret_access_key=self.ec2_user_secret_key,
+                            is_secure=self.is_secure,
+                            host=self.host,
+                            port=self.port,
+                            service=self.service_path)
 
