@@ -1,0 +1,224 @@
+#!/usr/bin/env python
+
+# Software License Agreement (BSD License)
+#
+# Copyright (c) 2009, Regents of the University of California
+# All rights reserved.
+#
+# Redistribution and use of this software in source and binary forms, with or
+# without modification, are permitted provided that the following conditions
+# are met:
+#
+#   Redistributions of source code must retain the above
+#   copyright notice, this list of conditions and the
+#   following disclaimer.
+#
+#   Redistributions in binary form must reproduce the above
+#   copyright notice, this list of conditions and the
+#   following disclaimer in the documentation and/or other
+#   materials provided with the distribution.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+# ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+# LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE.
+#
+# Author: Sunil Soman sunils@cs.ucsb.edu
+
+import getopt, sys, os
+import tarfile
+import gzip
+from xml.dom import minidom
+from xml.dom.minidom import Document
+import sha
+from M2Crypto import BN, EVP, RSA, util, Rand, m2, X509
+from binascii import hexlify, unhexlify
+
+VERSION = "2007-10-10"
+BUNDLER_NAME = "euca-tools"
+BUNDLER_VERSION = "1.0"
+AES = 'AES-128-CBC'
+
+usage_string = """
+USAGE
+    euca-unbundle-image -m, --manifest manifest_path -k, --privatekey private_key_path 
+	[-h, --help]
+
+    Where
+	manifest_path - The path to the manifest.
+	private_key_path - The path to the user's PEM encoded RSA private key file.
+	-h, --help - Display this help message.
+"""
+
+version_string = """    euca-unbundle-image version: 1.0 (BSD)"""
+
+IMAGE_IO_CHUNK = 8 * 1024
+IMAGE_SPLIT_CHUNK = IMAGE_IO_CHUNK * 1024;
+
+def usage():
+    print usage_string
+    sys.exit()
+
+def version():
+    print version_string
+    sys.exit()
+
+def get_absolute_filename(filename):
+    f_parts = filename.split('/')
+    return f_parts[len(f_parts) - 1]
+
+def crypt_file(cipher, in_file, out_file):
+    while 1:
+        buf=in_file.read()
+        if not buf:
+           break
+        out_file.write(cipher.update(buf))
+    out_file.write(cipher.final())
+  
+def get_verification_string(manifest_string):
+    start_mc = manifest_string.find('<machine_configuration>')
+    end_mc = manifest_string.find('</machine_configuration>')
+    mc_config_string = manifest_string[start_mc:end_mc + len('</machine_configuration>')]
+    start_image = manifest_string.find('<image>')
+    end_image = manifest_string.find('</image>')
+    image_string = manifest_string[start_image:end_image + len('</image>')]
+
+    return mc_config_string + image_string
+
+def get_absolute_filename(filename):
+    f_parts = filename.split('/')
+    return f_parts[len(f_parts) - 1]
+
+def parse_manifest(manifest_filename):
+    parts = []
+    encrypted_key = None
+    encrypted_iv = None
+    dom = minidom.parse(manifest_filename) 
+    manifest_elem = dom.getElementsByTagName('manifest')[0]
+    parts_list = manifest_elem.getElementsByTagName('filename')
+    for part_elem in parts_list:
+	nodes = part_elem.childNodes
+	for node in nodes:
+            if node.nodeType == node.TEXT_NODE:
+                parts.append(node.data)
+    encrypted_key_elem = manifest_elem.getElementsByTagName('user_encrypted_key')[0]
+    nodes = encrypted_key_elem.childNodes
+    for node in nodes:
+	if node.nodeType == node.TEXT_NODE:
+	    encrypted_key = node.data
+    encrypted_iv_elem = manifest_elem.getElementsByTagName('user_encrypted_iv')[0]
+    nodes = encrypted_iv_elem.childNodes
+    for node in nodes:
+	if node.nodeType == node.TEXT_NODE:
+	    encrypted_iv = node.data
+    return parts, encrypted_key, encrypted_iv
+
+def assemble_parts(src_directory, directory, manifest_path, parts):
+    manifest_filename = get_absolute_filename(manifest_path)
+    encrypted_filename = directory + '/' + manifest_filename.replace('.manifest.xml', '.enc.tar.gz')
+    if (len(parts) > 0):
+	if not os.path.exists(directory):
+	    os.makedirs(directory)
+	encrypted_file = open(encrypted_filename, "wb")
+	for part in parts:
+   	    part_filename = src_directory + '/' + part
+	    part_file = open(part_filename, "rb")
+	    while 1:
+	        data = part_file.read()
+		if not data:
+		    break
+		encrypted_file.write(data)
+	    part_file.close()			 
+	encrypted_file.close()
+    return encrypted_filename
+
+def decrypt_image(encrypted_filename, encrypted_key, encrypted_iv, private_key_path):
+    user_priv_key = RSA.load_key(private_key_path)
+    key = user_priv_key.private_decrypt(unhexlify(encrypted_key), RSA.pkcs1_padding)
+    iv = user_priv_key.private_decrypt(unhexlify(encrypted_iv), RSA.pkcs1_padding)
+    k=EVP.Cipher(alg='aes_128_cbc', key=unhexlify(key), iv=unhexlify(iv), op=0)
+  
+    decrypted_filename = encrypted_filename.replace('.enc', '')
+    decrypted_file = open(decrypted_filename, "wb")
+    encrypted_file = open(encrypted_filename, "rb")
+    crypt_file(k, encrypted_file, decrypted_file)
+    encrypted_file.close()
+    decrypted_file.close()
+    return decrypted_filename
+
+def unzip_image(file):
+    file_in = gzip.open(file, 'rb')
+    unzipped_filename = file.replace('.gz', '')
+    unzipped_file = open(unzipped_filename, 'wb')
+    while 1:
+	data = file_in.read()
+	if not data:
+	    break
+	unzipped_file.write(data)
+    file_in.close()
+    unzipped_file.close()
+    return unzipped_filename
+
+def untar_image(path, file):
+    untarred_filename = file.replace('.tar', '') 
+    tar_file = tarfile.open(file)
+    tar_file.extractall(path)
+    untarred_names = tar_file.getnames()
+    tar_file.close()
+    return untarred_names 
+
+def main():
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], 'm:k:hd:s:',
+                                   ['manifest=', 'privatekey=', 'destination=', 'source=', 'help',
+                                    'version', 'debug'])
+    except:
+        usage()
+  
+    debug=False 
+    cert_path=os.getenv('EC2_CERT')
+    private_key_path=os.getenv('EC2_PRIVATE_KEY')
+    manifest_path = None
+    batch=False
+    directory = '.' 
+    src_directory = '.'
+     
+    for name, value in opts:
+        if name in ('-h', '--help'):
+            usage()
+        elif name in ('-k', '--privatekey'):
+            private_key_path = value
+	elif name in ('-m', '--manifest'):
+	    manifest_path = value 
+	elif name in ('-d', '--directory'):
+	    directory = value
+	elif name in ('-s', '--source'):
+	    src_directory = value
+	elif name in ('--version'):
+	    version()
+	elif name in ('--debug'):
+	    debug = True
+
+    if manifest_path and private_key_path:
+	parts, encrypted_key, encrypted_iv = parse_manifest(manifest_path)
+	image = assemble_parts(src_directory, directory, manifest_path, parts)
+	decrypted_image = decrypt_image(image, encrypted_key, encrypted_iv, private_key_path)
+	os.remove(image)
+	unzipped_image = unzip_image(decrypted_image)
+	os.remove(decrypted_image)
+	unencrypted_image = untar_image(directory, unzipped_image)
+	os.remove(unzipped_image)
+    else:
+	print 'manifest_path and private_key MUST be specified.'
+	usage()
+if __name__ == "__main__":
+    main()
+       
+
