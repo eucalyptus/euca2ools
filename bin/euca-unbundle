@@ -49,11 +49,13 @@ AES = 'AES-128-CBC'
 usage_string = """
 USAGE
     euca-unbundle-image -m, --manifest manifest_path -k, --privatekey private_key_path 
-	[-h, --help]
+	[-s, --source source_directory] [-d, --destination destination_directory] [-h, --help]
 
     Where
 	manifest_path - The path to the manifest.
 	private_key_path - The path to the user's PEM encoded RSA private key file.
+	source_directory - The source directory for the bundled image parts (default = current directory).
+ 	destination_directory - The destination directory for unbundled image (defaults =current directory).
 	-h, --help - Display this help message.
 """
 
