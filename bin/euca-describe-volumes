@@ -33,7 +33,7 @@
 # Author: Sunil Soman sunils@cs.ucsb.edu
 
 import getopt, sys, os
-import euca_tool
+import euca_tools
 
 usage_string = """
 DESCRIPTION
@@ -51,7 +51,7 @@ version_string = """    euca-describe-volumes version: 1.0 (BSD)"""
 
 def usage():
     print usage_string
-    euca_tool.usage()
+    euca_tools.usage()
 
 def version():
     print version_string
@@ -78,7 +78,7 @@ def display_volumes(volumes, volume_ids):
 def main():
     euca = None
     try:
-	euca = euca_tool.EucaTool()
+	euca = euca_tools.EucaTool()
     except:
         usage()
  

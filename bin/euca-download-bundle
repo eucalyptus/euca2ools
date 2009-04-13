@@ -34,11 +34,11 @@
 
 import getopt, sys, os
 from xml.dom import minidom
-import euca_tool
+import euca_tools
 from boto.exception import S3ResponseError
 from boto.s3 import Connection
 from boto.s3.key import Key
-import euca_tool
+import euca_tools
 
 usage_string = """
 USAGE
@@ -54,7 +54,7 @@ version_string = """    euca-download-bundle version: 1.0 (BSD)"""
 
 def usage():
     print usage_string
-    euca_tool.usage()
+    euca_tools.usage()
 
 def version():
     print version_string
@@ -119,7 +119,7 @@ def download_parts(bucket, manifests, directory):
 def main():
     euca = None
     try:
-        euca = euca_tool.EucaTool('b:m:d:',
+        euca = euca_tools.EucaTool('b:m:d:',
                                   ['bucket=', 'manifest=', 'directory='],
 				  is_s3=True)
     except:

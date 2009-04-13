@@ -1,5 +1,4 @@
-#!/usr/bin/env python
-
+#!/usr/bin/python
 # Software License Agreement (BSD License)
 #
 # Copyright (c) 2009, Regents of the University of California
@@ -32,59 +31,25 @@
 #
 # Author: Sunil Soman sunils@cs.ucsb.edu
 
-import getopt, sys, os
-import euca_tools
+try:
+    from setuptools import setup
+except ImportError:
+    from distutils.core import setup
 
-usage_string = """
-DESCRIPTION
-    Shows information about regions. 
-
-USAGE
-    euca-describe-regions [region1 region2...regionN] 
-	  [-h, --help] [--version] [--debug]
-
-    Where
-	region1 region2...regionN - regions to describe. 
-"""
-
-version_string = """    euca-describe-regions version: 1.0 (BSD)"""
-
-def usage():
-    print usage_string
-    euca_tools.usage()
-
-def version():
-    print version_string
-    sys.exit()
-
-def display_regions(regions, region_ids):
-    check_region_ids = False
-    if(len(region_ids) > 0):
-	check_region_ids = True
-    for region in regions:
-	if check_region_ids:
-	    if not region.name in region_ids:
-	        continue
-        region_string = '%s\t%s' % (region.name, region.endpoint)
-	print 'REGION\t%s' % (region_string)
-
-def main():
-    euca = None
-    try:
-	euca = euca_tools.EucaTool()
-    except:
-        usage()
- 
-    for name, value in euca.opts:
-        if name in ('-h', '--help'):
-            usage()
-	if name in ('--version'):
-	    version()
-
-    ec2_conn = euca.make_connection()
-    region_ids = euca.process_args()
-    regions = ec2_conn.get_all_regions()
-    display_regions(regions, region_ids)
-if __name__ == "__main__":
-    main()
- 
+setup(name = "euca_tools",
+      version = "1.0",
+      description = "API tools compatible with Amazon AWS",
+      long_description="API tools compliant with Amazon's AWS API. Work with Amazon AWS and Eucalyptus.",
+      author = "Sunil Soman",
+      author_email = "sunils@cs.ucsb.edu",
+      url = "http://eucalyptus.cs.ucsb.edu",
+      packages = [ 'euca_tools'],
+      license = 'BSD (Simplified)',
+      platforms = 'Posix; MacOS X; Windows',
+      classifiers = [ 'Development Status :: 3 - Alpha',
+                      'Intended Audience :: Users',
+                      'License :: OSI Approved :: Simplified BSD License',
+                      'Operating System :: OS Independent',
+                      'Topic :: Internet',
+                      ],
+      )
