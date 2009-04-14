@@ -116,14 +116,21 @@ def upload_manifest(bucket_instance, manifest_filename):
     manifest_file = open(manifest_filename, "rb")
     k.set_contents_from_file(manifest_file)
 
-def upload_parts(bucket_instance, directory, parts):
-    print 'uploading parts'
+def upload_parts(bucket_instance, directory, parts, part_to_start_from):
+    if part_to_start_from:
+        okay_to_upload = False
+    else:
+	okay_to_upload = True
+
     for part in parts:
-        print 'part:', part
-        k = Key(bucket_instance)
-        k.key = part
-        part_file = open(directory + "/" + part, "rb")
-        k.set_contents_from_file(part_file)
+	if part == part_to_start_from:
+	    okay_to_upload = True
+	if okay_to_upload:
+            print 'uploading part:', part
+            k = Key(bucket_instance)
+            k.key = part
+            part_file = open(directory + "/" + part, "rb")
+            k.set_contents_from_file(part_file)
 
 def main():
     euca = None
@@ -171,8 +178,9 @@ def main():
 	    version()
 	if name in ('-S'):
 	    ssl = True
-
-    skipmanifest = False
+    
+    print 'part: ', part
+ 
     if bucket and manifest_path:
 	conn = euca.make_connection()
 	bucket_instance = ensure_bucket(conn, bucket)
@@ -180,9 +188,9 @@ def main():
         if not directory:
 	    manifest_path_parts = manifest_path.split('/')
 	    directory = manifest_path.replace(manifest_path_parts[len(manifest_path_parts) - 1], '')
-	if not skipmanifest:
+	if not skipmanifest and not part:
 	    upload_manifest(bucket_instance, manifest_path)
-	upload_parts(bucket_instance, directory, parts)
+	upload_parts(bucket_instance, directory, parts, part)
     else:
 	print 'bucket, manifest, access-key and secret-key MUST be specified.'	
         usage()
