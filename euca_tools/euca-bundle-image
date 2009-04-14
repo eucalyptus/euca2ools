@@ -208,7 +208,20 @@ def get_verification_string(manifest_string):
 
     return mc_config_string + image_string
 
-def generate_manifest(path, prefix, parts, parts_digest, file, key, iv, cert_path, ec2cert_path, private_key_path, target_arch, image_size, bundled_size, image_digest, user, kernel, ramdisk):
+def get_block_devs(mapping):
+    virtual = []
+    devices = []
+   
+    mapping_pairs = mapping.split(',')
+    for m in mapping_pairs:
+ 	m_parts = m.split('=')
+        if(len(m_parts) > 1):
+	    virtual.append(m_parts[0])
+	    devices.append(m_parts[1])
+  
+    return virtual, devices
+
+def generate_manifest(path, prefix, parts, parts_digest, file, key, iv, cert_path, ec2cert_path, private_key_path, target_arch, image_size, bundled_size, image_digest, user, kernel, ramdisk, mapping):
     print 'generating manifest'
 
     user_pub_key = X509.load_cert(cert_path).get_pubkey().get_rsa()
@@ -249,11 +262,32 @@ def generate_manifest(path, prefix, parts, parts_digest, file, key, iv, cert_pat
 
     #machine config
     machine_config_elem = doc.createElement("machine_configuration")
+    manifest_elem.appendChild(machine_config_elem)
+    
     target_arch_elem = doc.createElement("architecture")
     target_arch_value = doc.createTextNode(target_arch)
     target_arch_elem.appendChild(target_arch_value)
     machine_config_elem.appendChild(target_arch_elem)
-    manifest_elem.appendChild(machine_config_elem)
+    
+    #block device mapping
+    block_dev_mapping_elem = doc.createElement("block_device_mapping")
+    virtual_names, device_names = get_block_devs(mapping)
+    vname_index = 0
+    for vname in virtual_names:
+	dname = device_names[vname_index]
+        mapping_elem = doc.createElement("mapping")
+        virtual_elem = doc.createElement("virtual")
+        virtual_value = doc.createTextNode(vname)
+        virtual_elem.appendChild(virtual_value)
+        mapping_elem.appendChild(virtual_elem)
+        device_elem = doc.createElement("device")
+  	device_value = doc.createTextNode(dname)
+   	device_elem.appendChild(device_value)
+	mapping_elem.appendChild(device_elem)
+	block_dev_mapping_elem.appendChild(mapping_elem)
+	vname_index = vname_index + 1
+	
+    machine_config_elem.appendChild(block_dev_mapping_elem)
 
     #kernel and ramdisk
     if kernel:
@@ -433,7 +467,7 @@ def main():
 	encrypted_file, key, iv, bundled_size = encrypt_image(zip_file)
 	os.remove(zip_file)
 	parts, parts_digest = split_image(encrypted_file)
-	generate_manifest(destination_path, prefix, parts, parts_digest, image_path, key, iv, cert_path, ec2cert_path, private_key_path, target_arch, image_size, bundled_size, sha_image_digest, user, kernel, ramdisk)
+	generate_manifest(destination_path, prefix, parts, parts_digest, image_path, key, iv, cert_path, ec2cert_path, private_key_path, target_arch, image_size, bundled_size, sha_image_digest, user, kernel, ramdisk, mapping)
         os.remove(encrypted_file)
     else:
 	print 'image, cert, privatekey, user and ec2cert_path MUST be specified.'
