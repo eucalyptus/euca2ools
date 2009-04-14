@@ -41,7 +41,8 @@ import hmac
 import re
 import urllib, urllib2
 import imp
-import popen2, os, StringIO
+import os, StringIO
+from subprocess import *
 import time, datetime
 import logging.handlers
 import boto
@@ -241,7 +242,7 @@ class ShellCommand(object):
 
     def run(self):
         boto.log.info('running:%s' % self.command)
-        self.process = popen2.Popen4(self.command)
+	self.process = Popen(self.command)
         if(self.wait):
             return self.getStatus()
 
