@@ -35,7 +35,7 @@
 import getopt, sys, os
 from xml.dom import minidom
 import euca_tools
-from boto.exception import S3ResponseError
+from boto.exception import S3ResponseError, S3CreateError
 from boto.s3 import Connection
 from boto.s3.key import Key
 import euca_tools
