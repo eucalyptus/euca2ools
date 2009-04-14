@@ -37,7 +37,6 @@ import tarfile
 import gzip
 from xml.dom import minidom
 from xml.dom.minidom import Document
-import sha
 from M2Crypto import BN, EVP, RSA, util, Rand, m2, X509
 from binascii import hexlify, unhexlify
 

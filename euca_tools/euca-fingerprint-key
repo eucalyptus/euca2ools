@@ -35,7 +35,7 @@
 import getopt, sys, os
 import euca_tools
 from M2Crypto import RSA
-import sha
+from hashlib import sha1 as sha
 from binascii import hexlify, unhexlify
 
 usage_string = """
@@ -62,9 +62,9 @@ def version():
 
 def display_fingerprint(key_path):
     rsa = RSA.load_key(key_path)
-    sha1 = sha.new()
-    sha1.update(rsa.n)
-    print hexlify(sha1.digest())
+    sha_key = sha()
+    sha_key.update(rsa.n)
+    print hexlify(sha_key.digest())
 
 def main():
     euca = None

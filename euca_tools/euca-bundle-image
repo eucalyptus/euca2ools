@@ -36,7 +36,7 @@ import getopt, sys, os
 import tarfile
 import gzip
 from xml.dom.minidom import Document
-import sha
+from hashlib import sha1 as sha
 from M2Crypto import BN, EVP, RSA, util, Rand, m2, X509
 from binascii import hexlify, unhexlify
 
@@ -98,7 +98,7 @@ def split_file(file, chunk_size):
     bytes_read = 0
     for i in range(0, number_parts, 1):
 	filename = '%s.%d' % (file, i)
-	part_digest = sha.new()
+	part_digest = sha()
 	file_part = open(filename, "wb")
 	part_bytes_written = 0
 	while part_bytes_written < IMAGE_SPLIT_CHUNK:
@@ -122,7 +122,7 @@ def check_image(image_file, path):
         os.makedirs(path)
     image_size = os.path.getsize(image_file)
     in_file = open(image_file, "rb")
-    sha_image = sha.new()
+    sha_image = sha()
     while 1:
         buf=in_file.read(IMAGE_IO_CHUNK)
         if not buf:
@@ -393,7 +393,9 @@ def generate_manifest(path, prefix, parts, parts_digest, file, key, iv, cert_pat
 
     string_to_sign = get_verification_string(manifest_string)
     signature_elem = doc.createElement("signature")
-    signature_value = doc.createTextNode("%s" % (hexlify(user_priv_key.sign(sha.sha(string_to_sign).digest()))))
+    sha_manifest = sha()
+    sha_manifest.update(string_to_sign)
+    signature_value = doc.createTextNode("%s" % (hexlify(user_priv_key.sign(sha_manifest.digest()))))
     signature_elem.appendChild(signature_value)
     manifest_elem.appendChild(signature_elem)
     manifest_out_file.write(doc.toxml())
