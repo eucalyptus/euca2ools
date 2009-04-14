@@ -382,7 +382,7 @@ def main():
     private_key_path=os.getenv('EC2_PRIVATE_KEY')
     prefix=None
     destination_path='/tmp'
-    ec2cert_path=None
+    ec2cert_path=os.getenv('EUCALYPTUS_CERT')
     target_arch='x86_64'
     batch=False
          
