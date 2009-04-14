@@ -124,7 +124,7 @@ def check_image(image_file, path):
     in_file = open(image_file, "rb")
     sha_image = sha.new()
     while 1:
-        buf=in_file.read()
+        buf=in_file.read(IMAGE_IO_CHUNK)
         if not buf:
            break
 	sha_image.update(buf)
@@ -158,7 +158,7 @@ def hexToBytes(hexString):
 
 def encrypt_file(cipher, in_file, out_file) :
     while 1:
-        buf=in_file.read()
+        buf=in_file.read(IMAGE_IO_CHUNK)
         if not buf:
            break
         out_file.write(cipher.update(buf))

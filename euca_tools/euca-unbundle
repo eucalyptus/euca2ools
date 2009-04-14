@@ -78,7 +78,7 @@ def get_absolute_filename(filename):
 
 def crypt_file(cipher, in_file, out_file):
     while 1:
-        buf=in_file.read()
+        buf=in_file.read(IMAGE_IO_CHUNK)
         if not buf:
            break
         out_file.write(cipher.update(buf))
@@ -133,7 +133,7 @@ def assemble_parts(src_directory, directory, manifest_path, parts):
    	    part_filename = src_directory + '/' + part
 	    part_file = open(part_filename, "rb")
 	    while 1:
-	        data = part_file.read()
+	        data = part_file.read(IMAGE_IO_CHUNK)
 		if not data:
 		    break
 		encrypted_file.write(data)
@@ -160,7 +160,7 @@ def unzip_image(file):
     unzipped_filename = file.replace('.gz', '')
     unzipped_file = open(unzipped_filename, 'wb')
     while 1:
-	data = file_in.read()
+	data = file_in.read(IMAGE_IO_CHUNK)
 	if not data:
 	    break
 	unzipped_file.write(data)
