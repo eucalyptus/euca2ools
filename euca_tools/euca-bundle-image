@@ -130,9 +130,9 @@ def check_image(image_file, path):
 	sha_image.update(buf)
     return image_size, hexlify(sha_image.digest())
 
-def tar_image(file, path): 
+def tar_image(prefix, file, path): 
     print 'tarring image'
-    tar_file = '%s.tar' % (path + "/" + get_absolute_filename(file))
+    tar_file = '%s.tar' % (path + '/' + prefix) 
     tar = tarfile.open(tar_file, "w")
     tar.add(file)
     tar.close()
@@ -208,7 +208,7 @@ def get_verification_string(manifest_string):
 
     return mc_config_string + image_string
 
-def generate_manifest(path, parts, parts_digest, file, key, iv, cert_path, ec2cert_path, private_key_path, target_arch, image_size, bundled_size, image_digest, user, kernel, ramdisk):
+def generate_manifest(path, prefix, parts, parts_digest, file, key, iv, cert_path, ec2cert_path, private_key_path, target_arch, image_size, bundled_size, image_digest, user, kernel, ramdisk):
     print 'generating manifest'
 
     user_pub_key = X509.load_cert(cert_path).get_pubkey().get_rsa()
@@ -222,7 +222,7 @@ def generate_manifest(path, parts, parts_digest, file, key, iv, cert_path, ec2ce
 
     user_priv_key = RSA.load_key(private_key_path)
 
-    manifest_file = '%s.manifest.xml' % (path + "/" + get_absolute_filename(file))
+    manifest_file = '%s.manifest.xml' % (path + "/" + prefix)
     manifest_out_file = open(manifest_file, "wb")
     doc = Document()
     
@@ -367,8 +367,8 @@ def generate_manifest(path, parts, parts_digest, file, key, iv, cert_path, ec2ce
 
 def main():
     try:
-        opts, args = getopt.getopt(sys.argv[1:], 'i:c:k:u:hB:d:br:',
-                                   ['image=', 'cert=', 'privatekey=', 'user=', 'help',
+        opts, args = getopt.getopt(sys.argv[1:], 'i:c:k:u:hB:d:br:p:',
+                                   ['image=', 'cert=', 'privatekey=', 'user=', 'prefix=', 'help',
                                     'kernel=', 'ramdisk=', 'block-device-mapping=', 'destination=', 'ec2cert=', 'arch=', 'batch', 'version', 'debug'])
     except:
         usage()
@@ -384,6 +384,7 @@ def main():
     destination_path='/tmp'
     ec2cert_path=os.getenv('EUCALYPTUS_CERT')
     target_arch='x86_64'
+    mapping = None
     batch=False
          
     for name, value in opts:
@@ -413,6 +414,8 @@ def main():
 	    if target_arch != 'i386' and target_arch != 'x86_64':
 		print 'target architecture must be i386 or x86_64'
 		usage()
+	elif name in ('-B', '--block-device-mapping'):
+	    mapping = value
 	elif name in ('--batch'):
 	    batch = True
 	elif name in ('--version'):
@@ -422,13 +425,15 @@ def main():
 
     if image_path and cert_path and private_key_path and user and ec2cert_path:
 	image_size, sha_image_digest = check_image(image_path, destination_path)
-	tar_file = tar_image(image_path, destination_path)
+	if not prefix:
+            prefix = get_absolute_filename(image_path)
+	tar_file = tar_image(prefix, image_path, destination_path)
 	zip_file = zip_image(tar_file)
 	os.remove(tar_file)
 	encrypted_file, key, iv, bundled_size = encrypt_image(zip_file)
 	os.remove(zip_file)
 	parts, parts_digest = split_image(encrypted_file)
-	generate_manifest(destination_path, parts, parts_digest, image_path, key, iv, cert_path, ec2cert_path, private_key_path, target_arch, image_size, bundled_size, sha_image_digest, user, kernel, ramdisk)
+	generate_manifest(destination_path, prefix, parts, parts_digest, image_path, key, iv, cert_path, ec2cert_path, private_key_path, target_arch, image_size, bundled_size, sha_image_digest, user, kernel, ramdisk)
         os.remove(encrypted_file)
     else:
 	print 'image, cert, privatekey, user and ec2cert_path MUST be specified.'
