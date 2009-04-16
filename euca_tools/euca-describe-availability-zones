@@ -80,11 +80,8 @@ def main():
     for name, value in euca.opts:
         if name in ('-h', '--help'):
             usage()
-
-	if name in ('--version'):
+	elif name in ('--version'):
 	    version()
-	if name in ('--debug'):
-	    debug = True
     
     ec2_conn = euca.make_connection()
     zone_ids = euca.process_args()

@@ -37,11 +37,14 @@ from xml.dom.minidom import Document
 from hashlib import sha1 as sha
 from M2Crypto import BN, EVP, RSA, util, Rand, m2, X509
 from binascii import hexlify, unhexlify
+from subprocess import *
 
 VERSION = "2007-10-10"
 BUNDLER_NAME = "euca-tools"
 BUNDLER_VERSION = "1.0"
 AES = 'AES-128-CBC'
+
+MAKEFS_CMD = 'mkfs.ext2'
 
 usage_string = """
 	-K, --access-key - user's Access Key ID.
@@ -54,7 +57,9 @@ usage_string = """
 IMAGE_IO_CHUNK = 8 * 1024
 IMAGE_SPLIT_CHUNK = IMAGE_IO_CHUNK * 1024;
 
-
+#This needs to refactored into platform dependent libs
+ALLOWED_FS_TYPES = ['ext2', 'ext3', 'xfs', 'jfs', 'reiserfs']
+BANNED_MOUNTS = ['/dev', '/media', '/mnt', '/proc', '/sys']
 def usage():
     print usage_string
     sys.exit()
@@ -472,4 +477,55 @@ def generate_manifest(path, prefix, parts, parts_digest, file, key, iv, cert_pat
     manifest_out_file.write(doc.toxml())
     manifest_out_file.close() 
 
+def add_excludes(path, excludes):
+    mtab_file = open("/etc/mtab", "r")
+    while 1:
+	mtab_line = mtab_file.readline()
+	if not mtab_line:
+	    break
+	mtab_line_parts = mtab_line.split(' ')
+	mount_point = mtab_line_parts[1]
+	fs_type = mtab_line_parts[2]
+	if (mount_point.find(path) == 0) and (fs_type not in ALLOWED_FS_TYPES):
+	    excludes.append(mount_point)
 
+def create_image(size_in_MB, image_path):
+    dd_cmd = ["dd"] 
+    dd_cmd.append("if=/dev/zero")
+    dd_cmd.append("of=%s" % (image_path))
+    dd_cmd.append("count=%d" % (size_in_MB))
+    dd_cmd.append("bs=1M")
+    print Popen(dd_cmd, PIPE).communicate()[0]
+
+def make_fs(image_path):
+    makefs_cmd = Popen([MAKEFS_CMD, "-F", image_path], PIPE).communicate()[0]
+
+def make_image(size_in_MB, excludes, prefix, destination_path):
+    image_file = '%s.img' % (prefix)
+    image_path = '%s/%s' % (destination_path, image_file)
+    create_image(size_in_MB, image_path)
+    make_fs(image_path)    
+    return image_path
+
+def create_loopback(image_path):
+    return Popen(["losetup", "-sf", ('%s' % (image_path))], stdout=PIPE).communicate()[0].replace('\n', '')
+
+def mount_image(image_path):
+    tmp_mnt_point = "/tmp/%s" % (hex(BN.rand(16)))[2:6]
+    if not os.path.exists(tmp_mnt_point):
+	os.makedirs(tmp_mnt_point)
+    loop_dev = create_loopback(image_path)
+    Popen(["mount", loop_dev, tmp_mnt_point], stdout=PIPE).communicate()  
+    return tmp_mnt_point, loop_dev
+
+def copy_to_image(mount_point, volume_path, excludes):
+    Popen(["rsync", "-r", volume_path, mount_point], stdout=PIPE).communicate()
+
+def unmount_image(mount_point):
+    Popen(["umount", "-d", mount_point], stdout=PIPE).communicate()
+    os.rmdir(mount_point)
+
+def copy_volume(image_path, volume_path, excludes):
+    mount_point, loop_dev = mount_image(image_path)
+    copy_to_image(mount_point, volume_path, excludes)
+    unmount_image(mount_point)

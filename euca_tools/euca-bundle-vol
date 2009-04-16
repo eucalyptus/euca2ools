@@ -34,12 +34,15 @@
 
 import getopt, sys, os
 import euca_tools
+from subprocess import * 
 
 usage_string = """
 USAGE
-    euca-bundle-image -i, --image image_path -c, --cert cert_path -k, --privatekey private_key_path 
-	  -u, --user user 
-	[-p, --prefix prefix] [--kernel kernel_id] [--ramdisk ramdisk_id] 
+    euca-bundle-vol -i, --image image_path -u, --user user 
+	[-c, --cert cert_path] [-k, --privatekey private_key_path] 
+	[-a, --all] [-e, --exclude dir1, dir2,...dirN] [-p, --prefix prefix] [-s, --size size_in_MB]
+	[--[no-]inherit] [-v, --volume volume_path] [--fstab fstab_path] [--generate-fstab]
+	[--kernel kernel_id] [--ramdisk ramdisk_id]
 	[-B, --block-device-mapping mapping] [-d, --destination destination_path] 
 	[--ec2cert ec2cert_path] [-m, --manual] [-r, --arch target_architecture] 
 	[-b, --batch] 
@@ -49,8 +52,14 @@ USAGE
 	cert_path - The path to the user's PEM encoded RSA public key certificate file.
 	private_key_path - The path to the user's PEM encoded RSA private key file.
 	user -  The user's EC2 user ID (not the Access Key/Query Key ID).
-
+	all - Include all directories in the volume.
+	dir1, dir2,...dirN - directories to exclude
 	prefix - The filename prefix for bundled files. Defaults to image name.
+	size_in_MB - Size of the image file to create in MB.
+	--[no-]inherit - Inherit instance metadata.
+	volume_path - Path to a volume that should be bundled into the image.
+	--fstab - Path to the fstab to be bundled into the image.
+	--generate-fstab - Generate fstab to bundle into the image.
 	kernel_id - Id of the default kernel to launch the instance with.
 	ramdisk_id - Id of the default ramdisk to launch the instance with.
 	mapping - Default block-device-mapping scheme.
@@ -60,7 +69,9 @@ USAGE
 	-b, --batch - Run in non-interactive mode.
 """
 
-version_string = """    euca-bundle-image version: 1.0 (BSD)"""
+MAX_IMAGE_SIZE = 1024 * 10
+
+version_string = """    euca-bundle-vol version: 1.0 (BSD)"""
 
 def usage():
     print usage_string
@@ -70,12 +81,33 @@ def version():
     print version_string
     sys.exit()
 
+def check_root():
+    chk_root = Popen(["id", "-u"], stdout=PIPE)
+    id = chk_root.stdout.read().split('\n')[0]
+    if id == '0':
+	return
+    else:
+	print "Must be superuser to execute this command."
+	sys.exit()
+
+def check_image_size(size):
+    if size > MAX_IMAGE_SIZE:
+	print "Image Size is too large (Max = %d MB)" % (MAX_IMAGE_SIZE) 
+	sys.exit()
+ 
+def parse_excludes(excludes_string):
+    excludes = []
+    if excludes_string:
+        excludes_string = excludes_string.replace(' ', '')
+        excludes = excludes_string.split(',')
+    return excludes
+
 def main():
     euca = None
     try:
-	euca = euca_tools.EucaTool('i:c:k:u:B:d:br:p:',
-                                   ['image=', 'cert=', 'privatekey=', 'user=', 'prefix=', 
-                                    'kernel=', 'ramdisk=', 'block-device-mapping=', 'destination=', 'ec2cert=', 'arch=', 'batch'])
+        euca = euca_tools.EucaTool('i:c:k:u:B:d:br:p:s:v:e:',
+                                   ['image=', 'cert=', 'privatekey=', 'user=', 'prefix=', 'volume=',
+                                    'kernel=', 'ramdisk=', 'block-device-mapping=', 'destination=', 'ec2cert=', 'arch=', 'size=', 'exclude=', 'batch'])
     except:
         usage()
   
@@ -86,12 +118,15 @@ def main():
     cert_path=os.getenv('EC2_CERT')
     private_key_path=os.getenv('EC2_PRIVATE_KEY')
     prefix=None
-    destination_path='/tmp'
+    size_in_MB = 10*1024
+    destination_path='/disk1'
     ec2cert_path=os.getenv('EUCALYPTUS_CERT')
     target_arch='x86_64'
     mapping = None
+    excludes_string = None
     batch=False
-         
+    volume_path = "/"
+     
     for name, value in euca.opts:
         if name in ('-h', '--help'):
             usage()
@@ -109,6 +144,12 @@ def main():
             ramdisk = value
         elif name in ('-p', '--prefix'):
             prefix = value
+        elif name in ('-s', '--size'):
+            size_in_MB = int(value)
+        elif name in ('-v', '--volume'):
+            volume_path = value
+        elif name in ('-e', '--exclude'):
+            excludes_string = value
         elif name in ('-d', '--destination'):
             destination_path = value
         elif name in ('--ec2cert'):
@@ -123,10 +164,17 @@ def main():
 	    mapping = value
 	elif name in ('--batch'):
 	    batch = True
-	elif name in ('--version'):
-	    version()
 
     if image_path and cert_path and private_key_path and user and ec2cert_path:
+	check_root()
+	check_image_size(size_in_MB)
+	excludes = parse_excludes(excludes_string)
+	euca_tools.add_excludes(volume_path, excludes)
+	print volume_path, excludes
+	if not prefix:
+            prefix = euca_tools.get_absolute_filename(image_path)
+	image_path = euca_tools.make_image(size_in_MB, excludes, prefix, destination_path)        
+        euca_tools.copy_volume(image_path, volume_path, excludes)
 	image_size, sha_image_digest = euca_tools.check_image(image_path, destination_path)
 	if not prefix:
             prefix = euca_tools.get_absolute_filename(image_path)

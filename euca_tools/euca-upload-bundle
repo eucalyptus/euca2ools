@@ -45,7 +45,7 @@ USAGE
     euca-upload-bundle -b, --bucket bucket -m, --manifest manifest_path -a, --access-key access_key_id 
 	  -s, --secret-key secret_key
 	  [--acl canned_acl] [--ec2cert ec2cert_path] [-d, --directory bundle_path] [--debug]
-	  [--part part] [--url url] [--retry] [--skipmanifest] [--ssl] [-h, --help]
+	  [--part part] [--url url] [--retry] [--skipmanifest] [-h, --help]
 	  [--version]
 
     Where
@@ -61,7 +61,6 @@ USAGE
 	url - URL for the service (defaults to http://localhost:8773/services/Walrus).
 	--retry - Retry if failed.
 	--skipmanifest - Do not upload the manifest file.
-	--ssl - Use secure http
 """
 
 version_string = """    euca-upload-bundle version: 1.0 (BSD)"""
@@ -151,36 +150,31 @@ def main():
     retry = False
     skipmanifest = False
     debug = False
-    ssl = False
 
     for name, value in euca.opts:
         if name in ('-h', '--help'):
             usage()
-        if name in ('-b', '--bucket'):
+        elif name in ('-b', '--bucket'):
             bucket = value
-        if name in ('-m', '--manifest'):
+        elif name in ('-m', '--manifest'):
             manifest_path = value
-        if name in ('--ec2cert'):
+        elif name in ('--ec2cert'):
             ec2cert_path = value
-        if name in ('--acl'):
+        elif name in ('--acl'):
             canned_acl = value
-        if name in ('-d', '--directory'):
+        elif name in ('-d', '--directory'):
             directory = value
-        if name in ('--part'):
+        elif name in ('--part'):
             part = value
-        if name in ('--url'):
+        elif name in ('--url'):
             url = value
-	if name in ('--retry'):
+	elif name in ('--retry'):
 	    retry = True
-	if name in ('--skipmanifest'):
+	elif name in ('--skipmanifest'):
 	    skipmanifest = True
-	if name in ('--version'):
+	elif name in ('--version'):
 	    version()
-	if name in ('-S'):
-	    ssl = True
     
-    print 'part: ', part
- 
     if bucket and manifest_path:
 	conn = euca.make_connection()
 	bucket_instance = ensure_bucket(conn, bucket)

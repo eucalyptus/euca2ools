@@ -79,7 +79,7 @@ def main():
     for name, value in euca.opts:
         if name in ('-h', '--help'):
             usage()
-	if name in ('--version'):
+	elif name in ('--version'):
 	    version()
     
     ec2_conn = euca.make_connection()
