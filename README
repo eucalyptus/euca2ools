@@ -1,0 +1,35 @@
+Installing
+----------
+
+1. You need swig install (swig is provided by most distributions. If not, untar the included swig tarball 
+from the deps directory and run "./configure ; make ; sudo make install").
+
+2. To install euca_tools, run "make ; sudo make install"
+
+This will install euca_tools and the required dependencies (M2Crypto v1.9 and boto).
+
+3. To clean, run "make clean"
+
+Running
+-------
+
+Make sure that the following environment variables are set:
+
+EC2_URL, EC2_ACCESS_KEY, EC2_PRIVATE_KEY, EC2_CERT, EC2_PRIVATE_KEY, S3_URL, EUCALYPTUS_CERT (optional)
+
+cd bin
+
+Try it!
+
+For example:
+
+./euca-describe-availability-zones verbose
+AVAILABILITYZONE	mycluster	  UP mycluster.mydomain
+AVAILABILITYZONE	|- vm types	free / max   cpu   ram  disk
+AVAILABILITYZONE	|- m1.xlarge	0007 / 0008   1    512     3
+AVAILABILITYZONE	|- m1.small	0007 / 0008   1    512     3
+AVAILABILITYZONE	|- m1.large	0007 / 0008   1    512     3
+AVAILABILITYZONE	|- c1.xlarge	0007 / 0008   1    512     3
+AVAILABILITYZONE	|- c1.medium	0007 / 0008   1    512     3
+AVAILABILITYZONE	|- mync.mydomain	certs[cc=true,nc=true] @ Fri Apr 17 09:38:23 PDT 2009
+

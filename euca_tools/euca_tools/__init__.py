@@ -30,6 +30,7 @@
 #
 # Author: Sunil Soman sunils@cs.ucsb.edu
 
+import boto
 import getopt, sys, os
 import tarfile
 import gzip
