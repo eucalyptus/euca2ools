@@ -102,12 +102,35 @@ def parse_excludes(excludes_string):
         excludes = excludes_string.split(',')
     return excludes
 
+def get_instance_metadata(ramdisk, kernel, mapping):
+    product_codes = None
+    ramdisk_id = ramdisk
+    kernel_id = kernel
+    block_dev_mapping = mapping
+    try:
+	euca_tools.can_read_instance_metadata()
+	if not ramdisk_id:
+	    ramdisk_id = euca_tools.get_instance_ramdisk()
+
+	if not kernel_id:
+	    kernel_id = euca_tools.get_instance_kernel()
+
+        if not block_dev_mapping:
+	    block_dev_mapping = euca_tools.get_instance_block_device_mappings().split(' ')
+
+        product_codes = euca_tools.get_instance_product_codes().split(' ')
+    except:
+	print "Unable to read instance metadata. Pass the --no-inherit option if you wish to exclude instance metadata."
+	sys.exit()	
+   
+    return ramdisk_id, kernel_id, block_dev_mapping, product_codes	
+
 def main():
     euca = None
     try:
         euca = euca_tools.EucaTool('i:c:k:u:B:d:br:p:s:v:e:',
                                    ['image=', 'cert=', 'privatekey=', 'user=', 'prefix=', 'volume=',
-                                    'kernel=', 'ramdisk=', 'block-device-mapping=', 'destination=', 'ec2cert=', 'arch=', 'size=', 'exclude=', 'batch'])
+                                    'kernel=', 'ramdisk=', 'block-device-mapping=', 'destination=', 'ec2cert=', 'arch=', 'size=', 'exclude=', 'inherit=', 'no-inherit', 'batch'])
     except:
         usage()
   
@@ -126,7 +149,9 @@ def main():
     excludes_string = None
     batch=False
     volume_path = "/"
-     
+    inherit = True
+    product_codes = None
+ 
     for name, value in euca.opts:
         if name in ('-h', '--help'):
             usage()
@@ -162,6 +187,8 @@ def main():
 		usage()
 	elif name in ('-B', '--block-device-mapping'):
 	    mapping = value
+	elif name in ('--no-inherit'):
+	    inherit = False
 	elif name in ('--batch'):
 	    batch = True
 
@@ -170,7 +197,8 @@ def main():
 	check_image_size(size_in_MB)
 	excludes = parse_excludes(excludes_string)
 	euca_tools.add_excludes(volume_path, excludes)
-	print volume_path, excludes
+	if inherit:
+	    ramdisk, kernel, mapping, product_codes = get_instance_metadata(ramdisk, kernel, mapping)   
 	if not prefix:
             prefix = euca_tools.get_absolute_filename(image_path)
 	image_path = euca_tools.make_image(size_in_MB, excludes, prefix, destination_path)        
@@ -184,7 +212,7 @@ def main():
 	encrypted_file, key, iv, bundled_size = euca_tools.encrypt_image(zip_file)
 	os.remove(zip_file)
 	parts, parts_digest = euca_tools.split_image(encrypted_file)
-	euca_tools.generate_manifest(destination_path, prefix, parts, parts_digest, image_path, key, iv, cert_path, ec2cert_path, private_key_path, target_arch, image_size, bundled_size, sha_image_digest, user, kernel, ramdisk, mapping)
+	euca_tools.generate_manifest(destination_path, prefix, parts, parts_digest, image_path, key, iv, cert_path, ec2cert_path, private_key_path, target_arch, image_size, bundled_size, sha_image_digest, user, kernel, ramdisk, mapping, product_codes)
         os.remove(encrypted_file)
     else:
 	print 'image, cert, privatekey, user and ec2cert_path MUST be specified.'

@@ -39,6 +39,7 @@ from hashlib import sha1 as sha
 from M2Crypto import BN, EVP, RSA, util, Rand, m2, X509
 from binascii import hexlify, unhexlify
 from subprocess import *
+import urllib
 
 VERSION = "2007-10-10"
 BUNDLER_NAME = "euca-tools"
@@ -61,6 +62,8 @@ IMAGE_SPLIT_CHUNK = IMAGE_IO_CHUNK * 1024;
 #This needs to refactored into platform dependent libs
 ALLOWED_FS_TYPES = ['ext2', 'ext3', 'xfs', 'jfs', 'reiserfs']
 BANNED_MOUNTS = ['/dev', '/media', '/mnt', '/proc', '/sys']
+METADATA_URL = "http://169.254.169.254/latest/meta-data/"
+
 def usage():
     print usage_string
     sys.exit()
@@ -297,7 +300,7 @@ def get_block_devs(mapping):
   
     return virtual, devices
 
-def generate_manifest(path, prefix, parts, parts_digest, file, key, iv, cert_path, ec2cert_path, private_key_path, target_arch, image_size, bundled_size, image_digest, user, kernel, ramdisk, mapping):
+def generate_manifest(path, prefix, parts, parts_digest, file, key, iv, cert_path, ec2cert_path, private_key_path, target_arch, image_size, bundled_size, image_digest, user, kernel, ramdisk, mapping, product_codes=None):
     print 'generating manifest'
 
     user_pub_key = X509.load_cert(cert_path).get_pubkey().get_rsa()
@@ -346,8 +349,8 @@ def generate_manifest(path, prefix, parts, parts_digest, file, key, iv, cert_pat
     machine_config_elem.appendChild(target_arch_elem)
     
     #block device mapping
-    block_dev_mapping_elem = doc.createElement("block_device_mapping")
     if mapping:
+        block_dev_mapping_elem = doc.createElement("block_device_mapping")
         virtual_names, device_names = get_block_devs(mapping)
         vname_index = 0
         for vname in virtual_names:
@@ -363,8 +366,16 @@ def generate_manifest(path, prefix, parts, parts_digest, file, key, iv, cert_pat
 	    mapping_elem.appendChild(device_elem)
 	    block_dev_mapping_elem.appendChild(mapping_elem)
 	    vname_index = vname_index + 1
-	
         machine_config_elem.appendChild(block_dev_mapping_elem)
+
+    if product_codes:
+        product_codes_elem = doc.createElement("product_codes")
+        for product_code in product_codes:
+	    product_code_elem = doc.createElement("product_code");
+	    product_code_value = doc.createTextNode(product_code)
+	    product_code_elem.appendChild(product_code_value)
+	    product_codes_elem.appendChild(product_code_elem)
+  	machine_config_elem.appendChild(product_codes_elem)
 
     #kernel and ramdisk
     if kernel:
@@ -533,6 +544,24 @@ def copy_to_image(mount_point, volume_path, excludes):
 def unmount_image(mount_point):
     Popen(["umount", "-d", mount_point], stdout=PIPE).communicate()[0]
     os.rmdir(mount_point)
+
+def can_read_instance_metadata():
+    meta_data = urllib.urlopen(METADATA_URL)    
+
+def get_instance_metadata(type):
+    return urllib.urlopen(METADATA_URL + type)
+
+def get_instance_ramdisk():
+    return get_instance_metadata('ramdisk-id')
+
+def get_instance_kernel():
+    return get_instance_metadata('kernel-id')
+
+def get_instance_product_codes():
+    return get_instance_metadata('product-codes')
+
+def get_instance_block_device_mappings():
+    return get_instance_metadata('block-device-mapping')
 
 def copy_volume(image_path, volume_path, excludes):
     mount_point, loop_dev = mount_image(image_path)
