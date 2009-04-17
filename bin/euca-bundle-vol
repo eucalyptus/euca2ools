@@ -38,9 +38,9 @@ from subprocess import *
 
 usage_string = """
 USAGE
-    euca-bundle-vol -i, --image image_path -u, --user user 
+    euca-bundle-vol -u, --user user -s, --size size_in_MB
 	[-c, --cert cert_path] [-k, --privatekey private_key_path] 
-	[-a, --all] [-e, --exclude dir1, dir2,...dirN] [-p, --prefix prefix] [-s, --size size_in_MB]
+	[-a, --all] [-e, --exclude dir1, dir2,...dirN] [-p, --prefix prefix]	
 	[--[no-]inherit] [-v, --volume volume_path] [--fstab fstab_path] [--generate-fstab]
 	[--kernel kernel_id] [--ramdisk ramdisk_id]
 	[-B, --block-device-mapping mapping] [-d, --destination destination_path] 
@@ -128,19 +128,18 @@ def get_instance_metadata(ramdisk, kernel, mapping):
 def main():
     euca = None
     try:
-        euca = euca_tools.EucaTool('i:c:k:u:B:d:br:p:s:v:e:',
-                                   ['image=', 'cert=', 'privatekey=', 'user=', 'prefix=', 'volume=',
+        euca = euca_tools.EucaTool('c:k:u:B:d:br:p:s:v:e:',
+                                   ['cert=', 'privatekey=', 'user=', 'prefix=', 'volume=',
                                     'kernel=', 'ramdisk=', 'block-device-mapping=', 'destination=', 'ec2cert=', 'arch=', 'size=', 'exclude=', 'inherit=', 'no-inherit', 'batch'])
     except:
         usage()
   
-    image_path=None
     kernel=None
     user=None
     ramdisk=None
     cert_path=os.getenv('EC2_CERT')
     private_key_path=os.getenv('EC2_PRIVATE_KEY')
-    prefix=None
+    prefix='image'
     size_in_MB = 10*1024
     destination_path='/disk1'
     ec2cert_path=os.getenv('EUCALYPTUS_CERT')
@@ -155,8 +154,6 @@ def main():
     for name, value in euca.opts:
         if name in ('-h', '--help'):
             usage()
-        elif name in ('-i', '--image'):
-            image_path = value
         elif name in ('-c', '--cert'):
             cert_path = value
         elif name in ('-k', '--privatekey'):
@@ -181,7 +178,6 @@ def main():
             ec2cert_path = value
         elif name in ('-r', '--arch'):
             target_arch = value
-	    print target_arch
 	    if target_arch != 'i386' and target_arch != 'x86_64':
 		print 'target architecture must be i386 or x86_64'
 		usage()
@@ -192,15 +188,13 @@ def main():
 	elif name in ('--batch'):
 	    batch = True
 
-    if image_path and cert_path and private_key_path and user and ec2cert_path:
+    if size_in_MB and cert_path and private_key_path and user and ec2cert_path:
 	check_root()
 	check_image_size(size_in_MB)
 	excludes = parse_excludes(excludes_string)
 	euca_tools.add_excludes(volume_path, excludes)
 	if inherit:
 	    ramdisk, kernel, mapping, product_codes = get_instance_metadata(ramdisk, kernel, mapping)   
-	if not prefix:
-            prefix = euca_tools.get_absolute_filename(image_path)
 	image_path = euca_tools.make_image(size_in_MB, excludes, prefix, destination_path)        
         euca_tools.copy_volume(image_path, volume_path, excludes)
 	image_size, sha_image_digest = euca_tools.check_image(image_path, destination_path)

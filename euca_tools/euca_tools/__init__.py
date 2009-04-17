@@ -196,7 +196,7 @@ def split_file(file, chunk_size):
     return parts, parts_digest
  
 def check_image(image_file, path):
-    print 'checking image'
+    print 'Checking image'
     if not os.path.exists(path):
         os.makedirs(path)
     image_size = os.path.getsize(image_file)
@@ -210,7 +210,7 @@ def check_image(image_file, path):
     return image_size, hexlify(sha_image.digest())
 
 def tar_image(prefix, file, path): 
-    print 'tarring image'
+    print 'Tarring image'
     tar_file = '%s.tar' % (path + '/' + prefix) 
     tar = tarfile.open(tar_file, "w")
     tar.add(file)
@@ -218,7 +218,7 @@ def tar_image(prefix, file, path):
     return tar_file
 
 def zip_image(file):
-    print 'zipping image'
+    print 'Zipping image'
     file_in = open(file, 'rb')
     gz_file = '%s.gz' % (file)
     gz_out = gzip.open(gz_file, 'wb')
@@ -255,7 +255,7 @@ def decrypt_file( cipherType, key, iv, in_file, out_file ) :
     out_file.write( final_data )
  
 def encrypt_image(file):
-    print 'encrypting image'
+    print 'Encrypting image'
     enc_file = '%s.part' % (file.replace('.tar.gz', ''))
 
     key = (hex(BN.rand(16 * 8))[2:34]).replace('L', 'c')
@@ -274,7 +274,7 @@ def encrypt_image(file):
     return enc_file, key, iv, bundled_size
 
 def split_image(file): 
-    print 'splitting image'  
+    print 'Splitting image'  
     return split_file(file, IMAGE_SPLIT_CHUNK) 
 
 def get_verification_string(manifest_string):
@@ -301,7 +301,7 @@ def get_block_devs(mapping):
     return virtual, devices
 
 def generate_manifest(path, prefix, parts, parts_digest, file, key, iv, cert_path, ec2cert_path, private_key_path, target_arch, image_size, bundled_size, image_digest, user, kernel, ramdisk, mapping, product_codes=None):
-    print 'generating manifest'
+    print 'Generating manifest'
 
     user_pub_key = X509.load_cert(cert_path).get_pubkey().get_rsa()
     cloud_pub_key = X509.load_cert(ec2cert_path).get_pubkey().get_rsa()
@@ -507,9 +507,8 @@ def create_image(size_in_MB, image_path):
     dd_cmd.append("of=%s" % (image_path))
     dd_cmd.append("count=%d" % (size_in_MB))
     dd_cmd.append("bs=1M")
-
-    print dd_cmd
-    print Popen(dd_cmd, PIPE).communicate()[0]
+    print 'Creating disk image...', image_path
+    Popen(dd_cmd, PIPE).communicate()[0]
 
 def make_fs(image_path):
     makefs_cmd = Popen([MAKEFS_CMD, "-F", image_path], PIPE).communicate()[0]
@@ -535,10 +534,11 @@ def mount_image(image_path):
     return tmp_mnt_point, loop_dev
 
 def copy_to_image(mount_point, volume_path, excludes):
-    rsync_cmd = ["rsync", "-r", "-v", volume_path, mount_point]
+    rsync_cmd = ["rsync", "-a", "-v", volume_path, mount_point]
     for exclude in excludes:
 	rsync_cmd.append("--exclude")
 	rsync_cmd.append(exclude)
+    print "Copying files..."
     Popen(rsync_cmd, stdout=PIPE).communicate()
 
 def unmount_image(mount_point):
