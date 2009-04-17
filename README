@@ -1,7 +1,7 @@
 Installing
 ----------
 
-1. You need swig install (swig is provided by most distributions. If not, untar the included swig tarball 
+1. You need swig installed (swig is provided by most distributions. If not, untar the included swig tarball 
 from the deps directory and run "./configure ; make ; sudo make install").
 
 2. To install euca_tools, run "make ; sudo make install"

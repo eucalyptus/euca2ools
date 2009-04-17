@@ -496,6 +496,8 @@ def create_image(size_in_MB, image_path):
     dd_cmd.append("of=%s" % (image_path))
     dd_cmd.append("count=%d" % (size_in_MB))
     dd_cmd.append("bs=1M")
+
+    print dd_cmd
     print Popen(dd_cmd, PIPE).communicate()[0]
 
 def make_fs(image_path):
@@ -504,12 +506,14 @@ def make_fs(image_path):
 def make_image(size_in_MB, excludes, prefix, destination_path):
     image_file = '%s.img' % (prefix)
     image_path = '%s/%s' % (destination_path, image_file)
+    if not os.path.exists(destination_path):
+	os.makedirs(destination_path)
     create_image(size_in_MB, image_path)
     make_fs(image_path)    
     return image_path
 
 def create_loopback(image_path):
-    return Popen(["losetup", "-sf", ('%s' % (image_path))], stdout=PIPE).communicate()[0].replace('\n', '')
+    return Popen(["losetup", "--show", "-f", ('%s' % (image_path))], stdout=PIPE).communicate()[0].replace('\n', '')
 
 def mount_image(image_path):
     tmp_mnt_point = "/tmp/%s" % (hex(BN.rand(16)))[2:6]
@@ -520,10 +524,14 @@ def mount_image(image_path):
     return tmp_mnt_point, loop_dev
 
 def copy_to_image(mount_point, volume_path, excludes):
-    Popen(["rsync", "-r", volume_path, mount_point], stdout=PIPE).communicate()
+    rsync_cmd = ["rsync", "-r", "-v", volume_path, mount_point]
+    for exclude in excludes:
+	rsync_cmd.append("--exclude")
+	rsync_cmd.append(exclude)
+    Popen(rsync_cmd, stdout=PIPE).communicate()
 
 def unmount_image(mount_point):
-    Popen(["umount", "-d", mount_point], stdout=PIPE).communicate()
+    Popen(["umount", "-d", mount_point], stdout=PIPE).communicate()[0]
     os.rmdir(mount_point)
 
 def copy_volume(image_path, volume_path, excludes):
