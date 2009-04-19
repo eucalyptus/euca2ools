@@ -61,7 +61,7 @@ IMAGE_SPLIT_CHUNK = IMAGE_IO_CHUNK * 1024;
 
 #This needs to refactored into platform dependent libs
 ALLOWED_FS_TYPES = ['ext2', 'ext3', 'xfs', 'jfs', 'reiserfs']
-BANNED_MOUNTS = ['/dev', '/media', '/mnt', '/proc', '/sys']
+BANNED_MOUNTS = ['/dev', '/media', '/mnt', '/proc', '/sys', '/cdrom']
 METADATA_URL = "http://169.254.169.254/latest/meta-data/"
 
 def usage():
@@ -163,392 +163,421 @@ class EucaTool:
                             port=self.port,
                             service=self.service_path)
 
-def get_absolute_filename(filename):
-    f_parts = filename.split('/')
-    return f_parts[len(f_parts) - 1]
+    def get_absolute_filename(self, filename):
+        f_parts = filename.split('/')
+        return f_parts[len(f_parts) - 1]
 
-def split_file(file, chunk_size):
-    parts = []
-    parts_digest = []
-    file_size = os.path.getsize(file)
-    in_file = open(file, "rb")
-    number_parts = int(file_size / chunk_size)
-    number_parts += 1
-    bytes_read = 0
-    for i in range(0, number_parts, 1):
-	filename = '%s.%d' % (file, i)
-	part_digest = sha()
-	file_part = open(filename, "wb")
-	part_bytes_written = 0
-	while part_bytes_written < IMAGE_SPLIT_CHUNK:
-	    data = in_file.read(IMAGE_IO_CHUNK)
-	    file_part.write(data)
-	    part_digest.update(data)
-	    data_len = len(data)
-	    part_bytes_written += data_len    	    		
-	    bytes_read += data_len
-	    if bytes_read >= file_size: break
-	file_part.close()
-	parts.append(filename)
-	parts_digest.append(hexlify(part_digest.digest()))	
+    def split_file(self, file, chunk_size):
+        parts = []
+        parts_digest = []
+        file_size = os.path.getsize(file)
+        in_file = open(file, "rb")
+        number_parts = int(file_size / chunk_size)
+        number_parts += 1
+        bytes_read = 0
+        for i in range(0, number_parts, 1):
+  	    filename = '%s.%d' % (file, i)
+	    part_digest = sha()
+	    file_part = open(filename, "wb")
+	    if self.debug:
+		print "Part:", filename
+	    part_bytes_written = 0
+	    while part_bytes_written < IMAGE_SPLIT_CHUNK:
+	        data = in_file.read(IMAGE_IO_CHUNK)
+	        file_part.write(data)
+	        part_digest.update(data)
+	        data_len = len(data)
+	        part_bytes_written += data_len        	        		
+	        bytes_read += data_len
+	        if bytes_read >= file_size: 
+		    break
+	    file_part.close()
+	    parts.append(filename)
+	    parts_digest.append(hexlify(part_digest.digest()))	
 
-    in_file.close()
-    return parts, parts_digest
+        in_file.close()
+        return parts, parts_digest
  
-def check_image(image_file, path):
-    print 'Checking image'
-    if not os.path.exists(path):
-        os.makedirs(path)
-    image_size = os.path.getsize(image_file)
-    in_file = open(image_file, "rb")
-    sha_image = sha()
-    while 1:
-        buf=in_file.read(IMAGE_IO_CHUNK)
-        if not buf:
-           break
+    def check_image(self, image_file, path):
+        print 'Checking image'
+        if not os.path.exists(path):
+                os.makedirs(path)
+        image_size = os.path.getsize(image_file)
+	if self.debug:
+	    print "Image Size:", image_size, "bytes"
+        in_file = open(image_file, "rb")
+        sha_image = sha()
+        while 1:
+                buf=in_file.read(IMAGE_IO_CHUNK)
+                if not buf:
+                   break
 	sha_image.update(buf)
-    return image_size, hexlify(sha_image.digest())
+        return image_size, hexlify(sha_image.digest())
 
-def tar_image(prefix, file, path): 
-    print 'Tarring image'
-    tar_file = '%s.tar' % (path + '/' + prefix) 
-    tar = tarfile.open(tar_file, "w")
-    tar.add(file)
-    tar.close()
-    return tar_file
+    def tar_image(self, prefix, file, path): 
+        print 'Tarring image'
+        tar_file = '%s.tar' % (path + '/' + prefix) 
+        tar = tarfile.open(tar_file, "w")
+        tar.add(file)
+        tar.close()
+        return tar_file
 
-def zip_image(file):
-    print 'Zipping image'
-    file_in = open(file, 'rb')
-    gz_file = '%s.gz' % (file)
-    gz_out = gzip.open(gz_file, 'wb')
-    gz_out.writelines(file_in)
-    gz_out.close()
-    file_in.close()
-    return gz_file
+    def zip_image(self, file):
+        print 'Zipping image'
+        file_in = open(file, 'rb')
+        gz_file = '%s.gz' % (file)
+        gz_out = gzip.open(gz_file, 'wb')
+        gz_out.writelines(file_in)
+        gz_out.close()
+        file_in.close()
+        return gz_file
 
-def hexToBytes(hexString):
-    bytes = []
-    hexString = ''.join(hexString.split(" "))
-    for i in range(0, len(hexString), 2):
-        bytes.append(chr(int (hexString[i:i+2], 16)))
+    def hexToBytes(self, hexString):
+        bytes = []
+        hexString = ''.join(hexString.split(" "))
+        for i in range(0, len(hexString), 2):
+                bytes.append(chr(int (hexString[i:i+2], 16)))
 
-    return ''.join( bytes )
+        return ''.join( bytes )
 
-def encrypt_file(cipher, in_file, out_file) :
-    while 1:
-        buf=in_file.read(IMAGE_IO_CHUNK)
-        if not buf:
-           break
-        out_file.write(cipher.update(buf))
-    out_file.write(cipher.final())
+    def encrypt_file(self, cipher, in_file, out_file) :
+        while 1:
+                buf=in_file.read(IMAGE_IO_CHUNK)
+                if not buf:
+                   break
+                out_file.write(cipher.update(buf))
+        out_file.write(cipher.final())
   
 
-def decrypt_file( cipherType, key, iv, in_file, out_file ) :
-    dec = DecryptCipher( cipherType, key, iv )
-    while 1 :
-        data = in_file.read(IMAGE_IO_CHUNK)
-        if not data : break
-        out_data = dec.update( data )
-        out_file.write( out_data )
-    final_data = dec.finish()
-    out_file.write( final_data )
+    def decrypt_file(self, cipherType, key, iv, in_file, out_file ) :
+        dec = DecryptCipher( cipherType, key, iv )
+        while 1 :
+                data = in_file.read(IMAGE_IO_CHUNK)
+                if not data : break
+                out_data = dec.update( data )
+                out_file.write( out_data )
+        final_data = dec.finish()
+        out_file.write( final_data )
  
-def encrypt_image(file):
-    print 'Encrypting image'
-    enc_file = '%s.part' % (file.replace('.tar.gz', ''))
+    def encrypt_image(self, file):
+        print 'Encrypting image'
+        enc_file = '%s.part' % (file.replace('.tar.gz', ''))
 
-    key = (hex(BN.rand(16 * 8))[2:34]).replace('L', 'c')
-    print 'key: %s' % (key)
-    iv = (hex(BN.rand(16 * 8))[2:34]).replace('L', 'c')
-    print 'iv: %s' % (iv)
+        key = (hex(BN.rand(16 * 8))[2:34]).replace('L', 'c')
+        print 'key: %s' % (key)
+        iv = (hex(BN.rand(16 * 8))[2:34]).replace('L', 'c')
+        print 'iv: %s' % (iv)
 
-    k=EVP.Cipher(alg='aes_128_cbc', key=unhexlify(key), iv=unhexlify(iv), op=1)
+        k=EVP.Cipher(alg='aes_128_cbc', key=unhexlify(key), iv=unhexlify(iv), op=1)
 
-    in_file = open(file)
-    out_file = open(enc_file, "wb")
-    encrypt_file(k, in_file, out_file)
-    in_file.close()
-    out_file.close()
-    bundled_size = os.path.getsize(enc_file)
-    return enc_file, key, iv, bundled_size
+        in_file = open(file)
+        out_file = open(enc_file, "wb")
+        self.encrypt_file(k, in_file, out_file)
+        in_file.close()
+        out_file.close()
+        bundled_size = os.path.getsize(enc_file)
+        return enc_file, key, iv, bundled_size
 
-def split_image(file): 
-    print 'Splitting image'  
-    return split_file(file, IMAGE_SPLIT_CHUNK) 
+    def split_image(self, file): 
+        print 'Splitting image'  
+        return self.split_file(file, IMAGE_SPLIT_CHUNK) 
 
-def get_verification_string(manifest_string):
-    start_mc = manifest_string.find('<machine_configuration>')
-    end_mc = manifest_string.find('</machine_configuration>')
-    mc_config_string = manifest_string[start_mc:end_mc + len('</machine_configuration>')]
-    start_image = manifest_string.find('<image>')
-    end_image = manifest_string.find('</image>')
-    image_string = manifest_string[start_image:end_image + len('</image>')]
+    def get_verification_string(self, manifest_string):
+        start_mc = manifest_string.find('<machine_configuration>')
+        end_mc = manifest_string.find('</machine_configuration>')
+        mc_config_string = manifest_string[start_mc:end_mc + len('</machine_configuration>')]
+        start_image = manifest_string.find('<image>')
+        end_image = manifest_string.find('</image>')
+        image_string = manifest_string[start_image:end_image + len('</image>')]
 
-    return mc_config_string + image_string
+        return mc_config_string + image_string
 
-def get_block_devs(mapping):
-    virtual = []
-    devices = []
+    def get_block_devs(self, mapping):
+        virtual = []
+        devices = []
    
-    mapping_pairs = mapping.split(',')
-    for m in mapping_pairs:
- 	m_parts = m.split('=')
-        if(len(m_parts) > 1):
-	    virtual.append(m_parts[0])
-	    devices.append(m_parts[1])
+        mapping_pairs = mapping.split(',')
+        for m in mapping_pairs:
+ 	    m_parts = m.split('=')
+            if(len(m_parts) > 1):
+	        virtual.append(m_parts[0])
+	        devices.append(m_parts[1])
   
-    return virtual, devices
+        return virtual, devices
 
-def generate_manifest(path, prefix, parts, parts_digest, file, key, iv, cert_path, ec2cert_path, private_key_path, target_arch, image_size, bundled_size, image_digest, user, kernel, ramdisk, mapping, product_codes=None):
-    print 'Generating manifest'
+    def generate_manifest(self, path, prefix, parts, parts_digest, file, key, iv, cert_path, ec2cert_path, private_key_path, target_arch, image_size, bundled_size, image_digest, user, kernel, ramdisk, mapping, product_codes=None):
+        print 'Generating manifest'
 
-    user_pub_key = X509.load_cert(cert_path).get_pubkey().get_rsa()
-    cloud_pub_key = X509.load_cert(ec2cert_path).get_pubkey().get_rsa()
+        user_pub_key = X509.load_cert(cert_path).get_pubkey().get_rsa()
+        cloud_pub_key = X509.load_cert(ec2cert_path).get_pubkey().get_rsa()
 
-    user_encrypted_key = hexlify(user_pub_key.public_encrypt(key, RSA.pkcs1_padding))
-    user_encrypted_iv = hexlify(user_pub_key.public_encrypt(iv, RSA.pkcs1_padding))
+        user_encrypted_key = hexlify(user_pub_key.public_encrypt(key, RSA.pkcs1_padding))
+        user_encrypted_iv = hexlify(user_pub_key.public_encrypt(iv, RSA.pkcs1_padding))
 
-    cloud_encrypted_key = hexlify(cloud_pub_key.public_encrypt(key, RSA.pkcs1_padding))
-    cloud_encrypted_iv = hexlify(cloud_pub_key.public_encrypt(iv, RSA.pkcs1_padding))
+        cloud_encrypted_key = hexlify(cloud_pub_key.public_encrypt(key, RSA.pkcs1_padding))
+        cloud_encrypted_iv = hexlify(cloud_pub_key.public_encrypt(iv, RSA.pkcs1_padding))
 
-    user_priv_key = RSA.load_key(private_key_path)
+        user_priv_key = RSA.load_key(private_key_path)
 
-    manifest_file = '%s.manifest.xml' % (path + "/" + prefix)
-    manifest_out_file = open(manifest_file, "wb")
-    doc = Document()
-    
-    manifest_elem = doc.createElement("manifest")
-    doc.appendChild(manifest_elem)
+        manifest_file = '%s.manifest.xml' % (path + "/" + prefix)
+	if self.debug:
+	    print 'Manifest: ', manifest_file
+        manifest_out_file = open(manifest_file, "wb")
+        doc = Document()
+        
+        manifest_elem = doc.createElement("manifest")
+        doc.appendChild(manifest_elem)
 
-    #version
-    version_elem = doc.createElement("version")
-    version_value = doc.createTextNode(VERSION)
-    version_elem.appendChild(version_value)
-    manifest_elem.appendChild(version_elem)
+        #version
+        version_elem = doc.createElement("version")
+        version_value = doc.createTextNode(VERSION)
+        version_elem.appendChild(version_value)
+        manifest_elem.appendChild(version_elem)
  
-    #bundler info
-    bundler_elem = doc.createElement("bundler")
-    bundler_name_elem = doc.createElement("name")
-    bundler_name_value = doc.createTextNode(BUNDLER_NAME)
-    bundler_name_elem.appendChild(bundler_name_value)
-    bundler_version_elem = doc.createElement("version")
-    bundler_version_value = doc.createTextNode(BUNDLER_VERSION)
-    bundler_version_elem.appendChild(bundler_version_value)
-    bundler_elem.appendChild(bundler_name_elem)
-    bundler_elem.appendChild(bundler_version_elem)
-    manifest_elem.appendChild(bundler_elem) 
+        #bundler info
+        bundler_elem = doc.createElement("bundler")
+        bundler_name_elem = doc.createElement("name")
+        bundler_name_value = doc.createTextNode(BUNDLER_NAME)
+        bundler_name_elem.appendChild(bundler_name_value)
+        bundler_version_elem = doc.createElement("version")
+        bundler_version_value = doc.createTextNode(BUNDLER_VERSION)
+        bundler_version_elem.appendChild(bundler_version_value)
+        bundler_elem.appendChild(bundler_name_elem)
+        bundler_elem.appendChild(bundler_version_elem)
+        manifest_elem.appendChild(bundler_elem) 
 
-    #machine config
-    machine_config_elem = doc.createElement("machine_configuration")
-    manifest_elem.appendChild(machine_config_elem)
-    
-    target_arch_elem = doc.createElement("architecture")
-    target_arch_value = doc.createTextNode(target_arch)
-    target_arch_elem.appendChild(target_arch_value)
-    machine_config_elem.appendChild(target_arch_elem)
-    
-    #block device mapping
-    if mapping:
-        block_dev_mapping_elem = doc.createElement("block_device_mapping")
-        virtual_names, device_names = get_block_devs(mapping)
-        vname_index = 0
-        for vname in virtual_names:
-	    dname = device_names[vname_index]
-            mapping_elem = doc.createElement("mapping")
-            virtual_elem = doc.createElement("virtual")
-            virtual_value = doc.createTextNode(vname)
-            virtual_elem.appendChild(virtual_value)
-            mapping_elem.appendChild(virtual_elem)
-            device_elem = doc.createElement("device")
-       	    device_value = doc.createTextNode(dname)
-   	    device_elem.appendChild(device_value)
-	    mapping_elem.appendChild(device_elem)
-	    block_dev_mapping_elem.appendChild(mapping_elem)
-	    vname_index = vname_index + 1
-        machine_config_elem.appendChild(block_dev_mapping_elem)
+        #machine config
+        machine_config_elem = doc.createElement("machine_configuration")
+        manifest_elem.appendChild(machine_config_elem)
+        
+        target_arch_elem = doc.createElement("architecture")
+        target_arch_value = doc.createTextNode(target_arch)
+        target_arch_elem.appendChild(target_arch_value)
+        machine_config_elem.appendChild(target_arch_elem)
+        
+        #block device mapping
+        if mapping:
+            block_dev_mapping_elem = doc.createElement("block_device_mapping")
+            virtual_names, device_names = self.get_block_devs(mapping)
+            vname_index = 0
+            for vname in virtual_names:
+	        dname = device_names[vname_index]
+                mapping_elem = doc.createElement("mapping")
+                virtual_elem = doc.createElement("virtual")
+                virtual_value = doc.createTextNode(vname)
+                virtual_elem.appendChild(virtual_value)
+                mapping_elem.appendChild(virtual_elem)
+                device_elem = doc.createElement("device")
+                device_value = doc.createTextNode(dname)
+     	        device_elem.appendChild(device_value)
+	        mapping_elem.appendChild(device_elem)
+	        block_dev_mapping_elem.appendChild(mapping_elem)
+	        vname_index = vname_index + 1
+            machine_config_elem.appendChild(block_dev_mapping_elem)
 
-    if product_codes:
-        product_codes_elem = doc.createElement("product_codes")
-        for product_code in product_codes:
-	    product_code_elem = doc.createElement("product_code");
-	    product_code_value = doc.createTextNode(product_code)
-	    product_code_elem.appendChild(product_code_value)
-	    product_codes_elem.appendChild(product_code_elem)
-  	machine_config_elem.appendChild(product_codes_elem)
+        if product_codes:
+            product_codes_elem = doc.createElement("product_codes")
+            for product_code in product_codes:
+	        product_code_elem = doc.createElement("product_code");
+	        product_code_value = doc.createTextNode(product_code)
+	        product_code_elem.appendChild(product_code_value)
+	        product_codes_elem.appendChild(product_code_elem)
+     	    machine_config_elem.appendChild(product_codes_elem)
 
-    #kernel and ramdisk
-    if kernel:
-	kernel_id_elem = doc.createElement("kernel_id")
-	kernel_id_value = doc.createTextNode(kernel)
-	kernel_id_elem.appendChild(kernel_id_value)
-	machine_config_elem.appendChild(kernel_id_elem)
+        #kernel and ramdisk
+        if kernel:
+       	    kernel_id_elem = doc.createElement("kernel_id")
+	    kernel_id_value = doc.createTextNode(kernel)
+	    kernel_id_elem.appendChild(kernel_id_value)
+	    machine_config_elem.appendChild(kernel_id_elem)
 
-    if ramdisk:
-	ramdisk_id_elem = doc.createElement("ramdisk_id")
-	ramdisk_id_value = doc.createTextNode(ramdisk)
-	ramdisk_id_elem.appendChild(ramdisk_id_value)
-	machine_config_elem.appendChild(ramdisk_id_elem)
+        if ramdisk:
+	    ramdisk_id_elem = doc.createElement("ramdisk_id")
+	    ramdisk_id_value = doc.createTextNode(ramdisk)
+	    ramdisk_id_elem.appendChild(ramdisk_id_value)
+	    machine_config_elem.appendChild(ramdisk_id_elem)
 
-    image_elem = doc.createElement("image")
-    manifest_elem.appendChild(image_elem)
+        image_elem = doc.createElement("image")
+        manifest_elem.appendChild(image_elem)
 
-    #name
-    image_name_elem = doc.createElement("name") 
-    image_name_value = doc.createTextNode(get_absolute_filename(file))
-    image_name_elem.appendChild(image_name_value)
-    image_elem.appendChild(image_name_elem)
+        #name
+        image_name_elem = doc.createElement("name") 
+        image_name_value = doc.createTextNode(self.get_absolute_filename(file))
+        image_name_elem.appendChild(image_name_value)
+        image_elem.appendChild(image_name_elem)
  
-    #user
-    user_elem = doc.createElement("user")
-    user_value = doc.createTextNode("%s" % (user))
-    user_elem.appendChild(user_value)
-    image_elem.appendChild(user_elem)
-    
-    #type
-    #TODO: fixme
-    image_type_elem = doc.createElement("type")
-    image_type_value = doc.createTextNode("machine")
-    image_type_elem.appendChild(image_type_value)
-    image_elem.appendChild(image_type_elem) 
-    
-    #digest
-    image_digest_elem = doc.createElement("digest")
-    image_digest_elem.setAttribute('algorithm', 'SHA1')
-    image_digest_value = doc.createTextNode('%s' % (image_digest))
-    image_digest_elem.appendChild(image_digest_value)
-    image_elem.appendChild(image_digest_elem) 
-    
-    #size
-    image_size_elem = doc.createElement("size")
-    image_size_value = doc.createTextNode("%s" % (image_size))
-    image_size_elem.appendChild(image_size_value)
-    image_elem.appendChild(image_size_elem)
-
-    #bundled size
-    bundled_size_elem = doc.createElement("bundled_size")
-    bundled_size_value = doc.createTextNode("%s" % (bundled_size))
-    bundled_size_elem.appendChild(bundled_size_value)
-    image_elem.appendChild(bundled_size_elem)
-
-    #key, iv
-    cloud_encrypted_key_elem = doc.createElement("ec2_encrypted_key")
-    cloud_encrypted_key_value = doc.createTextNode("%s" % (cloud_encrypted_key))
-    cloud_encrypted_key_elem.appendChild(cloud_encrypted_key_value)
-    cloud_encrypted_key_elem.setAttribute("algorithm", AES)
-    image_elem.appendChild(cloud_encrypted_key_elem)
-    
-    user_encrypted_key_elem = doc.createElement("user_encrypted_key")
-    user_encrypted_key_value = doc.createTextNode("%s" % (user_encrypted_key))
-    user_encrypted_key_elem.appendChild(user_encrypted_key_value)
-    user_encrypted_key_elem.setAttribute("algorithm", AES)
-    image_elem.appendChild(user_encrypted_key_elem) 
-
-    cloud_encrypted_iv_elem = doc.createElement("ec2_encrypted_iv")
-    cloud_encrypted_iv_value = doc.createTextNode("%s" % (cloud_encrypted_iv))
-    cloud_encrypted_iv_elem.appendChild(cloud_encrypted_iv_value)
-    cloud_encrypted_iv_elem.setAttribute("algorithm", AES)
-    image_elem.appendChild(cloud_encrypted_iv_elem)
-
-    user_encrypted_iv_elem = doc.createElement("user_encrypted_iv")
-    user_encrypted_iv_value = doc.createTextNode("%s" % (user_encrypted_iv))
-    user_encrypted_iv_elem.appendChild(user_encrypted_iv_value)
-    user_encrypted_iv_elem.setAttribute("algorithm", AES)
-    image_elem.appendChild(user_encrypted_iv_elem) 
-
-    #parts
-    parts_elem = doc.createElement("parts")
-    parts_elem.setAttribute("count", '%s' % (len(parts)))
-    part_number = 0
-    for part in parts:
-	part_elem = doc.createElement("part")
-	filename_elem = doc.createElement("filename")
-	filename_value = doc.createTextNode(get_absolute_filename(part))
-	filename_elem.appendChild(filename_value)
-	part_elem.appendChild(filename_elem)
+        #user
+        user_elem = doc.createElement("user")
+        user_value = doc.createTextNode("%s" % (user))
+        user_elem.appendChild(user_value)
+        image_elem.appendChild(user_elem)
+        
+        #type
+        #TODO: fixme
+        image_type_elem = doc.createElement("type")
+        image_type_value = doc.createTextNode("machine")
+        image_type_elem.appendChild(image_type_value)
+        image_elem.appendChild(image_type_elem) 
+        
         #digest
-	part_digest_elem = doc.createElement("digest")
-	part_digest_elem.setAttribute('algorithm', 'SHA1')
-	part_digest_value = doc.createTextNode(parts_digest[part_number])
-	part_digest_elem.appendChild(part_digest_value)
-	part_elem.appendChild(part_digest_elem)
-	part_elem.setAttribute("index", '%s' % (part_number))
-	parts_elem.appendChild(part_elem)
-        part_number += 1
-    image_elem.appendChild(parts_elem)
+        image_digest_elem = doc.createElement("digest")
+        image_digest_elem.setAttribute('algorithm', 'SHA1')
+        image_digest_value = doc.createTextNode('%s' % (image_digest))
+        image_digest_elem.appendChild(image_digest_value)
+        image_elem.appendChild(image_digest_elem) 
+        
+        #size
+        image_size_elem = doc.createElement("size")
+        image_size_value = doc.createTextNode("%s" % (image_size))
+        image_size_elem.appendChild(image_size_value)
+        image_elem.appendChild(image_size_elem)
 
-    manifest_string = doc.toxml()
+        #bundled size
+        bundled_size_elem = doc.createElement("bundled_size")
+        bundled_size_value = doc.createTextNode("%s" % (bundled_size))
+        bundled_size_elem.appendChild(bundled_size_value)
+        image_elem.appendChild(bundled_size_elem)
 
-    string_to_sign = get_verification_string(manifest_string)
-    signature_elem = doc.createElement("signature")
-    sha_manifest = sha()
-    sha_manifest.update(string_to_sign)
-    signature_value = doc.createTextNode("%s" % (hexlify(user_priv_key.sign(sha_manifest.digest()))))
-    signature_elem.appendChild(signature_value)
-    manifest_elem.appendChild(signature_elem)
-    manifest_out_file.write(doc.toxml())
-    manifest_out_file.close() 
+        #key, iv
+        cloud_encrypted_key_elem = doc.createElement("ec2_encrypted_key")
+        cloud_encrypted_key_value = doc.createTextNode("%s" % (cloud_encrypted_key))
+        cloud_encrypted_key_elem.appendChild(cloud_encrypted_key_value)
+        cloud_encrypted_key_elem.setAttribute("algorithm", AES)
+        image_elem.appendChild(cloud_encrypted_key_elem)
+        
+        user_encrypted_key_elem = doc.createElement("user_encrypted_key")
+        user_encrypted_key_value = doc.createTextNode("%s" % (user_encrypted_key))
+        user_encrypted_key_elem.appendChild(user_encrypted_key_value)
+        user_encrypted_key_elem.setAttribute("algorithm", AES)
+        image_elem.appendChild(user_encrypted_key_elem) 
 
-def add_excludes(path, excludes):
-    mtab_file = open("/etc/mtab", "r")
-    while 1:
-	mtab_line = mtab_file.readline()
-	if not mtab_line:
-	    break
-	mtab_line_parts = mtab_line.split(' ')
-	mount_point = mtab_line_parts[1]
-	fs_type = mtab_line_parts[2]
-	if (mount_point.find(path) == 0) and (fs_type not in ALLOWED_FS_TYPES):
-	    excludes.append(mount_point)
+        cloud_encrypted_iv_elem = doc.createElement("ec2_encrypted_iv")
+        cloud_encrypted_iv_value = doc.createTextNode("%s" % (cloud_encrypted_iv))
+        cloud_encrypted_iv_elem.appendChild(cloud_encrypted_iv_value)
+        cloud_encrypted_iv_elem.setAttribute("algorithm", AES)
+        image_elem.appendChild(cloud_encrypted_iv_elem)
 
-def create_image(size_in_MB, image_path):
-    dd_cmd = ["dd"] 
-    dd_cmd.append("if=/dev/zero")
-    dd_cmd.append("of=%s" % (image_path))
-    dd_cmd.append("count=%d" % (size_in_MB))
-    dd_cmd.append("bs=1M")
-    print 'Creating disk image...', image_path
-    Popen(dd_cmd, PIPE).communicate()[0]
+        user_encrypted_iv_elem = doc.createElement("user_encrypted_iv")
+        user_encrypted_iv_value = doc.createTextNode("%s" % (user_encrypted_iv))
+        user_encrypted_iv_elem.appendChild(user_encrypted_iv_value)
+        user_encrypted_iv_elem.setAttribute("algorithm", AES)
+        image_elem.appendChild(user_encrypted_iv_elem) 
 
-def make_fs(image_path):
-    makefs_cmd = Popen([MAKEFS_CMD, "-F", image_path], PIPE).communicate()[0]
+        #parts
+        parts_elem = doc.createElement("parts")
+        parts_elem.setAttribute("count", '%s' % (len(parts)))
+        part_number = 0
+        for part in parts:
+	    part_elem = doc.createElement("part")
+	    filename_elem = doc.createElement("filename")
+	    filename_value = doc.createTextNode(self.get_absolute_filename(part))
+	    filename_elem.appendChild(filename_value)
+	    part_elem.appendChild(filename_elem)
+            #digest
+  	    part_digest_elem = doc.createElement("digest")
+	    part_digest_elem.setAttribute('algorithm', 'SHA1')
+	    part_digest_value = doc.createTextNode(parts_digest[part_number])
+	    part_digest_elem.appendChild(part_digest_value)
+	    part_elem.appendChild(part_digest_elem)
+	    part_elem.setAttribute("index", '%s' % (part_number))
+	    parts_elem.appendChild(part_elem)
+            part_number += 1
+        image_elem.appendChild(parts_elem)
 
-def make_image(size_in_MB, excludes, prefix, destination_path):
-    image_file = '%s.img' % (prefix)
-    image_path = '%s/%s' % (destination_path, image_file)
-    if not os.path.exists(destination_path):
-	os.makedirs(destination_path)
-    create_image(size_in_MB, image_path)
-    make_fs(image_path)    
-    return image_path
+        manifest_string = doc.toxml()
 
-def create_loopback(image_path):
-    return Popen(["losetup", "--show", "-f", ('%s' % (image_path))], stdout=PIPE).communicate()[0].replace('\n', '')
+        string_to_sign = self.get_verification_string(manifest_string)
+        signature_elem = doc.createElement("signature")
+        sha_manifest = sha()
+        sha_manifest.update(string_to_sign)
+        signature_value = doc.createTextNode("%s" % (hexlify(user_priv_key.sign(sha_manifest.digest()))))
+        signature_elem.appendChild(signature_value)
+        manifest_elem.appendChild(signature_elem)
+        manifest_out_file.write(doc.toxml())
+        manifest_out_file.close() 
 
-def mount_image(image_path):
-    tmp_mnt_point = "/tmp/%s" % (hex(BN.rand(16)))[2:6]
-    if not os.path.exists(tmp_mnt_point):
-	os.makedirs(tmp_mnt_point)
-    loop_dev = create_loopback(image_path)
-    Popen(["mount", loop_dev, tmp_mnt_point], stdout=PIPE).communicate()  
-    return tmp_mnt_point, loop_dev
+    def add_excludes(self, path, excludes):
+	if self.debug:
+	    print "Reading /etc/mtab..."
+        mtab_file = open("/etc/mtab", "r")
+        while 1:
+  	    mtab_line = mtab_file.readline()
+	    if not mtab_line:
+	        break
+	    mtab_line_parts = mtab_line.split(' ')
+	    mount_point = mtab_line_parts[1]
+	    fs_type = mtab_line_parts[2]
+	    if (mount_point.find(path) == 0) and (fs_type not in ALLOWED_FS_TYPES):
+	        excludes.append(mount_point)
 
-def copy_to_image(mount_point, volume_path, excludes):
-    rsync_cmd = ["rsync", "-a", "-v", volume_path, mount_point]
-    for exclude in excludes:
-	rsync_cmd.append("--exclude")
-	rsync_cmd.append(exclude)
-    print "Copying files..."
-    Popen(rsync_cmd, stdout=PIPE).communicate()
+        for banned in BANNED_MOUNTS:
+	    excludes.append(banned)
 
-def unmount_image(mount_point):
-    Popen(["umount", "-d", mount_point], stdout=PIPE).communicate()[0]
-    os.rmdir(mount_point)
+    def create_image(self, size_in_MB, image_path):
+        dd_cmd = ["dd"] 
+        dd_cmd.append("if=/dev/zero")
+        dd_cmd.append("of=%s" % (image_path))
+        dd_cmd.append("count=%d" % (size_in_MB))
+        dd_cmd.append("bs=1M")
+	if self.debug:
+            print 'Creating disk image...', image_path
+        Popen(dd_cmd, PIPE).communicate()[0]
+
+    def make_fs(self, image_path):
+	if self.debug:
+	    print "Creating filesystem..."
+        makefs_cmd = Popen([MAKEFS_CMD, "-F", image_path], PIPE).communicate()[0]
+
+    def make_image(self, size_in_MB, excludes, prefix, destination_path):
+        image_file = '%s.img' % (prefix)
+        image_path = '%s/%s' % (destination_path, image_file)
+        if not os.path.exists(destination_path):
+	    os.makedirs(destination_path)
+        self.create_image(size_in_MB, image_path)
+        self.make_fs(image_path)        
+        return image_path
+
+    def create_loopback(self, image_path):
+        return Popen(["losetup", "--show", "-f", ('%s' % (image_path))], stdout=PIPE).communicate()[0].replace('\n', '')
+
+    def mount_image(self, image_path):
+        tmp_mnt_point = "/tmp/%s" % (hex(BN.rand(16)))[2:6]
+        if not os.path.exists(tmp_mnt_point):
+	    os.makedirs(tmp_mnt_point)
+	if self.debug:
+	    print "Creating loopback device..."
+        loop_dev = self.create_loopback(image_path)
+	if self.debug:
+	    print "Mounting image..."
+        Popen(["mount", loop_dev, tmp_mnt_point], stdout=PIPE).communicate()  
+        return tmp_mnt_point, loop_dev
+
+    def copy_to_image(self, mount_point, volume_path, excludes):
+        rsync_cmd = ["rsync", "-a", "-v", volume_path, mount_point]
+        for exclude in excludes:
+  	    rsync_cmd.append("--exclude")
+	    rsync_cmd.append(exclude)
+	if self.debug:
+   	    print "Copying files..."
+        Popen(rsync_cmd, stdout=PIPE).communicate()
+
+    def unmount_image(self, mount_point):
+	if self.debug:
+	    print "Unmounting image..."
+        Popen(["umount", "-d", mount_point], stdout=PIPE).communicate()[0]
+        os.rmdir(mount_point)
+
+    def copy_volume(self, image_path, volume_path, excludes):
+        mount_point, loop_dev = self.mount_image(image_path)
+        self.copy_to_image(mount_point, volume_path, excludes)
+        self.unmount_image(mount_point)
 
 def can_read_instance_metadata():
-    meta_data = urllib.urlopen(METADATA_URL)    
+    meta_data = urllib.urlopen(METADATA_URL)        
 
 def get_instance_metadata(type):
+    if self.debug:
+	print "Reading instance metadata", type
     return urllib.urlopen(METADATA_URL + type)
 
 def get_instance_ramdisk():
@@ -563,7 +592,4 @@ def get_instance_product_codes():
 def get_instance_block_device_mappings():
     return get_instance_metadata('block-device-mapping')
 
-def copy_volume(image_path, volume_path, excludes):
-    mount_point, loop_dev = mount_image(image_path)
-    copy_to_image(mount_point, volume_path, excludes)
-    unmount_image(mount_point)
+

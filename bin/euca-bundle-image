@@ -127,16 +127,16 @@ def main():
 	    version()
 
     if image_path and cert_path and private_key_path and user and ec2cert_path:
-	image_size, sha_image_digest = euca_tools.check_image(image_path, destination_path)
+	image_size, sha_image_digest = euca.check_image(image_path, destination_path)
 	if not prefix:
-            prefix = euca_tools.get_absolute_filename(image_path)
-	tar_file = euca_tools.tar_image(prefix, image_path, destination_path)
-	zip_file = euca_tools.zip_image(tar_file)
+            prefix = euca.get_absolute_filename(image_path)
+	tar_file = euca.tar_image(prefix, image_path, destination_path)
+	zip_file = euca.zip_image(tar_file)
 	os.remove(tar_file)
-	encrypted_file, key, iv, bundled_size = euca_tools.encrypt_image(zip_file)
+	encrypted_file, key, iv, bundled_size = euca.encrypt_image(zip_file)
 	os.remove(zip_file)
-	parts, parts_digest = euca_tools.split_image(encrypted_file)
-	euca_tools.generate_manifest(destination_path, prefix, parts, parts_digest, image_path, key, iv, cert_path, ec2cert_path, private_key_path, target_arch, image_size, bundled_size, sha_image_digest, user, kernel, ramdisk, mapping)
+	parts, parts_digest = euca.split_image(encrypted_file)
+	euca.generate_manifest(destination_path, prefix, parts, parts_digest, image_path, key, iv, cert_path, ec2cert_path, private_key_path, target_arch, image_size, bundled_size, sha_image_digest, user, kernel, ramdisk, mapping)
         os.remove(encrypted_file)
     else:
 	print 'image, cert, privatekey, user and ec2cert_path MUST be specified.'

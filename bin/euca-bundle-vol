@@ -128,8 +128,8 @@ def get_instance_metadata(ramdisk, kernel, mapping):
 def main():
     euca = None
     try:
-        euca = euca_tools.EucaTool('c:k:u:B:d:br:p:s:v:e:',
-                                   ['cert=', 'privatekey=', 'user=', 'prefix=', 'volume=',
+        euca = euca_tools.EucaTool('a:c:k:u:B:d:br:p:s:v:e:',
+                                   ['cert=', 'privatekey=', 'user=', 'prefix=', 'volume=', 'all',
                                     'kernel=', 'ramdisk=', 'block-device-mapping=', 'destination=', 'ec2cert=', 'arch=', 'size=', 'exclude=', 'inherit=', 'no-inherit', 'batch'])
     except:
         usage()
@@ -146,7 +146,9 @@ def main():
     target_arch='x86_64'
     mapping = None
     excludes_string = None
+    excludes = None
     batch=False
+    all=False
     volume_path = "/"
     inherit = True
     product_codes = None
@@ -176,6 +178,8 @@ def main():
             destination_path = value
         elif name in ('--ec2cert'):
             ec2cert_path = value
+        elif name in ('-a', '--all'):
+            all = True
         elif name in ('-r', '--arch'):
             target_arch = value
 	    if target_arch != 'i386' and target_arch != 'x86_64':
@@ -191,22 +195,23 @@ def main():
     if size_in_MB and cert_path and private_key_path and user and ec2cert_path:
 	check_root()
 	check_image_size(size_in_MB)
-	excludes = parse_excludes(excludes_string)
-	euca_tools.add_excludes(volume_path, excludes)
+	if not all:
+ 	    excludes = parse_excludes(excludes_string)
+	    euca.add_excludes(volume_path, excludes)
 	if inherit:
 	    ramdisk, kernel, mapping, product_codes = get_instance_metadata(ramdisk, kernel, mapping)   
-	image_path = euca_tools.make_image(size_in_MB, excludes, prefix, destination_path)        
-        euca_tools.copy_volume(image_path, volume_path, excludes)
-	image_size, sha_image_digest = euca_tools.check_image(image_path, destination_path)
+	image_path = euca.make_image(size_in_MB, excludes, prefix, destination_path)        
+        euca.copy_volume(image_path, volume_path, excludes)
+	image_size, sha_image_digest = euca.check_image(image_path, destination_path)
 	if not prefix:
-            prefix = euca_tools.get_absolute_filename(image_path)
-	tar_file = euca_tools.tar_image(prefix, image_path, destination_path)
-	zip_file = euca_tools.zip_image(tar_file)
+            prefix = euca.get_absolute_filename(image_path)
+	tar_file = euca.tar_image(prefix, image_path, destination_path)
+	zip_file = euca.zip_image(tar_file)
 	os.remove(tar_file)
-	encrypted_file, key, iv, bundled_size = euca_tools.encrypt_image(zip_file)
+	encrypted_file, key, iv, bundled_size = euca.encrypt_image(zip_file)
 	os.remove(zip_file)
-	parts, parts_digest = euca_tools.split_image(encrypted_file)
-	euca_tools.generate_manifest(destination_path, prefix, parts, parts_digest, image_path, key, iv, cert_path, ec2cert_path, private_key_path, target_arch, image_size, bundled_size, sha_image_digest, user, kernel, ramdisk, mapping, product_codes)
+	parts, parts_digest = euca.split_image(encrypted_file)
+	euca.generate_manifest(destination_path, prefix, parts, parts_digest, image_path, key, iv, cert_path, ec2cert_path, private_key_path, target_arch, image_size, bundled_size, sha_image_digest, user, kernel, ramdisk, mapping, product_codes)
         os.remove(encrypted_file)
     else:
 	print 'image, cert, privatekey, user and ec2cert_path MUST be specified.'
