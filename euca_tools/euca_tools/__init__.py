@@ -93,6 +93,7 @@ class EucaTool:
                                   long_opts)
 	self.opts = opts
 	self.args = args
+	self.debug = False
         for name, value in opts:
             if name in ('-K', '--access-key'):
  		self.ec2_user_access_key = value
@@ -264,9 +265,11 @@ class EucaTool:
         enc_file = '%s.part' % (file.replace('.tar.gz', ''))
 
         key = (hex(BN.rand(16 * 8))[2:34]).replace('L', 'c')
-        print 'key: %s' % (key)
+	if self.debug:
+            print 'Key: %s' % (key)
         iv = (hex(BN.rand(16 * 8))[2:34]).replace('L', 'c')
-        print 'iv: %s' % (iv)
+	if self.debug:
+            print 'IV: %s' % (iv)
 
         k=EVP.Cipher(alg='aes_128_cbc', key=unhexlify(key), iv=unhexlify(iv), op=1)
 
@@ -279,7 +282,7 @@ class EucaTool:
         return enc_file, key, iv, bundled_size
 
     def split_image(self, file): 
-        print 'Splitting image'  
+        print 'Splitting image...'  
         return self.split_file(file, IMAGE_SPLIT_CHUNK) 
 
     def get_verification_string(self, manifest_string):
