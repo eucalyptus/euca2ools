@@ -130,7 +130,7 @@ class EucaTool:
 		    print 'S3_URL not specified. Trying %s' % (self.ec2_url)
 
         self.port = None
-        self.service_path = '/'
+        self.service_path = '' 
 	if (self.ec2_url.find('https://') >= 0):
             self.ec2_url = self.ec2_url.replace('https://', '')
 	    self.is_secure = True
@@ -162,6 +162,7 @@ class EucaTool:
                             is_secure=self.is_secure,
                             host=self.host,
                             port=self.port,
+			    calling_format=boto.s3.connection.OrdinaryCallingFormat(),
                             service=self.service_path)
 
     def get_absolute_filename(self, filename):

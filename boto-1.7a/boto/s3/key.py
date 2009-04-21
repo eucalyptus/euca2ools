@@ -339,7 +339,7 @@ class Key:
                 return response
             elif response.status >= 200 and response.status <= 299:
                 self.etag = response.getheader('etag')
-                if self.etag != '%s'  % self.md5:
+                if self.etag != '"%s"'  % self.md5:
                     raise S3DataError('ETag from S3 did not match computed MD5')
                 return response
             else:

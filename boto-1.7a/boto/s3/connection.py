@@ -59,11 +59,8 @@ class _CallingFormat:
             path = '/' + bucket
         return path + '/%s' % urllib.quote(key)
 
-    def build_path_base(self, bucket, key='', virtual_hosting=False):
-        if virtual_hosting:
-            return '/%s' % urllib.quote(key)
-        else:
-            return '%s/%s' % (bucket, urllib.quote(key))
+    def build_path_base(self, bucket, key=''):
+        return '/%s' % urllib.quote(key)
 
 class SubdomainCallingFormat(_CallingFormat):
     @assert_case_insensitive
@@ -205,11 +202,9 @@ class S3Connection(AWSAuthConnection):
             query_part = ''
         if force_http:
             protocol = 'http'
-	    server_name = self.server
         else:
             protocol = self.protocol
-	    server_name = self.server_name
-        return self.calling_format.build_url_base(protocol, server_name,
+        return self.calling_format.build_url_base(protocol, self.server,
                                                   bucket, key) + query_part
 
     def get_all_buckets(self):
@@ -294,20 +289,17 @@ class S3Connection(AWSAuthConnection):
             raise S3ResponseError(response.status, response.reason, body)
 
     def make_request(self, method, bucket='', key='', headers=None, data='',
-            query_args=None, sender=None, virtual_hosting=False):
+            query_args=None, sender=None):
         if isinstance(bucket, Bucket):
             bucket = bucket.name
         if isinstance(key, Key):
             key = key.name
-        path = self.calling_format.build_path_base(bucket, key, virtual_hosting)
+        path = self.calling_format.build_path_base(bucket, key)
         auth_path = self.calling_format.build_auth_path(bucket, key)
-	if virtual_hosting:
-            host = self.calling_format.build_host(self.server, bucket)
-        else:
-            host = self.server
+        host = self.calling_format.build_host(self.server_name, bucket)
         if query_args:
             path += '?' + query_args
             auth_path += '?' + query_args
-        return AWSAuthConnection.make_request(self, method, path, headers,
+	return AWSAuthConnection.make_request(self, method, path, headers,
                 data, host, auth_path, sender)
 

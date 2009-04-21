@@ -124,7 +124,7 @@ class AWSAuthConnection:
         @param port: The port to use to connect
         """
         
-        self.num_retries = 5 
+        self.num_retries = 0 
         self.is_secure = is_secure
         self.handle_proxy(proxy, proxy_port, proxy_user, proxy_pass)
         # define exceptions from httplib that we want to catch and retry
@@ -180,8 +180,7 @@ class AWSAuthConnection:
         elif config.has_option('Credentials', 'aws_secret_access_key'):
             self.aws_secret_access_key = config.get('Credentials', 'aws_secret_access_key')
 
-	if service:
-	    self.service = service
+	self.service = service
 
         # initialize an HMAC for signatures, make copies with each request
         self.hmac = hmac.new(self.aws_secret_access_key, digestmod=sha)
@@ -383,7 +382,7 @@ class AWSAuthConnection:
             raise BotoClientError('Please report this exception as a Boto Issue!')
 
     def make_request(self, method, path, headers=None, data='', host=None,
-            auth_path=None, sender=None, virtual_hosting=False):
+            auth_path=None, sender=None):
 	if self.service:
 	    path = '/%s/%s' % (self.service, path)
         if headers == None:
@@ -398,11 +397,11 @@ class AWSAuthConnection:
                 # If is_secure, we don't have to set the proxy authentication
                 # header here, we did that in the CONNECT to the proxy.
                 headers.update(self.get_proxy_auth_header())
-	request_string = path
-        if virtual_hosting:
-           request_string = auth_path 
+	request_string = auth_path or path
+	if self.service:
+	    request_string = path
         self.add_aws_auth_header(headers, method, request_string)
-        return self._mexe(method, path, data, headers, host, sender)
+	return self._mexe(method, path, data, headers, host, sender)
 
     def add_aws_auth_header(self, headers, method, path):
         if not headers.has_key('Date'):
