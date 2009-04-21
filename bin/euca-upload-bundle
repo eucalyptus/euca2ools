@@ -90,6 +90,12 @@ def ensure_bucket(connection, bucket, canned_acl=None):
 	    except S3CreateError:
 		print 'Unable to create bucket %s' % (bucket)
 		sys.exit()
+	elif (s3error_string.find("403") >= 0):
+	    print "You do not have permissions to access bucket:", bucket
+	    sys.exit()
+	else:
+	    print s3error_string
+	    sys.exit()
     return bucket_instance
  
 def get_parts(manifest_filename):
@@ -113,8 +119,16 @@ def upload_manifest(bucket_instance, manifest_filename, canned_acl=None):
     k = Key(bucket_instance)
     k.key = get_absolute_filename(manifest_filename)
     manifest_file = open(manifest_filename, "rb")
-    k.set_contents_from_file(manifest_file, policy=canned_acl)
-
+    try:
+        k.set_contents_from_file(manifest_file, policy=canned_acl)
+    except S3ResponseError as s3error:
+        s3error_string = '%s' % (s3error)
+	if (s3error_string.find("403") >= 0):
+	    print "Permission denied while writing:", k.key
+	else:
+	    print s3error_string
+	sys.exit()
+	
 def upload_parts(bucket_instance, directory, parts, part_to_start_from, canned_acl=None):
     if part_to_start_from:
         okay_to_upload = False
@@ -129,8 +143,16 @@ def upload_parts(bucket_instance, directory, parts, part_to_start_from, canned_a
             k = Key(bucket_instance)
             k.key = part
             part_file = open(directory + "/" + part, "rb")
-            k.set_contents_from_file(part_file, policy=canned_acl)
-
+	    try:
+                k.set_contents_from_file(part_file, policy=canned_acl)
+	    except S3ResponseError as s3error:
+   	        s3error_string = '%s' % (s3error)
+		if (s3error_string.find("403") >= 0):
+	    	    print "Permission denied while writing:", k.key
+		else:
+	    	    print s3error_string
+		sys.exit()
+	
 def main():
     euca = None
     try:
@@ -146,7 +168,7 @@ def main():
     ec2cert_path = None
     directory = None
     part = None
-    canned_acl = None
+    canned_acl = 'aws-exec-read' 
     retry = False
     skipmanifest = False
     debug = False
