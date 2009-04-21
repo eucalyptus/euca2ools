@@ -179,6 +179,7 @@ def main():
 	conn = euca.make_connection()
         bucket_instance = ensure_bucket(conn, bucket)
 	manifests = get_manifests(bucket_instance)
+	print manifests
 	download_manifests(bucket_instance, manifests, directory)
 	delete_parts(bucket_instance, manifests, directory)
 	delete_manifests(bucket_instance, manifests, clear)

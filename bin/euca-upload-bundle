@@ -73,11 +73,11 @@ def version():
     print version_string
     sys.exit()
 
-def create_bucket(connection, bucket):
+def create_bucket(connection, bucket, canned_acl=None):
     print 'creating bucket:', bucket
-    return connection.create_bucket(bucket)
+    return connection.create_bucket(bucket, policy=canned_acl)
 
-def ensure_bucket(connection, bucket):
+def ensure_bucket(connection, bucket, canned_acl=None):
     bucket_instance = None
     try:
 	print 'checking bucket:', bucket
@@ -86,7 +86,7 @@ def ensure_bucket(connection, bucket):
         s3error_string = '%s' % (s3error)
 	if (s3error_string.find("404") >= 0):
 	    try:
-                bucket_instance = create_bucket(connection, bucket) 
+                bucket_instance = create_bucket(connection, bucket, canned_acl) 
 	    except S3CreateError:
 		print 'Unable to create bucket %s' % (bucket)
 		sys.exit()
@@ -108,14 +108,14 @@ def get_absolute_filename(filename):
     f_parts = filename.split('/')
     return f_parts[len(f_parts) - 1]
 
-def upload_manifest(bucket_instance, manifest_filename):
+def upload_manifest(bucket_instance, manifest_filename, canned_acl=None):
     print 'uploading manifest file'
     k = Key(bucket_instance)
     k.key = get_absolute_filename(manifest_filename)
     manifest_file = open(manifest_filename, "rb")
-    k.set_contents_from_file(manifest_file)
+    k.set_contents_from_file(manifest_file, policy=canned_acl)
 
-def upload_parts(bucket_instance, directory, parts, part_to_start_from):
+def upload_parts(bucket_instance, directory, parts, part_to_start_from, canned_acl=None):
     if part_to_start_from:
         okay_to_upload = False
     else:
@@ -129,7 +129,7 @@ def upload_parts(bucket_instance, directory, parts, part_to_start_from):
             k = Key(bucket_instance)
             k.key = part
             part_file = open(directory + "/" + part, "rb")
-            k.set_contents_from_file(part_file)
+            k.set_contents_from_file(part_file, policy=canned_acl)
 
 def main():
     euca = None
@@ -177,14 +177,14 @@ def main():
     
     if bucket and manifest_path:
 	conn = euca.make_connection()
-	bucket_instance = ensure_bucket(conn, bucket)
+	bucket_instance = ensure_bucket(conn, bucket, canned_acl)
 	parts = get_parts(manifest_path)
         if not directory:
 	    manifest_path_parts = manifest_path.split('/')
 	    directory = manifest_path.replace(manifest_path_parts[len(manifest_path_parts) - 1], '')
 	if not skipmanifest and not part:
-	    upload_manifest(bucket_instance, manifest_path)
-	upload_parts(bucket_instance, directory, parts, part)
+	    upload_manifest(bucket_instance, manifest_path, canned_acl)
+	upload_parts(bucket_instance, directory, parts, part, canned_acl)
     else:
 	print 'bucket, manifest, access-key and secret-key MUST be specified.'	
         usage()
