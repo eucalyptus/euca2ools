@@ -62,14 +62,11 @@ def version():
     print version_string
     sys.exit()
 
-def display_images(images, owner, image_ids):
+def display_images(images, image_ids):
     check_image_ids = False
     if(len(image_ids) > 0):
 	check_image_ids = True
     for image in images:
-	if owner:
-	    if image.ownerId != owner:
-		continue
         if check_image_ids:
 	    if not image.id in image_ids:
 	        continue
@@ -89,7 +86,8 @@ def main():
  
     show_all = False
     executable_by = None 
-    owner = None
+    owners = [] 
+    owner = 'self' 
 
     for name, value in euca.opts:
         if name in ('-h', '--help'):
@@ -103,12 +101,13 @@ def main():
 	elif name in ('--version'):
 	    version()
 
+    owners.append(owner)
     ec2_conn = euca.make_connection()
     image_ids = euca.process_args()
     #This is workaround for an issue with the front end (does not return an image set when an image id is specified LP:356389)
-    images = ec2_conn.get_all_images()
+    images = ec2_conn.get_all_images(owners=owners)
     #TODO: DescribeImageAttributes from boto currently fails. Need to figure out incompatibility.
-    display_images(images, owner, image_ids)
+    display_images(images, image_ids)
 if __name__ == "__main__":
     main()
  

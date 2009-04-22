@@ -41,9 +41,10 @@ from binascii import hexlify, unhexlify
 from subprocess import *
 import urllib
 
-VERSION = "2007-10-10"
 BUNDLER_NAME = "euca-tools"
 BUNDLER_VERSION = "1.0"
+VERSION = "2007-10-10"
+RELEASE = "31337"
 AES = 'AES-128-CBC'
 
 MAKEFS_CMD = 'mkfs.ext2'
@@ -101,9 +102,9 @@ class EucaTool:
 		self.ec2_user_secret_key = value
 	    elif name in ('-U', '--url'):
 		self.ec2_url = value
-	    elif name in ('--debug'):
+	    elif name == '--debug':
 		self.debug = True
-        
+ 
 	if not self.ec2_user_access_key:
             self.ec2_user_access_key = os.getenv('EC2_ACCESS_KEY')
  	    if not self.ec2_user_access_key:
@@ -216,10 +217,10 @@ class EucaTool:
 	sha_image.update(buf)
         return image_size, hexlify(sha_image.digest())
 
-    def tar_image(self, prefix, file, path): 
+    def tarzip_image(self, prefix, file, path): 
         print 'Tarring image'
-        tar_file = '%s.tar' % (path + '/' + prefix) 
-        tar = tarfile.open(tar_file, "w")
+        tar_file = '%s.tar.gz' % (path + '/' + prefix) 
+        tar = tarfile.open(tar_file, "w|gz")
         tar.add(file)
         tar.close()
         return tar_file
@@ -337,7 +338,7 @@ class EucaTool:
         version_value = doc.createTextNode(VERSION)
         version_elem.appendChild(version_value)
         manifest_elem.appendChild(version_elem)
- 
+
         #bundler info
         bundler_elem = doc.createElement("bundler")
         bundler_name_elem = doc.createElement("name")
@@ -348,8 +349,13 @@ class EucaTool:
         bundler_version_elem.appendChild(bundler_version_value)
         bundler_elem.appendChild(bundler_name_elem)
         bundler_elem.appendChild(bundler_version_elem)
+       	#release
+	release_elem = doc.createElement("release")
+	release_value = doc.createTextNode(RELEASE)
+	release_elem.appendChild(release_value)
+	bundler_elem.appendChild(release_elem)
         manifest_elem.appendChild(bundler_elem) 
-
+ 
         #machine config
         machine_config_elem = doc.createElement("machine_configuration")
         manifest_elem.appendChild(machine_config_elem)
@@ -458,13 +464,11 @@ class EucaTool:
         cloud_encrypted_iv_elem = doc.createElement("ec2_encrypted_iv")
         cloud_encrypted_iv_value = doc.createTextNode("%s" % (cloud_encrypted_iv))
         cloud_encrypted_iv_elem.appendChild(cloud_encrypted_iv_value)
-        cloud_encrypted_iv_elem.setAttribute("algorithm", AES)
         image_elem.appendChild(cloud_encrypted_iv_elem)
 
         user_encrypted_iv_elem = doc.createElement("user_encrypted_iv")
         user_encrypted_iv_value = doc.createTextNode("%s" % (user_encrypted_iv))
         user_encrypted_iv_elem.appendChild(user_encrypted_iv_value)
-        user_encrypted_iv_elem.setAttribute("algorithm", AES)
         image_elem.appendChild(user_encrypted_iv_elem) 
 
         #parts

@@ -91,7 +91,7 @@ def ensure_bucket(connection, bucket, canned_acl=None):
 		print 'Unable to create bucket %s' % (bucket)
 		sys.exit()
 	elif (s3error_string.find("403") >= 0):
-	    print "You do not have permissions to access bucket:", bucket
+	    print "You do not have permission to access bucket:", bucket
 	    sys.exit()
 	else:
 	    print s3error_string
