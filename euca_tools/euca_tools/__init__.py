@@ -35,6 +35,7 @@ import getopt, sys, os
 import tarfile
 import gzip
 from xml.dom.minidom import Document
+from xml.dom import minidom
 from hashlib import sha1 as sha
 from M2Crypto import BN, EVP, RSA, util, Rand, m2, X509
 from binascii import hexlify, unhexlify
@@ -170,6 +171,10 @@ class EucaTool:
         f_parts = filename.split('/')
         return f_parts[len(f_parts) - 1]
 
+    def get_file_path(self, filename):
+	absolute_filename = self.get_absolute_filename(filename)
+	return filename.replace(absolute_filename, '')
+
     def split_file(self, file, chunk_size):
         parts = []
         parts_digest = []
@@ -221,7 +226,7 @@ class EucaTool:
         print 'Tarring image'
         tar_file = '%s.tar.gz' % (path + '/' + prefix) 
         tar = tarfile.open(tar_file, "w|gz")
-        tar.add(file)
+        tar.add(file, arcname=prefix)
         tar.close()
         return tar_file
 
@@ -243,24 +248,13 @@ class EucaTool:
 
         return ''.join( bytes )
 
-    def encrypt_file(self, cipher, in_file, out_file) :
+    def crypt_file(self, cipher, in_file, out_file) :
         while 1:
                 buf=in_file.read(IMAGE_IO_CHUNK)
                 if not buf:
                    break
                 out_file.write(cipher.update(buf))
         out_file.write(cipher.final())
-  
-
-    def decrypt_file(self, cipherType, key, iv, in_file, out_file ) :
-        dec = DecryptCipher( cipherType, key, iv )
-        while 1 :
-                data = in_file.read(IMAGE_IO_CHUNK)
-                if not data : break
-                out_data = dec.update( data )
-                out_file.write( out_data )
-        final_data = dec.finish()
-        out_file.write( final_data )
  
     def encrypt_image(self, file):
         print 'Encrypting image'
@@ -277,7 +271,7 @@ class EucaTool:
 
         in_file = open(file)
         out_file = open(enc_file, "wb")
-        self.encrypt_file(k, in_file, out_file)
+        self.crypt_file(k, in_file, out_file)
         in_file.close()
         out_file.close()
         bundled_size = os.path.getsize(enc_file)
@@ -296,6 +290,84 @@ class EucaTool:
         image_string = manifest_string[start_image:end_image + len('</image>')]
 
         return mc_config_string + image_string
+
+    def parse_manifest(self, manifest_filename):
+        parts = []
+        encrypted_key = None
+  	encrypted_iv = None
+        dom = minidom.parse(manifest_filename) 
+        manifest_elem = dom.getElementsByTagName('manifest')[0]
+        parts_list = manifest_elem.getElementsByTagName('filename')
+        for part_elem in parts_list:
+    	    nodes = part_elem.childNodes
+	    for node in nodes:
+                if node.nodeType == node.TEXT_NODE:
+                    parts.append(node.data)
+        encrypted_key_elem = manifest_elem.getElementsByTagName('user_encrypted_key')[0]
+        nodes = encrypted_key_elem.childNodes
+        for node in nodes:
+	    if node.nodeType == node.TEXT_NODE:
+	        encrypted_key = node.data
+        encrypted_iv_elem = manifest_elem.getElementsByTagName('user_encrypted_iv')[0]
+        nodes = encrypted_iv_elem.childNodes
+        for node in nodes:
+	    if node.nodeType == node.TEXT_NODE:
+	        encrypted_iv = node.data
+        return parts, encrypted_key, encrypted_iv
+
+    def assemble_parts(self, src_directory, directory, manifest_path, parts):
+        manifest_filename = self.get_absolute_filename(manifest_path)
+        encrypted_filename = directory + '/' + manifest_filename.replace('.manifest.xml', '.enc.tar.gz')
+        if (len(parts) > 0):
+     	    if not os.path.exists(directory):
+	        os.makedirs(directory)
+	    encrypted_file = open(encrypted_filename, "wb")
+	    for part in parts:
+   	        part_filename = src_directory + '/' + part
+	        part_file = open(part_filename, "rb")
+	        while 1:
+	            data = part_file.read(IMAGE_IO_CHUNK)
+		    if not data:
+		        break
+		    encrypted_file.write(data)
+	        part_file.close()			 
+	    encrypted_file.close()
+        return encrypted_filename
+
+    def decrypt_image(self, encrypted_filename, encrypted_key, encrypted_iv, private_key_path):
+        user_priv_key = RSA.load_key(private_key_path)
+        key = user_priv_key.private_decrypt(unhexlify(encrypted_key), RSA.pkcs1_padding)
+        iv = user_priv_key.private_decrypt(unhexlify(encrypted_iv), RSA.pkcs1_padding)
+        k=EVP.Cipher(alg='aes_128_cbc', key=unhexlify(key), iv=unhexlify(iv), op=0)
+  
+        decrypted_filename = encrypted_filename.replace('.enc', '')
+        decrypted_file = open(decrypted_filename, "wb")
+        encrypted_file = open(encrypted_filename, "rb")
+        self.crypt_file(k, encrypted_file, decrypted_file)
+        encrypted_file.close()
+        decrypted_file.close()
+        return decrypted_filename
+
+    def unzip_image(self, file):
+        file_in = gzip.open(file, 'rb')
+        unzipped_filename = file.replace('.gz', '')
+        unzipped_file = open(unzipped_filename, 'wb')
+        while 1:
+    	    data = file_in.read(IMAGE_IO_CHUNK)
+	    if not data:
+	        break
+	    unzipped_file.write(data)
+        file_in.close()
+        unzipped_file.close()
+        return unzipped_filename
+
+    def untarzip_image(self, path, file):
+        untarred_filename = file.replace('.tar.gz', '') 
+        tar_file = tarfile.open(file, "r|gz")
+        tar_file.extractall(path)
+        untarred_names = tar_file.getnames()
+        tar_file.close()
+        return untarred_names 
 
     def get_block_devs(self, mapping):
         virtual = []
