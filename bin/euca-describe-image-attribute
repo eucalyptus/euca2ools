@@ -40,11 +40,17 @@ DESCRIPTION
     Show image attributes.
 
 USAGE
-    euca-describe-image-attribute -l | -p | -B | --kernel | --ramdisk
+    euca-describe-image-attribute [-l, --launch-permission] [-p, --product-code] 
+	  [-B, --block-device-mapping] [--kernel] [--ramdisk]
 	  [-h, --help] [--version] [--debug] image_id 
 
     Where
 	image_id - unique identifier for the image that you want to retrieve the attributes for. 
+        -B, --block-device-mapping - show block device mapping.
+	-l, --launch-permission - show launch permissions.
+	-p, --product-code - show the product codes associated with the image
+	--kernel - show the kernel id associated with the image.
+	--ramdisk - show the ramdisk id associated with the image.
 """
 
 version_string = """    euca-describe-image-attribute version: 1.0 (BSD)"""

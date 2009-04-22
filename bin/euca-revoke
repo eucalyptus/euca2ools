@@ -63,9 +63,9 @@ def version():
 def main():
     euca = None
     try:
-        euca = euca_tools.EucaTool('P:p:o:u:s:',
+        euca = euca_tools.EucaTool('P:p:o:u:s:t:',
                                    ['protocol=', 'port-range=', 'source-group=',
-				    'source-group-user=', 'source-subnet='])
+				    'source-group-user=', 'source-subnet=', 'icmp-type-code='])
     except:
         usage()
  
@@ -93,6 +93,11 @@ def main():
 	    source_group_owner_id = value  
 	elif name in ('-s', '--source-subnet'):
 	    cidr_ip = value
+        elif name in ('-t', '--icmp-type-code'):
+            code_parts = value.split(":")
+            if (len(code_parts) > 1):
+                from_port = int(code_parts[0])
+                to_port = int(code_parts[1])
         elif name in ('-h', '--help'):
             usage()
 	elif name in ('--version'):

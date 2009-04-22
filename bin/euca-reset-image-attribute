@@ -40,7 +40,7 @@ DESCRIPTION
     Reset attributes for an image.
 
 USAGE
-    euca-reset-image-attribute -l 
+    euca-reset-image-attribute -l, --launch-permission 
 	  [-h, --help] [--version] [--debug] image_id 
 
     Where
@@ -57,28 +57,11 @@ def version():
     print version_string
     sys.exit()
 
-def display_image_attribute(image_attribute):
-    if image_attribute.name == 'launch_permission':
-        if image_attribute.attrs.has_key('groups'):
-	    for group in image_attribute.attrs['groups']:
-		print 'launchPermission\t%s\tgroup\t%s' % (image_attribute.image_id, group)
-	if image_attribute.attrs.has_key('user_ids'):
-	    for userid in image_attribute.attrs['user_ids']:
-		print 'launchPermission\t%s\tuserId\t%s' % (image_attribute.image_id, userid)
-    if image_attribute.attrs.has_key('product_codes'):
-	for product_code in image_attribute.attrs['product_codes']:
-	    print 'productCodes\t%s\tproductCode\t%s' % (image_attribute.image_id, product_code)
-    if image_attribute.kernel:
-	print 'kernel\t%s\tkernel\t%s' % (image_attribute.image_id, image_attribute.kernel)
-    if image_attribute.ramdisk:
-	print 'ramdisk\t%s\tramdisk\t%s' % (image_attribute.image_id, image_attribute.ramdisk)
-
 def main():
     euca = None
     try:
-        euca = euca_tools.EucaTool('lpi:a:r:',
-                                   ['launch-permission', 'product-code=', 'add=', 'remove=',
-				    'kernel', 'ramdisk'])
+        euca = euca_tools.EucaTool('l',
+                                   ['launch-permission'])
     except:
         usage()
  
