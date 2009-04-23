@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009, Regents of the University of California
+# Copyright (c) 2009, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -29,7 +29,7 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 #
-# Author: Sunil Soman sunils@cs.ucsb.edu
+# Author: Neil Soman neil@eucalyptus.com
 
 try:
     from setuptools import setup
@@ -40,9 +40,9 @@ setup(name = "euca_tools",
       version = "1.0",
       description = "API tools compatible with Amazon AWS",
       long_description="API tools compliant with Amazon's AWS API. Work with Amazon AWS and Eucalyptus.",
-      author = "Sunil Soman",
-      author_email = "sunils@cs.ucsb.edu",
-      url = "http://eucalyptus.cs.ucsb.edu",
+      author = "Neil Soman",
+      author_email = "neil@eucalyptus.com",
+      url = "http://www.eucalyptus.com",
       packages = [ 'euca_tools'],
       license = 'BSD (Simplified)',
       platforms = 'Posix; MacOS X; Windows',
