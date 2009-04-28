@@ -33,7 +33,7 @@
 # Author: Neil Soman neil@eucalyptus.com
 
 import getopt, sys, os
-import euca_tools
+from euca_tools import EucaTool, ValidationError, Util
 
 usage_string = """
 DESCRIPTION
@@ -51,7 +51,7 @@ version_string = """    euca-disassociate-address version: 1.0 (BSD)"""
 
 def usage():
     print usage_string
-    euca_tools.usage()
+    Util().usage()
 
 def version():
     print version_string
@@ -60,7 +60,7 @@ def version():
 def main():
     euca = None
     try:
-	euca = euca_tools.EucaTool()
+	euca = EucaTool()
     except:
         usage()
  
@@ -76,12 +76,18 @@ def main():
         ip = arg
 	break
 
-    ec2_conn = euca.make_connection()
 
     if ip:
-        return_code = ec2_conn.disassociate_address(public_ip = ip)
-	if return_code:
-	    print 'ADDRESS\t%s\t%s' % (ip, instance_id)
+        try:
+    	    euca.validate_address(ip)
+        except ValidationError as error:
+            print error.message
+            sys.exit(1)
+
+        euca_conn = euca.make_connection()
+        return_code = euca_conn.disassociate_address(public_ip = ip)
+        if return_code:
+            print 'ADDRESS\t%s\t%s' % (ip, instance_id)
     else:
 	print 'ip address must be specified'
 	usage()

@@ -33,7 +33,7 @@
 # Author: Neil Soman neil@eucalyptus.com
 
 import getopt, sys, os
-import euca_tools
+from euca_tools import EucaTool, ValidationError, Util
 
 usage_string = """
 DESCRIPTION
@@ -53,7 +53,7 @@ version_string = """    euca-authorize version: 1.0 (BSD)"""
 
 def usage():
     print usage_string
-    euca_tools.usage()
+    Util().usage()
 
 def version():
     print version_string
@@ -62,7 +62,7 @@ def version():
 def main():
     euca = None
     try:
-        euca = euca_tools.EucaTool('P:p:o:s:t:',
+        euca = EucaTool('P:p:o:s:t:',
                                    ['protocol=', 'port-range=', 'source-group=',
 				    'source-group-user=', 'source-subnet=', 'icmp-type-code='])
     except:
@@ -106,10 +106,20 @@ def main():
 	group_name = arg
 	break
     
-    ec2_conn = euca.make_connection()
+    euca_conn = euca.make_connection()
 
     if group_name:
-        return_code = ec2_conn.authorize_security_group(group_name = group_name,
+	try:
+	    if cidr_ip:
+                euca.validate_address(cidr_ip)
+	    if protocol:
+	        euca.validate_protocol(protocol)
+        except ValidationError as error:
+   	    print error.message
+            sys.exit(1)
+
+
+        return_code = euca_conn.authorize_security_group(group_name = group_name,
 							src_security_group_name = source_group_name,
 							src_security_group_owner_id = source_group_owner_id,
 							ip_protocol = protocol,

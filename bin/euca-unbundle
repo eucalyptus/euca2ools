@@ -33,7 +33,7 @@
 # Author: Neil Soman neil@eucalyptus.com
 
 import getopt, sys, os
-import euca_tools
+from euca_tools import EucaTool, ValidationError, Util
 import tarfile
 import gzip
 from xml.dom import minidom
@@ -67,7 +67,7 @@ IMAGE_SPLIT_CHUNK = IMAGE_IO_CHUNK * 1024;
 
 def usage():
     print usage_string
-    euca_tools.usage()
+    Util().usage()
 
 def version():
     print version_string
@@ -75,7 +75,7 @@ def version():
 
 def main():
     try:
-        euca = euca_tools.EucaTool('m:k:d:s:',
+        euca = EucaTool('m:k:d:s:',
                                    ['manifest=', 'privatekey=', 'destination=', 'source='])
     except:
         usage()
@@ -101,7 +101,16 @@ def main():
 	    version()
 
     if manifest_path and private_key_path:
-	parts, encrypted_key, encrypted_iv = euca.parse_manifest(manifest_path)
+	try:
+	    euca.validate_file(manifest_path)
+	    euca.validate_file(private_key_path)
+	    if src_directory:
+		euca.validate_dir(src_directory)
+	except ValidationError as error:
+	    print error.message
+	    sys.exit(1)
+
+        parts, encrypted_key, encrypted_iv = euca.parse_manifest(manifest_path)
 	if not src_directory:
 	    src_directory = euca.get_file_path(manifest_path)
 	image = euca.assemble_parts(src_directory, directory, manifest_path, parts)

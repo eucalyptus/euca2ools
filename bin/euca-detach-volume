@@ -33,7 +33,7 @@
 # Author: Neil Soman neil@eucalyptus.com
 
 import getopt, sys, os
-import euca_tools
+from euca_tools import EucaTool, ValidationError, Util
 
 usage_string = """
 DESCRIPTION
@@ -50,7 +50,7 @@ version_string = """    euca-detach-volume version: 1.0 (BSD)"""
 
 def usage():
     print usage_string
-    euca_tools.usage()
+    Util().usage()
 
 def version():
     print version_string
@@ -66,7 +66,7 @@ def get_volume_params(volumes, volume_id):
 def main():
     euca = None
     try:
-        euca = euca_tools.EucaTool('i:d:',
+        euca = EucaTool('i:d:',
                                    ['instance=', 'device='])
     except:
         usage()
@@ -89,11 +89,17 @@ def main():
 	volume_id = arg
 	break
 
-    ec2_conn = euca.make_connection()
     if volume_id:
-        volumes = ec2_conn.get_all_volumes()
+        try:
+    	    euca.validate_volume_id(volume_id)
+        except ValidationError as error:
+            print error.message
+            sys.exit(1)
+
+        euca_conn = euca.make_connection()
+        volumes = euca_conn.get_all_volumes()
 	instance_id, device = get_volume_params(volumes, volume_id)
-	return_code = ec2_conn.detach_volume(volume_id = volume_id, 
+	return_code = euca_conn.detach_volume(volume_id = volume_id, 
 					     instance_id = instance_id,
 					     device = device) 
 	if return_code:

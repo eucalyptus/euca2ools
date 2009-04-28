@@ -33,7 +33,7 @@
 # Author: Neil Soman neil@eucalyptus.com
 
 import getopt, sys, os
-import euca_tools
+from euca_tools import EucaTool, ValidationError, Util
 
 usage_string = """
 DESCRIPTION
@@ -54,7 +54,7 @@ version_string = """    euca-create-volume version: 1.0 (BSD)"""
 
 def usage():
     print usage_string
-    euca_tools.usage()
+    Util().usage()
 
 def version():
     print version_string
@@ -71,7 +71,7 @@ def display_volume(volume):
 def main():
     euca = None
     try:
-        euca = euca_tools.EucaTool('s:z:',
+        euca = EucaTool('s:z:',
                                    ['zone=', 'snapshot='])
     except:
         usage()
@@ -92,10 +92,20 @@ def main():
 	elif name in ('--version'):
 	    version()
 
-    ec2_conn = euca.make_connection()
+    euca_conn = euca.make_connection()
     
     if (size or snapshot_id) and zone:
-	volume = ec2_conn.create_volume(size, zone, snapshot_id)
+        try:
+	    if size:
+		euca.validate_volume_size(size)
+	    if snapshot_id:
+	        euca.validate_snapshot_id(instance_id)
+        except ValidationError as error:
+   	    print error.message
+            sys.exit(1)
+
+
+	volume = euca_conn.create_volume(size, zone, snapshot_id)
 	display_volume(volume)
     else:
     	print 'availability zone and size (or snapshot id) must be specified'

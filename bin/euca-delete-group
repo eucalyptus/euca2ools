@@ -33,7 +33,7 @@
 # Author: Neil Soman neil@eucalyptus.com
 
 import getopt, sys, os
-import euca_tools
+from euca_tools import EucaTool, ValidationError, Util
 
 usage_string = """
 DESCRIPTION
@@ -50,7 +50,7 @@ version_string = """    euca-delete-group version: 1.0 (BSD)"""
 
 def usage():
     print usage_string
-    euca_tools.usage()
+    Util().usage()
 
 def version():
     print version_string
@@ -59,7 +59,7 @@ def version():
 def main():
     euca = None
     try:
-        euca = euca_tools.EucaTool()
+        euca = EucaTool()
     except:
         usage()
  
@@ -75,9 +75,9 @@ def main():
         group_name = arg
 	break
 
-    ec2_conn = euca.make_connection()
     if group_name:
-	return_code = ec2_conn.delete_security_group(name = group_name)
+        euca_conn = euca.make_connection()
+	return_code = euca_conn.delete_security_group(name = group_name)
 	if return_code:
 	    print 'GROUP\t%s' % (group_name)
     else:

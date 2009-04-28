@@ -33,7 +33,7 @@
 # Author: Neil Soman neil@eucalyptus.com
 
 import getopt, sys, os
-import euca_tools
+from euca_tools import Util, EucaTool
 
 usage_string = """
 DESCRIPTION
@@ -52,7 +52,7 @@ version_string = """    euca-add-group version: 1.0 (BSD)"""
 
 def usage():
     print usage_string
-    euca_tools.usage()
+    Util().usage()
 
 def version():
     print version_string
@@ -65,7 +65,7 @@ def display_group(group):
 def main():
     euca = None
     try:
-        euca = euca_tools.EucaTool('d:', ['description='])
+        euca = EucaTool('d:', ['description='])
     except:
         usage()
  
@@ -80,13 +80,13 @@ def main():
 	elif name in ('--version'):
 	    version()
     
-    ec2_conn = euca.make_connection()
+    euca_conn = euca.make_connection()
  
     for arg in euca.args:
         group_name = arg
 	break
     if group_name and group_description:
-	group = ec2_conn.create_security_group(name = group_name,
+	group = euca_conn.create_security_group(name = group_name,
 					       description = group_description)
 	display_group(group)
     else:

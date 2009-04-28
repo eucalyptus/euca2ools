@@ -41,6 +41,7 @@ from M2Crypto import BN, EVP, RSA, util, Rand, m2, X509
 from binascii import hexlify, unhexlify
 from subprocess import *
 import urllib
+import re
 
 BUNDLER_NAME = "euca-tools"
 BUNDLER_VERSION = "1.0"
@@ -49,15 +50,8 @@ RELEASE = "31337"
 AES = 'AES-128-CBC'
 
 MAKEFS_CMD = 'mkfs.ext2'
+IP_PROTOCOLS = ['ip', 'tcp', 'icmp']
 
-usage_string = """
-	-K, --access-key - user's Access Key ID.
- 	-S, --secret-key - user's Secret Key.
-	-U, --url - Cloud URL.
-	-h, --help - Display this help message.
-	--version - Display the version of this tool.
-	--debug - Turn on debugging.
-"""     
 IMAGE_IO_CHUNK = 8 * 1024
 IMAGE_SPLIT_CHUNK = IMAGE_IO_CHUNK * 1024;
 
@@ -66,10 +60,23 @@ ALLOWED_FS_TYPES = ['ext2', 'ext3', 'xfs', 'jfs', 'reiserfs']
 BANNED_MOUNTS = ['/dev', '/media', '/mnt', '/proc', '/sys', '/cdrom']
 METADATA_URL = "http://169.254.169.254/latest/meta-data/"
 
-def usage():
-    print usage_string
-    sys.exit()
+class Util:
+    usage_string = """
+	-K, --access-key - user's Access Key ID.
+ 	-S, --secret-key - user's Secret Key.
+	-U, --url - Cloud URL.
+	-h, --help - Display this help message.
+	--version - Display the version of this tool.
+	--debug - Turn on debugging.
+    """    
+ 
+    def usage(self):
+    	print self.usage_string
+    	sys.exit()
 
+class ValidationError:
+    def __init__(self, msg):
+	self.message = msg
 
 class EucaTool:
     def process_args(self):
@@ -79,7 +86,6 @@ class EucaTool:
         return ids 
 
     def __init__(self, short_opts=None, long_opts=None, is_s3=False):
-
 	self.ec2_user_access_key = None
 	self.ec2_user_secret_key = None
 	self.ec2_url = None
@@ -167,6 +173,38 @@ class EucaTool:
 			    calling_format=boto.s3.connection.OrdinaryCallingFormat(),
                             service=self.service_path)
 
+    def validate_address(self, address):
+ 	if not re.match("[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$", address):
+            raise ValidationError("Invalid address: " + address) 
+
+    def validate_instance_id(self, id):
+ 	if not re.match("i-", id):
+            raise ValidationError("Invalid instance id: " + id) 
+
+    def validate_volume_id(self, id):
+ 	if not re.match("vol-", id):
+            raise ValidationError("Invalid volume id: " + id) 
+
+    def validate_volume_size(self, size):
+	if size < 0 or size > 1024:
+	    raise ValidationError("Invalid volume size: %d" % size)
+
+    def validate_snapshot_id(self, id):
+ 	if not re.match("snap-", id):
+            raise ValidationError("Invalid snapshot id: " + id) 
+
+    def validate_protocol(self, proto):
+	if not proto in IP_PROTOCOLS:
+	    raise ValidationError("Invalid protocol: " + proto)
+	
+    def validate_file(self, path):
+	if not os.path.exists(path) or not os.path.isfile(path):
+	    raise ValidationError("Invalid file: " + path)
+	
+    def validate_dir(self, path):
+	if not os.path.exists(path) or not os.path.isdir(path):
+	    raise ValidationError("Invalid directory: " + path)
+	
     def get_absolute_filename(self, filename):
         f_parts = filename.split('/')
         return f_parts[len(f_parts) - 1]
@@ -229,16 +267,6 @@ class EucaTool:
         tar.add(file, arcname=prefix)
         tar.close()
         return tar_file
-
-    def zip_image(self, file):
-        print 'Zipping image'
-        file_in = open(file, 'rb')
-        gz_file = '%s.gz' % (file)
-        gz_out = gzip.open(gz_file, 'wb')
-        gz_out.writelines(file_in)
-        gz_out.close()
-        file_in.close()
-        return gz_file
 
     def hexToBytes(self, hexString):
         bytes = []
@@ -347,19 +375,6 @@ class EucaTool:
         encrypted_file.close()
         decrypted_file.close()
         return decrypted_filename
-
-    def unzip_image(self, file):
-        file_in = gzip.open(file, 'rb')
-        unzipped_filename = file.replace('.gz', '')
-        unzipped_file = open(unzipped_filename, 'wb')
-        while 1:
-    	    data = file_in.read(IMAGE_IO_CHUNK)
-	    if not data:
-	        break
-	    unzipped_file.write(data)
-        file_in.close()
-        unzipped_file.close()
-        return unzipped_filename
 
     def untarzip_image(self, path, file):
         untarred_filename = file.replace('.tar.gz', '') 
@@ -639,6 +654,8 @@ class EucaTool:
 	    rsync_cmd.append(exclude)
 	if self.debug:
    	    print "Copying files..."
+	    for exclude in excludes:
+		print "Excluding:", exclude
         Popen(rsync_cmd, stdout=PIPE).communicate()
 
     def unmount_image(self, mount_point):
@@ -652,24 +669,24 @@ class EucaTool:
         self.copy_to_image(mount_point, volume_path, excludes)
         self.unmount_image(mount_point)
 
-def can_read_instance_metadata():
-    meta_data = urllib.urlopen(METADATA_URL)        
+    def can_read_instance_metadata(self):
+        meta_data = urllib.urlopen(METADATA_URL)        
 
-def get_instance_metadata(type):
-    if self.debug:
-	print "Reading instance metadata", type
-    return urllib.urlopen(METADATA_URL + type)
+    def get_instance_metadata(self, type):
+        if self.debug:
+	    print "Reading instance metadata", type
+        return urllib.urlopen(METADATA_URL + type)
 
-def get_instance_ramdisk():
-    return get_instance_metadata('ramdisk-id')
+    def get_instance_ramdisk(self):
+        return get_instance_metadata('ramdisk-id')
 
-def get_instance_kernel():
-    return get_instance_metadata('kernel-id')
+    def get_instance_kernel(self):
+        return get_instance_metadata('kernel-id')
 
-def get_instance_product_codes():
-    return get_instance_metadata('product-codes')
+    def get_instance_product_codes(self):
+        return get_instance_metadata('product-codes')
 
-def get_instance_block_device_mappings():
-    return get_instance_metadata('block-device-mapping')
+    def get_instance_block_device_mappings(self):
+        return get_instance_metadata('block-device-mapping')
 
 

@@ -33,7 +33,7 @@
 # Author: Neil Soman neil@eucalyptus.com
 
 import getopt, sys, os
-import euca_tools
+from euca_tools import EucaTool, ValidationError, Util
 from subprocess import * 
 
 usage_string = """
@@ -107,18 +107,19 @@ def get_instance_metadata(ramdisk, kernel, mapping):
     ramdisk_id = ramdisk
     kernel_id = kernel
     block_dev_mapping = mapping
+    util = Util()
     try:
-	euca_tools.can_read_instance_metadata()
+	util.can_read_instance_metadata()
 	if not ramdisk_id:
-	    ramdisk_id = euca_tools.get_instance_ramdisk()
+	    ramdisk_id = util.get_instance_ramdisk()
 
 	if not kernel_id:
-	    kernel_id = euca_tools.get_instance_kernel()
+	    kernel_id = util.get_instance_kernel()
 
         if not block_dev_mapping:
-	    block_dev_mapping = euca_tools.get_instance_block_device_mappings().split(' ')
+	    block_dev_mapping = util.get_instance_block_device_mappings().split(' ')
 
-        product_codes = euca_tools.get_instance_product_codes().split(' ')
+        product_codes = util.get_instance_product_codes().split(' ')
     except:
 	print "Unable to read instance metadata. Pass the --no-inherit option if you wish to exclude instance metadata."
 	sys.exit()	
@@ -128,7 +129,7 @@ def get_instance_metadata(ramdisk, kernel, mapping):
 def main():
     euca = None
     try:
-        euca = euca_tools.EucaTool('a:c:k:u:B:d:br:p:s:v:e:',
+        euca = EucaTool('a:c:k:u:B:d:br:p:s:v:e:',
                                    ['cert=', 'privatekey=', 'user=', 'prefix=', 'volume=', 'all',
                                     'kernel=', 'ramdisk=', 'block-device-mapping=', 'destination=', 'ec2cert=', 'arch=', 'size=', 'exclude=', 'inherit=', 'no-inherit', 'batch'])
     except:
@@ -193,6 +194,16 @@ def main():
 	    batch = True
 
     if size_in_MB and cert_path and private_key_path and user and ec2cert_path:
+	try:
+	    euca.validate_file(cert_path)
+	    euca.validate_file(private_key_path)
+	    euca.validate_file(ec2cert_path)
+	    euca.validate_dir(volume_path)
+
+	except ValidationError as error:
+	    print error.message
+	    sys.exit(1)
+
 	check_root()
 	check_image_size(size_in_MB)
 	if not all:
@@ -207,11 +218,9 @@ def main():
 	image_size, sha_image_digest = euca.check_image(image_path, destination_path)
 	if not prefix:
             prefix = euca.get_absolute_filename(image_path)
-	tar_file = euca.tar_image(prefix, image_path, destination_path)
-	zip_file = euca.zip_image(tar_file)
-	os.remove(tar_file)
-	encrypted_file, key, iv, bundled_size = euca.encrypt_image(zip_file)
-	os.remove(zip_file)
+	tgz_file = euca.tarzip_image(prefix, image_path, destination_path)
+	encrypted_file, key, iv, bundled_size = euca.encrypt_image(tgz_file)
+	os.remove(tgz_file)
 	parts, parts_digest = euca.split_image(encrypted_file)
 	euca.generate_manifest(destination_path, prefix, parts, parts_digest, image_path, key, iv, cert_path, ec2cert_path, private_key_path, target_arch, image_size, bundled_size, sha_image_digest, user, kernel, ramdisk, mapping, product_codes)
         os.remove(encrypted_file)

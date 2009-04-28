@@ -33,7 +33,7 @@
 # Author: Neil Soman neil@eucalyptus.com
 
 import getopt, sys, os
-import euca_tools
+from euca_tools import EucaTool, ValidationError, Util
 
 usage_string = """
 DESCRIPTION
@@ -51,7 +51,7 @@ version_string = """    euca-describe-availability-zones version: 1.0 (BSD)"""
 
 def usage():
     print usage_string
-    euca_tools.usage()
+    Util().usage()
 
 def version():
     print version_string
@@ -71,7 +71,7 @@ def display_zones(zones, zone_ids):
 def main():
     euca = None
     try:
-        euca = euca_tools.EucaTool() 
+        euca = EucaTool() 
     except:
         usage()
 
@@ -83,12 +83,12 @@ def main():
 	elif name in ('--version'):
 	    version()
     
-    ec2_conn = euca.make_connection()
     zone_ids = euca.process_args()
+    euca_conn = euca.make_connection()
     if 'verbose' in zone_ids:
-	zones = ec2_conn.get_all_zones('verbose')
+	zones = euca_conn.get_all_zones('verbose')
     else:
-        zones = ec2_conn.get_all_zones()
+        zones = euca_conn.get_all_zones()
     display_zones(zones, zone_ids)
 if __name__ == "__main__":
     main()

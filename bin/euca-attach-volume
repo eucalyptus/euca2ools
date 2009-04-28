@@ -33,7 +33,7 @@
 # Author: Neil Soman neil@eucalyptus.com
 
 import getopt, sys, os
-import euca_tools
+from euca_tools import EucaTool, ValidationError, Util
 
 usage_string = """
 DESCRIPTION
@@ -53,7 +53,7 @@ version_string = """    euca-attach-volume version: 1.0 (BSD)"""
 
 def usage():
     print usage_string
-    euca_tools.usage()
+    Util().usage()
 
 def version():
     print version_string
@@ -62,7 +62,7 @@ def version():
 def main():
     euca = None
     try:
-        euca = euca_tools.EucaTool('i:d:',
+        euca = EucaTool('i:d:',
                                    ['instance=', 'device='])
     except:
         usage()
@@ -81,14 +81,21 @@ def main():
 	elif name in ('--version'):
 	    version()
     
-    ec2_conn = euca.make_connection()
+    euca_conn = euca.make_connection()
 
     for arg in euca.args:
   	volume_id = arg
 	break
 
     if volume_id and instance_id and device:
-	return_code = ec2_conn.attach_volume(volume_id = volume_id, 
+        try:
+            euca.validate_volume_id(volume_id)
+	    euca.validate_instance_id(instance_id)
+        except ValidationError as error:
+   	    print error.message
+            sys.exit(1)
+
+	return_code = euca_conn.attach_volume(volume_id = volume_id, 
 					instance_id = instance_id,
 					device = device)
 	if return_code:

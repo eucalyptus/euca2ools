@@ -33,7 +33,7 @@
 # Author: Neil Soman neil@eucalyptus.com
 
 import getopt, sys, os
-import euca_tools
+from euca_tools import EucaTool, ValidationError, Util
 
 usage_string = """
 DESCRIPTION
@@ -56,7 +56,7 @@ version_string = """    euca-describe-images version: 1.0 (BSD)"""
 
 def usage():
     print usage_string
-    euca_tools.usage()
+    Util().usage()
 
 def version():
     print version_string
@@ -80,7 +80,7 @@ def display_images(images, image_ids):
 def main():
     euca = None
     try:
-        euca = euca_tools.EucaTool('ao:x:') 
+        euca = EucaTool('ao:x:') 
     except:
         usage()
  
@@ -102,11 +102,10 @@ def main():
 	    version()
 
     owners.append(owner)
-    ec2_conn = euca.make_connection()
     image_ids = euca.process_args()
     #This is workaround for an issue with the front end (does not return an image set when an image id is specified LP:356389)
-    images = ec2_conn.get_all_images(owners=owners)
-    #TODO: DescribeImageAttributes from boto currently fails. Need to figure out incompatibility.
+    euca_conn = euca.make_connection()
+    images = euca_conn.get_all_images(owners=owners)
     display_images(images, image_ids)
 if __name__ == "__main__":
     main()

@@ -34,11 +34,10 @@
 
 import getopt, sys, os
 from xml.dom import minidom
-import euca_tools
+from euca_tools import EucaTool, ValidationError, Util
 from boto.exception import S3ResponseError
 from boto.s3 import Connection
 from boto.s3.key import Key
-import euca_tools
 
 usage_string = """
 USAGE
@@ -56,7 +55,7 @@ version_string = """    euca-delete-bundle version: 1.0 (BSD)"""
 
 def usage():
     print usage_string
-    euca_tools.usage()
+    Util().usage()
 
 def version():
     print version_string
@@ -154,7 +153,7 @@ def remove_manifests(manifests, directory):
 def main():
     euca = None
     try:
-        euca = euca_tools.EucaTool('b:m:',
+        euca = EucaTool('b:m:',
                                   ['bucket=', 'manifest=', 'clear'],
 				  is_s3=True)
     except:
@@ -176,6 +175,12 @@ def main():
 	    clear = True
 
     if bucket:
+	try:
+	    euca.validate_file(manifest_path)
+	except ValidationError as error:
+	    print error.message
+	    sys.exit(1)
+
 	conn = euca.make_connection()
         bucket_instance = ensure_bucket(conn, bucket)
 	manifests = get_manifests(bucket_instance)

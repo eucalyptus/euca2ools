@@ -33,7 +33,7 @@
 # Author: Neil Soman neil@eucalyptus.com
 
 import getopt, sys, os
-import euca_tools
+from euca_tools import EucaTool, ValidationError, Util
 
 usage_string = """
 DESCRIPTION
@@ -47,12 +47,12 @@ version_string = """    euca-allocate-address version: 1.0 (BSD)"""
 
 def usage():
     print usage_string
-    euca_tools.usage()
+    Util().usage()
   
 def main():
     euca = None
     try:
-        euca = euca_tools.EucaTool()
+        euca = EucaTool()
     except:
         usage()
  
@@ -64,9 +64,9 @@ def main():
 	elif name in ('--debug'):
 	    debug = True
     
-    ec2_conn = euca.make_connection()
+    euca_conn = euca.make_connection()
 
-    address = ec2_conn.allocate_address()
+    address = euca_conn.allocate_address()
     if address:
 	print 'ADDRESS\t%s' % (address.public_ip)   
 

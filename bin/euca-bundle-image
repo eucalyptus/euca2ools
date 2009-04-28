@@ -33,7 +33,7 @@
 # Author: Neil Soman neil@eucalyptus.com
 
 import getopt, sys, os
-import euca_tools
+from euca_tools import EucaTool, ValidationError, Util
 
 usage_string = """
 USAGE
@@ -73,7 +73,7 @@ def version():
 def main():
     euca = None
     try:
-	euca = euca_tools.EucaTool('i:c:k:u:B:d:br:p:',
+	euca = EucaTool('i:c:k:u:B:d:br:p:',
                                    ['image=', 'cert=', 'privatekey=', 'user=', 'prefix=', 
                                     'kernel=', 'ramdisk=', 'block-device-mapping=', 'destination=', 'ec2cert=', 'arch=', 'batch'])
     except:
@@ -127,6 +127,15 @@ def main():
 	    version()
 
     if image_path and cert_path and private_key_path and user and ec2cert_path:
+	try:
+	    euca.validate_file(image_path)
+	    euca.validate_file(cert_path)
+	    euca.validate_file(private_key_path)
+	    euca.validate_file(ec2cert_path)
+	except ValidationError as error:
+	    print error.message
+	    sys.exit(1)
+
 	image_size, sha_image_digest = euca.check_image(image_path, destination_path)
 	if not prefix:
             prefix = euca.get_absolute_filename(image_path)
