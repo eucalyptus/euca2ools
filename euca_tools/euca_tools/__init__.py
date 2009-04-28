@@ -52,7 +52,7 @@ AES = 'AES-128-CBC'
 MAKEFS_CMD = 'mkfs.ext2'
 IP_PROTOCOLS = ['ip', 'tcp', 'icmp']
 
-IMAGE_IO_CHUNK = 8 * 1024
+IMAGE_IO_CHUNK = 10 * 1024
 IMAGE_SPLIT_CHUNK = IMAGE_IO_CHUNK * 1024;
 
 #This needs to refactored into platform dependent libs
@@ -75,6 +75,10 @@ class Util:
     	sys.exit()
 
 class ValidationError:
+    def __init__(self, msg):
+	self.message = msg
+
+class CopyError:
     def __init__(self, msg):
 	self.message = msg
 
@@ -656,7 +660,8 @@ class EucaTool:
    	    print "Copying files..."
 	    for exclude in excludes:
 		print "Excluding:", exclude
-        Popen(rsync_cmd, stdout=PIPE).communicate()
+	    print rsync_cmd
+        return Popen(rsync_cmd, stdout=PIPE, stderr=PIPE).communicate()
 
     def unmount_image(self, mount_point):
 	if self.debug:
@@ -666,8 +671,11 @@ class EucaTool:
 
     def copy_volume(self, image_path, volume_path, excludes):
         mount_point, loop_dev = self.mount_image(image_path)
-        self.copy_to_image(mount_point, volume_path, excludes)
+        output = self.copy_to_image(mount_point, volume_path, excludes)
         self.unmount_image(mount_point)
+	for out in output:
+	    if "failed" in out or "error" in out or "No space" in out: 
+	        raise CopyError(output[1])
 
     def can_read_instance_metadata(self):
         meta_data = urllib.urlopen(METADATA_URL)        

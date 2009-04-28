@@ -33,7 +33,7 @@
 # Author: Neil Soman neil@eucalyptus.com
 
 import getopt, sys, os
-from euca_tools import EucaTool, ValidationError, Util
+from euca_tools import EucaTool, ValidationError, CopyError, Util
 from subprocess import * 
 
 usage_string = """
@@ -126,6 +126,10 @@ def get_instance_metadata(ramdisk, kernel, mapping):
    
     return ramdisk_id, kernel_id, block_dev_mapping, product_codes	
 
+def cleanup(path):
+   if os.path.exists(path):
+	os.remove(path)
+
 def main():
     euca = None
     try:
@@ -213,8 +217,20 @@ def main():
 	    ramdisk, kernel, mapping, product_codes = get_instance_metadata(ramdisk, kernel, mapping)   
 	image_path = euca.make_image(size_in_MB, excludes, prefix, destination_path)    
 	if (image_path.find(volume_path) == 0):
-	    excludes.append(image_path) 
-        euca.copy_volume(image_path, volume_path, excludes)
+	    exclude_image = image_path
+	    if exclude_image.find("/") == 0:
+		exclude_image = exclude_image.replace("/", "", 1)
+	    image_path_parts = exclude_image.split("/")
+	    if(len(image_path_parts) > 1):
+	        exclude_image = image_path.replace(image_path_parts[0] + "/", "", 1)
+	    excludes.append(exclude_image) 
+	try:
+            euca.copy_volume(image_path, volume_path, excludes)
+	except CopyError as copy_error:
+	    print copy_error.message
+	    cleanup(image_path)
+	    sys.exit(1)
+
 	image_size, sha_image_digest = euca.check_image(image_path, destination_path)
 	if not prefix:
             prefix = euca.get_absolute_filename(image_path)
@@ -224,6 +240,7 @@ def main():
 	parts, parts_digest = euca.split_image(encrypted_file)
 	euca.generate_manifest(destination_path, prefix, parts, parts_digest, image_path, key, iv, cert_path, ec2cert_path, private_key_path, target_arch, image_size, bundled_size, sha_image_digest, user, kernel, ramdisk, mapping, product_codes)
         os.remove(encrypted_file)
+	cleanup(image_path)
     else:
 	print 'image, cert, privatekey, user and ec2cert_path must be specified.'
 	usage()
