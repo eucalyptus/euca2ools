@@ -200,7 +200,9 @@ def main():
 	    euca.add_excludes(volume_path, excludes)
 	if inherit:
 	    ramdisk, kernel, mapping, product_codes = get_instance_metadata(ramdisk, kernel, mapping)   
-	image_path = euca.make_image(size_in_MB, excludes, prefix, destination_path)        
+	image_path = euca.make_image(size_in_MB, excludes, prefix, destination_path)    
+	if (image_path.find(volume_path) == 0):
+	    excludes.append(image_path) 
         euca.copy_volume(image_path, volume_path, excludes)
 	image_size, sha_image_digest = euca.check_image(image_path, destination_path)
 	if not prefix:
