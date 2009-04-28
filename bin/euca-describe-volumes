@@ -40,8 +40,8 @@ DESCRIPTION
     Shows information about volumes.
 
 USAGE
-    euca-describe-volumes [volume1 volume2...volumeN] 
-	  [-h, --help] [--version] [--debug]
+    euca-describe-volumes [-h, --help] [--version] [--debug]
+	[volume1 volume2...volumeN] 
 
     Where
 	volume1 volume2...volumeN- volumes to describe. 

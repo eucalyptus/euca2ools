@@ -40,8 +40,8 @@ DESCRIPTION
     Confirm if instance is running with product code attached.
 
 USAGE
-    euca-confirm-product-instance -i instance_id product_code
-	  [-h, --help] [--version] [--debug] 
+    euca-confirm-product-instance -i instance_id 
+	  [-h, --help] [--version] [--debug] product_code
 
     Where
 	instance_id - Unique identifier for a running instance.
@@ -95,7 +95,7 @@ def main():
         print product_string
 
     else:
-    	print 'instance_id and product_code MUST be specified'
+    	print 'instance_id and product_code must be specified'
 	usage()
 if __name__ == "__main__":
     main()

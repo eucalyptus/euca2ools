@@ -49,7 +49,8 @@ AES = 'AES-128-CBC'
 usage_string = """
 USAGE
     euca-unbundle-image -m, --manifest manifest_path -k, --privatekey private_key_path 
-	[-s, --source source_directory] [-d, --destination destination_directory] [-h, --help]
+	[-s, --source source_directory] [-d, --destination destination_directory]
+	[-h, --help] [--version] [--debug]
 
     Where
 	manifest_path - The path to the manifest.
@@ -109,7 +110,7 @@ def main():
 	unencrypted_image = euca.untarzip_image(directory, decrypted_image)
 	os.remove(decrypted_image)
     else:
-	print 'manifest_path and private_key MUST be specified.'
+	print 'manifest_path and private_key must be specified.'
 	usage()
 if __name__ == "__main__":
     main()

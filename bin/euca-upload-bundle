@@ -44,8 +44,8 @@ usage_string = """
 USAGE
     euca-upload-bundle -b, --bucket bucket -m, --manifest manifest_path -a, --access-key access_key_id 
 	  -s, --secret-key secret_key
-	  [--acl canned_acl] [--ec2cert ec2cert_path] [-d, --directory bundle_path] [--debug]
-	  [--part part] [--url url] [--retry] [--skipmanifest] [-h, --help]
+	  [--acl canned_acl] [--ec2cert ec2cert_path] [-d, --directory bundle_path]
+	  [--part part] [--url url] [--retry] [--skipmanifest] [--debug] [-h, --help]
 	  [--version]
 
     Where
@@ -56,7 +56,8 @@ USAGE
 
 	canned_acl - Canned access control policy (defaults to "aws-exec-read").
 	ec2cert_path - The path to the Cloud's X509 public key certificate.
-	bundle_path - The directory containing the bundled image to upload (default to the directory containing the manifest).
+	bundle_path - The directory containing the bundled image to upload (defaults to the directory 
+		      containing the manifest).
 	part - Uploads specified part and all subsequent parts.
 	url - URL for the service (defaults to http://localhost:8773/services/Walrus).
 	--retry - Retry if failed.
@@ -208,7 +209,7 @@ def main():
 	    upload_manifest(bucket_instance, manifest_path, canned_acl)
 	upload_parts(bucket_instance, directory, parts, part, canned_acl)
     else:
-	print 'bucket, manifest, access-key and secret-key MUST be specified.'	
+	print 'bucket, manifest, access-key and secret-key must be specified.'	
         usage()
 
 if __name__ == "__main__":

@@ -40,8 +40,8 @@ DESCRIPTION
     Creates a new security group.
 
 USAGE
-    euca-add-group group_name -d | --description group_description 
-	  [-h, --help] [--version] [--debug]
+    euca-add-group -d, --description group_description
+	  [-h, --help] [--version] [--debug] group_name 
 
     Where
 	group_name - unique name for the group to create.

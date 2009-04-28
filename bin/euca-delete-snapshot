@@ -40,8 +40,7 @@ DESCRIPTION
     Deletes a snapshot.
 
 USAGE
-    euca-delete-snapshot snapshot_id
-	  [-h, --help] [--version] [--debug]
+    euca-delete-snapshot [-h, --help] [--version] [--debug] snapshot_id
 
     Where
 	snapshot_id - unique identifier for the snapshot to be deleted.

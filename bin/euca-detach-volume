@@ -40,8 +40,7 @@ DESCRIPTION
     Detaches a volume from an instance.
 
 USAGE
-    euca-detach-volume volume_id
-	  [-h, --help] [--version] [--debug]
+    euca-detach-volume [-h, --help] [--version] [--debug] volume_id
 
     Where
 	volume_id - unique id for a volume to detach.

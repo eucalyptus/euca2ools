@@ -146,7 +146,7 @@ def main():
 	download_manifests(bucket_instance, manifests, directory)
 	download_parts(bucket_instance, manifests, directory)
     else:
-	print 'bucket MUST be specified.'	
+	print 'bucket must be specified.'	
         usage()
 
 if __name__ == "__main__":

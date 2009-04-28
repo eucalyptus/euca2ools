@@ -40,8 +40,8 @@ DESCRIPTION
     Reboots specified instances.
 
 USAGE
-    euca-reboot-instances [instance1 instance2... instanceN] 
-	  [-h, --help] [--version] [--debug]
+    euca-reboot-instances [-h, --help] [--version] [--debug]
+	[instance1 instance2... instanceN] 
 
     Where
 	instance1 instance2...instanceN - instances to reboot. 

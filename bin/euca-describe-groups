@@ -40,8 +40,8 @@ DESCRIPTION
     Shows information about groups.
 
 USAGE
-    euca-describe-groups [group1 group2...groupN] 
-	  [-h, --help] [--version] [--debug]
+    euca-describe-groups [-h, --help] [--version] [--debug] 
+	[group1 group2...groupN] 
 
     Where
 	group1 group2...groupN - groups to describe. 

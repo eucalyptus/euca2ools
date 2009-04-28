@@ -40,8 +40,7 @@ DESCRIPTION
     Disassociate a public IP address from an instance.
 
 USAGE
-    euca-disassociate-address ip
-	  [-h, --help] [--version] [--debug]
+    euca-disassociate-address [-h, --help] [--version] [--debug] ip
 
     Where
 	ip - address to disassociate. 

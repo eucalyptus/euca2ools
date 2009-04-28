@@ -40,8 +40,8 @@ DESCRIPTION
     Attaches a volume to an instance.
 
 USAGE
-    euca-attach-volume volume_id -i instance_id -d device 
-	  [-h, --help] [--version] [--debug]
+    euca-attach-volume -i instance_id -d device 
+	  [-h, --help] [--version] [--debug] volume_id 
 
     Where
 	volume_id - unique id for a volume to attach.

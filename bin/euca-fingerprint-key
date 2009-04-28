@@ -43,8 +43,7 @@ DESCRIPTION
     Gets the fingerprint for a private key.
 
 USAGE
-    euca-fingerprint-key path_to_key
-	  [-h, --help] [--version] [--debug]
+    euca-fingerprint-key [-h, --help] [--version] [--debug] path_to_key
 
     Where
 	path_to_key - Path to the PEM file for the key.
@@ -88,7 +87,7 @@ def main():
     if key_path:
         display_fingerprint(key_path) 
     else:
-	print 'key_path MUST be specified'
+	print 'key_path must be specified'
 	usage()
 
 if __name__ == "__main__":

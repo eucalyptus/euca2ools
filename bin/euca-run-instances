@@ -43,8 +43,7 @@ USAGE
     euca-run-instances [-B | --block-device-mappings mappings] [-n | --instance-count count] 
           [-g | --group group_name] [-k | --keypair keyname] [-d | --user-data data] 
 	  [--addressing addressing] [-t | --instance-type instance_type] [-z | --availability-zone zone] 
-	  [--kernel kernel_id] [--ramdisk ramdisk_id] image_id 
-	  [-h, --help] [--version] [--debug]
+	  [--kernel kernel_id] [--ramdisk ramdisk_id] [-h, --help] [--version] [--debug] image_id 
 
     Where
 	image_id - identifier for the image to run. 

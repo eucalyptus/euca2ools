@@ -40,8 +40,8 @@ DESCRIPTION
     Stops specified instances.
 
 USAGE
-    euca-terminate-instances [instance1 instance2... instanceN] 
-	  [-h, --help] [--version] [--debug]
+    euca-terminate-instances [-h, --help] [--version] [--debug]
+	[instance1 instance2... instanceN] 
 
     Where
 	instance1 instance2...instanceN - instances to terminate. 

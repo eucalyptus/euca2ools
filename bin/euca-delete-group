@@ -40,8 +40,7 @@ DESCRIPTION
     Deletes a security group.
 
 USAGE
-    euca-delete-group group_name
-	  [-h, --help] [--version] [--debug]
+    euca-delete-group [-h, --help] [--version] [--debug] group_name
 
     Where
 	group_name - unique name for a group to delete.

@@ -40,8 +40,7 @@ DESCRIPTION
     Creates a volume in a specified availability zone.
 
 USAGE
-    euca-create-snapshot volume_id 
-	  [-h, --help] [--version] [--debug]
+    euca-create-snapshot [-h, --help] [--version] [--debug] volume_id 
 
     Where
 	volume_id - unique id for a volume to snapshot.

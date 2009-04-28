@@ -38,11 +38,11 @@ import euca_tools
 usage_string = """
 USAGE
     euca-bundle-image -i, --image image_path -c, --cert cert_path -k, --privatekey private_key_path 
-	  -u, --user user 
+	-u, --user user 
 	[-p, --prefix prefix] [--kernel kernel_id] [--ramdisk ramdisk_id] 
 	[-B, --block-device-mapping mapping] [-d, --destination destination_path] 
-	[--ec2cert ec2cert_path] [-m, --manual] [-r, --arch target_architecture] 
-	[-b, --batch] 
+	[--ec2cert ec2cert_path] [-r, --arch target_architecture] 
+	[-b, --batch] [-h, --help] [--version] [--debug] 
 
     Where
 	image_path - The path to the file system image to bundle.
@@ -137,7 +137,7 @@ def main():
 	euca.generate_manifest(destination_path, prefix, parts, parts_digest, image_path, key, iv, cert_path, ec2cert_path, private_key_path, target_arch, image_size, bundled_size, sha_image_digest, user, kernel, ramdisk, mapping)
         os.remove(encrypted_file)
     else:
-	print 'image, cert, privatekey, user and ec2cert_path MUST be specified.'
+	print 'image, cert, privatekey, user and ec2cert_path must be specified.'
 	usage()
 if __name__ == "__main__":
     main()

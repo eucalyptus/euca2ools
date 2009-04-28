@@ -40,8 +40,7 @@ DESCRIPTION
     Delete a key pair.
 
 USAGE
-    euca-delete-keypair keypair_name
-	  [-h, --help] [--version] [--debug]
+    euca-delete-keypair [-h, --help] [--version] [--debug] keypair_name
 
     Where
 	keypair_name - unique name for the keypair to delete. 

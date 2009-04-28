@@ -40,8 +40,8 @@ DESCRIPTION
     Shows information about machine images.
 
 USAGE
-    euca-describe-images [image1 image2 ... imageN] [-a] [-o owner] [-x user] 
-	  [-h, --help] [--version] [--debug]
+    euca-describe-images [-a] [-o owner] [-x user] 
+	  [-h, --help] [--version] [--debug] [image1 image2 ... imageN]
 
     Where
 	image1 image2 ... imageN - images to describe.

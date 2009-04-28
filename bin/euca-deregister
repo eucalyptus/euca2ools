@@ -40,8 +40,7 @@ DESCRIPTION
     Deregisters an image from the cloud.
 
 USAGE
-    euca-deregister image_id 
-	  [-h, --help] [--version] [--debug]
+    euca-deregister [-h, --help] [--version] [--debug] image_id
 
     Where
 	image_id - unique identifier for the image to be deregistered.

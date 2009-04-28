@@ -43,7 +43,7 @@ import euca_tools
 usage_string = """
 USAGE
     euca-delete-bundle -b, --bucket bucket [-m, --manifest manifest_path] [-d, --directory directory]
-	[--clear]
+	[--clear] [-h, --help] [--version] [--debug]
  
     Where
 	bucket - The name of the bucket to download to. Bucket will be created if it does not exist.
@@ -184,7 +184,7 @@ def main():
 	delete_manifests(bucket_instance, manifests, clear)
 	remove_manifests(manifests, directory)
     else:
-	print 'bucket MUST be specified.'	
+	print 'bucket must be specified.'	
         usage()
 
 if __name__ == "__main__":

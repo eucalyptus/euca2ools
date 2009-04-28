@@ -43,8 +43,7 @@ USAGE
     euca-authorize [-P | --protocol protocol] [-p | --port-range port_range] 
 	  [-t | --icmp-type-code type:code] [-o | --source-group source_group]
 	  [-u | --source-group-user source_group_user] [-s | --source-subnet source_subnet]
-	  group_name 
-	  [-h, --help] [--version] [--debug]
+	  [-h, --help] [--version] [--debug] group_name
 
     Where
 	group_name - name of the group to add the rule to.

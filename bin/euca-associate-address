@@ -40,8 +40,8 @@ DESCRIPTION
     Associate a public IP address with an instance.
 
 USAGE
-    euca-associate-address ip -i | --instance instance_id
-	  [-h, --help] [--version] [--debug]
+    euca-associate-address -i, --instance instance_id
+	  [-h, --help] [--version] [--debug] ip
 
     Where
 	ip - address to associate. 

@@ -40,8 +40,7 @@ DESCRIPTION
     Registers a manifest for use with the cloud.
 
 USAGE
-    euca-register image_location 
-	  [-h, --help] [--version] [--debug]
+    euca-register [-h, --help] [--version] [--debug] image_location 
 
     Where
 	image_location - path to the uploaded image (bucket/manifest).

@@ -40,8 +40,7 @@ DESCRIPTION
     Deletes a volume.
 
 USAGE
-    euca-delete-volume volume_id
-	  [-h, --help] [--version] [--debug]
+    euca-delete-volume [-h, --help] [--version] [--debug] volume_id
 
     Where
 	volume_id - unique identifier for the volume to be deleted.

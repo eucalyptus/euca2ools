@@ -40,8 +40,8 @@ DESCRIPTION
     Shows information about availability zones.
 
 USAGE
-    euca-describe-availability-zones [zone1 zone2...zoneN] 
-	  [-h, --help] [--version] [--debug]
+    euca-describe-availability-zones [-h, --help] [--version] [--debug] 
+ 	[zone1 zone2...zoneN]
 
     Where
 	zone1 zone2...zoneN - zones to describe. 

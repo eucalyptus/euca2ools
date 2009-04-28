@@ -40,8 +40,8 @@ DESCRIPTION
     Shows information about snapshots.
 
 USAGE
-    euca-describe-snapshots [snapshot1 snapshot2...snapshotN] 
-	  [-h, --help] [--version] [--debug]
+    euca-describe-snapshots [-h, --help] [--version] [--debug]
+	[snapshot1 snapshot2...snapshotN] 
 
     Where
 	snapshot1 snapshot2...snapshotN - snapshots to describe. 

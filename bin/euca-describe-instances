@@ -40,8 +40,8 @@ DESCRIPTION
     Shows information about instances.
 
 USAGE
-    euca-describe-instances [instance1 instance2... instanceN] 
-	  [-h, --help] [--version] [--debug]
+    euca-describe-instances [-h, --help] [--version] [--debug]
+	[instance1 instance2... instanceN] 
 
     Where
 	instance1 instance2...instanceN - instances to describe. 
