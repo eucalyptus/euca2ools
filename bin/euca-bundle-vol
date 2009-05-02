@@ -35,6 +35,7 @@
 import getopt, sys, os
 from euca_tools import EucaTool, ValidationError, CopyError, Util
 from subprocess import * 
+import platform
 
 usage_string = """
 USAGE
@@ -135,7 +136,7 @@ def main():
     try:
         euca = EucaTool('a:c:k:u:B:d:br:p:s:v:e:',
                                    ['cert=', 'privatekey=', 'user=', 'prefix=', 'volume=', 'all',
-                                    'kernel=', 'ramdisk=', 'block-device-mapping=', 'destination=', 'ec2cert=', 'arch=', 'size=', 'exclude=', 'inherit=', 'no-inherit', 'batch'])
+                                    'kernel=', 'ramdisk=', 'block-device-mapping=', 'destination=', 'ec2cert=', 'arch=', 'size=', 'exclude=', 'inherit=', 'no-inherit', 'batch', 'fstab=', 'generate-fstab'])
     except:
         usage()
   
@@ -157,6 +158,8 @@ def main():
     volume_path = "/"
     inherit = True
     product_codes = None
+    fstab_path = None
+    generate_fstab = False
  
     for name, value in euca.opts:
         if name in ('-h', '--help'):
@@ -196,17 +199,30 @@ def main():
 	    inherit = False
 	elif name in ('--batch'):
 	    batch = True
-
+	elif name in ('--generate-fstab'):
+	    generate_fstab = True	
+	elif name in ('--fstab'):
+	    fstab_path = value
+	
     if size_in_MB and cert_path and private_key_path and user and ec2cert_path:
 	try:
 	    euca.validate_file(cert_path)
 	    euca.validate_file(private_key_path)
 	    euca.validate_file(ec2cert_path)
 	    euca.validate_dir(volume_path)
-
+	    if generate_fstab and fstab_path:
+		print "--generate-fstab and --fstab path cannot both be set."
+		sys.exit(1)
+	    if fstab_path:
+		euca.validate_file(fstab_path)
 	except ValidationError as error:
 	    print error.message
 	    sys.exit(1)
+	if not fstab_path:
+	    if platform.machine() == 'i386':
+		fstab_path = "old"
+	    else:
+		fstab_path = "new"
 
 	check_root()
 	check_image_size(size_in_MB)
@@ -225,7 +241,7 @@ def main():
 	        exclude_image = exclude_image.replace(image_path_parts[0] + "/", "", 1)
 	    excludes.append(exclude_image)
 	try:
-            euca.copy_volume(image_path, volume_path, excludes)
+            euca.copy_volume(image_path, volume_path, excludes, fstab_path)
 	except CopyError as copy_error:
 	    print copy_error.message
 	    cleanup(image_path)

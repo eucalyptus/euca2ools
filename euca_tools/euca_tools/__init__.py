@@ -40,8 +40,10 @@ from hashlib import sha1 as sha
 from M2Crypto import BN, EVP, RSA, util, Rand, m2, X509
 from binascii import hexlify, unhexlify
 from subprocess import *
+import platform
 import urllib
 import re
+import shutil
 
 BUNDLER_NAME = "euca-tools"
 BUNDLER_VERSION = "1.0"
@@ -55,10 +57,93 @@ IP_PROTOCOLS = ['ip', 'tcp', 'icmp']
 IMAGE_IO_CHUNK = 10 * 1024
 IMAGE_SPLIT_CHUNK = IMAGE_IO_CHUNK * 1024;
 
-#This needs to refactored into platform dependent libs
-ALLOWED_FS_TYPES = ['ext2', 'ext3', 'xfs', 'jfs', 'reiserfs']
-BANNED_MOUNTS = ['/dev', '/media', '/mnt', '/proc', '/sys', '/cdrom']
 METADATA_URL = "http://169.254.169.254/latest/meta-data/"
+
+class LinuxImage:
+    ALLOWED_FS_TYPES = ['ext2', 'ext3', 'xfs', 'jfs', 'reiserfs']
+    BANNED_MOUNTS = ['/dev', '/media', '/mnt', '/proc', '/sys', '/cdrom']
+ 
+    NEW_FSTAB = """
+/dev/sda1 /     ext3    defaults 1 1
+/dev/sdb  /mnt  ext3    defaults 0 0
+none      /dev/pts devpts  gid=5,mode=620 0 0
+none      /proc proc    defaults 0 0
+none      /sys  sysfs   defaults 0 0
+    """   
+
+    OLD_FSTAB = """
+/dev/sda1 /     ext3    defaults 1 1
+/dev/sda2 /mnt  ext3    defaults 0 0
+/dev/sda3 swap  swap    defaults 0 0
+none      /proc proc    defaults 0 0
+none      /sys  sysfs   defaults 0 0
+    """
+ 
+    def __init__(self, debug=False):
+	self.debug = debug
+   
+    def create_image(self, size_in_MB, image_path):
+        dd_cmd = ["dd"] 
+        dd_cmd.append("if=/dev/zero")
+        dd_cmd.append("of=%s" % (image_path))
+        dd_cmd.append("count=%d" % (size_in_MB))
+        dd_cmd.append("bs=1M")
+	if self.debug:
+            print 'Creating disk image...', image_path
+        Popen(dd_cmd, PIPE).communicate()[0]
+
+    def make_fs(self, image_path):
+	if self.debug:
+	    print "Creating filesystem..."
+        makefs_cmd = Popen([MAKEFS_CMD, "-F", image_path], PIPE).communicate()[0]
+
+    def add_fstab(self, mount_point, fstab_path):
+	if not fstab_path:
+	    return
+	fstab = None
+	if fstab_path == "old":
+	    fstab = self.OLD_FSTAB
+	elif fstab_path == "new":
+	    fstab = self.NEW_FSTAB
+
+        etc_file_path = os.path.join(mount_point, "etc")
+	fstab_file_path = os.path.join(etc_file_path, "fstab")
+	if not os.path.exists(etc_file_path):
+	    os.mkdir(etc_file_path)
+	else:
+	    if os.path.exists(fstab_file_path):
+		fstab_copy_path = fstab_file_path + ".old"
+		shutil.copyfile(fstab_file_path, fstab_copy_path)
+   
+	if self.debug:
+	    print "Updating fstab entry" 
+	fstab_file = open(fstab_file_path, "w")
+	if fstab:
+	    fstab_file.write(fstab)
+	else:
+	    orig_fstab_file = open(fstab_path, "r")
+	    while 1:
+		data = orig_fstab_file.read(IMAGE_IO_CHUNK)
+		if not data:
+		    break
+		fstab_file.write(data)
+	    orig_fstab_file.close()
+	fstab_file.close()	
+
+class SolarisImage:
+    ALLOWED_FS_TYPES = ['ext2', 'ext3', 'xfs', 'jfs', 'reiserfs']
+    BANNED_MOUNTS = ['/dev', '/media', '/mnt', '/proc', '/sys', '/cdrom']
+
+    def __init__(self, debug=False):
+	self.debug = debug
+
+    def create_image(self, size_in_MB, image_path):
+	print "Sorry. Solaris not supported yet"
+	sys.exit(1)
+
+    def make_fs(self, image_path):
+	print "Sorry. Solaris not supported yet"
+	sys.exit(1)
 
 class Util:
     usage_string = """
@@ -160,6 +245,14 @@ class EucaTool:
 	    else:
 		self.port = int(url_parts[1])
 
+        system_string = platform.system()
+	if system_string == "Linux":
+	    self.img = LinuxImage(self.debug)
+	elif system_string == "SunOS":
+	    self.img = SolarisImage(self.debug)
+	else:
+	    print "Platform not fully supported. Image bundling may not work."
+	  
     def make_connection(self):
 	if not self.is_s3:
             return boto.connect_ec2(aws_access_key_id=self.ec2_user_access_key, 
@@ -609,31 +702,16 @@ class EucaTool:
 	    if (mount_point.find(path) == 0) and (fs_type not in ALLOWED_FS_TYPES):
 	        excludes.append(mount_point)
 
-        for banned in BANNED_MOUNTS:
+        for banned in self.img.BANNED_MOUNTS:
 	    excludes.append(banned)
-
-    def create_image(self, size_in_MB, image_path):
-        dd_cmd = ["dd"] 
-        dd_cmd.append("if=/dev/zero")
-        dd_cmd.append("of=%s" % (image_path))
-        dd_cmd.append("count=%d" % (size_in_MB))
-        dd_cmd.append("bs=1M")
-	if self.debug:
-            print 'Creating disk image...', image_path
-        Popen(dd_cmd, PIPE).communicate()[0]
-
-    def make_fs(self, image_path):
-	if self.debug:
-	    print "Creating filesystem..."
-        makefs_cmd = Popen([MAKEFS_CMD, "-F", image_path], PIPE).communicate()[0]
 
     def make_image(self, size_in_MB, excludes, prefix, destination_path):
         image_file = '%s.img' % (prefix)
         image_path = '%s/%s' % (destination_path, image_file)
         if not os.path.exists(destination_path):
 	    os.makedirs(destination_path)
-        self.create_image(size_in_MB, image_path)
-        self.make_fs(image_path)        
+        self.img.create_image(size_in_MB, image_path)
+        self.img.make_fs(image_path)        
         return image_path
 
     def create_loopback(self, image_path):
@@ -660,8 +738,11 @@ class EucaTool:
    	    print "Copying files..."
 	    for exclude in excludes:
 		print "Excluding:", exclude
-	    print rsync_cmd
-        return Popen(rsync_cmd, stdout=PIPE, stderr=PIPE).communicate()
+        output = Popen(rsync_cmd, stdout=PIPE, stderr=PIPE).communicate()
+	for out in output:
+	    if "failed" in out or "error" in out or "No space" in out: 
+	        raise CopyError(output[1])
+
 
     def unmount_image(self, mount_point):
 	if self.debug:
@@ -669,13 +750,15 @@ class EucaTool:
         Popen(["umount", "-d", mount_point], stdout=PIPE).communicate()[0]
         os.rmdir(mount_point)
 
-    def copy_volume(self, image_path, volume_path, excludes):
+    def copy_volume(self, image_path, volume_path, excludes, fstab_path):
         mount_point, loop_dev = self.mount_image(image_path)
-        output = self.copy_to_image(mount_point, volume_path, excludes)
-        self.unmount_image(mount_point)
-	for out in output:
-	    if "failed" in out or "error" in out or "No space" in out: 
-	        raise CopyError(output[1])
+	try:
+            output = self.copy_to_image(mount_point, volume_path, excludes)
+	    self.img.add_fstab(mount_point, fstab_path)
+	except CopyError as error:
+	    raise error
+	finally:
+            self.unmount_image(mount_point)
 
     def can_read_instance_metadata(self):
         meta_data = urllib.urlopen(METADATA_URL)        
@@ -696,5 +779,4 @@ class EucaTool:
 
     def get_instance_block_device_mappings(self):
         return get_instance_metadata('block-device-mapping')
-
 
