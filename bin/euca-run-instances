@@ -33,7 +33,7 @@
 # Author: Neil Soman neil@eucalyptus.com
 
 import getopt, sys, os
-from euca_tools import EucaTool, ValidationError, Util
+from euca2ools import Euca2ool, ValidationError, Util
 
 usage_string = """
 DESCRIPTION
@@ -73,7 +73,7 @@ def display_reservations(reservation):
 def main():
     euca = None
     try:
-        euca = EucaTool('k:n:t:g:d:z:',
+        euca = Euca2ool('k:n:t:g:d:z:',
                                    ['key=', 'kernel=', 'ramdisk=', 'instance-count=', 'instance_type=', 
 				    'group=', 'user-data=', 'addressing=', 'availability-zone='])
     except:

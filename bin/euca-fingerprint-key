@@ -33,7 +33,7 @@
 # Author: Neil Soman neil@eucalyptus.com
 
 import getopt, sys, os
-from euca_tools import EucaTool, ValidationError, Util
+from euca2ools import Euca2ool, ValidationError, Util
 from M2Crypto import RSA
 from hashlib import sha1 as sha
 from binascii import hexlify, unhexlify
@@ -68,7 +68,7 @@ def display_fingerprint(key_path):
 def main():
     euca = None
     try:
-        euca = EucaTool() 
+        euca = Euca2ool() 
     except:
         usage()
 

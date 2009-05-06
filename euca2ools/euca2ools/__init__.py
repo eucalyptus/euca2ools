@@ -167,7 +167,7 @@ class CopyError:
     def __init__(self, msg):
 	self.message = msg
 
-class EucaTool:
+class Euca2ool:
     def process_args(self):
         ids = []
         for arg in self.args:

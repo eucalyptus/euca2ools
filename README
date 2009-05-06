@@ -4,9 +4,9 @@ Installing
 1. You need swig installed (swig is provided by most distributions. If not, untar the included swig tarball 
 from the deps directory and run "./configure ; make ; sudo make install").
 
-2. To install euca_tools, run "make ; sudo make install"
+2. To install euca2ools, run "make ; sudo make install"
 
-This will install euca_tools and the required dependencies (M2Crypto v1.9 and boto).
+This will install euca2ools and the required dependencies (M2Crypto v1.9 and boto).
 
 3. To clean, run "make clean"
 

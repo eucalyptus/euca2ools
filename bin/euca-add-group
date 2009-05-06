@@ -33,7 +33,7 @@
 # Author: Neil Soman neil@eucalyptus.com
 
 import getopt, sys, os
-from euca_tools import Util, EucaTool
+from euca2ools import Util, Euca2ool
 
 usage_string = """
 DESCRIPTION
@@ -65,7 +65,7 @@ def display_group(group):
 def main():
     euca = None
     try:
-        euca = EucaTool('d:', ['description='])
+        euca = Euca2ool('d:', ['description='])
     except:
         usage()
  

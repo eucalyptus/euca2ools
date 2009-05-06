@@ -34,11 +34,11 @@
 
 import getopt, sys, os
 from xml.dom import minidom
-from euca_tools import EucaTool, ValidationError, Util
+from euca2ools import Euca2ool, ValidationError, Util
 from boto.exception import S3ResponseError
 from boto.s3 import Connection
 from boto.s3.key import Key
-from euca_tools import EucaTool, ValidationError, Util
+from euca2ools import Euca2ool, ValidationError, Util
 
 usage_string = """
 USAGE
@@ -119,7 +119,7 @@ def download_parts(bucket, manifests, directory):
 def main():
     euca = None
     try:
-        euca = EucaTool('b:m:d:',
+        euca = Euca2ool('b:m:d:',
                                   ['bucket=', 'manifest=', 'directory='],
 				  is_s3=True)
     except:

@@ -1,6 +1,6 @@
 SUBDIRS                 =       M2Crypto-0.19.1 \
                                 boto-1.7a \
-                                euca_tools 
+                                euca2ools
 
 
 all: build install

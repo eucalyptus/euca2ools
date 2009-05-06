@@ -34,11 +34,11 @@
 
 import getopt, sys, os
 from xml.dom import minidom
-from euca_tools import EucaTool, ValidationError, Util
+from euca2ools import Euca2ool, ValidationError, Util
 from boto.exception import S3ResponseError, S3CreateError
 from boto.s3 import Connection
 from boto.s3.key import Key
-from euca_tools import EucaTool, ValidationError, Util
+from euca2ools import Euca2ool, ValidationError, Util
 
 usage_string = """
 USAGE
@@ -157,7 +157,7 @@ def upload_parts(bucket_instance, directory, parts, part_to_start_from, canned_a
 def main():
     euca = None
     try:
-        euca = EucaTool('b:m:a:s:Sd:',
+        euca = Euca2ool('b:m:a:s:Sd:',
                                   ['bucket=', 'manifest=', 
                                   'acl=', 'ec2cert=', 'directory=', 'part=', 'retry', 'skipmanifest'],
 				  is_s3=True)

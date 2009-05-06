@@ -33,7 +33,7 @@
 # Author: Neil Soman neil@eucalyptus.com
 
 import getopt, sys, os
-from euca_tools import EucaTool, ValidationError, Util
+from euca2ools import Euca2ool, ValidationError, Util
 import tarfile
 import gzip
 from xml.dom import minidom
@@ -75,7 +75,7 @@ def version():
 
 def main():
     try:
-        euca = EucaTool('m:k:d:s:',
+        euca = Euca2ool('m:k:d:s:',
                                    ['manifest=', 'privatekey=', 'destination=', 'source='])
     except:
         usage()

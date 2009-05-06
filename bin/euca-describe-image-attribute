@@ -33,7 +33,7 @@
 # Author: Neil Soman neil@eucalyptus.com
 
 import getopt, sys, os
-from euca_tools import EucaTool, ValidationError, Util
+from euca2ools import Euca2ool, ValidationError, Util
 
 usage_string = """
 DESCRIPTION
@@ -83,7 +83,7 @@ def display_image_attribute(image_attribute):
 def main():
     euca = None
     try:
-        euca = EucaTool('lpB',
+        euca = Euca2ool('lpB',
                                    ['block-device-mapping', 'launch-permission', 'product-code',
 				    'kernel', 'ramdisk'])
     except:

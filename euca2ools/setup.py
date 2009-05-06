@@ -36,14 +36,14 @@ try:
 except ImportError:
     from distutils.core import setup
 
-setup(name = "euca_tools",
+setup(name = "euca2ools",
       version = "1.0",
       description = "API tools compatible with Amazon AWS",
       long_description="API tools compliant with Amazon's AWS API. Work with Amazon AWS and Eucalyptus.",
       author = "Neil Soman",
       author_email = "neil@eucalyptus.com",
       url = "http://www.eucalyptus.com",
-      packages = [ 'euca_tools'],
+      packages = [ 'euca2ools'],
       license = 'BSD (Simplified)',
       platforms = 'Posix; MacOS X; Windows',
       classifiers = [ 'Development Status :: 3 - Alpha',

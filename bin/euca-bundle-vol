@@ -33,7 +33,7 @@
 # Author: Neil Soman neil@eucalyptus.com
 
 import getopt, sys, os
-from euca_tools import EucaTool, ValidationError, CopyError, Util
+from euca2ools import Euca2ool, ValidationError, CopyError, Util
 from subprocess import * 
 import platform
 
@@ -134,7 +134,7 @@ def cleanup(path):
 def main():
     euca = None
     try:
-        euca = EucaTool('a:c:k:u:B:d:br:p:s:v:e:',
+        euca = Euca2ool('a:c:k:u:B:d:br:p:s:v:e:',
                                    ['cert=', 'privatekey=', 'user=', 'prefix=', 'volume=', 'all',
                                     'kernel=', 'ramdisk=', 'block-device-mapping=', 'destination=', 'ec2cert=', 'arch=', 'size=', 'exclude=', 'inherit=', 'no-inherit', 'batch', 'fstab=', 'generate-fstab'])
     except:

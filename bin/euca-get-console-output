@@ -33,7 +33,7 @@
 # Author: Neil Soman neil@eucalyptus.com
 
 import getopt, sys, os
-from euca_tools import EucaTool, ValidationError, Util
+from euca2ools import Euca2ool, ValidationError, Util
 
 usage_string = """
 DESCRIPTION
@@ -63,7 +63,7 @@ def display_console_output(console_output):
  
 def main():
     try:
-	euca = EucaTool()
+	euca = Euca2ool()
     except:
         usage()
  
