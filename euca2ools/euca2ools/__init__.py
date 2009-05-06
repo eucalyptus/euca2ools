@@ -51,7 +51,6 @@ VERSION = "2007-10-10"
 RELEASE = "31337"
 AES = 'AES-128-CBC'
 
-MAKEFS_CMD = 'mkfs.ext2'
 IP_PROTOCOLS = ['ip', 'tcp', 'icmp']
 
 IMAGE_IO_CHUNK = 10 * 1024
@@ -62,7 +61,7 @@ METADATA_URL = "http://169.254.169.254/latest/meta-data/"
 class LinuxImage:
     ALLOWED_FS_TYPES = ['ext2', 'ext3', 'xfs', 'jfs', 'reiserfs']
     BANNED_MOUNTS = ['/dev', '/media', '/mnt', '/proc', '/sys', '/cdrom']
- 
+    MAKEFS_CMD = 'mkfs.ext2'
     NEW_FSTAB = """
 /dev/sda1 /     ext3    defaults 1 1
 /dev/sdb  /mnt  ext3    defaults 0 0
@@ -95,7 +94,7 @@ none      /sys  sysfs   defaults 0 0
     def make_fs(self, image_path):
 	if self.debug:
 	    print "Creating filesystem..."
-        makefs_cmd = Popen([MAKEFS_CMD, "-F", image_path], PIPE).communicate()[0]
+        makefs_cmd = Popen([self.MAKEFS_CMD, "-F", image_path], PIPE).communicate()[0]
 
     def add_fstab(self, mount_point, fstab_path):
 	if not fstab_path:
