@@ -358,7 +358,7 @@ class Euca2ool:
 
     def tarzip_image(self, prefix, file, path): 
         print 'Tarring image'
-        tar_file = '%s.tar.gz' % (path + '/' + prefix) 
+        tar_file = '%s.tar.gz' % os.path.join(path, prefix) 
         tar = tarfile.open(tar_file, "w|gz")
         tar.add(file, arcname=prefix)
         tar.close()
@@ -441,13 +441,13 @@ class Euca2ool:
 
     def assemble_parts(self, src_directory, directory, manifest_path, parts):
         manifest_filename = self.get_absolute_filename(manifest_path)
-        encrypted_filename = directory + '/' + manifest_filename.replace('.manifest.xml', '.enc.tar.gz')
+        encrypted_filename = os.path.join(directory, manifest_filename.replace('.manifest.xml', '.enc.tar.gz'))
         if (len(parts) > 0):
      	    if not os.path.exists(directory):
 	        os.makedirs(directory)
 	    encrypted_file = open(encrypted_filename, "wb")
 	    for part in parts:
-   	        part_filename = src_directory + '/' + part
+   	        part_filename = os.path.join(src_directory, part)
 	        part_file = open(part_filename, "rb")
 	        while 1:
 	            data = part_file.read(IMAGE_IO_CHUNK)
@@ -507,7 +507,7 @@ class Euca2ool:
 
         user_priv_key = RSA.load_key(private_key_path)
 
-        manifest_file = '%s.manifest.xml' % (path + "/" + prefix)
+        manifest_file = '%s.manifest.xml' % os.path.join(path, prefix)
 	if self.debug:
 	    print 'Manifest: ', manifest_file
         manifest_out_file = open(manifest_file, "wb")
