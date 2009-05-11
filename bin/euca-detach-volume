@@ -98,10 +98,7 @@ def main():
 
         euca_conn = euca.make_connection()
         volumes = euca_conn.get_all_volumes()
-	instance_id, device = get_volume_params(volumes, volume_id)
-	return_code = euca_conn.detach_volume(volume_id = volume_id, 
-					     instance_id = instance_id,
-					     device = device) 
+	return_code = euca_conn.detach_volume(volume_id = volume_id)
 	if return_code:
 	    print 'VOLUME\t%s' % (volume_id)
     else:

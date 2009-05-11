@@ -102,13 +102,13 @@ def download_manifests(bucket, manifests, directory):
     for manifest in manifests:
 	k = Key(bucket)
 	k.key = manifest
-	manifest_file = open(directory + "/" + manifest, "wb")
+	manifest_file = open(os.path.join(directory, manifest), "wb")
 	k.get_contents_to_file(manifest_file)
 	manifest_file.close()
 
 def delete_parts(bucket, manifests, directory):
     for manifest in manifests:
-	manifest_filename = directory + "/" + manifest
+	manifest_filename = os.path.join(directory, manifest)
 	parts = get_parts(manifest_filename)
 	for part in parts:
 	    k = Key(bucket)
@@ -146,7 +146,7 @@ def delete_manifests(bucket, manifests, clear):
 
 def remove_manifests(manifests, directory):
     for manifest in manifests:
-	manifest_filename = directory + "/" + manifest
+	manifest_filename = os.path.join(directory, manifest)
 	if os.path.exists(manifest_filename):
 	    os.remove(manifest_filename)	
 

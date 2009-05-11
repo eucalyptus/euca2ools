@@ -83,9 +83,7 @@ def version():
     sys.exit()
 
 def check_root():
-    chk_root = Popen(["id", "-u"], stdout=PIPE)
-    id = chk_root.stdout.read().split('\n')[0]
-    if id == '0':
+    if os.geteuid() == 0:
 	return
     else:
 	print "Must be superuser to execute this command."

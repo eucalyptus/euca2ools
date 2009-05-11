@@ -143,7 +143,7 @@ def upload_parts(bucket_instance, directory, parts, part_to_start_from, canned_a
             print 'uploading part:', part
             k = Key(bucket_instance)
             k.key = part
-            part_file = open(directory + "/" + part, "rb")
+            part_file = open(os.path.join(directory, part), "rb")
 	    try:
                 k.set_contents_from_file(part_file, policy=canned_acl)
 	    except S3ResponseError as s3error:

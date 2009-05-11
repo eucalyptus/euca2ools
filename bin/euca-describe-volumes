@@ -72,7 +72,7 @@ def display_volumes(volumes, volume_ids):
 	volume_string += '\t%s\t%s' % (volume.status, volume.create_time)
 	print 'VOLUME\t%s' % (volume_string)
 	if volume.status == 'in-use':
-	    attachment_string = '%s\t%s\t%s\t%s' % (volume.id, volume.instance_id, volume.device, volume.attach_time)
+	    attachment_string = '%s\t%s\t%s\t%s' % (volume.id, volume.attach_data.instance_id, volume.attach_data.device, volume.attach_data.attach_time)
 	    print 'ATTACHMENT\t%s' %(attachment_string)
 
 def main():
