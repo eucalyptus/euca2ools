@@ -176,7 +176,8 @@ def main():
 
     if bucket:
 	try:
-	    euca.validate_file(manifest_path)
+	    if manifest_path:
+	        euca.validate_file(manifest_path)
 	except ValidationError as error:
 	    print error.message
 	    sys.exit(1)
