@@ -90,7 +90,7 @@ def main():
 	    operation_type = 'remove'
         elif name in ('-h', '--help'):
             usage()
-	elif name in ('--version'):
+	elif name == '--version':
 	    version()
     
     for arg in euca.args:

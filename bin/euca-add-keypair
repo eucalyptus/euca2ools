@@ -74,7 +74,7 @@ def main():
     for name, value in euca.opts:
         if name in ('-h', '--help'):
             usage()
-	elif name in ('--version'):
+	elif name == '--version':
 	    version()
     
     euca_conn = euca.make_connection()

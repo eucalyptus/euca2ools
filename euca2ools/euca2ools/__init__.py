@@ -146,8 +146,8 @@ class SolarisImage:
 
 class Util:
     usage_string = """
-	-K, --access-key - user's Access Key ID.
- 	-S, --secret-key - user's Secret Key.
+	-a, --access-key - user's Access Key ID.
+ 	-s, --secret-key - user's Secret Key.
 	-U, --url - Cloud URL.
 	-h, --help - Display this help message.
 	--version - Display the version of this tool.
@@ -183,7 +183,7 @@ class Euca2ool:
 	    short_opts = ''
 	if not long_opts:
 	    long_opts = ['']
-	short_opts += 'hK:S:U:'
+	short_opts += 'ha:s:U:'
 	long_opts += ['access-key=', 'secret-key=', 'url=', 'help', 'version', 'debug']
         opts, args = getopt.getopt(sys.argv[1:], short_opts,
                                   long_opts)
@@ -191,10 +191,14 @@ class Euca2ool:
 	self.args = args
 	self.debug = False
         for name, value in opts:
-            if name in ('-K', '--access-key'):
+            if name in ('-a', '--access-key'):
  		self.ec2_user_access_key = value
-	    elif name in ('-S', '--secret-key'):
-		self.ec2_user_secret_key = value
+	    elif name in ('-s', '--secret-key'):
+		try:
+		    self.ec2_user_secret_key = int(value)
+		    self.ec2_user_secret_key = None
+		except ValueError:
+		    self.ec2_user_secret_key = value
 	    elif name in ('-U', '--url'):
 		self.ec2_url = value
 	    elif name == '--debug':

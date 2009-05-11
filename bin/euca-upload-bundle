@@ -157,7 +157,7 @@ def upload_parts(bucket_instance, directory, parts, part_to_start_from, canned_a
 def main():
     euca = None
     try:
-        euca = Euca2ool('b:m:a:s:Sd:',
+        euca = Euca2ool('b:m:a:s:d:',
                                   ['bucket=', 'manifest=', 
                                   'acl=', 'ec2cert=', 'directory=', 'part=', 'retry', 'skipmanifest'],
 				  is_s3=True)
@@ -181,21 +181,21 @@ def main():
             bucket = value
         elif name in ('-m', '--manifest'):
             manifest_path = value
-        elif name in ('--ec2cert'):
+        elif name == '--ec2cert':
             ec2cert_path = value
-        elif name in ('--acl'):
+        elif name == '--acl':
             canned_acl = value
         elif name in ('-d', '--directory'):
             directory = value
-        elif name in ('--part'):
+        elif name == '--part':
             part = value
-        elif name in ('--url'):
+        elif name == '--url':
             url = value
-	elif name in ('--retry'):
+	elif name == '--retry':
 	    retry = True
-	elif name in ('--skipmanifest'):
+	elif name == '--skipmanifest':
 	    skipmanifest = True
-	elif name in ('--version'):
+	elif name == '--version':
 	    version()
     
     if bucket and manifest_path:

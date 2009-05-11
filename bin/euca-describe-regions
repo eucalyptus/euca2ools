@@ -78,7 +78,7 @@ def main():
     for name, value in euca.opts:
         if name in ('-h', '--help'):
             usage()
-	elif name in ('--version'):
+	elif name == '--version':
 	    version()
 
     region_ids = euca.process_args()

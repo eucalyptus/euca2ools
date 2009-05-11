@@ -82,7 +82,7 @@ def main():
             device = value 
         elif name in ('-h', '--help'):
             usage()
-	elif name in ('--version'):
+	elif name == '--version':
 	    version()
 
     for arg in euca.args:

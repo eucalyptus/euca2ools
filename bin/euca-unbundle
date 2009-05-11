@@ -97,7 +97,7 @@ def main():
 	    directory = value
 	elif name in ('-s', '--source'):
 	    src_directory = value
-	elif name in ('--version'):
+	elif name == '--version':
 	    version()
 
     if manifest_path and private_key_path:

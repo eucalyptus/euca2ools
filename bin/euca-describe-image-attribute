@@ -102,15 +102,15 @@ def main():
 	elif name in ('-B', '--block-device-mapping'):
 	    if not image_attribute:
 		image_attribute = 'blockDeviceMapping'
-	elif name in ('--kernel'):
+	elif name == '--kernel':
 	    if not image_attribute:
 		image_attribute = 'kernel'
-	elif name in ('--ramdisk'):
+	elif name == '--ramdisk':
 	    if not image_attribute:
 		image_attribute = 'ramdisk'
         elif name in ('-h', '--help'):
             usage()
-	elif name in ('--version'):
+	elif name == '--version':
 	    version()
     
     for arg in euca.args:

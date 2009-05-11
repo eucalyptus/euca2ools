@@ -73,7 +73,7 @@ def main():
             instance_id = value
         elif name in ('-h', '--help'):
             usage()
-	elif name in ('--version'):
+	elif name == '--version':
 	    version()
     
     euca_conn = euca.make_connection()

@@ -93,9 +93,9 @@ def main():
     for name, value in euca.opts:
         if name in ('-k', '--key'):
 	    keyname = value
-	elif name in ('--kernel'):
+	elif name == '--kernel':
 	    kernel_id = value
-	elif name in ('--ramdisk'):
+	elif name == '--ramdisk':
 	    ramdisk_id = value
 	elif name in ('-n', '--instance-count'):
 	    counts = value.split('-')
@@ -110,13 +110,13 @@ def main():
 	    group_names.append(value)
 	elif name in ('-d', '--user-data'):
 	    user_data = value
-	elif name in ('--addressing'):
+	elif name == '--addressing':
 	    addressing_type = value
 	elif name in ('-z', '--availability-zone'):
 	     zone = value
         elif name in ('-h', '--help'):
             usage()
-	elif name in ('--version'):
+	elif name == '--version':
 	    version()
 
     for arg in euca.args:

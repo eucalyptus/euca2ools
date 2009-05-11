@@ -168,9 +168,9 @@ def main():
             private_key_path = value
         elif name in ('-u', '--user'):
             user = value
-        elif name in ('--kernel'):
+        elif name == '--kernel':
             kernel = value
-        elif name in ('--ramdisk'):
+        elif name == '--ramdisk':
             ramdisk = value
         elif name in ('-p', '--prefix'):
             prefix = value
@@ -182,7 +182,7 @@ def main():
             excludes_string = value
         elif name in ('-d', '--destination'):
             destination_path = value
-        elif name in ('--ec2cert'):
+        elif name == '--ec2cert':
             ec2cert_path = value
         elif name in ('-a', '--all'):
             all = True
@@ -193,13 +193,13 @@ def main():
 		usage()
 	elif name in ('-B', '--block-device-mapping'):
 	    mapping = value
-	elif name in ('--no-inherit'):
+	elif name == '--no-inherit':
 	    inherit = False
-	elif name in ('--batch'):
+	elif name == '--batch':
 	    batch = True
-	elif name in ('--generate-fstab'):
+	elif name == '--generate-fstab':
 	    generate_fstab = True	
-	elif name in ('--fstab'):
+	elif name == '--fstab':
 	    fstab_path = value
 	
     if size_in_MB and cert_path and private_key_path and user and ec2cert_path:

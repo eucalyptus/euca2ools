@@ -99,7 +99,7 @@ def main():
                 to_port = int(code_parts[1])
         elif name in ('-h', '--help'):
             usage()
-	elif name in ('--version'):
+	elif name == '--version':
 	    version()
   
     for arg in euca.args:

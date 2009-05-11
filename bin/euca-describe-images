@@ -92,13 +92,13 @@ def main():
     for name, value in euca.opts:
         if name in ('-h', '--help'):
             usage()
-	elif name in ('-x'):
+	elif name == 'x':
 	    executable_by = value
-	elif name in ('-o'):
+	elif name == '-o':
 	    owner = value	     
-        elif name in ('-a'):
+        elif name == '-a':
             show_all = True 
-	elif name in ('--version'):
+	elif name == '--version':
 	    version()
 
     owners.append(owner)

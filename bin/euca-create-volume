@@ -81,15 +81,15 @@ def main():
     snapshot_id = None
 
     for name, value in euca.opts:
-        if name in ('-s'):
+        if name == '-s':
             size = int(value) 
         elif name in ('-z', '--zone'):
             zone = value 
-        elif name in ('--snapshot'):
+        elif name == '--snapshot':
             snapshot_id = value 
         elif name in ('-h', '--help'):
             usage()
-	elif name in ('--version'):
+	elif name == '--version':
 	    version()
 
     euca_conn = euca.make_connection()
