@@ -514,7 +514,9 @@ class EC2Connection(AWSQueryConnection):
         """
         if isinstance(zone, Zone):
             zone = zone.name
-        params = {'Size': size, 'AvailabilityZone' : zone}
+        params = {'AvailabilityZone' : zone}
+	if size:
+	    params['Size'] = size
         if snapshot:
             if isinstance(snapshot, Snapshot):
                 snapshot = snapshot.id

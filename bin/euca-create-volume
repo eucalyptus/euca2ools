@@ -62,7 +62,9 @@ def version():
 
 def display_volume(volume):
         
-    volume_string = '%s\t%d' % (volume.id, volume.size)
+    volume_string = '%s' % (volume.id)
+    if volume.size:
+	volume_string += '\t%d' % (volume.size)
     if volume.snapshot_id:
 	    volume_string += '\t%s' % (volume.snapshot_id)
     volume_string += '\t%s\t%s' % (volume.status, volume.create_time)
@@ -99,7 +101,7 @@ def main():
 	    if size:
 		euca.validate_volume_size(size)
 	    if snapshot_id:
-	        euca.validate_snapshot_id(instance_id)
+	        euca.validate_snapshot_id(snapshot_id)
         except ValidationError as error:
    	    print error.message
             sys.exit(1)
