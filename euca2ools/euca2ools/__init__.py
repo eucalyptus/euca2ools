@@ -274,7 +274,7 @@ class Euca2ool:
                             service=self.service_path)
 
     def validate_address(self, address):
- 	if not re.match("[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$", address):
+ 	if not re.match("[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+(\/[0-9]+)?$", address):
             raise ValidationError("Invalid address: " + address) 
 
     def validate_instance_id(self, id):
