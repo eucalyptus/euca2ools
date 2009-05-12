@@ -79,7 +79,7 @@ def display_reservations(reservations, instance_ids):
 	    group_delim = ', '
 	print 'RESERVATION\t%s' % (reservation_string) 
 	for instance in instances:
-	    instance_string = '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s' % (instance.id, instance.image_id, instance.public_dns_name, instance.private_dns_name, instance.state, instance.key_name, instance.launch_time, instance.kernel, instance.ramdisk)
+	    instance_string = '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s' % (instance.id, instance.image_id, instance.public_dns_name, instance.private_dns_name, instance.state, instance.key_name, instance.ami_launch_index, instance.instance_type, instance.launch_time, instance.kernel, instance.ramdisk)
 	    print 'INSTANCE\t%s' % (instance_string)
 
 def main():
