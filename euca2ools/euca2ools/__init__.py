@@ -325,8 +325,7 @@ class Euca2ool:
   	    filename = '%s.%d' % (file, i)
 	    part_digest = sha()
 	    file_part = open(filename, "wb")
-	    if self.debug:
-		print "Part:", filename
+	    print "Part:", filename
 	    part_bytes_written = 0
 	    while part_bytes_written < IMAGE_SPLIT_CHUNK:
 	        data = in_file.read(IMAGE_IO_CHUNK)
