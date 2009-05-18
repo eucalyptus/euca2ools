@@ -110,7 +110,10 @@ def main():
 	volume = euca_conn.create_volume(size, zone, snapshot_id)
 	display_volume(volume)
     else:
-    	print 'availability zone and size (or snapshot id) must be specified'
+	if not zone:
+    	    print 'availability zone must be specified.'
+	if not (size or snapshot_id):
+	    print 'size or snapshot id must be specified.'
 	usage()
 if __name__ == "__main__":
     main()

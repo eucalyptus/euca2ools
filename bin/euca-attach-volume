@@ -101,8 +101,13 @@ def main():
 	if return_code:
 	    print 'VOLUME\t%s' % (volume_id)
     else:
-    	print 'volume_id, instance_id and device must be specified'
-	usage()
+	if not volume_id:
+    	    print 'volume_id must be specified'
+	if not instance_id:
+    	    print 'instance_id must be specified'
+	if not device:
+    	    print 'device must be specified'
+ 	usage()
 if __name__ == "__main__":
     main()
  

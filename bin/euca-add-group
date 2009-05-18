@@ -90,7 +90,10 @@ def main():
 					       description = group_description)
 	display_group(group)
     else:
-    	print 'group_name and group_description must be specified'
+	if not group_name:
+    	    print 'group name must be specified.'
+	if not group_description:
+    	    print 'group description must be specified.'
 	usage()
 if __name__ == "__main__":
     main()

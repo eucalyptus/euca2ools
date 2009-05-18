@@ -95,7 +95,10 @@ def main():
 	if return_code:
 	    print 'ADDRESS\t%s\t%s' % (ip, instance_id)
     else:
-	print 'ip and instance_id must be specified'
+	if not ip:
+	    print 'ip must be specified'
+	if not instance_id:
+	    print 'ip must be specified'
 	usage()
 
 if __name__ == "__main__":

@@ -215,7 +215,10 @@ def main():
 	    upload_manifest(bucket_instance, manifest_path, canned_acl)
 	upload_parts(bucket_instance, directory, parts, part, canned_acl)
     else:
-	print 'bucket, manifest, access-key and secret-key must be specified.'	
+	if not bucket:
+	    print 'bucket must be specified.'	
+	if not manifest_path:
+	    print 'manifest must be specified.'	
         usage()
 
 if __name__ == "__main__":

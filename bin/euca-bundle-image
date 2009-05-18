@@ -102,8 +102,12 @@ def main():
         elif name in ('-k', '--privatekey'):
             private_key_path = value
         elif name in ('-u', '--user'):
-            user = value
-        elif name == '--kernel':
+	    try:
+                user = int(value)
+	    except ValueError:
+		print 'Invalid user'
+		sys.exit()
+        elif name == '--kernel':	
             kernel = value
         elif name == '--ramdisk':
             ramdisk = value
@@ -146,7 +150,16 @@ def main():
 	euca.generate_manifest(destination_path, prefix, parts, parts_digest, image_path, key, iv, cert_path, ec2cert_path, private_key_path, target_arch, image_size, bundled_size, sha_image_digest, user, kernel, ramdisk, mapping)
         os.remove(encrypted_file)
     else:
-	print 'image, cert, privatekey, user and ec2cert_path must be specified.'
+	if not image_path:
+	    print 'image be specified.'
+	if not cert_path:
+	    print 'cert must be specified.'
+	if not private_key_path:
+	    print 'private key must be specified.'
+	if not user:
+	    print 'user must be specified.'
+	if not ec2cert_path:
+	    print 'ec2cert must be specified.'
 	usage()
 if __name__ == "__main__":
     main()

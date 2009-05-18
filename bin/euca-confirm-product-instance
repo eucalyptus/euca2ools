@@ -100,7 +100,10 @@ def main():
         print product_string
 
     else:
-    	print 'instance_id and product_code must be specified'
+	if not instance_id:
+      	    print 'instance_id must be specified'
+	if not product_code:
+    	    print 'product_code must be specified'
 	usage()
 if __name__ == "__main__":
     main()

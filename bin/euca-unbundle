@@ -119,7 +119,10 @@ def main():
 	unencrypted_image = euca.untarzip_image(directory, decrypted_image)
 	os.remove(decrypted_image)
     else:
-	print 'manifest_path and private_key must be specified.'
+	if not manifest_path:
+ 	    print 'manifest path must be specified.'
+	if not private_key_path:
+	    print 'private key must be specified.'
 	usage()
 if __name__ == "__main__":
     main()
