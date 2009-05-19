@@ -254,8 +254,8 @@ class Euca2ool:
 	elif system_string == "SunOS":
 	    self.img = SolarisImage(self.debug)
 	else:
-	    print "Platform not fully supported. Image bundling may not work."
-	  
+	    self.img = "Unsupported"
+ 
     def make_connection(self):
 	if not self.is_s3:
             return boto.connect_ec2(aws_access_key_id=self.ec2_user_access_key, 
@@ -359,12 +359,26 @@ class Euca2ool:
 	sha_image.update(buf)
         return image_size, hexlify(sha_image.digest())
 
+#    def tarzip_image(self, prefix, file, path): 
+#        print 'Tarring image'
+#        tar_file = '%s.tar.gz' % os.path.join(path, prefix) 
+#        tar = tarfile.open(tar_file, "w|gz")
+#        tar.add(file, arcname=prefix)
+#        tar.close()
+#        return tar_file
+
     def tarzip_image(self, prefix, file, path): 
         print 'Tarring image'
-        tar_file = '%s.tar.gz' % os.path.join(path, prefix) 
-        tar = tarfile.open(tar_file, "w|gz")
-        tar.add(file, arcname=prefix)
-        tar.close()
+        tar_file = '%s.tar.gz' % os.path.join(path, prefix)
+	outfile = open(tar_file, "wb")
+	tar_cmd = ["tar", "c", "-C", self.get_file_path(file), "-S", self.get_absolute_filename(file)]
+        p1 = Popen(tar_cmd, stdout=PIPE)
+	p2 = Popen(["gzip"], stdin=p1.stdout, stdout=outfile)
+	p2.communicate()
+	outfile.close
+	if os.path.getsize(tar_file) <= 0:
+	    print "Could not tar image"
+	    sys.exit(1)
         return tar_file
 
     def hexToBytes(self, hexString):
@@ -712,6 +726,9 @@ class Euca2ool:
         image_path = '%s/%s' % (destination_path, image_file)
         if not os.path.exists(destination_path):
 	    os.makedirs(destination_path)
+ 	if self.img == "Unsupported":
+	    print "Platform not fully supported."
+	    sys.exit(1)
         self.img.create_image(size_in_MB, image_path)
         self.img.make_fs(image_path)        
         return image_path
@@ -756,6 +773,9 @@ class Euca2ool:
         mount_point, loop_dev = self.mount_image(image_path)
 	try:
             output = self.copy_to_image(mount_point, volume_path, excludes)
+   	    if self.img == "Unsupported":
+	        print "Platform not fully supported."
+	        sys.exit(1)
 	    self.img.add_fstab(mount_point, fstab_path)
 	except CopyError as error:
 	    raise error
