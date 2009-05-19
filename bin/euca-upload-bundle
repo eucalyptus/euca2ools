@@ -111,14 +111,14 @@ def get_parts(manifest_filename):
                 parts.append(node.data)
     return parts
 
-def get_absolute_filename(filename):
+def get_relative_filename(filename):
     f_parts = filename.split('/')
     return f_parts[len(f_parts) - 1]
 
 def upload_manifest(bucket_instance, manifest_filename, canned_acl=None):
     print 'uploading manifest file'
     k = Key(bucket_instance)
-    k.key = get_absolute_filename(manifest_filename)
+    k.key = get_relative_filename(manifest_filename)
     manifest_file = open(manifest_filename, "rb")
     try:
         k.set_contents_from_file(manifest_file, policy=canned_acl)

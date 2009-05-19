@@ -142,7 +142,7 @@ def main():
 
 	image_size, sha_image_digest = euca.check_image(image_path, destination_path)
 	if not prefix:
-            prefix = euca.get_absolute_filename(image_path)
+            prefix = euca.get_relative_filename(image_path)
 	tgz_file = euca.tarzip_image(prefix, image_path, destination_path)
 	encrypted_file, key, iv, bundled_size = euca.encrypt_image(tgz_file)
 	os.remove(tgz_file)

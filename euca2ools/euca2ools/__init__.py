@@ -305,13 +305,13 @@ class Euca2ool:
 	if not os.path.exists(path) or not os.path.isdir(path):
 	    raise ValidationError("Invalid directory: " + path)
 	
-    def get_absolute_filename(self, filename):
+    def get_relative_filename(self, filename):
         f_parts = filename.split('/')
         return f_parts[len(f_parts) - 1]
 
     def get_file_path(self, filename):
-	absolute_filename = self.get_absolute_filename(filename)
-	return filename.replace(absolute_filename, '')
+	relative_filename = self.get_relative_filename(filename)
+	return filename.replace(relative_filename, '')
 
     def split_file(self, file, chunk_size):
         parts = []
@@ -325,7 +325,7 @@ class Euca2ool:
   	    filename = '%s.%d' % (file, i)
 	    part_digest = sha()
 	    file_part = open(filename, "wb")
-	    print "Part:", filename
+	    print "Part:", self.get_relative_filename(filename)
 	    part_bytes_written = 0
 	    while part_bytes_written < IMAGE_SPLIT_CHUNK:
 	        data = in_file.read(IMAGE_IO_CHUNK)
@@ -371,7 +371,7 @@ class Euca2ool:
         print 'Tarring image'
         tar_file = '%s.tar.gz' % os.path.join(path, prefix)
 	outfile = open(tar_file, "wb")
-	tar_cmd = ["tar", "c", "-C", self.get_file_path(file), "-S", self.get_absolute_filename(file)]
+	tar_cmd = ["tar", "c", "-C", self.get_file_path(file), "-S", self.get_relative_filename(file)]
         p1 = Popen(tar_cmd, stdout=PIPE)
 	p2 = Popen(["gzip"], stdin=p1.stdout, stdout=outfile)
 	p2.communicate()
@@ -457,7 +457,7 @@ class Euca2ool:
         return parts, encrypted_key, encrypted_iv
 
     def assemble_parts(self, src_directory, directory, manifest_path, parts):
-        manifest_filename = self.get_absolute_filename(manifest_path)
+        manifest_filename = self.get_relative_filename(manifest_path)
         encrypted_filename = os.path.join(directory, manifest_filename.replace('.manifest.xml', '.enc.tar.gz'))
         if (len(parts) > 0):
      	    if not os.path.exists(directory):
@@ -612,7 +612,7 @@ class Euca2ool:
 
         #name
         image_name_elem = doc.createElement("name") 
-        image_name_value = doc.createTextNode(self.get_absolute_filename(file))
+        image_name_value = doc.createTextNode(self.get_relative_filename(file))
         image_name_elem.appendChild(image_name_value)
         image_elem.appendChild(image_name_elem)
  
@@ -678,7 +678,7 @@ class Euca2ool:
         for part in parts:
 	    part_elem = doc.createElement("part")
 	    filename_elem = doc.createElement("filename")
-	    filename_value = doc.createTextNode(self.get_absolute_filename(part))
+	    filename_value = doc.createTextNode(self.get_relative_filename(part))
 	    filename_elem.appendChild(filename_value)
 	    part_elem.appendChild(filename_elem)
             #digest
