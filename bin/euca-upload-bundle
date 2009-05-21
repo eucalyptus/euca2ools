@@ -75,13 +75,13 @@ def version():
     sys.exit()
 
 def create_bucket(connection, bucket, canned_acl=None):
-    print 'creating bucket:', bucket
+    print 'Creating bucket:', bucket
     return connection.create_bucket(bucket, policy=canned_acl)
 
 def ensure_bucket(connection, bucket, canned_acl=None):
     bucket_instance = None
     try:
-	print 'checking bucket:', bucket
+	print 'Checking bucket:', bucket
 	bucket_instance = connection.get_bucket(bucket)
     except S3ResponseError as s3error:
         s3error_string = '%s' % (s3error)
@@ -116,7 +116,7 @@ def get_relative_filename(filename):
     return f_parts[len(f_parts) - 1]
 
 def upload_manifest(bucket_instance, manifest_filename, canned_acl=None):
-    print 'uploading manifest file'
+    print 'Uploading manifest file'
     k = Key(bucket_instance)
     k.key = get_relative_filename(manifest_filename)
     manifest_file = open(manifest_filename, "rb")
@@ -140,7 +140,7 @@ def upload_parts(bucket_instance, directory, parts, part_to_start_from, canned_a
 	if part == part_to_start_from:
 	    okay_to_upload = True
 	if okay_to_upload:
-            print 'uploading part:', part
+            print 'Uploading part:', part
             k = Key(bucket_instance)
             k.key = part
             part_file = open(os.path.join(directory, part), "rb")
@@ -214,6 +214,7 @@ def main():
 	if not skipmanifest and not part:
 	    upload_manifest(bucket_instance, manifest_path, canned_acl)
 	upload_parts(bucket_instance, directory, parts, part, canned_acl)
+	print "Uploaded image as %s/%s" % (bucket, get_relative_filename(manifest_path))
     else:
 	if not bucket:
 	    print 'bucket must be specified.'	
