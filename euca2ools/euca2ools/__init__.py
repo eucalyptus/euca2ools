@@ -371,7 +371,14 @@ class Euca2ool:
         print 'Tarring image'
         tar_file = '%s.tar.gz' % os.path.join(path, prefix)
 	outfile = open(tar_file, "wb")
-	tar_cmd = ["tar", "c", "-C", self.get_file_path(file), "-S", self.get_relative_filename(file)]
+	file_path = self.get_file_path(file)
+	tar_cmd = ["tar", "c", "-S"]
+	if file_path:
+	    tar_cmd.append("-C")
+	    tar_cmd.append(file_path)
+	    tar_cmd.append(self.get_relative_filename(file))
+	else:
+	    tar_cmd.append(file)
         p1 = Popen(tar_cmd, stdout=PIPE)
 	p2 = Popen(["gzip"], stdin=p1.stdout, stdout=outfile)
 	p2.communicate()

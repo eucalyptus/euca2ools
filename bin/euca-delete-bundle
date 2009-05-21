@@ -42,12 +42,13 @@ from boto.s3.key import Key
 usage_string = """
 USAGE
     euca-delete-bundle -b, --bucket bucket [-m, --manifest manifest_path] [-d, --directory directory]
-	[--clear] [-h, --help] [--version] [--debug]
+	[-p, --prefix prefix] [--clear] [-h, --help] [--version] [--debug]
  
     Where
 	bucket - The name of the bucket to download to. Bucket will be created if it does not exist.
 	manifest_path - The path to the manifest file.
 	directory - The name of the directory to download the bundled parts to.
+        prefix - The filename prefix for bundled files. Defaults to image name.
 	--clear - Delete the bucket containing the image.
 """
 
@@ -102,11 +103,22 @@ def download_manifests(bucket, manifests, directory):
     for manifest in manifests:
 	k = Key(bucket)
 	k.key = manifest
-	manifest_file = open(os.path.join(directory, manifest), "wb")
-	k.get_contents_to_file(manifest_file)
+	manifest_filename = os.path.join(directory, manifest)
+	manifest_file = open(manifest_filename, "wb")
+	try:
+	    k.get_contents_to_file(manifest_file)
+        except S3ResponseError as s3error:
+	    s3error_string = '%s' % (s3error)
+	    if (s3error_string.find('200') < 0):
+	  	print s3error_string
+		print 'unable to download manifest %s' % (manifest)
+		if os.path.exists(manifest_filename):
+		    os.remove(manifest_filename)
+		return False
 	manifest_file.close()
+	return True
 
-def delete_parts(bucket, manifests, directory):
+def delete_parts(bucket, manifests, directory=None):
     for manifest in manifests:
 	manifest_filename = os.path.join(directory, manifest)
 	parts = get_parts(manifest_filename)
@@ -123,22 +135,22 @@ def delete_parts(bucket, manifests, directory):
 		    sys.exit()
 	
 
-def delete_manifests(bucket, manifests, clear):
+def delete_manifests(bucket, manifests, clear, euca, bucket_name):
     for manifest in manifests:
 	k = Key(bucket)
 	k.key = manifest
 	try:
   	    k.delete()
-	except S3ResponseError as s3error:
+	except Exception as s3error:
 	    s3error_string = '%s' % (s3error)
 	    if (s3error_string.find('200') < 0):
 		print s3error_string
-	        print 'unable to delete part %s' % (manifest)
-		sys.exit()
+	        print 'unable to delete manifest %s' % (manifest)
+		bucket = ensure_bucket(euca.make_connection(), bucket_name)
     if clear:
 	try:
   	    bucket.delete()
-	except S3ResponseError as s3error:
+	except Exception as s3error:
 	    s3error_string = '%s' % (s3error)
 	    if (s3error_string.find('200') < 0):
 		print s3error_string
@@ -153,8 +165,8 @@ def remove_manifests(manifests, directory):
 def main():
     euca = None
     try:
-        euca = Euca2ool('b:m:',
-                                  ['bucket=', 'manifest=', 'clear'],
+        euca = Euca2ool('b:m:p:',
+                                  ['bucket=', 'manifest=', 'prefix=', 'clear'],
 				  is_s3=True)
     except:
         usage()
@@ -163,6 +175,7 @@ def main():
     manifest_path = None
     directory = '/tmp' 
     clear = False
+    prefix = None
 
     for name, value in euca.opts:
         if name in ('-h', '--help'):
@@ -173,6 +186,8 @@ def main():
             manifest_path = value
 	elif name == '--clear':
 	    clear = True
+        elif name in ('-p', '--prefix'):
+            prefix = value
 
     if bucket:
 	try:
@@ -184,11 +199,24 @@ def main():
 
 	conn = euca.make_connection()
         bucket_instance = ensure_bucket(conn, bucket)
-	manifests = get_manifests(bucket_instance)
-	download_manifests(bucket_instance, manifests, directory)
-	delete_parts(bucket_instance, manifests, directory)
-	delete_manifests(bucket_instance, manifests, clear)
-	remove_manifests(manifests, directory)
+	manifests = None
+	delete_local_manifests = True
+	if not manifest_path:
+  	    if not prefix:
+	    	manifests = get_manifests(bucket_instance)
+	    else:
+	    	manifests = ["%s.manifest.xml" % prefix]
+	else:
+	    manifests = ["%s" % euca.get_relative_filename(manifest_path)] 
+	    directory = "%s" % euca.get_file_path(manifest_path)
+	    delete_local_manifests = False	    	    
+	return_code = download_manifests(bucket_instance, manifests, directory)
+	if return_code:
+	    delete_parts(bucket_instance, manifests, directory)
+	delete_manifests(bucket_instance, manifests, clear, euca, bucket)
+	if delete_local_manifests:
+	    remove_manifests(manifests, directory)
+	    
     else:
 	print 'bucket must be specified.'	
         usage()
