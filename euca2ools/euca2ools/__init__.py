@@ -812,8 +812,8 @@ class Euca2ool:
 	        print "Platform not fully supported."
 	        sys.exit(1)
 	    self.img.add_fstab(mount_point, fstab_path)
-	except CopyError as error:
-	    raise error
+	except CopyError:
+	    raise CopyError 
 	finally:
             self.unmount_image(mount_point)
 
