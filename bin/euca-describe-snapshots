@@ -33,7 +33,7 @@
 # Author: Neil Soman neil@eucalyptus.com
 
 import getopt, sys, os
-from euca2ools import Euca2ool, ValidationError, Util
+from euca2ools import Euca2ool, SnapshotValidationError, Util
 
 usage_string = """
 DESCRIPTION
@@ -86,8 +86,8 @@ def main():
     try:
 	for id in snapshot_ids:
     	    euca.validate_snapshot_id(id)
-    except ValidationError as error:
-        print error.message
+    except SnapshotValidationError:
+        print 'Invalid snapshot id' 
         sys.exit(1)
 
     euca_conn = euca.make_connection() 

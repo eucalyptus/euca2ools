@@ -33,7 +33,7 @@
 # Author: Neil Soman neil@eucalyptus.com
 
 import getopt, sys, os
-from euca2ools import Euca2ool, ValidationError, Util
+from euca2ools import Euca2ool, InstanceValidationError, Util
 
 usage_string = """
 DESCRIPTION
@@ -102,8 +102,8 @@ def main():
     try:
 	for id in instance_ids:
     	    euca.validate_instance_id(id)
-    except ValidationError as error:
-        print error.message
+    except InstanceValidationError:
+        print 'Invalid instance id'
         sys.exit(1)
 
     #This is workaround for an issue with the front end (does not return the correct instances when an instance id is specified LP:356580)

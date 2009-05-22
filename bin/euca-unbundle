@@ -33,7 +33,7 @@
 # Author: Neil Soman neil@eucalyptus.com
 
 import getopt, sys, os
-from euca2ools import Euca2ool, ValidationError, Util
+from euca2ools import Euca2ool, FileValidationError, DirValidationError, Util
 import tarfile
 import gzip
 from xml.dom import minidom
@@ -103,12 +103,21 @@ def main():
     if manifest_path and private_key_path:
 	try:
 	    euca.validate_file(manifest_path)
-	    euca.validate_file(private_key_path)
-	    if src_directory:
-		euca.validate_dir(src_directory)
-	except ValidationError as error:
-	    print error.message
+	except FileValidationError:
+	    print 'Invalid manifest'
 	    sys.exit(1)
+	try:
+	    euca.validate_file(private_key_path)
+	except FileValidationError:
+	    print 'Invalid private key'
+	    sys.exit(1)
+
+	if src_directory:
+	    try:
+	        euca.validate_dir(src_directory)
+	    except DirValidationError:
+	        print 'Invalid source directory'
+	        sys.exit(1)
 
         parts, encrypted_key, encrypted_iv = euca.parse_manifest(manifest_path)
 	if not src_directory:

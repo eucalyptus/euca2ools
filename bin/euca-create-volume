@@ -33,7 +33,7 @@
 # Author: Neil Soman neil@eucalyptus.com
 
 import getopt, sys, os
-from euca2ools import Euca2ool, ValidationError, Util
+from euca2ools import Euca2ool, SizeValidationError, SnapshotValidationError, Util
 
 usage_string = """
 DESCRIPTION
@@ -84,7 +84,11 @@ def main():
 
     for name, value in euca.opts:
         if name == '-s':
-            size = int(value) 
+	    try:
+                size = int(value) 
+	    except ValueError:
+		print 'Invalid size'
+		sys.exit(1)
         elif name in ('-z', '--zone'):
             zone = value 
         elif name == '--snapshot':
@@ -97,16 +101,19 @@ def main():
     euca_conn = euca.make_connection()
     
     if (size or snapshot_id) and zone:
-        try:
-	    if size:
-		euca.validate_volume_size(size)
-	    if snapshot_id:
+	if size:
+	    try:
+	        euca.validate_volume_size(size)
+	    except SizeValidationError:
+   	        print 'Invalid volume size' 
+                sys.exit(1)
+	if snapshot_id:
+	    try:
 	        euca.validate_snapshot_id(snapshot_id)
-        except ValidationError as error:
-   	    print error.message
-            sys.exit(1)
-
-
+	    except SnapshotValidationError:
+	    	print 'Invalid snapshot id'
+		sys.exit(1)
+       
 	volume = euca_conn.create_volume(size, zone, snapshot_id)
 	display_volume(volume)
     else:

@@ -33,7 +33,7 @@
 # Author: Neil Soman neil@eucalyptus.com
 
 import getopt, sys, os
-from euca2ools import Euca2ool, ValidationError, CopyError, Util
+from euca2ools import Euca2ool, FileValidationError, DirValidationError, CopyError, Util
 from subprocess import * 
 import platform
 
@@ -209,17 +209,33 @@ def main():
     if size_in_MB and cert_path and private_key_path and user and ec2cert_path:
 	try:
 	    euca.validate_file(cert_path)
+	except FileValidationError:
+	    print 'Invalid cert'
+	    sys.exit(1)
+	try:
 	    euca.validate_file(private_key_path)
+	except FileValidationError:
+	    print 'Invalid private key'
+	    sys.exit(1)
+	try:
 	    euca.validate_file(ec2cert_path)
+	except FileValidationError:
+	    print 'Invalid ec2cert'
+	    sys.exit(1)
+	try:
 	    euca.validate_dir(volume_path)
+	except DirValidationError:
+	    print 'Invalid directory', volume_path
+	    sys.exit(1)
 	    if generate_fstab and fstab_path:
 		print "--generate-fstab and --fstab path cannot both be set."
 		sys.exit(1)
 	    if fstab_path:
-		euca.validate_file(fstab_path)
-	except ValidationError as error:
-	    print error.message
-	    sys.exit(1)
+	        try:
+		    euca.validate_file(fstab_path)
+		except FileValidationError:
+		    print 'Invalid fstab path'
+		    sys.exit(1)
 	if not fstab_path:
 	    if platform.machine() == 'i386':
 		fstab_path = "old"
@@ -244,8 +260,8 @@ def main():
 	    excludes.append(exclude_image)
 	try:
             euca.copy_volume(image_path, volume_path, excludes, fstab_path)
-	except CopyError as copy_error:
-	    print copy_error.message
+	except CopyError:
+	    print "Unable to copy files" 
 	    cleanup(image_path)
 	    sys.exit(1)
 

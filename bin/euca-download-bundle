@@ -34,11 +34,10 @@
 
 import getopt, sys, os
 from xml.dom import minidom
-from euca2ools import Euca2ool, ValidationError, Util
+from euca2ools import Euca2ool, FileValidationError, Util
 from boto.exception import S3ResponseError
 from boto.s3 import Connection
 from boto.s3.key import Key
-from euca2ools import Euca2ool, ValidationError, Util
 
 usage_string = """
 USAGE
@@ -142,8 +141,8 @@ def main():
     if bucket:
 	try:
 	    euca.validate_file(manifest_path)
-	except ValidationError as error:
-	    print error.message
+	except FileValidationError: 
+	    print 'Invalid manifest'
 	    sys.exit(1)
 
 	conn = euca.make_connection()

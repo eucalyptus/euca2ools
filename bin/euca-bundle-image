@@ -33,7 +33,7 @@
 # Author: Neil Soman neil@eucalyptus.com
 
 import getopt, sys, os
-from euca2ools import Euca2ool, ValidationError, Util
+from euca2ools import Euca2ool, FileValidationError, Util
 
 usage_string = """
 USAGE
@@ -133,11 +133,23 @@ def main():
     if image_path and cert_path and private_key_path and user and ec2cert_path:
 	try:
 	    euca.validate_file(image_path)
+	except FileValidationError:
+	    print 'Invalid image'
+	    sys.exit(1)
+	try:
 	    euca.validate_file(cert_path)
+	except FileValidationError:
+	    print 'Invalid cert'
+	    sys.exit(1)
+	try:
 	    euca.validate_file(private_key_path)
+	except FileValidationError:
+	    print 'Invalid private key'
+ 	    sys.exit(1)
+	try: 
 	    euca.validate_file(ec2cert_path)
-	except ValidationError as error:
-	    print error.message
+	except FileValidationError:
+	    print 'Invalid ec2cert' 
 	    sys.exit(1)
 
 	image_size, sha_image_digest = euca.check_image(image_path, destination_path)

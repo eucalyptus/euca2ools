@@ -33,7 +33,7 @@
 # Author: Neil Soman neil@eucalyptus.com
 
 import getopt, sys, os
-from euca2ools import Euca2ool, ValidationError, Util
+from euca2ools import Euca2ool, AddressValidationError, ProtocolValidationError, Util
 
 usage_string = """
 DESCRIPTION
@@ -107,14 +107,18 @@ def main():
 	break
 
     if group_name:
-	try:
-	    if cidr_ip:
+    	if cidr_ip:
+	    try:
                 euca.validate_address(cidr_ip)
-	    if protocol:
+	    except AddressValidationError:
+	        print 'Invalid address', cidr_ip
+	        sys.exit(1)
+	if protocol:
+	    try:
 	        euca.validate_protocol(protocol)
-        except ValidationError as error:
-   	    print error.message
-            sys.exit(1)
+	    except ProtocolValidationError:
+	        print 'Invalid protocol', protocol
+	        sys.exit(1)
 
         euca_conn = euca.make_connection()
         return_code = euca_conn.revoke_security_group(group_name = group_name,

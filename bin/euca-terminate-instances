@@ -33,7 +33,7 @@
 # Author: Neil Soman neil@eucalyptus.com
 
 import getopt, sys, os
-from euca2ools import Euca2ool, ValidationError, Util
+from euca2ools import Euca2ool, InstanceValidationError, Util
 
 usage_string = """
 DESCRIPTION
@@ -79,8 +79,8 @@ def main():
         try:
 	    for id in instance_ids:
     	        euca.validate_instance_id(id)
-        except ValidationError as error:
-            print error.message
+        except InstanceValidationError as error:
+            print 'Invalid instance id' 
             sys.exit(1)
 
         euca_conn = euca.make_connection()

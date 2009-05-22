@@ -33,7 +33,7 @@
 # Author: Neil Soman neil@eucalyptus.com
 
 import getopt, sys, os
-from euca2ools import Euca2ool, ValidationError, Util
+from euca2ools import Euca2ool, AddressValidationError, Util
 
 usage_string = """
 DESCRIPTION
@@ -80,8 +80,8 @@ def main():
     if ip:
         try:
     	    euca.validate_address(ip)
-        except ValidationError as error:
-            print error.message
+        except AddressValidationError:
+            print 'Invalid address', ip 
             sys.exit(1)
 
         euca_conn = euca.make_connection()

@@ -158,13 +158,41 @@ class Util:
     	print self.usage_string
     	sys.exit()
 
-class ValidationError:
-    def __init__(self, msg):
-	self.message = msg
+class AddressValidationError:
+    def __init__(self):
+	self.message = 'Invalid address' 
+
+class InstanceValidationError:
+    def __init__(self):
+	self.message = 'Invalid instance id'
+
+class VolumeValidationError:
+    def __init__(self):
+	self.message = 'Invalid volume id'
+
+class SizeValidationError:
+    def __init__(self):
+	self.message = 'Invalid size'
+
+class SnapshotValidationError:
+    def __init__(self):
+	self.message = 'Invalid snapshot id'
+
+class ProtocolValidationError:
+    def __init__(self):
+	self.message = 'Invalid protocol'
+
+class FileValidationError:
+    def __init__(self):
+	self.message = 'Invalid file'
+
+class DirValidationError:
+    def __init__(self):
+	self.message = 'Invalid directory'
 
 class CopyError:
-    def __init__(self, msg):
-	self.message = msg
+    def __init__(self):
+	self.message = 'Unable to copy'
 
 class Euca2ool:
     def process_args(self):
@@ -275,35 +303,35 @@ class Euca2ool:
 
     def validate_address(self, address):
  	if not re.match("[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+(\/[0-9]+)?$", address):
-            raise ValidationError("Invalid address: " + address) 
+            raise AddressValidationError 
 
     def validate_instance_id(self, id):
  	if not re.match("i-", id):
-            raise ValidationError("Invalid instance id: " + id) 
+            raise InstanceValidationError 
 
     def validate_volume_id(self, id):
  	if not re.match("vol-", id):
-            raise ValidationError("Invalid volume id: " + id) 
+            raise VolumeValidationError 
 
     def validate_volume_size(self, size):
 	if size < 0 or size > 1024:
-	    raise ValidationError("Invalid volume size: %d" % size)
+	    raise SizeValidationError
 
     def validate_snapshot_id(self, id):
  	if not re.match("snap-", id):
-            raise ValidationError("Invalid snapshot id: " + id) 
+            raise SnapshotValidationError 
 
     def validate_protocol(self, proto):
 	if not proto in IP_PROTOCOLS:
-	    raise ValidationError("Invalid protocol: " + proto)
+	    raise ProtocolValidationError
 	
     def validate_file(self, path):
 	if not os.path.exists(path) or not os.path.isfile(path):
-	    raise ValidationError("Invalid file: " + path)
+	    raise FileValidationError
 	
     def validate_dir(self, path):
 	if not os.path.exists(path) or not os.path.isdir(path):
-	    raise ValidationError("Invalid directory: " + path)
+	    raise DirValidationError
 	
     def get_relative_filename(self, filename):
         f_parts = filename.split('/')
@@ -767,7 +795,7 @@ class Euca2ool:
         output = Popen(rsync_cmd, stdout=PIPE, stderr=PIPE).communicate()
 	for out in output:
 	    if "failed" in out or "error" in out or "No space" in out: 
-	        raise CopyError(output[1])
+	        raise CopyError
 
 
     def unmount_image(self, mount_point):
