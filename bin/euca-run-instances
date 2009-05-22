@@ -74,7 +74,7 @@ def main():
     euca = None
     try:
         euca = Euca2ool('k:n:t:g:d:z:',
-                                   ['key=', 'kernel=', 'ramdisk=', 'instance-count=', 'instance_type=', 
+                                   ['key=', 'kernel=', 'ramdisk=', 'instance-count=', 'instance-type=', 
 				    'group=', 'user-data=', 'addressing=', 'availability-zone='])
     except:
         usage()

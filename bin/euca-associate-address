@@ -52,7 +52,7 @@ version_string = """    euca-associate-address version: 1.0 (BSD)"""
 
 def usage():
     print usage_string
-    Util.usage()
+    Util().usage()
 
 def version():
     print version_string
@@ -98,7 +98,7 @@ def main():
 	if not ip:
 	    print 'ip must be specified'
 	if not instance_id:
-	    print 'ip must be specified'
+	    print 'instance id must be specified'
 	usage()
 
 if __name__ == "__main__":
