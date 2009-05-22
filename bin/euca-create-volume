@@ -84,7 +84,11 @@ def main():
 
     for name, value in euca.opts:
         if name == '-s':
-            size = int(value) 
+	    try:
+                size = int(value) 
+	    except ValueError:
+		print 'Invalid size'
+		sys.exit(1)
         elif name in ('-z', '--zone'):
             zone = value 
         elif name == '--snapshot':
