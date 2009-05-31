@@ -90,15 +90,16 @@ def main():
         usage()
  
     show_all = False
-    executable_by = None 
+    executable_by = []
     owners = [] 
-    owner = 'self' 
+    owner = 'self'
+    executable = 'self' 
 
     for name, value in euca.opts:
         if name in ('-h', '--help'):
             usage()
 	elif name == 'x':
-	    executable_by = value
+	    executable = value
 	elif name == '-o':
 	    owner = value	     
         elif name == '-a':
@@ -107,10 +108,11 @@ def main():
 	    version()
 
     owners.append(owner)
+    executable_by.append(executable)
     image_ids = euca.process_args()
     #This is workaround for an issue with the front end (does not return an image set when an image id is specified LP:356389)
     euca_conn = euca.make_connection()
-    images = euca_conn.get_all_images(owners=owners)
+    images = euca_conn.get_all_images(owners=owners, executable_by=executable_by)
     display_images(images, image_ids)
 if __name__ == "__main__":
     main()
