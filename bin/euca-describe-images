@@ -72,10 +72,15 @@ def display_images(images, image_ids):
 	        continue
 	image_string = '%s\t%s\t%s\t%s' % (image.id, image.location, image.ownerId, image.state)
 	if image.is_public:
-  	    image_string += '\tpublic'
-  	image_string += '\t%s\t%s' % (image.architecture, image.type)	
+  	    image_string += '\t public'
+	if image.product_codes:
+	    for product_code in image.product_codes:
+		image_string += '\t%s' % product_code
+	if image.architecture:
+  	    image_string += '\t%s' % image.architecture
+	if image.type:
+	    image_string += '\t%s' % image.type
 	print 'IMAGE\t%s' % (image_string)
-
 
 def main():
     euca = None
