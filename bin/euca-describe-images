@@ -90,26 +90,29 @@ def main():
         usage()
  
     show_all = False
-    executable_by = ['self', 'all']
+    executable_by = ['self']
     owners = [] 
-    owner = 'self'
-    executable = None
+    defaults = True
 
     for name, value in euca.opts:
         if name in ('-h', '--help'):
             usage()
-	elif name == 'x':
-	    if not executable:
+	elif name == '-x':
+	    if defaults:
 		executable_by = []
+		defaults = False
 	    executable_by.append(value)
 	elif name == '-o':
-	    owner = value	     
+	    if defaults:
+		executable_by = []
+		defaults = False
+	    owners.append(value)	     
         elif name == '-a':
-            show_all = True 
+            executable_by = ['self', 'all']
+	    owners = []
 	elif name == '--version':
 	    version()
 
-    owners.append(owner)
     image_ids = euca.process_args()
     #This is workaround for an issue with the front end (does not return an image set when an image id is specified LP:356389)
     euca_conn = euca.make_connection()
