@@ -31,7 +31,7 @@
 # Author: Neil Soman neil@eucalyptus.com
 
 import boto
-import getopt, sys, os
+import getopt, sys, os, stat
 import tarfile
 import gzip
 from xml.dom.minidom import Document
@@ -765,10 +765,12 @@ class Euca2ool:
         return tmp_mnt_point, loop_dev
 
     def copy_to_image(self, mount_point, volume_path, excludes):
-        rsync_cmd = ["rsync", "-aX", "-v", volume_path, mount_point]
+        rsync_cmd = ["rsync", "-aXS"]
         for exclude in excludes:
   	    rsync_cmd.append("--exclude")
 	    rsync_cmd.append(exclude)
+	rsync_cmd.append(volume_path)
+	rsync_cmd.append(mount_point)
 	if self.debug:
    	    print "Copying files..."
 	    for exclude in excludes:
@@ -778,6 +780,8 @@ class Euca2ool:
             dir_path = os.path.join(mount_point, dir)
             if not os.path.exists(dir_path):
                 os.mkdir(dir_path)
+		if dir == "tmp":
+		    os.chmod(dir_path, 01777)
 	if output[1]:
 	    raise CopyError(output[1])
 
