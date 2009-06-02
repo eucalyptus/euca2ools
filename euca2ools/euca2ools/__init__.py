@@ -166,6 +166,10 @@ class CopyError:
     def __init__(self, msg):
 	self.message = msg
 
+class MetadataReadError:
+    def __init__(self):
+	self.message = "Unable to read metadata"
+
 class Euca2ool:
     def process_args(self):
         ids = []
@@ -722,7 +726,7 @@ class Euca2ool:
 	    mtab_line_parts = mtab_line.split(' ')
 	    mount_point = mtab_line_parts[1]
 	    fs_type = mtab_line_parts[2]
-	    if (mount_point.find(path) == 0) and (fs_type not in ALLOWED_FS_TYPES):
+	    if (mount_point.find(path) == 0) and (fs_type not in self.img.ALLOWED_FS_TYPES):
 	        excludes.append(mount_point)
 
         for banned in self.img.BANNED_MOUNTS:
@@ -795,7 +799,10 @@ class Euca2ool:
     def get_instance_metadata(self, type):
         if self.debug:
 	    print "Reading instance metadata", type
-        return urllib.urlopen(METADATA_URL + type)
+        metadata = urllib.urlopen(METADATA_URL + type).read()
+	if "Not" in metadata and "Found" in metadata and "404" in metadata:
+	    raise MetadataReadError
+	return metadata
 
     def get_instance_ramdisk(self):
         return get_instance_metadata('ramdisk-id')

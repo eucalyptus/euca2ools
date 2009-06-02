@@ -33,7 +33,7 @@
 # Author: Neil Soman neil@eucalyptus.com
 
 import getopt, sys, os
-from euca2ools import Euca2ool, ValidationError, CopyError, Util
+from euca2ools import Euca2ool, ValidationError, CopyError, MetadataReadError, Util
 from subprocess import * 
 import platform
 
@@ -101,24 +101,36 @@ def parse_excludes(excludes_string):
         excludes = excludes_string.split(',')
     return excludes
 
-def get_instance_metadata(ramdisk, kernel, mapping):
+def get_instance_metadata(euca, ramdisk, kernel, mapping):
     product_codes = None
     ramdisk_id = ramdisk
     kernel_id = kernel
     block_dev_mapping = mapping
-    util = Util()
     try:
-	util.can_read_instance_metadata()
+	euca.can_read_instance_metadata()
 	if not ramdisk_id:
-	    ramdisk_id = util.get_instance_ramdisk()
+	    try:
+	        ramdisk_id = euca.get_instance_ramdisk()
+	    except MetadataReadError:
+		print "Unable to read ramdisk id"
 
 	if not kernel_id:
-	    kernel_id = util.get_instance_kernel()
+	    try:
+	        kernel_id = euca.get_instance_kernel()
+	    except MetadataReadError:
+		print "Unable to read kernel id"
 
         if not block_dev_mapping:
-	    block_dev_mapping = util.get_instance_block_device_mappings().split(' ')
+	    try:
+	        block_dev_mapping = euca.get_instance_block_device_mappings().split(' ')
+	    except MetadataReadError:
+		print "Unable to read block device mapping"
 
-        product_codes = util.get_instance_product_codes().split(' ')
+	try:
+            product_codes = euca.get_instance_product_codes().split(' ')
+	except MetadataReadError:
+	    print "Unable to read product codes"
+
     except:
 	print "Unable to read instance metadata. Pass the --no-inherit option if you wish to exclude instance metadata."
 	sys.exit()	
@@ -233,7 +245,7 @@ def main():
  	    excludes = parse_excludes(excludes_string)
 	    euca.add_excludes(volume_path, excludes)
 	if inherit:
-	    ramdisk, kernel, mapping, product_codes = get_instance_metadata(ramdisk, kernel, mapping)   
+	    ramdisk, kernel, mapping, product_codes = get_instance_metadata(euca, ramdisk, kernel, mapping)   
 	image_path = euca.make_image(size_in_MB, excludes, prefix, destination_path)    
 	image_path = os.path.normpath(image_path)
 	if (image_path.find(volume_path) == 0):
