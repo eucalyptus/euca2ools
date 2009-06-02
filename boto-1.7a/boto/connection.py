@@ -124,7 +124,7 @@ class AWSAuthConnection:
         @param port: The port to use to connect
         """
         
-        self.num_retries = 0 
+        self.num_retries = 5
         self.is_secure = is_secure
         self.handle_proxy(proxy, proxy_port, proxy_user, proxy_pass)
         # define exceptions from httplib that we want to catch and retry
@@ -149,22 +149,21 @@ class AWSAuthConnection:
             self.port = port
         else:
             self.port = PORTS_BY_SECURITY[is_secure]
-	if server:
+        if server:
 	    self.server_name = server
         if self.port == 80:
             self.server_name = server
-#        else:
+        else:
             # This unfortunate little hack can be attributed to
             # a difference in the 2.6 version of httplib.  In old
             # versions, it would append ":443" to the hostname sent
             # in the Host header and so we needed to make sure we
             # did the same when calculating the signature.  In 2.6
             # it no longer does that.  Hence, this kludge.
-#            if sys.version[:3] == "2.6" and self.port in [80, 443]:
-#                self.server_name = server
-#            else:
-#                self.server_name = '%s:%d' % (server, self.port)
-#       		print 'server_name', self.server_name
+            if sys.version[:3] == "2.6": #and self.port in [80, 443]:
+                self.server_name = server
+            else:
+                self.server_name = '%s:%d' % (server, self.port)
  
         if aws_access_key_id:
             self.aws_access_key_id = aws_access_key_id
@@ -180,7 +179,7 @@ class AWSAuthConnection:
         elif config.has_option('Credentials', 'aws_secret_access_key'):
             self.aws_secret_access_key = config.get('Credentials', 'aws_secret_access_key')
 
-	self.service = service
+        self.service = service
 
         # initialize an HMAC for signatures, make copies with each request
         self.hmac = hmac.new(self.aws_secret_access_key, digestmod=sha)

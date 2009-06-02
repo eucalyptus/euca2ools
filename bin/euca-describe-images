@@ -72,10 +72,15 @@ def display_images(images, image_ids):
 	        continue
 	image_string = '%s\t%s\t%s\t%s' % (image.id, image.location, image.ownerId, image.state)
 	if image.is_public:
-  	    image_string += '\tpublic'
-  	image_string += '\t%s\t%s' % (image.architecture, image.type)	
+  	    image_string += '\t public'
+	if image.product_codes:
+	    for product_code in image.product_codes:
+		image_string += '\t%s' % product_code
+	if image.architecture:
+  	    image_string += '\t%s' % image.architecture
+	if image.type:
+	    image_string += '\t%s' % image.type
 	print 'IMAGE\t%s' % (image_string)
-
 
 def main():
     euca = None
@@ -85,27 +90,33 @@ def main():
         usage()
  
     show_all = False
-    executable_by = None 
+    executable_by = ['self']
     owners = [] 
-    owner = 'self' 
+    defaults = True
 
     for name, value in euca.opts:
         if name in ('-h', '--help'):
             usage()
-	elif name == 'x':
-	    executable_by = value
+	elif name == '-x':
+	    if defaults:
+		executable_by = []
+		defaults = False
+	    executable_by.append(value)
 	elif name == '-o':
-	    owner = value	     
+	    if defaults:
+		executable_by = []
+		defaults = False
+	    owners.append(value)	     
         elif name == '-a':
-            show_all = True 
+            executable_by = ['self', 'all']
+	    owners = []
 	elif name == '--version':
 	    version()
 
-    owners.append(owner)
     image_ids = euca.process_args()
     #This is workaround for an issue with the front end (does not return an image set when an image id is specified LP:356389)
     euca_conn = euca.make_connection()
-    images = euca_conn.get_all_images(owners=owners)
+    images = euca_conn.get_all_images(owners=owners, executable_by=executable_by)
     display_images(images, image_ids)
 if __name__ == "__main__":
     main()

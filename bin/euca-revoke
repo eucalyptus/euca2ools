@@ -42,7 +42,7 @@ DESCRIPTION
 USAGE
     euca-revoke [-P | --protocol protocol] [-p | --port-range port_range] 
 	  [-t | --icmp-type-code type:code] [-o | --source-group source_group]
-	  [-u | --source-group-user source_group_user] [-s | --source-subnet source_subnet]
+	  [-u | --source-group-user source_group_user] [-S | --source-subnet source_subnet]
 	  [-h, --help] [--version] [--debug] group_name 
 
     Where
@@ -62,7 +62,7 @@ def version():
 def main():
     euca = None
     try:
-        euca = Euca2ool('P:p:o:u:s:t:',
+        euca = Euca2ool('P:p:o:u:S:t:',
                                    ['protocol=', 'port-range=', 'source-group=',
 				    'source-group-user=', 'source-subnet=', 'icmp-type-code='])
     except:
@@ -90,7 +90,7 @@ def main():
 	    source_group_name = value
 	elif name in ('-u', '--source-group-user'):
 	    source_group_owner_id = value  
-	elif name in ('-s', '--source-subnet'):
+	elif name in ('-S', '--source-subnet'):
 	    cidr_ip = value
         elif name in ('-t', '--icmp-type-code'):
             code_parts = value.split(":")
@@ -130,6 +130,21 @@ def main():
 							cidr_ip = cidr_ip)
         if return_code:
 	    print 'GROUP\t%s' % (group_name)
+	    permission_string = 'PERMISSION\t%s\tALLOWS' % group_name
+	    if protocol:
+		permission_string += '\t%s' % protocol 
+	    if from_port:
+		permission_string += '\t%s' % from_port
+	    if to_port:
+		permission_string += '\t%s' % to_port
+	    if source_group_owner_id:
+		permission_string += '\tUSER\t%s' % source_group_owner_id
+	    if source_group_name:
+		permission_string += '\tGRPNAME\t%s' % source_group_name
+	    if cidr_ip:
+		permission_string += '\tFROM\tCIDR\t%s' % cidr_ip
+	    print permission_string
+
     else:
 	print 'group_name must be specified'
 	usage()

@@ -31,7 +31,7 @@
 # Author: Neil Soman neil@eucalyptus.com
 
 import boto
-import getopt, sys, os
+import getopt, sys, os, stat
 import tarfile
 import gzip
 from xml.dom.minidom import Document
@@ -60,7 +60,8 @@ METADATA_URL = "http://169.254.169.254/latest/meta-data/"
 
 class LinuxImage:
     ALLOWED_FS_TYPES = ['ext2', 'ext3', 'xfs', 'jfs', 'reiserfs']
-    BANNED_MOUNTS = ['/dev', '/media', '/mnt', '/proc', '/sys', '/cdrom']
+    BANNED_MOUNTS = ['/dev', '/media', '/mnt', '/proc', '/sys', '/cdrom', '/tmp']
+    ESSENTIAL_DIRS = ['proc', 'tmp', 'dev', 'mnt', 'sys']
     MAKEFS_CMD = 'mkfs.ext2'
     NEW_FSTAB = """
 /dev/sda1 /     ext3    defaults 1 1
@@ -85,8 +86,9 @@ none      /sys  sysfs   defaults 0 0
         dd_cmd = ["dd"] 
         dd_cmd.append("if=/dev/zero")
         dd_cmd.append("of=%s" % (image_path))
-        dd_cmd.append("count=%d" % (size_in_MB))
+        dd_cmd.append("count=1")
         dd_cmd.append("bs=1M")
+        dd_cmd.append("seek=%s" % (size_in_MB-1))
 	if self.debug:
             print 'Creating disk image...', image_path
         Popen(dd_cmd, PIPE).communicate()[0]
@@ -131,7 +133,8 @@ none      /sys  sysfs   defaults 0 0
 
 class SolarisImage:
     ALLOWED_FS_TYPES = ['ext2', 'ext3', 'xfs', 'jfs', 'reiserfs']
-    BANNED_MOUNTS = ['/dev', '/media', '/mnt', '/proc', '/sys', '/cdrom']
+    BANNED_MOUNTS = ['/dev', '/media', '/mnt', '/proc', '/sys', '/cdrom', '/tmp']
+    ESSENTIAL_DIRS = ['proc', 'tmp', 'dev', 'mnt', 'sys']
 
     def __init__(self, debug=False):
 	self.debug = debug
@@ -193,6 +196,10 @@ class DirValidationError:
 class CopyError:
     def __init__(self):
 	self.message = 'Unable to copy'
+
+class MetadataReadError:
+    def __init__(self):
+	self.message = "Unable to read metadata"
 
 class Euca2ool:
     def process_args(self):
@@ -535,17 +542,19 @@ class Euca2ool:
     def get_block_devs(self, mapping):
         virtual = []
         devices = []
-   
-        mapping_pairs = mapping.split(',')
-        for m in mapping_pairs:
- 	    m_parts = m.split('=')
-            if(len(m_parts) > 1):
-	        virtual.append(m_parts[0])
-	        devices.append(m_parts[1])
   
+        vname = None
+        for m in mapping:
+            if not vname:
+                vname = m
+                virtual.append(vname)
+            else:
+                devices.append(m)
+                vname = None
+
         return virtual, devices
 
-    def generate_manifest(self, path, prefix, parts, parts_digest, file, key, iv, cert_path, ec2cert_path, private_key_path, target_arch, image_size, bundled_size, image_digest, user, kernel, ramdisk, mapping, product_codes=None):
+    def generate_manifest(self, path, prefix, parts, parts_digest, file, key, iv, cert_path, ec2cert_path, private_key_path, target_arch, image_size, bundled_size, image_digest, user, kernel, ramdisk, mapping=None, product_codes=None):
         print 'Generating manifest'
 
         user_pub_key = X509.load_cert(cert_path).get_pubkey().get_rsa()
@@ -750,7 +759,7 @@ class Euca2ool:
 	    mtab_line_parts = mtab_line.split(' ')
 	    mount_point = mtab_line_parts[1]
 	    fs_type = mtab_line_parts[2]
-	    if (mount_point.find(path) == 0) and (fs_type not in ALLOWED_FS_TYPES):
+	    if (mount_point.find(path) == 0) and (fs_type not in self.img.ALLOWED_FS_TYPES):
 	        excludes.append(mount_point)
 
         for banned in self.img.BANNED_MOUNTS:
@@ -784,19 +793,25 @@ class Euca2ool:
         return tmp_mnt_point, loop_dev
 
     def copy_to_image(self, mount_point, volume_path, excludes):
-        rsync_cmd = ["rsync", "-a", "-v", volume_path, mount_point]
+        rsync_cmd = ["rsync", "-aXS"]
         for exclude in excludes:
   	    rsync_cmd.append("--exclude")
 	    rsync_cmd.append(exclude)
+	rsync_cmd.append(volume_path)
+	rsync_cmd.append(mount_point)
 	if self.debug:
    	    print "Copying files..."
 	    for exclude in excludes:
 		print "Excluding:", exclude
         output = Popen(rsync_cmd, stdout=PIPE, stderr=PIPE).communicate()
-	for out in output:
-	    if "failed" in out or "error" in out or "No space" in out: 
-	        raise CopyError
-
+        for dir in self.img.ESSENTIAL_DIRS:
+            dir_path = os.path.join(mount_point, dir)
+            if not os.path.exists(dir_path):
+                os.mkdir(dir_path)
+		if dir == "tmp":
+		    os.chmod(dir_path, 01777)
+	if output[1]:
+	    raise CopyError
 
     def unmount_image(self, mount_point):
 	if self.debug:
@@ -823,7 +838,10 @@ class Euca2ool:
     def get_instance_metadata(self, type):
         if self.debug:
 	    print "Reading instance metadata", type
-        return urllib.urlopen(METADATA_URL + type)
+        metadata = urllib.urlopen(METADATA_URL + type).read()
+	if "Not" in metadata and "Found" in metadata and "404" in metadata:
+	    raise MetadataReadError
+	return metadata
 
     def get_instance_ramdisk(self):
         return get_instance_metadata('ramdisk-id')
@@ -835,5 +853,10 @@ class Euca2ool:
         return get_instance_metadata('product-codes')
 
     def get_instance_block_device_mappings(self):
-        return get_instance_metadata('block-device-mapping')
+        keys = self.get_instance_metadata('block-device-mapping').split('\n')
+        mapping = []
+        for k in keys:
+            mapping.append(k)
+            mapping.append(self.get_instance_metadata(os.path.join('block-device-mapping', k)))
+        return mapping
 

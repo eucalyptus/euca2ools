@@ -70,6 +70,16 @@ def version():
     print version_string
     sys.exit()
 
+def get_block_devs(mapping):
+    mapping = []
+    mapping_pairs = mapping.split(',')
+    for m in mapping_pairs:
+        m_parts = m.split('=')
+        if(len(m_parts) > 1):
+            mapping.append(m_parts[0])
+            mapping.append(m_parts[1])
+    return mapping
+
 def main():
     euca = None
     try:
@@ -159,6 +169,8 @@ def main():
 	encrypted_file, key, iv, bundled_size = euca.encrypt_image(tgz_file)
 	os.remove(tgz_file)
 	parts, parts_digest = euca.split_image(encrypted_file)
+        if mapping:
+            mapping = get_block_devs(mapping)
 	euca.generate_manifest(destination_path, prefix, parts, parts_digest, image_path, key, iv, cert_path, ec2cert_path, private_key_path, target_arch, image_size, bundled_size, sha_image_digest, user, kernel, ramdisk, mapping)
         os.remove(encrypted_file)
     else:
