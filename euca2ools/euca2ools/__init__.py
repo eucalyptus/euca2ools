@@ -60,7 +60,7 @@ METADATA_URL = "http://169.254.169.254/latest/meta-data/"
 
 class LinuxImage:
     ALLOWED_FS_TYPES = ['ext2', 'ext3', 'xfs', 'jfs', 'reiserfs']
-    BANNED_MOUNTS = ['/dev', '/media', '/mnt', '/proc', '/sys', '/cdrom']
+    BANNED_MOUNTS = ['/dev', '/media', '/mnt', '/proc', '/sys', '/cdrom', '/tmp']
     MAKEFS_CMD = 'mkfs.ext2'
     NEW_FSTAB = """
 /dev/sda1 /     ext3    defaults 1 1
@@ -85,8 +85,9 @@ none      /sys  sysfs   defaults 0 0
         dd_cmd = ["dd"] 
         dd_cmd.append("if=/dev/zero")
         dd_cmd.append("of=%s" % (image_path))
-        dd_cmd.append("count=%d" % (size_in_MB))
+        dd_cmd.append("count=1")
         dd_cmd.append("bs=1M")
+        dd_cmd.append("seek=%s" % (size_in_MB-1))
 	if self.debug:
             print 'Creating disk image...', image_path
         Popen(dd_cmd, PIPE).communicate()[0]
@@ -131,7 +132,7 @@ none      /sys  sysfs   defaults 0 0
 
 class SolarisImage:
     ALLOWED_FS_TYPES = ['ext2', 'ext3', 'xfs', 'jfs', 'reiserfs']
-    BANNED_MOUNTS = ['/dev', '/media', '/mnt', '/proc', '/sys', '/cdrom']
+    BANNED_MOUNTS = ['/dev', '/media', '/mnt', '/proc', '/sys', '/cdrom', '/tmp']
 
     def __init__(self, debug=False):
 	self.debug = debug
@@ -511,17 +512,19 @@ class Euca2ool:
     def get_block_devs(self, mapping):
         virtual = []
         devices = []
-   
-        mapping_pairs = mapping.split(',')
-        for m in mapping_pairs:
- 	    m_parts = m.split('=')
-            if(len(m_parts) > 1):
-	        virtual.append(m_parts[0])
-	        devices.append(m_parts[1])
   
+        vname = None
+        for m in mapping:
+            if not vname:
+                vname = m
+                virtual.append(vname)
+            else:
+                devices.append(m)
+                vname = None
+
         return virtual, devices
 
-    def generate_manifest(self, path, prefix, parts, parts_digest, file, key, iv, cert_path, ec2cert_path, private_key_path, target_arch, image_size, bundled_size, image_digest, user, kernel, ramdisk, mapping, product_codes=None):
+    def generate_manifest(self, path, prefix, parts, parts_digest, file, key, iv, cert_path, ec2cert_path, private_key_path, target_arch, image_size, bundled_size, image_digest, user, kernel, ramdisk, mapping=None, product_codes=None):
         print 'Generating manifest'
 
         user_pub_key = X509.load_cert(cert_path).get_pubkey().get_rsa()
@@ -814,5 +817,10 @@ class Euca2ool:
         return get_instance_metadata('product-codes')
 
     def get_instance_block_device_mappings(self):
-        return get_instance_metadata('block-device-mapping')
+        keys = self.get_instance_metadata('block-device-mapping').split('\n')
+        mapping = []
+        for k in keys:
+            mapping.append(k)
+            mapping.append(self.get_instance_metadata(os.path.join('block-device-mapping', k)))
+        return mapping
 
