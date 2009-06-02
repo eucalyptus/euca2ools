@@ -61,6 +61,7 @@ METADATA_URL = "http://169.254.169.254/latest/meta-data/"
 class LinuxImage:
     ALLOWED_FS_TYPES = ['ext2', 'ext3', 'xfs', 'jfs', 'reiserfs']
     BANNED_MOUNTS = ['/dev', '/media', '/mnt', '/proc', '/sys', '/cdrom', '/tmp']
+    ESSENTIAL_DIRS = ['proc', 'tmp', 'dev', 'mnt', 'sys']
     MAKEFS_CMD = 'mkfs.ext2'
     NEW_FSTAB = """
 /dev/sda1 /     ext3    defaults 1 1
@@ -133,6 +134,7 @@ none      /sys  sysfs   defaults 0 0
 class SolarisImage:
     ALLOWED_FS_TYPES = ['ext2', 'ext3', 'xfs', 'jfs', 'reiserfs']
     BANNED_MOUNTS = ['/dev', '/media', '/mnt', '/proc', '/sys', '/cdrom', '/tmp']
+    ESSENTIAL_DIRS = ['proc', 'tmp', 'dev', 'mnt', 'sys']
 
     def __init__(self, debug=False):
 	self.debug = debug
@@ -763,7 +765,7 @@ class Euca2ool:
         return tmp_mnt_point, loop_dev
 
     def copy_to_image(self, mount_point, volume_path, excludes):
-        rsync_cmd = ["rsync", "-a", "-v", volume_path, mount_point]
+        rsync_cmd = ["rsync", "-aX", "-v", volume_path, mount_point]
         for exclude in excludes:
   	    rsync_cmd.append("--exclude")
 	    rsync_cmd.append(exclude)
@@ -772,9 +774,12 @@ class Euca2ool:
 	    for exclude in excludes:
 		print "Excluding:", exclude
         output = Popen(rsync_cmd, stdout=PIPE, stderr=PIPE).communicate()
-	for out in output:
-	    if "failed" in out or "error" in out or "No space" in out: 
-	        raise CopyError(output[1])
+        for dir in self.img.ESSENTIAL_DIRS:
+            dir_path = os.path.join(mount_point, dir)
+            if not os.path.exists(dir_path):
+                os.mkdir(dir_path)
+	if output[1]:
+	    raise CopyError(output[1])
 
 
     def unmount_image(self, mount_point):
