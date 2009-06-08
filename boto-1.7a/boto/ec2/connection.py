@@ -211,7 +211,7 @@ class EC2Connection(AWSQueryConnection):
         return self.get_object('DescribeImageAttribute', params, ImageAttribute)
         
     def modify_image_attribute(self, image_id, attribute='launchPermission',
-                               operation='add', user_ids=None, groups=None):
+                               operation=None, user_ids=None, groups=None, product_codes=None):
         """
         Changes an attribute of an image.
         See http://docs.amazonwebservices.com/AWSEC2/2008-02-01/DeveloperGuide/ApiReference-Query-ModifyImageAttribute.html
@@ -232,12 +232,16 @@ class EC2Connection(AWSQueryConnection):
         @param groups: The groups to add/remove attributes
         """
         params = {'ImageId' : image_id,
-                  'Attribute' : attribute,
-                  'OperationType' : operation}
+                  'Attribute' : attribute}
+	if operation:
+	    params['OperationType'] = operation
         if user_ids:
             self.build_list_params(params, user_ids, 'UserId')
         if groups:
             self.build_list_params(params, groups, 'UserGroup')
+        if product_codes:
+            self.build_list_params(params, product_codes, 'ProductCode')
+
         return self.get_status('ModifyImageAttribute', params)
 
     def reset_image_attribute(self, image_id, attribute='launchPermission'):

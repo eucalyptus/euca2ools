@@ -40,11 +40,11 @@ DESCRIPTION
     Creates a volume in a specified availability zone.
 
 USAGE
-    euca-create-volume -s size | --snapshot snapshot_id -z zone
+    euca-create-volume -s, --size size | --snapshot snapshot_id -z zone
 	  [-h, --help] [--version] [--debug]
 
     Where
-	-s - size of the volume (in GiB). 
+	-s, --size - size of the volume (in GiB). 
 	--snapshot - create volume from a snapshot.
 	-z - availability zone to create the volume in
 	snapshot_id - unique id for a snapshot to create the volume from.
@@ -74,7 +74,7 @@ def main():
     euca = None
     try:
         euca = Euca2ool('s:z:',
-                                   ['zone=', 'snapshot='])
+                                   ['zone=', 'snapshot=', 'size='])
     except:
         usage()
  
@@ -83,7 +83,7 @@ def main():
     snapshot_id = None
 
     for name, value in euca.opts:
-        if name == '-s':
+        if name in ('-s', '--size'):
 	    try:
                 size = int(value) 
 	    except ValueError:
@@ -99,7 +99,7 @@ def main():
 	    version()
 
     euca_conn = euca.make_connection()
-    
+
     if (size or snapshot_id) and zone:
         try:
 	    if size:

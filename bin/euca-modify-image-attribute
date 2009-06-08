@@ -61,7 +61,7 @@ def version():
 def main():
     euca = None
     try:
-        euca = Euca2ool('lpa:r:',
+        euca = Euca2ool('lp:a:r:',
                                    ['launch-permission', 'product-code=', 'add=', 'remove='])
     except:
         usage()
@@ -73,12 +73,13 @@ def main():
     operation_type = None
     user_ids = []
     groups = []
+    product_codes = []
 
     for name, value in euca.opts:
 	if name in ('-p', '--product-code'):
 	    if not image_attribute:
 	        image_attribute = 'productCodes'
-	        code = value
+	    product_codes.append(value)
 	elif name in ('-l', '--launch-permission'):
 	    if not image_attribute:
 		image_attribute = 'launchPermission'
@@ -104,13 +105,17 @@ def main():
 	    user_ids.append(entity)
 
 
+    print image_id
+    print product_codes
+
     if image_id:
         euca_conn = euca.make_connection()
 	return_code = euca_conn.modify_image_attribute(image_id = image_id,
  						       attribute = image_attribute,
 						       operation = operation_type,
 						       user_ids = user_ids,
-						       groups = groups)
+						       groups = groups,
+						       product_codes = product_codes)
 	if return_code:
 	    print 'IMAGE\t%s' % (image_id)
     else:
