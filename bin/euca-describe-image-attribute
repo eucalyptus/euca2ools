@@ -117,7 +117,6 @@ def main():
         image_id = arg
 	break
 
-
     if image_id:
         euca_conn = euca.make_connection()
 	image_attribute = euca_conn.get_image_attribute(image_id = image_id,

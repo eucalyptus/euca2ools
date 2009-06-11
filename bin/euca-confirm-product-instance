@@ -90,14 +90,15 @@ def main():
    	    print 'Invalid instance id' 
             sys.exit(1)
 
-	(status, owner_id) = euca_conn.confirm_product_instance(product_code = product_code,
+	rs = euca_conn.confirm_product_instance(product_code = product_code,
 							       instance_id = instance_id)
-	product_string = '%s\t%s\t' % (product_code, instance_id)
-	if status:
-	    product_string += 'true'
-	else:
-	    product_string += 'false'
-        print product_string
+	if rs:
+	    product_string = '%s\t%s\t' % (product_code, instance_id)
+	    if rs.status:
+	        product_string += 'true'
+	    else:
+	        product_string += 'false'
+            print product_string
 
     else:
 	if not instance_id:
