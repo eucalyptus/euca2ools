@@ -24,15 +24,30 @@ This tools are complatible with Amazon EC2.
 %setup -n euca2ools
 
 %build
-make 
+cd M2Crypto-0.19.1
+python setup.py build
+cd ../boto-1.7a-patched
+python setup.py build
+cd ../euca2ools
+python setup.py build
 
 %install
-make install
+cd M2Crypto-0.19.1
+python setup.py install --prefix=/opt/euca2ools
+cd ../boto-1.7a-patched
+python setup.py install --prefix=/opt/euca2ools
+cd ../euca2ools
+python setup.py install --prefix=/opt/euca2ools
+cd ..
+mkdir /opt/euca2ools/bin
+cp bin/* /opt/euca2ools/bin
 
 %clean
 rm -rf $RPM_BUILD_DIR/euca2ools
+rm -rf /opt/euca2ools
 
 %files
+/opt/euca2ools
 
 %pre
 
@@ -41,6 +56,6 @@ rm -rf $RPM_BUILD_DIR/euca2ools
 %postun
 
 %changelog
-*Thu Apr 16 2009 Eucalyptus team (support@open.eucalyptus.com)
+*Thu Jun 11 2009 Eucalyptus team (support@open.eucalyptus.com)
 - First public release.
-- 
+
