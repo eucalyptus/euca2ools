@@ -49,12 +49,6 @@ rm -rf /opt/euca2ools
 %files
 /opt/euca2ools
 
-%pre
-
-%post
-
-%postun
-
 %changelog
 *Thu Jun 11 2009 Eucalyptus team (support@open.eucalyptus.com)
 - First public release.
