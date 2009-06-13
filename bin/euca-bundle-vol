@@ -143,6 +143,16 @@ def get_instance_metadata(euca, ramdisk, kernel, mapping):
    
     return ramdisk_id, kernel_id, block_dev_mapping, product_codes, ancestor_ami_ids
 
+def add_product_codes(product_code_string, product_codes):
+    if not product_codes:
+	product_codes = []
+    product_code_values = product_code_string.split(',')
+   
+    if p in product_code_values:
+        product_codes.append(p)
+    
+    return product_codes
+
 def cleanup(path):
    if os.path.exists(path):
 	os.remove(path)
@@ -152,7 +162,7 @@ def main():
     try:
         euca = Euca2ool('a:c:k:u:B:d:br:p:s:v:e:',
                                    ['cert=', 'privatekey=', 'user=', 'prefix=', 'volume=', 'all',
-                                    'kernel=', 'ramdisk=', 'block-device-mapping=', 'destination=', 'ec2cert=', 'arch=', 'size=', 'exclude=', 'inherit=', 'no-inherit', 'batch', 'fstab=', 'generate-fstab'])
+                                    'kernel=', 'ramdisk=', 'block-device-mapping=', 'destination=', 'ec2cert=', 'arch=', 'size=', 'exclude=', 'inherit=', 'no-inherit', 'batch', 'fstab=', 'generate-fstab', 'productcodes='])
     except:
         usage()
   
@@ -176,6 +186,7 @@ def main():
     product_codes = None
     fstab_path = None
     generate_fstab = False
+    product_code_string = None
  
     for name, value in euca.opts:
         if name in ('-h', '--help'):
@@ -223,6 +234,8 @@ def main():
 	    generate_fstab = True	
 	elif name == '--fstab':
 	    fstab_path = value
+	elif name == '--productcodes':
+	    product_code_string = value
 	
     if size_in_MB and cert_path and private_key_path and user and ec2cert_path:
 	try:
@@ -267,7 +280,9 @@ def main():
  	    excludes = parse_excludes(excludes_string)
 	    euca.add_excludes(volume_path, excludes)
 	if inherit:
-	    ramdisk, kernel, mapping, product_codes, ancestor_ami_ids = get_instance_metadata(euca, ramdisk, kernel, mapping)   
+	    ramdisk, kernel, mapping, product_codes, ancestor_ami_ids = get_instance_metadata(euca, ramdisk, kernel, mapping)
+	if product_code_string:
+	    product_codes = add_product_codes(product_code_string)   
 	image_path = euca.make_image(size_in_MB, excludes, prefix, destination_path)    
 	image_path = os.path.normpath(image_path)
 	if (image_path.find(volume_path) == 0):
