@@ -104,10 +104,6 @@ def main():
 	else:
 	    user_ids.append(entity)
 
-
-    print image_id
-    print product_codes
-
     if image_id:
         euca_conn = euca.make_connection()
 	return_code = euca_conn.modify_image_attribute(image_id = image_id,

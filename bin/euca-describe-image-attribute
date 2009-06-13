@@ -117,14 +117,17 @@ def main():
         image_id = arg
 	break
 
-    if image_id:
+    if image_id and image_attribute:
         euca_conn = euca.make_connection()
 	image_attribute = euca_conn.get_image_attribute(image_id = image_id,
 						     attribute = image_attribute)
 	if image_attribute:
 	    display_image_attribute(image_attribute)
     else:
-    	print 'image_id must be specified'
+ 	if not image_id:
+    	    print 'image_id must be specified'
+	if not image_attribute:
+	    print 'image attribute must be specified'
 	usage()
 if __name__ == "__main__":
     main()
