@@ -854,16 +854,16 @@ class Euca2ool:
 	return metadata
 
     def get_instance_ramdisk(self):
-        return get_instance_metadata('ramdisk-id')
+        return self.get_instance_metadata('ramdisk-id')
 
     def get_instance_kernel(self):
-        return get_instance_metadata('kernel-id')
+        return self.get_instance_metadata('kernel-id')
 
     def get_instance_product_codes(self):
-        return get_instance_metadata('product-codes')
+        return self.get_instance_metadata('product-codes')
 
     def get_ancestor_ami_ids(self):
-        return get_instance_metadata('ancestor-ami-ids')
+        return self.get_instance_metadata('ancestor-ami-ids')
 
     def get_instance_block_device_mappings(self):
         keys = self.get_instance_metadata('block-device-mapping').split('\n')

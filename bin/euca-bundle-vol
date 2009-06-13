@@ -123,7 +123,7 @@ def get_instance_metadata(euca, ramdisk, kernel, mapping):
 
         if not block_dev_mapping:
 	    try:
-	        block_dev_mapping = euca.get_instance_block_device_mappings().split(' ')
+	        block_dev_mapping = euca.get_instance_block_device_mappings()
 	    except MetadataReadError:
 		print "Unable to read block device mapping"
 
@@ -137,7 +137,7 @@ def get_instance_metadata(euca, ramdisk, kernel, mapping):
 	except MetadataReadError:
 	    print "Unable to read product codes"
 
-    except:
+    except IOError:
 	print "Unable to read instance metadata. Pass the --no-inherit option if you wish to exclude instance metadata."
 	sys.exit()	
    
