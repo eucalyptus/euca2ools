@@ -678,8 +678,8 @@ class Euca2ool:
             ancestry_elem = doc.createElement("ancestry")
             for ancestor_ami_id in ancestor_ami_ids:
 	        ancestor_id_elem = doc.createElement("ancestor_ami_id");
-	        ancestor_id_elem = doc.createTextNode(ancestor_ami_id)
-	        ancestor_id_elem.appendChild(product_code_value)
+	        ancestor_id_value = doc.createTextNode(ancestor_ami_id)
+	        ancestor_id_elem.appendChild(ancestor_id_value)
 	        ancestry_elem.appendChild(ancestor_id_elem)
      	    image_elem.appendChild(ancestry_elem)
 
