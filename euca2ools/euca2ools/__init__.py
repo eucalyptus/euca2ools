@@ -554,7 +554,7 @@ class Euca2ool:
 
         return virtual, devices
 
-    def generate_manifest(self, path, prefix, parts, parts_digest, file, key, iv, cert_path, ec2cert_path, private_key_path, target_arch, image_size, bundled_size, image_digest, user, kernel, ramdisk, mapping=None, product_codes=None):
+    def generate_manifest(self, path, prefix, parts, parts_digest, file, key, iv, cert_path, ec2cert_path, private_key_path, target_arch, image_size, bundled_size, image_digest, user, kernel, ramdisk, mapping=None, product_codes=None, ancestor_ami_ids=None):
         print 'Generating manifest'
 
         user_pub_key = X509.load_cert(cert_path).get_pubkey().get_rsa()
@@ -672,7 +672,17 @@ class Euca2ool:
         image_type_value = doc.createTextNode("machine")
         image_type_elem.appendChild(image_type_value)
         image_elem.appendChild(image_type_elem) 
-        
+
+	#ancestor ami ids 
+        if ancestor_ami_ids:
+            ancestry_elem = doc.createElement("ancestry")
+            for ancestor_ami_id in ancestor_ami_ids:
+	        ancestor_id_elem = doc.createElement("ancestor_ami_id");
+	        ancestor_id_elem = doc.createTextNode(ancestor_ami_id)
+	        ancestor_id_elem.appendChild(product_code_value)
+	        ancestry_elem.appendChild(ancestor_id_elem)
+     	    image_elem.appendChild(ancestry_elem)
+
         #digest
         image_digest_elem = doc.createElement("digest")
         image_digest_elem.setAttribute('algorithm', 'SHA1')
@@ -851,6 +861,9 @@ class Euca2ool:
 
     def get_instance_product_codes(self):
         return get_instance_metadata('product-codes')
+
+    def get_ancestor_ami_ids(self):
+        return get_instance_metadata('ancestor-ami-ids')
 
     def get_instance_block_device_mappings(self):
         keys = self.get_instance_metadata('block-device-mapping').split('\n')
