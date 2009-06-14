@@ -82,6 +82,7 @@ class Instance(EC2Object):
         self.kernel = None
         self.ramdisk = None
         self.product_codes = []
+	self.ami_launch_index = None
 
     def __repr__(self):
         return 'Instance:%s' % self.id

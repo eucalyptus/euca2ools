@@ -79,11 +79,22 @@ def display_reservations(reservations, instance_ids):
 	    group_delim = ', '
 	print 'RESERVATION\t%s' % (reservation_string) 
 	for instance in instances:
-	    instance_string = '%s\t%s\t%s\t%s\t%s'  % (instance.id, instance.image_id, instance.public_dns_name, instance.private_dns_name, instance.state) 
-	    if instance.key_name:
-		instance_string += '\t%s' % instance.key_name
-	    instance_string += '\t%s\t%s\t%s\t%s\t%s\t%s' % (instance.ami_launch_index, instance.instance_type, instance.launch_time, instance.placement, instance.kernel, instance.ramdisk)
-	    print 'INSTANCE\t%s' % (instance_string)
+	    if instance:
+	        instance_string = '%s\t%s\t%s\t%s\t%s'  % (instance.id, instance.image_id, instance.public_dns_name, instance.private_dns_name, instance.state) 
+	        if instance.key_name:
+		    instance_string += '\t%s' % instance.key_name
+	    	if instance.ami_launch_index:
+		    instance_string += '\t%s' % instance.ami_launch_index
+	        if instance.product_codes:
+	            first = True
+		    for p in instance.product_codes:
+		        if first:
+		            instance_string += '\t%s' % p
+			    first = False
+		        else:
+			    instance_string += ',%s' % p
+	        instance_string += '\t%s\t%s\t%s\t%s\t%s' % (instance.instance_type, instance.launch_time, instance.placement, instance.kernel, instance.ramdisk)
+	        print 'INSTANCE\t%s' % (instance_string)
 
 def main():
     euca = None
