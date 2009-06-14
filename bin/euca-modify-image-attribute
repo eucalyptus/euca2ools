@@ -71,8 +71,8 @@ def main():
     entity = None
     image_attribute = None
     operation_type = None
-    user_ids = []
-    groups = []
+    user_ids = None 
+    groups = None
     product_codes = []
 
     for name, value in euca.opts:
@@ -100,9 +100,9 @@ def main():
 
     if image_attribute == 'launchPermission':
 	if entity == 'all':
-	    groups.append(entity)
+	    groups = [entity]
 	else:
-	    user_ids.append(entity)
+	    user_ids = [entity]
 
     if image_id:
         euca_conn = euca.make_connection()

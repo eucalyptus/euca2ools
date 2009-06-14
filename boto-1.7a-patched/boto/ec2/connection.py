@@ -238,7 +238,7 @@ class EC2Connection(AWSQueryConnection):
         if user_ids:
             self.build_list_params(params, user_ids, 'UserId')
         if groups:
-            self.build_list_params(params, groups, 'UserGroup')
+            self.build_list_params(params, groups, 'Group')
         if product_codes:
             self.build_list_params(params, product_codes, 'ProductCode')
 
