@@ -157,9 +157,6 @@ class ImageAttribute:
     def endElement(self, name, value, connection):
         if name == 'launchPermission':
             self.name = 'launch_permission'
-        elif name == 'productCodes':
-            self.name = 'product_codes'
-            self.attrs[self.name] = []
         elif name == 'group':
             if self.attrs.has_key('groups'):
                 self.attrs['groups'].append(value)
@@ -173,7 +170,10 @@ class ImageAttribute:
         elif name == 'imageId':
             self.image_id = value
         elif name == 'productCode':
-            self.attrs['product_codes'].append(value)
+	    if self.attrs.has_key('product_codes'):
+		self.attrs['product_codes'].append(value)
+	    else:
+                self.attrs['product_codes'] = [value]
         elif name == 'kernel':
             self.kernel = value
         elif name == 'ramdisk':
