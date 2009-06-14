@@ -41,7 +41,7 @@ DESCRIPTION
 
 USAGE
     euca-modify-image-attribute [-l, --launch-permission] [-p, --product-code] 
-	  [-a | --add entity ] [-r | --remove entity]
+	  [-A | --add entity ] [-R | --remove entity]
 	  [-h, --help] [--version] [--debug] image_id 
 
     Where
@@ -61,7 +61,7 @@ def version():
 def main():
     euca = None
     try:
-        euca = Euca2ool('lp:a:r:',
+        euca = Euca2ool('lp:A:R:',
                                    ['launch-permission', 'product-code=', 'add=', 'remove='])
     except:
         usage()
@@ -83,10 +83,10 @@ def main():
 	elif name in ('-l', '--launch-permission'):
 	    if not image_attribute:
 		image_attribute = 'launchPermission'
-	elif name in ('-a', '--add'):
+	elif name in ('-A', '--add'):
 	    entity = value
 	    operation_type = 'add' 	
-	elif name in ('-r', '--remove'):
+	elif name in ('-R', '--remove'):
 	    entity = value 	
 	    operation_type = 'remove'
         elif name in ('-h', '--help'):
