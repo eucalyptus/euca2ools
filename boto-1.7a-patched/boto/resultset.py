@@ -48,7 +48,7 @@ class ResultSet(list):
         self.next_token = None
         self.status = True
 
-    def startElement(self, name, attrs, connection):
+    def startElement(self, name, attrs, connection):	
         for t in self.markers:
             if name == t[0]:
                 obj = t[1](connection)

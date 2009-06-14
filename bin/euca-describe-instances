@@ -64,12 +64,12 @@ def display_reservations(reservations, instance_ids):
     for reservation in reservations:
         dont_display = False
 	instances = []
- 	for instance in reservation.instances:
-            if check_instance_ids:
+        if check_instance_ids:
+ 	    for instance in reservation.instances:
 	        if instance.id in instance_ids:
-		    instances.append(instance)
-	    else:
-		instances = reservation.instances
+	            instances.append(instance)
+        else:
+	    instances = reservation.instances
 	if (len(instances) == 0):
  	    continue
         reservation_string = '%s\t%s' % (reservation.id, reservation.owner_id)
@@ -93,7 +93,16 @@ def display_reservations(reservations, instance_ids):
 			    first = False
 		        else:
 			    instance_string += ',%s' % p
-	        instance_string += '\t%s\t%s\t%s\t%s\t%s' % (instance.instance_type, instance.launch_time, instance.placement, instance.kernel, instance.ramdisk)
+		if instance.instance_type:
+		    instance_string += '\t%s' % instance.instance_type
+		if instance.launch_time:
+		    instance_string += '\t%s' % instance.launch_time
+		if instance.placement:
+		    instance_string += '\t%s' % instance.placement
+		if instance.kernel:
+		    instance_string += '\t%s' % instance.kernel
+		if instance.ramdisk:
+		    instance_string += '\t%s' % instance.ramdisk
 	        print 'INSTANCE\t%s' % (instance_string)
 
 def main():

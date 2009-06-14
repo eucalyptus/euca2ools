@@ -46,7 +46,7 @@ class Reservation(EC2Object):
             return self.instances
         elif name == 'groupSet':
             self.groups = ResultSet([('item', Group)])
-            return self.groups
+	    return self.groups
         else:
             return None
 
