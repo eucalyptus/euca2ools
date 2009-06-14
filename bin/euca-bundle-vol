@@ -197,6 +197,7 @@ def main():
             private_key_path = value
         elif name in ('-u', '--user'):
 	    try:
+		value = value.replace('-', '')
                 user = int(value)
 	    except ValueError:
 		print "Invalid user"
