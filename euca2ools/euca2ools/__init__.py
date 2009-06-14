@@ -241,7 +241,6 @@ class Euca2ool:
  
 	if not self.ec2_user_access_key:
             self.ec2_user_access_key = os.getenv('EC2_ACCESS_KEY')
-	    print self.ec2_user_access_key
  	    if not self.ec2_user_access_key:
                 print 'EC2_ACCESS_KEY environment variable must be set.'
      		sys.exit()
