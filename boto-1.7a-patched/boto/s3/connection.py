@@ -297,7 +297,7 @@ class S3Connection(AWSAuthConnection):
         path = self.calling_format.build_path_base(bucket, key)
         auth_path = self.calling_format.build_auth_path(bucket, key)
         host = self.calling_format.build_host(self.server_name, bucket)
-        if query_args:
+	if query_args:
             path += '?' + query_args
             auth_path += '?' + query_args
 	return AWSAuthConnection.make_request(self, method, path, headers,

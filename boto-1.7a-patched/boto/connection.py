@@ -88,7 +88,7 @@ class AWSAuthConnection:
     def __init__(self, server, aws_access_key_id=None,
                  aws_secret_access_key=None, is_secure=True, port=None,
                  proxy=None, proxy_port=None, proxy_user=None,
-                 proxy_pass=None, debug=0, https_connection_factory=None, service=''):
+                 proxy_pass=None, debug=0, https_connection_factory=None, service=None):
         """
         @type server: string
         @param server: The server to make the connection to
@@ -124,7 +124,7 @@ class AWSAuthConnection:
         @param port: The port to use to connect
         """
         
-        self.num_retries = 0 
+        self.num_retries = 5
         self.is_secure = is_secure
         self.handle_proxy(proxy, proxy_port, proxy_user, proxy_pass)
         # define exceptions from httplib that we want to catch and retry
@@ -230,9 +230,9 @@ class AWSAuthConnection:
     def get_http_connection(self, host, is_secure):
         if host is None:
             host = self.server_name
-	if self.port:
+	if self.service:
 	    host = '%s:%d' % (self.server_name, int(self.port))
-        cached_name = is_secure and 'https://' or 'http://'
+	cached_name = is_secure and 'https://' or 'http://'
         cached_name += host
         if cached_name in self._cache:
             return self._cache[cached_name]
@@ -396,9 +396,10 @@ class AWSAuthConnection:
                 # If is_secure, we don't have to set the proxy authentication
                 # header here, we did that in the CONNECT to the proxy.
                 headers.update(self.get_proxy_auth_header())
-	request_string = auth_path or path
 	if self.service:
 	    request_string = path
+	else:
+	    request_string = auth_path or path
         self.add_aws_auth_header(headers, method, request_string)
 	return self._mexe(method, path, data, headers, host, sender)
 
@@ -423,7 +424,7 @@ class AWSQueryConnection(AWSAuthConnection):
     def __init__(self, aws_access_key_id=None, aws_secret_access_key=None,
                  is_secure=True, host=None, port=None, proxy=None, proxy_port=None,
                  proxy_user=None, proxy_pass=None, region=None, debug=0,
-                 https_connection_factory=None, service=''):
+                 https_connection_factory=None, service=None):
         AWSAuthConnection.__init__(self, host, aws_access_key_id, aws_secret_access_key,
                                    is_secure, port, proxy, proxy_port, proxy_user, proxy_pass,
                                    debug,  https_connection_factory, service)
