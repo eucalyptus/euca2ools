@@ -80,12 +80,23 @@ def get_block_devs(mapping):
             mapping.append(m_parts[1])
     return mapping
 
+def add_product_codes(product_code_string, product_codes):
+    if not product_codes:
+	product_codes = []
+    product_code_values = product_code_string.split(',')
+   
+    for p in product_code_values:
+        product_codes.append(p)
+    
+    return product_codes
+
+
 def main():
     euca = None
     try:
 	euca = Euca2ool('i:c:k:u:B:d:br:p:',
                                    ['image=', 'cert=', 'privatekey=', 'user=', 'prefix=', 
-                                    'kernel=', 'ramdisk=', 'block-device-mapping=', 'destination=', 'ec2cert=', 'arch=', 'batch'])
+                                    'kernel=', 'ramdisk=', 'block-device-mapping=', 'destination=', 'ec2cert=', 'arch=', 'batch', 'productcodes='])
     except:
         usage()
   
@@ -101,7 +112,9 @@ def main():
     target_arch='x86_64'
     mapping = None
     batch=False
-         
+    product_codes = None
+    product_code_string = None
+        
     for name, value in euca.opts:
         if name in ('-h', '--help'):
             usage()
@@ -138,6 +151,8 @@ def main():
 	    mapping = value
 	elif name == '--batch':
 	    batch = True
+	elif name == '--productcodes':
+	    product_code_string = value
 	elif name == '--version':
 	    version()
 
@@ -172,7 +187,9 @@ def main():
 	parts, parts_digest = euca.split_image(encrypted_file)
         if mapping:
             mapping = get_block_devs(mapping)
-	euca.generate_manifest(destination_path, prefix, parts, parts_digest, image_path, key, iv, cert_path, ec2cert_path, private_key_path, target_arch, image_size, bundled_size, sha_image_digest, user, kernel, ramdisk, mapping)
+	if product_code_string:
+	    product_codes = add_product_codes(product_code_string, product_codes)   
+        euca.generate_manifest(destination_path, prefix, parts, parts_digest, image_path, key, iv, cert_path, ec2cert_path, private_key_path, target_arch, image_size, bundled_size, sha_image_digest, user, kernel, ramdisk, mapping, product_codes)
         os.remove(encrypted_file)
     else:
 	if not image_path:

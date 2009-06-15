@@ -46,7 +46,7 @@ USAGE
 	[--kernel kernel_id] [--ramdisk ramdisk_id]
 	[-B, --block-device-mapping mapping] [-d, --destination destination_path] 
 	[--ec2cert ec2cert_path] [-r, --arch target_architecture] 
-	[-b, --batch] 
+	[-b, --batch] [--version]  
 
     Where
 	image_path - The path to the file system image to bundle.
@@ -148,7 +148,7 @@ def add_product_codes(product_code_string, product_codes):
 	product_codes = []
     product_code_values = product_code_string.split(',')
    
-    if p in product_code_values:
+    for p in product_code_values:
         product_codes.append(p)
     
     return product_codes
@@ -237,6 +237,8 @@ def main():
 	    fstab_path = value
 	elif name == '--productcodes':
 	    product_code_string = value
+	elif name == '--version':
+	    version()
 	
     if size_in_MB and cert_path and private_key_path and user and ec2cert_path:
 	try:
@@ -283,7 +285,7 @@ def main():
 	if inherit:
 	    ramdisk, kernel, mapping, product_codes, ancestor_ami_ids = get_instance_metadata(euca, ramdisk, kernel, mapping)
 	if product_code_string:
-	    product_codes = add_product_codes(product_code_string)   
+	    product_codes = add_product_codes(product_code_string, product_codes)   
 	image_path = euca.make_image(size_in_MB, excludes, prefix, destination_path)    
 	image_path = os.path.normpath(image_path)
 	if (image_path.find(volume_path) == 0):
