@@ -44,7 +44,6 @@ USAGE
 
     Where
 	ip - address to disassociate. 
-	instance_id - unique identifier for a running instance to disassociate the address with.
 """
 
 version_string = """    euca-disassociate-address version: 1.0 (BSD)"""
@@ -87,7 +86,7 @@ def main():
         euca_conn = euca.make_connection()
         return_code = euca_conn.disassociate_address(public_ip = ip)
         if return_code:
-            print 'ADDRESS\t%s\t%s' % (ip, instance_id)
+            print 'ADDRESS\t%s' % ip
     else:
 	print 'ip address must be specified'
 	usage()
