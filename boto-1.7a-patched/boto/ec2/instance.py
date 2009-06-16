@@ -83,6 +83,8 @@ class Instance(EC2Object):
         self.ramdisk = None
         self.product_codes = []
 	self.ami_launch_index = None
+        self.monitored = False
+        self._in_monitoring_element = False
 
     def __repr__(self):
         return 'Instance:%s' % self.id
@@ -123,6 +125,11 @@ class Instance(EC2Object):
             self.ramdisk = value
         elif name == 'productCode':
             self.product_codes.append(value)
+        elif name == 'state':
+            if self._in_monitoring_element:
+                if value == 'enabled':
+                    self.monitored = True
+                self._in_monitoring_element = False
         else:
             setattr(self, name, value)
 

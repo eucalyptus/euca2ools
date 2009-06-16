@@ -124,7 +124,7 @@ class AWSAuthConnection:
         @param port: The port to use to connect
         """
         
-        self.num_retries = 5
+        self.num_retries = 0
         self.is_secure = is_secure
         self.handle_proxy(proxy, proxy_port, proxy_user, proxy_pass)
         # define exceptions from httplib that we want to catch and retry
