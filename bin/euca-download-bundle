@@ -126,7 +126,7 @@ def main():
  
     bucket=None
     manifest_path = None
-    directory = None
+    directory = '/tmp' 
 
     for name, value in euca.opts:
         if name in ('-h', '--help'):
@@ -139,11 +139,12 @@ def main():
             manifest_path = value
 
     if bucket:
-	try:
-	    euca.validate_file(manifest_path)
-	except FileValidationError: 
-	    print 'Invalid manifest'
-	    sys.exit(1)
+	if manifest_path:
+	    try:
+	        euca.validate_file(manifest_path)
+	    except FileValidationError: 
+	        print 'Invalid manifest', manifest_path
+	        sys.exit(1)
 
 	conn = euca.make_connection()
         bucket_instance = ensure_bucket(conn, bucket)
