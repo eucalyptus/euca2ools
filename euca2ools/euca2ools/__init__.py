@@ -44,6 +44,7 @@ import platform
 import urllib
 import re
 import shutil
+from boto.ec2.regioninfo import RegionInfo
 
 BUNDLER_NAME = "euca-tools"
 BUNDLER_VERSION = "1.0"
@@ -265,7 +266,7 @@ class Euca2ool:
 		    print 'S3_URL not specified. Trying %s' % (self.ec2_url)
 
         self.port = None
-        self.service_path = None 
+        self.service_path = "/" 
 	if (self.ec2_url.find('https://') >= 0):
             self.ec2_url = self.ec2_url.replace('https://', '')
 	    self.is_secure = True
@@ -279,7 +280,7 @@ class Euca2ool:
             path_parts = url_parts[1].split('/', 1)
     	    if (len(path_parts) > 1):
 	        self.port = int(path_parts[0])
-	        self.service_path = path_parts[1]
+	        self.service_path = self.service_path + path_parts[1]
 	    else:
 		self.port = int(url_parts[1])
 
@@ -293,12 +294,12 @@ class Euca2ool:
  
     def make_connection(self):
 	if not self.is_s3:
-            return boto.connect_ec2(aws_access_key_id=self.ec2_user_access_key, 
+     	    return boto.connect_ec2(aws_access_key_id=self.ec2_user_access_key, 
 			        aws_secret_access_key=self.ec2_user_secret_key,
 				is_secure=self.is_secure,
-				host=self.host,
+				region=RegionInfo(None, "eucalyptus", self.host),
 				port=self.port,
-				service=self.service_path)
+				path=self.service_path)
 	else:
 	    return boto.s3.Connection(aws_access_key_id=self.ec2_user_access_key,
                             aws_secret_access_key=self.ec2_user_secret_key,
@@ -306,7 +307,7 @@ class Euca2ool:
                             host=self.host,
                             port=self.port,
 			    calling_format=boto.s3.connection.OrdinaryCallingFormat(),
-                            service=self.service_path)
+                            path=self.service_path)
 
     def validate_address(self, address):
  	if not re.match("[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+(\/[0-9]+)?$", address):

@@ -1,5 +1,5 @@
 SUBDIRS                 =       M2Crypto-0.19.1 \
-                                boto-1.7a-patched \
+                                boto-1.8a\
                                 euca2ools
 
 
