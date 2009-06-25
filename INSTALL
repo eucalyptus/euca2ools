@@ -2,7 +2,7 @@ Pre-requisites
 --------------
 
 Euca2ools depends on the boto REST library. You must have boto-1.8a installed prior to installing Euca2ools. In addition,
-Euca2ools requires the M2Crypto python library version 0.19.1 or higher. 
+Euca2ools requires the M2Crypto python library version 0.19.1 or higher. python2.5 (dev) or higher is also required.
 
 Installation
 ------------
@@ -14,9 +14,11 @@ To do this, untar boto-1.8a.tar.gz and run "sudo setup.py install"
 
 To do this, untar M2Crypto-0.19.1-tar.gz and run "sudo setup.py install"
 
+Note that M2Crypto needs swig in order to install.
+
 3. Install Euca2ools.
 
-"make ; sudo make install" in the top-level directory.
+"sudo make ; sudo make install" in the top-level directory.
 
 Running
 -------
@@ -24,7 +26,6 @@ Running
 Make sure that the following environment variables are set:
 
 EC2_URL, EC2_ACCESS_KEY, EC2_PRIVATE_KEY, EC2_CERT, EC2_PRIVATE_KEY, S3_URL, EUCALYPTUS_CERT (optional)
-
 
 Try it!
 
