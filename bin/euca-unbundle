@@ -123,8 +123,10 @@ def main():
 	if not src_directory:
 	    src_directory = euca.get_file_path(manifest_path)
 	image = euca.assemble_parts(src_directory, directory, manifest_path, parts)
+	print "Decrypting image"
 	decrypted_image = euca.decrypt_image(image, encrypted_key, encrypted_iv, private_key_path)
 	os.remove(image)
+	print "Uncompressing image"
 	unencrypted_image = euca.untarzip_image(directory, decrypted_image)
 	os.remove(decrypted_image)
     else:

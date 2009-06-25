@@ -507,7 +507,8 @@ class Euca2ool:
 	        os.makedirs(directory)
 	    encrypted_file = open(encrypted_filename, "wb")
 	    for part in parts:
-   	        part_filename = os.path.join(src_directory, part)
+	        print "Part:", self.get_relative_filename(part)
+		part_filename = os.path.join(src_directory, part)
 	        part_file = open(part_filename, "rb")
 	        while 1:
 	            data = part_file.read(IMAGE_IO_CHUNK)
