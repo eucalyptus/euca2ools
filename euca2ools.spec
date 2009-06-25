@@ -50,6 +50,6 @@ rm -rf /opt/euca2ools
 /opt/euca2ools
 
 %changelog
-*Thu Jun 11 2009 Eucalyptus team (support@open.eucalyptus.com)
+*Sat Jun 27 2009 Eucalyptus Systems (support@open.eucalyptus.com)
 - First public release.
 

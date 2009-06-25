@@ -2,7 +2,6 @@ SUBDIRS                 =       M2Crypto-0.19.1 \
                                 boto-1.8a\
                                 euca2ools
 
-
 all: build install
 
 build:
@@ -12,7 +11,8 @@ build:
 install:
 	@for subdir in $(SUBDIRS); do \
                 (cd $$subdir && $(MAKE) $@) || exit $$? ; done
-
+	@install -g root -o root -m 755 -d /usr/local/install
+	@install -g root -o root -m 755  bin/* /usr/local/bin/
 
 clean:
 	@for subdir in $(SUBDIRS); do \
