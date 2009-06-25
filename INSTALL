@@ -1,6 +1,22 @@
-	Euca2ools: Command-line tools to interact with Amazon EC2 API compatible web services using REST.
+Pre-requisites
+--------------
 
-Euca2ools was inspired by Amazon's command-line tools.
+Euca2ools depends on the boto REST library. You must have boto-1.8a installed prior to installing Euca2ools. In addition,
+Euca2ools requires the M2Crypto python library version 0.19.1 or higher. 
+
+Installation
+------------
+1. Install boto-1.8a 
+
+To do this, untar boto-1.8a.tar.gz and run "sudo setup.py install"
+
+2. Install M2Crypto-0.19.1
+
+To do this, untar M2Crypto-0.19.1-tar.gz and run "sudo setup.py install"
+
+3. Install Euca2ools.
+
+"make ; sudo make install" in the top-level directory.
 
 Running
 -------
@@ -9,7 +25,6 @@ Make sure that the following environment variables are set:
 
 EC2_URL, EC2_ACCESS_KEY, EC2_PRIVATE_KEY, EC2_CERT, EC2_PRIVATE_KEY, S3_URL, EUCALYPTUS_CERT (optional)
 
-cd bin
 
 Try it!
 
@@ -25,3 +40,4 @@ AVAILABILITYZONE	|- c1.xlarge	0007 / 0008   1    512     3
 AVAILABILITYZONE	|- c1.medium	0007 / 0008   1    512     3
 AVAILABILITYZONE	|- mync.mydomain	certs[cc=true,nc=true] @ Fri Apr 17 09:38:23 PDT 2009
 
+See the documentation at http://open.eucalyptus.com/wiki/Documentation for more.
