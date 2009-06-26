@@ -79,7 +79,7 @@ def main():
         try:
 	    for id in instance_ids:
     	        euca.validate_instance_id(id)
-        except InstanceValidationError as error:
+        except InstanceValidationError, error:
             print 'Invalid instance id' 
             sys.exit(1)
 
