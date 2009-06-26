@@ -15,7 +15,7 @@ To do this, untar boto-1.8a.tar.gz and run "sudo setup.py install"
 
 To do this, untar M2Crypto-0.19.1-tar.gz and run "sudo setup.py install"
 
-Note that M2Crypto needs swig in order to install.
+Note that M2Crypto needs swig and libssl-dev (or equivalent) in order to install.
 
 3. Install Euca2ools.
 
@@ -27,6 +27,8 @@ Running
 Make sure that the following environment variables are set:
 
 EC2_URL, EC2_ACCESS_KEY, EC2_PRIVATE_KEY, EC2_CERT, EC2_PRIVATE_KEY, S3_URL, EUCALYPTUS_CERT (optional)
+
+If you are running Euca2ools against Eucalyptus, sourcing the "eucarc" file that is included as part of the credentials that you downloaded from the Eucalyptus web interface should be enough to setup the above variables correctly.
 
 Try it!
 
