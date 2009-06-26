@@ -1,4 +1,5 @@
 SUBDIRS                 =       euca2ools 
+BINLIST			=	`ls bin`
 
 all: build install
 
@@ -16,3 +17,6 @@ clean:
 	@for subdir in $(SUBDIRS); do \
                 (cd $$subdir && $(MAKE) $@) || exit $$? ; done
 
+uninstall:
+	@for x in $(BINLIST); do \
+		rm -f /usr/local/bin/$$x ; done

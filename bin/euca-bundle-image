@@ -36,6 +36,8 @@ import getopt, sys, os
 from euca2ools import Euca2ool, FileValidationError, Util
 
 usage_string = """
+Bundles an image for use with Eucalyptus or Amazon EC2.
+
 USAGE
     euca-bundle-image -i, --image image_path -c, --cert cert_path -k, --privatekey private_key_path 
 	-u, --user user 
