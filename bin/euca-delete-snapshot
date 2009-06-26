@@ -60,7 +60,8 @@ def main():
     euca = None
     try:
 	euca = Euca2ool()
-    except:
+    except Exception, e:
+	print e
         usage()
  
     snapshot_id = None

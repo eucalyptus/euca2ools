@@ -86,7 +86,8 @@ def main():
         euca = Euca2ool('lpB',
                                    ['block-device-mapping', 'launch-permission', 'product-code',
 				    'kernel', 'ramdisk'])
-    except:
+    except Exception, e:
+	print e
         usage()
  
     image_id = None

@@ -65,7 +65,8 @@ def main():
         euca = Euca2ool('P:p:o:u:S:t:',
                                    ['protocol=', 'port-range=', 'source-group=',
 				    'source-group-user=', 'source-subnet=', 'icmp-type-code='])
-    except:
+    except Exception, e:
+	print e
         usage()
  
     group_name = None

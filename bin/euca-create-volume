@@ -75,7 +75,8 @@ def main():
     try:
         euca = Euca2ool('s:z:',
                                    ['zone=', 'snapshot=', 'size='])
-    except:
+    except Exception, e:
+	print e
         usage()
  
     size = None 

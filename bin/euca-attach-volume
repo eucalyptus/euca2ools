@@ -64,7 +64,8 @@ def main():
     try:
         euca = Euca2ool('i:d:',
                                    ['instance=', 'device='])
-    except:
+    except Exception, e:
+	print e
         usage()
 
     volume_id = None

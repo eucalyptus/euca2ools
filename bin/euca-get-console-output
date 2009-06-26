@@ -64,7 +64,8 @@ def display_console_output(console_output):
 def main():
     try:
 	euca = Euca2ool()
-    except:
+    except Exception, e:
+	print e
         usage()
  
     instance_id = None

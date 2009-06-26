@@ -77,7 +77,8 @@ def main():
     try:
         euca = Euca2ool('m:k:d:s:',
                                    ['manifest=', 'privatekey=', 'destination=', 'source='])
-    except:
+    except Exception, e:
+	print e
         usage()
   
     private_key_path=os.getenv('EC2_PRIVATE_KEY')

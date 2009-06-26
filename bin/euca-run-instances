@@ -76,7 +76,8 @@ def main():
         euca = Euca2ool('k:n:t:g:d:z:',
                                    ['key=', 'kernel=', 'ramdisk=', 'instance-count=', 'instance-type=', 
 				    'group=', 'user-data=', 'addressing=', 'availability-zone='])
-    except:
+    except Exception, e:
+	print e
         usage()
  
     image_id = None

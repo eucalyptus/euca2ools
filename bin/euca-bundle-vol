@@ -163,7 +163,8 @@ def main():
         euca = Euca2ool('a:c:k:u:B:d:br:p:s:v:e:',
                                    ['cert=', 'privatekey=', 'user=', 'prefix=', 'volume=', 'all',
                                     'kernel=', 'ramdisk=', 'block-device-mapping=', 'destination=', 'ec2cert=', 'arch=', 'size=', 'exclude=', 'inherit=', 'no-inherit', 'batch', 'fstab=', 'generate-fstab', 'productcodes='])
-    except:
+    except Exception, e:
+	print e
         usage()
   
     kernel=None

@@ -59,7 +59,8 @@ def version():
 def main():
     try:
  	euca = Euca2ool()
-    except:
+    except Exception, e:
+	print e
         usage()
  
     image_id = None

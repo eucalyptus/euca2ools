@@ -97,7 +97,8 @@ def main():
 	euca = Euca2ool('i:c:k:u:B:d:br:p:',
                                    ['image=', 'cert=', 'privatekey=', 'user=', 'prefix=', 
                                     'kernel=', 'ramdisk=', 'block-device-mapping=', 'destination=', 'ec2cert=', 'arch=', 'batch', 'productcodes='])
-    except:
+    except Exception, e:
+	print e
         usage()
   
     image_path=None

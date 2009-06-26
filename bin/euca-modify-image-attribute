@@ -63,7 +63,8 @@ def main():
     try:
         euca = Euca2ool('lp:A:R:',
                                    ['launch-permission', 'product-code=', 'add=', 'remove='])
-    except:
+    except Exception, e:
+	print e
         usage()
  
     image_id = None

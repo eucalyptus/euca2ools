@@ -168,7 +168,8 @@ def main():
         euca = Euca2ool('b:m:p:',
                                   ['bucket=', 'manifest=', 'prefix=', 'clear'],
 				  is_s3=True)
-    except:
+    except Exception, e:
+	print e
         usage()
  
     bucket=None
