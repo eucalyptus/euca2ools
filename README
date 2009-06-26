@@ -9,6 +9,10 @@ Make sure that the following environment variables are set:
 
 EC2_URL, EC2_ACCESS_KEY, EC2_PRIVATE_KEY, EC2_CERT, EC2_PRIVATE_KEY, S3_URL, EUCALYPTUS_CERT (optional)
 
+Eucalyputs users note: if you are running Eucalyptus and you have
+downloaded the credentials, it's enough to source eucarc to have all the
+needed variables set.
+
 cd bin
 
 Try it!
