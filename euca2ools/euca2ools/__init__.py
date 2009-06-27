@@ -240,6 +240,15 @@ class Euca2ool:
 	    elif name == '--debug':
 		self.debug = True
  
+        system_string = platform.system()
+	if system_string == "Linux":
+	    self.img = LinuxImage(self.debug)
+	elif system_string == "SunOS":
+	    self.img = SolarisImage(self.debug)
+	else:
+	    self.img = "Unsupported"
+ 
+    def make_connection(self):
 	if not self.ec2_user_access_key:
             self.ec2_user_access_key = os.getenv('EC2_ACCESS_KEY')
  	    if not self.ec2_user_access_key:
@@ -284,15 +293,6 @@ class Euca2ool:
 	    else:
 		self.port = int(url_parts[1])
 
-        system_string = platform.system()
-	if system_string == "Linux":
-	    self.img = LinuxImage(self.debug)
-	elif system_string == "SunOS":
-	    self.img = SolarisImage(self.debug)
-	else:
-	    self.img = "Unsupported"
- 
-    def make_connection(self):
 	if not self.is_s3:
      	    return boto.connect_ec2(aws_access_key_id=self.ec2_user_access_key, 
 			        aws_secret_access_key=self.ec2_user_secret_key,

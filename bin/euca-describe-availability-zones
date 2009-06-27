@@ -75,15 +75,15 @@ def main():
     except Exception, e:
 	print e
         usage()
-
-    debug = False
-
     for name, value in euca.opts:
         if name in ('-h', '--help'):
             usage()
 	elif name == '--version':
 	    version()
-    
+
+    debug = False
+
+   
     zone_ids = euca.process_args()
     euca_conn = euca.make_connection()
     if 'verbose' in zone_ids:
