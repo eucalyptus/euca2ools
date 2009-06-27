@@ -36,15 +36,15 @@ import getopt, sys, os
 from euca2ools import Euca2ool, Util
 
 usage_string = """
-DESCRIPTION
-    Shows information about regions. 
+Shows information about regions. 
 
-USAGE
-    euca-describe-regions [-h, --help] [--version] [--debug]
- 	[region1 region2...regionN]
+euca-describe-regions [-h, --help] [--version] [--debug]
+[region1 region2...regionN]
 
-    Where
-	region1 region2...regionN - regions to describe. 
+OPTIONAL PARAMETERS
+	
+region1 region2...regionN	regions to describe. 
+
 """
 
 version_string = """    euca-describe-regions version: 1.0 (BSD)"""

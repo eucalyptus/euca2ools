@@ -36,14 +36,16 @@ import getopt, sys, os
 from euca2ools import Euca2ool, InstanceValidationError, Util
 
 usage_string = """
-DESCRIPTION
-    Prints console output from a running instance.
+Prints console output from a running instance.
 
-USAGE
-    euca-get-console-output [-h, --help] [--version] [--debug] instance_id
+euca-get-console-output [-h, --help] [--version] [--debug] instance_id
 
-    Where
-	instance_id - unique identifier for the instance show the console output for.
+REQUIRED PARAMETERS
+	
+instance_id			unique identifier for the instance show the console output for.
+
+OPTIONAL PARAMETERS
+
 """
 
 version_string = """    euca-get-console-output version: 1.0 (BSD)"""

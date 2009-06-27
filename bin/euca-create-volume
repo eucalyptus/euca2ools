@@ -36,18 +36,21 @@ import getopt, sys, os
 from euca2ools import Euca2ool, SizeValidationError, SnapshotValidationError, Util
 
 usage_string = """
-DESCRIPTION
-    Creates a volume in a specified availability zone.
+Creates a volume in a specified availability zone.
 
-USAGE
-    euca-create-volume -s, --size size | --snapshot snapshot_id -z zone
-	  [-h, --help] [--version] [--debug]
+euca-create-volume -s, --size size | --snapshot snapshot_id -z zone
+[-h, --help] [--version] [--debug]
 
-    Where
-	-s, --size - size of the volume (in GiB). 
-	--snapshot - create volume from a snapshot.
-	-z - availability zone to create the volume in
-	snapshot_id - unique id for a snapshot to create the volume from.
+REQUIRED PARAMETERS	
+
+-s, --size			size of the volume (in GiB). 
+	
+--snapshot			snapshot id to create the volume from. Either size or snapshot can be specified (not both).
+	
+-z 				availability zone to create the volume in
+	
+OPTIONAL PARAMETERS
+
 """
 
 version_string = """    euca-create-volume version: 1.0 (BSD)"""

@@ -36,15 +36,15 @@ import getopt, sys, os
 from euca2ools import Euca2ool, InstanceValidationError, Util
 
 usage_string = """
-DESCRIPTION
-    Reboots specified instances.
+Reboots specified instances.
 
-USAGE
-    euca-reboot-instances [-h, --help] [--version] [--debug]
-	[instance1 instance2... instanceN] 
+euca-reboot-instances [-h, --help] [--version] [--debug]
+[instance1... instanceN] 
 
-    Where
-	instance1 instance2...instanceN - instances to reboot. 
+OPTIONAL PARAMETERS
+	
+instance1... instanceN		instances to reboot. 
+
 """
 
 version_string = """    euca-reboot-instances version: 1.0 (BSD)"""

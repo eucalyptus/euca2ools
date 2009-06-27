@@ -36,15 +36,15 @@ import getopt, sys, os
 from euca2ools import Euca2ool, InstanceValidationError, Util
 
 usage_string = """
-DESCRIPTION
-    Shows information about instances.
+Shows information about instances.
 
-USAGE
-    euca-describe-instances [-h, --help] [--version] [--debug]
-	[instance1 instance2... instanceN] 
+euca-describe-instances [-h, --help] [--version] [--debug]
+[instance1... instanceN] 
 
-    Where
-	instance1 instance2...instanceN - instances to describe. 
+OPTIONAL PARAMETERS
+
+instance1... instanceN		instances to describe.
+
 """
 
 version_string = """    euca-describe-instances version: 1.0 (BSD)"""

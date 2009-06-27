@@ -36,17 +36,21 @@ import getopt, sys, os
 from euca2ools import Euca2ool, VolumeValidationError, InstanceValidationError, Util
 
 usage_string = """
-DESCRIPTION
-    Attaches a volume to an instance.
+Attaches a volume to an instance.
 
-USAGE
-    euca-attach-volume -i instance_id -d device 
-	  [-h, --help] [--version] [--debug] volume_id 
+euca-attach-volume -i, --instance instance_id -d, --device device 
+[-h, --help] [--version] [--debug] volume_id 
 
-    Where
-	volume_id - unique id for a volume to attach.
-	instance_id - unique id of a running instance to attach the volume to.
-	device - local device name (inside the guest VM) to use.
+REQUIRED PARAMETERS
+
+-i, --instance 			unique id of a running instance to attach the volume to.
+
+-d, --device			local device name (inside the guest VM) to use.
+
+volume_id			unique id for a volume to attach.
+
+OPTIONAL PARAMETERS
+
 """
 
 version_string = """    euca-attach-volume version: 1.0 (BSD)"""

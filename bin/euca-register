@@ -36,14 +36,16 @@ import getopt, sys, os
 from euca2ools import Euca2ool, Util
 
 usage_string = """
-DESCRIPTION
-    Registers a manifest for use with the cloud.
+Registers a manifest for use with the cloud.
 
-USAGE
-    euca-register [-h, --help] [--version] [--debug] image_location 
+euca-register [-h, --help] [--version] [--debug] image_location 
 
-    Where
-	image_location - path to the uploaded image (bucket/manifest).
+REQUIRED PARAMETERS
+	
+image_location - path to the uploaded image (bucket/manifest).
+
+OPTIONAL PARAMETERS
+
 """
 
 version_string = """    euca-register version: 1.0 (BSD)"""

@@ -36,14 +36,16 @@ import getopt, sys, os
 from euca2ools import Euca2ool, Util 
 
 usage_string = """
-DESCRIPTION
-    Creates a new key pair.
+Creates a new key pair for use with instances.
 
-USAGE
-    euca-add-keypair [-h, --help] [--version] [--debug] keypair_name
+euca-add-keypair [-h, --help] [--version] [--debug] keypair_name
 
-    Where
-	keypair_name - unique name for a keypair to create. 
+REQUIRED PARAMETERS
+
+keypair_name - unique name for a keypair to create. 
+
+OPTIONAL PARAMETERS
+
 """
 
 version_string = """    euca-add-keypair version: 1.0 (BSD)"""

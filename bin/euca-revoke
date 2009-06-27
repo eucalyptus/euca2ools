@@ -36,17 +36,29 @@ import getopt, sys, os
 from euca2ools import Euca2ool, AddressValidationError, ProtocolValidationError, Util
 
 usage_string = """
-DESCRIPTION
-    Revoke a rule for a security group.
+Revoke a rule for a security group.
 
-USAGE
-    euca-revoke [-P | --protocol protocol] [-p | --port-range port_range] 
-	  [-t | --icmp-type-code type:code] [-o | --source-group source_group]
-	  [-u | --source-group-user source_group_user] [-S | --source-subnet source_subnet]
-	  [-h, --help] [--version] [--debug] group_name 
+euca-revoke [-P | --protocol protocol] [-p | --port-range port_range] 
+[-t | --icmp-type-code type:code] [-o | --source-group source_group]
+[-u | --source-group-user source_group_user] [-S | --source-subnet source_subnet]
+[-h, --help] [--version] [--debug] group_name 
 
-    Where
-	group_name - name of the group to add the rule to.
+REQUIRED PARAMETERS
+
+group_name			Name of the group to add the rule to.
+
+OPTIONAL PARAMETERS
+
+-p, --port-range		Range of ports for the rule (specified as "from-to").
+
+-t, --icmp-type-code		ICMP type and code specified as "type:code"	
+
+-o, --source-group		Group from which traffic is authorized by the rule.
+
+-u, --source-group-user		User ID for the source group.
+
+-S, --source-subnet		The source subnet for the rule.
+
 """
 
 version_string = """    euca-revoke version: 1.0 (BSD)"""

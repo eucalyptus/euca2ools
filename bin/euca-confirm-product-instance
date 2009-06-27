@@ -36,16 +36,18 @@ import getopt, sys, os
 from euca2ools import Euca2ool, InstanceValidationError, Util
 
 usage_string = """
-DESCRIPTION
-    Confirm if instance is running with product code attached.
+Confirm if instance is running with product code attached.
 
-USAGE
-    euca-confirm-product-instance -i instance_id 
-	  [-h, --help] [--version] [--debug] product_code
+euca-confirm-product-instance -i, --instance instance_id [-h, --help] [--version] [--debug] product_code
 
-    Where
-	instance_id - Unique identifier for a running instance.
-	product_code - The product code to verify.
+REQUIRED PARAMETERS
+
+-i, --instance 			Unique identifier for a running instance.
+
+product_code			The product code to verify.
+
+OPTIONAL PARAMETERS
+
 """
 
 version_string = """    euca-confirm-product-instance version: 1.0 (BSD)"""

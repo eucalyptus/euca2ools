@@ -36,14 +36,16 @@ import getopt, sys, os
 from euca2ools import Euca2ool, VolumeValidationError, Util
 
 usage_string = """
-DESCRIPTION
-    Deletes a volume.
+Deletes a volume.
 
-USAGE
-    euca-delete-volume [-h, --help] [--version] [--debug] volume_id
+euca-delete-volume [-h, --help] [--version] [--debug] volume_id
 
-    Where
-	volume_id - unique identifier for the volume to be deleted.
+REQUIRED PARAMETERS
+
+volume_id			unique identifier for the volume to be deleted.
+
+OPTIONAL PARAMETERS
+
 """
 
 version_string = """    euca-delete-volume version: 1.0 (BSD)"""

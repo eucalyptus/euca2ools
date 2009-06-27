@@ -38,36 +38,51 @@ from subprocess import *
 import platform
 
 usage_string = """
-USAGE
-    euca-bundle-vol -u, --user user -s, --size size_in_MB
-	[-c, --cert cert_path] [-k, --privatekey private_key_path] 
-	[-a, --all] [-e, --exclude dir1, dir2,...dirN] [-p, --prefix prefix]	
-	[--[no-]inherit] [-v, --volume volume_path] [--fstab fstab_path] [--generate-fstab]
-	[--kernel kernel_id] [--ramdisk ramdisk_id]
-	[-B, --block-device-mapping mapping] [-d, --destination destination_path] 
-	[--ec2cert ec2cert_path] [-r, --arch target_architecture] 
-	[-b, --batch] [--version]  
+Bundle the local filesystem of a running instance as a bundled image.
 
-    Where
-	image_path - The path to the file system image to bundle.
-	cert_path - The path to the user's PEM encoded RSA public key certificate file.
-	private_key_path - The path to the user's PEM encoded RSA private key file.
-	user -  The user's EC2 user ID (not the Access Key/Query Key ID).
-	all - Include all directories in the volume.
-	dir1, dir2,...dirN - directories to exclude
-	prefix - The filename prefix for bundled files. Defaults to image name.
-	size_in_MB - Size of the image file to create in MB.
-	--[no-]inherit - Inherit instance metadata.
-	volume_path - Path to a volume that should be bundled into the image.
-	--fstab - Path to the fstab to be bundled into the image.
-	--generate-fstab - Generate fstab to bundle into the image.
-	kernel_id - Id of the default kernel to launch the instance with.
-	ramdisk_id - Id of the default ramdisk to launch the instance with.
-	mapping - Default block-device-mapping scheme.
-	destination_path - The directory to create the bundle in. Defaults to '/tmp'.
-	ec2cert_path - The path to the Cloud's X509 public key certificate.
-	target_architecture - Target architecture ['x86_64' or 'i386'].
-	-b, --batch - Run in non-interactive mode.
+euca-bundle-vol -u, --user user -s, --size size_in_MB
+[-c, --cert cert_path] [-k, --privatekey private_key_path] 
+[-a, --all] [-e, --exclude dir1, dir2,...dirN] [-p, --prefix prefix] [--[no-]inherit] [-v, --volume volume_path] [--fstab fstab_path] [--generate-fstab] [--kernel kernel_id] [--ramdisk ramdisk_id] [-B, --block-device-mapping mapping] 
+[-d, --destination destination_path] [--ec2cert ec2cert_path] [-r, --arch target_architecture] [--version]  
+
+REQUIRED PARAMETERS
+
+-u, --user			User ID (12-digit) of the user who is bundling the image.
+
+-s, --size			Size for the image in MB (default: 10GB or 10240MB).
+
+OPTIONAL PARAMETERS
+
+-c, --cert			Path to the user's PEM encoded certificate.
+
+-k, --privatekey		Path to the user's PEM encoded private key.
+
+-a, --all			Bundle all directories (including mounted filesystems).
+
+-p, --prefix			The prefix for the bundle image files. (default: image name).
+
+--[no-]inherit			Add (or do not add) instance metadata to the bundled image. Inherit is set by default.
+
+-e, --exclude			comma-separated list of directories to exclude.
+
+--kernel			The kernel to be associated with the bundled image.
+
+--ramdisk			The ramdisk to be associated with the bundled image.
+
+-B, --block-device-mapping	Default block device mapping for the image (comma-separated list of key=value pairs).
+
+-d, --destination		Directory to store the bundled image in (default: "/tmp"). Recommended. 
+
+--ec2cert_path 			The path to the Cloud's X509 public key certificate.
+
+-r, --arch			Target architecture for the image ('x86_64' or 'i386' default: 'x86_64').
+
+-v, --volume			Path to mounted volume to create the bundle from (default: "/").
+
+--fstab 			Path to the fstab to be bundled into the image.
+	
+--generate-fstab 		Generate fstab to bundle into the image.
+
 """
 
 MAX_IMAGE_SIZE = 1024 * 10

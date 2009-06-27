@@ -36,14 +36,16 @@ import getopt, sys, os
 from euca2ools import Euca2ool, VolumeValidationError, Util
 
 usage_string = """
-DESCRIPTION
-    Detaches a volume from an instance.
+Detaches a volume from an instance.
 
-USAGE
-    euca-detach-volume [-h, --help] [--version] [--debug] volume_id
+euca-detach-volume [-h, --help] [--version] [--debug] volume_id
 
-    Where
-	volume_id - unique id for a volume to detach.
+REQUIRED PARAMETERS
+	
+volume_id			unique id for a volume to detach.
+
+OPTIONAL PARAMETERS
+
 """
 
 version_string = """    euca-detach-volume version: 1.0 (BSD)"""

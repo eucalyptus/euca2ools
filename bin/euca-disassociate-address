@@ -36,14 +36,16 @@ import getopt, sys, os
 from euca2ools import Euca2ool, AddressValidationError, Util
 
 usage_string = """
-DESCRIPTION
-    Disassociate a public IP address from an instance.
+Disassociate a public IP address from an instance.
 
-USAGE
-    euca-disassociate-address [-h, --help] [--version] [--debug] ip
+euca-disassociate-address [-h, --help] [--version] [--debug] ip
 
-    Where
-	ip - address to disassociate. 
+REQUIRED PARAMETERS
+
+ip				IP address to disassociate.
+
+OPTIONAL PARAMETERS
+	
 """
 
 version_string = """    euca-disassociate-address version: 1.0 (BSD)"""

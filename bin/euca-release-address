@@ -36,14 +36,16 @@ import getopt, sys, os
 from euca2ools import Euca2ool, AddressValidationError, Util
 
 usage_string = """
-DESCRIPTION
-    Releases a public IP address.
+Releases a public IP address.
 
-USAGE
-    euca-release-address [-h, --help] [--version] [--debug] ip
+euca-release-address [-h, --help] [--version] [--debug] ip
 
-    Where
-	ip - the public IP address to release.
+REQUIRED PARAMETERS
+
+ip				The public IP address to release.
+
+OPTIONAL PARAMETERS
+
 """
 
 version_string = """    euca-release-address version: 1.0 (BSD)"""

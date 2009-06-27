@@ -36,17 +36,33 @@ import getopt, sys, os
 from euca2ools import Euca2ool, Util
 
 usage_string = """
-DESCRIPTION
-    Starts instances.
+Starts instances.
 
-USAGE
-    euca-run-instances [-B | --block-device-mappings mappings] [-n | --instance-count count] 
-          [-g | --group group_name] [-k | --keypair keyname] [-d | --user-data data] 
-	  [--addressing addressing] [-t | --instance-type instance_type] [-z | --availability-zone zone] 
-	  [--kernel kernel_id] [--ramdisk ramdisk_id] [-h, --help] [--version] [--debug] image_id 
+euca-run-instances [-n, --instance-count count] [-g, --group group_name] [-k, --keypair keyname] 
+[--addressing addressing] [-t, --instance-type instance_type] [-z, --availability-zone zone] 
+[--kernel kernel_id] [--ramdisk ramdisk_id] [-h, --help] [--version] [--debug] image_id 
 
-    Where
-	image_id - identifier for the image to run. 
+REQUIRED PARAMETERS
+	
+image_id			identifier for the image to run. 
+
+OPTIONAL PARAMETERS
+
+-n, --instance-count		Number of instances to run.
+	
+-g, --group			Security group to run the instance under.
+
+-k, --keypair			Name of a (previously created) keypair to associate with this reservation.			
+--addressing			Addressing mode (e.g., private).
+
+-t, --instance-type		VM Image type to run the instance(s) as (default: m1.small).
+
+-z, --availability-zone		Availability zone to run the instance(s) in.
+
+--kernel			Id of the kernel to be used to launch instance(s).
+
+--ramdisk			Id of the ramdisk to be used to launch instance(s).
+
 """
 
 version_string = """    euca-run-instances version: 1.0 (BSD)"""

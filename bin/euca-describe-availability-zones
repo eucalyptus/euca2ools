@@ -36,15 +36,14 @@ import getopt, sys, os
 from euca2ools import Euca2ool, Util
 
 usage_string = """
-DESCRIPTION
-    Shows information about availability zones.
+Shows information about availability zones.
 
-USAGE
-    euca-describe-availability-zones [-h, --help] [--version] [--debug] 
- 	[zone1 zone2...zoneN]
+euca-describe-availability-zones [-h, --help] [--version] [--debug] [zone1 zone2...zoneN]
 
-    Where
-	zone1 zone2...zoneN - zones to describe. 
+OPTIONAL PARAMETERS
+
+zone1 zone2...zoneN		zones to describe. 
+
 """
 
 version_string = """    euca-describe-availability-zones version: 1.0 (BSD)"""

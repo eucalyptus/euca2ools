@@ -36,16 +36,23 @@ import getopt, sys, os
 from euca2ools import Euca2ool, Util
 
 usage_string = """
-DESCRIPTION
-    Modify attributes for an image.
+Modify attributes for an image.
 
-USAGE
-    euca-modify-image-attribute [-l, --launch-permission] [-p, --product-code] 
-	  [-A | --add entity ] [-R | --remove entity]
-	  [-h, --help] [--version] [--debug] image_id 
+euca-modify-image-attribute [-l, --launch-permission] [-p, --product-code] 
+[-A, --add entity ] [-R, --remove entity]
+[-h, --help] [--version] [--debug] image_id 
 
-    Where
-	image_id - unique identifier for the image that you want to modify the attributes for. 
+REQUIRED PARAMETERS
+	
+image_id			Unique identifier for the image that you want to modify the attributes for.
+
+OPTIONAL PARAMETERS
+
+-l, --launch-permission 	Show launch permissions.
+-p, --product-code		Show the product codes associated with the image
+-A, -add			Entity (typically, user id) to add.
+-R, --remove			Entity (typically, user id) to remove.
+
 """
 
 version_string = """    euca-modify-image-attribute version: 1.0 (BSD)"""

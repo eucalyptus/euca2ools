@@ -36,15 +36,15 @@ import getopt, sys, os
 from euca2ools import Euca2ool, VolumeValidationError, Util
 
 usage_string = """
-DESCRIPTION
-    Shows information about volumes.
+Shows information about volumes.
 
-USAGE
-    euca-describe-volumes [-h, --help] [--version] [--debug]
-	[volume1 volume2...volumeN] 
+euca-describe-volumes [-h, --help] [--version] [--debug]
+[volume1 volume2...volumeN] 
 
-    Where
-	volume1 volume2...volumeN- volumes to describe. 
+OPTIONAL PARAMETERS
+
+volume1 volume2...volumeN	volumes to describe. 
+
 """
 
 version_string = """    euca-describe-volumes version: 1.0 (BSD)"""

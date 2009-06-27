@@ -36,14 +36,16 @@ import getopt, sys, os
 from euca2ools import Euca2ool, Util
 
 usage_string = """
-DESCRIPTION
-    Deregisters an image from the cloud.
+Deregisters an image from the cloud.
 
-USAGE
-    euca-deregister [-h, --help] [--version] [--debug] image_id
+euca-deregister [-h, --help] [--version] [--debug] image_id
 
-    Where
-	image_id - unique identifier for the image to be deregistered.
+REQUIRED PARAMETER
+
+image_id			unique identifier for the image to be deregistered.
+
+OPTIONAL PARAMETER
+
 """
 
 version_string = """    euca-deregister version: 1.0 (BSD)"""

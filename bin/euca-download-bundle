@@ -40,13 +40,21 @@ from boto.s3 import Connection
 from boto.s3.key import Key
 
 usage_string = """
-USAGE
-    euca-download-bundle -b, --bucket bucket [-m, --manifest manifest_path] [-d, --directory directory]
- 
-    Where
-	bucket - The name of the bucket to download to. Bucket will be created if it does not exist.
-	manifest_path - The path to the manifest file.
-	directory - The name of the directory to download the bundled parts to.
+Downloads a bundled image from a bucket.
+
+euca-download-bundle -b, --bucket bucket [-m, --manifest manifest_path] [-d, --directory directory]
+[-h, --help] [--version] [--debug]
+
+REQUIRED PARAMETERS
+	
+-b, --bucket			The name of the bucket to download to. Bucket will be created if it does not exist.
+
+OPTIONAL PARAMETERS
+
+-m, --manifest_path		The path to the manifest file.
+
+-d, --directory			The name of the directory to download the bundled parts to.
+
 """
 
 version_string = """    euca-download-bundle version: 1.0 (BSD)"""

@@ -36,16 +36,19 @@ import getopt, sys, os
 from euca2ools import Euca2ool, AddressValidationError, InstanceValidationError, Util
 
 usage_string = """
-DESCRIPTION
-    Associate a public IP address with an instance.
+Associate an instance with a public IP address.
 
-USAGE
-    euca-associate-address -i, --instance instance_id
-	  [-h, --help] [--version] [--debug] ip
+euca-associate-address -i, --instance instance_id
+[-h, --help] [--version] [--debug] ip
 
-    Where
-	ip - address to associate. 
-	instance_id - unique identifier for a running instance to associate the address with.
+REQUIRED PARAMETERS
+	
+-i, --instance			unique identifier for a running instance to associate the address with.
+
+ip				IP address to associate. 
+
+OPTIONAL PARAMETERS
+
 """
 
 version_string = """    euca-associate-address version: 1.0 (BSD)"""

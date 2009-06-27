@@ -36,15 +36,14 @@ import getopt, sys, os
 from euca2ools import Euca2ool, Util
 
 usage_string = """
-DESCRIPTION
-    Shows information about groups.
+Shows information about groups.
 
-USAGE
-    euca-describe-groups [-h, --help] [--version] [--debug] 
-	[group1 group2...groupN] 
+euca-describe-groups [-h, --help] [--version] [--debug] [group1 group2...groupN] 
 
-    Where
-	group1 group2...groupN - groups to describe. 
+OPTIONAL PARAMETERS
+
+group1 group2...groupN		groups to describe. 
+
 """
 
 version_string = """    euca-describe-groups version: 1.0 (BSD)"""

@@ -40,27 +40,30 @@ from boto.s3 import Connection
 from boto.s3.key import Key
 
 usage_string = """
-USAGE
-    euca-upload-bundle -b, --bucket bucket -m, --manifest manifest_path -a, --access-key access_key_id 
-	  -s, --secret-key secret_key
-	  [--acl canned_acl] [--ec2cert ec2cert_path] [-d, --directory bundle_path]
-	  [--part part] [--url url] [--retry] [--skipmanifest] [--debug] [-h, --help]
-	  [--version]
+Upload a previously bundled image to the cloud.
 
-    Where
-	bucket - The name of the bucket to upload to. Bucket will be created if it does not exist.
-	manifest_path - The path to the manifest file.
-	access_key_id - The user's AWS access key or Query ID.
-	secret_key - The user's secret key.
+euca-upload-bundle -b, --bucket bucket -m, --manifest manifest_path [-a, --access-key access_key_id] 
+[-s, --secret-key secret_key] [--acl canned_acl] [--ec2cert ec2cert_path] [-d, --directory bundle_path]
+[--part part] [--url url] [--skipmanifest] [--debug] [-h, --help] [--version]
 
-	canned_acl - Canned access control policy (defaults to "aws-exec-read").
-	ec2cert_path - The path to the Cloud's X509 public key certificate.
-	bundle_path - The directory containing the bundled image to upload (defaults to the directory 
-		      containing the manifest).
-	part - Uploads specified part and all subsequent parts.
-	url - URL for the service (defaults to http://localhost:8773/services/Walrus).
-	--retry - Retry if failed.
-	--skipmanifest - Do not upload the manifest file.
+REQUIRED PARAMETERS
+
+-b, --bucket 			The name of the bucket to upload to. Bucket will be created if it does not exist.
+
+-m, --manifest 			The path to the manifest file for the bundled image.
+
+OPTIONAL PARAMETERS
+
+--acl				Canned access control policy (defaults to "aws-exec-read").
+
+--ec2cert			The path to the Cloud's X509 public key certificate.
+
+-d, --directory			The directory containing the bundled image to upload (defaults to the manifest directory).
+
+--part				Uploads specified part and all subsequent parts.
+
+--skipmanifest			Do not upload the manifest file.
+
 """
 
 version_string = """    euca-upload-bundle version: 1.0 (BSD)"""
@@ -158,7 +161,7 @@ def main():
     try:
         euca = Euca2ool('b:m:a:s:d:',
                                   ['bucket=', 'manifest=', 
-                                  'acl=', 'ec2cert=', 'directory=', 'part=', 'retry', 'skipmanifest'],
+                                  'acl=', 'ec2cert=', 'directory=', 'part=', 'skipmanifest'],
 				  is_s3=True)
     except Exception, e:
 	print e
@@ -170,7 +173,6 @@ def main():
     directory = None
     part = None
     canned_acl = 'aws-exec-read' 
-    retry = False
     skipmanifest = False
     debug = False
 
@@ -191,8 +193,6 @@ def main():
             part = value
         elif name == '--url':
             url = value
-	elif name == '--retry':
-	    retry = True
 	elif name == '--skipmanifest':
 	    skipmanifest = True
 	elif name == '--version':

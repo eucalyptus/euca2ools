@@ -36,20 +36,20 @@ import getopt, sys, os
 from euca2ools import Euca2ool, Util
 
 usage_string = """
-DESCRIPTION
-    Shows information about machine images.
+Shows information about machine images.
 
-USAGE
-    euca-describe-images [-a] [-o owner] [-x user] 
-	  [-h, --help] [--version] [--debug] [image1 image2 ... imageN]
+euca-describe-images [-a] [-o owner] [-x user] [-h, --help] [--version] [--debug] [image1 image2 ... imageN]
 
-    Where
-	image1 image2 ... imageN - images to describe.
-	-a - Show all images that the user has access to.
-	-o - Show only images owned by the owner specified are displayed.	
-	owner - owner of the image (string).
-	-x - Show only images that the specified user is permitted to launch.
-        user - username (string).
+OPTIONAL PARAMETERS
+
+image1 image2 ... imageN	Images to describe.
+
+-a 				Show all images that the user has access to.
+
+-o 				Show only images owned by the owner specified are displayed.	
+
+-x 				Show only images that the specified user is permitted to launch.
+
 """
 
 version_string = """    euca-describe-images version: 1.0 (BSD)"""

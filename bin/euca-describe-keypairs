@@ -36,15 +36,15 @@ import getopt, sys, os
 from euca2ools import Euca2ool, Util
 
 usage_string = """
-DESCRIPTION
-    Shows information about keypairs.
+Shows information about keypairs.
 
-USAGE
-    euca-describe-keypairs [-h, --help] [--version] [--debug]
-	[keypair1 keypair2...keypairN] 
+euca-describe-keypairs [-h, --help] [--version] [--debug]
+[keypair1 keypair2...keypairN] 
 
-    Where
-	keypair1 keypair2...keypairN - keypairs to describe. 
+OPTIONAL PARAMETERS
+	
+keypair1 keypair2...keypairN 	keypairs to describe. 
+
 """
 
 version_string = """    euca-describe-key-pairs version: 1.0 (BSD)"""

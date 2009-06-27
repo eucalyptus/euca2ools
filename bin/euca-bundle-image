@@ -38,34 +38,44 @@ from euca2ools import Euca2ool, FileValidationError, Util
 usage_string = """
 Bundles an image for use with Eucalyptus or Amazon EC2.
 
-USAGE
-    euca-bundle-image -i, --image image_path -c, --cert cert_path -k, --privatekey private_key_path 
-	-u, --user user 
-	[-p, --prefix prefix] [--kernel kernel_id] [--ramdisk ramdisk_id] 
-	[-B, --block-device-mapping mapping] [-d, --destination destination_path] 
-	[--ec2cert ec2cert_path] [-r, --arch target_architecture] 
-	[-b, --batch] [-h, --help] [--version] [--debug] 
+euca-bundle-image -i, --image image_path -u, --user user [-c, --cert cert_path] 
+[-k, --privatekey private_key_path] [-p, --prefix prefix] [--kernel kernel_id] 
+[--ramdisk ramdisk_id] [-B, --block-device-mapping mapping] 
+[-d, --destination destination_path] [--ec2cert ec2cert_path] 
+[-r, --arch target_architecture] [-h, --help] [--version] [--debug] 
 
-    Where
-	image_path - The path to the file system image to bundle.
-	cert_path - The path to the user's PEM encoded RSA public key certificate file.
-	private_key_path - The path to the user's PEM encoded RSA private key file.
-	user -  The user's EC2 user ID (not the Access Key/Query Key ID).
+REQUIRED PARAMETERS
 
-	prefix - The filename prefix for bundled files. Defaults to image name.
-	kernel_id - Id of the default kernel to launch the instance with.
-	ramdisk_id - Id of the default ramdisk to launch the instance with.
-	mapping - Default block-device-mapping scheme.
-	destination_path - The directory to create the bundle in. Defaults to '/tmp'.
-	ec2cert_path - The path to the Cloud's X509 public key certificate.
-	target_architecture - Target architecture ['x86_64' or 'i386'].
-	-b, --batch - Run in non-interactive mode.
+-i, --image			Path to the image file to bundle.
+
+-u, --user			User ID (12-digit) of the user who is bundling the image.
+
+OPTIONAL PARAMETERS
+
+-c, --cert			Path to the user's PEM encoded certificate.
+
+-k, --privatekey		Path to the user's PEM encoded private key.
+
+-p, --prefix			The prefix for the bundle image files. (default: image name).
+
+--kernel			The kernel to be associated with the bundled image.
+
+--ramdisk			The ramdisk to be associated with the bundled image.
+
+-B, --block-device-mapping	Default block device mapping for the image (comma-separated list of key=value pairs).
+
+-d, --destination		Directory to store the bundled image in (default: "/tmp"). Recommended. 
+
+--ec2cert_path 			The path to the Cloud's X509 public key certificate.
+
+-r, --arch			Target architecture for the image ('x86_64' or 'i386' default: 'x86_64').
 """
 
 version_string = """    euca-bundle-image version: 1.0 (BSD)"""
 
 def usage():
     print usage_string
+    Util().usage()
     sys.exit()
 
 def version():
@@ -98,7 +108,7 @@ def main():
     try:
 	euca = Euca2ool('i:c:k:u:B:d:br:p:',
                                    ['image=', 'cert=', 'privatekey=', 'user=', 'prefix=', 
-                                    'kernel=', 'ramdisk=', 'block-device-mapping=', 'destination=', 'ec2cert=', 'arch=', 'batch', 'productcodes='])
+                                    'kernel=', 'ramdisk=', 'block-device-mapping=', 'destination=', 'ec2cert=', 'arch=', 'productcodes='])
     except Exception, e:
 	print e
         usage()
@@ -114,7 +124,6 @@ def main():
     ec2cert_path=os.getenv('EUCALYPTUS_CERT')
     target_arch='x86_64'
     mapping = None
-    batch=False
     product_codes = None
     product_code_string = None
         
@@ -152,8 +161,6 @@ def main():
 		usage()
 	elif name in ('-B', '--block-device-mapping'):
 	    mapping = value
-	elif name == '--batch':
-	    batch = True
 	elif name == '--productcodes':
 	    product_code_string = value
 	elif name == '--version':

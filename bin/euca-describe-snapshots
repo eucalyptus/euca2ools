@@ -36,15 +36,15 @@ import getopt, sys, os
 from euca2ools import Euca2ool, SnapshotValidationError, Util
 
 usage_string = """
-DESCRIPTION
-    Shows information about snapshots.
+Shows information about snapshots.
 
-USAGE
-    euca-describe-snapshots [-h, --help] [--version] [--debug]
-	[snapshot1 snapshot2...snapshotN] 
+euca-describe-snapshots [-h, --help] [--version] [--debug]
+[snapshot1 snapshot2...snapshotN] 
 
-    Where
-	snapshot1 snapshot2...snapshotN - snapshots to describe. 
+OPTIONAL PARAMETERS
+	
+snapshot1 snapshot2...snapshotN - snapshots to describe. 
+
 """
 
 version_string = """    euca-describe-snapshot version: 1.0 (BSD)"""

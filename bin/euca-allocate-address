@@ -36,11 +36,12 @@ import getopt, sys, os
 from euca2ools import Euca2ool, Util
 
 usage_string = """
-DESCRIPTION
-    Allocate a public IP address.
+Allocate a public IP address.
 
-USAGE
-    euca-allocate-address [-h, --help] [--version] [--debug]
+euca-allocate-address [-h, --help] [--version] [--debug]
+
+OPTIONAL PARAMETERS
+
 """
 
 version_string = """    euca-allocate-address version: 1.0 (BSD)"""

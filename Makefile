@@ -9,11 +9,12 @@ build:
                 (cd $$subdir && $(MAKE) $@) || exit $$? ; done
 
 man:
+	@echo "Generating manpages..."
 	mkdir -p $(MANDIR) 
 	@for x in $(BINLIST); do \
 		help2man bin/$$x -o $(MANDIR)/$$x.1 ; done
 
-install:
+install: build man
 	@for subdir in $(SUBDIRS); do \
                 (cd $$subdir && $(MAKE) $@) || exit $$? ; done
 	@install -g root -o root -m 755 -d /usr/local/install

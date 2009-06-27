@@ -36,14 +36,14 @@ import getopt, sys, os
 from euca2ools import Euca2ool, AddressValidationError, Util
 
 usage_string = """
-DESCRIPTION
-    Shows information about addresses.
+Shows information about addresses.
 
-USAGE
-    euca-describe-addresses [-h, --help] [--version] [--debug] [ip1 ip2...ipN] 
+euca-describe-addresses [-h, --help] [--version] [--debug] [ip1 ip2...ipN] 
 
-    Where
-	ip1 ip2...ipN - addresses to describe. 
+OPTIONAL PARAMETERS
+
+ip1 ip2...ipN			IP addresses to display information about.
+
 """
 
 version_string = """    euca-describe-addresses version: 1.0 (BSD)"""

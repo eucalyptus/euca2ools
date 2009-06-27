@@ -150,17 +150,24 @@ class SolarisImage:
 
 class Util:
     usage_string = """
-	-a, --access-key - user's Access Key ID.
- 	-s, --secret-key - user's Secret Key.
-	-U, --url - Cloud URL.
-	-h, --help - Display this help message.
-	--version - Display the version of this tool.
-	--debug - Turn on debugging.
+-a, --access-key		user's Access Key ID.
+
+-s, --secret-key		user's Secret Key.
+
+-U, --url			URL of the Cloud to connect to.
+
+-h, --help			Display this help message.
+
+--version 			Display the version of this tool.
+
+--debug 			Turn on debugging.
+
+Euca2ools will use the environment variables EC2_URL, EC2_ACCESS_KEY, EC2_PRIVATE_KEY, EC2_CERT, EC2_PRIVATE_KEY, S3_URL, EUCALYPTUS_CERT by default.
     """    
  
     def usage(self):
     	print self.usage_string
-    	sys.exit()
+	sys.exit()
 
 class AddressValidationError:
     def __init__(self):

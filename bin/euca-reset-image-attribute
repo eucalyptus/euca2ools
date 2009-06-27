@@ -36,15 +36,19 @@ import getopt, sys, os
 from euca2ools import Euca2ool, Util
 
 usage_string = """
-DESCRIPTION
-    Reset attributes for an image.
+Reset attributes for an image.
 
-USAGE
-    euca-reset-image-attribute -l, --launch-permission 
-	  [-h, --help] [--version] [--debug] image_id 
+euca-reset-image-attribute -l, --launch-permission 
+[-h, --help] [--version] [--debug] image_id 
 
-    Where
-	image_id - unique identifier for the image that you want to reset the attributes for. 
+REQUIRED PARAMETERS
+	
+-l, --launch-permission 	show launch permissions.
+
+image_id - unique identifier for the image that you want to reset the attributes for. 
+
+OPTIONAL PARAMETERS
+
 """
 
 version_string = """    euca-reset-image-attribute version: 1.0 (BSD)"""

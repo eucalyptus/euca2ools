@@ -40,16 +40,26 @@ from boto.s3 import Connection
 from boto.s3.key import Key
 
 usage_string = """
-USAGE
-    euca-delete-bundle -b, --bucket bucket [-m, --manifest manifest_path] [-d, --directory directory]
-	[-p, --prefix prefix] [--clear] [-h, --help] [--version] [--debug]
+
+Delete a previously uploaded bundle.    
+
+euca-delete-bundle -b, --bucket bucket [-m, --manifest manifest_path] [-d, --directory directory]
+[-p, --prefix prefix] [--clear] [-h, --help] [--version] [--debug]
  
-    Where
-	bucket - The name of the bucket to download to. Bucket will be created if it does not exist.
-	manifest_path - The path to the manifest file.
-	directory - The name of the directory to download the bundled parts to.
-        prefix - The filename prefix for bundled files. Defaults to image name.
-	--clear - Delete the bucket containing the image.
+REQUIRED PARAMETERS	
+
+bucket				The name of the bucket to delete from.
+
+OPTIONAL PARAMETERS
+	
+-m, --manifest			The path to the manifest file.
+
+-d, --directory 		The name of the directory to download the bundled parts to.
+
+-p, --prefix 			The filename prefix for bundled files. Defaults to image name.
+
+--clear 			Delete the bucket containing the image.
+
 """
 
 version_string = """    euca-delete-bundle version: 1.0 (BSD)"""

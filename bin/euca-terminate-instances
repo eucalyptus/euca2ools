@@ -36,15 +36,17 @@ import getopt, sys, os
 from euca2ools import Euca2ool, InstanceValidationError, Util
 
 usage_string = """
-DESCRIPTION
-    Stops specified instances.
+Stops specified instances.
 
-USAGE
-    euca-terminate-instances [-h, --help] [--version] [--debug]
-	[instance1 instance2... instanceN] 
+euca-terminate-instances [-h, --help] [--version] [--debug]
+[instance1... instanceN] 
 
-    Where
-	instance1 instance2...instanceN - instances to terminate. 
+REQUIRED PARAMETERS
+
+instance1... instanceN		instances to terminate. 
+
+OPTIONAL PARAMETERS
+
 """
 
 version_string = """    euca-terminate-instances version: 1.0 (BSD)"""

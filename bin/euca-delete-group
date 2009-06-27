@@ -36,14 +36,16 @@ import getopt, sys, os
 from euca2ools import Euca2ool, Util
 
 usage_string = """
-DESCRIPTION
-    Deletes a security group.
+Deletes a security group.
 
-USAGE
-    euca-delete-group [-h, --help] [--version] [--debug] group_name
+euca-delete-group [-h, --help] [--version] [--debug] group_name
 
-    Where
-	group_name - unique name for a group to delete.
+REQUIRED PARAMETER
+
+group_name 			unique name for a group to delete.
+
+OPTIONAL PARAMETER
+
 """
 
 version_string = """    euca-delete-group version: 1.0 (BSD)"""

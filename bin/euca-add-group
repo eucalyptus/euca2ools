@@ -36,16 +36,17 @@ import getopt, sys, os
 from euca2ools import Util, Euca2ool
 
 usage_string = """
-DESCRIPTION
-    Creates a new security group.
+Creates a new security group.
 
-USAGE
-    euca-add-group -d, --description group_description
-	  [-h, --help] [--version] [--debug] group_name 
+euca-add-group -d, --description group_description
+[-h, --help] [--version] [--debug] group_name 
 
-    Where
-	group_name - unique name for the group to create.
-	group_description - description of this group.
+REQUIRED PARAMETERS
+
+-d, --description		Description for the group to be created.
+
+OPTIONAL PARAMETERS
+
 """
 
 version_string = """    euca-add-group version: 1.0 (BSD)"""

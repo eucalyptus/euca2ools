@@ -47,17 +47,22 @@ BUNDLER_VERSION = "1.0"
 AES = 'AES-128-CBC'
 
 usage_string = """
-USAGE
-    euca-unbundle-image -m, --manifest manifest_path -k, --privatekey private_key_path 
-	[-s, --source source_directory] [-d, --destination destination_directory]
-	[-h, --help] [--version] [--debug]
+Unbundles a previously bundled image.    
 
-    Where
-	manifest_path - The path to the manifest.
-	private_key_path - The path to the user's PEM encoded RSA private key file.
-	source_directory - The source directory for the bundled image parts (default = manifest's directory).
- 	destination_directory - The destination directory for unbundled image (defaults = current directory).
-	-h, --help - Display this help message.
+euca-unbundle-image -m, --manifest manifest_path [-k, --privatekey private_key_path] 
+[-s, --source source_directory] [-d, --destination destination_directory]
+[-h, --help] [--version] [--debug]
+
+REQUIRED PARAMETERS
+
+-m, --manifest			Path to the manifest file for the bundled image.
+
+OPTIONAL PARAMETERS
+
+-d, --destination		Directory to store the image to (defaults to the current directory). 
+
+-s, --source			Source directory for the bundled image parts (defaults to manifest directory).
+
 """
 
 version_string = """    euca-unbundle-image version: 1.0 (BSD)"""

@@ -36,14 +36,16 @@ import getopt, sys, os
 from euca2ools import Euca2ool, SnapshotValidationError, Util
 
 usage_string = """
-DESCRIPTION
-    Deletes a snapshot.
+Deletes a snapshot.
 
-USAGE
-    euca-delete-snapshot [-h, --help] [--version] [--debug] snapshot_id
+euca-delete-snapshot [-h, --help] [--version] [--debug] snapshot_id
 
-    Where
-	snapshot_id - unique identifier for the snapshot to be deleted.
+REQUIRED PARAMETERS
+	
+snapshot_id			unique identifier for the snapshot to be deleted.
+
+OPTIONAL PARAMETERS
+
 """
 
 version_string = """    euca-delete-snapshot version: 1.0 (BSD)"""

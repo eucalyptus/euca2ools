@@ -36,14 +36,16 @@ import getopt, sys, os
 from euca2ools import Euca2ool, VolumeValidationError, Util
 
 usage_string = """
-DESCRIPTION
-    Creates a volume in a specified availability zone.
+Creates a volume in a specified availability zone.
 
-USAGE
-    euca-create-snapshot [-h, --help] [--version] [--debug] volume_id 
+euca-create-snapshot [-h, --help] [--version] [--debug] volume_id 
 
-    Where
-	volume_id - unique id for a volume to snapshot.
+REQUIRED PARAMETERS
+	
+volume_id			unique id for a volume to snapshot.
+
+OPTIONAL PARAMETERS
+
 """
 
 version_string = """    euca-create-snapshot version: 1.0 (BSD)"""

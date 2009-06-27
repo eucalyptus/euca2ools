@@ -36,14 +36,16 @@ import getopt, sys, os
 from euca2ools import Euca2ool, Util
 
 usage_string = """
-DESCRIPTION
-    Delete a key pair.
+Delete a key pair.
 
-USAGE
-    euca-delete-keypair [-h, --help] [--version] [--debug] keypair_name
+euca-delete-keypair [-h, --help] [--version] [--debug] keypair_name
 
-    Where
-	keypair_name - unique name for the keypair to delete. 
+REQUIRED PARAMETERS	
+
+keypair_name 			unique name for the keypair to delete. 
+
+OPTIONAL PARAMETERS
+
 """
 
 version_string = """    euca-delete-keypair version: 1.0 (BSD)"""
