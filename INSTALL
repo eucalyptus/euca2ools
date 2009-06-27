@@ -19,7 +19,7 @@ Note that M2Crypto needs swig and libssl-dev (or equivalent) in order to install
 
 3. Install Euca2ools.
 
-"sudo make ; sudo make install" in the top-level directory.
+"sudo make" in the top-level directory.
 
 Running
 -------
