@@ -1,4 +1,4 @@
-	Euca2ools: Command-line tools to interact with Amazon EC2 API compatible web services using REST.
+	Euca2ools: Command-line tools to interact with Amazon EC2 API compatible web services using the REST/Query API.
 
 Euca2ools was inspired by Amazon's command-line tools.
 
