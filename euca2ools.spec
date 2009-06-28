@@ -32,8 +32,6 @@ cd ../boto*
 python setup.py build
 cd ../euca2ools
 python setup.py build
-cd ..
-make man
 
 %install
 cd M2Crypto-*
@@ -43,7 +41,6 @@ python setup.py install --prefix=/opt/euca2ools
 cd ../euca2ools
 python setup.py install --prefix=/opt/euca2ools
 cd ..
-mkdir /opt/euca2ools/bin
 install -g root -o root -m 755 -d /opt/euca2tools/bin
 install -g root -o root -m 755 -d /opt/euca2tools/man/man1
 install -g root -o root -m 755  bin/* /opt/euca2ools/bin

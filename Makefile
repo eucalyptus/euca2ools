@@ -2,7 +2,9 @@ SUBDIRS                 =       euca2ools
 BINLIST			=	`ls bin`
 MANDIR			=	man
 
-all: build man install
+.PHONY: man all build install
+
+all: build install
 
 build:
 	@for subdir in $(SUBDIRS); do \
@@ -14,7 +16,7 @@ man:
 	@for x in $(BINLIST); do \
 		help2man bin/$$x -o $(MANDIR)/$$x.1 ; done
 
-install: build man
+install: build
 	@for subdir in $(SUBDIRS); do \
                 (cd $$subdir && $(MAKE) $@) || exit $$? ; done
 	@install -g root -o root -m 755 -d /usr/local/bin
@@ -25,7 +27,6 @@ install: build man
 clean:
 	@for subdir in $(SUBDIRS); do \
 		(cd $$subdir && $(MAKE) $@) || exit $$? ; done
-	rm -rf $(MANDIR) 
 
 uninstall: man
 	@for x in $(BINLIST); do \
