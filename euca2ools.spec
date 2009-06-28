@@ -21,29 +21,36 @@ This package contains the command line tools to interact with Eucalyptus.
 This tools are complatible with Amazon EC2.
 
 %prep
-%setup -n euca2ools
+%setup -n euca2ools-%{version}
+tar xzf deps/M2Crypto*tar.gz
+tar xzf deps/boto-*tar.gz
 
 %build
-cd M2Crypto-0.19.1
+cd M2Crypto*
 python setup.py build
-cd ../boto-1.7a-patched
+cd ../boto*
 python setup.py build
 cd ../euca2ools
 python setup.py build
+cd ..
+make man
 
 %install
-cd M2Crypto-0.19.1
+cd M2Crypto-*
 python setup.py install --prefix=/opt/euca2ools
-cd ../boto-1.7a-patched
+cd ../boto-*
 python setup.py install --prefix=/opt/euca2ools
 cd ../euca2ools
 python setup.py install --prefix=/opt/euca2ools
 cd ..
 mkdir /opt/euca2ools/bin
-cp bin/* /opt/euca2ools/bin
+install -g root -o root -m 755 -d /opt/euca2tools/bin
+install -g root -o root -m 755 -d /opt/euca2tools/man/man1
+install -g root -o root -m 755  bin/* /opt/euca2ools/bin
+install -g root -o root -m 644  man/* /usr/local/man/man1
 
 %clean
-rm -rf $RPM_BUILD_DIR/euca2ools
+rm -rf $RPM_BUILD_DIR/euca2ools-%{version}
 rm -rf /opt/euca2ools
 
 %files

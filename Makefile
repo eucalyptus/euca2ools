@@ -17,8 +17,9 @@ man:
 install: build man
 	@for subdir in $(SUBDIRS); do \
                 (cd $$subdir && $(MAKE) $@) || exit $$? ; done
-	@install -g root -o root -m 755 -d /usr/local/install
+	@install -g root -o root -m 755 -d /usr/local/bin
 	@install -g root -o root -m 755  bin/* /usr/local/bin/
+	@install -g root -o root -m 755 -d /usr/local/man/man1
 	@install -g root -o root -m 644  $(MANDIR)/* /usr/local/man/man1
  
 clean:
