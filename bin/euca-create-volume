@@ -43,11 +43,11 @@ euca-create-volume -s, --size size | --snapshot snapshot_id -z zone
 
 REQUIRED PARAMETERS	
 
--s, --size			size of the volume (in GiB). 
+-S, --size			size of the volume (in GiB). 
 	
 --snapshot			snapshot id to create the volume from. Either size or snapshot can be specified (not both).
 	
--z 				availability zone to create the volume in
+-z, --zone 			availability zone to create the volume in
 	
 OPTIONAL PARAMETERS
 
@@ -76,7 +76,7 @@ def display_volume(volume):
 def main():
     euca = None
     try:
-        euca = Euca2ool('s:z:',
+        euca = Euca2ool('S:z:',
                                    ['zone=', 'snapshot=', 'size='])
     except Exception, e:
 	print e
@@ -87,7 +87,7 @@ def main():
     snapshot_id = None
 
     for name, value in euca.opts:
-        if name in ('-s', '--size'):
+        if name in ('-S', '--size'):
 	    try:
                 size = int(value) 
 	    except ValueError:
