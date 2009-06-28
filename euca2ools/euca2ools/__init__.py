@@ -228,7 +228,7 @@ class Euca2ool:
 	    long_opts = ['']
 	short_opts += 'ha:s:U:'
 	long_opts += ['access-key=', 'secret-key=', 'url=', 'help', 'version', 'debug']
-        opts, args = getopt.getopt(sys.argv[1:], short_opts,
+        opts, args = getopt.gnu_getopt(sys.argv[1:], short_opts,
                                   long_opts)
 	self.opts = opts
 	self.args = args
