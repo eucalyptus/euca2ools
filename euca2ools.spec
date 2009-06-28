@@ -41,8 +41,8 @@ python setup.py install --prefix=/opt/euca2ools
 cd ../euca2ools
 python setup.py install --prefix=/opt/euca2ools
 cd ..
-install -g root -o root -m 755 -d /opt/euca2tools/bin
-install -g root -o root -m 755 -d /opt/euca2tools/man/man1
+install -g root -o root -m 755 -d /opt/euca2ools/bin
+install -g root -o root -m 755 -d /opt/euca2ools/man/man1
 install -g root -o root -m 755  bin/* /opt/euca2ools/bin
 install -g root -o root -m 644  man/* /opt/euca2ools/man/man1
 
