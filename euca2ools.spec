@@ -4,7 +4,7 @@ Version:       1.0
 Release:       1
 License:       MIT
 Group:         Applications/System
-BuildRequires: gcc, make, swig, python
+BuildRequires: gcc, make, swig, python-devel, python
 Requires:      swig, python
 Vendor:        Eucalyptus Systems
 #Icon:          someicon.xpm
