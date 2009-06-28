@@ -203,6 +203,13 @@ def main():
     fstab_path = None
     generate_fstab = False
     product_code_string = None
+    user_string = os.getenv("EC2_USER_ID")
+    if user_string:
+        try:
+            user = int(user_string)
+        except ValueError:
+            print 'Invalid user', user_string
+            sys.exit()	       
  
     for name, value in euca.opts:
         if name in ('-h', '--help'):
@@ -216,7 +223,7 @@ def main():
 		value = value.replace('-', '')
                 user = int(value)
 	    except ValueError:
-		print "Invalid user"
+		print 'Invalid user', value
 		sys.exit()
         elif name == '--kernel':
             kernel = value
