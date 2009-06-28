@@ -44,7 +44,7 @@ cd ..
 install -g root -o root -m 755 -d /opt/euca2tools/bin
 install -g root -o root -m 755 -d /opt/euca2tools/man/man1
 install -g root -o root -m 755  bin/* /opt/euca2ools/bin
-install -g root -o root -m 644  man/* /usr/local/man/man1
+install -g root -o root -m 644  man/* /opt/euca2ools/man/man1
 
 %clean
 rm -rf $RPM_BUILD_DIR/euca2ools-%{version}
