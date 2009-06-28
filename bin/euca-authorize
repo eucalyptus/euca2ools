@@ -74,7 +74,7 @@ def version():
 def main():
     euca = None
     try:
-        euca = Euca2ool('P:p:o:S:t:',
+        euca = Euca2ool('P:p:o:u:S:t:',
                                    ['protocol=', 'port-range=', 'source-group=',
 				    'source-group-user=', 'source-subnet=', 'icmp-type-code='])
     except Exception, e:
