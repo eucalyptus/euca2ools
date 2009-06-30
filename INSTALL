@@ -3,7 +3,7 @@ Euca2ools: Command-line tools for interacting with Amazon EC2 and S3
 
 These instructions describe how to install and run Euca2ools.  Please, 
 see the README file for general information and the COPYING file for 
-legal matters such as the license for this software.
+the license for this software.
 
 ============
 Installation
@@ -14,6 +14,7 @@ or RPM).  The latest source tarball and binary packages can be found here:
 
   http://open.eucalyptus.com/downloads 
 
+Please, download the correct package for your distribution or the tarball.
 Euca2ools are written in Python, relying on the Boto AWS library and 
 the M2Crypto cryptography and SSL toolkit.  The smallest acceptable 
 versions for the dependencies are:
@@ -28,24 +29,24 @@ the standard mechanisms for the distibution.
  
 - On a DEB-based system, such as Ubuntu or Debian, install as follows:
 
-apt-get install boto m2crypto
-dpkg -i euca2ools-1.0.deb
+apt-get install python swig libssl-dev boto m2crypto
+dpkg -i euca2ools-1.0-*.deb
 
 - On an RPM-based system with 'yum', such as CentOS, install as follows:
 
-yum install boto m2crypto
-rpm -i euca2tools-1.0.rpm
+rpm -i euca2tools-1.0-centos-*.rpm
 export PATH=$PATH:/opt/euca2ools/bin
+export MANPATH=$MANPATH:/opt/euca2ools/man
 
 - On an RPM-based system with 'yast', such as OpenSUSE, install as follows:
 
-yast install boto m2crypto
-rpm -i euca2tools-1.0.rpm
+rpm -i euca2tools-1.0-opensuse-*.rpm
 export PATH=$PATH:/opt/euca2ools/bin
+export MANPATH=$MANPATH:/opt/euca2ools/man
 
 - To install from source, build the dependencies and install as follows:
 
-tar zxvf euca2tools-1.0.tgz
+tar zxvf euca2tools-1.0-src.tgz
 cd euca2tools-1.0
 
 # Install Boto, if necessary
