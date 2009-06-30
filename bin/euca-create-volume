@@ -38,7 +38,7 @@ from euca2ools import Euca2ool, SizeValidationError, SnapshotValidationError, Ut
 usage_string = """
 Creates a volume in a specified availability zone.
 
-euca-create-volume -s, --size size | --snapshot snapshot_id -z zone
+euca-create-volume -S, --size size | --snapshot snapshot_id -z zone
 [-h, --help] [--version] [--debug]
 
 REQUIRED PARAMETERS	
