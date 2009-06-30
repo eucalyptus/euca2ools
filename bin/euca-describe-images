@@ -72,7 +72,9 @@ def display_images(images, image_ids):
 	        continue
 	image_string = '%s\t%s\t%s\t%s' % (image.id, image.location, image.ownerId, image.state)
 	if image.is_public:
-  	    image_string += '\t public'
+  	    image_string += '\tpublic '
+	else:
+	    image_string += '\tprivate '
 	if image.product_codes:
 	    for product_code in image.product_codes:
 		image_string += '\t%s' % product_code
@@ -91,8 +93,8 @@ def main():
         usage()
  
     show_all = False
-    executable_by = ['self']
-    owners = [] 
+    executable_by = []
+    owners = ['self'] 
     defaults = True
 
     for name, value in euca.opts:
@@ -102,6 +104,7 @@ def main():
 	    if defaults:
 		executable_by = []
 		defaults = False
+	    	owners = []
 	    executable_by.append(value)
 	elif name == '-o':
 	    if defaults:
