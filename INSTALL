@@ -1,40 +1,101 @@
-Pre-requisites
---------------
+Euca2ools: Command-line tools for interacting with Amazon EC2 and S3 
+           API-compatible Web services using the REST/Query API.
 
-Euca2ools depends on the boto REST library. You must have boto-1.8c installed prior to installing Euca2ools. In addition,
-Euca2ools requires the M2Crypto python library version 0.19.1 or higher. python2.5 (dev) or higher is also required.
-For convenience, boto-1.8c and M2Crypto-0.19.1 are provided in the deps directory.
+These instructions describe how to install and run Euca2ools.  Please, 
+see the README file for general information and the COPYING file for 
+legal matters such as the license for this software.
 
+============
 Installation
-------------
-1. Install boto-1.8c
+============
 
-To do this, untar boto-1.8c.tar.gz and run "sudo setup.py install"
+Euca2ools can be installed from source or as a binary package (DEB
+or RPM).  The latest source tarball and binary packages can be found here:
 
-2. Install M2Crypto-0.19.1
+  http://open.eucalyptus.com/downloads 
 
-To do this, untar M2Crypto-0.19.1-tar.gz and run "sudo setup.py install"
+Euca2ools are written in Python, relying on the Boto AWS library and 
+the M2Crypto cryptography and SSL toolkit.  The smallest acceptable 
+versions for the dependencies are:
 
-Note that M2Crypto needs swig and libssl-dev (or equivalent) in order to install.
+  Python   2.5 (dev) or higher
+  Boto     1.8c or higher
+  M2Crypto 0.19.1 or higher 
 
-3. Install Euca2ools.
+The source tarball includes the appropriate versions of Boto and M2Crypto,
+while the binary packages will install the necessary dependencies through
+the standard mechanisms for the distibution.
+ 
+- On a DEB-based system, such as Ubuntu or Debian, install as follows:
 
-"sudo make" in the top-level directory.
+apt-get install boto m2crypto
+dpkg -i euca2ools-1.0.deb
 
+- On an RPM-based system with 'yum', such as CentOS, install as follows:
+
+yum install boto m2crypto
+rpm -i euca2tools-1.0.rpm
+export PATH=$PATH:/opt/euca2ools/bin
+
+- On an RPM-based system with 'yast', such as OpenSUSE, install as follows:
+
+yast install boto m2crypto
+rpm -i euca2tools-1.0.rpm
+export PATH=$PATH:/opt/euca2ools/bin
+
+- To install from source, build the dependencies and install as follows:
+
+tar zxvf euca2tools-1.0.tgz
+cd euca2tools-1.0
+
+# Install Boto, if necessary
+tar zxvf deps/boto-1.8c.tar.gz
+cd boto-1.8c
+sudo python setup.py install
+cd ..
+
+# Install M2Crypto, if necessary (it requires, in turn, Swig and libssl-dev)
+tar zxvxf deps/M2Crypto-0.19.1-tar.gz
+cd M2Crypto-0.19.1
+sudo python setup.py install
+cd ..
+
+# Install Euca2ools in /usr/local/bin, adding it to your $PATH, if necessary
+sudo make
+export PATH=$PATH:/usr/local/bin
+
+=======
 Running
--------
+=======
 
-Make sure that the following environment variables are set:
+Euca2ools use cryptographic credentials for authentication.  Two types of
+credentials are issued by EC2- and S3-compatible services: x509 certificates
+and keys.  While some commands only require the latter, it is best to always
+specify both types of credentials.  Furthermore, unless the Web services 
+reside on 'localhost', the URLs of the EC2- and S3-compatible service 
+endpoints must also be specified.
 
-EC2_URL, EC2_ACCESS_KEY, EC2_PRIVATE_KEY, EC2_CERT, EC2_PRIVATE_KEY, S3_URL, EUCALYPTUS_CERT (optional)
+The credentials and URLs can be specified via the command line option 
+or by setting environment variables as follows:
 
-If you are running Euca2ools against Eucalyptus, sourcing the "eucarc" file that is included as part of the credentials that you downloaded from the Eucalyptus web interface should be enough to setup the above variables correctly.
+  variable        option                    explanation
+  --------------- ------------------------- --------------------------------
+  EC2_URL         -U or --url <url>         e.g. http://ec2.amazonaws.com/
+  S3_URL          -U or --url <url>         e.g. http://s3.amazonaws.com/
+  EC2_ACCESS_KEY  -a or --access-key <key>  Access Key ID / Query ID
+  EC2_SECRET_KEY  -s or --secret-key <key>  Secret Access Key / Secret Key 
+  EC2_CERT        -c or --cert <file>       user's PEM-encoded certificate
+  EC2_PRIVATE_KEY -k or --privatekey <file> user's PEM-encoded private key
+  EUCALYPTUS_CERT --ec2cert_path <file>     OPTIONAL path to cloud cert
 
-Try it!
+If you are running Euca2ools against Eucalyptus, sourcing the "eucarc" 
+file that is included as part of the credentials zip-file that you 
+downloaded from the Eucalyptus Web interface should be enough to set up 
+all of the above variables correctly.
 
-For example:
+To get started, try:
 
-./euca-describe-availability-zones verbose
+euca-describe-availability-zones verbose
 AVAILABILITYZONE	mycluster	  UP mycluster.mydomain
 AVAILABILITYZONE	|- vm types	free / max   cpu   ram  disk
 AVAILABILITYZONE	|- m1.xlarge	0007 / 0008   1    512     3
@@ -44,4 +105,14 @@ AVAILABILITYZONE	|- c1.xlarge	0007 / 0008   1    512     3
 AVAILABILITYZONE	|- c1.medium	0007 / 0008   1    512     3
 AVAILABILITYZONE	|- mync.mydomain	certs[cc=true,nc=true] @ Fri Apr 17 09:38:23 PDT 2009
 
-See the documentation at http://open.eucalyptus.com/wiki/Documentation for more.
+For more information, try the --help option of the individual commands:
+
+  euca-describe-availability-zones --help
+
+or check the man pages of the command:
+
+  man euca-describe-availability-zones 
+
+or consult the complete documentation at 
+
+  http://open.eucalyptus.com/wiki/Documentation

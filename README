@@ -12,7 +12,7 @@ the Boto AWS library and M2Crypto toolkit.
 
 Here's the summary of the tasks that can be accomplished with these tools:
 
-- Query for availability zones (aka clusters)
+- Query of availability zones (i.e. clusters in Eucalyptus)
 - SSH key management (add, list, delete)
 - VM control (start, list, stop, reboot)
 - Security group management (firewall configuration)
