@@ -2,7 +2,7 @@ Summary:       Elastic Utility Computing Architecture Command Line Tools
 Name:          euca2ools
 Version:       1.0
 Release:       1
-License:       MIT
+License:       BSD 
 Group:         Applications/System
 BuildRequires: gcc, make, swig, python-devel, python
 Requires:      swig, python
