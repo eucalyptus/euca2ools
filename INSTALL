@@ -29,7 +29,7 @@ the standard mechanisms for the distibution.
  
 - On a DEB-based system, such as Ubuntu or Debian, install as follows:
 
-apt-get install python swig libssl-dev boto m2crypto
+apt-get install python swig libssl-dev python-boto python-m2crypto
 dpkg -i euca2ools-1.0-*.deb
 
 - On an RPM-based system with 'yum', such as CentOS, install as follows:
@@ -81,8 +81,10 @@ or by setting environment variables as follows:
 
   variable        option                    explanation
   --------------- ------------------------- --------------------------------
-  EC2_URL         -U or --url <url>         e.g. http://ec2.amazonaws.com/
-  S3_URL          -U or --url <url>         e.g. http://s3.amazonaws.com/
+  EC2_URL         -U or --url <url>         http://host:8773/services/Eucalyptus
+                                            or http://ec2.amazonaws.com
+  S3_URL          -U or --url <url>         http://host:8773/services/Walrus
+                                            or http://s3.amazonaws.com
   EC2_ACCESS_KEY  -a or --access-key <key>  Access Key ID / Query ID
   EC2_SECRET_KEY  -s or --secret-key <key>  Secret Access Key / Secret Key 
   EC2_CERT        -c or --cert <file>       user's PEM-encoded certificate
