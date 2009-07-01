@@ -27,20 +27,13 @@ The source tarball includes the appropriate versions of Boto and M2Crypto,
 while the binary packages will install the necessary dependencies through
 the standard mechanisms for the distibution.
  
-- On a DEB-based system, such as Ubuntu or Debian, install as follows:
+- If you are installing a binary package, please, follow the standard
+process on your distribution for installing euca2ools package and the
+prerequisites.
 
-apt-get install python swig libssl-dev python-boto python-m2crypto
-dpkg -i euca2ools-1.0-*.deb
+When installing RPMs, the tools are placed in /opt/euca2ools, so you
+may want to update your $PATH and $MANPATH accordingly:
 
-- On an RPM-based system with 'yum', such as CentOS, install as follows:
-
-rpm -i euca2tools-1.0-centos-*.rpm
-export PATH=$PATH:/opt/euca2ools/bin
-export MANPATH=$MANPATH:/opt/euca2ools/man
-
-- On an RPM-based system with 'yast', such as OpenSUSE, install as follows:
-
-rpm -i euca2tools-1.0-opensuse-*.rpm
 export PATH=$PATH:/opt/euca2ools/bin
 export MANPATH=$MANPATH:/opt/euca2ools/man
 
@@ -55,8 +48,8 @@ cd boto-1.8c
 sudo python setup.py install
 cd ..
 
-# Install M2Crypto, if necessary (it requires, in turn, Swig and libssl-dev)
-tar zxvxf deps/M2Crypto-0.19.1-tar.gz
+# Install M2Crypto, if necessary (which needs python-dev, swig, and libssl-dev)
+tar zxvxf deps/M2Crypto-0.19.1.tar.gz
 cd M2Crypto-0.19.1
 sudo python setup.py install
 cd ..
