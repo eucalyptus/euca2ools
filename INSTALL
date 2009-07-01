@@ -101,9 +101,7 @@ AVAILABILITYZONE	|- c1.xlarge	0007 / 0008   1    512     3
 AVAILABILITYZONE	|- c1.medium	0007 / 0008   1    512     3
 AVAILABILITYZONE	|- mync.mydomain	certs[cc=true,nc=true] @ Fri Apr 17 09:38:23 PDT 2009
 
-For more information, try the --help option of the individual commands.
-
-For example,
+For more information, try the --help option of the individual commands. E.g.,
 
   euca-describe-availability-zones --help
 
