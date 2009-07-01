@@ -126,7 +126,7 @@ def download_manifests(bucket, manifests, directory):
 		    os.remove(manifest_filename)
 		return False
 	manifest_file.close()
-	return True
+    return True
 
 def delete_parts(bucket, manifests, directory=None):
     for manifest in manifests:
