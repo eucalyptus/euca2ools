@@ -11,12 +11,14 @@
 %define __python    python
 %define __where     %{__libarch}/python2.6/site-packages
 %define __whereM2C  %{__libarch}/python2.6/site-packages
+%define __docdir    /usr/share/doc/packages
 %endif
 
 %if %is_centos
 %define __python    python2.5
 %define __where     lib/python2.5/site-packages
 %define __whereM2C  %{__libarch}/python2.5/site-packages
+%define __docdir    /usr/share/doc
 %endif
 
 Summary:       Elastic Utility Computing Architecture Command Line Tools
@@ -76,10 +78,13 @@ cd ../euca2ools
 cd ..
 install -g root -o root -m 755 -d /usrbin
 install -g root -o root -m 755 -d /usr/man/man1
+install -g root -o root -m 755 -d %{__docdir}/euca2ools-%{version}
 install -g root -o root -m 755  bin/* /usr/bin
 install -g root -o root -m 644  man/* /usr/man/man1
+install -g root -o root -m 755  INSTALL COPYING README %{__docdir}/euca2ools-%{version}
 
 %clean
+rm -rf %{__docdir}/euca2ools-%{version}
 rm -rf $RPM_BUILD_DIR/euca2ools-%{version}
 rm -rf /usr/%__whereM2C/M2Crypto
 rm -rf /usr/%__whereM2C/M2Crypto*egg-info
@@ -101,7 +106,7 @@ rm -rf /usr/man/man1/euca-*
 /usr/%__where/boto*egg-info
 /usr/%__where/euca2ools
 /usr/%__where/euca2ools*egg-info
-
+%{__docdir}/euca2ools-%{version}
 
 %changelog
 *Sat Jun 27 2009 Eucalyptus Systems (support@open.eucalyptus.com)
