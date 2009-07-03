@@ -10,7 +10,7 @@ ami-tools) and largely accept the same options and environment variables.
 However, these tools were implemented from scratch in Python, relying on 
 the Boto AWS library and M2Crypto toolkit.
 
-Here's the summary of the tasks that can be accomplished with these tools:
+Here is the summary of the tasks that can be accomplished with these tools:
 
 - Query of availability zones (i.e. clusters in Eucalyptus)
 - SSH key management (add, list, delete)

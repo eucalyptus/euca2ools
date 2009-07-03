@@ -49,14 +49,15 @@ sudo python setup.py install
 cd ..
 
 # Install M2Crypto, if necessary (which needs python-dev, swig, and libssl-dev)
-tar zxvxf deps/M2Crypto-0.19.1.tar.gz
+tar zxvf deps/M2Crypto-0.19.1.tar.gz
 cd M2Crypto-0.19.1
 sudo python setup.py install
 cd ..
 
 # Install Euca2ools in /usr/local/bin, adding it to your $PATH, if necessary
 sudo make
-export PATH=$PATH:/usr/local/bin
+
+export PATH=/usr/local/bin:$PATH (not necessary on most installations)
 
 =======
 Running
@@ -65,7 +66,7 @@ Running
 Euca2ools use cryptographic credentials for authentication.  Two types of
 credentials are issued by EC2- and S3-compatible services: x509 certificates
 and keys.  While some commands only require the latter, it is best to always
-specify both types of credentials.  Furthermore, unless the Web services 
+specify both types of credentials.  Furthermore, unless the front end Web services 
 reside on 'localhost', the URLs of the EC2- and S3-compatible service 
 endpoints must also be specified.
 
@@ -91,15 +92,8 @@ all of the above variables correctly.
 
 To get started, try:
 
-euca-describe-availability-zones verbose
+euca-describe-availability-zones
 AVAILABILITYZONE	mycluster	  UP mycluster.mydomain
-AVAILABILITYZONE	|- vm types	free / max   cpu   ram  disk
-AVAILABILITYZONE	|- m1.xlarge	0007 / 0008   1    512     3
-AVAILABILITYZONE	|- m1.small	0007 / 0008   1    512     3
-AVAILABILITYZONE	|- m1.large	0007 / 0008   1    512     3
-AVAILABILITYZONE	|- c1.xlarge	0007 / 0008   1    512     3
-AVAILABILITYZONE	|- c1.medium	0007 / 0008   1    512     3
-AVAILABILITYZONE	|- mync.mydomain	certs[cc=true,nc=true] @ Fri Apr 17 09:38:23 PDT 2009
 
 For more information, try the --help option of the individual commands. E.g.,
 
