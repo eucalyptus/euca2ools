@@ -162,7 +162,7 @@ class Util:
 
 --debug 			Turn on debugging.
 
-Euca2ools will use the environment variables EC2_URL, EC2_ACCESS_KEY, EC2_PRIVATE_KEY, EC2_CERT, EC2_PRIVATE_KEY, S3_URL, EUCALYPTUS_CERT by default.
+Euca2ools will use the environment variables EC2_URL, EC2_ACCESS_KEY, EC2_SECRET_KEY, EC2_CERT, EC2_PRIVATE_KEY, S3_URL, EUCALYPTUS_CERT by default.
     """    
  
     def usage(self):
