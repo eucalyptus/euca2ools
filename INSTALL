@@ -20,7 +20,7 @@ the M2Crypto cryptography and SSL toolkit.  The smallest acceptable
 versions for the dependencies are:
 
   Python   2.5 (dev) or higher
-  Boto     1.8c or higher
+  Boto     1.8d or higher
   M2Crypto 0.19.1 or higher 
 
 The source tarball includes the appropriate versions of Boto and M2Crypto,
@@ -43,7 +43,7 @@ tar zxvf euca2tools-1.0-src.tgz
 cd euca2tools-1.0
 
 # Install Boto, if necessary
-tar zxvf deps/boto-1.8c.tar.gz
+tar zxvf deps/boto-1.8d.tar.gz
 cd boto-1.8c
 sudo python setup.py install
 cd ..
