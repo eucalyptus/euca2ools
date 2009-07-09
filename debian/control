@@ -1,0 +1,35 @@
+Source: euca2ools
+Section: utils
+Priority: extra
+Maintainer: chris grzegorczyk <grze@eucalyptus.com>
+Build-Depends: cdbs, debhelper (>= 5.0.38), python-all-dev (>= 2.3.5-11), python-central (>= 0.5.6), help2man
+Standards-Version: 3.8.2
+XS-Python-Version: >= 2.5
+Homepage: http://www.eucalyptus.com/open/
+
+Package: euca2ools
+Architecture: all
+Depends: ${python:Depends}, python-m2crypto (>= 0.19.1), python-boto (>= 1.8c), ${misc:Depends}
+XB-Python-Version: ${python:Versions}
+Description: managing cloud instances for Eucalyptus
+ EUCALYPTUS is an open source service overlay that implements elastic
+ computing using existing resources. The goal of EUCALYPTUS is to allow
+ sites with existing clusters and server infrastructure to co-host an
+ elastic computing service that is interface-compatible with Amazon's EC2.
+ .
+ Elastic Utility Computing Architecture for Linking Your Programs
+ To Useful Systems - is an open-source software infrastructure for
+ implementing "cloud computing" on clusters.  Eucalyptus Systems is the
+ pioneer in open source cloud computing technology that delivers hybrid
+ cloud deployments for enterprise data centers. Leveraging Linux and web
+ service technologies that commonly exist in today's IT infrastructure,
+ Eucalyptus enables customers to quickly and easily create elastic clouds
+ in minutes. This "no lock-in" approach provides users with ultimate
+ flexibility when delivering their SLAs.
+ .
+ Eucalyptus is more than just virtualization. Along with building virtual
+ machines, the technology supports the network and storage infrastructure
+ within the cloud environment. Eucalyptus works with multiple flavors
+ of Linux including Ubuntu, OpenSuse, Debian, and CentOS. Eucalyptus
+ currently supports Xen and KVM hypervisors.  These tools are meant to
+ be CLI compatible with the ec2-api-tools.
