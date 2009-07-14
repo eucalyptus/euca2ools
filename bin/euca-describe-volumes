@@ -66,7 +66,9 @@ def display_volumes(volumes, volume_ids):
 	if check_volume_ids:
 	    if not volume.id in volume_ids:
 	        continue
-        volume_string = '%s\t%d' % (volume.id, volume.size)
+        volume_string = '%s\t ' % volume.id
+	if volume.size:
+	    volume_string += '%d' % volume.size
 	if volume.snapshot_id:
 	    volume_string += '\t%s' % (volume.snapshot_id)
 	volume_string += '\t%s\t%s' % (volume.status, volume.create_time)
