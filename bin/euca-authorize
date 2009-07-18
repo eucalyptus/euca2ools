@@ -82,7 +82,7 @@ def main():
         usage()
  
     group_name = None
-    protocol = None
+    protocol = 'tcp' 
     from_port = None
     to_port = None
     source_group_name = None
