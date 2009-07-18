@@ -49,6 +49,8 @@ group_name			Name of the group to add the rule to.
 
 OPTIONAL PARAMETERS
 
+-P, --protocol                  Protocol ("tcp" "udp" or "icmp").
+
 -p, --port-range		Range of ports for the rule (specified as "from-to").
 
 -t, --icmp-type-code		ICMP type and code specified as "type:code"	
