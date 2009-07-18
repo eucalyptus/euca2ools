@@ -38,9 +38,11 @@ from euca2ools import Euca2ool, Util
 usage_string = """
 Shows information about availability zones.
 
-euca-describe-availability-zones [-h, --help] [--version] [--debug] [zone1 zone2...zoneN]
+euca-describe-availability-zones [--region region] [-h, --help] [--version] [--debug] [zone1 zone2...zoneN]
 
 OPTIONAL PARAMETERS
+
+--region			region to describe availability zones for
 
 zone1 zone2...zoneN		zones to describe. 
 
@@ -56,7 +58,7 @@ def version():
     print version_string
     sys.exit()
 
-def display_zones(zones, zone_ids):
+def display_zones(zones, zone_ids, region):
     check_zone_ids = False
     if(len(zone_ids) > 0) and (not 'verbose' in zone_ids):
 	check_zone_ids = True
@@ -65,31 +67,37 @@ def display_zones(zones, zone_ids):
 	    if not zone.name in zone_ids:
 	        continue
         zone_string = '%s\t%s' % (zone.name, zone.state)
+	if region:
+	    zone_string += '\t%s' % region
 	print 'AVAILABILITYZONE\t%s' % (zone_string)
 
 def main():
     euca = None
+    region = None
     try:
-        euca = Euca2ool() 
+        euca = Euca2ool('', ['region=']) 
     except Exception, e:
 	print e
         usage()
     for name, value in euca.opts:
-        if name in ('-h', '--help'):
+	if name == '--region':
+	    region = value
+        elif name in ('-h', '--help'):
             usage()
 	elif name == '--version':
 	    version()
 
     debug = False
 
-   
+    if region:
+	os.environ['EC2_URL'] = 'https://' + region + ".ec2.amazonaws.com"
     zone_ids = euca.process_args()
     euca_conn = euca.make_connection()
     if 'verbose' in zone_ids:
 	zones = euca_conn.get_all_zones('verbose')
     else:
         zones = euca_conn.get_all_zones()
-    display_zones(zones, zone_ids)
+    display_zones(zones, zone_ids, region)
 if __name__ == "__main__":
     main()
  
