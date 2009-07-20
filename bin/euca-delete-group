@@ -80,7 +80,11 @@ def main():
 
     if group_name:
         euca_conn = euca.make_connection()
-	return_code = euca_conn.delete_security_group(name = group_name)
+	try:
+	    return_code = euca_conn.delete_security_group(name = group_name)
+        except Exception, ex:
+            euca.display_error_and_exit('%s' % ex)
+
 	if return_code:
 	    print 'GROUP\t%s' % (group_name)
     else:

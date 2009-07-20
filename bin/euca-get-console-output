@@ -93,7 +93,11 @@ def main():
             sys.exit(1)
 
         euca_conn = euca.make_connection()
-	console_output = euca_conn.get_console_output(instance_id)
+	try:
+	    console_output = euca_conn.get_console_output(instance_id)
+        except Exception, ex:
+            euca.display_error_and_exit('%s' % ex)
+
 	display_console_output(console_output)
     else:
     	print 'instance_id must be specified'

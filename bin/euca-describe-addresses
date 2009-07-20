@@ -90,7 +90,11 @@ def main():
         sys.exit(1)
 
     euca_conn = euca.make_connection()
-    addresses = euca_conn.get_all_addresses()
+    try:
+        addresses = euca_conn.get_all_addresses()
+    except Exception, ex:
+        euca.display_error_and_exit('%s' % ex)
+
     display_addresses(addresses, address_ids)
 if __name__ == "__main__":
     main()

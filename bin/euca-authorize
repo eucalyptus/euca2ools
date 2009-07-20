@@ -137,13 +137,17 @@ def main():
 	        print 'Invalid protocol', protocol
  	        sys.exit(1)
 
-        return_code = euca_conn.authorize_security_group(group_name = group_name,
+	try:
+            return_code = euca_conn.authorize_security_group(group_name = group_name,
 							src_security_group_name = source_group_name,
 							src_security_group_owner_id = source_group_owner_id,
 							ip_protocol = protocol,
 							from_port = from_port,
 							to_port = to_port,
 							cidr_ip = cidr_ip)
+        except Exception, ex:
+            euca.display_error_and_exit('%s' % ex)
+
         if return_code:
 	    print 'GROUP\t%s' % (group_name)
 	    permission_string = 'PERMISSION\t%s\tALLOWS' % group_name

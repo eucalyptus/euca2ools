@@ -84,7 +84,11 @@ def main():
 
     euca_conn = euca.make_connection()
     if keypair_name:
-        return_code = euca_conn.delete_key_pair(keypair_name)
+	try:
+            return_code = euca_conn.delete_key_pair(keypair_name)
+        except Exception, ex:
+            euca.display_error_and_exit('%s' % ex)
+
 	if return_code:
 	    print 'KEYPAIR\t%s' % (keypair_name)
     else:

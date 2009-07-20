@@ -83,7 +83,11 @@ def main():
 
     if image_id:
         euca_conn = euca.make_connection()
-	return_code = euca_conn.deregister_image(image_id = image_id)
+	try:
+	    return_code = euca_conn.deregister_image(image_id = image_id)
+        except Exception, ex:
+            euca.display_error_and_exit('%s' % ex)
+
 	if return_code:
 	    print 'IMAGE\t%s' % (image_id)
     else:

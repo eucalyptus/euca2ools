@@ -117,8 +117,12 @@ def main():
 	    except SnapshotValidationError:
 	    	print 'Invalid snapshot id'
 		sys.exit(1)
-       
-	volume = euca_conn.create_volume(size, zone, snapshot_id)
+
+	try:       
+	    volume = euca_conn.create_volume(size, zone, snapshot_id)
+	except Exception, ex:
+            euca.display_error_and_exit('%s' % ex)
+
 	display_volume(volume)
     else:
 	if not zone:

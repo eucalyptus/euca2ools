@@ -142,7 +142,8 @@ def main():
 
     if image_id:
         euca_conn = euca.make_connection()
-        reservation = euca_conn.run_instances(image_id = image_id,
+	try:
+            reservation = euca_conn.run_instances(image_id = image_id,
 					      min_count = min_count,
 					      max_count = max_count,
 					      key_name = keyname,
@@ -153,6 +154,9 @@ def main():
 					      placement = zone,
 					      kernel_id = kernel_id,
 					      ramdisk_id = ramdisk_id)
+        except Exception, ex:
+            euca.display_error_and_exit('%s' % ex)
+
         display_reservations(reservation)
     else:
 	print 'image_id must be specified'

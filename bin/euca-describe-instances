@@ -129,7 +129,11 @@ def main():
 
     #This is workaround for an issue with the front end (does not return the correct instances when an instance id is specified LP:356580)
     euca_conn = euca.make_connection()
-    reservations = euca_conn.get_all_instances(instance_ids)
+    try:
+        reservations = euca_conn.get_all_instances(instance_ids)
+    except Exception, ex:
+        euca.display_error_and_exit('%s' % ex)
+
     display_reservations(reservations, instance_ids)
 if __name__ == "__main__":
     main()

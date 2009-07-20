@@ -96,7 +96,11 @@ def main():
 
     group_ids = euca.process_args()
     euca_conn = euca.make_connection()
-    groups = euca_conn.get_all_security_groups()
+    try:
+        groups = euca_conn.get_all_security_groups()
+    except Exception, ex:
+        euca.display_error_and_exit('%s' % ex)
+
     display_groups(groups, group_ids)
 if __name__ == "__main__":
     main()

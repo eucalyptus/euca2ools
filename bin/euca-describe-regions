@@ -84,7 +84,11 @@ def main():
 
     region_ids = euca.process_args()
     euca_conn = euca.make_connection()
-    regions = euca_conn.get_all_regions()
+    try:
+        regions = euca_conn.get_all_regions()
+    except Exception, ex:
+        euca.display_error_and_exit('%s' % ex)
+
     display_regions(regions, region_ids)
 if __name__ == "__main__":
     main()

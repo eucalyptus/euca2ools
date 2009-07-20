@@ -92,9 +92,12 @@ def main():
         except InstanceValidationError:
    	    print 'Invalid instance id' 
             sys.exit(1)
-
-	rs = euca_conn.confirm_product_instance(product_code = product_code,
+	try:
+	    rs = euca_conn.confirm_product_instance(product_code = product_code,
 							       instance_id = instance_id)
+        except Exception, ex:
+            euca.display_error_and_exit('%s' % ex)
+
 	if rs:
 	    product_string = '%s\t%s\t' % (product_code, instance_id)
 	    if rs.status:

@@ -114,12 +114,16 @@ def main():
 
     if image_id:
         euca_conn = euca.make_connection()
-	return_code = euca_conn.modify_image_attribute(image_id = image_id,
+	try:
+	    return_code = euca_conn.modify_image_attribute(image_id = image_id,
  						       attribute = image_attribute,
 						       operation = operation_type,
 						       user_ids = user_ids,
 						       groups = groups,
 						       product_codes = product_codes)
+        except Exception, ex:
+            euca.display_error_and_exit('%s' % ex)
+
 	if return_code:
 	    print 'IMAGE\t%s' % (image_id)
     else:

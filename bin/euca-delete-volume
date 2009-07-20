@@ -88,7 +88,11 @@ def main():
             sys.exit(1)
 
         euca_conn = euca.make_connection()
-	return_code = euca_conn.delete_volume(volume_id)
+	try:
+	    return_code = euca_conn.delete_volume(volume_id)
+        except Exception, ex:
+            euca.display_error_and_exit('%s' % ex)
+
 	if return_code:
 	    print 'VOLUME\t%s' % (volume_id)
     else:

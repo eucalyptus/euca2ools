@@ -87,7 +87,11 @@ def main():
             sys.exit(1)
 
         euca_conn = euca.make_connection()
-        return_code = euca_conn.disassociate_address(public_ip = ip)
+	try:
+            return_code = euca_conn.disassociate_address(public_ip = ip)
+        except Exception, ex:
+            euca.display_error_and_exit('%s' % ex)
+
         if return_code:
             print 'ADDRESS\t%s' % ip
     else:

@@ -81,7 +81,11 @@ def main():
             sys.exit(1)
 
         euca_conn = euca.make_connection()
-        return_code = euca_conn.reboot_instances(instance_ids)
+	try:
+            return_code = euca_conn.reboot_instances(instance_ids)
+        except Exception, ex:
+            euca.display_error_and_exit('%s' % ex)
+
 	if return_code:
 	    for instance_id in instance_ids:
 		print 'INSTANCE\t%s' % (instance_id)

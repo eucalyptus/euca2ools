@@ -120,7 +120,11 @@ def main():
     image_ids = euca.process_args()
     #This is workaround for an issue with the front end (does not return an image set when an image id is specified LP:356389)
     euca_conn = euca.make_connection()
-    images = euca_conn.get_all_images(owners=owners, executable_by=executable_by)
+    try:
+        images = euca_conn.get_all_images(owners=owners, executable_by=executable_by)
+    except Exception, ex:
+        euca.display_error_and_exit('%s' % ex)
+
     display_images(images, image_ids)
 if __name__ == "__main__":
     main()

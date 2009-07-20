@@ -45,6 +45,7 @@ import urllib
 import re
 import shutil
 from boto.ec2.regioninfo import RegionInfo
+import logging
 
 BUNDLER_NAME = "euca-tools"
 BUNDLER_VERSION = "1.0"
@@ -209,7 +210,12 @@ class MetadataReadError:
     def __init__(self):
 	self.message = "Unable to read metadata"
 
+class NullHandler(logging.Handler):
+    def emit(self, record):
+        pass
+
 class Euca2ool:
+  
     def process_args(self):
         ids = []
         for arg in self.args:
@@ -254,6 +260,9 @@ class Euca2ool:
 	    self.img = SolarisImage(self.debug)
 	else:
 	    self.img = "Unsupported"
+
+    h = NullHandler()
+    logging.getLogger("boto").addHandler(h)
  
     def make_connection(self):
 	if not self.ec2_user_access_key:
@@ -882,3 +891,31 @@ class Euca2ool:
             mapping.append(self.get_instance_metadata(os.path.join('block-device-mapping', k)))
         return mapping
 
+    def display_error_and_exit(self, msg):
+	code = None
+	message = None
+	index = msg.find("<")
+	if (index < 0):
+	    print msg
+	    sys.exit(1) 
+	msg = msg[index-1:]
+	msg = msg.replace("\n", "")
+        dom = minidom.parseString(msg)
+	try:
+            error_elem = dom.getElementsByTagName('Error')[0]
+	    code_elem = error_elem.getElementsByTagName('Code')[0]
+            nodes = code_elem.childNodes
+            for node in nodes:
+	        if node.nodeType == node.TEXT_NODE:
+	            code = node.data
+
+	    msg_elem = error_elem.getElementsByTagName('Message')[0]
+            nodes = msg_elem.childNodes
+            for node in nodes:
+	        if node.nodeType == node.TEXT_NODE:
+	            message = node.data
+
+ 	    print "%s:" % code, message
+	except Exception:
+	    print msg
+	sys.exit(1)

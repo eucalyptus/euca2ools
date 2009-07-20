@@ -123,8 +123,12 @@ def main():
 
     if image_id and image_attribute:
         euca_conn = euca.make_connection()
-	image_attribute = euca_conn.get_image_attribute(image_id = image_id,
+	try:
+	    image_attribute = euca_conn.get_image_attribute(image_id = image_id,
 						     attribute = image_attribute)
+        except Exception, ex:
+            euca.display_error_and_exit('%s' % ex)
+
 	if image_attribute:
 	    display_image_attribute(image_attribute)
     else:

@@ -88,8 +88,12 @@ def main():
         group_name = arg
 	break
     if group_name and group_description:
-	group = euca_conn.create_security_group(name = group_name,
+	try:
+	    group = euca_conn.create_security_group(name = group_name,
 					       description = group_description)
+	except Exception, ex:
+            euca.display_error_and_exit('%s' % ex)
+
 	display_group(group)
     else:
 	if not group_name:

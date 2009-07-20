@@ -87,7 +87,10 @@ def main():
 	break
 
     if keypair_name:
-        keypair = euca_conn.create_key_pair(keypair_name)
+	try:
+            keypair = euca_conn.create_key_pair(keypair_name)
+	except Exception, ex:
+	    euca.display_error_and_exit('%s' % ex)
         display_keypair(keypair)
     else:
         print 'keypair_name must be specified'

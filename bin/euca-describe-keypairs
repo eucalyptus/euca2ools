@@ -85,7 +85,11 @@ def main():
     
     keypair_ids = euca.process_args()
     euca_conn = euca.make_connection()
-    keypairs = euca_conn.get_all_key_pairs()
+    try:
+        keypairs = euca_conn.get_all_key_pairs()
+    except Exception, ex:
+        euca.display_error_and_exit('%s' % ex)
+
     display_keypairs(keypairs, keypair_ids)
 if __name__ == "__main__":
     main()

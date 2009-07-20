@@ -81,7 +81,11 @@ def main():
 
     if image_location:
         euca_conn = euca.make_connection()
-	image_id = euca_conn.register_image(image_location = image_location)
+	try:
+	    image_id = euca_conn.register_image(image_location = image_location)
+        except Exception, ex:
+            euca.display_error_and_exit('%s' % ex)
+
 	print 'IMAGE\t%s' % (image_id)
     else:
     	print 'image_location must be specified'

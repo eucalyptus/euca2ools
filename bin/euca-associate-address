@@ -98,8 +98,12 @@ def main():
    	    print 'Invalid instance id' 
             sys.exit(1)
 
-        return_code = euca_conn.associate_address(instance_id = instance_id,
+	try:
+            return_code = euca_conn.associate_address(instance_id = instance_id,
 						 public_ip = ip)
+        except Exception, ex:
+            euca.display_error_and_exit('%s' % ex)
+
 	if return_code:
 	    print 'ADDRESS\t%s\t%s' % (ip, instance_id)
     else:

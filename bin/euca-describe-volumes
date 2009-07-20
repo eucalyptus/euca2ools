@@ -100,7 +100,11 @@ def main():
         sys.exit(1)
 
     euca_conn = euca.make_connection()
-    volumes = euca_conn.get_all_volumes()
+    try:
+        volumes = euca_conn.get_all_volumes()
+    except Exception, ex:
+        euca.display_error_and_exit('%s' % ex)
+
     display_volumes(volumes, volume_ids)
 if __name__ == "__main__":
     main()

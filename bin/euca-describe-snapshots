@@ -92,7 +92,11 @@ def main():
         sys.exit(1)
 
     euca_conn = euca.make_connection() 
-    snapshots = euca_conn.get_all_snapshots()
+    try:
+        snapshots = euca_conn.get_all_snapshots()
+    except Exception, ex:
+        euca.display_error_and_exit('%s' % ex)
+
     display_snapshots(snapshots, snapshot_ids)
 if __name__ == "__main__":
     main()

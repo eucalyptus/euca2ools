@@ -91,7 +91,11 @@ def main():
    	    print 'Invalid volume id' 
             sys.exit(1)
 
-	snapshot = euca_conn.create_snapshot(volume_id)
+	try:
+	    snapshot = euca_conn.create_snapshot(volume_id)
+        except Exception, ex:
+            euca.display_error_and_exit('%s' % ex)
+
 	display_snapshot(snapshot)
     else:
     	print 'volume_id must be specified'
