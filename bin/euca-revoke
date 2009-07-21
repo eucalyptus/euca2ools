@@ -110,8 +110,12 @@ def main():
         elif name in ('-t', '--icmp-type-code'):
             code_parts = value.split(":")
             if (len(code_parts) > 1):
-                from_port = int(code_parts[0])
-                to_port = int(code_parts[1])
+		try:
+                    from_port = int(code_parts[0])
+                    to_port = int(code_parts[1])
+                except ValueError:
+                    print "port must be an integer."
+		    sys.exit(1)
         elif name in ('-h', '--help'):
             usage()
 	elif name == '--version':
