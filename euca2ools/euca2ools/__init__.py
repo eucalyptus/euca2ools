@@ -166,7 +166,9 @@ class Util:
 Euca2ools will use the environment variables EC2_URL, EC2_ACCESS_KEY, EC2_SECRET_KEY, EC2_CERT, EC2_PRIVATE_KEY, S3_URL, EUCALYPTUS_CERT by default.
     """    
  
-    def usage(self):
+    def usage(self, compat=False):
+	if compat:
+	    self.usage_string = self.usage_string.replace("-s,", "-S,")
     	print self.usage_string
 	sys.exit()
 
@@ -222,17 +224,22 @@ class Euca2ool:
             ids.append(arg)
         return ids 
 
-    def __init__(self, short_opts=None, long_opts=None, is_s3=False):
+    def __init__(self, short_opts=None, long_opts=None, is_s3=False, compat=False):
 	self.ec2_user_access_key = None
 	self.ec2_user_secret_key = None
 	self.ec2_url = None
 	self.s3_url = None
 	self.is_s3 = is_s3
+	if compat:
+	    self.secret_key_opt = 'S'
+	else:
+	    self.secret_key_opt = 's'
 	if not short_opts:
 	    short_opts = ''
 	if not long_opts:
 	    long_opts = ['']
-	short_opts += 'ha:s:U:'
+	short_opts += 'ha:U:'
+	short_opts += '%s:' % self.secret_key_opt
 	long_opts += ['access-key=', 'secret-key=', 'url=', 'help', 'version', 'debug']
         opts, args = getopt.gnu_getopt(sys.argv[1:], short_opts,
                                   long_opts)
@@ -242,7 +249,7 @@ class Euca2ool:
         for name, value in opts:
             if name in ('-a', '--access-key'):
  		self.ec2_user_access_key = value
-	    elif name in ('-s', '--secret-key'):
+	    elif name in ('-%s' % self.secret_key_opt, '--secret-key'):
 		try:
 		    self.ec2_user_secret_key = int(value)
 		    self.ec2_user_secret_key = None

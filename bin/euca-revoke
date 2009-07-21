@@ -40,7 +40,7 @@ Revoke a rule for a security group.
 
 euca-revoke [-P | --protocol protocol] [-p | --port-range port_range] 
 [-t | --icmp-type-code type:code] [-o | --source-group source_group]
-[-u | --source-group-user source_group_user] [-S | --source-subnet source_subnet]
+[-u | --source-group-user source_group_user] [-s | --source-subnet source_subnet]
 [-h, --help] [--version] [--debug] group_name 
 
 REQUIRED PARAMETERS
@@ -48,6 +48,8 @@ REQUIRED PARAMETERS
 group_name			Name of the group to add the rule to.
 
 OPTIONAL PARAMETERS
+
+-P, --protocol                  Protocol ("tcp" "udp" or "icmp").
 
 -p, --port-range		Range of ports for the rule (specified as "from-to").
 
@@ -57,7 +59,7 @@ OPTIONAL PARAMETERS
 
 -u, --source-group-user		User ID for the source group.
 
--S, --source-subnet		The source subnet for the rule.
+-s, --source-subnet		The source subnet for the rule.
 
 """
 
@@ -65,7 +67,7 @@ version_string = """    euca-revoke version: 1.0 (BSD)"""
 
 def usage():
     print usage_string
-    Util().usage()
+    Util().usage(compat=True)
 
 def version():
     print version_string
@@ -74,15 +76,15 @@ def version():
 def main():
     euca = None
     try:
-        euca = Euca2ool('P:p:o:u:S:t:',
+        euca = Euca2ool('P:p:o:u:s:t:',
                                    ['protocol=', 'port-range=', 'source-group=',
-				    'source-group-user=', 'source-subnet=', 'icmp-type-code='])
+				    'source-group-user=', 'source-subnet=', 'icmp-type-code='], compat=True)
     except Exception, e:
 	print e
         usage()
  
     group_name = None
-    protocol = None
+    protocol = 'tcp' 
     from_port = None
     to_port = None
     source_group_name = None
@@ -103,7 +105,7 @@ def main():
 	    source_group_name = value
 	elif name in ('-u', '--source-group-user'):
 	    source_group_owner_id = value  
-	elif name in ('-S', '--source-subnet'):
+	elif name in ('-s', '--source-subnet'):
 	    cidr_ip = value
         elif name in ('-t', '--icmp-type-code'):
             code_parts = value.split(":")
