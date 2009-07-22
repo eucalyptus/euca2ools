@@ -43,7 +43,7 @@ Bundle the local filesystem of a running instance as a bundled image.
 euca-bundle-vol -u, --user user -s, --size size_in_MB
 [-c, --cert cert_path] [-k, --privatekey private_key_path] 
 [-a, --all] [-e, --exclude dir1, dir2,...dirN] [-p, --prefix prefix] [--[no-]inherit] [-v, --volume volume_path] [--fstab fstab_path] [--generate-fstab] [--kernel kernel_id] [--ramdisk ramdisk_id] [-B, --block-device-mapping mapping] 
-[-d, --destination destination_path] [--ec2cert ec2cert_path] [-r, --arch target_architecture] [--version]  
+[-d, --destination destination_path] [--ec2cert ec2cert_path] [-r, --arch target_architecture] [--batch] [--version]
 
 REQUIRED PARAMETERS
 
@@ -83,6 +83,7 @@ OPTIONAL PARAMETERS
 	
 --generate-fstab 		Generate fstab to bundle into the image.
 
+--batch                         Run in batch mode (compatibility only. has no effect).
 """
 
 MAX_IMAGE_SIZE = 1024 * 10
@@ -195,7 +196,6 @@ def main():
     mapping = None
     excludes_string = None
     excludes = None
-    batch=False
     all=False
     volume_path = "/"
     inherit = True
@@ -252,8 +252,6 @@ def main():
 	    mapping = value
 	elif name == '--no-inherit':
 	    inherit = False
-	elif name == '--batch':
-	    batch = True
 	elif name == '--generate-fstab':
 	    generate_fstab = True	
 	elif name == '--fstab':

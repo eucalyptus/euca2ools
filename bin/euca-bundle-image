@@ -42,7 +42,7 @@ euca-bundle-image -i, --image image_path -u, --user user [-c, --cert cert_path]
 [-k, --privatekey private_key_path] [-p, --prefix prefix] [--kernel kernel_id] 
 [--ramdisk ramdisk_id] [-B, --block-device-mapping mapping] 
 [-d, --destination destination_path] [--ec2cert ec2cert_path] 
-[-r, --arch target_architecture] [-h, --help] [--version] [--debug] 
+[-r, --arch target_architecture] [--batch] [-h, --help] [--version] [--debug] 
 
 REQUIRED PARAMETERS
 
@@ -69,6 +69,8 @@ OPTIONAL PARAMETERS
 --ec2cert_path 			The path to the Cloud's X509 public key certificate.
 
 -r, --arch			Target architecture for the image ('x86_64' or 'i386' default: 'x86_64').
+
+--batch				Run in batch mode (compatibility only. has no effect).
 """
 
 version_string = """    euca-bundle-image version: 1.0 (BSD)"""
@@ -108,7 +110,7 @@ def main():
     try:
 	euca = Euca2ool('i:c:k:u:B:d:br:p:',
                                    ['image=', 'cert=', 'privatekey=', 'user=', 'prefix=', 
-                                    'kernel=', 'ramdisk=', 'block-device-mapping=', 'destination=', 'ec2cert=', 'arch=', 'productcodes='])
+                                    'kernel=', 'ramdisk=', 'block-device-mapping=', 'destination=', 'ec2cert=', 'arch=', 'productcodes=', 'batch'])
     except Exception, e:
 	print e
         usage()
