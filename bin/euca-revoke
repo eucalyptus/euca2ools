@@ -103,6 +103,7 @@ def main():
 		from_port = to_port = int(ports[0])
 	elif name in ('-o', '--source-group'):
 	    source_group_name = value
+	    protocol = None
 	elif name in ('-u', '--source-group-user'):
 	    source_group_owner_id = value  
 	elif name in ('-s', '--source-subnet'):
@@ -120,7 +121,12 @@ def main():
             usage()
 	elif name == '--version':
 	    version()
-  
+
+    if source_group_name:
+        from_port = None
+        to_port = None
+        protocol = None
+ 
     for arg in euca.args:
 	group_name = arg
 	break

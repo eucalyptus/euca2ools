@@ -121,6 +121,10 @@ def main():
 	elif name == '--version':
 	    version()
 
+    if source_group_name:
+	from_port = None
+	to_port = None
+	protocol = None
     for arg in euca.args:
 	group_name = arg
 	break
