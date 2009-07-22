@@ -1,3 +1,10 @@
+euca2ools (1.0-2euca1) unstable; urgency=low
+
+  * Release 1.0 GA version
+  * Add README.debian  
+
+ -- chris grzegorczyk <grze@eucalyptus.com>  Thu, 16 Jul 2009 21:25:47 -0700
+
 euca2ools (1.0-2) unstable; urgency=low
 
   * Further addition to debian/control.

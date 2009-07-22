@@ -1,0 +1,27 @@
+Euca2ools for Debian
+====================
+
+When installing this package, you may have heard about the concept of cloud computing
+which was brought to considerable attention by the internet merchant Amazon and their EC2
+(elastic compute cloud) and S3 (storage) services. The Eucalyptus team provides such
+services themselves, too, but with an Open Source infrastructure, while achieving a binary
+compatibility with the Amazon API as an independent development.
+
+The basic concept behind the here represented concept of clouds is to have remote storage
+space in the cloud. That arbitrary data may also be bootable disk images, and the EC2
+functionality means to start one or multiple instances of these. The images are not
+necessarily provided by the respective user themselves, but they may instead be shared in
+communities. As such, clouds may be perceived as a continuation of the community-driven
+Linux distributions.
+
+This package provides the functionality to control disk images, i.e. to upload, start or
+stop them. Their initial preparation however is performed by different means, e.g. by the
+package vmbuilder or publicly shared scripts on the internet.
+
+See also
+
+ * http://open.eucalyptus.com/
+ * http://aws.amazon.com/ec2/
+ * http://alestic.com/
+ * vmbuilder (Debian/Ubuntu packages)
+ * http://wiki.debian.org/Cloud

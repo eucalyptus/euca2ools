@@ -67,6 +67,7 @@ distclean clean:
 		(cd $$subdir && $(MAKE) $@) || exit $$? ; done
 	rm -rf $(MANDIR) 
 
+
 uninstall: man
 	@for x in $(BINLIST); do \
 		rm -f $(PREFIX)/bin/$$x ; \
