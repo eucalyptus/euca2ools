@@ -57,6 +57,7 @@ IP_PROTOCOLS = ['ip', 'tcp', 'icmp']
 
 IMAGE_IO_CHUNK = 10 * 1024
 IMAGE_SPLIT_CHUNK = IMAGE_IO_CHUNK * 1024;
+MAX_LOOP_DEVS = 256;
 
 METADATA_URL = "http://169.254.169.254/latest/meta-data/"
 
@@ -813,7 +814,17 @@ class Euca2ool:
         return image_path
 
     def create_loopback(self, image_path):
-        return Popen(["losetup", "--show", "-f", ('%s' % (image_path))], stdout=PIPE).communicate()[0].replace('\n', '')
+	tries = 0
+	while tries < MAX_LOOP_DEVS:
+	    loop_dev = Popen(["losetup", "-f"], stdout=PIPE).communicate()[0].replace('\n', '')
+	    if loop_dev:
+	        output = Popen(["losetup", "%s" % loop_dev, "%s" % image_path], stdout=PIPE, stderr=PIPE).communicate()
+	        if not output[1]:
+		    return loop_dev
+	    else:
+		print "Could not create loopback device. Aborting"
+		sys.exit(1)
+	    tries += 1
 
     def mount_image(self, image_path):
         tmp_mnt_point = "/tmp/%s" % (hex(BN.rand(16)))[2:6]
