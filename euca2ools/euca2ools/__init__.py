@@ -53,7 +53,7 @@ VERSION = "2007-10-10"
 RELEASE = "31337"
 AES = 'AES-128-CBC'
 
-IP_PROTOCOLS = ['ip', 'tcp', 'icmp']
+IP_PROTOCOLS = ['tcp', 'udp', 'icmp']
 
 IMAGE_IO_CHUNK = 10 * 1024
 IMAGE_SPLIT_CHUNK = IMAGE_IO_CHUNK * 1024;
