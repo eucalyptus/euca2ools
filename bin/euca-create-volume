@@ -123,7 +123,8 @@ def main():
 	except Exception, ex:
             euca.display_error_and_exit('%s' % ex)
 
-	display_volume(volume)
+	if volume:
+	    display_volume(volume)
     else:
 	if not zone:
     	    print 'availability zone must be specified.'

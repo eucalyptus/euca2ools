@@ -86,6 +86,10 @@ none      /sys  sysfs   defaults 0 0
 	self.debug = debug
    
     def create_image(self, size_in_MB, image_path):
+        try:
+            self.check_prerequisite_command('losetup')  
+        except NotFoundError:
+            sys.exit(1)
         dd_cmd = ["dd"] 
         dd_cmd.append("if=/dev/zero")
         dd_cmd.append("of=%s" % (image_path))
@@ -97,6 +101,11 @@ none      /sys  sysfs   defaults 0 0
         Popen(dd_cmd, PIPE).communicate()[0]
 
     def make_fs(self, image_path):
+        try:
+            self.check_prerequisite_command(self.MAKEFS_CMD)  
+        except NotFoundError:
+            sys.exit(1)
+
 	if self.debug:
 	    print "Creating filesystem..."
         makefs_cmd = Popen([self.MAKEFS_CMD, "-F", image_path], PIPE).communicate()[0]
@@ -216,6 +225,10 @@ class MetadataReadError:
 class NullHandler(logging.Handler):
     def emit(self, record):
         pass
+
+class NotFoundError:
+    def __init__(self):
+	self.message = "Unable to find"
 
 class Euca2ool:
   
@@ -373,6 +386,18 @@ class Euca2ool:
 	relative_filename = self.get_relative_filename(filename)
 	return filename.replace(relative_filename, '')
 
+    def check_prerequisite_command(self, command):
+        cmd = [command]
+	try:
+            output = Popen(cmd, stdout=PIPE, stderr=PIPE).communicate()
+	except OSError, e:
+	    error_string = "%s" % e
+	    if "No such" in error_string:
+	        print "Command %s not found. Is it installed?" % command
+	        raise NotFoundError
+	    else:
+	  	raise OSError(e)
+
     def split_file(self, file, chunk_size):
         parts = []
         parts_digest = []
@@ -428,6 +453,12 @@ class Euca2ool:
 #        return tar_file
 
     def tarzip_image(self, prefix, file, path): 
+        try:
+            self.check_prerequisite_command('tar')
+            self.check_prerequisite_command('gzip') 
+        except NotFoundError:
+            sys.exit(1)
+
         print 'Tarring image'
         tar_file = '%s.tar.gz' % os.path.join(path, prefix)
 	outfile = open(tar_file, "wb")
@@ -814,6 +845,10 @@ class Euca2ool:
         return image_path
 
     def create_loopback(self, image_path):
+	try:
+	    self.check_prerequisite_command('losetup')
+	except NotFoundError:
+	    sys.exit(1)	
 	tries = 0
 	while tries < MAX_LOOP_DEVS:
 	    loop_dev = Popen(["losetup", "-f"], stdout=PIPE).communicate()[0].replace('\n', '')
@@ -827,6 +862,11 @@ class Euca2ool:
 	    tries += 1
 
     def mount_image(self, image_path):
+        try:
+            self.check_prerequisite_command('mount') 
+        except NotFoundError:
+            sys.exit(1)
+
         tmp_mnt_point = "/tmp/%s" % (hex(BN.rand(16)))[2:6]
         if not os.path.exists(tmp_mnt_point):
 	    os.makedirs(tmp_mnt_point)
@@ -839,6 +879,10 @@ class Euca2ool:
         return tmp_mnt_point, loop_dev
 
     def copy_to_image(self, mount_point, volume_path, excludes):
+	try:
+	    self.check_prerequisite_command('rsync')
+	except NotFoundError:
+	    raise CopyError
         rsync_cmd = ["rsync", "-aXS"]
         for exclude in excludes:
   	    rsync_cmd.append("--exclude")
@@ -860,6 +904,10 @@ class Euca2ool:
 	    raise CopyError
 
     def unmount_image(self, mount_point):
+        try:
+            self.check_prerequisite_command('umount') 
+        except NotFoundError:
+            sys.exit(1)
 	if self.debug:
 	    print "Unmounting image..."
         Popen(["umount", "-d", mount_point], stdout=PIPE).communicate()[0]

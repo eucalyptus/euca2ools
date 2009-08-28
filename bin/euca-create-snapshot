@@ -96,7 +96,8 @@ def main():
         except Exception, ex:
             euca.display_error_and_exit('%s' % ex)
 
-	display_snapshot(snapshot)
+	if snapshot:
+	    display_snapshot(snapshot)
     else:
     	print 'volume_id must be specified'
 	usage()
