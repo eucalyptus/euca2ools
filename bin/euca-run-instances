@@ -52,7 +52,12 @@ OPTIONAL PARAMETERS
 	
 -g, --group			Security group to run the instance under.
 
--k, --keypair			Name of a (previously created) keypair to associate with this reservation.			
+-k, --keypair			Name of a (previously created) keypair to associate with this reservation.		
+
+-d, --user-data			User data for instances read from the command line.
+
+-f, --user-data-file		User data for instances as a filename.
+
 --addressing			Addressing mode (e.g., private).
 
 -t, --instance-type		VM Image type to run the instance(s) as (default: m1.small).
@@ -86,12 +91,24 @@ def display_reservations(reservation):
 	instance_string = '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s' % (instance.id, instance.image_id, instance.public_dns_name, instance.private_dns_name, instance.state, instance.key_name, instance.launch_time, instance.kernel, instance.ramdisk)
 	print 'INSTANCE\t%s' % (instance_string)
 
+def read_user_data(user_data_filename):
+    USER_DATA_CHUNK_SIZE = 512
+    user_data = "";
+    user_data_file = open(user_data_filename, "r")
+    while 1:
+	data = user_data_file.read(USER_DATA_CHUNK_SIZE)
+	if not data:
+	    break
+	user_data += data
+    user_data_file.close()
+    return user_data
+
 def main():
     euca = None
     try:
-        euca = Euca2ool('k:n:t:g:d:z:',
+        euca = Euca2ool('k:n:t:g:d:f:z:',
                                    ['key=', 'kernel=', 'ramdisk=', 'instance-count=', 'instance-type=', 
-				    'group=', 'user-data=', 'addressing=', 'availability-zone='])
+				    'group=', 'user-data=', 'user-data-file=', 'addressing=', 'availability-zone='])
     except Exception, e:
 	print e
         usage()
@@ -105,6 +122,7 @@ def main():
     instance_type = 'm1.small' 
     group_names = [] 
     user_data = None
+    user_data_file = None
     addressing_type = None
     zone = None
     for name, value in euca.opts:
@@ -127,6 +145,8 @@ def main():
 	    group_names.append(value)
 	elif name in ('-d', '--user-data'):
 	    user_data = value
+	elif name in ('-f', '--user-data-file'):
+	    user_data_file = value
 	elif name == '--addressing':
 	    addressing_type = value
 	elif name in ('-z', '--availability-zone'):
@@ -141,6 +161,15 @@ def main():
 	break
 
     if image_id:
+	if not user_data:
+	    if user_data_file:
+        	try:
+            	    euca.validate_file(user_data_file)
+        	except FileValidationError:
+            	    print 'Invalid user data file path'
+            	    sys.exit(1)
+		user_data = read_user_data(user_data_file)
+
         euca_conn = euca.make_connection()
 	try:
             reservation = euca_conn.run_instances(image_id = image_id,
