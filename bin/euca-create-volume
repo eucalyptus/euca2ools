@@ -120,11 +120,11 @@ def main():
 
 	try:       
 	    volume = euca_conn.create_volume(size, zone, snapshot_id)
+  	    if volume:
+	        display_volume(volume)
 	except Exception, ex:
             euca.display_error_and_exit('%s' % ex)
 
-	if volume:
-	    display_volume(volume)
     else:
 	if not zone:
     	    print 'availability zone must be specified.'

@@ -86,10 +86,6 @@ none      /sys  sysfs   defaults 0 0
 	self.debug = debug
    
     def create_image(self, size_in_MB, image_path):
-        try:
-            self.check_prerequisite_command('losetup')  
-        except NotFoundError:
-            sys.exit(1)
         dd_cmd = ["dd"] 
         dd_cmd.append("if=/dev/zero")
         dd_cmd.append("of=%s" % (image_path))
@@ -840,6 +836,10 @@ class Euca2ool:
  	if self.img == "Unsupported":
 	    print "Platform not fully supported."
 	    sys.exit(1)
+        try:
+            self.check_prerequisite_command('dd')  
+        except NotFoundError:
+            sys.exit(1)
         self.img.create_image(size_in_MB, image_path)
         self.img.make_fs(image_path)        
         return image_path

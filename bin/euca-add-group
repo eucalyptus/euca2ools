@@ -76,7 +76,7 @@ def main():
 
     for name, value in euca.opts:
         if name in ('-d', '--description'):
-            group_description = value 
+            group_description = value
         elif name in ('-h', '--help'):
             usage()
 	elif name == '--version':
