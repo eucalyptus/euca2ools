@@ -451,7 +451,6 @@ class Euca2ool:
     def tarzip_image(self, prefix, file, path): 
         try:
             self.check_prerequisite_command('tar')
-            self.check_prerequisite_command('gzip') 
         except NotFoundError:
             sys.exit(1)
 
