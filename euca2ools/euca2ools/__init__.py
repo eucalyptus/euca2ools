@@ -824,7 +824,7 @@ class Euca2ool:
 	    fs_type = mtab_line_parts[2]
 	    if (mount_point.find(path) == 0) and (fs_type not in self.img.ALLOWED_FS_TYPES):
 	        excludes.append(mount_point)
-
+        mtab_file.close()
         for banned in self.img.BANNED_MOUNTS:
 	    excludes.append(banned)
 
@@ -837,7 +837,7 @@ class Euca2ool:
 	    print "Platform not fully supported."
 	    sys.exit(1)
         try:
-            self.check_prerequisite_command('dd')  
+            self.check_prerequisite_command('dd --help')  
         except NotFoundError:
             sys.exit(1)
         self.img.create_image(size_in_MB, image_path)
