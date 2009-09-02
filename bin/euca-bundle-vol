@@ -200,6 +200,7 @@ def main():
     volume_path = "/"
     inherit = True
     product_codes = None
+    ancestor_ami_ids = None
     fstab_path = None
     generate_fstab = False
     product_code_string = None
