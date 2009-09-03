@@ -65,7 +65,19 @@ class LinuxImage:
     ALLOWED_FS_TYPES = ['ext2', 'ext3', 'xfs', 'jfs', 'reiserfs']
     BANNED_MOUNTS = ['/dev', '/media', '/mnt', '/proc', '/sys', '/cdrom', '/tmp']
     ESSENTIAL_DIRS = ['proc', 'tmp', 'dev', 'mnt', 'sys']
-    MAKEFS_CMD = 'mkfs.ext2'
+    ESSENTIAL_DEVS = [[os.path.join('dev', 'console'), 'c', '5', '1'],
+		      [os.path.join('dev', 'full'), 'c', '1', '7'],
+		      [os.path.join('dev', 'null'), 'c', '1', '3'],
+		      [os.path.join('dev', 'zero'), 'c', '1', '5'],
+		      [os.path.join('dev', 'tty'), 'c', '5', '0'],
+		      [os.path.join('dev', 'tty0'), 'c', '4', '0'],
+		      [os.path.join('dev', 'tty1'), 'c', '4', '1'],
+ 		      [os.path.join('dev', 'tty2'), 'c', '4', '2'],
+ 		      [os.path.join('dev', 'tty3'), 'c', '4', '3'],
+ 		      [os.path.join('dev', 'tty4'), 'c', '4', '4'],
+ 		      [os.path.join('dev', 'tty5'), 'c', '4', '5'],
+		      [os.path.join('dev', 'xvc0'), 'c', '204', '191']]
+    MAKEFS_CMD = 'mkfs.ext3'
     NEW_FSTAB = """
 /dev/sda1 /     ext3    defaults 1 1
 /dev/sdb  /mnt  ext3    defaults 0 0
@@ -74,13 +86,11 @@ none      /proc proc    defaults 0 0
 none      /sys  sysfs   defaults 0 0
     """   
 
-    OLD_FSTAB = """
-/dev/sda1 /     ext3    defaults 1 1
-/dev/sda2 /mnt  ext3    defaults 0 0
-/dev/sda3 swap  swap    defaults 0 0
-none      /proc proc    defaults 0 0
-none      /sys  sysfs   defaults 0 0
-    """
+    OLD_FSTAB = """/dev/sda1       /             ext3     defaults,errors=remount-ro 0 0
+/dev/sda2	/mnt	      ext3     defaults			  0 0
+/dev/sda3	swap	      swap     defaults			  0 0
+proc            /proc         proc     defaults                   0 0
+devpts          /dev/pts      devpts   gid=5,mode=620             0 0"""
  
     def __init__(self, debug=False):
 	self.debug = debug
@@ -98,7 +108,7 @@ none      /sys  sysfs   defaults 0 0
 
     def make_fs(self, image_path):
         try:
-            self.check_prerequisite_command(self.MAKEFS_CMD)  
+            Util().check_prerequisite_command(self.MAKEFS_CMD)  
         except NotFoundError:
             sys.exit(1)
 
@@ -106,13 +116,17 @@ none      /sys  sysfs   defaults 0 0
 	    print "Creating filesystem..."
         makefs_cmd = Popen([self.MAKEFS_CMD, "-F", image_path], PIPE).communicate()[0]
 
-    def add_fstab(self, mount_point, fstab_path):
+    def add_fstab(self, mount_point, generate_fstab, fstab_path):
 	if not fstab_path:
 	    return
 	fstab = None
 	if fstab_path == "old":
+	    if not generate_fstab:
+		return
 	    fstab = self.OLD_FSTAB
 	elif fstab_path == "new":
+	    if not generate_fstab:
+		return
 	    fstab = self.NEW_FSTAB
 
         etc_file_path = os.path.join(mount_point, "etc")
@@ -139,6 +153,13 @@ none      /sys  sysfs   defaults 0 0
 	    orig_fstab_file.close()
 	fstab_file.close()	
 
+    def make_essential_devs(self, image_path):
+	for entry in self.ESSENTIAL_DEVS:
+	    cmd = ['mknod']
+	    entry[0] = os.path.join(image_path, entry[0])
+	    cmd.extend(entry)
+            Popen(cmd, stdout=PIPE, stderr=PIPE).communicate()
+
 class SolarisImage:
     ALLOWED_FS_TYPES = ['ext2', 'ext3', 'xfs', 'jfs', 'reiserfs']
     BANNED_MOUNTS = ['/dev', '/media', '/mnt', '/proc', '/sys', '/cdrom', '/tmp']
@@ -152,6 +173,10 @@ class SolarisImage:
 	sys.exit(1)
 
     def make_fs(self, image_path):
+	print "Sorry. Solaris not supported yet"
+	sys.exit(1)
+
+    def make_essential_devs(self, image_path):
 	print "Sorry. Solaris not supported yet"
 	sys.exit(1)
 
@@ -177,6 +202,18 @@ Euca2ools will use the environment variables EC2_URL, EC2_ACCESS_KEY, EC2_SECRET
 	    self.usage_string = self.usage_string.replace("-s,", "-S,")
     	print self.usage_string
 	sys.exit()
+
+    def check_prerequisite_command(self, command):
+        cmd = [command]
+	try:
+            output = Popen(cmd, stdout=PIPE, stderr=PIPE).communicate()
+	except OSError, e:
+	    error_string = "%s" % e
+	    if "No such" in error_string:
+	        print "Command %s not found. Is it installed?" % command
+	        raise NotFoundError
+	    else:
+	  	raise OSError(e)
 
 class AddressValidationError:
     def __init__(self):
@@ -382,18 +419,6 @@ class Euca2ool:
 	relative_filename = self.get_relative_filename(filename)
 	return filename.replace(relative_filename, '')
 
-    def check_prerequisite_command(self, command):
-        cmd = [command]
-	try:
-            output = Popen(cmd, stdout=PIPE, stderr=PIPE).communicate()
-	except OSError, e:
-	    error_string = "%s" % e
-	    if "No such" in error_string:
-	        print "Command %s not found. Is it installed?" % command
-	        raise NotFoundError
-	    else:
-	  	raise OSError(e)
-
     def split_file(self, file, chunk_size):
         parts = []
         parts_digest = []
@@ -450,7 +475,7 @@ class Euca2ool:
 
     def tarzip_image(self, prefix, file, path): 
         try:
-            self.check_prerequisite_command('tar')
+            Util().check_prerequisite_command('tar')
         except NotFoundError:
             sys.exit(1)
 
@@ -822,8 +847,10 @@ class Euca2ool:
 	    mount_point = mtab_line_parts[1]
 	    fs_type = mtab_line_parts[2]
 	    if (mount_point.find(path) == 0) and (fs_type not in self.img.ALLOWED_FS_TYPES):
+		if self.debug:
+		    print 'Excluding %s...' % mount_point
 	        excludes.append(mount_point)
-        mtab_file.close()
+	mtab_file.close()
         for banned in self.img.BANNED_MOUNTS:
 	    excludes.append(banned)
 
@@ -835,17 +862,13 @@ class Euca2ool:
  	if self.img == "Unsupported":
 	    print "Platform not fully supported."
 	    sys.exit(1)
-        try:
-            self.check_prerequisite_command('dd --help')  
-        except NotFoundError:
-            sys.exit(1)
         self.img.create_image(size_in_MB, image_path)
         self.img.make_fs(image_path)        
         return image_path
 
     def create_loopback(self, image_path):
 	try:
-	    self.check_prerequisite_command('losetup')
+	    Util().check_prerequisite_command('losetup')
 	except NotFoundError:
 	    sys.exit(1)	
 	tries = 0
@@ -862,7 +885,7 @@ class Euca2ool:
 
     def mount_image(self, image_path):
         try:
-            self.check_prerequisite_command('mount') 
+            Util().check_prerequisite_command('mount') 
         except NotFoundError:
             sys.exit(1)
 
@@ -879,7 +902,7 @@ class Euca2ool:
 
     def copy_to_image(self, mount_point, volume_path, excludes):
 	try:
-	    self.check_prerequisite_command('rsync')
+	    Util().check_prerequisite_command('rsync')
 	except NotFoundError:
 	    raise CopyError
         rsync_cmd = ["rsync", "-aXS"]
@@ -899,12 +922,13 @@ class Euca2ool:
                 os.mkdir(dir_path)
 		if dir == "tmp":
 		    os.chmod(dir_path, 01777)
+	self.img.make_essential_devs(mount_point)
 	if output[1]:
 	    raise CopyError
 
     def unmount_image(self, mount_point):
         try:
-            self.check_prerequisite_command('umount') 
+            Util().check_prerequisite_command('umount') 
         except NotFoundError:
             sys.exit(1)
 	if self.debug:
@@ -912,14 +936,14 @@ class Euca2ool:
         Popen(["umount", "-d", mount_point], stdout=PIPE).communicate()[0]
         os.rmdir(mount_point)
 
-    def copy_volume(self, image_path, volume_path, excludes, fstab_path):
+    def copy_volume(self, image_path, volume_path, excludes, generate_fstab, fstab_path):
         mount_point, loop_dev = self.mount_image(image_path)
 	try:
             output = self.copy_to_image(mount_point, volume_path, excludes)
    	    if self.img == "Unsupported":
 	        print "Platform not fully supported."
 	        sys.exit(1)
-	    self.img.add_fstab(mount_point, fstab_path)
+	    self.img.add_fstab(mount_point, generate_fstab, fstab_path)
 	except CopyError:
 	    raise CopyError 
 	finally:

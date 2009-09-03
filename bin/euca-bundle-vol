@@ -317,7 +317,7 @@ def main():
 	        exclude_image = exclude_image.replace(image_path_parts[0] + "/", "", 1)
 	    excludes.append(exclude_image)
 	try:
-            euca.copy_volume(image_path, volume_path, excludes, fstab_path)
+            euca.copy_volume(image_path, volume_path, excludes, generate_fstab, fstab_path)
 	except CopyError:
 	    print "Unable to copy files" 
 	    cleanup(image_path)
@@ -332,7 +332,7 @@ def main():
 	parts, parts_digest = euca.split_image(encrypted_file)
 	euca.generate_manifest(destination_path, prefix, parts, parts_digest, image_path, key, iv, cert_path, ec2cert_path, private_key_path, target_arch, image_size, bundled_size, sha_image_digest, user, kernel, ramdisk, mapping, product_codes, ancestor_ami_ids)
         os.remove(encrypted_file)
-	cleanup(image_path)
+#	cleanup(image_path)
     else:
 	if not size_in_MB:
 	    print 'size must be specified.'
