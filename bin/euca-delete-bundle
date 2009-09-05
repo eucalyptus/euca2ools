@@ -43,7 +43,7 @@ usage_string = """
 
 Delete a previously uploaded bundle.    
 
-euca-delete-bundle -b, --bucket bucket [-m, --manifest manifest_path] [-d, --directory directory]
+euca-delete-bundle -b, --bucket bucket [-m, --manifest manifest_path]
 [-p, --prefix prefix] [--clear] [-h, --help] [--version] [--debug]
  
 REQUIRED PARAMETERS	
