@@ -54,9 +54,12 @@ OPTIONAL PARAMETERS
 	
 -m, --manifest			The path to the manifest file.
 
--d, --directory 		The name of the directory to download the bundled parts to.
+-b, --bucket			The bucket to delete the bundle from (if no 
+				manifest is specified, all images from this 
+				bucket will be deleted).
 
--p, --prefix 			The filename prefix for bundled files. Defaults to image name.
+-p, --prefix 			The filename prefix for bundled files. Defaults
+				to image name.
 
 --clear 			Delete the bucket containing the image.
 
