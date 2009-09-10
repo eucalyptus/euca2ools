@@ -201,7 +201,7 @@ Euca2ools will use the environment variables EC2_URL, EC2_ACCESS_KEY, EC2_SECRET
 	if compat:
 	    self.usage_string = self.usage_string.replace("-s,", "-S,")
     	print self.usage_string
-	sys.exit()
+	sys.exit(1)
 
     def check_prerequisite_command(self, command):
         cmd = [command]
