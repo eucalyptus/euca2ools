@@ -39,7 +39,7 @@ usage_string = """
 Modify attributes for an image.
 
 euca-modify-image-attribute [-l, --launch-permission] [-p, --product-code] 
-[-A, --add entity ] [-R, --remove entity]
+[-a, --add entity ] [-r, --remove entity]
 [-h, --help] [--version] [--debug] image_id 
 
 REQUIRED PARAMETERS
@@ -49,17 +49,19 @@ image_id			Unique identifier for the image that you want to modify the attribute
 OPTIONAL PARAMETERS
 
 -l, --launch-permission 	Show launch permissions.
--p, --product-code		Show the product codes associated with the image
--A, -add			Entity (typically, user id) to add.
--R, --remove			Entity (typically, user id) to remove.
 
+-p, --product-code		Show the product codes associated with the image
+
+-a, -add			Entity (typically, user id) to add.
+
+-r, --remove			Entity (typically, user id) to remove.
 """
 
 version_string = """    euca-modify-image-attribute version: 1.0 (BSD)"""
 
 def usage():
     print usage_string
-    Util().usage()
+    Util().usage(compat=True)
 
 def version():
     print version_string
@@ -68,8 +70,8 @@ def version():
 def main():
     euca = None
     try:
-        euca = Euca2ool('lp:A:R:',
-                                   ['launch-permission', 'product-code=', 'add=', 'remove='])
+        euca = Euca2ool('lp:a:r:',
+                                   ['launch-permission', 'product-code=', 'add=', 'remove='], compat=True)
     except Exception, e:
 	print e
         usage()
@@ -91,10 +93,10 @@ def main():
 	elif name in ('-l', '--launch-permission'):
 	    if not image_attribute:
 		image_attribute = 'launchPermission'
-	elif name in ('-A', '--add'):
+	elif name in ('-a', '--add'):
 	    entity = value
 	    operation_type = 'add' 	
-	elif name in ('-R', '--remove'):
+	elif name in ('-r', '--remove'):
 	    entity = value 	
 	    operation_type = 'remove'
         elif name in ('-h', '--help'):

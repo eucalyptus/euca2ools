@@ -200,6 +200,7 @@ Euca2ools will use the environment variables EC2_URL, EC2_ACCESS_KEY, EC2_SECRET
     def usage(self, compat=False):
 	if compat:
 	    self.usage_string = self.usage_string.replace("-s,", "-S,")
+	    self.usage_string = self.usage_string.replace("-a,", "-A,")
     	print self.usage_string
 	sys.exit(1)
 
@@ -279,14 +280,17 @@ class Euca2ool:
 	self.is_s3 = is_s3
 	if compat:
 	    self.secret_key_opt = 'S'
+	    self.access_key_opt = 'A'
 	else:
 	    self.secret_key_opt = 's'
+	    self.access_key_opt = 'a'
 	if not short_opts:
 	    short_opts = ''
 	if not long_opts:
 	    long_opts = ['']
-	short_opts += 'ha:U:'
+	short_opts += 'hU:'
 	short_opts += '%s:' % self.secret_key_opt
+	short_opts += '%s:' % self.access_key_opt
 	long_opts += ['access-key=', 'secret-key=', 'url=', 'help', 'version', 'debug']
         opts, args = getopt.gnu_getopt(sys.argv[1:], short_opts,
                                   long_opts)
@@ -294,7 +298,7 @@ class Euca2ool:
 	self.args = args
 	self.debug = False
         for name, value in opts:
-            if name in ('-a', '--access-key'):
+            if name in ('-%s' % self.access_key_opt, '--access-key'):
  		self.ec2_user_access_key = value
 	    elif name in ('-%s' % self.secret_key_opt, '--secret-key'):
 		try:
