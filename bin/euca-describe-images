@@ -93,7 +93,7 @@ def main():
         usage()
  
     show_all = False
-    executable_by = []
+    executable_by = ['self']
     owners = ['self'] 
     defaults = True
 
