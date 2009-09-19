@@ -86,9 +86,10 @@ def main():
         except Exception, ex:
             euca.display_error_and_exit('%s' % ex)
 
-	print 'IMAGE\t%s' % (image_id)
+	if image_id:
+	    print 'IMAGE\t%s' % (image_id)
     else:
-    	print 'image_location must be specified'
+    	print 'image location must be specified'
 	usage()
 if __name__ == "__main__":
     main()

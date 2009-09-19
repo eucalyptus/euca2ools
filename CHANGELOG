@@ -1,0 +1,13 @@
+
+
+	* A number of bug fixes including,
+		#404951 #429010 #427367 #424212 
+		#423500 #419583 #417937 #419583 
+		#413735 #409732 #407710 #401225 
+		#403244 #402670 #401172 #401222
+	  	#401190 
+	* Addressed incompatibility in several command line options.
+	* Number of fixes for euca-bundle-vol
+	* euca-describe-availability-zones accepts "--region"
+	* Better error reporting for fault strings.
+	* Incorporated changes to debian rules from Steffen Moeller et al
