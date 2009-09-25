@@ -59,6 +59,8 @@ def version():
     sys.exit()
 
 def display_snapshot(snapshot):
+    if not snapshot.id:
+	return
     snapshot_string = '%s\t%s\t%s\t%s\t%s' % (snapshot.id, snapshot.volume_id, snapshot.status, snapshot.start_time, snapshot.progress)
     print 'SNAPSHOT\t%s' % (snapshot_string)
 

@@ -64,7 +64,8 @@ def version():
     sys.exit()
 
 def display_volume(volume):
-        
+    if not volume.id:
+	return 
     volume_string = '%s' % (volume.id)
     if volume.size:
 	volume_string += '\t%d' % (volume.size)
