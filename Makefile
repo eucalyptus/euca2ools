@@ -51,8 +51,9 @@ man: $(MANPAGES)
 $(MANPAGES): $(BINLIST)
 	@echo "Generating manpages..."
 	mkdir -p $(MANDIR) 
-	@for x in $(BINLIST); do \
+	@export PYTHONPATH=$(CURDIR)/euca2ools; for x in $(BINLIST); do \
 		DESCR=`$$x --help | head -n2 | tail -n1`; help2man $$x -o $(MANDIR)/`basename $$x`.1 -n "Eucalyptus tool: $${DESCR}  " ; done
+ 
 
 install: build
 	@for subdir in $(SUBDIRS); do \
