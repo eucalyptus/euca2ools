@@ -62,7 +62,6 @@ def display_reservations(reservations, instance_ids):
     if(len(instance_ids) > 0):
 	check_instance_ids = True
     for reservation in reservations:
-        dont_display = False
 	instances = []
         if check_instance_ids:
  	    for instance in reservation.instances:
@@ -127,7 +126,6 @@ def main():
         print 'Invalid instance id'
         sys.exit(1)
 
-    #This is workaround for an issue with the front end (does not return the correct instances when an instance id is specified LP:356580)
     euca_conn = euca.make_connection()
     try:
         reservations = euca_conn.get_all_instances(instance_ids)
