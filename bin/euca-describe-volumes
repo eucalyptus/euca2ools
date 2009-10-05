@@ -71,6 +71,10 @@ def display_volumes(volumes, volume_ids):
 	    volume_string += '%d' % volume.size
 	if volume.snapshot_id:
 	    volume_string += '\t%s' % (volume.snapshot_id)
+	else:
+	    volume_string += '\t'
+	if volume.availabilityZone:
+ 	    volume_string += '\t%s' % volume.availabilityZone
 	volume_string += '\t%s\t%s' % (volume.status, volume.create_time)
 	print 'VOLUME\t%s' % (volume_string)
 	if volume.status == 'in-use':
