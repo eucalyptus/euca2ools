@@ -97,6 +97,7 @@ def main():
             euca.validate_volume_id(volume_id)
 	except VolumeValidationError:
 	    print 'Invalid volume id'
+	    sys.exit(1)
 	try:
 	    euca.validate_instance_id(instance_id)
         except InstanceValidationError:
