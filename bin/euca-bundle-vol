@@ -73,7 +73,7 @@ OPTIONAL PARAMETERS
 
 -d, --destination		Directory to store the bundled image in (default: "/tmp"). Recommended. 
 
---ec2cert_path 			The path to the Cloud's X509 public key certificate.
+--ec2cert			The path to the Cloud's X509 public key certificate.
 
 -r, --arch			Target architecture for the image ('x86_64' or 'i386' default: 'x86_64').
 
