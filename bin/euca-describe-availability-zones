@@ -59,13 +59,7 @@ def version():
     sys.exit()
 
 def display_zones(zones, zone_ids, region):
-    check_zone_ids = False
-    if(len(zone_ids) > 0) and (not 'verbose' in zone_ids):
-	check_zone_ids = True
     for zone in zones:
-	if check_zone_ids:
-	    if not zone.name in zone_ids:
-	        continue
         zone_string = '%s\t%s' % (zone.name, zone.state)
 	if region:
 	    zone_string += '\t%s' % region
@@ -94,10 +88,7 @@ def main():
     zone_ids = euca.process_args()
     euca_conn = euca.make_connection()
     try:
-        if 'verbose' in zone_ids:
-	    zones = euca_conn.get_all_zones('verbose')
-        else:
-            zones = euca_conn.get_all_zones()
+         zones = euca_conn.get_all_zones(zone_ids)
     except Exception, ex:
         euca.display_error_and_exit('%s' % ex)
 
