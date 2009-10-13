@@ -927,6 +927,22 @@ class Euca2ool:
 		if dir == "tmp":
 		    os.chmod(dir_path, 01777)
 	self.img.make_essential_devs(mount_point)
+        mtab_file = open("/etc/mtab", "r")
+        while 1:
+  	    mtab_line = mtab_file.readline()
+	    if not mtab_line:
+	        break
+	    mtab_line_parts = mtab_line.split(' ')
+	    mount_location = mtab_line_parts[1]
+	    fs_type = mtab_line_parts[2]
+	    if fs_type == "tmpfs":
+		mount_location = mount_location[1:]
+	        dir_path = os.path.join(mount_point, mount_location)
+		if not os.path.exists(dir_path):
+		    if self.debug:
+		        print 'Making essential directory %s' % mount_location 
+		        os.makedirs(dir_path)	    
+	mtab_file.close()
 	if output[1]:
 	    raise CopyError
 
