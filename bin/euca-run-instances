@@ -34,7 +34,6 @@
 
 import getopt, sys, os
 from euca2ools import Euca2ool, Util
-import base64
 
 usage_string = """
 Starts instances.
@@ -170,8 +169,6 @@ def main():
             	    print 'Invalid user data file path'
             	    sys.exit(1)
 		user_data = read_user_data(user_data_file)
-	if user_data:
-	    user_data = base64.urlsafe_b64encode(user_data)
         euca_conn = euca.make_connection()
 	try:
             reservation = euca_conn.run_instances(image_id = image_id,
