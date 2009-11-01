@@ -42,15 +42,13 @@ PREFIX			=	/usr/local
 
 all: build install
 
-build: $(MANPAGES)
+build: man
 	@for subdir in $(SUBDIRS); do \
                 (cd $$subdir && $(MAKE) $@) || exit $$? ; done
 
-man: $(MANPAGES)
-
-$(MANPAGES): $(BINLIST)
-	@echo "Generating manpages..."
-	@if ( ! which help2man > /dev/null ); then echo "You'll need to install help2man to generate/install the manpages"; else mkdir -p $(MANDIR); export PYTHONPATH=$(CURDIR)/euca2ools; for x in $(BINLIST); do DESCR=`$$x --help | head -n2 | tail -n1`; help2man $$x -N -o $(MANDIR)/`basename $$x`.1 -n "Eucalyptus tool: $${DESCR}  " ; done; fi
+man: $(BINLIST)
+	@echo "Re-generating manpages..."
+	@if ( ! which help2man > /dev/null ); then echo "You'll need to install help2man to re-generate the manpages"; else mkdir -p $(MANDIR); rm -rf $(MANDIR)/*; export PYTHONPATH=$(CURDIR)/euca2ools; for x in $(BINLIST); do DESCR=`$$x --help | head -n2 | tail -n1`; help2man $$x -N -o $(MANDIR)/`basename $$x`.1 -n "Eucalyptus tool: $${DESCR}  " ; done; fi
 
 install: build
 	@for subdir in $(SUBDIRS); do \
@@ -63,12 +61,8 @@ install: build
 distclean clean:
 	@for subdir in $(SUBDIRS); do \
 		(cd $$subdir && $(MAKE) $@) || exit $$? ; done
-	rm -rf $(MANDIR) 
 
-
-uninstall: man
+uninstall:
 	@for x in $(BINLIST); do \
 		rm -f $(PREFIX)/bin/$$x ; \
 		rm -f $(PREFIX)/man/man1/`basename $$x`.1; done
-	done
-
