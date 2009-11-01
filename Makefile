@@ -50,11 +50,7 @@ man: $(MANPAGES)
 
 $(MANPAGES): $(BINLIST)
 	@echo "Generating manpages..."
-	mkdir -p $(MANDIR) 
-	@if ( ! which help2man > /dev/null ); then echo "need to install help2man"; exit 1; fi
-	@export PYTHONPATH=$(CURDIR)/euca2ools; for x in $(BINLIST); do \
-		DESCR=`$$x --help | head -n2 | tail -n1`; help2man $$x -o $(MANDIR)/`basename $$x`.1 -n "Eucalyptus tool: $${DESCR}  " ; done
- 
+	@if ( ! which help2man > /dev/null ); then echo "You'll need to install help2man to generate/install the manpages"; else mkdir -p $(MANDIR); export PYTHONPATH=$(CURDIR)/euca2ools; for x in $(BINLIST); do DESCR=`$$x --help | head -n2 | tail -n1`; help2man $$x -o $(MANDIR)/`basename $$x`.1 -n "Eucalyptus tool: $${DESCR}  " ; done; fi
 
 install: build
 	@for subdir in $(SUBDIRS); do \
@@ -62,7 +58,7 @@ install: build
 	@install -g root -o root -m 755 -d $(PREFIX)/bin
 	@install -g root -o root -m 755  bin/* $(PREFIX)/bin/
 	@install -g root -o root -m 755 -d $(PREFIX)/man/man1
-	@install -g root -o root -m 644  $(MANDIR)/* $(PREFIX)/man/man1
+	@if [ -d $(MANDIR) ]; then install -g root -o root -m 644  $(MANDIR)/* $(PREFIX)/man/man1; fi
  
 distclean clean:
 	@for subdir in $(SUBDIRS); do \
