@@ -50,7 +50,7 @@ man: $(MANPAGES)
 
 $(MANPAGES): $(BINLIST)
 	@echo "Generating manpages..."
-	@if ( ! which help2man > /dev/null ); then echo "You'll need to install help2man to generate/install the manpages"; else mkdir -p $(MANDIR); export PYTHONPATH=$(CURDIR)/euca2ools; for x in $(BINLIST); do DESCR=`$$x --help | head -n2 | tail -n1`; help2man $$x -o $(MANDIR)/`basename $$x`.1 -n "Eucalyptus tool: $${DESCR}  " ; done; fi
+	@if ( ! which help2man > /dev/null ); then echo "You'll need to install help2man to generate/install the manpages"; else mkdir -p $(MANDIR); export PYTHONPATH=$(CURDIR)/euca2ools; for x in $(BINLIST); do DESCR=`$$x --help | head -n2 | tail -n1`; help2man $$x -N -o $(MANDIR)/`basename $$x`.1 -n "Eucalyptus tool: $${DESCR}  " ; done; fi
 
 install: build
 	@for subdir in $(SUBDIRS); do \
