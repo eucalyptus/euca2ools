@@ -1,6 +1,9 @@
 *Sun Nov 1 2009 Eucalyptus Systems (support@eucalyptus.com)
 	* Version 1.1
-	* Closes bugs
+	* Addresses incompatibilities in some uncommon command line
+	  options
+	* Made bundling more robust
+	* A number of bug fixes including:
 		#461301 #450044 #444747 #444105 #444097 #436950
 		#436947 #404951 #429010 #427367 #424212 #423500
 		#419583 #417937 #413735 #409732 #407710 #401225
