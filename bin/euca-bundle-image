@@ -135,6 +135,7 @@ def main():
         except ValueError:
             print 'Invalid user', user_string
             sys.exit()	       
+	user = user_string
  
     for name, value in euca.opts:
         if name in ('-h', '--help'):
@@ -152,6 +153,7 @@ def main():
 	    except ValueError:
 		print 'Invalid user', value
 		sys.exit()
+	    user = value
         elif name == '--kernel':	
             kernel = value
         elif name == '--ramdisk':
