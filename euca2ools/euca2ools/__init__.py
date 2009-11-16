@@ -941,7 +941,7 @@ class Euca2ool:
 		if not os.path.exists(dir_path):
 		    if self.debug:
 		        print 'Making essential directory %s' % mount_location 
-		        os.makedirs(dir_path)	    
+		    os.makedirs(dir_path)	    
 	mtab_file.close()
 	if output[1]:
 	    raise CopyError
