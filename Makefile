@@ -37,6 +37,8 @@ BINLIST			=	$(wildcard $(BINDIR)/*)
 MANDIR			=	man
 MANPAGES		=	$(shell echo $(BINLIST) | sed -e 's%$(BINDIR)/%$(MANDIR)/%g' -e 's/  */.1 /g').1
 PREFIX			=	/usr/local
+BASH_COMPLETION		=	/etc/bash_completion.d
+UTILDIR			=	util
  
 .PHONY: man all build install clean distclean
 
@@ -57,6 +59,7 @@ install: build
 	@install -g root -o root -m 755  bin/* $(PREFIX)/bin/
 	@install -g root -o root -m 755 -d $(PREFIX)/man/man1
 	@if [ -d $(MANDIR) ]; then install -g root -o root -m 644  $(MANDIR)/* $(PREFIX)/man/man1; fi
+	@if [ -d $(BASH_COMPLETION) ]; then install -g root -o root -m 644  $(UTILDIR)/* $(BASH_COMPLETION); fi
  
 distclean clean:
 	@for subdir in $(SUBDIRS); do \
@@ -66,3 +69,4 @@ uninstall:
 	@for x in $(BINLIST); do \
 		rm -f $(PREFIX)/bin/$$x ; \
 		rm -f $(PREFIX)/man/man1/`basename $$x`.1; done
+	@if [ -d $(BASH_COMPLETION) ]; then rm $(BASH_COMPLETION)/euca2ools; fi 
