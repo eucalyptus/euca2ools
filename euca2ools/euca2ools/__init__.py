@@ -182,11 +182,14 @@ class SolarisImage:
 
 class Util:
     usage_string = """
--a, --access-key		user's Access Key ID.
+-a, --access-key		User's Access Key ID.
 
--s, --secret-key		user's Secret Key.
+-s, --secret-key		User's Secret Key.
 
 -U, --url			URL of the Cloud to connect to.
+
+--config			Read credentials and cloud settings from the 
+				specified config file (defaults to $HOME/.eucarc or /etc/euca2ools/eucarc).
 
 -h, --help			Display this help message.
 
@@ -264,19 +267,25 @@ class NotFoundError:
     def __init__(self):
 	self.message = "Unable to find"
 
+    
+
+
 class Euca2ool:
-  
+ 
+ 
     def process_args(self):
         ids = []
         for arg in self.args:
             ids.append(arg)
         return ids 
 
+
     def __init__(self, short_opts=None, long_opts=None, is_s3=False, compat=False):
 	self.ec2_user_access_key = None
 	self.ec2_user_secret_key = None
 	self.ec2_url = None
 	self.s3_url = None
+	self.config_file_path = None
 	self.is_s3 = is_s3
 	if compat:
 	    self.secret_key_opt = 'S'
@@ -291,7 +300,7 @@ class Euca2ool:
 	short_opts += 'hU:'
 	short_opts += '%s:' % self.secret_key_opt
 	short_opts += '%s:' % self.access_key_opt
-	long_opts += ['access-key=', 'secret-key=', 'url=', 'help', 'version', 'debug']
+	long_opts += ['access-key=', 'secret-key=', 'url=', 'help', 'version', 'debug', 'config=']
         opts, args = getopt.gnu_getopt(sys.argv[1:], short_opts,
                                   long_opts)
 	self.opts = opts
@@ -310,7 +319,8 @@ class Euca2ool:
 		self.ec2_url = value
 	    elif name == '--debug':
 		self.debug = True
- 
+ 	    elif name == '--config':
+		self.config_file_path = value
         system_string = platform.system()
 	if system_string == "Linux":
 	    self.img = LinuxImage(self.debug)
@@ -318,32 +328,83 @@ class Euca2ool:
 	    self.img = SolarisImage(self.debug)
 	else:
 	    self.img = "Unsupported"
+        self.setup_environ()
+    
+        h = NullHandler()
+        logging.getLogger("boto").addHandler(h)
 
-    h = NullHandler()
-    logging.getLogger("boto").addHandler(h)
- 
+    SYSTEM_EUCARC_PATH = os.path.join("/etc", "euca2ools", "eucarc")
+    
+    def setup_environ(self):
+	self.environ = {}
+	user_eucarc = os.path.join(os.getenv('HOME'), ".eucarc")
+	base_path = None
+	read_config = False
+	if self.config_file_path and os.path.exists(self.config_file_path):
+	    base_path = os.path.dirname(self.config_file_path)
+	    eucarc = open(self.config_file_path, "r")
+	    read_config = True 
+	elif os.path.exists(user_eucarc):
+	    base_path = os.path.dirname(user_eucarc)
+	    eucarc = open(user_eucarc, "r")
+	    read_config = True
+	elif os.path.exists(self.SYSTEM_EUCARC_PATH):
+	    base_path = os.path.dirname(self.SYSTEM_EUCARC_PATH)
+	    eucarc = open(self.SYSTEM_EUCARC_PATH, "r")
+	    read_config = True
+	if read_config:	
+ 	    lines = eucarc.readlines()
+	    comment = re.compile('^#')
+	    for line in lines:
+	        line = line.strip('export')
+		line = line.replace('\'', '')
+   	        line = line.strip()
+		line = line.replace('${EUCA_KEY_DIR}', base_path)
+	        if not comment.match(line):
+	  	    parts = line.split('=', 1)
+		    if len(parts) == 2:
+		        self.environ[parts[0]] = parts[1]
+	    eucarc.close()
+
+    	else:
+	    self.environ['EC2_ACCESS_KEY'] = os.getenv('EC2_ACCESS_KEY')
+	    self.environ['EC2_SECRET_KEY'] = os.getenv('EC2_SECRET_KEY')
+	    self.environ['S3_URL'] = os.getenv('S3_URL')
+	    self.environ['EC2_URL'] = os.getenv('EC2_URL')
+	    self.environ['EC2_CERT'] = os.getenv('EC2_CERT')
+	    self.environ['EC2_PRIVATE_KEY'] = os.getenv('EC2_PRIVATE_KEY')
+	    self.environ['EUCALYPTUS_CERT'] = os.getenv('EUCALYPTUS_CERT')
+	    self.environ['EC2_USER_ID'] = os.getenv('EC2_USER_ID')
+
+    def get_environ(self, name):
+	    if self.environ.has_key(name):
+		return self.environ[name]
+	    else:
+		print '%s not found' % name
+		sys.exit(1)
+
     def make_connection(self):
 	if not self.ec2_user_access_key:
-            self.ec2_user_access_key = os.getenv('EC2_ACCESS_KEY')
+            self.ec2_user_access_key = self.environ['EC2_ACCESS_KEY']
  	    if not self.ec2_user_access_key:
                 print 'EC2_ACCESS_KEY environment variable must be set.'
-     		sys.exit()
+     		sys.exit(1)
  
 	if not self.ec2_user_secret_key:
-            self.ec2_user_secret_key = os.getenv('EC2_SECRET_KEY')
+            self.ec2_user_secret_key = self.environ['EC2_SECRET_KEY']
             if not self.ec2_user_secret_key:
                 print 'EC2_SECRET_KEY environment variable must be set.'
-		sys.exit()
+		sys.exit(1)
 
         if not self.is_s3:
             if not self.ec2_url:
-                self.ec2_url = os.getenv('EC2_URL')
+                self.ec2_url = self.environ['EC2_URL']
                 if not self.ec2_url:
 	            self.ec2_url = 'http://localhost:8773/services/Eucalyptus' 
     		    print 'EC2_URL not specified. Trying %s' % (self.ec2_url)
 	else:
 	    if not self.ec2_url:
-                self.ec2_url = os.getenv('S3_URL')
+                self.ec2_url = self.environ['S3_URL']
                 if not self.ec2_url:
 	            self.ec2_url = 'http://localhost:8773/services/Walrus' 
 		    print 'S3_URL not specified. Trying %s' % (self.ec2_url)

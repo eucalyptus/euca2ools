@@ -86,7 +86,7 @@ def main():
 	print e
         usage()
   
-    private_key_path=os.getenv('EC2_PRIVATE_KEY')
+    private_key_path=euca.get_environ('EC2_PRIVATE_KEY')
     manifest_path = None
     batch=False
     directory = '.' 

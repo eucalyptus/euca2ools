@@ -186,12 +186,12 @@ def main():
     kernel=None
     user=None
     ramdisk=None
-    cert_path=os.getenv('EC2_CERT')
-    private_key_path=os.getenv('EC2_PRIVATE_KEY')
+    cert_path=euca.get_environ('EC2_CERT')
+    private_key_path=euca.get_environ('EC2_PRIVATE_KEY')
     prefix='image'
     size_in_MB = 10*1024
     destination_path='/disk1'
-    ec2cert_path=os.getenv('EUCALYPTUS_CERT')
+    ec2cert_path=euca.get_environ('EUCALYPTUS_CERT')
     target_arch='x86_64'
     mapping = None
     excludes_string = None
@@ -204,7 +204,7 @@ def main():
     fstab_path = None
     generate_fstab = False
     product_code_string = None
-    user_string = os.getenv("EC2_USER_ID")
+    user_string = euca.get_environ("EC2_USER_ID")
     if user_string:
         try:
             user = int(user_string)
