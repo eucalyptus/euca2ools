@@ -67,7 +67,7 @@ def version():
     sys.exit()
 
  
-def display_image_attribute(image_attribute):
+def display_image_attribute(image_id, image_attribute):
     if image_attribute.name == 'launch_permission':
         if image_attribute.attrs.has_key('groups'):
 	    for group in image_attribute.attrs['groups']:
@@ -82,6 +82,9 @@ def display_image_attribute(image_attribute):
 	print 'kernel\t%s\tkernel\t%s' % (image_attribute.image_id, image_attribute.kernel)
     if image_attribute.ramdisk:
 	print 'ramdisk\t%s\tramdisk\t%s' % (image_attribute.image_id, image_attribute.ramdisk)
+    if image_attribute.name == 'block_device_mapping':
+        for i in range(0, len(image_attribute.attrs['virtual_names'])):
+            print 'blockDeviceMapping\t%s\tblockDeviceMap\t%s: %s' % (image_id, image_attribute.attrs['virtual_names'][i], image_attribute.attrs['device_names'][i])
 
 def main():
     euca = None
@@ -130,7 +133,7 @@ def main():
             euca.display_error_and_exit('%s' % ex)
 
 	if image_attribute:
-	    display_image_attribute(image_attribute)
+	    display_image_attribute(image_id, image_attribute)
     else:
  	if not image_id:
     	    print 'image_id must be specified'
