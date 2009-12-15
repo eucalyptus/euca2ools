@@ -72,16 +72,16 @@ def display_images(images, image_ids):
 	        continue
 	image_string = '%s\t%s\t%s\t%s' % (image.id, image.location, image.ownerId, image.state)
 	if image.is_public:
-  	    image_string += '\tpublic '
+  	    image_string += '\tpublic'
 	else:
-	    image_string += '\tprivate '
-	if image.product_codes:
-	    for product_code in image.product_codes:
-		image_string += '\t%s' % product_code
-	if image.architecture:
-  	    image_string += '\t%s' % image.architecture
-	if image.type:
-	    image_string += '\t%s' % image.type
+	    image_string += '\tprivate'
+
+	image_string += '\t%s' % ','.join(image.product_codes)
+
+	for i in [image.architecture, image.type,
+	          image.ramdisk_id, image.kernel_id]:
+	    image_string += '\t%s' % ("" if i == None else i)
+
 	print 'IMAGE\t%s' % (image_string)
 
 def main():
