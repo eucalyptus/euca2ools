@@ -482,7 +482,10 @@ class Euca2ool:
 
     def get_file_path(self, filename):
 	relative_filename = self.get_relative_filename(filename)
-	return filename.replace(relative_filename, '')
+	file_path = filename.replace(relative_filename, '')
+	if len(file_path) == 0:
+	    file_path = "."
+	return file_path
 
     def split_file(self, file, chunk_size):
         parts = []
