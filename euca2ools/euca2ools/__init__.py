@@ -700,8 +700,6 @@ class Euca2ool:
         return virtual, devices
 
     def generate_manifest(self, path, prefix, parts, parts_digest, file, key, iv, cert_path, ec2cert_path, private_key_path, target_arch, image_size, bundled_size, image_digest, user, kernel, ramdisk, mapping=None, product_codes=None, ancestor_ami_ids=None):
-        print 'Generating manifest'
-
         user_pub_key = X509.load_cert(cert_path).get_pubkey().get_rsa()
         cloud_pub_key = X509.load_cert(ec2cert_path).get_pubkey().get_rsa()
 
@@ -716,6 +714,9 @@ class Euca2ool:
         manifest_file = '%s.manifest.xml' % os.path.join(path, prefix)
 	if self.debug:
 	    print 'Manifest: ', manifest_file
+
+        print 'Generating manifest %s' % manifest_file
+
         manifest_out_file = open(manifest_file, "wb")
         doc = Document()
         
