@@ -90,6 +90,12 @@ def ensure_bucket(connection, bucket, canned_acl=None):
 	if (s3error_string.find("404") >= 0):
 	    try:
                 bucket_instance = create_bucket(connection, bucket, canned_acl) 
+		keys = bucket_instance.get_all_keys()
+		for k in keys:
+	    	    print k.name
+		length_list_keys = len(keys)
+		print length_list_keys
+		sys.exit()
 	    except S3CreateError:
 		print 'Unable to create bucket %s' % (bucket)
 		sys.exit()

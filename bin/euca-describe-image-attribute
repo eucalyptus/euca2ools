@@ -78,10 +78,10 @@ def display_image_attribute(image_id, image_attribute):
     if image_attribute.attrs.has_key('product_codes'):
 	for product_code in image_attribute.attrs['product_codes']:
 	    print 'productCodes\t%s\tproductCode\t%s' % (image_attribute.image_id, product_code)
-    if image_attribute.kernel:
-	print 'kernel\t%s\tkernel\t%s' % (image_attribute.image_id, image_attribute.kernel)
-    if image_attribute.ramdisk:
-	print 'ramdisk\t%s\tramdisk\t%s' % (image_attribute.image_id, image_attribute.ramdisk)
+    if image_attribute.kernel is not None:
+	print 'kernel\t%s\t\t%s' % (image_attribute.image_id, image_attribute.value)
+    if image_attribute.ramdisk is not None:
+	print 'ramdisk\t%s\t\t%s' % (image_attribute.image_id, image_attribute.value)
     if image_attribute.name == 'block_device_mapping':
         for i in range(0, len(image_attribute.attrs['virtual_names'])):
             print 'blockDeviceMapping\t%s\tblockDeviceMap\t%s: %s' % (image_id, image_attribute.attrs['virtual_names'][i], image_attribute.attrs['device_names'][i])
