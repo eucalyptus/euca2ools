@@ -9,7 +9,7 @@
 
 %if %is_suse
 %define __python    python
-%define __where     %{__libarch}/python2.6/site-packages
+%define __where     lib/python2.6/site-packages
 %define __whereM2C  %{__libarch}/python2.6/site-packages
 %define __docdir    /usr/share/doc/packages
 %endif
@@ -55,6 +55,7 @@ tar xzf deps/M2Crypto*tar.gz
 tar xzf deps/boto-*tar.gz
 
 %build
+export DESTDIR=$RPM_BUILD_ROOT
 cd M2Crypto*
 %{__python} setup.py build
 cd ../boto*
@@ -69,31 +70,34 @@ done
 %endif
 
 %install
+export DESTDIR=$RPM_BUILD_ROOT
 cd M2Crypto-*
-%{__python} setup.py install --prefix=/usr
+%{__python} setup.py install --prefix=$DESTDIR/usr
 cd ../boto-*
-%{__python} setup.py install --prefix=/usr
+%{__python} setup.py install --prefix=$DESTDIR/usr
 cd ../euca2ools
-%{__python} setup.py install --prefix=/usr
+%{__python} setup.py install --prefix=$DESTDIR/usr
 cd ..
-install -g root -o root -m 755 -d /usrbin
-install -g root -o root -m 755 -d /usr/man/man1
-install -g root -o root -m 755 -d %{__docdir}/euca2ools-%{version}
-install -g root -o root -m 755  bin/* /usr/bin
-install -g root -o root -m 644  man/* /usr/man/man1
-install -g root -o root -m 755  INSTALL COPYING README %{__docdir}/euca2ools-%{version}
+install -g root -o root -m 755 -d $DESTDIR/usr/bin
+install -g root -o root -m 755 -d $DESTDIR/usr/man/man1
+install -g root -o root -m 755 -d $DESTDIR/%{__docdir}/euca2ools-%{version}
+install -g root -o root -m 755  bin/* $DESTDIR/usr/bin
+install -g root -o root -m 644  man/* $DESTDIR/usr/man/man1
+install -g root -o root -m 755  INSTALL COPYING README $DESTDIR/%{__docdir}/euca2ools-%{version}
 
 %clean
-rm -rf %{__docdir}/euca2ools-%{version}
-rm -rf $RPM_BUILD_DIR/euca2ools-%{version}
-rm -rf /usr/%__whereM2C/M2Crypto
-rm -rf /usr/%__whereM2C/M2Crypto*egg-info
-rm -rf /usr/%__where/boto
-rm -rf /usr/%__where/boto*egg-info
-rm -rf /usr/%__where/euca2ools
-rm -rf /usr/%__where/euca2ools*egg-info
-rm -rf /usr/bin/euca-* /usr/local/bin/s3put /usr/local/bin/sdbadmin
-rm -rf /usr/man/man1/euca-*
+[ ${RPM_BUILD_ROOT} != "/" ] && rm -rf ${RPM_BUILD_ROOT}
+#export DESTDIR=$RPM_BUILD_ROOT
+#rm -rf $RPM_BUILD_DIR/euca2ools-%{version}
+#rm -rf $DESTDIR/%{__docdir}/euca2ools-%{version}
+#rm -rf $DESTDIR/usr/%__whereM2C/M2Crypto
+#rm -rf $DESTDIR/usr/%__whereM2C/M2Crypto*egg-info
+#rm -rf $DESTDIR/usr/%__where/boto
+#rm -rf $DESTDIR/usr/%__where/boto*egg-info
+#rm -rf $DESTDIR/usr/%__where/euca2ools
+#rm -rf $DESTDIR/usr/%__where/euca2ools*egg-info
+#rm -rf $DESTDIR/usr/bin/euca-* $DESTDIR/usr/bin/s3put $DESTDIR/usr/bin/sdbadmin
+#rm -rf $DESTDIR/usr/man/man1/euca-*
 
 %files
 /usr/bin/s3put
