@@ -23,8 +23,8 @@
 
 Summary:       Elastic Utility Computing Architecture Command Line Tools
 Name:          euca2ools
-Version:       1.1
-Release:       1
+Version:       1.2
+Release:       0.1.rc1
 License:       BSD 
 Group:         Applications/System
 %if %is_suse
