@@ -337,14 +337,16 @@ class Euca2ool:
     
     def setup_environ(self):
 	self.environ = {}
-	user_eucarc = os.path.join(os.getenv('HOME'), ".eucarc")
+	user_eucarc = None
+	if 'HOME' in os.environ:
+	    os.path.join(os.getenv('HOME'), ".eucarc")
 	base_path = None
 	read_config = False
 	if self.config_file_path and os.path.exists(self.config_file_path):
 	    base_path = os.path.dirname(self.config_file_path)
 	    eucarc = open(self.config_file_path, "r")
 	    read_config = True 
-	elif os.path.exists(user_eucarc):
+	elif user_eucarc is not None and os.path.exists(user_eucarc):
 	    base_path = os.path.dirname(user_eucarc)
 	    eucarc = open(user_eucarc, "r")
 	    read_config = True
