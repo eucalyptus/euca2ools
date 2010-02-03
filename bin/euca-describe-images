@@ -56,7 +56,7 @@ version_string = """    euca-describe-images version: 1.0 (BSD)"""
 
 def usage():
     print usage_string
-    Util().usage()
+    Util().usage(compat=True)
 
 def version():
     print version_string
@@ -87,7 +87,7 @@ def display_images(images, image_ids):
 def main():
     euca = None
     try:
-        euca = Euca2ool('ao:x:') 
+        euca = Euca2ool('ao:x:', compat=True) 
     except Exception, e:
 	print e
         usage()
