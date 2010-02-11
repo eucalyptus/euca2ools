@@ -1,6 +1,9 @@
 * Fri Feb 12 2010 Eucalyptus Systems (support@eucalyptus.com)
         * Version 1.2
         * A number of bug fixes including:
+		#479823 #450044 #485106 #495618 #439366 #497495
+		#507840 #510982 #510982 #516486 #516738
+	* Support for bash completion of commands
 
 * Sun Nov 1 2009 Eucalyptus Systems (support@eucalyptus.com)
 	* Version 1.1
