@@ -1,3 +1,7 @@
+* Fri Feb 12 2010 Eucalyptus Systems (support@eucalyptus.com)
+        * Version 1.2
+        * A number of bug fixes including:
+
 * Sun Nov 1 2009 Eucalyptus Systems (support@eucalyptus.com)
 	* Version 1.1
 	* Addresses incompatibilities in some uncommon command line

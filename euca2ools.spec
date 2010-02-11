@@ -24,7 +24,7 @@
 Summary:       Elastic Utility Computing Architecture Command Line Tools
 Name:          euca2ools
 Version:       1.2
-Release:       0.1.rc1
+Release:       1
 License:       BSD 
 Group:         Applications/System
 %if %is_suse
@@ -113,6 +113,9 @@ install -g root -o root -m 755  INSTALL COPYING README $DESTDIR/%{__docdir}/euca
 %{__docdir}/euca2ools-%{version}
 
 %changelog
+*Fri Feb 12 2010 Eucalyptus Systems (support@eucalyptus.com)
+- Version 1.2
+
 *Sun Nov 1 2009 Eucalyptus Systems (support@eucalyptus.com)
 - Version 1.1
 
