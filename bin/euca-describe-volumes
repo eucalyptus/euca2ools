@@ -73,8 +73,11 @@ def display_volumes(volumes, volume_ids):
 	    volume_string += '\t%s' % (volume.snapshot_id)
 	else:
 	    volume_string += '\t'
-	if volume.availabilityZone:
- 	    volume_string += '\t%s' % volume.availabilityZone
+	
+	az = getattr(volume, 'availabilityZone', object)
+	if az is object: az=volume.zone
+	if az: volume_string += '\t%s' % az
+
 	volume_string += '\t%s\t%s' % (volume.status, volume.create_time)
 	print 'VOLUME\t%s' % (volume_string)
 	if volume.status == 'in-use':
