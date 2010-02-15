@@ -1,3 +1,10 @@
+euca2ools (1.2-0euca2) unstable; urgency=low
+
+	* Release 1.2 GA version
+
+ -- chris grzegorczyk <grze@eucalyptus.com>  Mon, 15 Feb 2010 21:25:47 -0700
+	
+	
 euca2ools (1.0-2euca1) unstable; urgency=low
 
   * Release 1.0 GA version
