@@ -33,7 +33,7 @@
 # Author: Neil Soman neil@eucalyptus.com
 
 import getopt, sys, os
-from euca2ools import Euca2ool, Util
+from euca2ools import Euca2ool, Util, ConnectionFailed
 
 usage_string = """
 Shows information about regions. 
@@ -83,7 +83,11 @@ def main():
 	    version()
 
     region_ids = euca.process_args()
-    euca_conn = euca.make_connection()
+    try:
+        euca_conn = euca.make_connection()
+    except ConnectionFailed, e:
+        print e.message
+        sys.exit(1)
     try:
         regions = euca_conn.get_all_regions()
     except Exception, ex:

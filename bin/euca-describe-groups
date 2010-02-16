@@ -33,7 +33,7 @@
 # Author: Neil Soman neil@eucalyptus.com
 
 import getopt, sys, os
-from euca2ools import Euca2ool, Util
+from euca2ools import Euca2ool, Util, ConnectionFailed
 
 usage_string = """
 Shows information about groups.
@@ -95,7 +95,11 @@ def main():
 	    version()
 
     group_ids = euca.process_args()
-    euca_conn = euca.make_connection()
+    try:
+        euca_conn = euca.make_connection()
+    except ConnectionFailed, e:
+        print e.message
+        sys.exit(1)
     try:
         groups = euca_conn.get_all_security_groups()
     except Exception, ex:

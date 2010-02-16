@@ -33,7 +33,7 @@
 # Author: Neil Soman neil@eucalyptus.com
 
 import getopt, sys, os
-from euca2ools import Euca2ool, InstanceValidationError, Util
+from euca2ools import Euca2ool, InstanceValidationError, Util, ConnectionFailed
 
 usage_string = """
 Shows information about instances.
@@ -126,7 +126,11 @@ def main():
         print 'Invalid instance id'
         sys.exit(1)
 
-    euca_conn = euca.make_connection()
+    try:
+        euca_conn = euca.make_connection()
+    except ConnectionFailed, e:
+        print e.message
+        sys.exit(1)
     try:
         reservations = euca_conn.get_all_instances(instance_ids)
     except Exception, ex:

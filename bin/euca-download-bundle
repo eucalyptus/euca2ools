@@ -34,7 +34,7 @@
 
 import getopt, sys, os
 from xml.dom import minidom
-from euca2ools import Euca2ool, FileValidationError, Util
+from euca2ools import Euca2ool, FileValidationError, Util, ConnectionFailed
 from boto.exception import S3ResponseError
 from boto.s3 import Connection
 from boto.s3.key import Key
@@ -157,7 +157,12 @@ def main():
 	        print 'Invalid manifest', manifest_path
 	        sys.exit(1)
 
-	conn = euca.make_connection()
+	try:
+	    conn = euca.make_connection()
+	except ConnectionFailed, e:
+	    print e.message
+	    sys.exit(1)
+
         bucket_instance = ensure_bucket(conn, bucket)
 	manifests = get_manifests(bucket_instance)
 	download_manifests(bucket_instance, manifests, directory)

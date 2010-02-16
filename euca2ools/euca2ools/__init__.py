@@ -268,7 +268,9 @@ class NotFoundError:
 	self.message = "Unable to find"
 
     
-
+class ConnectionFailed:
+    def __init__(self):
+	self.message = "Connection failed"
 
 class Euca2ool:
  
@@ -390,13 +392,13 @@ class Euca2ool:
             self.ec2_user_access_key = self.environ['EC2_ACCESS_KEY']
  	    if not self.ec2_user_access_key:
                 print 'EC2_ACCESS_KEY environment variable must be set.'
-     		sys.exit(1)
+		raise ConnectionFailed
  
 	if not self.ec2_user_secret_key:
             self.ec2_user_secret_key = self.environ['EC2_SECRET_KEY']
             if not self.ec2_user_secret_key:
                 print 'EC2_SECRET_KEY environment variable must be set.'
-		sys.exit(1)
+		raise ConnectionFailed
 
         if not self.is_s3:
             if not self.ec2_url:

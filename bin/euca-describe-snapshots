@@ -33,7 +33,7 @@
 # Author: Neil Soman neil@eucalyptus.com
 
 import getopt, sys, os
-from euca2ools import Euca2ool, SnapshotValidationError, Util
+from euca2ools import Euca2ool, SnapshotValidationError, Util, ConnectionFailed
 
 usage_string = """
 Shows information about snapshots.
@@ -91,7 +91,11 @@ def main():
         print 'Invalid snapshot id' 
         sys.exit(1)
 
-    euca_conn = euca.make_connection() 
+    try:
+        euca_conn = euca.make_connection()
+    except ConnectionFailed, e:
+        print e.message
+        sys.exit(1) 
     try:
         snapshots = euca_conn.get_all_snapshots()
     except Exception, ex:

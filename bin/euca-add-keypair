@@ -33,7 +33,7 @@
 # Author: Neil Soman neil@eucalyptus.com
 
 import getopt, sys, os
-from euca2ools import Euca2ool, Util 
+from euca2ools import Euca2ool, Util, ConnectionFailed 
 
 usage_string = """
 Creates a new key pair for use with instances.
@@ -80,7 +80,11 @@ def main():
 	elif name == '--version':
 	    version()
     
-    euca_conn = euca.make_connection()
+    try:
+        euca_conn = euca.make_connection()
+    except ConnectionFailed, e:
+        print e.message
+        sys.exit(1)
  
     for arg in euca.args:
         keypair_name = arg

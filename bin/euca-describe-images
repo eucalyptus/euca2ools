@@ -33,7 +33,7 @@
 # Author: Neil Soman neil@eucalyptus.com
 
 import getopt, sys, os
-from euca2ools import Euca2ool, Util
+from euca2ools import Euca2ool, Util, ConnectionFailed
 
 usage_string = """
 Shows information about machine images.
@@ -119,7 +119,12 @@ def main():
 
     image_ids = euca.process_args()
     #This is workaround for an issue with the front end (does not return an image set when an image id is specified LP:356389)
-    euca_conn = euca.make_connection()
+    try:
+        euca_conn = euca.make_connection()
+    except ConnectionFailed, e:
+        print e.message
+        sys.exit(1)
+
     try:
         images = euca_conn.get_all_images(owners=owners, executable_by=executable_by)
     except Exception, ex:

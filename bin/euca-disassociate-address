@@ -33,7 +33,7 @@
 # Author: Neil Soman neil@eucalyptus.com
 
 import getopt, sys, os
-from euca2ools import Euca2ool, AddressValidationError, Util
+from euca2ools import Euca2ool, AddressValidationError, Util, ConnectionFailed
 
 usage_string = """
 Disassociate a public IP address from an instance.
@@ -86,8 +86,13 @@ def main():
             print 'Invalid address', ip 
             sys.exit(1)
 
-        euca_conn = euca.make_connection()
-	try:
+        try:
+            euca_conn = euca.make_connection()
+        except ConnectionFailed, e:
+            print e.message
+            sys.exit(1)
+
+        try:
             return_code = euca_conn.disassociate_address(public_ip = ip)
         except Exception, ex:
             euca.display_error_and_exit('%s' % ex)

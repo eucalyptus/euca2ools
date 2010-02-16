@@ -33,7 +33,7 @@
 # Author: Neil Soman neil@eucalyptus.com
 
 import getopt, sys, os
-from euca2ools import Euca2ool, Util
+from euca2ools import Euca2ool, Util, ConnectionFailed
 
 usage_string = """
 Starts instances.
@@ -169,7 +169,11 @@ def main():
             	    print 'Invalid user data file path'
             	    sys.exit(1)
 		user_data = read_user_data(user_data_file)
-        euca_conn = euca.make_connection()
+        try:
+            euca_conn = euca.make_connection()
+        except ConnectionFailed, e:
+            print e.message
+            sys.exit(1)
 	try:
             reservation = euca_conn.run_instances(image_id = image_id,
 					      min_count = min_count,

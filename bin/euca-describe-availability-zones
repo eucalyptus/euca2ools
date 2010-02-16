@@ -33,7 +33,7 @@
 # Author: Neil Soman neil@eucalyptus.com
 
 import getopt, sys, os
-from euca2ools import Euca2ool, Util
+from euca2ools import Euca2ool, Util, ConnectionFailed
 
 usage_string = """
 Shows information about availability zones.
@@ -86,9 +86,14 @@ def main():
     if region:
 	os.environ['EC2_URL'] = 'https://' + region + ".ec2.amazonaws.com"
     zone_ids = euca.process_args()
-    euca_conn = euca.make_connection()
     try:
-         zones = euca_conn.get_all_zones(zone_ids)
+        euca_conn = euca.make_connection()
+    except ConnectionFailed, e:
+        print e.message
+        sys.exit(1)
+
+    try:
+        zones = euca_conn.get_all_zones(zone_ids)
     except Exception, ex:
         euca.display_error_and_exit('%s' % ex)
 

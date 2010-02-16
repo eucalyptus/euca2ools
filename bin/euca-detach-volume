@@ -33,7 +33,7 @@
 # Author: Neil Soman neil@eucalyptus.com
 
 import getopt, sys, os
-from euca2ools import Euca2ool, VolumeValidationError, Util
+from euca2ools import Euca2ool, VolumeValidationError, Util, ConnectionFailed
 
 usage_string = """
 Detaches a volume from an instance.
@@ -99,7 +99,11 @@ def main():
             print 'Invalid volume id', volume_id
             sys.exit(1)
 
-        euca_conn = euca.make_connection()
+        try:
+            euca_conn = euca.make_connection()
+        except ConnectionFailed, e:
+            print e.message
+            sys.exit(1)
 	try:
 	    return_code = euca_conn.detach_volume(volume_id = volume_id)
         except Exception, ex:

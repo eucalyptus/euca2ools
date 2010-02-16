@@ -34,7 +34,7 @@
 
 import getopt, sys, os
 from xml.dom import minidom
-from euca2ools import Euca2ool, FileValidationError, Util
+from euca2ools import Euca2ool, FileValidationError, Util, ConnectionFailed
 from boto.exception import S3ResponseError
 from boto.s3 import Connection
 from boto.s3.key import Key
@@ -159,7 +159,11 @@ def delete_manifests(bucket, manifests, clear, euca, bucket_name):
 	    if (s3error_string.find('200') < 0):
 		print s3error_string
 	        print 'unable to delete manifest %s' % (manifest)
-		bucket = ensure_bucket(euca.make_connection(), bucket_name)
+		try:
+		    bucket = ensure_bucket(euca.make_connection(), bucket_name)
+		except ConnectionFailed, e:
+		    print e.message
+		    sys.exit(1)
     if clear:
 	try:
   	    bucket.delete()
@@ -210,8 +214,11 @@ def main():
 	except FileValidationError:
 	    print 'Invalid manifest' 
 	    sys.exit(1)
-
-	conn = euca.make_connection()
+	try:
+	    conn = euca.make_connection()
+	except ConnectionFailed, e:
+	    print e.message
+	    sys.exit(1)
         bucket_instance = ensure_bucket(conn, bucket)
 	manifests = None
 	delete_local_manifests = True

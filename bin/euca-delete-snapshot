@@ -33,7 +33,7 @@
 # Author: Neil Soman neil@eucalyptus.com
 
 import getopt, sys, os
-from euca2ools import Euca2ool, SnapshotValidationError, Util
+from euca2ools import Euca2ool, SnapshotValidationError, Util, ConnectionFailed
 
 usage_string = """
 Deletes a snapshot.
@@ -86,7 +86,12 @@ def main():
    	    print 'Invalid snapshot id' 
             sys.exit(1)
 
-        euca_conn = euca.make_connection()
+        try:
+            euca_conn = euca.make_connection()
+        except ConnectionFailed, e:
+            print e.message
+            sys.exit(1)
+
 	return_code = euca_conn.delete_snapshot(snapshot_id)
 	if return_code:
 	    print 'SNAPSHOT\t%s' % (snapshot_id)

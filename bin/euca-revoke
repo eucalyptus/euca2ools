@@ -33,7 +33,7 @@
 # Author: Neil Soman neil@eucalyptus.com
 
 import getopt, sys, os
-from euca2ools import Euca2ool, AddressValidationError, ProtocolValidationError, Util
+from euca2ools import Euca2ool, AddressValidationError, ProtocolValidationError, Util, ConnectionFailed
 
 usage_string = """
 Revoke a rule for a security group.
@@ -145,7 +145,11 @@ def main():
 	        print 'Invalid protocol', protocol
 	        sys.exit(1)
 
-        euca_conn = euca.make_connection()
+        try:
+            euca_conn = euca.make_connection()
+        except ConnectionFailed, e:
+            print e.message
+            sys.exit(1)
 	try:
             return_code = euca_conn.revoke_security_group(group_name = group_name,
 							src_security_group_name = source_group_name,

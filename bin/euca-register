@@ -33,7 +33,7 @@
 # Author: Neil Soman neil@eucalyptus.com
 
 import getopt, sys, os
-from euca2ools import Euca2ool, Util
+from euca2ools import Euca2ool, Util, ConnectionFailed
 
 usage_string = """
 Registers a manifest for use with the cloud.
@@ -80,7 +80,11 @@ def main():
 
 
     if image_location:
-        euca_conn = euca.make_connection()
+        try:
+            euca_conn = euca.make_connection()
+        except ConnectionFailed, e:
+            print e.message
+            sys.exit(1)
 	try:
 	    image_id = euca_conn.register_image(image_location = image_location)
         except Exception, ex:

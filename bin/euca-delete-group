@@ -33,7 +33,7 @@
 # Author: Neil Soman neil@eucalyptus.com
 
 import getopt, sys, os
-from euca2ools import Euca2ool, Util
+from euca2ools import Euca2ool, Util, ConnectionFailed
 
 usage_string = """
 Deletes a security group.
@@ -79,14 +79,18 @@ def main():
 	break
 
     if group_name:
-        euca_conn = euca.make_connection()
-	try:
+        try:
+            euca_conn = euca.make_connection()
+        except ConnectionFailed, e:
+            print e.message
+            sys.exit(1)
+        try:
 	    return_code = euca_conn.delete_security_group(name = group_name)
         except Exception, ex:
             euca.display_error_and_exit('%s' % ex)
 
-	if return_code:
-	    print 'GROUP\t%s' % (group_name)
+        if return_code:
+            print 'GROUP\t%s' % (group_name)
     else:
     	print 'group_name must be specified'
 	usage()

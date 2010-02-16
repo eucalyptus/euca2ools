@@ -33,7 +33,7 @@
 # Author: Neil Soman neil@eucalyptus.com
 
 import getopt, sys, os
-from euca2ools import Euca2ool, AddressValidationError, Util
+from euca2ools import Euca2ool, AddressValidationError, Util, ConnectionFailed
 
 usage_string = """
 Releases a public IP address.
@@ -86,7 +86,11 @@ def main():
    	    print 'Invalid address' 
             sys.exit(1)
 
-        euca_conn = euca.make_connection()
+        try:
+            euca_conn = euca.make_connection()
+        except ConnectionFailed, e:
+            print e.message
+            sys.exit(1)
 	try:
             return_code = euca_conn.release_address(ip)
         except Exception, ex:

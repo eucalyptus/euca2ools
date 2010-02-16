@@ -33,7 +33,7 @@
 # Author: Neil Soman neil@eucalyptus.com
 
 import getopt, sys, os
-from euca2ools import Euca2ool, InstanceValidationError, Util
+from euca2ools import Euca2ool, InstanceValidationError, Util, ConnectionFailed
 
 usage_string = """
 Confirm if instance is running with product code attached.
@@ -84,7 +84,11 @@ def main():
         product_code = arg
 	break
 
-    euca_conn = euca.make_connection()
+    try:
+        euca_conn = euca.make_connection()
+    except ConnectionFailed, e:
+        print e.message
+        sys.exit(1)
 
     if instance_id and product_code:
         try:

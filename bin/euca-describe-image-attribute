@@ -33,7 +33,7 @@
 # Author: Neil Soman neil@eucalyptus.com
 
 import getopt, sys, os
-from euca2ools import Euca2ool, Util
+from euca2ools import Euca2ool, Util, ConnectionFailed
 
 usage_string = """
 Show image attributes.
@@ -125,7 +125,11 @@ def main():
 	break
 
     if image_id and image_attribute:
-        euca_conn = euca.make_connection()
+        try:
+            euca_conn = euca.make_connection()
+        except ConnectionFailed, e:
+            print e.message
+            sys.exit(1)
 	try:
 	    image_attribute = euca_conn.get_image_attribute(image_id = image_id,
 						     attribute = image_attribute)
