@@ -47,14 +47,13 @@ keypair1 keypair2...keypairN 	keypairs to describe.
 
 """
 
-version_string = """    euca-describe-key-pairs version: 1.0 (BSD)"""
 
 def usage():
     print usage_string
     Util().usage()
 
 def version():
-    print version_string
+    print Util().version()
     sys.exit()
 
 def display_keypairs(keypairs, keypair_ids):

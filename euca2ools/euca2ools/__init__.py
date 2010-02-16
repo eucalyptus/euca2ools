@@ -199,7 +199,12 @@ class Util:
 
 Euca2ools will use the environment variables EC2_URL, EC2_ACCESS_KEY, EC2_SECRET_KEY, EC2_CERT, EC2_PRIVATE_KEY, S3_URL, EUCALYPTUS_CERT by default.
     """    
- 
+
+    version_string = """    Version: 1.2 (BSD)"""
+
+    def version(self):
+        return self.version_string
+  
     def usage(self, compat=False):
 	if compat:
 	    self.usage_string = self.usage_string.replace("-s,", "-S,")

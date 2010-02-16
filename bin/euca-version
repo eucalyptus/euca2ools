@@ -36,7 +36,7 @@ import getopt, sys, os
 from euca2ools import Euca2ool, Util
 
 
-TOOLS_VERSION = "1.0-31337"
+TOOLS_VERSION = "1.2-31337"
 API_VERSION = "2009-04-04"
 
 usage_string = """
@@ -45,14 +45,13 @@ Shows the Euca2ools version
 euca-version [-h, --help] [--debug]
 """
 
-version_string = """    euca-version version: 1.0 (BSD)"""
 
 def usage():
     print usage_string
     sys.exit()
 
 def version():
-    print version_string
+    print Util().version()
     sys.exit()
 
 def display_tools_version():

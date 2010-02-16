@@ -51,14 +51,13 @@ OPTIONAL PARAMETERS
 
 """
 
-version_string = """    euca-reset-image-attribute version: 1.0 (BSD)"""
 
 def usage():
     print usage_string
     Util().usage()
 
 def version():
-    print version_string
+    print Util().version()
     sys.exit()
 
 def main():

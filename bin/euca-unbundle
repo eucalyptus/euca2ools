@@ -65,7 +65,6 @@ OPTIONAL PARAMETERS
 
 """
 
-version_string = """    euca-unbundle-image version: 1.0 (BSD)"""
 
 IMAGE_IO_CHUNK = 8 * 1024
 IMAGE_SPLIT_CHUNK = IMAGE_IO_CHUNK * 1024;
@@ -75,7 +74,7 @@ def usage():
     Util().usage()
 
 def version():
-    print version_string
+    print Util().version()
     sys.exit()
 
 def main():
