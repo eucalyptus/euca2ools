@@ -48,7 +48,7 @@ from boto.ec2.regioninfo import RegionInfo
 import logging
 
 BUNDLER_NAME = "euca-tools"
-BUNDLER_VERSION = "1.0"
+BUNDLER_VERSION = "1.2"
 VERSION = "2007-10-10"
 RELEASE = "31337"
 AES = 'AES-128-CBC'
