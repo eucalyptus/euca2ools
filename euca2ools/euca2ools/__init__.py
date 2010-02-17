@@ -993,7 +993,9 @@ class Euca2ool:
    	    print "Copying files..."
 	    for exclude in excludes:
 		print "Excluding:", exclude
-        output = Popen(rsync_cmd, stdout=PIPE, stderr=PIPE).communicate()
+        
+        pipe = Popen(rsync_cmd, stdout=PIPE, stderr=PIPE)
+        output = pipe.communicate()
         for dir in self.img.ESSENTIAL_DIRS:
             dir_path = os.path.join(mount_point, dir)
             if not os.path.exists(dir_path):
@@ -1017,8 +1019,15 @@ class Euca2ool:
 		        print 'Making essential directory %s' % mount_location 
 		    os.makedirs(dir_path)	    
 	mtab_file.close()
-	if output[1]:
-	    raise CopyError
+	if pipe.returncode:
+            # rsync return code 23: Partial transfer due to error
+            # rsync return code 24: Partial transfer due to vanished source files
+            if pipe.returncode in (23, 24):
+                print "Warning: rsync reports files partially copied:"
+                print output
+            else:
+                print "Error: rsync failed with return code %d" % pipe.returncode
+                raise CopyError
 
     def unmount_image(self, mount_point):
         try:
