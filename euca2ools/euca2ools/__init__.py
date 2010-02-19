@@ -346,7 +346,7 @@ class Euca2ool:
 	self.environ = {}
 	user_eucarc = None
 	if 'HOME' in os.environ:
-	    os.path.join(os.getenv('HOME'), ".eucarc")
+	    user_eucarc = os.path.join(os.getenv('HOME'), ".eucarc")
 	base_path = None
 	read_config = False
 	if self.config_file_path and os.path.exists(self.config_file_path):
