@@ -52,6 +52,7 @@ zone1 zone2...zoneN		zones to describe.
 def usage():
     print usage_string
     Util().usage()
+    sys.exit()
 
 def version():
     print Util().version()

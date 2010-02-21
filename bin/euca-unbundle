@@ -33,7 +33,7 @@
 # Author: Neil Soman neil@eucalyptus.com
 
 import getopt, sys, os
-from euca2ools import Euca2ool, FileValidationError, DirValidationError, Util
+from euca2ools import Euca2ool, FileValidationError, DirValidationError, Util, NotFoundError, CommandFailed
 import tarfile
 import gzip
 from xml.dom import minidom
@@ -72,6 +72,7 @@ IMAGE_SPLIT_CHUNK = IMAGE_IO_CHUNK * 1024;
 def usage():
     print usage_string
     Util().usage()
+    sys.exit()
 
 def version():
     print Util().version()
@@ -84,8 +85,12 @@ def main():
     except Exception, e:
 	print e
         usage()
-  
-    private_key_path=euca.get_environ('EC2_PRIVATE_KEY')
+ 
+    try: 
+        private_key_path=euca.get_environ('EC2_PRIVATE_KEY')
+    except NotFoundError:
+        sys.exit(1)
+
     manifest_path = None
     batch=False
     directory = '.' 
@@ -132,7 +137,12 @@ def main():
 	decrypted_image = euca.decrypt_image(image, encrypted_key, encrypted_iv, private_key_path)
 	os.remove(image)
 	print "Uncompressing image"
-	unencrypted_image = euca.untarzip_image(directory, decrypted_image)
+        try:
+	    unencrypted_image = euca.untarzip_image(directory, decrypted_image)
+        except NotFoundError:
+            sys.exit(1)
+	except CommandFailed:
+	    sys.exit(1)
 	os.remove(decrypted_image)
     else:
 	if not manifest_path:

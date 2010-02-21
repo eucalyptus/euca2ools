@@ -51,6 +51,7 @@ snapshot1 snapshot2...snapshotN - snapshots to describe.
 def usage():
     print usage_string
     Util().usage()
+    sys.exit()
 
 def version():
     print Util().version()

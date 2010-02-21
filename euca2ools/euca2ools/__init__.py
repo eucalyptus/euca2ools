@@ -107,10 +107,7 @@ devpts          /dev/pts      devpts   gid=5,mode=620             0 0"""
         Popen(dd_cmd, PIPE).communicate()[0]
 
     def make_fs(self, image_path):
-        try:
-            Util().check_prerequisite_command(self.MAKEFS_CMD)  
-        except NotFoundError:
-            sys.exit(1)
+        Util().check_prerequisite_command(self.MAKEFS_CMD)  
 
 	if self.debug:
 	    print "Creating filesystem..."
@@ -170,15 +167,15 @@ class SolarisImage:
 
     def create_image(self, size_in_MB, image_path):
 	print "Sorry. Solaris not supported yet"
-	sys.exit(1)
+        raise UnsupportedException
 
     def make_fs(self, image_path):
 	print "Sorry. Solaris not supported yet"
-	sys.exit(1)
+	raise UnsupportedException
 
     def make_essential_devs(self, image_path):
 	print "Sorry. Solaris not supported yet"
-	sys.exit(1)
+	raise UnsupportedException
 
 class Util:
     usage_string = """
@@ -210,7 +207,6 @@ Euca2ools will use the environment variables EC2_URL, EC2_ACCESS_KEY, EC2_SECRET
 	    self.usage_string = self.usage_string.replace("-s,", "-S,")
 	    self.usage_string = self.usage_string.replace("-a,", "-A,")
     	print self.usage_string
-	sys.exit(1)
 
     def check_prerequisite_command(self, command):
         cmd = [command]
@@ -272,6 +268,13 @@ class NotFoundError:
     def __init__(self):
 	self.message = "Unable to find"
 
+class UnsupportedException:
+    def __init__(self):
+        self.message = "Not supported"
+
+class CommandFailed:
+    def __init__(self):
+        self.message = "Command failed"
     
 class ConnectionFailed:
     def __init__(self):
@@ -390,7 +393,7 @@ class Euca2ool:
 		return self.environ[name]
 	    else:
 		print '%s not found' % name
-		sys.exit(1)
+		raise NotFoundError
 
     def make_connection(self):
 	if not self.ec2_user_access_key:
@@ -542,19 +545,8 @@ class Euca2ool:
 	sha_image.update(buf)
         return image_size, hexlify(sha_image.digest())
 
-#    def tarzip_image(self, prefix, file, path): 
-#        print 'Tarring image'
-#        tar_file = '%s.tar.gz' % os.path.join(path, prefix) 
-#        tar = tarfile.open(tar_file, "w|gz")
-#        tar.add(file, arcname=prefix)
-#        tar.close()
-#        return tar_file
-
     def tarzip_image(self, prefix, file, path): 
-        try:
-            Util().check_prerequisite_command('tar')
-        except NotFoundError:
-            sys.exit(1)
+        Util().check_prerequisite_command('tar')
 
         print 'Tarring image'
         tar_file = '%s.tar.gz' % os.path.join(path, prefix)
@@ -573,7 +565,7 @@ class Euca2ool:
 	outfile.close
 	if os.path.getsize(tar_file) <= 0:
 	    print "Could not tar image"
-	    sys.exit(1)
+            raise CommandFailed
         return tar_file
 
     def hexToBytes(self, hexString):
@@ -939,16 +931,13 @@ class Euca2ool:
 	    os.makedirs(destination_path)
  	if self.img == "Unsupported":
 	    print "Platform not fully supported."
-	    sys.exit(1)
+	    raise UnsupportedException
         self.img.create_image(size_in_MB, image_path)
         self.img.make_fs(image_path)        
         return image_path
 
     def create_loopback(self, image_path):
-	try:
-	    Util().check_prerequisite_command('losetup')
-	except NotFoundError:
-	    sys.exit(1)	
+	Util().check_prerequisite_command('losetup')
 	tries = 0
 	while tries < MAX_LOOP_DEVS:
 	    loop_dev = Popen(["losetup", "-f"], stdout=PIPE).communicate()[0].replace('\n', '')
@@ -958,14 +947,11 @@ class Euca2ool:
 		    return loop_dev
 	    else:
 		print "Could not create loopback device. Aborting"
-		sys.exit(1)
+		raise CommandFailed
 	    tries += 1
 
     def mount_image(self, image_path):
-        try:
-            Util().check_prerequisite_command('mount') 
-        except NotFoundError:
-            sys.exit(1)
+        Util().check_prerequisite_command('mount') 
 
         tmp_mnt_point = "/tmp/%s" % (hex(BN.rand(16)))[2:6]
         if not os.path.exists(tmp_mnt_point):
@@ -1030,10 +1016,7 @@ class Euca2ool:
                 raise CopyError
 
     def unmount_image(self, mount_point):
-        try:
-            Util().check_prerequisite_command('umount') 
-        except NotFoundError:
-            sys.exit(1)
+        Util().check_prerequisite_command('umount') 
 	if self.debug:
 	    print "Unmounting image..."
         Popen(["umount", "-d", mount_point], stdout=PIPE).communicate()[0]
@@ -1045,7 +1028,7 @@ class Euca2ool:
             output = self.copy_to_image(mount_point, volume_path, excludes)
    	    if self.img == "Unsupported":
 	        print "Platform not fully supported."
-	        sys.exit(1)
+		raise UnsupportedException
 	    self.img.add_fstab(mount_point, generate_fstab, fstab_path)
 	except CopyError:
 	    raise CopyError 

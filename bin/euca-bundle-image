@@ -33,7 +33,7 @@
 # Author: Neil Soman neil@eucalyptus.com
 
 import getopt, sys, os
-from euca2ools import Euca2ool, FileValidationError, Util
+from euca2ools import Euca2ool, FileValidationError, Util, NotFoundError, CommandFailed
 
 usage_string = """
 Bundles an image for use with Eucalyptus or Amazon EC2.
@@ -118,16 +118,20 @@ def main():
     kernel=None
     user=None
     ramdisk=None
-    cert_path=euca.get_environ('EC2_CERT')
-    private_key_path=euca.get_environ('EC2_PRIVATE_KEY')
+    try: 
+        cert_path=euca.get_environ('EC2_CERT')
+        private_key_path=euca.get_environ('EC2_PRIVATE_KEY')
+        ec2cert_path=euca.get_environ('EUCALYPTUS_CERT')
+        user_string = euca.get_environ('EC2_USER_ID')
+    except NotFoundError:
+	sys.exit(1)
+
     prefix=None
     destination_path='/tmp'
-    ec2cert_path=euca.get_environ('EUCALYPTUS_CERT')
     target_arch='x86_64'
     mapping = None
     product_codes = None
     product_code_string = None
-    user_string = euca.get_environ("EC2_USER_ID")
     if user_string:
         try:
             user = int(user_string)
@@ -201,7 +205,13 @@ def main():
 	image_size, sha_image_digest = euca.check_image(image_path, destination_path)
 	if not prefix:
             prefix = euca.get_relative_filename(image_path)
-	tgz_file = euca.tarzip_image(prefix, image_path, destination_path)
+        try:
+	    tgz_file = euca.tarzip_image(prefix, image_path, destination_path)
+        except NotFoundError:
+            sys.exit(1)
+	except CommandFailed:
+	    sys.exit(1)
+
 	encrypted_file, key, iv, bundled_size = euca.encrypt_image(tgz_file)
 	os.remove(tgz_file)
 	parts, parts_digest = euca.split_image(encrypted_file)
