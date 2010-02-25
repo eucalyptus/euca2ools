@@ -78,7 +78,7 @@ def display_images(images, image_ids):
 	image_string += '\t%s' % ','.join(image.product_codes)
 
 	for i in [image.architecture, image.type,
-	          image.ramdisk_id, image.kernel_id]:
+	          image.kernel_id, image.ramdisk_id]:
 	    image_string += '\t%s' % ("" if i == None else i)
 
 	print 'IMAGE\t%s' % (image_string)
