@@ -55,11 +55,11 @@ man: $(BINLIST)
 install: build
 	@for subdir in $(SUBDIRS); do \
                 (cd $$subdir && $(MAKE) $@) || exit $$? ; done
-	@install -g root -o root -m 755 -d $(PREFIX)/bin
-	@install -g root -o root -m 755  bin/* $(PREFIX)/bin/
-	@install -g root -o root -m 755 -d $(PREFIX)/man/man1
-	@if [ -d $(MANDIR) ]; then install -g root -o root -m 644  $(MANDIR)/* $(PREFIX)/man/man1; fi
-	@if [ -d $(BASH_COMPLETION) ]; then install -g root -o root -m 644  $(UTILDIR)/* $(BASH_COMPLETION); fi
+	@install -o root -m 755 -d $(PREFIX)/bin
+	@install -o root -m 755  bin/* $(PREFIX)/bin/
+	@install -o root -m 755 -d $(PREFIX)/man/man1
+	@if [ -d $(MANDIR) ]; then install -o root -m 644  $(MANDIR)/* $(PREFIX)/man/man1; fi
+	@if [ -d $(BASH_COMPLETION) ]; then install -o root -m 644  $(UTILDIR)/* $(BASH_COMPLETION); fi
  
 distclean clean:
 	@for subdir in $(SUBDIRS); do \
