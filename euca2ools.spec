@@ -78,12 +78,12 @@ cd ../boto-*
 cd ../euca2ools
 %{__python} setup.py install --prefix=$DESTDIR/usr
 cd ..
-install -g root -o root -m 755 -d $DESTDIR/usr/bin
-install -g root -o root -m 755 -d $DESTDIR/usr/man/man1
-install -g root -o root -m 755 -d $DESTDIR/%{__docdir}/euca2ools-%{version}
-install -g root -o root -m 755  bin/* $DESTDIR/usr/bin
-install -g root -o root -m 644  man/* $DESTDIR/usr/man/man1
-install -g root -o root -m 755  INSTALL COPYING README $DESTDIR/%{__docdir}/euca2ools-%{version}
+install -o root -m 755 -d $DESTDIR/usr/bin
+install -o root -m 755 -d $DESTDIR/usr/man/man1
+install -o root -m 755 -d $DESTDIR/%{__docdir}/euca2ools-%{version}
+install -o root -m 755  bin/* $DESTDIR/usr/bin
+install -o root -m 644  man/* $DESTDIR/usr/man/man1
+install -o root -m 755  INSTALL COPYING README $DESTDIR/%{__docdir}/euca2ools-%{version}
 
 %clean
 [ ${RPM_BUILD_ROOT} != "/" ] && rm -rf ${RPM_BUILD_ROOT}
