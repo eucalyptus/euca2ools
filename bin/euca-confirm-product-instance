@@ -51,10 +51,10 @@ OPTIONAL PARAMETERS
 """
 
 
-def usage():
+def usage(status=1):
     print usage_string
     Util().usage()
-    sys.exit()
+    sys.exit(status)
 
 def version():
     print Util().version()
@@ -76,7 +76,7 @@ def main():
 	if name in ('-i', '--instance'):
 	    instance_id = value
         elif name in ('-h', '--help'):
-            usage()
+            usage(0)
 	elif name == '--version':
 	    version()
     

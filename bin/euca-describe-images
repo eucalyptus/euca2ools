@@ -53,9 +53,10 @@ image1 image2 ... imageN	Images to describe.
 """
 
 
-def usage():
+def usage(status=1):
     print usage_string
     Util().usage(compat=True)
+    sys.exit(status)
 
 def version():
     print Util().version()
@@ -98,7 +99,7 @@ def main():
 
     for name, value in euca.opts:
         if name in ('-h', '--help'):
-            usage()
+            usage(0)
 	elif name == '-x':
 	    if defaults:
 		executable_by = []

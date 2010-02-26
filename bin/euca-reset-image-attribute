@@ -52,10 +52,10 @@ OPTIONAL PARAMETERS
 """
 
 
-def usage():
+def usage(status=1):
     print usage_string
     Util().usage()
-    sys.exit()
+    sys.exit(status)
 
 def version():
     print Util().version()
@@ -78,7 +78,7 @@ def main():
 	    if not image_attribute:
 		image_attribute = 'launchPermission'
         elif name in ('-h', '--help'):
-            usage()
+            usage(0)
 	elif name == '--version':
 	    version()
 

@@ -69,10 +69,10 @@ OPTIONAL PARAMETERS
 IMAGE_IO_CHUNK = 8 * 1024
 IMAGE_SPLIT_CHUNK = IMAGE_IO_CHUNK * 1024;
 
-def usage():
+def usage(status=1):
     print usage_string
     Util().usage()
-    sys.exit()
+    sys.exit(status)
 
 def version():
     print Util().version()
@@ -98,7 +98,7 @@ def main():
      
     for name, value in euca.opts:
         if name in ('-h', '--help'):
-            usage()
+            usage(0)
         elif name in ('-k', '--privatekey'):
             private_key_path = value
 	elif name in ('-m', '--manifest'):
