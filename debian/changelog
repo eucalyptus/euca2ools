@@ -1,18 +1,44 @@
-euca2ools (1.2-0euca2) unstable; urgency=low
+euca2ools (1.2-1) UNRELEASED; urgency=low
 
-	* Release 1.2 GA version
+  * Test
 
- -- chris grzegorczyk <grze@eucalyptus.com>  Mon, 15 Feb 2010 21:25:47 -0700
-	
-	
-euca2ools (1.0-2euca1) unstable; urgency=low
+ -- Chris Grzegorczyk <grze@eucalyptus.com>  Fri, 26 Feb 2010 19:10:29 -0800
+
+euca2ools (1.1-1) unstable; urgency=low
+
+  * New upstream release (Closes: #543001).
+  * Delete euca2ools/euca2ools.egg-info/ at clean time (debian/rules).
+  * Disabled upstream manpage regeneration in the clean target of debian/rules,
+    since it generates a big diff for no clear benefit. Dropped the build
+    dependency on help2man (debian/control).
+  * Use Debhelper 7 (debian/control, debian/compat).
+  * Dropped version constraint in build deps. that are satisfied in Lenny.
+  * Build-depend on python-all instead of python-all-dev, blindly trusting the
+    advice ‘build-depends-on-python-dev-with-no-arch-any’ from Lintian.
+  * Raised the package’s Priority to optional (debian/control).
+  * Depends on python-boto >= 1.8d instead of 1.8c according to the INSTALL
+    file (debian/control).
+  * Updated Standards-Version after checking conformance with Policy 3.8.3
+    (debian/control, no other changes needed).
+  * Added myself to Uploaders (debian/control).
+
+ -- Charles Plessy <plessy@debian.org>  Sun, 17 Jan 2010 21:36:04 +0900
+
+euca2ools (1.0+bzr20090731-1) unstable; urgency=low
+
+  * Initial release (Closes: #537370).
+  * Final roundup-contributions by Steffen Moeller.
+
+ -- chris grzegorczyk <grze@eucalyptus.com>  Sat, 01 Aug 2009 13:50:56 +0200
+
+euca2ools (1.0-2euca1) UNRELEASED; urgency=low
 
   * Release 1.0 GA version
   * Add README.debian  
 
  -- chris grzegorczyk <grze@eucalyptus.com>  Thu, 16 Jul 2009 21:25:47 -0700
 
-euca2ools (1.0-2) unstable; urgency=low
+euca2ools (1.0-2) UNRELEASED; urgency=low
 
   * Further addition to debian/control.
     - improved description
@@ -21,7 +47,7 @@ euca2ools (1.0-2) unstable; urgency=low
 
  -- chris grzegorczyk <grze@eucalyptus.com>  Wed, 08 Jul 2009 15:04:45 +0200
 
-euca2ools (1.0-1) unstable; urgency=low
+euca2ools (1.0-1) UNRELEASED; urgency=low
 
   * Updated packaging with fixes thanks to Steffen Moeller and David Wendt.
 

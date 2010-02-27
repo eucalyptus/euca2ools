@@ -1,11 +1,13 @@
 This package was debianized by Soren Hansen <soren@ubuntu.com> on
 Tue, 26 May 2009 11:30:48 +0200.
 
+Source: http://eucalyptussoftware.com/downloads/releases/euca2ools-1.1.tar.gz
+
 Copyright:
 	Copyright 2009, Eucalyptus Systems, Inc.
     All rights reserved.
 
-Authors:
+Author:
 	Neil Soman <neil@eucalyptus.com>
 
 License:
