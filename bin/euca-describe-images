@@ -61,14 +61,8 @@ def version():
     print Util().version()
     sys.exit()
 
-def display_images(images, image_ids):
-    check_image_ids = False
-    if(len(image_ids) > 0):
-	check_image_ids = True
+def display_images(images):
     for image in images:
-        if check_image_ids:
-	    if not image.id in image_ids:
-	        continue
 	image_string = '%s\t%s\t%s\t%s' % (image.id, image.location, image.ownerId, image.state)
 	if image.is_public:
   	    image_string += '\tpublic'
@@ -121,7 +115,6 @@ def main():
         executable_by = ['self', 'all']
         owners = []
 
-    #This is workaround for an issue with the front end (does not return an image set when an image id is specified LP:356389)
     try:
         euca_conn = euca.make_connection()
     except ConnectionFailed, e:
@@ -129,11 +122,11 @@ def main():
         sys.exit(1)
 
     try:
-        images = euca_conn.get_all_images(owners=owners, executable_by=executable_by)
+        images = euca_conn.get_all_images(image_ids=image_ids, owners=owners, executable_by=executable_by)
     except Exception, ex:
         euca.display_error_and_exit('%s' % ex)
 
-    display_images(images, image_ids)
+    display_images(images)
 if __name__ == "__main__":
     main()
  
