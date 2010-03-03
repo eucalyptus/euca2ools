@@ -37,7 +37,7 @@ except ImportError:
     from distutils.core import setup
 
 setup(name = "euca2ools",
-      version = "1.0",
+      version = "1.2",
       description = "API tools compatible with Amazon AWS",
       long_description="API tools compliant with Amazon's AWS API. Work with Amazon AWS and Eucalyptus.",
       author = "Neil Soman",
