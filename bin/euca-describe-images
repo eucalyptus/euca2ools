@@ -117,6 +117,10 @@ def main():
 	    version()
 
     image_ids = euca.process_args()
+    if defaults and len(image_ids) > 0:
+        executable_by = ['self', 'all']
+        owners = []
+
     #This is workaround for an issue with the front end (does not return an image set when an image id is specified LP:356389)
     try:
         euca_conn = euca.make_connection()
