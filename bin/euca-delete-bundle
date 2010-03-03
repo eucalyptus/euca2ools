@@ -66,10 +66,10 @@ OPTIONAL PARAMETERS
 """
 
 
-def usage():
+def usage(status=1):
     print usage_string
     Util().usage()
-    sys.exit()
+    sys.exit(status)
 
 def version():
     print Util().version()
@@ -197,7 +197,7 @@ def main():
 
     for name, value in euca.opts:
         if name in ('-h', '--help'):
-            usage()
+            usage(0)
         elif name in ('-b', '--bucket'):
             bucket = value
         elif name in ('-m', '--manifest'):

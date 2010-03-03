@@ -89,9 +89,9 @@ OPTIONAL PARAMETERS
 MAX_IMAGE_SIZE = 1024 * 10
 
 
-def usage():
+def usage(status=1):
     print usage_string
-    sys.exit()
+    sys.exit(status)
 
 def version():
     print Util().version()
@@ -218,7 +218,7 @@ def main():
  
     for name, value in euca.opts:
         if name in ('-h', '--help'):
-            usage()
+            usage(0)
         elif name in ('-c', '--cert'):
             cert_path = value
         elif name in ('-k', '--privatekey'):

@@ -280,6 +280,10 @@ class ConnectionFailed:
     def __init__(self):
 	self.message = "Connection failed"
 
+class ParseError:
+    def __init__(self, msg):
+	self.message = msg
+
 class Euca2ool:
  
  
@@ -346,47 +350,25 @@ class Euca2ool:
     SYSTEM_EUCARC_PATH = os.path.join("/etc", "euca2ools", "eucarc")
     
     def setup_environ(self):
+	envlist = ( 'EC2_ACCESS_KEY', 'EC2_SECRET_KEY', 'S3_URL', 'EC2_URL',
+                 'EC2_CERT', 'EC2_PRIVATE_KEY', 'EUCALYPTUS_CERT',
+                 'EC2_USER_ID' )
 	self.environ = {}
 	user_eucarc = None
 	if 'HOME' in os.environ:
 	    user_eucarc = os.path.join(os.getenv('HOME'), ".eucarc")
-	base_path = None
 	read_config = False
 	if self.config_file_path and os.path.exists(self.config_file_path):
-	    base_path = os.path.dirname(self.config_file_path)
-	    eucarc = open(self.config_file_path, "r")
-	    read_config = True 
+	    read_config = self.config_file_path
 	elif user_eucarc is not None and os.path.exists(user_eucarc):
-	    base_path = os.path.dirname(user_eucarc)
-	    eucarc = open(user_eucarc, "r")
-	    read_config = True
+	    read_config = user_eucarc
 	elif os.path.exists(self.SYSTEM_EUCARC_PATH):
-	    base_path = os.path.dirname(self.SYSTEM_EUCARC_PATH)
-	    eucarc = open(self.SYSTEM_EUCARC_PATH, "r")
-	    read_config = True
+	    read_config = self.SYSTEM_EUCARC_PATH
 	if read_config:	
- 	    lines = eucarc.readlines()
-	    comment = re.compile('^#')
-	    for line in lines:
-	        line = line.strip('export')
-		line = line.replace('\'', '')
-   	        line = line.strip()
-		line = line.replace('${EUCA_KEY_DIR}', base_path)
-	        if not comment.match(line):
-	  	    parts = line.split('=', 1)
-		    if len(parts) == 2:
-		        self.environ[parts[0]] = parts[1]
-	    eucarc.close()
-
+            parse_config(read_config, self.environ, envlist)
     	else:
-	    self.environ['EC2_ACCESS_KEY'] = os.getenv('EC2_ACCESS_KEY')
-	    self.environ['EC2_SECRET_KEY'] = os.getenv('EC2_SECRET_KEY')
-	    self.environ['S3_URL'] = os.getenv('S3_URL')
-	    self.environ['EC2_URL'] = os.getenv('EC2_URL')
-	    self.environ['EC2_CERT'] = os.getenv('EC2_CERT')
-	    self.environ['EC2_PRIVATE_KEY'] = os.getenv('EC2_PRIVATE_KEY')
-	    self.environ['EUCALYPTUS_CERT'] = os.getenv('EUCALYPTUS_CERT')
-	    self.environ['EC2_USER_ID'] = os.getenv('EC2_USER_ID')
+            for v in envlist:
+                self.environ[v]=os.getenv(v)
 
     def get_environ(self, name):
 	    if self.environ.has_key(name):
@@ -1094,3 +1076,27 @@ class Euca2ool:
 	except Exception:
 	    print msg
 	sys.exit(1)
+
+# read the config file 'config', update 'dict', setting 
+# the value from the config file for each element in array 'keylist'
+# "config" is a bash syntax file defining bash variables
+def parse_config(config, dict, keylist):
+    fmt = ""
+    str=""
+    for v in keylist:
+        str='%s "${%s}" ' % (str, v)
+        fmt=fmt + "%s%s" % ("%s", "\\0")
+
+    cmd = [ "bash", "-ec", 
+            ". '%s' >/dev/null; printf '%s' %s" \
+            % ( config, fmt, str ) ]
+    
+    handle = Popen(cmd, stderr=PIPE, stdout=PIPE)
+    ( stdout, stderr) = handle.communicate()
+    if handle.returncode != 0:
+        raise ParseError("Parsing config file %s failed:\n\t%s" %(config, stderr))
+
+    values = stdout.split("\0")
+    for i in range(len(values) - 1):
+        if values[i] != "":
+            dict[keylist[i]]=values[i]
