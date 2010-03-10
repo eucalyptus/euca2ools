@@ -38,7 +38,7 @@ from euca2ools import Euca2ool, Util, ConnectionFailed
 usage_string = """
 Shows information about availability zones.
 
-euca-describe-availability-zones [--region region] [-h, --help] [--version] [--debug] [zone1 zone2...zoneN]
+euca-describe-availability-zones [--region region] [-h, --help] [--version] [--debug] [zone1 zone2...zoneN] [verbose]
 
 OPTIONAL PARAMETERS
 
@@ -46,6 +46,7 @@ OPTIONAL PARAMETERS
 
 zone1 zone2...zoneN		zones to describe. 
 
+verbose				show verbose resource information (Eucalyptus administrator-only functionality).			
 """
 
 
