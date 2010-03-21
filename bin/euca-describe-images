@@ -62,8 +62,14 @@ def version():
     print Util().version()
     sys.exit()
 
-def display_images(images):
+def display_images(images, image_ids):
+    check_image_ids = False
+    if(len(image_ids) > 0):
+	check_image_ids = True
     for image in images:
+        if check_image_ids:
+	    if not image.id in image_ids:
+	        continue
 	image_string = '%s\t%s\t%s\t%s' % (image.id, image.location, image.ownerId, image.state)
 	if image.is_public:
   	    image_string += '\tpublic'
@@ -127,7 +133,7 @@ def main():
     except Exception, ex:
         euca.display_error_and_exit('%s' % ex)
 
-    display_images(images)
+    display_images(images, image_ids)
 if __name__ == "__main__":
     main()
  

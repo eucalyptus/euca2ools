@@ -43,7 +43,7 @@ euca-reset-image-attribute -l, --launch-permission
 
 REQUIRED PARAMETERS
 	
--l, --launch-permission 	show launch permissions.
+-l, --launch-permission 	Launch permissions.
 
 image_id - unique identifier for the image that you want to reset the attributes for. 
 
