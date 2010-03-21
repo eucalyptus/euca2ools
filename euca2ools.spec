@@ -1,25 +1,33 @@
-%define is_suse %(test -e /etc/SuSE-release && echo 1 || echo 0)
-%define is_centos %(test -e /etc/redhat-release && echo 1 || echo 0)
+%global is_suse %(test -e /etc/SuSE-release && echo 1 || echo 0)
+%global is_centos %(grep CentOS /etc/redhat-release > /dev/null && echo 1 || echo 0)
+%global is_fedora %(grep Fedora /etc/redhat-release > /dev/null && echo 1 || echo 0)
 
 %ifarch x86_64
-%define __libarch   lib64
+%global __libarch   lib64
 %else
-%define __libarch   lib
+%global __libarch   lib
 %endif
 
 %if %is_suse
-%define __python    python
-%define __where     lib/python2.6/site-packages
-%define __whereM2C  %{__libarch}/python2.6/site-packages
-%define __docdir    /usr/share/doc/packages
+%global __python    python
+%global __where     lib/python2.6/site-packages
+%global __whereM2C  %{__libarch}/python2.6/site-packages
+%global __docdir    /usr/share/doc/packages
 %endif
 
 %if %is_centos
-%define __python    python2.5
-%define __where     lib/python2.5/site-packages
-%define __whereM2C  %{__libarch}/python2.5/site-packages
-%define __docdir    /usr/share/doc
+%global __python    python2.5
+%global __where     lib/python2.5/site-packages
+%global __whereM2C  %{__libarch}/python2.5/site-packages
+%global __docdir    /usr/share/doc
 %endif
+
+%if %is_fedora
+%global __python    python
+%global __where     lib/python2.6/site-packages
+%global __docdir    /usr/share/doc
+%endif
+
 
 Summary:       Elastic Utility Computing Architecture Command Line Tools
 Name:          euca2ools
@@ -27,6 +35,10 @@ Version:       1.2
 Release:       1
 License:       BSD 
 Group:         Applications/System
+%if %is_fedora
+BuildRequires: gcc, make, swig, python-devel, python, m2crypto
+Requires:      swig, python
+%endif
 %if %is_suse
 BuildRequires: gcc, make, swig, python-devel, python
 Requires:      swig, python
@@ -56,9 +68,17 @@ tar xzf deps/boto-*tar.gz
 
 %build
 export DESTDIR=$RPM_BUILD_ROOT
+%if %is_suse
 cd M2Crypto*
 %{__python} setup.py build
-cd ../boto*
+cd ..
+%endif
+%if %is_centos
+cd M2Crypto*
+%{__python} setup.py build
+cd ..
+%endif
+cd boto*
 %{__python} setup.py build
 cd ../euca2ools
 %{__python} setup.py build
@@ -71,9 +91,17 @@ done
 
 %install
 export DESTDIR=$RPM_BUILD_ROOT
+%if %is_centos
 cd M2Crypto-*
 %{__python} setup.py install --prefix=$DESTDIR/usr
-cd ../boto-*
+cd ..
+%endif
+%if %is_suse
+cd M2Crypto-*
+%{__python} setup.py install --prefix=$DESTDIR/usr
+cd ..
+%endif
+cd boto-*
 %{__python} setup.py install --prefix=$DESTDIR/usr
 cd ../euca2ools
 %{__python} setup.py install --prefix=$DESTDIR/usr
@@ -104,8 +132,14 @@ install -o root -m 755  INSTALL COPYING README $DESTDIR/%{__docdir}/euca2ools-%{
 /usr/bin/sdbadmin
 /usr/bin/euca-*
 /usr/man/man1/euca*
+%if %is_centos
 /usr/%__whereM2C/M2Crypto
 /usr/%__whereM2C/M2Crypto*egg-info
+%endif
+%if %is_suse
+/usr/%__whereM2C/M2Crypto
+/usr/%__whereM2C/M2Crypto*egg-info
+%endif
 /usr/%__where/boto
 /usr/%__where/boto*egg-info
 /usr/%__where/euca2ools
@@ -113,12 +147,15 @@ install -o root -m 755  INSTALL COPYING README $DESTDIR/%{__docdir}/euca2ools-%{
 %{__docdir}/euca2ools-%{version}
 
 %changelog
-*Fri Feb 12 2010 Eucalyptus Systems (support@eucalyptus.com)
+* Wed Mar 17 2010 Eucalyptus Systems <support@eucalyptus.com>
+- Added support for fedora
+
+* Fri Feb 12 2010 Eucalyptus Systems <support@eucalyptus.com>
 - Version 1.2
 
-*Sun Nov 1 2009 Eucalyptus Systems (support@eucalyptus.com)
+* Sun Nov 1 2009 Eucalyptus Systems <support@eucalyptus.com>
 - Version 1.1
 
-*Sat Jun 27 2009 Eucalyptus Systems (support@open.eucalyptus.com)
+* Sat Jun 27 2009 Eucalyptus Systems<(support@open.eucalyptus.com>
 - First public release.
 
