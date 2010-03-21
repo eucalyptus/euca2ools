@@ -48,9 +48,9 @@ image_id			Unique identifier for the image that you want to modify the attribute
 
 OPTIONAL PARAMETERS
 
--l, --launch-permission 	Show launch permissions.
+-l, --launch-permission 	Launch permissions.
 
--p, --product-code		Show the product codes associated with the image
+-p, --product-code		Product codes associated with the image.
 
 -a, -add			Entity (typically, user id) to add.
 
