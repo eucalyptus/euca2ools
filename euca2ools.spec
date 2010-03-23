@@ -2,32 +2,29 @@
 %global is_centos %(grep CentOS /etc/redhat-release > /dev/null && echo 1 || echo 0)
 %global is_fedora %(grep Fedora /etc/redhat-release > /dev/null && echo 1 || echo 0)
 
+%global euca_docdir    /usr/share/doc
+%global euca_python    python
+%global euca_where     lib/python2.6/site-packages
+%global build_m2crypto 0
+
 %ifarch x86_64
-%global __libarch   lib64
+%global euca_libarch   lib64
 %else
-%global __libarch   lib
+%global euca_libarch   lib
 %endif
 
 %if %is_suse
-%global __python    python
-%global __where     lib/python2.6/site-packages
-%global __whereM2C  %{__libarch}/python2.6/site-packages
-%global __docdir    /usr/share/doc/packages
+%global euca_whereM2C  %{euca_libarch}/python2.6/site-packages
+%global euca_docdir    /usr/share/doc/packages
+%global build_m2crypto 1
 %endif
 
 %if %is_centos
-%global __python    python2.5
-%global __where     lib/python2.5/site-packages
-%global __whereM2C  %{__libarch}/python2.5/site-packages
-%global __docdir    /usr/share/doc
+%global euca_python    python2.5
+%global euca_where     lib/python2.5/site-packages
+%global euca_whereM2C  %{euca_libarch}/python2.5/site-packages
+%global build_m2crypto 1
 %endif
-
-%if %is_fedora
-%global __python    python
-%global __where     lib/python2.6/site-packages
-%global __docdir    /usr/share/doc
-%endif
-
 
 Summary:       Elastic Utility Computing Architecture Command Line Tools
 Name:          euca2ools
@@ -49,7 +46,7 @@ Requires:      swig, python25
 %endif
 Vendor:        Eucalyptus Systems
 #Icon:          someicon.xpm
-Source:        http://open.eucalyptus.com/downloads/euca2ools-%{version}.tgz
+Source:        http://eucalyptussoftware.com/downloads/releases/euca2ools-%{version}.tar.gz
 URL:           http://open.eucalyptus.com
 
 %description
@@ -63,25 +60,22 @@ This tools are complatible with Amazon EC2.
 
 %prep
 %setup -n euca2ools-%{version}
+%if %build_m2crypto
 tar xzf deps/M2Crypto*tar.gz
+%endif
 tar xzf deps/boto-*tar.gz
 
 %build
 export DESTDIR=$RPM_BUILD_ROOT
-%if %is_suse
+%if %build_m2crypto
 cd M2Crypto*
-%{__python} setup.py build
-cd ..
-%endif
-%if %is_centos
-cd M2Crypto*
-%{__python} setup.py build
+%{euca_python} setup.py build
 cd ..
 %endif
 cd boto*
-%{__python} setup.py build
+%{euca_python} setup.py build
 cd ../euca2ools
-%{__python} setup.py build
+%{euca_python} setup.py build
 %if %is_centos
 cd ..
 for x in `/bin/ls bin/euca-*`; do
@@ -91,39 +85,34 @@ done
 
 %install
 export DESTDIR=$RPM_BUILD_ROOT
-%if %is_centos
+%if %build_m2crypto
 cd M2Crypto-*
-%{__python} setup.py install --prefix=$DESTDIR/usr
-cd ..
-%endif
-%if %is_suse
-cd M2Crypto-*
-%{__python} setup.py install --prefix=$DESTDIR/usr
+%{euca_python} setup.py install --prefix=$DESTDIR/usr
 cd ..
 %endif
 cd boto-*
-%{__python} setup.py install --prefix=$DESTDIR/usr
+%{euca_python} setup.py install --prefix=$DESTDIR/usr
 cd ../euca2ools
-%{__python} setup.py install --prefix=$DESTDIR/usr
+%{euca_python} setup.py install --prefix=$DESTDIR/usr
 cd ..
 install -o root -m 755 -d $DESTDIR/usr/bin
 install -o root -m 755 -d $DESTDIR/usr/man/man1
-install -o root -m 755 -d $DESTDIR/%{__docdir}/euca2ools-%{version}
+install -o root -m 755 -d $DESTDIR/%{euca_docdir}/euca2ools-%{version}
 install -o root -m 755  bin/* $DESTDIR/usr/bin
 install -o root -m 644  man/* $DESTDIR/usr/man/man1
-install -o root -m 755  INSTALL COPYING README $DESTDIR/%{__docdir}/euca2ools-%{version}
+install -o root -m 755  INSTALL COPYING README $DESTDIR/%{euca_docdir}/euca2ools-%{version}
 
 %clean
 [ ${RPM_BUILD_ROOT} != "/" ] && rm -rf ${RPM_BUILD_ROOT}
 #export DESTDIR=$RPM_BUILD_ROOT
 #rm -rf $RPM_BUILD_DIR/euca2ools-%{version}
-#rm -rf $DESTDIR/%{__docdir}/euca2ools-%{version}
-#rm -rf $DESTDIR/usr/%__whereM2C/M2Crypto
-#rm -rf $DESTDIR/usr/%__whereM2C/M2Crypto*egg-info
-#rm -rf $DESTDIR/usr/%__where/boto
-#rm -rf $DESTDIR/usr/%__where/boto*egg-info
-#rm -rf $DESTDIR/usr/%__where/euca2ools
-#rm -rf $DESTDIR/usr/%__where/euca2ools*egg-info
+#rm -rf $DESTDIR/%{euca_docdir}/euca2ools-%{version}
+#rm -rf $DESTDIR/usr/%euca_whereM2C/M2Crypto
+#rm -rf $DESTDIR/usr/%euca_whereM2C/M2Crypto*egg-info
+#rm -rf $DESTDIR/usr/%euca_where/boto
+#rm -rf $DESTDIR/usr/%euca_where/boto*egg-info
+#rm -rf $DESTDIR/usr/%euca_where/euca2ools
+#rm -rf $DESTDIR/usr/%euca_where/euca2ools*egg-info
 #rm -rf $DESTDIR/usr/bin/euca-* $DESTDIR/usr/bin/s3put $DESTDIR/usr/bin/sdbadmin
 #rm -rf $DESTDIR/usr/man/man1/euca-*
 
@@ -132,19 +121,15 @@ install -o root -m 755  INSTALL COPYING README $DESTDIR/%{__docdir}/euca2ools-%{
 /usr/bin/sdbadmin
 /usr/bin/euca-*
 /usr/man/man1/euca*
-%if %is_centos
-/usr/%__whereM2C/M2Crypto
-/usr/%__whereM2C/M2Crypto*egg-info
+%if %build_m2crypto
+/usr/%euca_whereM2C/M2Crypto
+/usr/%euca_whereM2C/M2Crypto*egg-info
 %endif
-%if %is_suse
-/usr/%__whereM2C/M2Crypto
-/usr/%__whereM2C/M2Crypto*egg-info
-%endif
-/usr/%__where/boto
-/usr/%__where/boto*egg-info
-/usr/%__where/euca2ools
-/usr/%__where/euca2ools*egg-info
-%{__docdir}/euca2ools-%{version}
+/usr/%euca_where/boto
+/usr/%euca_where/boto*egg-info
+/usr/%euca_where/euca2ools
+/usr/%euca_where/euca2ools*egg-info
+%{euca_docdir}/euca2ools-%{version}
 
 %changelog
 * Wed Mar 17 2010 Eucalyptus Systems <support@eucalyptus.com>
