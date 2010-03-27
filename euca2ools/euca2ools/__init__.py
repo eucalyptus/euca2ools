@@ -31,13 +31,12 @@
 # Author: Neil Soman neil@eucalyptus.com
 
 import boto
-import getopt, sys, os, stat
+import getopt, sys, os
 import tarfile
-import gzip
 from xml.dom.minidom import Document
 from xml.dom import minidom
 from hashlib import sha1 as sha
-from M2Crypto import BN, EVP, RSA, util, Rand, m2, X509
+from M2Crypto import BN, EVP, RSA, X509
 from binascii import hexlify, unhexlify
 from subprocess import *
 import platform
