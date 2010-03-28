@@ -42,8 +42,8 @@ euca-describe-bundle-tasks [bundle_id1... bundle_idN] [-h, --help] [--version] [
 
 REQUIRED PARAMETERS
 
-bundle_id1... bundle_idN	Identifiers of bundle tasks to describe. When no bundle task ids are specified
-				all bundle tasks are returned.
+bundle_id1... bundle_idN	Identifiers of bundle tasks to describe. If no bundle task ids are specified
+all bundle tasks are returned.
 
 OPTIONAL PARAMETERS
 
