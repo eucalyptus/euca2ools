@@ -251,6 +251,10 @@ class DirValidationError:
     def __init__(self):
 	self.message = 'Invalid directory'
 
+class BundleValidationError:
+    def __init__(self):
+	self.message = 'Invalid bundle id'
+
 class CopyError:
     def __init__(self):
 	self.message = 'Unable to copy'
@@ -469,6 +473,10 @@ class Euca2ool:
 	if not os.path.exists(path) or not os.path.isdir(path):
 	    raise DirValidationError
 	
+    def validate_bundle_id(self, id):
+ 	if not re.match("bun-", id):
+            raise BundleValidationError 
+
     def get_relative_filename(self, filename):
         f_parts = filename.split('/')
         return f_parts[len(f_parts) - 1]
