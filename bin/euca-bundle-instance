@@ -1,0 +1,146 @@
+#!/usr/bin/env python
+
+# Software License Agreement (BSD License)
+#
+# Copyright (c) 2009, Eucalyptus Systems, Inc.
+# All rights reserved.
+#
+# Redistribution and use of this software in source and binary forms, with or
+# without modification, are permitted provided that the following conditions
+# are met:
+#
+#   Redistributions of source code must retain the above
+#   copyright notice, this list of conditions and the
+#   following disclaimer.
+#
+#   Redistributions in binary form must reproduce the above
+#   copyright notice, this list of conditions and the
+#   following disclaimer in the documentation and/or other
+#   materials provided with the distribution.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+# ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+# LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE.
+#
+# Author: Neil Soman neil@eucalyptus.com
+
+import sys
+from euca2ools import Euca2ool, Util, ConnectionFailed
+
+usage_string = """
+Bundle a Windows instance.
+
+euca-bundle-instance instance_id -b, --bucket bucket -p, --prefix prefix -o access_key_id -c policy -w secret_key [-h, --help] [--version] [--debug] image_location 
+
+REQUIRED PARAMETERS
+
+instance_id			Identifier of the instance to be bundled.
+
+-b, --bucket 			The name of the bucket to upload to. Bucket will be created if it does not exist.
+
+-p, --prefix			The prefix for the image file name.
+
+-o				Access Key ID of the owner of the bucket.
+
+-c				Base64 encoded upload policy that defines upload permissions and conditions.
+
+-w				Secret key used to sign the upload policy.
+
+OPTIONAL PARAMETERS
+
+"""
+
+
+def usage(status=1):
+    print usage_string
+    Util().usage()
+    sys.exit(status)
+
+def version():
+    print Util().version()
+    sys.exit()
+
+def display_bundle(bundle):
+    bundle_string = '%s\t%s\t%s\t%s\t%s' % (bundle.id, bundle.instance_id,
+                                bundle.bucket, bundle.prefix,
+                                bundle.state, bundle.start_time,
+                                bundle.update_time)
+    print 'BUNDLE\t%s' % (bundle_string)
+
+def main():
+    euca = None
+    try:
+	euca = Euca2ool('b:p:o:c:w:',
+                        ['bucket=', 'prefix='])
+    except Exception, e:
+	print e
+        usage()
+ 
+    bucket = None
+    prefix = None
+    access_key_id = None
+    policy = None
+    secret_key = None    
+    instance_id = None
+
+    for name, value in euca.opts:
+        if name in  ('-b', '--bucket'):
+            bucket = value
+        elif name in ('-p', '--prefix'):
+            prefix = value
+        elif name == '-o':
+            access_key_id = value
+        elif name == 'c':
+            policy = value
+        elif name == '-w':
+            secret_key = value
+        elif name in ('-h', '--help'):
+            usage(0)
+	elif name == '--version':
+	    version()
+
+    for arg in euca.args:
+        instance_id = arg
+	break
+
+    if instance_id and bucket and prefix and access_key_id and policy and secret_key:
+        try:
+            euca_conn = euca.make_connection()
+        except ConnectionFailed, e:
+            print e.message
+            sys.exit(1)
+	try:
+	    bundle_task = euca_conn.bundle_instance(instance_id = instance_id,
+                                                    s3_bucket = bucket,
+                                                    s3_prefix = prefix,
+                                                    s3_upload_policy = policy)
+        except Exception, ex:
+            euca.display_error_and_exit('%s' % ex)
+
+	if bundle_task:
+            display_bundle(bundle_task)
+    else:
+        if not instance_id:
+            print 'instance_id must be specified.'
+        if not bucket:
+            print 'bucket must be specified.'
+        if not prefix:
+            print 'prefix must be specified.'
+        if not access_key_id:
+            print 'access_key_id must be specified.'
+        if not policy:
+            print 'policy must be specified.'
+        if not secret_key:
+            print 'secret_key must be specified.' 
+	usage(1)
+if __name__ == "__main__":
+    main()
+ 
