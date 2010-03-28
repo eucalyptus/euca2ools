@@ -36,23 +36,13 @@ import sys
 from euca2ools import Euca2ool, Util, ConnectionFailed
 
 usage_string = """
-Bundle a Windows instance.
+Cancels a previously submitted bundle task.
 
-euca-bundle-instance instance_id -b, --bucket bucket -p, --prefix prefix -o access_key_id -c policy -w secret_key [-h, --help] [--version] [--debug]
+euca-cancel-bundle-task bundle_id [-h, --help] [--version] [--debug]
 
 REQUIRED PARAMETERS
 
-instance_id			Identifier of the instance to be bundled.
-
--b, --bucket 			The name of the bucket to upload to. Bucket will be created if it does not exist.
-
--p, --prefix			The prefix for the image file name.
-
--o				Access Key ID of the owner of the bucket.
-
--c				Base64 encoded upload policy that defines upload permissions and conditions.
-
--w				Secret key used to sign the upload policy.
+bundle_id			Identifier of the bundle task to be canceled.
 
 OPTIONAL PARAMETERS
 
@@ -78,68 +68,39 @@ def display_bundle(bundle):
 def main():
     euca = None
     try:
-	euca = Euca2ool('b:p:o:c:w:',
-                        ['bucket=', 'prefix='])
+	euca = Euca2ool()
     except Exception, e:
 	print e
         usage()
  
-    bucket = None
-    prefix = None
-    access_key_id = None
-    policy = None
-    secret_key = None    
-    instance_id = None
+    bundle_id = None
 
     for name, value in euca.opts:
-        if name in  ('-b', '--bucket'):
-            bucket = value
-        elif name in ('-p', '--prefix'):
-            prefix = value
-        elif name == '-o':
-            access_key_id = value
-        elif name == 'c':
-            policy = value
-        elif name == '-w':
-            secret_key = value
-        elif name in ('-h', '--help'):
+        if name in ('-h', '--help'):
             usage(0)
 	elif name == '--version':
 	    version()
 
     for arg in euca.args:
-        instance_id = arg
+        bundle_id = arg
 	break
 
-    if instance_id and bucket and prefix and access_key_id and policy and secret_key:
+    if bundle_id:
         try:
             euca_conn = euca.make_connection()
         except ConnectionFailed, e:
             print e.message
             sys.exit(1)
 	try:
-	    bundle_task = euca_conn.bundle_instance(instance_id = instance_id,
-                                                    s3_bucket = bucket,
-                                                    s3_prefix = prefix,
-                                                    s3_upload_policy = policy)
+	    bundle_task = euca_conn.cancel_bundle_task(bundle_id = bundle_id)
         except Exception, ex:
             euca.display_error_and_exit('%s' % ex)
 
 	if bundle_task:
             display_bundle(bundle_task)
     else:
-        if not instance_id:
-            print 'instance_id must be specified.'
-        if not bucket:
-            print 'bucket must be specified.'
-        if not prefix:
-            print 'prefix must be specified.'
-        if not access_key_id:
-            print 'access_key_id must be specified.'
-        if not policy:
-            print 'policy must be specified.'
-        if not secret_key:
-            print 'secret_key must be specified.' 
+        if not bundle_id:
+            print 'bundle_id must be specified.'
 	usage(1)
 if __name__ == "__main__":
     main()
