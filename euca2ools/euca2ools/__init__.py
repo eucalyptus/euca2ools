@@ -45,6 +45,7 @@ import re
 import shutil
 from boto.ec2.regioninfo import RegionInfo
 import logging
+import base64
 
 BUNDLER_NAME = "euca-tools"
 BUNDLER_VERSION = "1.2"
@@ -665,6 +666,13 @@ class Euca2ool:
         encrypted_file.close()
         decrypted_file.close()
         return decrypted_filename
+
+    def decrypt_string(self, encrypted_string, private_key_path, encoded=False):
+        user_priv_key = RSA.load_key(private_key_path)
+        string_to_decrypt = encrypted_string
+        if encoded:
+            string_to_decrypt = base64.b64decode(encrypted_string)
+        return user_priv_key.private_decrypt(string_to_decrypt, RSA.pkcs1_padding)
 
     def untarzip_image(self, path, file):
         untarred_filename = file.replace('.tar.gz', '') 
