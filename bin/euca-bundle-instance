@@ -69,9 +69,12 @@ def version():
     sys.exit()
 
 def display_bundle(bundle):
-    bundle_string = '%s\t%s\t%s\t%s\t%s' % (bundle.id, bundle.instance_id,
-                                bundle.bucket, bundle.prefix,
-                                bundle.state, bundle.start_time,
+    bundle_string = '%s\t%s\t%s\t%s\t%s\t%s\t%s' % (bundle.id, 
+                                bundle.instance_id,
+                                bundle.bucket, 
+                                bundle.prefix,
+                                bundle.state, 
+                                bundle.start_time,
                                 bundle.update_time)
     print 'BUNDLE\t%s' % (bundle_string)
 
@@ -98,7 +101,7 @@ def main():
             prefix = value
         elif name == '-o':
             access_key_id = value
-        elif name == 'c':
+        elif name == '-c':
             policy = value
         elif name == '-w':
             secret_key = value
