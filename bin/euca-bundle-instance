@@ -48,11 +48,11 @@ instance_id			Identifier of the instance to be bundled.
 
 -p, --prefix			The prefix for the image file name.
 
--o				Access Key ID of the owner of the bucket.
+-o, --user-access-key-id	Access Key ID of the owner of the bucket.
 
--c				Base64 encoded upload policy that defines upload permissions and conditions.
+-c, --policy			Base64 encoded upload policy that defines upload permissions and conditions.
 
--w				Secret key used to sign the upload policy.
+-w, --user-secret-key		Secret key used to sign the upload policy.
 
 OPTIONAL PARAMETERS
 
@@ -82,7 +82,7 @@ def main():
     euca = None
     try:
 	euca = Euca2ool('b:p:o:c:w:',
-                        ['bucket=', 'prefix='])
+                        ['bucket=', 'prefix=', 'policy=', 'user-access-key-id=', 'user-secret-key='])
     except Exception, e:
 	print e
         usage()
@@ -99,11 +99,11 @@ def main():
             bucket = value
         elif name in ('-p', '--prefix'):
             prefix = value
-        elif name == '-o':
+        elif name in ('-o', '--user-access-key-id'):
             access_key_id = value
-        elif name == '-c':
+        elif name in ('-c', '--policy'):
             policy = value
-        elif name == '-w':
+        elif name in ('-w', '--user-secret-key'):
             secret_key = value
         elif name in ('-h', '--help'):
             usage(0)
