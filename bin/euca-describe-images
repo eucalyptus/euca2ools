@@ -82,7 +82,16 @@ def display_images(images, image_ids):
 	          image.kernel_id, image.ramdisk_id]:
 	    image_string += '\t%s' % ("" if i == None else i)
 
+        if image.platform:
+           image_string += '\t%s' % (image.platform)
+        if image.root_device_type:
+           image_string += '\t%s' % (image.root_device_type)
 	print 'IMAGE\t%s' % (image_string)
+        if image.block_device_mapping:
+           block_dev_mapping = image.block_device_mapping
+           if image.root_device_type == 'ebs':
+               block_dev_string = '%s\t%s\t%s' % (block_dev_mapping.current_name, block_dev_mapping.current_value.snapshot_id, block_dev_mapping.current_value.size)
+               print 'BLOCKDEVICEMAPPING\t%s' % (block_dev_string)
 
 def main():
     euca = None
