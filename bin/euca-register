@@ -46,6 +46,7 @@ image_location - path to the uploaded image (bucket/manifest).
 
 OPTIONAL PARAMETERS
 
+-b, --block-device-mapping      Block device mapping for the instance(s). Option may be used multiple times.
 """
 
 
@@ -61,15 +62,19 @@ def version():
 def main():
     euca = None
     try:
-	euca = Euca2ool()
+	euca = Euca2ool('b:', ['block-device-mapping='])
     except Exception, e:
 	print e
         usage()
  
     image_location = None
+    block_device_map_args = []
+    block_device_map = None
 
     for name, value in euca.opts:
-        if name in ('-h', '--help'):
+        if name in ('-b', '--block-device-mapping'):
+            block_device_map_args.append(value)
+        elif name in ('-h', '--help'):
             usage(0)
 	elif name == '--version':
 	    version()
@@ -78,15 +83,16 @@ def main():
         image_location = arg
 	break
 
-
     if image_location:
         try:
             euca_conn = euca.make_connection()
         except ConnectionFailed, e:
             print e.message
             sys.exit(1)
+        if block_device_map_args:
+            block_device_map = euca.parse_block_device_args(block_device_map_args)
 	try:
-	    image_id = euca_conn.register_image(image_location = image_location)
+	    image_id = euca_conn.register_image(image_location = image_location, block_device_map = block_device_map)
         except Exception, ex:
             euca.display_error_and_exit('%s' % ex)
 

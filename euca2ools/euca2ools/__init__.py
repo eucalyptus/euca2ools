@@ -44,6 +44,8 @@ import urllib
 import re
 import shutil
 from boto.ec2.regioninfo import RegionInfo
+from boto.ec2.blockdevicemapping import BlockDeviceMapping
+from boto.ec2.blockdevicemapping import BlockDeviceType
 import logging
 import base64
 
@@ -1092,6 +1094,27 @@ class Euca2ool:
 	    print msg
 	sys.exit(1)
 
+    def parse_block_device_args(self, block_device_maps_args):
+        block_device_map = BlockDeviceMapping()
+        for block_device_map_arg in block_device_maps_args:
+            parts = block_device_map_arg.split('=')
+            if(len(parts) > 1):
+                device_name = parts[0]
+                block_dev_type = BlockDeviceType()
+                value_parts = parts[1].split(':')
+                if value_parts[0].startswith('snap'):
+                    block_dev_type.snapshot_id = value_parts[0]
+                else: 
+                    if value_parts[0].startswith('ephemeral'):
+                        block_dev_type.ephemeral_name = value_parts[0]
+                if(len(value_parts) > 1):
+                    block_dev_type.size = int(value_parts[1])
+                if(len(value_parts) > 2):
+                    if value_parts[2] == 'true':
+                        block_dev_type.delete_on_termination = True
+                block_device_map[device_name] = block_dev_type
+        return block_device_map
+ 
 # read the config file 'config', update 'dict', setting 
 # the value from the config file for each element in array 'keylist'
 # "config" is a bash syntax file defining bash variables

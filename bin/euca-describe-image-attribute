@@ -83,7 +83,7 @@ def display_image_attribute(image_id, image_attribute):
     if image_attribute.ramdisk is not None:
 	print 'ramdisk\t%s\t\t%s' % (image_attribute.image_id, image_attribute.value)
     if image_attribute.attrs.has_key('block_device_mapping'):
-        block_device_mapping = image_attribute.attrs['block_device_mapping']:
+        block_device_mapping = image_attribute.attrs['block_device_mapping']
         for dev_name in block_device_mapping:
             print 'blockDeviceMapping\t%s\tblockDeviceMap\t%s: %s' % (image_id, dev_name, block_device_mapping[dev_name].emphemeral_name) 
 
