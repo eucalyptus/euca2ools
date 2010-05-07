@@ -113,7 +113,7 @@ def main():
 	else:
 	    user_ids = [entity]
 
-    if image_id:
+    if image_id and image_attribute:
         try:
             euca_conn = euca.make_connection()
         except ConnectionFailed, e:
@@ -132,7 +132,10 @@ def main():
 	if return_code:
 	    print 'IMAGE\t%s' % (image_id)
     else:
-    	print 'image_id must be specified'
+        if not image_id:
+    	    print 'image_id must be specified'
+        if not image_attribute:
+            print '-l or -p must be specified'
 	usage()
 if __name__ == "__main__":
     main()
