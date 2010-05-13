@@ -80,7 +80,7 @@ def display_images(images, image_ids):
 
 	for i in [image.architecture, image.type,
 	          image.kernel_id, image.ramdisk_id]:
-	    image_string += '\t%s' % ("" if i == None else i)
+	    image_string += '\t%s' % (" " if i == None else i)
 
         if image.platform:
            image_string += '\t%s' % (image.platform)
