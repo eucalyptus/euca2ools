@@ -122,10 +122,6 @@ def main():
 	elif name == '--version':
 	    version()
 
-    if source_group_name:
-	from_port = None
-	to_port = None
-	protocol = None
     for arg in euca.args:
 	group_name = arg
 	break
@@ -151,6 +147,7 @@ def main():
  	        sys.exit(1)
 
 	try:
+	    print group_name, source_group_name, source_group_owner_id, protocol, from_port, to_port, cidr_ip
             return_code = euca_conn.authorize_security_group(group_name = group_name,
 							src_security_group_name = source_group_name,
 							src_security_group_owner_id = source_group_owner_id,
