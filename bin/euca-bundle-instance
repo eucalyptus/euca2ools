@@ -34,11 +34,13 @@
 
 import sys
 from euca2ools import Euca2ool, Util, InstanceValidationError, ConnectionFailed
+import base64
+from datetime import datetime, timedelta
 
 usage_string = """
 Bundle a Windows instance.
 
-euca-bundle-instance instance_id -b, --bucket bucket -p, --prefix prefix -o access_key_id -c policy -w secret_key [-h, --help] [--version] [--debug]
+euca-bundle-instance instance_id -b, --bucket bucket -p, --prefix prefix -o access_key_id [-c policy] -w secret_key [-h, --help] [--version] [--debug]
 
 REQUIRED PARAMETERS
 
@@ -50,9 +52,12 @@ instance_id			Identifier of the instance to be bundled.
 
 -o, --user-access-key-id	Access Key ID of the owner of the bucket.
 
--c, --policy			Base64 encoded upload policy that defines upload permissions and conditions.
+-c, --policy			Base64 encoded upload policy that defines upload permissions and conditions. 
+				If no policy is specified, a default policy is generated.
 
 -w, --user-secret-key		Secret key used to sign the upload policy.
+
+-x, --expires			Expiration for the generated upload policy (hours).
 
 OPTIONAL PARAMETERS
 
@@ -78,11 +83,27 @@ def display_bundle(bundle):
                                 bundle.update_time)
     print 'BUNDLE\t%s' % (bundle_string)
 
+def generate_default_policy(bucket, prefix, expiration, acl):
+    delta = timedelta(hours=expiration)
+    expiration_time = (datetime.utcnow() + delta).replace(microsecond=0)
+    expiration_str = expiration_time.isoformat()
+    policy = """
+    {"expiration": \""""+expiration_str+"""Z\", 
+     "conditions": [ 
+       {"bucket": \""""+bucket+"""\"}, 
+       {"acl": \""""+acl+"""\"},
+       ["starts-with", "$key", \""""+prefix+"""\"]
+     ] 
+    }
+    """
+    encoded_policy = base64.b64encode(policy)
+    return encoded_policy
+
 def main():
     euca = None
     try:
-	euca = Euca2ool('b:p:o:c:w:',
-                        ['bucket=', 'prefix=', 'policy=', 'user-access-key-id=', 'user-secret-key='])
+	euca = Euca2ool('b:p:o:c:w:x:',
+                        ['bucket=', 'prefix=', 'policy=', 'user-access-key-id=', 'user-secret-key=', 'expires='])
     except Exception, e:
 	print e
         usage()
@@ -93,6 +114,7 @@ def main():
     policy = None
     secret_key = None    
     instance_id = None
+    expiration=24
 
     for name, value in euca.opts:
         if name in  ('-b', '--bucket'):
@@ -105,6 +127,12 @@ def main():
             policy = value
         elif name in ('-w', '--user-secret-key'):
             secret_key = value
+        elif name in ('-x', '--expires'):
+            try:
+                expiration = int(value)
+            except ValueError:
+                print 'Expiration must be an integer value.'
+                sys.exit(1);
         elif name in ('-h', '--help'):
             usage(0)
 	elif name == '--version':
@@ -114,8 +142,7 @@ def main():
         instance_id = arg
 	break
 
-    if instance_id and bucket and prefix and access_key_id and policy and secret_key:
-    
+    if instance_id and bucket and prefix and access_key_id and secret_key:
         try:
             euca.validate_instance_id(instance_id)
         except InstanceValidationError:
@@ -126,6 +153,8 @@ def main():
         except ConnectionFailed, e:
             print e.message
             sys.exit(1)
+        if not policy:
+            policy = generate_default_policy(bucket, prefix, expiration, 'ec2-bundle-read')
 	try:
 	    bundle_task = euca_conn.bundle_instance(instance_id = instance_id,
                                                     s3_bucket = bucket,
@@ -145,8 +174,6 @@ def main():
             print 'prefix must be specified.'
         if not access_key_id:
             print 'access_key_id must be specified.'
-        if not policy:
-            print 'policy must be specified.'
         if not secret_key:
             print 'secret_key must be specified.' 
 	usage(1)
