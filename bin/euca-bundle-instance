@@ -87,15 +87,14 @@ def generate_default_policy(bucket, prefix, expiration, acl):
     delta = timedelta(hours=expiration)
     expiration_time = (datetime.utcnow() + delta).replace(microsecond=0)
     expiration_str = expiration_time.isoformat()
-    policy = """
-    {"expiration": \""""+expiration_str+"""Z\", 
-     "conditions": [ 
-       {"bucket": \""""+bucket+"""\"}, 
-       {"acl": \""""+acl+"""\"},
-       ["starts-with", "$key", \""""+prefix+"""\"]
-     ] 
-    }
-    """
+      
+    policy = '{"expiration": "%s",' % expiration_str + \
+    '"conditions": [' + \
+    '{"bucket": "%s" },' % bucket + \
+    '{"acl": "%s" },' % acl + \
+    '["starts-with", "$key", "%s"]' % prefix + \
+    ']' + \
+    '}'
     encoded_policy = base64.b64encode(policy)
     return encoded_policy
 
