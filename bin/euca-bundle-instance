@@ -129,6 +129,9 @@ def main():
         elif name in ('-x', '--expires'):
             try:
                 expiration = int(value)
+                if expiration < 0:
+                    print "Expiration needs to be > 0."
+                    sys.exit(1)
             except ValueError:
                 print 'Expiration must be an integer value.'
                 sys.exit(1);
