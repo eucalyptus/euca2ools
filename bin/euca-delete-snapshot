@@ -1,4 +1,5 @@
-#!/usr/bin/env python
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 
 # Software License Agreement (BSD License)
 #
@@ -32,10 +33,14 @@
 #
 # Author: Neil Soman neil@eucalyptus.com
 
-import getopt, sys, os
-from euca2ools import Euca2ool, SnapshotValidationError, Util, ConnectionFailed
+import getopt
+import sys
+import os
+from euca2ools import Euca2ool, SnapshotValidationError, Util, \
+    ConnectionFailed
 
-usage_string = """
+usage_string = \
+    """
 Deletes a snapshot.
 
 euca-delete-snapshot [-h, --help] [--version] [--debug] snapshot_id
@@ -54,36 +59,37 @@ def usage(status=1):
     Util().usage()
     sys.exit(status)
 
+
 def version():
     print Util().version()
     sys.exit()
 
+
 def main():
     euca = None
     try:
-	euca = Euca2ool()
+        euca = Euca2ool()
     except Exception, e:
-	print e
+        print e
         usage()
- 
+
     snapshot_id = None
 
-    for name, value in euca.opts:
+    for (name, value) in euca.opts:
         if name in ('-h', '--help'):
             usage(0)
-	elif name == '--version':
-	    version()
-    
-    for arg in euca.args:
-	snapshot_id = arg
-	break
+        elif name == '--version':
+            version()
 
+    for arg in euca.args:
+        snapshot_id = arg
+        break
 
     if snapshot_id:
         try:
-	    euca.validate_snapshot_id(snapshot_id)
+            euca.validate_snapshot_id(snapshot_id)
         except SnapshotValidationError:
-   	    print 'Invalid snapshot id' 
+            print 'Invalid snapshot id'
             sys.exit(1)
 
         try:
@@ -92,12 +98,14 @@ def main():
             print e.message
             sys.exit(1)
 
-	return_code = euca_conn.delete_snapshot(snapshot_id)
-	if return_code:
-	    print 'SNAPSHOT\t%s' % (snapshot_id)
+        return_code = euca_conn.delete_snapshot(snapshot_id)
+        if return_code:
+            print 'SNAPSHOT\t%s' % snapshot_id
     else:
-    	print 'snapshot_id must be specified'
-	usage()
-if __name__ == "__main__":
+        print 'snapshot_id must be specified'
+        usage()
+
+
+if __name__ == '__main__':
     main()
- 
+

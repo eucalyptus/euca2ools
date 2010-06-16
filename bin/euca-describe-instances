@@ -1,4 +1,5 @@
-#!/usr/bin/env python
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 
 # Software License Agreement (BSD License)
 #
@@ -32,10 +33,14 @@
 #
 # Author: Neil Soman neil@eucalyptus.com
 
-import getopt, sys, os
-from euca2ools import Euca2ool, InstanceValidationError, Util, ConnectionFailed
+import getopt
+import sys
+import os
+from euca2ools import Euca2ool, InstanceValidationError, Util, \
+    ConnectionFailed
 
-usage_string = """
+usage_string = \
+    """
 Shows information about instances.
 
 euca-describe-instances [-h, --help] [--version] [--debug]
@@ -53,75 +58,82 @@ def usage(status=1):
     Util().usage()
     sys.exit(status)
 
+
 def version():
     print Util().version()
     sys.exit()
 
+
 def display_reservations(reservations, instance_ids):
     check_instance_ids = False
-    if(len(instance_ids) > 0):
-	check_instance_ids = True
+    if len(instance_ids) > 0:
+        check_instance_ids = True
     for reservation in reservations:
-	instances = []
+        instances = []
         if check_instance_ids:
- 	    for instance in reservation.instances:
-	        if instance.id in instance_ids:
-	            instances.append(instance)
+            for instance in reservation.instances:
+                if instance.id in instance_ids:
+                    instances.append(instance)
         else:
-	    instances = reservation.instances
-	if (len(instances) == 0):
- 	    continue
-        reservation_string = '%s\t%s' % (reservation.id, reservation.owner_id)
-	group_delim = '\t'
-	for group in reservation.groups:
-	    reservation_string += '%s%s' % (group_delim, group.id)
-	    group_delim = ', '
-	print 'RESERVATION\t%s' % (reservation_string) 
-	for instance in instances:
-	    if instance:
-	        instance_string = '%s\t%s\t%s\t%s\t%s'  % (instance.id, instance.image_id, instance.public_dns_name, instance.private_dns_name, instance.state) 
-	        if instance.key_name:
-		    instance_string += ' \t%s' % instance.key_name
-	    	if instance.ami_launch_index:
-		    instance_string += ' \t%s' % instance.ami_launch_index
-	        if instance.product_codes:
-	            first = True
-		    for p in instance.product_codes:
-		        if first:
-		            instance_string += ' \t%s' % p
-			    first = False
-		        else:
-			    instance_string += ',%s' % p
-		if instance.instance_type:
-		    instance_string += ' \t%s' % instance.instance_type
-		if instance.launch_time:
-		    instance_string += ' \t%s' % instance.launch_time
-		if instance.placement:
-		    instance_string += ' \t%s' % instance.placement
-		if instance.kernel:
-		    instance_string += ' \t%s' % instance.kernel
-		if instance.ramdisk:
-		    instance_string += ' \t%s' % instance.ramdisk
-	        print 'INSTANCE\t%s' % (instance_string)
+            instances = reservation.instances
+        if len(instances) == 0:
+            continue
+        reservation_string = '%s\t%s' % (reservation.id,
+                reservation.owner_id)
+        group_delim = '\t'
+        for group in reservation.groups:
+            reservation_string += '%s%s' % (group_delim, group.id)
+            group_delim = ', '
+        print 'RESERVATION\t%s' % reservation_string
+        for instance in instances:
+            if instance:
+                instance_string = '%s\t%s\t%s\t%s\t%s' % (instance.id,
+                        instance.image_id, instance.public_dns_name,
+                        instance.private_dns_name, instance.state)
+                if instance.key_name:
+                    instance_string += ' \t%s' % instance.key_name
+                if instance.ami_launch_index:
+                    instance_string += ' \t%s' \
+                        % instance.ami_launch_index
+                if instance.product_codes:
+                    first = True
+                    for p in instance.product_codes:
+                        if first:
+                            instance_string += ' \t%s' % p
+                            first = False
+                        else:
+                            instance_string += ',%s' % p
+                if instance.instance_type:
+                    instance_string += ' \t%s' % instance.instance_type
+                if instance.launch_time:
+                    instance_string += ' \t%s' % instance.launch_time
+                if instance.placement:
+                    instance_string += ' \t%s' % instance.placement
+                if instance.kernel:
+                    instance_string += ' \t%s' % instance.kernel
+                if instance.ramdisk:
+                    instance_string += ' \t%s' % instance.ramdisk
+                print 'INSTANCE\t%s' % instance_string
+
 
 def main():
     euca = None
     try:
-	euca = Euca2ool()
+        euca = Euca2ool()
     except Exception, e:
-	print e
+        print e
         usage()
- 
-    for name, value in euca.opts:
+
+    for (name, value) in euca.opts:
         if name in ('-h', '--help'):
             usage(0)
-	elif name == '--version':
-	    version()
+        elif name == '--version':
+            version()
 
     instance_ids = euca.process_args()
     try:
-	for id in instance_ids:
-    	    euca.validate_instance_id(id)
+        for id in instance_ids:
+            euca.validate_instance_id(id)
     except InstanceValidationError:
         print 'Invalid instance id'
         sys.exit(1)
@@ -137,6 +149,8 @@ def main():
         euca.display_error_and_exit('%s' % ex)
 
     display_reservations(reservations, instance_ids)
-if __name__ == "__main__":
+
+
+if __name__ == '__main__':
     main()
- 
+

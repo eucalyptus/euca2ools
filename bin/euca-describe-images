@@ -1,4 +1,5 @@
-#!/usr/bin/env python
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 
 # Software License Agreement (BSD License)
 #
@@ -32,10 +33,13 @@
 #
 # Author: Neil Soman neil@eucalyptus.com
 
-import getopt, sys, os
+import getopt
+import sys
+import os
 from euca2ools import Euca2ool, Util, ConnectionFailed
 
-usage_string = """
+usage_string = \
+    """
 Shows information about machine images.
 
 euca-describe-images [-a] [-o owner] [-x user] [-h, --help] [--version] [--debug] [image1 image2 ... imageN]
@@ -58,73 +62,80 @@ def usage(status=1):
     Util().usage(compat=True)
     sys.exit(status)
 
+
 def version():
     print Util().version()
     sys.exit()
 
+
 def display_images(images, image_ids):
     check_image_ids = False
-    if(len(image_ids) > 0):
-	check_image_ids = True
+    if len(image_ids) > 0:
+        check_image_ids = True
     for image in images:
         if check_image_ids:
-	    if not image.id in image_ids:
-	        continue
-	image_string = '%s\t%s\t%s\t%s' % (image.id, image.location, image.ownerId, image.state)
-	if image.is_public:
-  	    image_string += '\tpublic'
-	else:
-	    image_string += '\tprivate'
+            if not image.id in image_ids:
+                continue
+        image_string = '%s\t%s\t%s\t%s' % (image.id, image.location,
+                image.ownerId, image.state)
+        if image.is_public:
+            image_string += '\tpublic'
+        else:
+            image_string += '\tprivate'
 
-	image_string += '\t%s' % ','.join(image.product_codes)
+        image_string += '\t%s' % ','.join(image.product_codes)
 
-	for i in [image.architecture, image.type,
-	          image.kernel_id, image.ramdisk_id]:
-	    image_string += '\t%s' % (" " if i == None else i)
+        for i in [image.architecture, image.type, image.kernel_id,
+                  image.ramdisk_id]:
+            image_string += '\t%s' % ((' ' if i == None else i))
 
         if image.platform:
-           image_string += '\t%s' % (image.platform)
+            image_string += '\t%s' % image.platform
         if image.root_device_type:
-           image_string += '\t%s' % (image.root_device_type)
-	print 'IMAGE\t%s' % (image_string)
+            image_string += '\t%s' % image.root_device_type
+        print 'IMAGE\t%s' % image_string
         if image.block_device_mapping:
-           block_dev_mapping = image.block_device_mapping
-           if image.root_device_type == 'ebs':
-               block_dev_string = '%s\t%s\t%s' % (block_dev_mapping.current_name, block_dev_mapping.current_value.snapshot_id, block_dev_mapping.current_value.size)
-               print 'BLOCKDEVICEMAPPING\t%s' % (block_dev_string)
+            block_dev_mapping = image.block_device_mapping
+            if image.root_device_type == 'ebs':
+                block_dev_string = '%s\t%s\t%s' \
+                    % (block_dev_mapping.current_name,
+                       block_dev_mapping.current_value.snapshot_id,
+                       block_dev_mapping.current_value.size)
+                print 'BLOCKDEVICEMAPPING\t%s' % block_dev_string
+
 
 def main():
     euca = None
     try:
-        euca = Euca2ool('ao:x:', compat=True) 
+        euca = Euca2ool('ao:x:', compat=True)
     except Exception, e:
-	print e
+        print e
         usage()
- 
+
     show_all = False
     executable_by = ['self']
-    owners = ['self'] 
+    owners = ['self']
     defaults = True
 
-    for name, value in euca.opts:
+    for (name, value) in euca.opts:
         if name in ('-h', '--help'):
             usage(0)
-	elif name == '-x':
-	    if defaults:
-		executable_by = []
-		defaults = False
-	    	owners = []
-	    executable_by.append(value)
-	elif name == '-o':
-	    if defaults:
-		executable_by = []
-		defaults = False
-	    owners.append(value)	     
+        elif name == '-x':
+            if defaults:
+                executable_by = []
+                defaults = False
+                owners = []
+            executable_by.append(value)
+        elif name == '-o':
+            if defaults:
+                executable_by = []
+                defaults = False
+            owners.append(value)
         elif name == '-a':
             executable_by = ['self', 'all']
-	    owners = []
-	elif name == '--version':
-	    version()
+            owners = []
+        elif name == '--version':
+            version()
 
     image_ids = euca.process_args()
     if defaults and len(image_ids) > 0:
@@ -138,11 +149,14 @@ def main():
         sys.exit(1)
 
     try:
-        images = euca_conn.get_all_images(image_ids=image_ids, owners=owners, executable_by=executable_by)
+        images = euca_conn.get_all_images(image_ids=image_ids,
+                owners=owners, executable_by=executable_by)
     except Exception, ex:
         euca.display_error_and_exit('%s' % ex)
 
     display_images(images, image_ids)
-if __name__ == "__main__":
+
+
+if __name__ == '__main__':
     main()
- 
+

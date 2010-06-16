@@ -1,4 +1,5 @@
-#!/usr/bin/env python
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 
 # Software License Agreement (BSD License)
 #
@@ -32,10 +33,14 @@
 #
 # Author: Neil Soman neil@eucalyptus.com
 
-import getopt, sys, os
-from euca2ools import Euca2ool, AddressValidationError, InstanceValidationError, Util, ConnectionFailed
+import getopt
+import sys
+import os
+from euca2ools import Euca2ool, AddressValidationError, \
+    InstanceValidationError, Util, ConnectionFailed
 
-usage_string = """
+usage_string = \
+    """
 Associate an instance with a public IP address.
 
 euca-associate-address -i, --instance instance_id
@@ -57,29 +62,31 @@ def usage(status=1):
     Util().usage()
     sys.exit(status)
 
+
 def version():
     print Util().version()
     sys.exit()
+
 
 def main():
     euca = None
     try:
         euca = Euca2ool('i:', ['instance='])
     except Exception, e:
-	print e
+        print e
         usage()
- 
+
     ip = None
     instance_id = None
 
-    for name, value in euca.opts:
+    for (name, value) in euca.opts:
         if name in ('-i', '--instance'):
             instance_id = value
         elif name in ('-h', '--help'):
             usage(0)
-	elif name == '--version':
-	    version()
-    
+        elif name == '--version':
+            version()
+
     try:
         euca_conn = euca.make_connection()
     except ConnectionFailed, e:
@@ -88,35 +95,37 @@ def main():
 
     for arg in euca.args:
         ip = arg
-	break
+        break
 
     if ip and instance_id:
         try:
             euca.validate_address(ip)
-	except AddressValidationError:
-	    print 'Invalid address', ip
-	    sys.exit(1)
-	try:
-	    euca.validate_instance_id(instance_id)
+        except AddressValidationError:
+            print 'Invalid address', ip
+            sys.exit(1)
+        try:
+            euca.validate_instance_id(instance_id)
         except InstanceValidationError:
-   	    print 'Invalid instance id' 
+            print 'Invalid instance id'
             sys.exit(1)
 
-	try:
-            return_code = euca_conn.associate_address(instance_id = instance_id,
-						 public_ip = ip)
+        try:
+            return_code = \
+                euca_conn.associate_address(instance_id=instance_id,
+                    public_ip=ip)
         except Exception, ex:
             euca.display_error_and_exit('%s' % ex)
 
-	if return_code:
-	    print 'ADDRESS\t%s\t%s' % (ip, instance_id)
+        if return_code:
+            print 'ADDRESS\t%s\t%s' % (ip, instance_id)
     else:
-	if not ip:
-	    print 'ip must be specified'
-	if not instance_id:
-	    print 'instance id must be specified'
-	usage()
+        if not ip:
+            print 'ip must be specified'
+        if not instance_id:
+            print 'instance id must be specified'
+        usage()
 
-if __name__ == "__main__":
+
+if __name__ == '__main__':
     main()
- 
+

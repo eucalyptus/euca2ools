@@ -1,4 +1,5 @@
-#!/usr/bin/env python
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 
 # Software License Agreement (BSD License)
 #
@@ -32,10 +33,13 @@
 #
 # Author: Neil Soman neil@eucalyptus.com
 
-import getopt, sys, os
+import getopt
+import sys
+import os
 from euca2ools import Euca2ool, Util, ConnectionFailed
 
-usage_string = """
+usage_string = \
+    """
 Modify attributes for an image.
 
 euca-modify-image-attribute [-l, --launch-permission] [-p, --product-code] 
@@ -62,56 +66,58 @@ def usage(status=1):
     print usage_string
     Util().usage(compat=True)
 
+
 def version():
     print Util().version()
     sys.exit(status)
 
+
 def main():
     euca = None
     try:
-        euca = Euca2ool('lp:a:r:',
-                                   ['launch-permission', 'product-code=', 'add=', 'remove='], compat=True)
+        euca = Euca2ool('lp:a:r:', ['launch-permission', 'product-code='
+                        , 'add=', 'remove='], compat=True)
     except Exception, e:
-	print e
+        print e
         usage()
- 
+
     image_id = None
     code = None
     entity = None
     image_attribute = None
     operation_type = None
-    user_ids = None 
+    user_ids = None
     groups = None
     product_codes = []
 
-    for name, value in euca.opts:
-	if name in ('-p', '--product-code'):
-	    if not image_attribute:
-	        image_attribute = 'productCodes'
-	    product_codes.append(value)
-	elif name in ('-l', '--launch-permission'):
-	    if not image_attribute:
-		image_attribute = 'launchPermission'
-	elif name in ('-a', '--add'):
-	    entity = value
-	    operation_type = 'add' 	
-	elif name in ('-r', '--remove'):
-	    entity = value 	
-	    operation_type = 'remove'
+    for (name, value) in euca.opts:
+        if name in ('-p', '--product-code'):
+            if not image_attribute:
+                image_attribute = 'productCodes'
+            product_codes.append(value)
+        elif name in ('-l', '--launch-permission'):
+            if not image_attribute:
+                image_attribute = 'launchPermission'
+        elif name in ('-a', '--add'):
+            entity = value
+            operation_type = 'add'
+        elif name in ('-r', '--remove'):
+            entity = value
+            operation_type = 'remove'
         elif name in ('-h', '--help'):
             usage(0)
-	elif name == '--version':
-	    version()
-    
+        elif name == '--version':
+            version()
+
     for arg in euca.args:
         image_id = arg
-	break
+        break
 
     if image_attribute == 'launchPermission':
-	if entity == 'all':
-	    groups = [entity]
-	else:
-	    user_ids = [entity]
+        if entity == 'all':
+            groups = [entity]
+        else:
+            user_ids = [entity]
 
     if image_id and image_attribute:
         try:
@@ -119,24 +125,28 @@ def main():
         except ConnectionFailed, e:
             print e.message
             sys.exit(1)
-	try:
-	    return_code = euca_conn.modify_image_attribute(image_id = image_id,
- 						       attribute = image_attribute,
-						       operation = operation_type,
-						       user_ids = user_ids,
-						       groups = groups,
-						       product_codes = product_codes)
+        try:
+            return_code = euca_conn.modify_image_attribute(
+                image_id=image_id,
+                attribute=image_attribute,
+                operation=operation_type,
+                user_ids=user_ids,
+                groups=groups,
+                product_codes=product_codes,
+                )
         except Exception, ex:
             euca.display_error_and_exit('%s' % ex)
 
-	if return_code:
-	    print 'IMAGE\t%s' % (image_id)
+        if return_code:
+            print 'IMAGE\t%s' % image_id
     else:
         if not image_id:
-    	    print 'image_id must be specified'
+            print 'image_id must be specified'
         if not image_attribute:
             print '-l or -p must be specified'
-	usage()
-if __name__ == "__main__":
+        usage()
+
+
+if __name__ == '__main__':
     main()
- 
+

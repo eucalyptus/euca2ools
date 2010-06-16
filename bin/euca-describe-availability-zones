@@ -1,4 +1,5 @@
-#!/usr/bin/env python
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 
 # Software License Agreement (BSD License)
 #
@@ -32,10 +33,13 @@
 #
 # Author: Neil Soman neil@eucalyptus.com
 
-import getopt, sys, os
+import getopt
+import sys
+import os
 from euca2ools import Euca2ool, Util, ConnectionFailed
 
-usage_string = """
+usage_string = \
+    """
 Shows information about availability zones.
 
 euca-describe-availability-zones [--region region] [-h, --help] [--version] [--debug] [zone1 zone2...zoneN] [verbose]
@@ -55,37 +59,41 @@ def usage(status=1):
     Util().usage()
     sys.exit(status)
 
+
 def version():
     print Util().version()
     sys.exit()
 
+
 def display_zones(zones, zone_ids, region):
     for zone in zones:
         zone_string = '%s\t%s' % (zone.name, zone.state)
-	if region:
-	    zone_string += '\t%s' % region
-	print 'AVAILABILITYZONE\t%s' % (zone_string)
+        if region:
+            zone_string += '\t%s' % region
+        print 'AVAILABILITYZONE\t%s' % zone_string
+
 
 def main():
     euca = None
     region = None
     try:
-        euca = Euca2ool('', ['region=']) 
+        euca = Euca2ool('', ['region='])
     except Exception, e:
-	print e
+        print e
         usage()
-    for name, value in euca.opts:
-	if name == '--region':
-	    region = value
+    for (name, value) in euca.opts:
+        if name == '--region':
+            region = value
         elif name in ('-h', '--help'):
             usage(0)
-	elif name == '--version':
-	    version()
+        elif name == '--version':
+            version()
 
     debug = False
 
     if region:
-	os.environ['EC2_URL'] = 'https://' + region + ".ec2.amazonaws.com"
+        os.environ['EC2_URL'] = 'https://' + region \
+            + '.ec2.amazonaws.com'
     zone_ids = euca.process_args()
     try:
         euca_conn = euca.make_connection()
@@ -99,6 +107,8 @@ def main():
         euca.display_error_and_exit('%s' % ex)
 
     display_zones(zones, zone_ids, region)
-if __name__ == "__main__":
+
+
+if __name__ == '__main__':
     main()
- 
+

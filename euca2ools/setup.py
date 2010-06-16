@@ -1,4 +1,6 @@
 #!/usr/bin/python
+# -*- coding: utf-8 -*-
+
 # Software License Agreement (BSD License)
 #
 # Copyright (c) 2009, Eucalyptus Systems, Inc.
@@ -36,20 +38,22 @@ try:
 except ImportError:
     from distutils.core import setup
 
-setup(name = "euca2ools",
-      version = "1.2",
-      description = "API tools compatible with Amazon AWS",
-      long_description="API tools compliant with Amazon's AWS API. Work with Amazon AWS and Eucalyptus.",
-      author = "Neil Soman",
-      author_email = "neil@eucalyptus.com",
-      url = "http://www.eucalyptus.com",
-      packages = [ 'euca2ools'],
-      license = 'BSD (Simplified)',
-      platforms = 'Posix; MacOS X; Windows',
-      classifiers = [ 'Development Status :: 3 - Alpha',
-                      'Intended Audience :: Users',
-                      'License :: OSI Approved :: Simplified BSD License',
-                      'Operating System :: OS Independent',
-                      'Topic :: Internet',
-                      ],
-      )
+setup(
+    name='euca2ools',
+    version='1.2',
+    description='API tools compatible with Amazon AWS',
+    long_description="API tools compliant with Amazon's AWS API. Work with Amazon AWS and Eucalyptus."
+        ,
+    author='Neil Soman',
+    author_email='neil@eucalyptus.com',
+    url='http://www.eucalyptus.com',
+    packages=['euca2ools'],
+    license='BSD (Simplified)',
+    platforms='Posix; MacOS X; Windows',
+    classifiers=['Development Status :: 3 - Alpha',
+                 'Intended Audience :: Users',
+                 'License :: OSI Approved :: Simplified BSD License',
+                 'Operating System :: OS Independent',
+                 'Topic :: Internet'],
+    )
+

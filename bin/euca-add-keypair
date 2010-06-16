@@ -1,4 +1,5 @@
-#!/usr/bin/env python
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 
 # Software License Agreement (BSD License)
 #
@@ -32,10 +33,13 @@
 #
 # Author: Neil Soman neil@eucalyptus.com
 
-import getopt, sys, os
-from euca2ools import Euca2ool, Util, ConnectionFailed 
+import getopt
+import sys
+import os
+from euca2ools import Euca2ool, Util, ConnectionFailed
 
-usage_string = """
+usage_string = \
+    """
 Creates a new key pair for use with instances.
 
 euca-add-keypair [-h, --help] [--version] [--debug] keypair_name
@@ -54,52 +58,56 @@ def usage(status=1):
     Util().usage()
     sys.exit(status)
 
+
 def version():
     print Util().version()
     sys.exit()
 
+
 def display_keypair(keypair):
     keypair_string = '%s\t%s' % (keypair.name, keypair.fingerprint)
-    print 'KEYPAIR\t%s' % (keypair_string)
+    print 'KEYPAIR\t%s' % keypair_string
     print keypair.material
+
 
 def main():
     euca = None
     try:
         euca = Euca2ool()
     except Exception, e:
-	print e
+        print e
         usage()
- 
+
     debug = False
     keypair_name = None
 
-    for name, value in euca.opts:
+    for (name, value) in euca.opts:
         if name in ('-h', '--help'):
             usage(0)
-	elif name == '--version':
-	    version()
-    
+        elif name == '--version':
+            version()
+
     try:
         euca_conn = euca.make_connection()
     except ConnectionFailed, e:
         print e.message
         sys.exit(1)
- 
+
     for arg in euca.args:
         keypair_name = arg
-	break
+        break
 
     if keypair_name:
-	try:
+        try:
             keypair = euca_conn.create_key_pair(keypair_name)
-	except Exception, ex:
-	    euca.display_error_and_exit('%s' % ex)
+        except Exception, ex:
+            euca.display_error_and_exit('%s' % ex)
         display_keypair(keypair)
     else:
         print 'keypair_name must be specified'
-	usage()
+        usage()
 
-if __name__ == "__main__":
+
+if __name__ == '__main__':
     main()
- 
+

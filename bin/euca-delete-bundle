@@ -1,4 +1,5 @@
-#!/usr/bin/env python
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 
 # Software License Agreement (BSD License)
 #
@@ -32,14 +33,18 @@
 #
 # Author: Neil Soman neil@eucalyptus.com
 
-import getopt, sys, os
+import getopt
+import sys
+import os
 from xml.dom import minidom
-from euca2ools import Euca2ool, FileValidationError, Util, ConnectionFailed
+from euca2ools import Euca2ool, FileValidationError, Util, \
+    ConnectionFailed
 from boto.exception import S3ResponseError
 from boto.s3 import Connection
 from boto.s3.key import Key
 
-usage_string = """
+usage_string = \
+    """
 
 Delete a previously uploaded bundle.    
 
@@ -71,177 +76,196 @@ def usage(status=1):
     Util().usage()
     sys.exit(status)
 
+
 def version():
     print Util().version()
     sys.exit()
 
+
 def ensure_bucket(connection, bucket):
     bucket_instance = None
     try:
-	bucket_instance = connection.get_bucket(bucket)
+        bucket_instance = connection.get_bucket(bucket)
     except S3ResponseError, s3error:
-	print 'Unable to get bucket %s' % (bucket)
-	sys.exit()
+        print 'Unable to get bucket %s' % bucket
+        sys.exit()
     return bucket_instance
- 
+
+
 def get_parts(manifest_filename):
     parts = []
-    dom = minidom.parse(manifest_filename) 
+    dom = minidom.parse(manifest_filename)
     manifest_elem = dom.getElementsByTagName('manifest')[0]
     parts_list = manifest_elem.getElementsByTagName('filename')
     for part_elem in parts_list:
-	nodes = part_elem.childNodes
-	for node in nodes:
+        nodes = part_elem.childNodes
+        for node in nodes:
             if node.nodeType == node.TEXT_NODE:
                 parts.append(node.data)
     return parts
+
 
 def get_relative_filename(filename):
     f_parts = filename.split('/')
     return f_parts[len(f_parts) - 1]
 
+
 def get_manifests(bucket):
     manifests = []
     keys = bucket.get_all_keys()
     for k in keys:
-	if k.name:
-	    if(k.name.find('manifest') >= 0):
-		manifests.append(k.name)
+        if k.name:
+            if k.name.find('manifest') >= 0:
+                manifests.append(k.name)
     return manifests
 
+
 def download_manifests(bucket, manifests, directory):
-    if (len(manifests) > 0):
-	if not os.path.exists(directory):
-	    os.makedirs(directory)
+    if len(manifests) > 0:
+        if not os.path.exists(directory):
+            os.makedirs(directory)
     for manifest in manifests:
-	k = Key(bucket)
-	k.key = manifest
-	manifest_filename = os.path.join(directory, manifest)
-	manifest_file = open(manifest_filename, "wb")
-	try:
-	    k.get_contents_to_file(manifest_file)
+        k = Key(bucket)
+        k.key = manifest
+        manifest_filename = os.path.join(directory, manifest)
+        manifest_file = open(manifest_filename, 'wb')
+        try:
+            k.get_contents_to_file(manifest_file)
         except S3ResponseError, s3error:
-	    s3error_string = '%s' % (s3error)
-	    if (s3error_string.find('200') < 0):
-	  	print s3error_string
-		print 'unable to download manifest %s' % (manifest)
-		if os.path.exists(manifest_filename):
-		    os.remove(manifest_filename)
-		return False
-	manifest_file.close()
+            s3error_string = '%s' % s3error
+            if s3error_string.find('200') < 0:
+                print s3error_string
+                print 'unable to download manifest %s' % manifest
+                if os.path.exists(manifest_filename):
+                    os.remove(manifest_filename)
+                return False
+        manifest_file.close()
     return True
+
 
 def delete_parts(bucket, manifests, directory=None):
     for manifest in manifests:
-	manifest_filename = os.path.join(directory, manifest)
-	parts = get_parts(manifest_filename)
-	for part in parts:
-	    k = Key(bucket)
-	    k.key = part 
-	    try:
-  	        k.delete()
-	    except S3ResponseError, s3error:
-	        s3error_string = '%s' % (s3error)
-		if (s3error_string.find('200') < 0):
-	  	    print s3error_string
-		    print 'unable to delete part %s' % (part)
-		    sys.exit()
-	
+        manifest_filename = os.path.join(directory, manifest)
+        parts = get_parts(manifest_filename)
+        for part in parts:
+            k = Key(bucket)
+            k.key = part
+            try:
+                k.delete()
+            except S3ResponseError, s3error:
+                s3error_string = '%s' % s3error
+                if s3error_string.find('200') < 0:
+                    print s3error_string
+                    print 'unable to delete part %s' % part
+                    sys.exit()
 
-def delete_manifests(bucket, manifests, clear, euca, bucket_name):
+
+def delete_manifests(
+    bucket,
+    manifests,
+    clear,
+    euca,
+    bucket_name,
+    ):
     for manifest in manifests:
-	k = Key(bucket)
-	k.key = manifest
-	try:
-  	    k.delete()
-	except Exception, s3error:
-	    s3error_string = '%s' % (s3error)
-	    if (s3error_string.find('200') < 0):
-		print s3error_string
-	        print 'unable to delete manifest %s' % (manifest)
-		try:
-		    bucket = ensure_bucket(euca.make_connection(), bucket_name)
-		except ConnectionFailed, e:
-		    print e.message
-		    sys.exit(1)
+        k = Key(bucket)
+        k.key = manifest
+        try:
+            k.delete()
+        except Exception, s3error:
+            s3error_string = '%s' % s3error
+            if s3error_string.find('200') < 0:
+                print s3error_string
+                print 'unable to delete manifest %s' % manifest
+                try:
+                    bucket = ensure_bucket(euca.make_connection(),
+                            bucket_name)
+                except ConnectionFailed, e:
+                    print e.message
+                    sys.exit(1)
     if clear:
-	try:
-  	    bucket.delete()
-	except Exception, s3error:
-	    s3error_string = '%s' % (s3error)
-	    if (s3error_string.find('200') < 0):
-		print s3error_string
-	        print 'unable to delete bucket %s' % (bucket.name)
+        try:
+            bucket.delete()
+        except Exception, s3error:
+            s3error_string = '%s' % s3error
+            if s3error_string.find('200') < 0:
+                print s3error_string
+                print 'unable to delete bucket %s' % bucket.name
+
 
 def remove_manifests(manifests, directory):
     for manifest in manifests:
-	manifest_filename = os.path.join(directory, manifest)
-	if os.path.exists(manifest_filename):
-	    os.remove(manifest_filename)	
+        manifest_filename = os.path.join(directory, manifest)
+        if os.path.exists(manifest_filename):
+            os.remove(manifest_filename)
+
 
 def main():
     euca = None
     try:
-        euca = Euca2ool('b:m:p:',
-                                  ['bucket=', 'manifest=', 'prefix=', 'clear'],
-				  is_s3=True)
+        euca = Euca2ool('b:m:p:', ['bucket=', 'manifest=', 'prefix=',
+                        'clear'], is_s3=True)
     except Exception, e:
-	print e
+        print e
         usage()
- 
-    bucket=None
+
+    bucket = None
     manifest_path = None
-    directory = '/tmp' 
+    directory = '/tmp'
     clear = False
     prefix = None
 
-    for name, value in euca.opts:
+    for (name, value) in euca.opts:
         if name in ('-h', '--help'):
             usage(0)
         elif name in ('-b', '--bucket'):
             bucket = value
         elif name in ('-m', '--manifest'):
             manifest_path = value
-	elif name == '--clear':
-	    clear = True
+        elif name == '--clear':
+            clear = True
         elif name in ('-p', '--prefix'):
             prefix = value
 
     if bucket:
-	try:
-	    if manifest_path:
-	        euca.validate_file(manifest_path)
-	except FileValidationError:
-	    print 'Invalid manifest' 
-	    sys.exit(1)
-	try:
-	    conn = euca.make_connection()
-	except ConnectionFailed, e:
-	    print e.message
-	    sys.exit(1)
+        try:
+            if manifest_path:
+                euca.validate_file(manifest_path)
+        except FileValidationError:
+            print 'Invalid manifest'
+            sys.exit(1)
+        try:
+            conn = euca.make_connection()
+        except ConnectionFailed, e:
+            print e.message
+            sys.exit(1)
         bucket_instance = ensure_bucket(conn, bucket)
-	manifests = None
-	delete_local_manifests = True
-	if not manifest_path:
-  	    if not prefix:
-	    	manifests = get_manifests(bucket_instance)
-	    else:
-	    	manifests = ["%s.manifest.xml" % prefix]
-	else:
-	    manifests = ["%s" % euca.get_relative_filename(manifest_path)] 
-	    directory = "%s" % euca.get_file_path(manifest_path)
-	    delete_local_manifests = False	    	    
-	return_code = download_manifests(bucket_instance, manifests, directory)
-	if return_code:
-	    delete_parts(bucket_instance, manifests, directory)
-	delete_manifests(bucket_instance, manifests, clear, euca, bucket)
-	if delete_local_manifests:
-	    remove_manifests(manifests, directory)
-	    
+        manifests = None
+        delete_local_manifests = True
+        if not manifest_path:
+            if not prefix:
+                manifests = get_manifests(bucket_instance)
+            else:
+                manifests = ['%s.manifest.xml' % prefix]
+        else:
+            manifests = ['%s'
+                         % euca.get_relative_filename(manifest_path)]
+            directory = '%s' % euca.get_file_path(manifest_path)
+            delete_local_manifests = False
+        return_code = download_manifests(bucket_instance, manifests,
+                directory)
+        if return_code:
+            delete_parts(bucket_instance, manifests, directory)
+        delete_manifests(bucket_instance, manifests, clear, euca,
+                         bucket)
+        if delete_local_manifests:
+            remove_manifests(manifests, directory)
     else:
-	print 'bucket must be specified.'	
+
+        print 'bucket must be specified.'
         usage()
 
-if __name__ == "__main__":
+
+if __name__ == '__main__':
     main()
- 
+

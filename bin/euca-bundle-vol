@@ -1,4 +1,5 @@
-#!/usr/bin/env python
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 
 # Software License Agreement (BSD License)
 #
@@ -32,12 +33,17 @@
 #
 # Author: Neil Soman neil@eucalyptus.com
 
-import getopt, sys, os
-from euca2ools import Euca2ool, FileValidationError, DirValidationError, CopyError, MetadataReadError, Util, NotFoundError, CommandFailed, UnsupportedException
-from subprocess import * 
+import getopt
+import sys
+import os
+from euca2ools import Euca2ool, FileValidationError, \
+    DirValidationError, CopyError, MetadataReadError, Util, \
+    NotFoundError, CommandFailed, UnsupportedException
+from subprocess import *
 import platform
 
-usage_string = """
+usage_string = \
+    """
 Bundle the local filesystem of a running instance as a bundled image.
 
 euca-bundle-vol -u, --user user -s, --size size_in_MB
@@ -93,22 +99,26 @@ def usage(status=1):
     print usage_string
     sys.exit(status)
 
+
 def version():
     print Util().version()
     sys.exit()
 
+
 def check_root():
     if os.geteuid() == 0:
-	return
+        return
     else:
-	print "Must be superuser to execute this command."
-	sys.exit()
+        print 'Must be superuser to execute this command.'
+        sys.exit()
+
 
 def check_image_size(size):
     if size > MAX_IMAGE_SIZE:
-	print "Image Size is too large (Max = %d MB)" % (MAX_IMAGE_SIZE) 
-	sys.exit()
- 
+        print 'Image Size is too large (Max = %d MB)' % MAX_IMAGE_SIZE
+        sys.exit()
+
+
 def parse_excludes(excludes_string):
     excludes = []
     if excludes_string:
@@ -116,92 +126,123 @@ def parse_excludes(excludes_string):
         excludes = excludes_string.split(',')
     return excludes
 
-def get_instance_metadata(euca, ramdisk, kernel, mapping):
+
+def get_instance_metadata(
+    euca,
+    ramdisk,
+    kernel,
+    mapping,
+    ):
     product_codes = None
     ramdisk_id = ramdisk
     kernel_id = kernel
     block_dev_mapping = mapping
     ancestor_ami_ids = None
     try:
-	euca.can_read_instance_metadata()
-	if not ramdisk_id:
-	    try:
-	        ramdisk_id = euca.get_instance_ramdisk()
-	    except MetadataReadError:
-		print "Unable to read ramdisk id"
+        euca.can_read_instance_metadata()
+        if not ramdisk_id:
+            try:
+                ramdisk_id = euca.get_instance_ramdisk()
+            except MetadataReadError:
+                print 'Unable to read ramdisk id'
 
-	if not kernel_id:
-	    try:
-	        kernel_id = euca.get_instance_kernel()
-	    except MetadataReadError:
-		print "Unable to read kernel id"
+        if not kernel_id:
+            try:
+                kernel_id = euca.get_instance_kernel()
+            except MetadataReadError:
+                print 'Unable to read kernel id'
 
         if not block_dev_mapping:
-	    try:
-	        block_dev_mapping = euca.get_instance_block_device_mappings()
-	    except MetadataReadError:
-		print "Unable to read block device mapping"
+            try:
+                block_dev_mapping = \
+                    euca.get_instance_block_device_mappings()
+            except MetadataReadError:
+                print 'Unable to read block device mapping'
 
-	try:
-            product_codes = euca.get_instance_product_codes().split('\n')
-	except MetadataReadError:
-	    print "Unable to read product codes"
+        try:
+            product_codes = euca.get_instance_product_codes().split('\n'
+                    )
+        except MetadataReadError:
+            print 'Unable to read product codes'
 
-	try:
+        try:
             ancestor_ami_ids = euca.get_ancestor_ami_ids().split('\n')
-	except MetadataReadError:
-	    print "Unable to read product codes"
-
+        except MetadataReadError:
+            print 'Unable to read product codes'
     except IOError:
-	print "Unable to read instance metadata. Pass the --no-inherit option if you wish to exclude instance metadata."
-	sys.exit()	
-   
-    return ramdisk_id, kernel_id, block_dev_mapping, product_codes, ancestor_ami_ids
+
+        print 'Unable to read instance metadata. Pass the --no-inherit option if you wish to exclude instance metadata.'
+        sys.exit()
+
+    return (ramdisk_id, kernel_id, block_dev_mapping, product_codes,
+            ancestor_ami_ids)
+
 
 def add_product_codes(product_code_string, product_codes):
     if not product_codes:
-	product_codes = []
+        product_codes = []
     product_code_values = product_code_string.split(',')
-   
+
     for p in product_code_values:
         product_codes.append(p)
-    
+
     return product_codes
 
+
 def cleanup(path):
-   if os.path.exists(path):
-	os.remove(path)
+    if os.path.exists(path):
+        os.remove(path)
+
 
 def main():
     euca = None
     try:
-        euca = Euca2ool('a:c:k:u:B:d:br:p:s:v:e:',
-                                   ['cert=', 'privatekey=', 'user=', 'prefix=', 'volume=', 'all',
-                                    'kernel=', 'ramdisk=', 'block-device-mapping=', 'destination=', 'ec2cert=', 'arch=', 'size=', 'exclude=', 'inherit=', 'no-inherit', 'batch', 'fstab=', 'generate-fstab', 'productcodes='])
+        euca = Euca2ool('a:c:k:u:B:d:br:p:s:v:e:', [
+            'cert=',
+            'privatekey=',
+            'user=',
+            'prefix=',
+            'volume=',
+            'all',
+            'kernel=',
+            'ramdisk=',
+            'block-device-mapping=',
+            'destination=',
+            'ec2cert=',
+            'arch=',
+            'size=',
+            'exclude=',
+            'inherit=',
+            'no-inherit',
+            'batch',
+            'fstab=',
+            'generate-fstab',
+            'productcodes=',
+            ])
     except Exception, e:
-	print e
+        print e
         usage()
-  
-    kernel=None
-    user=None
-    ramdisk=None
+
+    kernel = None
+    user = None
+    ramdisk = None
     try:
-        cert_path=euca.get_environ('EC2_CERT')
-        private_key_path=euca.get_environ('EC2_PRIVATE_KEY')
-        ec2cert_path=euca.get_environ('EUCALYPTUS_CERT')
+        cert_path = euca.get_environ('EC2_CERT')
+        private_key_path = euca.get_environ('EC2_PRIVATE_KEY')
+        ec2cert_path = euca.get_environ('EUCALYPTUS_CERT')
         user_string = euca.get_environ('EC2_USER_ID')
     except NotFoundError:
         sys.exit(1)
 
-    prefix='image'
-    size_in_MB = 10*1024
-    destination_path='/disk1'
-    target_arch='x86_64'
+    prefix = 'image'
+    size_in_MB = 10 * 1024
+    destination_path = '/disk1'
+    target_arch = 'x86_64'
     mapping = None
     excludes_string = None
     excludes = None
-    all=False
-    volume_path = "/"
+    all = False
+    volume_path = '/'
     inherit = True
     product_codes = None
     ancestor_ami_ids = None
@@ -213,10 +254,10 @@ def main():
             user = int(user_string)
         except ValueError:
             print 'Invalid user', user_string
-            sys.exit()	       
+            sys.exit()
     user = user_string
- 
-    for name, value in euca.opts:
+
+    for (name, value) in euca.opts:
         if name in ('-h', '--help'):
             usage(0)
         elif name in ('-c', '--cert'):
@@ -224,13 +265,13 @@ def main():
         elif name in ('-k', '--privatekey'):
             private_key_path = value
         elif name in ('-u', '--user'):
-	    try:
-		value = value.replace('-', '')
+            try:
+                value = value.replace('-', '')
                 user = int(value)
-	    except ValueError:
-		print 'Invalid user', value
-		sys.exit()
-	    user = value
+            except ValueError:
+                print 'Invalid user', value
+                sys.exit()
+            user = value
         elif name == '--kernel':
             kernel = value
         elif name == '--ramdisk':
@@ -251,126 +292,161 @@ def main():
             all = True
         elif name in ('-r', '--arch'):
             target_arch = value
-	    if target_arch != 'i386' and target_arch != 'x86_64':
-		print 'target architecture must be i386 or x86_64'
-		usage()
-	elif name in ('-B', '--block-device-mapping'):
-	    mapping = value
-	elif name == '--no-inherit':
-	    inherit = False
-	elif name == '--generate-fstab':
-	    generate_fstab = True	
-	elif name == '--fstab':
-	    fstab_path = value
-	elif name == '--productcodes':
-	    product_code_string = value
-	elif name == '--version':
-	    version()
-	
-    if size_in_MB and cert_path and private_key_path and user and ec2cert_path:
-	try:
-	    euca.validate_file(cert_path)
-	except FileValidationError:
-	    print 'Invalid cert'
-	    sys.exit(1)
-	try:
-	    euca.validate_file(private_key_path)
-	except FileValidationError:
-	    print 'Invalid private key'
-	    sys.exit(1)
-	try:
-	    euca.validate_file(ec2cert_path)
-	except FileValidationError:
-	    print 'Invalid ec2cert'
-	    sys.exit(1)
-	try:
-	    euca.validate_dir(volume_path)
-	except DirValidationError:
-	    print 'Invalid directory', volume_path
-	    sys.exit(1)
-	    if generate_fstab and fstab_path:
-		print "--generate-fstab and --fstab path cannot both be set."
-		sys.exit(1)
-	    if fstab_path:
-	        try:
-		    euca.validate_file(fstab_path)
-		except FileValidationError:
-		    print 'Invalid fstab path'
-		    sys.exit(1)
-	if not fstab_path:
-	    if platform.machine() == 'i386':
-		fstab_path = "old"
-	    else:
-		fstab_path = "new"
+            if target_arch != 'i386' and target_arch != 'x86_64':
+                print 'target architecture must be i386 or x86_64'
+                usage()
+        elif name in ('-B', '--block-device-mapping'):
+            mapping = value
+        elif name == '--no-inherit':
+            inherit = False
+        elif name == '--generate-fstab':
+            generate_fstab = True
+        elif name == '--fstab':
+            fstab_path = value
+        elif name == '--productcodes':
+            product_code_string = value
+        elif name == '--version':
+            version()
 
-	check_root()
-	check_image_size(size_in_MB)
-	volume_path = os.path.normpath(volume_path)
-	if not all:
- 	    excludes = parse_excludes(excludes_string)
-	    euca.add_excludes(volume_path, excludes)
-	if inherit:
-	    ramdisk, kernel, mapping, product_codes, ancestor_ami_ids = get_instance_metadata(euca, ramdisk, kernel, mapping)
-	if product_code_string:
-	    product_codes = add_product_codes(product_code_string, product_codes)
-	try: 
-	    image_path = euca.make_image(size_in_MB, excludes, prefix, destination_path)
- 	except NotFoundError:
-	    sys.exit(1)
-	except UnsupportedException:
-	    sys.exit(1)
-	image_path = os.path.normpath(image_path)
-	if (image_path.find(volume_path) == 0):
-	    exclude_image = image_path.replace(volume_path, "", 1)
-	    image_path_parts = exclude_image.split("/")
-	    if(len(image_path_parts) > 1):
-	        exclude_image = exclude_image.replace(image_path_parts[0] + "/", "", 1)
-	    excludes.append(exclude_image)
-	try:
-            euca.copy_volume(image_path, volume_path, excludes, generate_fstab, fstab_path)
-	except CopyError:
-	    print "Unable to copy files" 
-	    cleanup(image_path)
-	    sys.exit(1)
-	except NotFoundError:
-	    cleanup(image_path)
-	    sys.exit(1)
-	except CommandFailed:
-	    cleanup(image_path)
-	    sys.exit(1)
-	except UnsupportedException:
-	    cleanup(image_path)
-	    sys.exit(1)
+    if size_in_MB and cert_path and private_key_path and user \
+        and ec2cert_path:
+        try:
+            euca.validate_file(cert_path)
+        except FileValidationError:
+            print 'Invalid cert'
+            sys.exit(1)
+        try:
+            euca.validate_file(private_key_path)
+        except FileValidationError:
+            print 'Invalid private key'
+            sys.exit(1)
+        try:
+            euca.validate_file(ec2cert_path)
+        except FileValidationError:
+            print 'Invalid ec2cert'
+            sys.exit(1)
+        try:
+            euca.validate_dir(volume_path)
+        except DirValidationError:
+            print 'Invalid directory', volume_path
+            sys.exit(1)
+            if generate_fstab and fstab_path:
+                print '--generate-fstab and --fstab path cannot both be set.'
+                sys.exit(1)
+            if fstab_path:
+                try:
+                    euca.validate_file(fstab_path)
+                except FileValidationError:
+                    print 'Invalid fstab path'
+                    sys.exit(1)
+        if not fstab_path:
+            if platform.machine() == 'i386':
+                fstab_path = 'old'
+            else:
+                fstab_path = 'new'
 
-	image_size, sha_image_digest = euca.check_image(image_path, destination_path)
-	if not prefix:
-            prefix = euca.get_relative_filename(image_path)
-	try:
-            tgz_file = euca.tarzip_image(prefix, image_path, destination_path)
+        check_root()
+        check_image_size(size_in_MB)
+        volume_path = os.path.normpath(volume_path)
+        if not all:
+            excludes = parse_excludes(excludes_string)
+            euca.add_excludes(volume_path, excludes)
+        if inherit:
+            (ramdisk, kernel, mapping, product_codes,
+             ancestor_ami_ids) = get_instance_metadata(euca, ramdisk,
+                    kernel, mapping)
+        if product_code_string:
+            product_codes = add_product_codes(product_code_string,
+                    product_codes)
+        try:
+            image_path = euca.make_image(size_in_MB, excludes, prefix,
+                    destination_path)
         except NotFoundError:
             sys.exit(1)
-	except CommandFailed:
-	    sys.exit(1)
+        except UnsupportedException:
+            sys.exit(1)
+        image_path = os.path.normpath(image_path)
+        if image_path.find(volume_path) == 0:
+            exclude_image = image_path.replace(volume_path, '', 1)
+            image_path_parts = exclude_image.split('/')
+            if len(image_path_parts) > 1:
+                exclude_image = \
+                    exclude_image.replace(image_path_parts[0] + '/', ''
+                        , 1)
+            excludes.append(exclude_image)
+        try:
+            euca.copy_volume(image_path, volume_path, excludes,
+                             generate_fstab, fstab_path)
+        except CopyError:
+            print 'Unable to copy files'
+            cleanup(image_path)
+            sys.exit(1)
+        except NotFoundError:
+            cleanup(image_path)
+            sys.exit(1)
+        except CommandFailed:
+            cleanup(image_path)
+            sys.exit(1)
+        except UnsupportedException:
+            cleanup(image_path)
+            sys.exit(1)
 
-	encrypted_file, key, iv, bundled_size = euca.encrypt_image(tgz_file)
-	os.remove(tgz_file)
-	parts, parts_digest = euca.split_image(encrypted_file)
-	euca.generate_manifest(destination_path, prefix, parts, parts_digest, image_path, key, iv, cert_path, ec2cert_path, private_key_path, target_arch, image_size, bundled_size, sha_image_digest, user, kernel, ramdisk, mapping, product_codes, ancestor_ami_ids)
+        (image_size, sha_image_digest) = euca.check_image(image_path,
+                destination_path)
+        if not prefix:
+            prefix = euca.get_relative_filename(image_path)
+        try:
+            tgz_file = euca.tarzip_image(prefix, image_path,
+                    destination_path)
+        except NotFoundError:
+            sys.exit(1)
+        except CommandFailed:
+            sys.exit(1)
+
+        (encrypted_file, key, iv, bundled_size) = \
+            euca.encrypt_image(tgz_file)
+        os.remove(tgz_file)
+        (parts, parts_digest) = euca.split_image(encrypted_file)
+        euca.generate_manifest(
+            destination_path,
+            prefix,
+            parts,
+            parts_digest,
+            image_path,
+            key,
+            iv,
+            cert_path,
+            ec2cert_path,
+            private_key_path,
+            target_arch,
+            image_size,
+            bundled_size,
+            sha_image_digest,
+            user,
+            kernel,
+            ramdisk,
+            mapping,
+            product_codes,
+            ancestor_ami_ids,
+            )
         os.remove(encrypted_file)
-#	cleanup(image_path)
     else:
-	if not size_in_MB:
-	    print 'size must be specified.'
-	if not cert_path:
-	    print 'cert must be specified.'
-	if not private_key_path:
- 	    print 'privatekey must be specified.'
-	if not user:
- 	    print 'user must be specified.'
-	if not ec2cert_path:
- 	    print 'ec2cert must be specified.'
-	usage()
-if __name__ == "__main__":
+
+# ....cleanup(image_path)
+
+        if not size_in_MB:
+            print 'size must be specified.'
+        if not cert_path:
+            print 'cert must be specified.'
+        if not private_key_path:
+            print 'privatekey must be specified.'
+        if not user:
+            print 'user must be specified.'
+        if not ec2cert_path:
+            print 'ec2cert must be specified.'
+        usage()
+
+
+if __name__ == '__main__':
     main()
-       
 

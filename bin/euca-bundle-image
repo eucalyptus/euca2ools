@@ -1,4 +1,5 @@
-#!/usr/bin/env python
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 
 # Software License Agreement (BSD License)
 #
@@ -32,10 +33,14 @@
 #
 # Author: Neil Soman neil@eucalyptus.com
 
-import getopt, sys, os
-from euca2ools import Euca2ool, FileValidationError, Util, NotFoundError, CommandFailed
+import getopt
+import sys
+import os
+from euca2ools import Euca2ool, FileValidationError, Util, \
+    NotFoundError, CommandFailed
 
-usage_string = """
+usage_string = \
+    """
 Bundles an image for use with Eucalyptus or Amazon EC2.
 
 euca-bundle-image -i, --image image_path -u, --user user [-c, --cert cert_path] 
@@ -79,56 +84,71 @@ def usage(status=1):
     Util().usage()
     sys.exit(status)
 
+
 def version():
     print Util().version()
     sys.exit()
+
 
 def get_block_devs(mapping_str):
     mapping = []
     mapping_pairs = mapping_str.split(',')
     for m in mapping_pairs:
         m_parts = m.split('=')
-        if(len(m_parts) > 1):
+        if len(m_parts) > 1:
             mapping.append(m_parts[0])
             mapping.append(m_parts[1])
     return mapping
 
+
 def add_product_codes(product_code_string, product_codes):
     if not product_codes:
-	product_codes = []
+        product_codes = []
     product_code_values = product_code_string.split(',')
-   
+
     for p in product_code_values:
         product_codes.append(p)
-    
+
     return product_codes
 
 
 def main():
     euca = None
     try:
-	euca = Euca2ool('i:c:k:u:B:d:br:p:',
-                                   ['image=', 'cert=', 'privatekey=', 'user=', 'prefix=', 
-                                    'kernel=', 'ramdisk=', 'block-device-mapping=', 'destination=', 'ec2cert=', 'arch=', 'productcodes=', 'batch'])
+        euca = Euca2ool('i:c:k:u:B:d:br:p:', [
+            'image=',
+            'cert=',
+            'privatekey=',
+            'user=',
+            'prefix=',
+            'kernel=',
+            'ramdisk=',
+            'block-device-mapping=',
+            'destination=',
+            'ec2cert=',
+            'arch=',
+            'productcodes=',
+            'batch',
+            ])
     except Exception, e:
-	print e
+        print e
         usage()
-  
-    image_path=None
-    kernel=None
-    user=None
-    ramdisk=None
-    try: 
-        cert_path=euca.get_environ('EC2_CERT')
-        private_key_path=euca.get_environ('EC2_PRIVATE_KEY')
-        ec2cert_path=euca.get_environ('EUCALYPTUS_CERT')
+
+    image_path = None
+    kernel = None
+    user = None
+    ramdisk = None
+    try:
+        cert_path = euca.get_environ('EC2_CERT')
+        private_key_path = euca.get_environ('EC2_PRIVATE_KEY')
+        ec2cert_path = euca.get_environ('EUCALYPTUS_CERT')
         user_string = euca.get_environ('EC2_USER_ID')
     except NotFoundError:
-	sys.exit(1)
+        sys.exit(1)
 
-    prefix=None
-    destination_path='/tmp'
-    target_arch='x86_64'
+    prefix = None
+    destination_path = '/tmp'
+    target_arch = 'x86_64'
     mapping = None
     product_codes = None
     product_code_string = None
@@ -137,10 +157,10 @@ def main():
             user = int(user_string)
         except ValueError:
             print 'Invalid user', user_string
-            sys.exit()	       
-	user = user_string
- 
-    for name, value in euca.opts:
+            sys.exit()
+        user = user_string
+
+    for (name, value) in euca.opts:
         if name in ('-h', '--help'):
             usage(0)
         elif name in ('-i', '--image'):
@@ -150,14 +170,14 @@ def main():
         elif name in ('-k', '--privatekey'):
             private_key_path = value
         elif name in ('-u', '--user'):
-	    try:
-		value = value.replace('-', '')
+            try:
+                value = value.replace('-', '')
                 user = int(value)
-	    except ValueError:
-		print 'Invalid user', value
-		sys.exit()
-	    user = value
-        elif name == '--kernel':	
+            except ValueError:
+                print 'Invalid user', value
+                sys.exit()
+            user = value
+        elif name == '--kernel':
             kernel = value
         elif name == '--ramdisk':
             ramdisk = value
@@ -169,71 +189,97 @@ def main():
             ec2cert_path = value
         elif name in ('-r', '--arch'):
             target_arch = value
-	    print target_arch
-	    if target_arch != 'i386' and target_arch != 'x86_64':
-		print 'target architecture must be i386 or x86_64'
-		usage()
-	elif name in ('-B', '--block-device-mapping'):
-	    mapping = value
-	elif name == '--productcodes':
-	    product_code_string = value
-	elif name == '--version':
-	    version()
+            print target_arch
+            if target_arch != 'i386' and target_arch != 'x86_64':
+                print 'target architecture must be i386 or x86_64'
+                usage()
+        elif name in ('-B', '--block-device-mapping'):
+            mapping = value
+        elif name == '--productcodes':
+            product_code_string = value
+        elif name == '--version':
+            version()
 
-    if image_path and cert_path and private_key_path and user and ec2cert_path:
-	try:
-	    euca.validate_file(image_path)
-	except FileValidationError:
-	    print 'Invalid image'
-	    sys.exit(1)
-	try:
-	    euca.validate_file(cert_path)
-	except FileValidationError:
-	    print 'Invalid cert'
-	    sys.exit(1)
-	try:
-	    euca.validate_file(private_key_path)
-	except FileValidationError:
-	    print 'Invalid private key'
- 	    sys.exit(1)
-	try: 
-	    euca.validate_file(ec2cert_path)
-	except FileValidationError:
-	    print 'Invalid ec2cert' 
-	    sys.exit(1)
+    if image_path and cert_path and private_key_path and user \
+        and ec2cert_path:
+        try:
+            euca.validate_file(image_path)
+        except FileValidationError:
+            print 'Invalid image'
+            sys.exit(1)
+        try:
+            euca.validate_file(cert_path)
+        except FileValidationError:
+            print 'Invalid cert'
+            sys.exit(1)
+        try:
+            euca.validate_file(private_key_path)
+        except FileValidationError:
+            print 'Invalid private key'
+            sys.exit(1)
+        try:
+            euca.validate_file(ec2cert_path)
+        except FileValidationError:
+            print 'Invalid ec2cert'
+            sys.exit(1)
 
-	image_size, sha_image_digest = euca.check_image(image_path, destination_path)
-	if not prefix:
+        (image_size, sha_image_digest) = euca.check_image(image_path,
+                destination_path)
+        if not prefix:
             prefix = euca.get_relative_filename(image_path)
         try:
-	    tgz_file = euca.tarzip_image(prefix, image_path, destination_path)
+            tgz_file = euca.tarzip_image(prefix, image_path,
+                    destination_path)
         except NotFoundError:
             sys.exit(1)
-	except CommandFailed:
-	    sys.exit(1)
+        except CommandFailed:
+            sys.exit(1)
 
-	encrypted_file, key, iv, bundled_size = euca.encrypt_image(tgz_file)
-	os.remove(tgz_file)
-	parts, parts_digest = euca.split_image(encrypted_file)
+        (encrypted_file, key, iv, bundled_size) = \
+            euca.encrypt_image(tgz_file)
+        os.remove(tgz_file)
+        (parts, parts_digest) = euca.split_image(encrypted_file)
         if mapping:
             mapping = get_block_devs(mapping)
-	if product_code_string:
-	    product_codes = add_product_codes(product_code_string, product_codes)   
-        euca.generate_manifest(destination_path, prefix, parts, parts_digest, image_path, key, iv, cert_path, ec2cert_path, private_key_path, target_arch, image_size, bundled_size, sha_image_digest, user, kernel, ramdisk, mapping, product_codes)
+        if product_code_string:
+            product_codes = add_product_codes(product_code_string,
+                    product_codes)
+        euca.generate_manifest(
+            destination_path,
+            prefix,
+            parts,
+            parts_digest,
+            image_path,
+            key,
+            iv,
+            cert_path,
+            ec2cert_path,
+            private_key_path,
+            target_arch,
+            image_size,
+            bundled_size,
+            sha_image_digest,
+            user,
+            kernel,
+            ramdisk,
+            mapping,
+            product_codes,
+            )
         os.remove(encrypted_file)
     else:
-	if not image_path:
-	    print 'image be specified.'
-	if not cert_path:
-	    print 'cert must be specified.'
-	if not private_key_path:
-	    print 'private key must be specified.'
-	if not user:
-	    print 'user must be specified.'
-	if not ec2cert_path:
-	    print 'ec2cert must be specified.'
-	usage()
-if __name__ == "__main__":
+        if not image_path:
+            print 'image be specified.'
+        if not cert_path:
+            print 'cert must be specified.'
+        if not private_key_path:
+            print 'private key must be specified.'
+        if not user:
+            print 'user must be specified.'
+        if not ec2cert_path:
+            print 'ec2cert must be specified.'
+        usage()
+
+
+if __name__ == '__main__':
     main()
-       
 

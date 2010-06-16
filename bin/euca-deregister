@@ -1,4 +1,5 @@
-#!/usr/bin/env python
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 
 # Software License Agreement (BSD License)
 #
@@ -32,10 +33,13 @@
 #
 # Author: Neil Soman neil@eucalyptus.com
 
-import getopt, sys, os
+import getopt
+import sys
+import os
 from euca2ools import Euca2ool, Util, ConnectionFailed
 
-usage_string = """
+usage_string = \
+    """
 Deregisters an image from the cloud.
 
 euca-deregister [-h, --help] [--version] [--debug] image_id
@@ -54,32 +58,32 @@ def usage(status=1):
     Util().usage()
     sys.exit(status)
 
+
 def version():
     print Util().version()
     sys.exit()
 
+
 def main():
     try:
- 	euca = Euca2ool()
+        euca = Euca2ool()
     except Exception, e:
-	print e
+        print e
         usage()
- 
+
     image_id = None
 
-    for name, value in euca.opts:
+    for (name, value) in euca.opts:
         if name in ('-h', '--help'):
             usage(0)
-	elif name == '--version':
-	    version()
-	elif name == '--debug':
-	    debug = True
-    
+        elif name == '--version':
+            version()
+        elif name == '--debug':
+            debug = True
 
     for arg in euca.args:
         image_id = arg
-	break
-
+        break
 
     if image_id:
         try:
@@ -87,16 +91,18 @@ def main():
         except ConnectionFailed, e:
             print e.message
             sys.exit(1)
-	try:
-	    return_code = euca_conn.deregister_image(image_id = image_id)
+        try:
+            return_code = euca_conn.deregister_image(image_id=image_id)
         except Exception, ex:
             euca.display_error_and_exit('%s' % ex)
 
-	if return_code:
-	    print 'IMAGE\t%s' % (image_id)
+        if return_code:
+            print 'IMAGE\t%s' % image_id
     else:
-    	print 'image_id must be specified'
-	usage()
-if __name__ == "__main__":
+        print 'image_id must be specified'
+        usage()
+
+
+if __name__ == '__main__':
     main()
- 
+

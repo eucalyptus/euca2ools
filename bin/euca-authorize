@@ -1,4 +1,5 @@
-#!/usr/bin/env python
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 
 # Software License Agreement (BSD License)
 #
@@ -32,10 +33,14 @@
 #
 # Author: Neil Soman neil@eucalyptus.com
 
-import getopt, sys, os
-from euca2ools import Euca2ool, AddressValidationError, ProtocolValidationError, Util, ConnectionFailed
+import getopt
+import sys
+import os
+from euca2ools import Euca2ool, AddressValidationError, \
+    ProtocolValidationError, Util, ConnectionFailed
 
-usage_string = """
+usage_string = \
+    """
 Add a new rule to a security group.
 
 euca-authorize [-P, --protocol protocol] [-p, --port-range port_range] 
@@ -74,58 +79,64 @@ def version():
     print Util().version()
     sys.exit()
 
+
 def main():
     euca = None
     try:
-        euca = Euca2ool('P:p:o:u:s:t:',
-                                   ['protocol=', 'port-range=', 'source-group=',
-				    'source-group-user=', 'source-subnet=', 'icmp-type-code='], compat=True)
+        euca = Euca2ool('P:p:o:u:s:t:', [
+            'protocol=',
+            'port-range=',
+            'source-group=',
+            'source-group-user=',
+            'source-subnet=',
+            'icmp-type-code=',
+            ], compat=True)
     except Exception, e:
-	print e
+        print e
         usage()
- 
+
     group_name = None
-    protocol = 'tcp' 
+    protocol = 'tcp'
     from_port = None
     to_port = None
     source_group_name = None
     source_group_owner_id = None
     cidr_ip = None
 
-    for name, value in euca.opts:
-	if name in ('-P', '--protocol'):
-	    protocol = value
-	elif name in ('-p', '--port-range'):
-	    ports = value.split('-')
-	    if (len(ports) > 1):
-		from_port = int(ports[0])
-		to_port = int(ports[1])
-	    else:
-		from_port = to_port = int(ports[0])
-	elif name in ('-o', '--source-group'):
-	    source_group_name = value
-	elif name in ('-u', '--source-group-user'):
-	    source_group_owner_id = value  
-	elif name in ('-s', '--source-subnet'):
-	    cidr_ip = value
-	elif name in ('-t', '--icmp-type-code'):
-	    code_parts = value.split(":")
-	    if (len(code_parts) > 1):
-		try:
-		    from_port = int(code_parts[0])
-		    to_port = int(code_parts[1]) 
-		except ValueError:
-		    print "port must be an integer."
-		    sys.exit(1)
+    for (name, value) in euca.opts:
+        if name in ('-P', '--protocol'):
+            protocol = value
+        elif name in ('-p', '--port-range'):
+            ports = value.split('-')
+            if len(ports) > 1:
+                from_port = int(ports[0])
+                to_port = int(ports[1])
+            else:
+                from_port = to_port = int(ports[0])
+        elif name in ('-o', '--source-group'):
+            source_group_name = value
+        elif name in ('-u', '--source-group-user'):
+            source_group_owner_id = value
+        elif name in ('-s', '--source-subnet'):
+            cidr_ip = value
+        elif name in ('-t', '--icmp-type-code'):
+            code_parts = value.split(':')
+            if len(code_parts) > 1:
+                try:
+                    from_port = int(code_parts[0])
+                    to_port = int(code_parts[1])
+                except ValueError:
+                    print 'port must be an integer.'
+                    sys.exit(1)
         elif name in ('-h', '--help'):
             usage(0)
-	elif name == '--version':
-	    version()
+        elif name == '--version':
+            version()
 
     for arg in euca.args:
-	group_name = arg
-	break
-    
+        group_name = arg
+        break
+
     try:
         euca_conn = euca.make_connection()
     except ConnectionFailed, e:
@@ -133,51 +144,56 @@ def main():
         sys.exit(1)
 
     if group_name:
-	if cidr_ip:
-	    try:
+        if cidr_ip:
+            try:
                 euca.validate_address(cidr_ip)
-	    except AddressValidationError:
-	        print 'Invalid address', cidr_ip
-	        sys.exit(1)
-	if protocol:
-	    try:
-	        euca.validate_protocol(protocol)
-	    except ProtocolValidationError:
-	        print 'Invalid protocol', protocol
- 	        sys.exit(1)
+            except AddressValidationError:
+                print 'Invalid address', cidr_ip
+                sys.exit(1)
+        if protocol:
+            try:
+                euca.validate_protocol(protocol)
+            except ProtocolValidationError:
+                print 'Invalid protocol', protocol
+                sys.exit(1)
 
-	try:
-	    print group_name, source_group_name, source_group_owner_id, protocol, from_port, to_port, cidr_ip
-            return_code = euca_conn.authorize_security_group(group_name = group_name,
-							src_security_group_name = source_group_name,
-							src_security_group_owner_id = source_group_owner_id,
-							ip_protocol = protocol,
-							from_port = from_port,
-							to_port = to_port,
-							cidr_ip = cidr_ip)
+        try:
+            print group_name, source_group_name, source_group_owner_id, \
+                protocol, from_port, to_port, cidr_ip
+            return_code = euca_conn.authorize_security_group(
+                group_name=group_name,
+                src_security_group_name=source_group_name,
+                src_security_group_owner_id=source_group_owner_id,
+                ip_protocol=protocol,
+                from_port=from_port,
+                to_port=to_port,
+                cidr_ip=cidr_ip,
+                )
         except Exception, ex:
             euca.display_error_and_exit('%s' % ex)
 
         if return_code:
-	    print 'GROUP\t%s' % (group_name)
-	    permission_string = 'PERMISSION\t%s\tALLOWS' % group_name
-	    if protocol:
-		permission_string += '\t%s' % protocol 
-	    if from_port:
-		permission_string += '\t%s' % from_port
-	    if to_port:
-		permission_string += '\t%s' % to_port
-	    if source_group_owner_id:
-		permission_string += '\tUSER\t%s' % source_group_owner_id
-	    if source_group_name:
-		permission_string += '\tGRPNAME\t%s' % source_group_name
-	    if cidr_ip:
-		permission_string += '\tFROM\tCIDR\t%s' % cidr_ip
-	    print permission_string
+            print 'GROUP\t%s' % group_name
+            permission_string = 'PERMISSION\t%s\tALLOWS' % group_name
+            if protocol:
+                permission_string += '\t%s' % protocol
+            if from_port:
+                permission_string += '\t%s' % from_port
+            if to_port:
+                permission_string += '\t%s' % to_port
+            if source_group_owner_id:
+                permission_string += '\tUSER\t%s' \
+                    % source_group_owner_id
+            if source_group_name:
+                permission_string += '\tGRPNAME\t%s' % source_group_name
+            if cidr_ip:
+                permission_string += '\tFROM\tCIDR\t%s' % cidr_ip
+            print permission_string
     else:
-	print 'group_name must be specified'
-	usage()
+        print 'group_name must be specified'
+        usage()
 
-if __name__ == "__main__":
+
+if __name__ == '__main__':
     main()
- 
+

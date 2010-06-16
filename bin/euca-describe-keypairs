@@ -1,4 +1,5 @@
-#!/usr/bin/env python
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 
 # Software License Agreement (BSD License)
 #
@@ -32,10 +33,13 @@
 #
 # Author: Neil Soman neil@eucalyptus.com
 
-import getopt, sys, os
+import getopt
+import sys
+import os
 from euca2ools import Euca2ool, Util, ConnectionFailed
 
-usage_string = """
+usage_string = \
+    """
 Shows information about keypairs.
 
 euca-describe-keypairs [-h, --help] [--version] [--debug]
@@ -53,36 +57,38 @@ def usage(status=1):
     Util().usage()
     sys.exit(status)
 
+
 def version():
     print Util().version()
     sys.exit()
 
+
 def display_keypairs(keypairs, keypair_ids):
     check_keypair_ids = False
-    if(len(keypair_ids) > 0):
-	check_keypair_ids = True
+    if len(keypair_ids) > 0:
+        check_keypair_ids = True
     for keypair in keypairs:
-	if check_keypair_ids:
-	    if not keypair.name in keypair_ids:
-	        continue
+        if check_keypair_ids:
+            if not keypair.name in keypair_ids:
+                continue
         keypair_string = '%s\t%s' % (keypair.name, keypair.fingerprint)
-	print 'KEYPAIR\t%s' % (keypair_string)
+        print 'KEYPAIR\t%s' % keypair_string
+
 
 def main():
     euca = None
     try:
-    	euca = Euca2ool()
+        euca = Euca2ool()
     except Exception, e:
-	print e
+        print e
         usage()
- 
 
-    for name, value in euca.opts:
+    for (name, value) in euca.opts:
         if name in ('-h', '--help'):
             usage(0)
-	elif name == '--version':
-	    version()
-    
+        elif name == '--version':
+            version()
+
     keypair_ids = euca.process_args()
     try:
         euca_conn = euca.make_connection()
@@ -95,6 +101,8 @@ def main():
         euca.display_error_and_exit('%s' % ex)
 
     display_keypairs(keypairs, keypair_ids)
-if __name__ == "__main__":
+
+
+if __name__ == '__main__':
     main()
- 
+

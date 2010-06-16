@@ -1,4 +1,5 @@
-#!/usr/bin/env python
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 
 # Software License Agreement (BSD License)
 #
@@ -32,10 +33,13 @@
 #
 # Author: Neil Soman neil@eucalyptus.com
 
-import getopt, sys, os
+import getopt
+import sys
+import os
 from euca2ools import Euca2ool, Util, ConnectionFailed
 
-usage_string = """
+usage_string = \
+    """
 Registers a manifest for use with the cloud.
 
 euca-register [-h, --help] [--version] [--debug] image_location 
@@ -69,31 +73,41 @@ def usage(status=1):
     Util().usage(compat=True)
     sys.exit(status)
 
+
 def version():
     print Util().version()
     sys.exit()
 
+
 def main():
     euca = None
     try:
-	euca = Euca2ool('b:d:n:a:s:', ['block-device-mapping=', 'description=', 'name=', 'architecture=',
-                                     'kernel=', 'ramdisk=', 'root-device-name=', 'snapshot='], compat=True)
+        euca = Euca2ool('b:d:n:a:s:', [
+            'block-device-mapping=',
+            'description=',
+            'name=',
+            'architecture=',
+            'kernel=',
+            'ramdisk=',
+            'root-device-name=',
+            'snapshot=',
+            ], compat=True)
     except Exception, e:
-	print e
+        print e
         usage()
- 
+
     image_location = None
     block_device_map_args = []
     block_device_map = None
     description = None
     image_name = None
-    architecture = None 
+    architecture = None
     kernel = None
     ramdisk = None
-    root_device_name = None 
+    root_device_name = None
     snapshot = None
 
-    for name, value in euca.opts:
+    for (name, value) in euca.opts:
         if name in ('-b', '--block-device-mapping'):
             block_device_map_args.append(value)
         elif name in ('-d', '--description'):
@@ -109,15 +123,15 @@ def main():
         elif name == '--root-device-name':
             root_device_name = value
         elif name in ('-s', '--snapshot'):
-            snapshot = value 
+            snapshot = value
         elif name in ('-h', '--help'):
             usage(0)
-	elif name == '--version':
-	    version()
+        elif name == '--version':
+            version()
 
     for arg in euca.args:
         image_location = arg
-	break
+        break
 
     if image_location:
         try:
@@ -128,26 +142,32 @@ def main():
         if snapshot:
             if not root_device_name:
                 root_device_name = '/dev/sda1'
-            block_device_map_args.append('%s=%s' % (root_device_name, snapshot))
+            block_device_map_args.append('%s=%s' % (root_device_name,
+                    snapshot))
         if block_device_map_args:
-            block_device_map = euca.parse_block_device_args(block_device_map_args)
-	try:
-	    image_id = euca_conn.register_image(name = image_name,
-                                                description = description,
-                                                image_location = image_location,
-                                                architecture = architecture,
-                                                kernel_id = kernel,
-                                                ramdisk_id = ramdisk,
-                                                root_device_name = root_device_name,
-                                                block_device_map = block_device_map)
+            block_device_map = \
+                euca.parse_block_device_args(block_device_map_args)
+        try:
+            image_id = euca_conn.register_image(
+                name=image_name,
+                description=description,
+                image_location=image_location,
+                architecture=architecture,
+                kernel_id=kernel,
+                ramdisk_id=ramdisk,
+                root_device_name=root_device_name,
+                block_device_map=block_device_map,
+                )
         except Exception, ex:
             euca.display_error_and_exit('%s' % ex)
 
-	if image_id:
-	    print 'IMAGE\t%s' % (image_id)
+        if image_id:
+            print 'IMAGE\t%s' % image_id
     else:
-    	print 'image location must be specified'
-	usage()
-if __name__ == "__main__":
+        print 'image location must be specified'
+        usage()
+
+
+if __name__ == '__main__':
     main()
- 
+

@@ -1,4 +1,5 @@
-#!/usr/bin/env python
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 
 # Software License Agreement (BSD License)
 #
@@ -32,10 +33,14 @@
 #
 # Author: Neil Soman neil@eucalyptus.com
 
-import getopt, sys, os
-from euca2ools import Euca2ool, InstanceValidationError, Util, ConnectionFailed
+import getopt
+import sys
+import os
+from euca2ools import Euca2ool, InstanceValidationError, Util, \
+    ConnectionFailed
 
-usage_string = """
+usage_string = \
+    """
 Stops specified instances.
 
 euca-terminate-instances [-h, --help] [--version] [--debug]
@@ -55,35 +60,38 @@ def usage(status=1):
     Util().usage()
     sys.exit(status)
 
+
 def version():
     print Util().version()
     sys.exit()
 
+
 def display_instances(instances, instance_ids):
     for instance in instances:
-	    print 'INSTANCE\t%s' % (instance.id)
+        print 'INSTANCE\t%s' % instance.id
+
 
 def main():
     euca = None
     try:
-	euca = Euca2ool()
+        euca = Euca2ool()
     except Exception, e:
-	print e
+        print e
         usage()
- 
-    for name, value in euca.opts:
+
+    for (name, value) in euca.opts:
         if name in ('-h', '--help'):
             usage(0)
-	elif name == '--version':
-	    version()
+        elif name == '--version':
+            version()
 
     instance_ids = euca.process_args()
-    if (len(instance_ids) > 0):
+    if len(instance_ids) > 0:
         try:
-	    for id in instance_ids:
-    	        euca.validate_instance_id(id)
+            for id in instance_ids:
+                euca.validate_instance_id(id)
         except InstanceValidationError, error:
-            print 'Invalid instance id' 
+            print 'Invalid instance id'
             sys.exit(1)
 
         try:
@@ -91,16 +99,17 @@ def main():
         except ConnectionFailed, e:
             print e.message
             sys.exit(1)
-	try:
+        try:
             instances = euca_conn.terminate_instances(instance_ids)
         except Exception, ex:
             euca.display_error_and_exit('%s' % ex)
 
         display_instances(instances, instance_ids)
     else:
-	print 'instance id(s) must be specified.'
-	usage()
+        print 'instance id(s) must be specified.'
+        usage()
 
-if __name__ == "__main__":
+
+if __name__ == '__main__':
     main()
- 
+

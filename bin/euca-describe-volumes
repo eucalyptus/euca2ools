@@ -1,4 +1,5 @@
-#!/usr/bin/env python
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 
 # Software License Agreement (BSD License)
 #
@@ -32,10 +33,14 @@
 #
 # Author: Neil Soman neil@eucalyptus.com
 
-import getopt, sys, os
-from euca2ools import Euca2ool, VolumeValidationError, Util, ConnectionFailed
+import getopt
+import sys
+import os
+from euca2ools import Euca2ool, VolumeValidationError, Util, \
+    ConnectionFailed
 
-usage_string = """
+usage_string = \
+    """
 Shows information about volumes.
 
 euca-describe-volumes [-h, --help] [--version] [--debug]
@@ -53,57 +58,66 @@ def usage(status=1):
     Util().usage()
     sys.exit(status)
 
+
 def version():
     print Util().version()
     sys.exit()
 
+
 def display_volumes(volumes, volume_ids):
     check_volume_ids = False
-    if(len(volume_ids) > 0):
-	check_volume_ids = True
+    if len(volume_ids) > 0:
+        check_volume_ids = True
 
     for volume in volumes:
-	if check_volume_ids:
-	    if not volume.id in volume_ids:
-	        continue
+        if check_volume_ids:
+            if not volume.id in volume_ids:
+                continue
         volume_string = '%s\t ' % volume.id
-	if volume.size:
-	    volume_string += '%d' % volume.size
-	if volume.snapshot_id:
-	    volume_string += '\t%s' % (volume.snapshot_id)
-	else:
-	    volume_string += '\t'
-	
-	az = getattr(volume, 'availabilityZone', object)
-	if az is object: az=volume.zone
-	if az: volume_string += '\t%s' % az
+        if volume.size:
+            volume_string += '%d' % volume.size
+        if volume.snapshot_id:
+            volume_string += '\t%s' % volume.snapshot_id
+        else:
+            volume_string += '\t'
 
-	volume_string += '\t%s\t%s' % (volume.status, volume.create_time)
-	print 'VOLUME\t%s' % (volume_string)
-	if volume.status == 'in-use':
-	    attachment_string = '%s\t%s\t%s\t%s' % (volume.id, volume.attach_data.instance_id, volume.attach_data.device, volume.attach_data.attach_time)
-	    print 'ATTACHMENT\t%s' %(attachment_string)
+        az = getattr(volume, 'availabilityZone', object)
+        if az is object:
+            az = volume.zone
+        if az:
+            volume_string += '\t%s' % az
+
+        volume_string += '\t%s\t%s' % (volume.status,
+                volume.create_time)
+        print 'VOLUME\t%s' % volume_string
+        if volume.status == 'in-use':
+            attachment_string = '%s\t%s\t%s\t%s' % (volume.id,
+                    volume.attach_data.instance_id,
+                    volume.attach_data.device,
+                    volume.attach_data.attach_time)
+            print 'ATTACHMENT\t%s' % attachment_string
+
 
 def main():
     euca = None
     try:
-	euca = Euca2ool()
+        euca = Euca2ool()
     except Exception, e:
-	print e
+        print e
         usage()
- 
-    for name, value in euca.opts:
+
+    for (name, value) in euca.opts:
         if name in ('-h', '--help'):
             usage(0)
-	elif name == '--version':
-	    version()
-    
+        elif name == '--version':
+            version()
+
     volume_ids = euca.process_args()
     try:
-	for id in volume_ids:
-    	    euca.validate_volume_id(id)
+        for id in volume_ids:
+            euca.validate_volume_id(id)
     except VolumeValidationError:
-        print 'Invalid volume id' 
+        print 'Invalid volume id'
         sys.exit(1)
 
     try:
@@ -117,6 +131,8 @@ def main():
         euca.display_error_and_exit('%s' % ex)
 
     display_volumes(volumes, volume_ids)
-if __name__ == "__main__":
+
+
+if __name__ == '__main__':
     main()
- 
+

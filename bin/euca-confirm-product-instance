@@ -1,4 +1,5 @@
-#!/usr/bin/env python
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 
 # Software License Agreement (BSD License)
 #
@@ -32,10 +33,14 @@
 #
 # Author: Neil Soman neil@eucalyptus.com
 
-import getopt, sys, os
-from euca2ools import Euca2ool, InstanceValidationError, Util, ConnectionFailed
+import getopt
+import sys
+import os
+from euca2ools import Euca2ool, InstanceValidationError, Util, \
+    ConnectionFailed
 
-usage_string = """
+usage_string = \
+    """
 Confirm if instance is running with product code attached.
 
 euca-confirm-product-instance -i, --instance instance_id [-h, --help] [--version] [--debug] product_code
@@ -56,33 +61,34 @@ def usage(status=1):
     Util().usage()
     sys.exit(status)
 
+
 def version():
     print Util().version()
     sys.exit()
 
- 
+
 def main():
     euca = None
     try:
         euca = Euca2ool('i:', ['instance='])
     except Exception, e:
-	print e
+        print e
         usage()
- 
+
     instance_id = None
     product_code = None
 
-    for name, value in euca.opts:
-	if name in ('-i', '--instance'):
-	    instance_id = value
+    for (name, value) in euca.opts:
+        if name in ('-i', '--instance'):
+            instance_id = value
         elif name in ('-h', '--help'):
             usage(0)
-	elif name == '--version':
-	    version()
-    
+        elif name == '--version':
+            version()
+
     for arg in euca.args:
         product_code = arg
-	break
+        break
 
     try:
         euca_conn = euca.make_connection()
@@ -92,30 +98,33 @@ def main():
 
     if instance_id and product_code:
         try:
-	    euca.validate_instance_id(instance_id)
+            euca.validate_instance_id(instance_id)
         except InstanceValidationError:
-   	    print 'Invalid instance id' 
+            print 'Invalid instance id'
             sys.exit(1)
-	try:
-	    rs = euca_conn.confirm_product_instance(product_code = product_code,
-							       instance_id = instance_id)
+        try:
+            rs = \
+                euca_conn.confirm_product_instance(product_code=product_code,
+                    instance_id=instance_id)
         except Exception, ex:
             euca.display_error_and_exit('%s' % ex)
 
-	if rs:
-	    product_string = '%s\t%s\t' % (product_code, instance_id)
-	    if rs.status:
-	        product_string += 'true'
-	    else:
-	        product_string += 'false'
+        if rs:
+            product_string = '%s\t%s\t' % (product_code, instance_id)
+            if rs.status:
+                product_string += 'true'
+            else:
+                product_string += 'false'
             print product_string
-
     else:
-	if not instance_id:
-      	    print 'instance_id must be specified'
-	if not product_code:
-    	    print 'product_code must be specified'
-	usage()
-if __name__ == "__main__":
+
+        if not instance_id:
+            print 'instance_id must be specified'
+        if not product_code:
+            print 'product_code must be specified'
+        usage()
+
+
+if __name__ == '__main__':
     main()
- 
+

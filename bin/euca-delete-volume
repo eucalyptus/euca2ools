@@ -1,4 +1,5 @@
-#!/usr/bin/env python
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 
 # Software License Agreement (BSD License)
 #
@@ -32,10 +33,14 @@
 #
 # Author: Neil Soman neil@eucalyptus.com
 
-import getopt, sys, os
-from euca2ools import Euca2ool, VolumeValidationError, Util, ConnectionFailed
+import getopt
+import sys
+import os
+from euca2ools import Euca2ool, VolumeValidationError, Util, \
+    ConnectionFailed
 
-usage_string = """
+usage_string = \
+    """
 Deletes a volume.
 
 euca-delete-volume [-h, --help] [--version] [--debug] volume_id
@@ -54,37 +59,37 @@ def usage(status=1):
     Util().usage()
     sys.exit(status)
 
+
 def version():
     print Util().version()
     sys.exit()
 
-  
+
 def main():
     euca = None
     try:
-  	euca = Euca2ool()
+        euca = Euca2ool()
     except Exception, e:
-	print e
+        print e
         usage()
- 
+
     volume_id = None
 
-    for name, value in euca.opts:
+    for (name, value) in euca.opts:
         if name in ('-h', '--help'):
             usage(0)
-	elif name == '--version':
-	    version()
-    
-    for arg in euca.args:
-	volume_id = arg
-	break
+        elif name == '--version':
+            version()
 
+    for arg in euca.args:
+        volume_id = arg
+        break
 
     if volume_id:
         try:
-	    euca.validate_volume_id(volume_id)
+            euca.validate_volume_id(volume_id)
         except VolumeValidationError:
-   	    print 'Invalid volume id'
+            print 'Invalid volume id'
             sys.exit(1)
 
         try:
@@ -92,16 +97,18 @@ def main():
         except ConnectionFailed, e:
             print e.message
             sys.exit(1)
-	try:
-	    return_code = euca_conn.delete_volume(volume_id)
+        try:
+            return_code = euca_conn.delete_volume(volume_id)
         except Exception, ex:
             euca.display_error_and_exit('%s' % ex)
 
-	if return_code:
-	    print 'VOLUME\t%s' % (volume_id)
+        if return_code:
+            print 'VOLUME\t%s' % volume_id
     else:
-    	print 'volume_id must be specified'
-	usage()
-if __name__ == "__main__":
+        print 'volume_id must be specified'
+        usage()
+
+
+if __name__ == '__main__':
     main()
- 
+

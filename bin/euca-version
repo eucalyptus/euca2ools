@@ -1,4 +1,5 @@
-#!/usr/bin/env python
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 
 # Software License Agreement (BSD License)
 #
@@ -32,14 +33,16 @@
 #
 # Author: Neil Soman neil@eucalyptus.com
 
-import getopt, sys, os
+import getopt
+import sys
+import os
 from euca2ools import Euca2ool, Util
 
+TOOLS_VERSION = 'main-31337'
+API_VERSION = '2009-04-04'
 
-TOOLS_VERSION = "1.2-31337"
-API_VERSION = "2009-04-04"
-
-usage_string = """
+usage_string = \
+    """
 Shows the Euca2ools version
 
 euca-version [-h, --help] [--debug]
@@ -50,27 +53,31 @@ def usage(status=1):
     print usage_string
     sys.exit(status)
 
+
 def version():
     print Util().version()
     sys.exit()
 
+
 def display_tools_version():
     print '%s %s' % (TOOLS_VERSION, API_VERSION)
+
 
 def main():
     euca = None
     try:
-	euca = Euca2ool()
+        euca = Euca2ool()
     except Exception, e:
-	print e
+        print e
         usage()
- 
-    for name, value in euca.opts:
+
+    for (name, value) in euca.opts:
         if name in ('-h', '--help'):
             usage(0)
 
     display_tools_version()
 
-if __name__ == "__main__":
+
+if __name__ == '__main__':
     main()
- 
+

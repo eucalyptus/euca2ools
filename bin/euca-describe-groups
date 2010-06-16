@@ -1,4 +1,5 @@
-#!/usr/bin/env python
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 
 # Software License Agreement (BSD License)
 #
@@ -32,10 +33,13 @@
 #
 # Author: Neil Soman neil@eucalyptus.com
 
-import getopt, sys, os
+import getopt
+import sys
+import os
 from euca2ools import Euca2ool, Util, ConnectionFailed
 
-usage_string = """
+usage_string = \
+    """
 Shows information about groups.
 
 euca-describe-groups [-h, --help] [--version] [--debug] [group1 group2...groupN] 
@@ -52,47 +56,53 @@ def usage(status=1):
     Util().usage()
     sys.exit(status)
 
+
 def version():
     print Util().version()
     sys.exit()
 
+
 def display_groups(groups, group_ids):
     check_group_ids = False
-    if(len(group_ids) > 0):
-	check_group_ids = True
+    if len(group_ids) > 0:
+        check_group_ids = True
     for group in groups:
-	if check_group_ids:
-	    if not group.name in group_ids:
-	        continue
-        group_string = '%s\t%s\t%s' % (group.owner_id, group.name, group.description)
-	print 'GROUP\t%s' % (group_string)
-	for rule in group.rules:
-	    permission_string = '%s\t%s\tALLOWS\t%s\t%s\t%s' % (group.owner_id, group.name, rule.ip_protocol, rule.from_port, rule.to_port)
-	    for grant in rule.grants:
-		grant_string = '\tFROM'
-		if grant.owner_id or grant.name:
-		    if grant.owner_id:
-		        grant_string = '\tUSER\t%s' % (grant.owner_id)
-		    if grant.name:
-		        grant_string = '\tGRPNAME\t%s' % (grant.name)
+        if check_group_ids:
+            if not group.name in group_ids:
+                continue
+        group_string = '%s\t%s\t%s' % (group.owner_id, group.name,
+                group.description)
+        print 'GROUP\t%s' % group_string
+        for rule in group.rules:
+            permission_string = '%s\t%s\tALLOWS\t%s\t%s\t%s' \
+                % (group.owner_id, group.name, rule.ip_protocol,
+                   rule.from_port, rule.to_port)
+            for grant in rule.grants:
+                grant_string = '\tFROM'
+                if grant.owner_id or grant.name:
+                    if grant.owner_id:
+                        grant_string = '\tUSER\t%s' % grant.owner_id
+                    if grant.name:
+                        grant_string = '\tGRPNAME\t%s' % grant.name
                 else:
-	            grant_string += '\tCIDR\t%s' % (grant.cidr_ip)
-		permission_string += grant_string
-	        print 'PERMISSION\t%s' % (permission_string)
+                    grant_string += '\tCIDR\t%s' % grant.cidr_ip
+                permission_string += grant_string
+                print 'PERMISSION\t%s' % permission_string
+
 
 def main():
     euca = None
     try:
-	euca = Euca2ool()
+        euca = Euca2ool()
     except Exception, e:
-	print e
+        print e
         usage()
- 
-    for name, value in euca.opts:
+
+    for (name, value) in euca.opts:
         if name in ('-h', '--help'):
             usage(0)
-	elif name == '--version':
-	    version()
+        elif name == '--version':
+            version()
 
     group_ids = euca.process_args()
     try:
@@ -106,6 +116,8 @@ def main():
         euca.display_error_and_exit('%s' % ex)
 
     display_groups(groups, group_ids)
-if __name__ == "__main__":
+
+
+if __name__ == '__main__':
     main()
- 
+
