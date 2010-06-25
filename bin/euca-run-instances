@@ -43,36 +43,45 @@ usage_string = \
 Starts instances.
 
 euca-run-instances [-n, --instance-count count] [-g, --group group_name] [-k, --keypair keyname] 
-[--addressing addressing] [-t, --instance-type instance_type] [-z, --availability-zone zone] 
-[--kernel kernel_id] [--ramdisk ramdisk_id] [-h, --help] [--version] [--debug] image_id 
+[-d user_data] [-f user_data_file] [--addressing addressing] [-t, --instance-type instance_type] 
+[-z, --availability-zone zone] [--kernel kernel_id] [--ramdisk ramdisk_id] [-b block_device_mapping]
+[--monitor] [-s, --subnet subnet_id] [--disable-api-termination] [--instanceinitiatedshutdown-behavior behavior] 
+[-h, --help] [--version] [--debug] image_id 
 
 REQUIRED PARAMETERS
 	
-image_id			identifier for the image to run. 
+image_id				identifier for the image to run. 
 
 OPTIONAL PARAMETERS
 
--n, --instance-count		Number of instances to run.
+-n, --instance-count			Number of instances to run.
 	
--g, --group			Security group to run the instance under.
+-g, --group				Security group to run the instance under.
 
--k, --keypair			Name of a (previously created) keypair to associate with this reservation.		
+-k, --keypair				Name of a (previously created) keypair to associate with this reservation.		
+-d, --user-data				User data for instances read from the command line.
 
--d, --user-data			User data for instances read from the command line.
+-f, --user-data-file			User data for instances as a filename.
 
--f, --user-data-file		User data for instances as a filename.
+--addressing				Addressing mode (e.g., private).
 
---addressing			Addressing mode (e.g., private).
+-t, --instance-type			VM Image type to run the instance(s) as (default: m1.small).
 
--t, --instance-type		VM Image type to run the instance(s) as (default: m1.small).
+-z, --availability-zone			Availability zone to run the instance(s) in.
 
--z, --availability-zone		Availability zone to run the instance(s) in.
+--kernel				Id of the kernel to be used to launch instance(s).
 
---kernel			Id of the kernel to be used to launch instance(s).
+--ramdisk				Id of the ramdisk to be used to launch instance(s).
 
---ramdisk			Id of the ramdisk to be used to launch instance(s).
+-b, --block-device-mapping      	Block device mapping for the instance(s). Option may be used multiple times.
 
--b, --block-device-mapping      Block device mapping for the instance(s). Option may be used multiple times.
+--monitor				Enable monitoring for instance.
+
+-s, --subnet				Amazon VPC subnet ID for the instance.
+
+--disable-api-termination		Disabled termination using API calls.
+
+--instanceinitiatedshutdown-behavior	Instance behavior on shutdown (can be 'stop' or 'terminate').
 """
 
 
@@ -138,6 +147,10 @@ def main():
             'addressing=',
             'availability-zone=',
             'block-device-mapping=',
+            'monitor',
+            'subnet_id=',
+            'disable-api-termination',
+            'instanceinitiatedshutdown-behavior='
             ])
     except Exception, e:
         print e
@@ -157,6 +170,10 @@ def main():
     zone = None
     block_device_map_args = []
     block_device_map = None
+    monitor = False
+    subnet_id = None
+    disable_api_termination = False
+    instance_initiated_shutdown_behavior = None
     for (name, value) in euca.opts:
         if name in ('-k', '--key'):
             keyname = value
@@ -185,6 +202,14 @@ def main():
             zone = value
         elif name in ('-b', '--block-device-mapping'):
             block_device_map_args.append(value)
+        elif name == '--monitor':
+            monitor = True
+        elif name in ('-s', '--subnet'):
+            subnet_id = value
+        elif name == '--disable-api-termination':
+            disable_api_termination = True
+        elif name == '--instanceinitiatedshutdown-behavior':
+            instance_initiated_shutdown_behavior = value
         elif name in ('-h', '--help'):
             usage(0)
         elif name == '--version':
@@ -225,6 +250,10 @@ def main():
                 kernel_id=kernel_id,
                 ramdisk_id=ramdisk_id,
                 block_device_map=block_device_map,
+                monitoring_enabled=monitor,
+                subnet_id=subnet_id,
+                disable_api_termination = disable_api_termination,
+                instance_initiated_shutdown_behavior = instance_initiated_shutdown_behavior
                 )
         except Exception, ex:
             euca.display_error_and_exit('%s' % ex)

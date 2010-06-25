@@ -6,38 +6,47 @@ euca-run-instances \- Eucalyptus tool: Starts instances.
 Starts instances.
 .PP
 euca\-run\-instances [\-n, \fB\-\-instance\-count\fR count] [\-g, \fB\-\-group\fR group_name] [\-k, \fB\-\-keypair\fR keyname]
-[\-\-addressing addressing] [\-t, \fB\-\-instance\-type\fR instance_type] [\-z, \fB\-\-availability\-zone\fR zone]
-[\-\-kernel kernel_id] [\-\-ramdisk ramdisk_id] [\-h, \fB\-\-help]\fR [\-\-version] [\-\-debug] image_id
+[\-d user_data] [\-f user_data_file] [\-\-addressing addressing] [\-t, \fB\-\-instance\-type\fR instance_type]
+[\-z, \fB\-\-availability\-zone\fR zone] [\-\-kernel kernel_id] [\-\-ramdisk ramdisk_id] [\-b block_device_mapping]
+[\-\-monitor] [\-s, \fB\-\-subnet\fR subnet_id] [\-\-disable\-api\-termination] [\-\-instanceinitiatedshutdown\-behavior behavior]
+[\-h, \fB\-\-help]\fR [\-\-version] [\-\-debug] image_id
 .PP
 REQUIRED PARAMETERS
 .PP
         
-image_id                        identifier for the image to run.
+image_id                                identifier for the image to run.
 .PP
 OPTIONAL PARAMETERS
 .PP
-\fB\-n\fR, \fB\-\-instance\-count\fR            Number of instances to run.
+\fB\-n\fR, \fB\-\-instance\-count\fR                    Number of instances to run.
 .PP
         
-\fB\-g\fR, \fB\-\-group\fR                     Security group to run the instance under.
+\fB\-g\fR, \fB\-\-group\fR                             Security group to run the instance under.
 .PP
-\fB\-k\fR, \fB\-\-keypair\fR                   Name of a (previously created) keypair to associate with this reservation.              
+\fB\-k\fR, \fB\-\-keypair\fR                           Name of a (previously created) keypair to associate with this reservation.              
+\fB\-d\fR, \fB\-\-user\-data\fR                         User data for instances read from the command line.
 .PP
-\fB\-d\fR, \fB\-\-user\-data\fR                 User data for instances read from the command line.
+\fB\-f\fR, \fB\-\-user\-data\-file\fR                    User data for instances as a filename.
 .PP
-\fB\-f\fR, \fB\-\-user\-data\-file\fR            User data for instances as a filename.
+\fB\-\-addressing\fR                            Addressing mode (e.g., private).
 .PP
-\fB\-\-addressing\fR                    Addressing mode (e.g., private).
+\fB\-t\fR, \fB\-\-instance\-type\fR                     VM Image type to run the instance(s) as (default: m1.small).
 .PP
-\fB\-t\fR, \fB\-\-instance\-type\fR             VM Image type to run the instance(s) as (default: m1.small).
+\fB\-z\fR, \fB\-\-availability\-zone\fR                 Availability zone to run the instance(s) in.
 .PP
-\fB\-z\fR, \fB\-\-availability\-zone\fR         Availability zone to run the instance(s) in.
+\fB\-\-kernel\fR                                Id of the kernel to be used to launch instance(s).
 .PP
-\fB\-\-kernel\fR                        Id of the kernel to be used to launch instance(s).
+\fB\-\-ramdisk\fR                               Id of the ramdisk to be used to launch instance(s).
 .PP
-\fB\-\-ramdisk\fR                       Id of the ramdisk to be used to launch instance(s).
+\fB\-b\fR, \fB\-\-block\-device\-mapping\fR              Block device mapping for the instance(s). Option may be used multiple times.
 .PP
-\fB\-b\fR, \fB\-\-block\-device\-mapping\fR      Block device mapping for the instance(s). Option may be used multiple times.
+\fB\-\-monitor\fR                               Enable monitoring for instance.
+.PP
+\fB\-s\fR, \fB\-\-subnet\fR                            Amazon VPC subnet ID for the instance.
+.PP
+\fB\-\-disable\-api\-termination\fR               Disabled termination using API calls.
+.PP
+\fB\-\-instanceinitiatedshutdown\-behavior\fR    Instance behavior on shutdown (can be 'stop' or 'terminate').
 .PP
 \fB\-a\fR, \fB\-\-access\-key\fR                User's Access Key ID.
 .PP
