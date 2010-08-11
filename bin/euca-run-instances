@@ -45,7 +45,7 @@ Starts instances.
 euca-run-instances [-n, --instance-count count] [-g, --group group_name] [-k, --keypair keyname] 
 [-d user_data] [-f user_data_file] [--addressing addressing] [-t, --instance-type instance_type] 
 [-z, --availability-zone zone] [--kernel kernel_id] [--ramdisk ramdisk_id] [-b block_device_mapping]
-[--monitor] [-s, --subnet subnet_id] [--instanceinitiatedshutdown-behavior behavior] 
+[--monitor] [-s, --subnet subnet_id] 
 [-h, --help] [--version] [--debug] image_id 
 
 REQUIRED PARAMETERS
@@ -79,7 +79,6 @@ OPTIONAL PARAMETERS
 
 -s, --subnet				Amazon VPC subnet ID for the instance.
 
---instanceinitiatedshutdown-behavior	Instance behavior on shutdown (can be 'stop' or 'terminate').
 """
 
 
@@ -147,7 +146,6 @@ def main():
             'block-device-mapping=',
             'monitor',
             'subnet_id=',
-            'instanceinitiatedshutdown-behavior='
             ])
     except Exception, e:
         print e
@@ -169,7 +167,6 @@ def main():
     block_device_map = None
     monitor = False
     subnet_id = None
-    instance_initiated_shutdown_behavior = None
     for (name, value) in euca.opts:
         if name in ('-k', '--key'):
             keyname = value
@@ -202,8 +199,6 @@ def main():
             monitor = True
         elif name in ('-s', '--subnet'):
             subnet_id = value
-        elif name == '--instanceinitiatedshutdown-behavior':
-            instance_initiated_shutdown_behavior = value
         elif name in ('-h', '--help'):
             usage(0)
         elif name == '--version':
@@ -245,8 +240,7 @@ def main():
                 ramdisk_id=ramdisk_id,
                 block_device_map=block_device_map,
                 monitoring_enabled=monitor,
-                subnet_id=subnet_id,
-                instance_initiated_shutdown_behavior = instance_initiated_shutdown_behavior
+                subnet_id=subnet_id
                 )
         except Exception, ex:
             euca.display_error_and_exit('%s' % ex)
