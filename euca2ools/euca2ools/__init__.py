@@ -49,7 +49,7 @@ import re
 import shutil
 from boto.ec2.regioninfo import RegionInfo
 from boto.ec2.blockdevicemapping import BlockDeviceMapping
-from boto.ec2.blockdevicemapping import BlockDeviceType
+from boto.ec2.blockdevicemapping import EBSBlockDeviceType
 import logging
 import base64
 
@@ -1328,7 +1328,7 @@ class Euca2ool:
             parts = block_device_map_arg.split('=')
             if len(parts) > 1:
                 device_name = parts[0]
-                block_dev_type = BlockDeviceType()
+                block_dev_type = EBSBlockDeviceType()
                 value_parts = parts[1].split(':')
                 if value_parts[0].startswith('snap'):
                     block_dev_type.snapshot_id = value_parts[0]
