@@ -28,7 +28,7 @@
 
 Summary:       Elastic Utility Computing Architecture Command Line Tools
 Name:          euca2ools
-Version:       1.2
+Version:       1.3
 Release:       1
 License:       BSD 
 Group:         Applications/System
@@ -119,6 +119,11 @@ install -o root -m 755  INSTALL COPYING README $DESTDIR/%{euca_docdir}/euca2ools
 %files
 /usr/bin/s3put
 /usr/bin/sdbadmin
+/usr/bin/elbadmin
+/usr/bin/fetch_file
+/usr/bin/launch_instance
+/usr/bin/list_instances
+/usr/bin/taskadmin
 /usr/bin/euca-*
 /usr/man/man1/euca*
 %if %build_m2crypto
