@@ -54,7 +54,7 @@ import logging
 import base64
 
 BUNDLER_NAME = 'euca-tools'
-BUNDLER_VERSION = '1.2'
+BUNDLER_VERSION = '1.3'
 VERSION = '2007-10-10'
 RELEASE = '31337'
 AES = 'AES-128-CBC'
@@ -67,6 +67,26 @@ MAX_LOOP_DEVS = 256
 
 METADATA_URL = 'http://169.254.169.254/latest/meta-data/'
 
+#
+# Monkey patch the SAX endElement handler in boto's
+# BlockDeviceMapping class to not break on Eucalyptus's
+# DescribeImageAttribute output.  It's impossible to test
+# this against EC2 because EC2 will not let you run a
+# DescribeImageAttribute on the blockDeviceMapping attribute,
+# even for an image you own.
+#
+def endElement(self, name, value, connection):
+    if name == 'virtualName':
+        self.current_vname = value
+    elif name == 'device' or name == 'deviceName':
+        if hasattr(self, 'current_vname') and self.current_vname:
+            self[self.current_vname] = value
+            self.current_vname = None
+        else:
+            self.current_name = value
+
+BlockDeviceMapping.endElement = endElement
+    
 
 class LinuxImage:
 
