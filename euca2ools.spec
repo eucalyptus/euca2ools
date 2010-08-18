@@ -13,6 +13,10 @@
 %global euca_libarch   lib
 %endif
 
+%if %is_fedora
+%global build_m2crypto 0
+%endif
+
 %if %is_suse
 %global euca_whereM2C  %{euca_libarch}/python2.6/site-packages
 %global euca_docdir    /usr/share/doc/packages
@@ -33,8 +37,8 @@ Release:       1
 License:       BSD 
 Group:         Applications/System
 %if %is_fedora
-BuildRequires: gcc, make, swig, python-devel, python, m2crypto
-Requires:      swig, python
+BuildRequires: gcc, make, swig, python-devel, python
+Requires:      swig, python, m2crypto
 %endif
 %if %is_suse
 BuildRequires: gcc, make, swig, python-devel, python
@@ -137,6 +141,9 @@ install -o root -m 755  INSTALL COPYING README $DESTDIR/%{euca_docdir}/euca2ools
 %{euca_docdir}/euca2ools-%{version}
 
 %changelog
+* Wed Aug 18 2010 Eucalyptus Systems <support@eucalyptus.com>
+- Don't build m2crypto on fedora
+
 * Wed Mar 17 2010 Eucalyptus Systems <support@eucalyptus.com>
 - Added support for fedora
 
