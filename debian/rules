@@ -2,6 +2,9 @@
 
 DEB_PYTHON_SYSTEM = pycentral
 
+binary/euca2ools::
+	$(MAKE) man MANDIR=$(CURDIR)/debian/manpages-help2man
+
 DEB_SRCDIR = euca2ools
 include /usr/share/cdbs/1/rules/debhelper.mk
 include /usr/share/cdbs/1/class/python-distutils.mk
@@ -12,5 +15,6 @@ DEB_INDEP_PACKAGES=euca2ools
 
 clean::
 	$(MAKE) clean
-	rm -f euca2ools/euca2ools/__init__.pyc
+	$(RM) euca2ools/euca2ools/__init__.pyc
 	$(RM) --recursive euca2ools/euca2ools.egg-info
+	$(RM) --recursive $(CURDIR)/debian/manpages-help2man

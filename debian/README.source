@@ -1,9 +1,0 @@
-euca2ools for Debian
-====================
-
-Omitting the upstream-maintained debian folder to appear
-in source distribution but presenting it in the diff.gz.
-
-The original tarball contained the man pages. These are
-now auto-generated just the way that upstream produced
-them originally.
