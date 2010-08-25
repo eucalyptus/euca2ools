@@ -8,7 +8,7 @@
 	* Updates spec file for Fedora packages.
 	* Updated bash completion rules.
 	* API refresh to support new command line options (including block device mappings, updates to euca-register).
-	* Support newer versions of dependencieso.
+	* Support newer versions of dependencies.
 
 * Fri Feb 12 2010 Eucalyptus Systems (support@eucalyptus.com)
         * Version 1.2
