@@ -1,3 +1,15 @@
+* Tue Aug 24 2010 Eucalyptus Systems (support@eucalyptus.com)
+	* Version 1.3
+	* A number of bug fixes including (https://bugs.launchpad.net/euca2ools):
+		#522398 #522396 #522396 #523332 #516738 #525137
+		#527477 #526697 #530296	#531076	#526591 #536876
+		#543221 #544706 
+	* Windows API support (bundle instance, describe bundle tasks, cancel bundle task, get password data).
+	* Updates spec file for Fedora packages.
+	* Updated bash completion rules.
+	* API refresh to support new command line options (including block device mappings, updates to euca-register).
+	* Support newer versions of dependencieso.
+
 * Fri Feb 12 2010 Eucalyptus Systems (support@eucalyptus.com)
         * Version 1.2
         * A number of bug fixes including:
