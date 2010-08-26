@@ -43,12 +43,16 @@ usage_string = \
     """
 Shows information about snapshots.
 
-euca-describe-snapshots [-h, --help] [--version] [--debug]
-[snapshot1 snapshot2...snapshotN] 
+euca-describe-snapshots [-o owner_id] [-r user_id] [snapshot1 snapshot2...snapshotN] 
+[-h, --help] [--version] [--debug]
 
 OPTIONAL PARAMETERS
+
+-o					owner_id of the user who owns the snapshot.
+
+-r					restorable by (user id of the user that can create volumes from the snapshot).
 	
-snapshot1 snapshot2...snapshotN - snapshots to describe. 
+snapshot1 snapshot2...snapshotN		Snapshots to describe. 
 
 """
 
@@ -81,14 +85,20 @@ def display_snapshots(snapshots, snapshot_ids):
 
 def main():
     euca = None
+    owner = None
+    restorable_by = None
     try:
-        euca = Euca2ool()
+        euca = Euca2ool('o:r:')
     except Exception, e:
         print e
         usage()
 
     for (name, value) in euca.opts:
-        if name in ('-h', '--help'):
+        if name == "-o":
+            owner = value
+        elif name == "-r":
+            restorable_by = value
+        elif name in ('-h', '--help'):
             usage(0)
         elif name == '--version':
             version()
@@ -107,7 +117,8 @@ def main():
         print e.message
         sys.exit(1)
     try:
-        snapshots = euca_conn.get_all_snapshots()
+        snapshots = euca_conn.get_all_snapshots(owner=owner,
+                                                restorable_by=restorable_by)
     except Exception, ex:
         euca.display_error_and_exit('%s' % ex)
 
