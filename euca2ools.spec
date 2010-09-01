@@ -83,7 +83,7 @@ cd ../euca2ools
 %if %is_centos
 cd ..
 for x in `/bin/ls bin/euca-*`; do
-	sed --in-place 's:#!/usr/bin/env python:#!/usr/bin/env python2.5:' $x
+	sed --in-place 's:#!/usr/bin/python python:#!/usr/bin/env python2.5:' $x
 done
 %endif
 
