@@ -4,7 +4,11 @@
 
 %global euca_docdir    /usr/share/doc
 %global euca_python    python
+%if %is_fedora
+%global euca_where     lib/python2.5/site-packages
+%else
 %global euca_where     lib/python2.6/site-packages
+%endif
 %global build_m2crypto 0
 
 %ifarch x86_64
@@ -83,7 +87,7 @@ cd ../euca2ools
 %if %is_centos
 cd ..
 for x in `/bin/ls bin/euca-*`; do
-	sed --in-place 's:#!/usr/bin/env python:#!/usr/bin/env python2.5:' $x
+	sed --in-place 's:#!/usr/bin/python python:#!/usr/bin/env python2.5:' $x
 done
 %endif
 
