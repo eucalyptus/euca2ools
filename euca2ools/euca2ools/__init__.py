@@ -50,6 +50,8 @@ import shutil
 from boto.ec2.regioninfo import RegionInfo
 from boto.ec2.blockdevicemapping import BlockDeviceMapping
 from boto.ec2.blockdevicemapping import EBSBlockDeviceType
+from boto.ec2.connection import EC2Connection
+from boto.resultset import ResultSet
 import logging
 import base64
 
@@ -86,7 +88,70 @@ def endElement(self, name, value, connection):
             self.current_name = value
 
 BlockDeviceMapping.endElement = endElement
-    
+
+#
+# Monkey patch the register_image method from EC2Connection
+# The one in 1.9b required a value for the "name" parameter
+# but in fact that parameter is only required for EBS-backed
+# images.  So, an EBS image needs a name but not a location
+# and the S3 image needs a location but not a name.
+#
+def register_image(self, name=None, description=None, image_location=None,
+                   architecture=None, kernel_id=None, ramdisk_id=None,
+                   root_device_name=None, block_device_map=None):
+    """
+    Register an image.
+
+    :type name: string
+    :param name: The name of the AMI.  Valid only for EBS-based images.
+
+    :type description: string
+    :param description: The description of the AMI.
+
+    :type image_location: string
+    :param image_location: Full path to your AMI manifest in Amazon S3 storage.
+                           Only used for S3-based AMI's.
+
+    :type architecture: string
+    :param architecture: The architecture of the AMI.  Valid choices are:
+                         i386 | x86_64
+
+    :type kernel_id: string
+    :param kernel_id: The ID of the kernel with which to launch the instances
+
+    :type root_device_name: string
+    :param root_device_name: The root device name (e.g. /dev/sdh)
+
+    :type block_device_map: :class:`boto.ec2.blockdevicemapping.BlockDeviceMapping`
+    :param block_device_map: A BlockDeviceMapping data structure
+                             describing the EBS volumes associated
+                             with the Image.
+
+    :rtype: string
+    :return: The new image id
+    """
+    params = {}
+    if name:
+        params['Name'] = name
+    if description:
+        params['Description'] = description
+    if architecture:
+        params['Architecture'] = architecture
+    if kernel_id:
+        params['KernelId'] = kernel_id
+    if ramdisk_id:
+        params['RamdiskId'] = ramdisk_id
+    if image_location:
+        params['ImageLocation'] = image_location
+    if root_device_name:
+        params['RootDeviceName'] = root_device_name
+    if block_device_map:
+        block_device_map.build_list_params(params)
+    rs = self.get_object('RegisterImage', params, ResultSet)
+    image_id = getattr(rs, 'imageId', None)
+    return image_id
+
+EC2Connection.register_image = register_image
 
 class LinuxImage:
 
@@ -545,7 +610,7 @@ class Euca2ool:
                 self.port = int(url_parts[1])
 
         if not self.is_s3:
-            return boto.connect_ec2(
+            return EC2Connection(
                 aws_access_key_id=self.ec2_user_access_key,
                 aws_secret_access_key=self.ec2_user_secret_key,
                 is_secure=self.is_secure,
