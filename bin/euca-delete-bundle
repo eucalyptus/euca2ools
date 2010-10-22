@@ -40,7 +40,6 @@ from xml.dom import minidom
 from euca2ools import Euca2ool, FileValidationError, Util, \
     ConnectionFailed
 from boto.exception import S3ResponseError
-from boto.s3 import Connection
 from boto.s3.key import Key
 
 usage_string = \

@@ -49,7 +49,7 @@ import re
 import shutil
 from boto.ec2.regioninfo import RegionInfo
 from boto.ec2.blockdevicemapping import BlockDeviceMapping
-from boto.ec2.blockdevicemapping import EBSBlockDeviceType
+from boto.ec2.blockdevicemapping import BlockDeviceType
 import logging
 import base64
 
@@ -67,26 +67,6 @@ MAX_LOOP_DEVS = 256
 
 METADATA_URL = 'http://169.254.169.254/latest/meta-data/'
 
-#
-# Monkey patch the SAX endElement handler in boto's
-# BlockDeviceMapping class to not break on Eucalyptus's
-# DescribeImageAttribute output.  It's impossible to test
-# this against EC2 because EC2 will not let you run a
-# DescribeImageAttribute on the blockDeviceMapping attribute,
-# even for an image you own.
-#
-def endElement(self, name, value, connection):
-    if name == 'virtualName':
-        self.current_vname = value
-    elif name == 'device' or name == 'deviceName':
-        if hasattr(self, 'current_vname') and self.current_vname:
-            self[self.current_vname] = value
-            self.current_vname = None
-        else:
-            self.current_name = value
-
-BlockDeviceMapping.endElement = endElement
-    
 
 class LinuxImage:
 
@@ -1348,7 +1328,7 @@ class Euca2ool:
             parts = block_device_map_arg.split('=')
             if len(parts) > 1:
                 device_name = parts[0]
-                block_dev_type = EBSBlockDeviceType()
+                block_dev_type = BlockDeviceType()
                 value_parts = parts[1].split(':')
                 if value_parts[0].startswith('snap'):
                     block_dev_type.snapshot_id = value_parts[0]
