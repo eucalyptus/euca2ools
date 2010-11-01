@@ -50,6 +50,7 @@ import shutil
 from boto.ec2.regioninfo import RegionInfo
 from boto.ec2.blockdevicemapping import BlockDeviceMapping
 from boto.ec2.blockdevicemapping import BlockDeviceType
+from boto.s3.connection import OrdinaryCallingFormat
 import logging
 import base64
 
@@ -540,7 +541,7 @@ class Euca2ool:
                 is_secure=self.is_secure,
                 host=self.host,
                 port=self.port,
-                calling_format=boto.s3.connection.OrdinaryCallingFormat(),
+                calling_format=OrdinaryCallingFormat(),
                 path=self.service_path,
                 )
 
