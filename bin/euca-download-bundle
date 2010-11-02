@@ -55,6 +55,8 @@ REQUIRED PARAMETERS
 
 OPTIONAL PARAMETERS
 
+-p, --image_prefix		The prefix used to identify the image
+
 -m, --manifest_path		The path to the manifest file.
 
 -d, --directory			The name of the directory to download the bundled parts to.
@@ -101,13 +103,17 @@ def get_relative_filename(filename):
     return f_parts[len(f_parts) - 1]
 
 
-def get_manifests(bucket):
+def get_manifests(bucket, image_prefix=None):
     manifests = []
     keys = bucket.get_all_keys()
     for k in keys:
         if k.name:
             if k.name.find('manifest') >= 0:
-                manifests.append(k.name)
+                if image_prefix:
+                    if k.name.startswith(image_prefix):
+                        manifests.append(k.name)
+                else:
+                    manifests.append(k.name)
     return manifests
 
 
@@ -140,15 +146,17 @@ def download_parts(bucket, manifests, directory):
 def main():
     euca = None
     try:
-        euca = Euca2ool('b:m:d:', ['bucket=', 'manifest=', 'directory='
+        euca = Euca2ool('b:p:m:d:', ['bucket=', 'prefix=', 'manifest=', 'directory='
                         ], is_s3=True)
     except Exception, e:
         print e
         usage()
 
     bucket = None
+    image_prefix = None
     manifest_path = None
     directory = '/tmp'
+    conn = None
 
     for (name, value) in euca.opts:
         if name in ('-h', '--help'):
@@ -157,6 +165,8 @@ def main():
             directory = value
         elif name in ('-b', '--bucket'):
             bucket = value
+        elif name in ('-p', '--prefix'):
+            image_prefix = value
         elif name in ('-m', '--manifest'):
             manifest_path = value
 
@@ -175,7 +185,7 @@ def main():
             sys.exit(1)
 
         bucket_instance = ensure_bucket(conn, bucket)
-        manifests = get_manifests(bucket_instance)
+        manifests = get_manifests(bucket_instance, image_prefix)
         download_manifests(bucket_instance, manifests, directory)
         download_parts(bucket_instance, manifests, directory)
     else:
