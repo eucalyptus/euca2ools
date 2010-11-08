@@ -692,13 +692,16 @@ class Euca2ool:
         print 'Encrypting image'
         enc_file = '%s.part' % file.replace('.tar.gz', '')
 
-        key = hex(BN.rand(16 * 8))[2:34].replace('L', 'c')
+        # get 17 bytes of randomness with top bit a '1'.
+        # convert to a hex string like '0x<34 hex chars>L'
+        # then take the last 32 of the hex digits, giving 32 random hex chars
+        key = hex(BN.rand(17 * 8,top=0))[4:36]
         if self.debug:
             print 'Key: %s' % key
-        iv = hex(BN.rand(16 * 8))[2:34].replace('L', 'c')
+        iv = hex(BN.rand(17 * 8,top=0))[4:36]
         if self.debug:
             print 'IV: %s' % iv
-
+             
         k = EVP.Cipher(alg='aes_128_cbc', key=unhexlify(key),
                        iv=unhexlify(iv), op=1)
 
