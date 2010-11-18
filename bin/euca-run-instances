@@ -36,7 +36,7 @@
 import getopt
 import sys
 import os
-from euca2ools import Euca2ool, Util, ConnectionFailed
+from euca2ools import Euca2ool, Util, ConnectionFailed, print_instances
 
 usage_string = \
     """
@@ -101,20 +101,7 @@ def display_reservations(reservation):
         reservation_string += '%s%s' % (group_delim, group.id)
         group_delim = ', '
     print 'RESERVATION\t%s' % reservation_string
-    for instance in reservation.instances:
-        instance_string = '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s' % (
-            instance.id,
-            instance.image_id,
-            instance.public_dns_name,
-            instance.private_dns_name,
-            instance.state,
-            instance.key_name,
-            instance.launch_time,
-            instance.kernel,
-            instance.ramdisk,
-            )
-        print 'INSTANCE\t%s' % instance_string
-
+    print_instances(reservation.instances)
 
 def read_user_data(user_data_filename):
     USER_DATA_CHUNK_SIZE = 512
