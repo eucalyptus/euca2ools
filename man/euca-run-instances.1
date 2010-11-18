@@ -5,7 +5,7 @@ euca-run-instances \- Eucalyptus tool: Starts instances.
 .SH DESCRIPTION
 Starts instances.
 .PP
-euca\-run\-instances [\-n, \fB\-\-instance\-count\fR count] [\-g, \fB\-\-group\fR group_name] [\-k, \fB\-\-keypair\fR keyname]
+euca\-run\-instances [\-n, \fB\-\-instance\-count\fR count] [\-g, \fB\-\-group\fR group_name] [\-k, \fB\-\-key\fR keyname]
 [\-d user_data] [\-f user_data_file] [\-\-addressing addressing] [\-t, \fB\-\-instance\-type\fR instance_type]
 [\-z, \fB\-\-availability\-zone\fR zone] [\-\-kernel kernel_id] [\-\-ramdisk ramdisk_id] [\-b block_device_mapping]
 [\-\-monitor] [\-s, \fB\-\-subnet\fR subnet_id] [\-\-disable\-api\-termination] [\-\-instanceinitiatedshutdown\-behavior behavior]
@@ -23,7 +23,7 @@ OPTIONAL PARAMETERS
         
 \fB\-g\fR, \fB\-\-group\fR                             Security group to run the instance under.
 .PP
-\fB\-k\fR, \fB\-\-keypair\fR                           Name of a (previously created) keypair to associate with this reservation.              
+\fB\-k\fR, \fB\-\-key\fR                           Name of a (previously created) keypair to associate with this reservation.              
 \fB\-d\fR, \fB\-\-user\-data\fR                         User data for instances read from the command line.
 .PP
 \fB\-f\fR, \fB\-\-user\-data\-file\fR                    User data for instances as a filename.

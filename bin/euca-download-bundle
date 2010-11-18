@@ -51,13 +51,13 @@ euca-download-bundle -b, --bucket bucket [-m, --manifest manifest_path] [-d, --d
 
 REQUIRED PARAMETERS
 	
--b, --bucket			The name of the bucket to download to. Bucket will be created if it does not exist.
+-b, --bucket			The name of the bucket to download from.
 
 OPTIONAL PARAMETERS
 
 -p, --image_prefix		The prefix used to identify the image
 
--m, --manifest_path		The path to the manifest file.
+-m, --manifest			The path to the manifest file.
 
 -d, --directory			The name of the directory to download the bundled parts to.
 

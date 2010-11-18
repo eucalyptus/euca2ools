@@ -348,8 +348,16 @@ def main():
         check_root()
         check_image_size(size_in_MB)
         volume_path = os.path.normpath(volume_path)
+
+        noex='EUCA_BUNDLE_VOL_EMPTY_EXCLUDES'
+        if noex in os.environ and os.environ[noex] != "0":
+            excludes = [ ]
+        else:
+            excludes = [ '/etc/udev/rules.d/70-persistent-net.rules',
+                         '/etc/udev/rules.d/z25_persistent-net.rules' ]
+
         if not all:
-            excludes = parse_excludes(excludes_string)
+            excludes.extend(parse_excludes(excludes_string))
             euca.add_excludes(volume_path, excludes)
         if inherit:
             (ramdisk, kernel, mapping, product_codes,
@@ -443,7 +451,11 @@ def main():
         if not user:
             print 'user must be specified.'
         if not ec2cert_path:
-            print 'ec2cert must be specified.'
+            defcert = "/usr/share/euca2ools/cert-ec2.pem"
+            if os.path.exists(defcert):
+                ec2cert_path = defcert
+            else:
+                print 'ec2cert must be specified or exist in %s.' % defcert
         usage()
 
 

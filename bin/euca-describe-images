@@ -112,35 +112,28 @@ def main():
         print e
         usage()
 
-    show_all = False
-    executable_by = ['self']
-    owners = ['self']
-    defaults = True
+    all_ids = False
+    owners = [ ]
+    executable_by = [ ]
+    image_ids = [ ]
 
     for (name, value) in euca.opts:
         if name in ('-h', '--help'):
             usage(0)
         elif name == '-x':
-            if defaults:
-                executable_by = []
-                defaults = False
-                owners = []
             executable_by.append(value)
         elif name == '-o':
-            if defaults:
-                executable_by = []
-                defaults = False
             owners.append(value)
         elif name == '-a':
-            executable_by = ['self', 'all']
-            owners = []
+            all_ids = True
         elif name == '--version':
             version()
+            sys.exit(0)
 
     image_ids = euca.process_args()
-    if defaults and len(image_ids) > 0:
-        executable_by = ['self', 'all']
-        owners = []
+
+    if all_ids and ( len(owners) or len(executable_by) or len(image_ids) ):
+        euca.display_error_and_exit("-a cannot be combined with owner, launch, or image list")
 
     try:
         euca_conn = euca.make_connection()
@@ -148,11 +141,29 @@ def main():
         print e.message
         sys.exit(1)
 
-    try:
-        images = euca_conn.get_all_images(image_ids=image_ids,
-                owners=owners, executable_by=executable_by)
-    except Exception, ex:
-        euca.display_error_and_exit('%s' % ex)
+    if len(owners) == 0 and len(executable_by) == 0 and \
+       len(image_ids) == 0 and not all_ids:
+        try:
+           owned = euca_conn.get_all_images(image_ids = None,
+               owners = ("self", ), executable_by = None )
+           launchable = euca_conn.get_all_images(image_ids = None,
+               owners = None, executable_by = ("self"))
+
+           mylist = [ ]
+           images = [ ]
+           for image in owned:
+               mylist.append(image.id)
+               images.append(image)
+           for image in launchable:
+               if image.id not in mylist:
+                   images.append(image)
+        except Exception, ex:
+            euca.display_error_and_exit('%s' % ex)
+    else:
+        try:
+            images = euca_conn.get_all_images(image_ids=image_ids, owners=owners, executable_by=executable_by)
+        except Exception, ex:
+            euca.display_error_and_exit('%s' % ex)
 
     display_images(images, image_ids)
 

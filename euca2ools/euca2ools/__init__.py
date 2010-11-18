@@ -651,7 +651,7 @@ class Euca2ool:
         tar_file = '%s.tar.gz' % os.path.join(path, prefix)
         outfile = open(tar_file, 'wb')
         file_path = self.get_file_path(file)
-        tar_cmd = ['tar', 'c', '-S']
+        tar_cmd = ['tar', 'ch', '-S']
         if file_path:
             tar_cmd.append('-C')
             tar_cmd.append(file_path)

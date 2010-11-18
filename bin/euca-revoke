@@ -72,7 +72,7 @@ OPTIONAL PARAMETERS
 def usage(status=1):
     print usage_string
     Util().usage(compat=True)
-
+    sys.exit(status)
 
 def version():
     print Util().version()
