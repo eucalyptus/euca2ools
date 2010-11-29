@@ -632,11 +632,10 @@ class Euca2ool:
             print 'Image Size:', image_size, 'bytes'
         in_file = open(image_file, 'rb')
         sha_image = sha()
-        while 1:
+        buf = in_file.read(IMAGE_IO_CHUNK)
+        while buf:
+            sha_image.update(buf)
             buf = in_file.read(IMAGE_IO_CHUNK)
-            if not buf:
-                break
-        sha_image.update(buf)
         return (image_size, hexlify(sha_image.digest()))
 
     def tarzip_image(
