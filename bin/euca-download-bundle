@@ -55,7 +55,7 @@ REQUIRED PARAMETERS
 
 OPTIONAL PARAMETERS
 
--p, --image_prefix		The prefix used to identify the image
+-p, --prefix			The prefix used to identify the image
 
 -m, --manifest			The path to the manifest file.
 
