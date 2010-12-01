@@ -45,6 +45,7 @@ from binascii import hexlify, unhexlify
 from subprocess import *
 import platform
 import urllib
+import urlparse
 import re
 import shutil
 from boto.ec2.regioninfo import RegionInfo
@@ -380,8 +381,7 @@ class Euca2ool:
         ):
         self.ec2_user_access_key = None
         self.ec2_user_secret_key = None
-        self.ec2_url = None
-        self.s3_url = None
+        self.url = None
         self.config_file_path = None
         self.is_s3 = is_s3
         if compat:
@@ -421,7 +421,7 @@ class Euca2ool:
                 except ValueError:
                     self.ec2_user_secret_key = value
             elif name in ('-U', '--url'):
-                self.ec2_url = value
+                self.url = value
             elif name == '--debug':
                 self.debug = True
             elif name == '--config':
@@ -490,40 +490,39 @@ class Euca2ool:
                 raise ConnectionFailed
 
         if not self.is_s3:
-            if not self.ec2_url:
-                self.ec2_url = self.environ['EC2_URL']
-                if not self.ec2_url:
-                    self.ec2_url = \
+            if not self.url:
+                self.url = self.environ['EC2_URL']
+                if not self.url:
+                    self.url = \
                         'http://localhost:8773/services/Eucalyptus'
                     print 'EC2_URL not specified. Trying %s' \
-                        % self.ec2_url
+                        % self.url
         else:
-            if not self.ec2_url:
-                self.ec2_url = self.environ['S3_URL']
-                if not self.ec2_url:
-                    self.ec2_url = \
+            if not self.url:
+                self.url = self.environ['S3_URL']
+                if not self.url:
+                    self.url = \
                         'http://localhost:8773/services/Walrus'
                     print 'S3_URL not specified. Trying %s' \
-                        % self.ec2_url
+                        % self.url
 
         self.port = None
         self.service_path = '/'
-        if self.ec2_url.find('https://') >= 0:
-            self.ec2_url = self.ec2_url.replace('https://', '')
+        
+        rslt = urlparse.urlparse(self.url)
+        if rslt.scheme == 'https':
             self.is_secure = True
         else:
-            self.ec2_url = self.ec2_url.replace('http://', '')
             self.is_secure = False
-        self.host = self.ec2_url
-        url_parts = self.ec2_url.split(':')
-        if len(url_parts) > 1:
-            self.host = url_parts[0]
-            path_parts = url_parts[1].split('/', 1)
-            if len(path_parts) > 1:
-                self.port = int(path_parts[0])
-                self.service_path = self.service_path + path_parts[1]
-            else:
-                self.port = int(url_parts[1])
+
+        self.host = rslt.netloc
+        l = self.host.split(':')
+        if len(l) > 1:
+            self.host = l[0]
+            self.port = int(l[1])
+
+        if rslt.path:
+            self.service_path = rslt.path
 
         if not self.is_s3:
             return boto.connect_ec2(

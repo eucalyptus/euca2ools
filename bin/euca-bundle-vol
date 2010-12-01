@@ -249,13 +249,9 @@ def main():
     fstab_path = None
     generate_fstab = False
     product_code_string = None
-    if user_string:
-        try:
-            user = int(user_string)
-        except ValueError:
-            print 'Invalid user', user_string
-            sys.exit()
-    user = user_string
+    # check to see if user included the '-' characters in their
+    # user ID.  If so, remove them.  We only want the digits.
+    user = user_string.replace('-', '')
 
     for (name, value) in euca.opts:
         if name in ('-h', '--help'):
@@ -265,13 +261,7 @@ def main():
         elif name in ('-k', '--privatekey'):
             private_key_path = value
         elif name in ('-u', '--user'):
-            try:
-                value = value.replace('-', '')
-                user = int(value)
-            except ValueError:
-                print 'Invalid user', value
-                sys.exit()
-            user = value
+            user = value.replace('-', '')
         elif name == '--kernel':
             kernel = value
         elif name == '--ramdisk':
@@ -310,6 +300,11 @@ def main():
 
     if size_in_MB and cert_path and private_key_path and user \
         and ec2cert_path:
+        try:
+            user = int(user)
+        except ValueError:
+            print 'Invalid user', value
+            sys.exit(1)
         try:
             euca.validate_file(cert_path)
         except FileValidationError:
