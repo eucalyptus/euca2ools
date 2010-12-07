@@ -40,7 +40,7 @@ import tarfile
 from xml.dom.minidom import Document
 from xml.dom import minidom
 from hashlib import sha1 as sha
-from M2Crypto import BN, EVP, RSA, X509
+#from M2Crypto import BN, EVP, RSA, X509
 from binascii import hexlify, unhexlify
 from subprocess import *
 import platform
@@ -582,8 +582,7 @@ class Euca2ool:
             raise BundleValidationError
 
     def get_relative_filename(self, filename):
-        f_parts = filename.split('/')
-        return f_parts[len(f_parts) - 1]
+        return os.path.split(filename)[-1]
 
     def get_file_path(self, filename):
         relative_filename = self.get_relative_filename(filename)
@@ -703,7 +702,7 @@ class Euca2ool:
         k = EVP.Cipher(alg='aes_128_cbc', key=unhexlify(key),
                        iv=unhexlify(iv), op=1)
 
-        in_file = open(file)
+        in_file = open(file, 'rb')
         out_file = open(enc_file, 'wb')
         self.crypt_file(k, in_file, out_file)
         in_file.close()

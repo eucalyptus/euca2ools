@@ -123,16 +123,11 @@ def get_parts(manifest_filename):
     return parts
 
 
-def get_relative_filename(filename):
-    f_parts = filename.split('/')
-    return f_parts[len(f_parts) - 1]
-
-
-def upload_manifest(bucket_instance, manifest_filename,
+def upload_manifest(euca, bucket_instance, manifest_path,
                     canned_acl=None):
     print 'Uploading manifest file'
     k = Key(bucket_instance)
-    k.key = get_relative_filename(manifest_filename)
+    k.key = euca.get_relative_filename(manifest_filename)
     manifest_file = open(manifest_filename, 'rb')
     try:
         k.set_contents_from_file(manifest_file, policy=canned_acl)
@@ -238,17 +233,15 @@ def main():
 
         bucket_instance = ensure_bucket(conn, bucket, canned_acl)
         parts = get_parts(manifest_path)
+        manifest_file, manifest_directory = os.path.split(manifest_path)
         if not directory:
-            manifest_path_parts = manifest_path.split('/')
-            directory = \
-                manifest_path.replace(manifest_path_parts[len(manifest_path_parts)
-                    - 1], '')
+            directory = manifest_directory
         if not skipmanifest and not part:
-            upload_manifest(bucket_instance, manifest_path, canned_acl)
+            upload_manifest(euca, bucket_instance, manifest_path, canned_acl)
         upload_parts(bucket_instance, directory, parts, part,
                      canned_acl)
         print 'Uploaded image as %s/%s' % (bucket,
-                get_relative_filename(manifest_path))
+                euca.get_relative_filename(manifest_path))
     else:
         if not bucket:
             print 'bucket must be specified.'

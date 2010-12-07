@@ -98,11 +98,6 @@ def get_parts(manifest_filename):
     return parts
 
 
-def get_relative_filename(filename):
-    f_parts = filename.split('/')
-    return f_parts[len(f_parts) - 1]
-
-
 def get_manifests(bucket, image_prefix=None):
     manifests = []
     keys = bucket.get_all_keys()
@@ -155,7 +150,7 @@ def main():
     bucket = None
     image_prefix = None
     manifest_path = None
-    directory = '/tmp'
+    directory = os.path.abspath('/tmp')
     conn = None
 
     for (name, value) in euca.opts:

@@ -105,8 +105,7 @@ def get_parts(manifest_filename):
 
 
 def get_relative_filename(filename):
-    f_parts = filename.split('/')
-    return f_parts[len(f_parts) - 1]
+    return os.path.split(filename)[-1]
 
 
 def get_manifests(bucket):
@@ -210,7 +209,7 @@ def main():
 
     bucket = None
     manifest_path = None
-    directory = '/tmp'
+    directory = os.path.abspath('/tmp')
     clear = False
     prefix = None
 
