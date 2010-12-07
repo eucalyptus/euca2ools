@@ -152,7 +152,8 @@ def main():
     mapping = None
     product_codes = None
     product_code_string = None
-    user = user_string.replace('-', '')
+    if user is not None:
+        user = user_string.replace('-', '')
 
     for (name, value) in euca.opts:
         if name in ('-h', '--help'):
