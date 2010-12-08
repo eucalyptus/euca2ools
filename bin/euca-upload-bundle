@@ -123,7 +123,7 @@ def get_parts(manifest_filename):
     return parts
 
 
-def upload_manifest(euca, bucket_instance, manifest_path,
+def upload_manifest(euca, bucket_instance, manifest_filename,
                     canned_acl=None):
     print 'Uploading manifest file'
     k = Key(bucket_instance)
