@@ -43,6 +43,7 @@ from hashlib import sha1 as sha
 from M2Crypto import BN, EVP, RSA, X509
 from binascii import hexlify, unhexlify
 from subprocess import *
+import subprocess
 import platform
 import urllib
 import urlparse
@@ -600,7 +601,7 @@ class Euca2ool:
         number_parts += 1
         bytes_read = 0
         for i in range(0, number_parts, 1):
-            filename = '%s.%d' % (file, i)
+            filename = '%s.%02d' % (file, i)
             part_digest = sha()
             file_part = open(filename, 'wb')
             print 'Part:', self.get_relative_filename(filename)
@@ -628,13 +629,7 @@ class Euca2ool:
         image_size = os.path.getsize(image_file)
         if self.debug:
             print 'Image Size:', image_size, 'bytes'
-        in_file = open(image_file, 'rb')
-        sha_image = sha()
-        buf = in_file.read(IMAGE_IO_CHUNK)
-        while buf:
-            sha_image.update(buf)
-            buf = in_file.read(IMAGE_IO_CHUNK)
-        return (image_size, hexlify(sha_image.digest()))
+        return image_size
 
     def tarzip_image(
         self,
@@ -644,25 +639,35 @@ class Euca2ool:
         ):
         Util().check_prerequisite_command('tar')
 
-        print 'Tarring image'
-        tar_file = '%s.tar.gz' % os.path.join(path, prefix)
-        outfile = open(tar_file, 'wb')
-        file_path = self.get_file_path(file)
+        targz = '%s.tar.gz' % os.path.join(path, prefix)
+        targzfile = open(targz, 'w')
+
+        # make process pipes
         tar_cmd = ['tar', 'ch', '-S']
+        file_path = self.get_file_path(file)
         if file_path:
             tar_cmd.append('-C')
             tar_cmd.append(file_path)
             tar_cmd.append(self.get_relative_filename(file))
         else:
             tar_cmd.append(file)
-        p1 = Popen(tar_cmd, stdout=PIPE)
-        p2 = Popen(['gzip'], stdin=p1.stdout, stdout=outfile)
-        p2.communicate()
-        outfile.close
-        if os.path.getsize(tar_file) <= 0:
-            print 'Could not tar image'
+        tarproc = subprocess.Popen(tar_cmd, stdout=subprocess.PIPE)
+        zipproc = subprocess.Popen(['gzip'], stdin=subprocess.PIPE, stdout=targzfile)
+
+	# pass tar output to digest and gzip
+        sha_image = sha()
+        buf=os.read(tarproc.stdout.fileno(), 8196)
+        while buf:
+            zipproc.stdin.write(buf)
+            sha_image.update(buf)
+            buf=os.read(tarproc.stdout.fileno(), 8196)
+
+        zipproc.stdin.close();
+        targzfile.close()
+        if os.path.getsize(targz) <= 0:
+            print 'Could not tar/compress image'
             raise CommandFailed
-        return tar_file
+        return (targz, hexlify(sha_image.digest()))
 
     def hexToBytes(self, hexString):
         bytes = []
