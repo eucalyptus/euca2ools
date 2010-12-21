@@ -20,11 +20,11 @@ the M2Crypto cryptography and SSL toolkit.  The acceptable
 versions for the dependencies are:
 
   Python   2.5 (dev) or higher
-  Boto     1.8d or higher
-  M2Crypto 0.19.1 or higher 
+  Boto     1.9b
+  M2Crypto 0.20.2 or higher 
 
 If you are installing from source, you will need to download euca2ools-1.0-src-deps.tar.gz, which contains 
-boto-1.8d.tar.gz and M2Crypto-0.19.1.tar.gz.
+boto-1.9b.tar.gz and M2Crypto-0.20.2.tar.gz.
  
 - If you are installing a binary package, please, follow the standard
 process on your distribution for installing euca2ools package and the
@@ -44,14 +44,14 @@ You will need to install python-dev, swig and libssl-dev to build the following 
 
 tar zvxf euca2ools-1.0-src-deps.tar.gz
 cd euca2ools-1.0-src-deps
-tar zxvf boto-1.8d.tar.gz
-cd boto-1.8c
+tar zxvf boto-1.9b.tar.gz
+cd boto-1.9b
 sudo python setup.py install
 cd ..
 
 # Install M2Crypto
-tar zxvf M2Crypto-0.19.1.tar.gz
-cd M2Crypto-0.19.1
+tar zxvf M2Crypto-0.20.2.tar.gz
+cd M2Crypto-0.20.2
 sudo python setup.py install
 cd ..
 
