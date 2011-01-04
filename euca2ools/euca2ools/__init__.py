@@ -57,7 +57,7 @@ import logging
 import base64
 
 BUNDLER_NAME = 'euca-tools'
-BUNDLER_VERSION = '1.3'
+BUNDLER_VERSION = '1.3.2'
 VERSION = '2007-10-10'
 RELEASE = '31337'
 AES = 'AES-128-CBC'
