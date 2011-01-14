@@ -233,7 +233,7 @@ def main():
 
         bucket_instance = ensure_bucket(conn, bucket, canned_acl)
         parts = get_parts(manifest_path)
-        manifest_file, manifest_directory = os.path.split(manifest_path)
+        manifest_directory, manifest_file = os.path.split(manifest_path)
         if not directory:
             directory = manifest_directory
         if not skipmanifest and not part:
