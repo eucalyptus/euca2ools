@@ -230,7 +230,7 @@ def main():
         cert_path = euca.get_environ('EC2_CERT')
         private_key_path = euca.get_environ('EC2_PRIVATE_KEY')
         ec2cert_path = euca.get_environ('EUCALYPTUS_CERT')
-        user_string = euca.get_environ('EC2_USER_ID')
+        user = euca.get_environ('EC2_USER_ID')
     except NotFoundError:
         sys.exit(1)
 
@@ -249,10 +249,6 @@ def main():
     fstab_path = None
     generate_fstab = False
     product_code_string = None
-    # check to see if user included the '-' characters in their
-    # user ID.  If so, remove them.  We only want the digits.
-    if user is not None:
-        user = user_string.replace('-', '')
 
     for (name, value) in euca.opts:
         if name in ('-h', '--help'):
@@ -262,7 +258,7 @@ def main():
         elif name in ('-k', '--privatekey'):
             private_key_path = value
         elif name in ('-u', '--user'):
-            user = value.replace('-', '')
+            user = value
         elif name == '--kernel':
             kernel = value
         elif name == '--ramdisk':
@@ -301,11 +297,8 @@ def main():
 
     if size_in_MB and cert_path and private_key_path and user \
         and ec2cert_path:
-        try:
-            user = int(user)
-        except ValueError:
-            print 'Invalid user', value
-            sys.exit(1)
+
+        user = user.replace('-', '')
         try:
             euca.validate_file(cert_path)
         except FileValidationError:
