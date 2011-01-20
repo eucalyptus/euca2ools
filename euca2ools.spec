@@ -1,146 +1,107 @@
-%global is_suse %(test -e /etc/SuSE-release && echo 1 || echo 0)
-%global is_centos %(grep CentOS /etc/redhat-release > /dev/null && echo 1 || echo 0)
-%global is_fedora %(grep Fedora /etc/redhat-release > /dev/null && echo 1 || echo 0)
+# Use Python 2.6 on el5
+# Something (e.g. mock) must define el5 on that release for that check to work.
+# For now we define it ourselves like this, though it means we can't build on
+# RHEL 5.
+%global el5 %(grep -q 'CentOS release 5' /etc/redhat-release && echo 5)
 
-%global euca_docdir    /usr/share/doc
-%global euca_python    python
-%global euca_where     lib/python2.6/site-packages
-%global build_m2crypto 0
-
-%ifarch x86_64
-%global euca_libarch   lib64
-%else
-%global euca_libarch   lib
+%if 0%{?el5}
+%global __python_ver 26
+%global __python %{_bindir}/python2.6
+%global __os_install_post %{?__python26_os_install_post}
 %endif
 
-%if %is_fedora
-%global build_m2crypto 0
-%endif
+%{!?python_sitelib: %global python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")}
 
-%if %is_suse
-%global euca_whereM2C  %{euca_libarch}/python2.6/site-packages
-%global euca_docdir    /usr/share/doc/packages
-%global build_m2crypto 1
-%endif
-
-%if %is_centos
-%global euca_python    python2.5
-%global euca_where     lib/python2.5/site-packages
-%global euca_whereM2C  %{euca_libarch}/python2.5/site-packages
-%global build_m2crypto 1
-%endif
-
-Summary:       Elastic Utility Computing Architecture Command Line Tools
 Name:          euca2ools
-Version:       1.3
-Release:       1
-License:       BSD 
+Version:       1.3.2
+Release:       0%{?dist}
+Summary:       Elastic Utility Computing Architecture Command Line Tools
+
 Group:         Applications/System
-%if %is_fedora
-BuildRequires: gcc, make, swig, python-devel, python
-Requires:      swig, python, m2crypto
-%endif
-%if %is_suse
-BuildRequires: gcc, make, swig, python-devel, python
-Requires:      swig, python
-%endif
-%if %is_centos
-BuildRequires: gcc, make, swig, python25-devel, python25
-Requires:      swig, python25
-%endif
-Vendor:        Eucalyptus Systems
-#Icon:          someicon.xpm
-Source:        http://eucalyptussoftware.com/downloads/releases/euca2ools-%{version}.tar.gz
+License:       BSD
 URL:           http://open.eucalyptus.com
+Source:        http://eucalyptussoftware.com/downloads/releases/euca2ools-%{version}.tar.gz
+BuildRoot:     %(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
+BuildArch:     noarch
+
+# %%elseif behaves like %endif followed by %if.  Avoid it to reduce confusion.
+
+%if 0%{?el5}
+BuildRequires:  python%{?__python_ver}-devel
+Requires:       python%{?__python_ver}-boto >= 2.0
+Requires:       python%{?__python_ver}-m2crypto >= 0.20.2
+%endif
+%if 0%{?rhel} > 5 || 0%{?fedora}
+BuildRequires:  python-devel
+Requires:       python-boto >= 2.0
+Requires:       m2crypto
+%endif
+%if !0%{?rhel} && !0%{?fedora}
+BuildRequires:  python-devel
+Requires:       python-boto >= 2.0
+Requires:       python-m2crypto >= 0.20.2
+%endif
 
 %description
-EUCALYPTUS is an open source service overlay that implements elastic
-computing using existing resources. The goal of EUCALYPTUS is to allow
-sites with existing clusters and server infrastructure to co-host an
-elastic computing service that is interface-compatible with Amazon's EC2.
+Eucalyptus is an open source service overlay that implements elastic
+computing using existing resources.  The goal of Eucalyptus is to allow
+sites with existing clusters and server infrastructure to co-host elastic
+computing services that are interface-compatible with Amazon's AWS (EC2,
+S3, EBS).
 
-This package contains the command line tools to interact with Eucalyptus.
-This tools are complatible with Amazon EC2.
+This package contains the command line tools used to interact with
+Eucalyptus.  These tools are also compatible with Amazon AWS.
+
 
 %prep
-%setup -n euca2ools-%{version}
-%if %build_m2crypto
-tar xzf deps/M2Crypto*tar.gz
-%endif
-tar xzf deps/boto-*tar.gz
+%setup -q
+
 
 %build
-export DESTDIR=$RPM_BUILD_ROOT
-%if %build_m2crypto
-cd M2Crypto*
-%{euca_python} setup.py build
-cd ..
-%endif
-cd boto*
-%{euca_python} setup.py build
-cd ../euca2ools
-%{euca_python} setup.py build
-%if %is_centos
-cd ..
-for x in `/bin/ls bin/euca-*`; do
-	sed --in-place 's:#!/usr/bin/python:#!/usr/bin/env python2.5:' $x
+pushd %{name}
+%{__python} setup.py build
+popd
+
+%if 0%{?__python_ver:1}
+for file in bin/* `find %{name} -name '*.py'`; do
+    sed -i '1s|^#!.*python|#!%{__python}|' $file
 done
 %endif
 
+
 %install
-export DESTDIR=$RPM_BUILD_ROOT
-%if %build_m2crypto
-cd M2Crypto-*
-%{euca_python} setup.py install --prefix=$DESTDIR/usr
-cd ..
-%endif
-cd boto-*
-%{euca_python} setup.py install --prefix=$DESTDIR/usr
-cd ../euca2ools
-%{euca_python} setup.py install --prefix=$DESTDIR/usr
-cd ..
-install -o root -m 755 -d $DESTDIR/usr/bin
-install -o root -m 755 -d $DESTDIR/usr/man/man1
-install -o root -m 755 -d $DESTDIR/%{euca_docdir}/euca2ools-%{version}
-install -o root -m 755  bin/* $DESTDIR/usr/bin
-install -o root -m 644  man/* $DESTDIR/usr/man/man1
-install -o root -m 755  INSTALL COPYING README $DESTDIR/%{euca_docdir}/euca2ools-%{version}
+rm -rf %{buildroot}
+pushd %{name}
+%{__python} setup.py install --skip-build --root %{buildroot}
+%{__python} setup.py install -O1 --skip-build --root %{buildroot}
+popd
+
+mkdir -p %{buildroot}/%{_bindir}
+mkdir -p %{buildroot}/%{_mandir}/man1
+cp -p bin/* %{buildroot}/%{_bindir}
+cp -p man/* %{buildroot}/%{_mandir}/man1
+
 
 %clean
-[ ${RPM_BUILD_ROOT} != "/" ] && rm -rf ${RPM_BUILD_ROOT}
-#export DESTDIR=$RPM_BUILD_ROOT
-#rm -rf $RPM_BUILD_DIR/euca2ools-%{version}
-#rm -rf $DESTDIR/%{euca_docdir}/euca2ools-%{version}
-#rm -rf $DESTDIR/usr/%euca_whereM2C/M2Crypto
-#rm -rf $DESTDIR/usr/%euca_whereM2C/M2Crypto*egg-info
-#rm -rf $DESTDIR/usr/%euca_where/boto
-#rm -rf $DESTDIR/usr/%euca_where/boto*egg-info
-#rm -rf $DESTDIR/usr/%euca_where/euca2ools
-#rm -rf $DESTDIR/usr/%euca_where/euca2ools*egg-info
-#rm -rf $DESTDIR/usr/bin/euca-* $DESTDIR/usr/bin/s3put $DESTDIR/usr/bin/sdbadmin
-#rm -rf $DESTDIR/usr/man/man1/euca-*
+rm -rf %{buildroot}
+
 
 %files
-/usr/bin/s3put
-/usr/bin/sdbadmin
-/usr/bin/elbadmin
-/usr/bin/fetch_file
-/usr/bin/launch_instance
-/usr/bin/list_instances
-/usr/bin/taskadmin
-/usr/bin/euca-*
-/usr/man/man1/euca*
-%if %build_m2crypto
-/usr/%euca_whereM2C/M2Crypto
-/usr/%euca_whereM2C/M2Crypto*egg-info
-%endif
-/usr/%euca_where/boto
-/usr/%euca_where/boto*egg-info
-/usr/%euca_where/euca2ools
-/usr/%euca_where/euca2ools*egg-info
-%{euca_docdir}/euca2ools-%{version}
+%defattr(-,root,root,-)
+%{_bindir}/euca-*
+%{_mandir}/man1/euca*
+%{python_sitelib}/%{name}-*.egg-info
+%{python_sitelib}/%{name}/
+%doc CHANGELOG
+%doc COPYING
+%doc INSTALL
+%doc README
+
 
 %changelog
+* Thu Jan 20 2011 Eucalyptus Release Engineering <support@eucalyptus.com> - 1.3.2-0
+- Update to nightly builds of 1.3.2
+
 * Wed Aug 18 2010 Eucalyptus Systems <support@eucalyptus.com>
 - Don't build m2crypto on fedora
 
@@ -153,6 +114,5 @@ install -o root -m 755  INSTALL COPYING README $DESTDIR/%{euca_docdir}/euca2ools
 * Sun Nov 1 2009 Eucalyptus Systems <support@eucalyptus.com>
 - Version 1.1
 
-* Sat Jun 27 2009 Eucalyptus Systems<(support@open.eucalyptus.com>
+* Sat Jun 27 2009 Eucalyptus Systems <support@open.eucalyptus.com>
 - First public release.
-
