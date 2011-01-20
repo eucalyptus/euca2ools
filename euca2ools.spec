@@ -72,8 +72,8 @@ done
 %install
 rm -rf %{buildroot}
 pushd %{name}
-%{__python} setup.py install --skip-build --root %{buildroot}
-%{__python} setup.py install -O1 --skip-build --root %{buildroot}
+%{__python} setup.py install --prefix=%{_prefix} --skip-build --root %{buildroot}
+%{__python} setup.py install -O1 --prefix=%{_prefix} --skip-build --root %{buildroot}
 popd
 
 mkdir -p %{buildroot}/%{_bindir}
