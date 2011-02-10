@@ -2,7 +2,8 @@
 # Something (e.g. mock) must define el5 on that release for that check to work.
 # For now we define it ourselves like this, though it means we can't build on
 # RHEL 5.
-%global el5 %(grep -q 'CentOS release 5' /etc/redhat-release && echo 5)
+%{!?el5:  %global el5  %(grep -q 'CentOS release 5' /etc/redhat-release && echo 5)}
+%{!?rhel: %global rhel %(grep -q 'CentOS release 5' /etc/redhat-release && echo 5)}
 
 %if 0%{?el5}
 %global __python_ver 26
