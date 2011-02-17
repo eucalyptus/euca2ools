@@ -263,6 +263,8 @@ class Util:
 
 --debug 			Turn on debugging.
 
+--euca-auth                     Use Euca component authentication.
+
 Euca2ools will use the environment variables EC2_URL, EC2_ACCESS_KEY, EC2_SECRET_KEY, EC2_CERT, EC2_PRIVATE_KEY, S3_URL, EUCALYPTUS_CERT by default.
     """
 
@@ -403,18 +405,16 @@ class Euca2ool:
             ids.append(arg)
         return ids
 
-    def __init__(
-        self,
-        short_opts=None,
-        long_opts=None,
-        is_s3=False,
-        compat=False,
-        ):
+    def __init__(self, short_opts=None, long_opts=None,
+                 is_s3=False, is_euca=False, compat=False):
         self.ec2_user_access_key = None
         self.ec2_user_secret_key = None
         self.url = None
         self.config_file_path = None
         self.is_s3 = is_s3
+        self.is_euca = is_euca
+        self.euca_cert_path = None
+        self.euca_private_key_path = None
         if compat:
             self.secret_key_opt = 'S'
             self.access_key_opt = 'A'
@@ -436,6 +436,7 @@ class Euca2ool:
             'version',
             'debug',
             'config=',
+            'euca-auth',
             ]
         (opts, args) = getopt.gnu_getopt(sys.argv[1:], short_opts,
                 long_opts)
@@ -457,6 +458,8 @@ class Euca2ool:
                 self.debug = True
             elif name == '--config':
                 self.config_file_path = value
+            elif name == '--euca-auth':
+                self.is_euca = True
         system_string = platform.system()
         if system_string == 'Linux':
             self.img = LinuxImage(self.debug)
@@ -481,6 +484,8 @@ class Euca2ool:
             'EC2_PRIVATE_KEY',
             'EUCALYPTUS_CERT',
             'EC2_USER_ID',
+            'EUCA_CERT',
+            'EUCA_PRIVATE_KEY' 
             )
         self.environ = {}
         user_eucarc = None
@@ -542,6 +547,18 @@ class Euca2ool:
                     print 'S3_URL not specified. Trying %s' \
                         % self.url
 
+        if self.is_euca:
+            if not self.euca_cert_path:
+                self.euca_cert_path = self.environ['EUCA_CERT']
+                if not self.euca_cert_path:
+                    print 'EUCA_CERT variable must be set.'
+                    raise ConnectionFailed
+            if not self.euca_private_key_path:
+                self.euca_private_key_path = self.environ['EUCA_PRIVATE_KEY']
+                if not self.euca_private_key_path:
+                    print 'EUCA_PRIVATE_KEY variable must be set.'
+                    raise ConnectionFailed
+
         self.port = None
         self.service_path = '/'
         
@@ -560,7 +577,20 @@ class Euca2ool:
         if rslt.path:
             self.service_path = rslt.path
 
-        if not self.is_s3:
+        if self.is_euca:
+            # I'm importing these here because they depend
+            # on a boto version > 2.0b3
+            import admin.connection
+            import admin.auth
+            return admin.connection.EucaConnection(aws_access_key_id=self.ec2_user_access_key,
+                            aws_secret_access_key=self.ec2_user_secret_key,
+                            cert_path=self.euca_cert_path,
+                            private_key_path=self.euca_private_key_path,
+                            is_secure=self.is_secure,
+                            host=self.host,
+                            port=self.port,
+                            path=self.service_path)
+        elif not self.is_s3:
             return boto.connect_ec2(
                 aws_access_key_id=self.ec2_user_access_key,
                 aws_secret_access_key=self.ec2_user_secret_key,
