@@ -1,9 +1,9 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -32,14 +32,12 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 # Author: Neil Soman neil@eucalyptus.com
+#         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import getopt
-import sys
-import os
-from euca2ools import Euca2ool, Util, ConnectionFailed
+import euca2ools.controller
 
-usage_string = \
-    """
+USAGE = \
+"""
 Show image attributes.
 
 euca-describe-image-attribute [-l, --launch-permission] [-p, --product-code] 
@@ -59,18 +57,6 @@ OPTIONAL PARAMETERS
 --ramdisk 			show the ramdisk id associated with the image.
 
 """
-
-
-def usage(status=1):
-    print usage_string
-    Util().usage()
-    sys.exit(status)
-
-
-def version():
-    print Util().version()
-    sys.exit()
-
 
 def display_image_attribute(image_id, image_attribute):
     if image_attribute.name == 'launch_permission':
@@ -101,19 +87,17 @@ def display_image_attribute(image_id, image_attribute):
                    block_device_mapping[dev_name])
 
 def main():
-    euca = None
-    try:
-        euca = Euca2ool('lpB', ['block-device-mapping',
-                        'launch-permission', 'product-code', 'kernel',
-                        'ramdisk'])
-    except Exception, e:
-        print e
-        usage()
-
+    controller = euca2ools.controller.Controller('lpB',
+                                                 ['block-device-mapping',
+                                                  'launch-permission',
+                                                  'product-code',
+                                                  'kernel',
+                                                  'ramdisk'],
+                                                 cmd_usage=USAGE)
     image_id = None
     image_attribute = None
 
-    for (name, value) in euca.opts:
+    for (name, value) in controller.opts:
         if name in ('-p', '--product-code'):
             if not image_attribute:
                 image_attribute = 'productCodes'
@@ -129,28 +113,16 @@ def main():
         elif name == '--ramdisk':
             if not image_attribute:
                 image_attribute = 'ramdisk'
-        elif name in ('-h', '--help'):
-            usage(0)
-        elif name == '--version':
-            version()
 
-    for arg in euca.args:
-        image_id = arg
-        break
-
+    if len(command.args) >= 1:
+        image_id = command.args[0]
+        
     if image_id and image_attribute:
-        try:
-            euca_conn = euca.make_connection()
-        except ConnectionFailed, e:
-            print e.message
-            sys.exit(1)
-        try:
-            image_attribute = \
-                euca_conn.get_image_attribute(image_id=image_id,
-                    attribute=image_attribute)
-        except Exception, ex:
-            euca.display_error_and_exit('%s' % ex)
-
+        euca_conn = controller.make_connection_cli()
+        image_attribute = controller.make_request_cli(euca_conn,
+                                                      'get_image_attribute',
+                                                      image_id=image_id,
+                                                      attribute=image_attribute)
         if image_attribute:
             display_image_attribute(image_id, image_attribute)
     else:
@@ -158,9 +130,8 @@ def main():
             print 'image_id must be specified'
         if not image_attribute:
             print 'image attribute must be specified'
-        usage()
-
-
+        command.usage()
+        
 if __name__ == '__main__':
     main()
 

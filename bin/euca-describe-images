@@ -1,9 +1,9 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -32,14 +32,11 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 # Author: Neil Soman neil@eucalyptus.com
+#         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import getopt
-import sys
-import os
-from euca2ools import Euca2ool, Util, ConnectionFailed
+import euca2ools.controller
 
-usage_string = \
-    """
+USAGE = """
 Shows information about machine images.
 
 euca-describe-images [-a] [-o owner] [-x user] [-h, --help] [--version] [--debug] [image1 image2 ... imageN]
@@ -56,26 +53,8 @@ image1 image2 ... imageN	Images to describe.
 
 """
 
-
-def usage(status=1):
-    print usage_string
-    Util().usage(compat=True)
-    sys.exit(status)
-
-
-def version():
-    print Util().version()
-    sys.exit()
-
-
-def display_images(images, image_ids):
-    check_image_ids = False
-    if len(image_ids) > 0:
-        check_image_ids = True
+def display_images(images):
     for image in images:
-        if check_image_ids:
-            if not image.id in image_ids:
-                continue
         image_string = '%s\t%s\t%s\t%s' % (image.id, image.location,
                 image.ownerId, image.state)
         if image.is_public:
@@ -103,69 +82,54 @@ def display_images(images, image_ids):
                        block_dev_mapping.current_value.size)
                 print 'BLOCKDEVICEMAPPING\t%s' % block_dev_string
 
-
 def main():
-    euca = None
-    try:
-        euca = Euca2ool('ao:x:', compat=True)
-    except Exception, e:
-        print e
-        usage()
-
+    controller = euca2ools.controller.Controller('ao:x:',
+                                                 compat=True,
+                                                 cmd_usage=USAGE)
     all_ids = False
-    owners = [ ]
-    executable_by = [ ]
-    image_ids = [ ]
+    owners = []
+    executable_by = []
+    image_ids = []
 
-    for (name, value) in euca.opts:
-        if name in ('-h', '--help'):
-            usage(0)
-        elif name == '-x':
+    for (name, value) in controller.opts:
+        if name == '-x':
             executable_by.append(value)
         elif name == '-o':
             owners.append(value)
         elif name == '-a':
             all_ids = True
-        elif name == '--version':
-            version()
-            sys.exit(0)
 
-    image_ids = euca.process_args()
+    image_ids = controller.args
 
     if all_ids and ( len(owners) or len(executable_by) or len(image_ids) ):
-        euca.display_error_and_exit("-a cannot be combined with owner, launch, or image list")
+        msg = '-a cannot be combined with owner, launch, or image list'
+        controller.display_error_and_exit(msg)
 
-    try:
-        euca_conn = euca.make_connection()
-    except ConnectionFailed, e:
-        print e.message
-        sys.exit(1)
-
+    euca_conn = controller.make_connection_cli()
     if len(owners) == 0 and len(executable_by) == 0 and \
        len(image_ids) == 0 and not all_ids:
-        try:
-           owned = euca_conn.get_all_images(image_ids = None,
-               owners = ("self", ), executable_by = None )
-           launchable = euca_conn.get_all_images(image_ids = None,
-               owners = None, executable_by = ("self"))
-
-           mylist = [ ]
-           images = [ ]
-           for image in owned:
-               mylist.append(image.id)
-               images.append(image)
-           for image in launchable:
-               if image.id not in mylist:
-                   images.append(image)
-        except Exception, ex:
-            euca.display_error_and_exit('%s' % ex)
+        owned = controller.make_request_cli(euca_conn,
+                                            'get_all_images',
+                                            image_ids=None,
+                                            owners=['self'],
+                                            executable_by=None)
+        launchable = controller.make_request_cli(euca_conn,
+                                                 'get_all_images',
+                                                 image_ids=None,
+                                                 owners=None,
+                                                 executable_by=['self'])
+        image_set = set()
+        image_set.update(owned)
+        image_set.update(launchable)
+        images = list(image_set)
     else:
-        try:
-            images = euca_conn.get_all_images(image_ids=image_ids, owners=owners, executable_by=executable_by)
-        except Exception, ex:
-            euca.display_error_and_exit('%s' % ex)
+        images = controller.make_request_cli(euca_conn,
+                                             'get_all_images',
+                                             image_ids=image_ids,
+                                             owners=owners,
+                                             executable_by=executable_by)
 
-    display_images(images, image_ids)
+    display_images(images)
 
 
 if __name__ == '__main__':
