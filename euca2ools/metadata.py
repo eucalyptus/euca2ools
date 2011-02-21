@@ -1,5 +1,3 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
 # Software License Agreement (BSD License)
 #
 # Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
@@ -31,9 +29,35 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 # Author: Neil Soman neil@eucalyptus.com
-#       : Mitch Garnaat mgarnaat@eucalyptus.com
+#         Mitch Garnaat mgarnaat@eucalyptus.com
 
-__version__ = '1.4'
-__tools_version__ = 'main-31337'
-__api_version__ = '2009-04-04'
+from boto.utils import get_instance_metadata
+from exceptions import MetadataReadError
+
+class MetaData(object):
+
+    def __init__(self):
+        self.md = get_instance_metadata()
+        
+    def get_instance_metadata(self, key):
+        try:
+            value = self.md[key]
+        except IndexError:
+            raise MetadataReadError
+        return value
+
+    def get_instance_ramdisk(self):
+        return self.get_instance_metadata('ramdisk-id')
+
+    def get_instance_kernel(self):
+        return self.get_instance_metadata('kernel-id')
+
+    def get_instance_product_codes(self):
+        return self.get_instance_metadata('product-codes')
+
+    def get_ancestor_ami_ids(self):
+        return self.get_instance_metadata('ancestor-ami-ids')
+
+    def get_instance_block_device_mappings(self):
+        return self.get_instance_metadata('ancestor-ami-ids')
 

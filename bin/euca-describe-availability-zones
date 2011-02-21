@@ -1,9 +1,9 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -32,82 +32,35 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 # Author: Neil Soman neil@eucalyptus.com
+#         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import getopt
-import sys
-import os
-from euca2ools import Euca2ool, Util, ConnectionFailed
+import euca2ools.controller
+import euca2ools.exceptions
 
-usage_string = \
-    """
+USAGE = \
+"""
 Shows information about availability zones.
 
-euca-describe-availability-zones [--region region] [-h, --help] [--version] [--debug] [zone1 zone2...zoneN] [verbose]
+euca-describe-availability-zones [-h, --help] [--version] [--debug] [zone1 zone2...zoneN] [verbose]
 
 OPTIONAL PARAMETERS
 
---region			region to describe availability zones for
-
 zone1 zone2...zoneN		zones to describe. 
 
-verbose				show verbose resource information (Eucalyptus administrator-only functionality).			
 """
 
-
-def usage(status=1):
-    print usage_string
-    Util().usage()
-    sys.exit(status)
-
-
-def version():
-    print Util().version()
-    sys.exit()
-
-
-def display_zones(zones, zone_ids, region):
+def display_zones(zones):
     for zone in zones:
         zone_string = '%s\t%s' % (zone.name, zone.state)
-        if region:
-            zone_string += '\t%s' % region
         print 'AVAILABILITYZONE\t%s' % zone_string
 
-
 def main():
-    euca = None
-    region = None
-    try:
-        euca = Euca2ool('', ['region='])
-    except Exception, e:
-        print e
-        usage()
-    for (name, value) in euca.opts:
-        if name == '--region':
-            region = value
-        elif name in ('-h', '--help'):
-            usage(0)
-        elif name == '--version':
-            version()
-
-    debug = False
-
-    if region:
-        os.environ['EC2_URL'] = 'https://' + region \
-            + '.ec2.amazonaws.com'
-    zone_ids = euca.process_args()
-    try:
-        euca_conn = euca.make_connection()
-    except ConnectionFailed, e:
-        print e.message
-        sys.exit(1)
-
-    try:
-        zones = euca_conn.get_all_zones(zone_ids)
-    except Exception, ex:
-        euca.display_error_and_exit('%s' % ex)
-
-    display_zones(zones, zone_ids, region)
-
+    controller = euca2ools.controller.Controller(cmd_usage=USAGE)
+    euca_conn = controller.make_connection_cli()
+    zones = controller.make_request_cli(euca_conn,
+                                        'get_all_zones',
+                                        zones=controller.args)
+    display_zones(zones)
 
 if __name__ == '__main__':
     main()

@@ -1,5 +1,3 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
 # Software License Agreement (BSD License)
 #
 # Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
@@ -31,9 +29,47 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 # Author: Neil Soman neil@eucalyptus.com
-#       : Mitch Garnaat mgarnaat@eucalyptus.com
+#         Mitch Garnaat mgarnaat@eucalyptus.com
 
-__version__ = '1.4'
-__tools_version__ = 'main-31337'
-__api_version__ = '2009-04-04'
+import exceptions
+import os
+import re
+
+IP_PROTOCOLS = ['tcp', 'udp', 'icmp']
+
+def validate_address(address):
+    if not re.match("[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+(\/[0-9]+)?$", address):
+        raise exceptions.AddressValidationError
+
+def validate_instance_id(id):
+    if not re.match('i-', id):
+        raise exceptions.InstanceValidationError
+
+def validate_volume_id(id):
+    if not re.match('vol-', id):
+        raise exceptions.VolumeValidationError
+
+def validate_volume_size(size):
+    if size < 0 or size > 1024:
+        raise exceptions.SizeValidationError
+
+def validate_snapshot_id(id):
+    if not re.match('snap-', id):
+        raise exceptions.SnapshotValidationError
+
+def validate_protocol(proto):
+    if not proto in IP_PROTOCOLS:
+        raise exceptions.ProtocolValidationError
+
+def validate_file(path):
+    if not os.path.exists(path) or not os.path.isfile(path):
+        raise exceptions.FileValidationError
+
+def validate_dir(path):
+    if not os.path.exists(path) or not os.path.isdir(path):
+        raise exceptions.DirValidationError
+
+def validate_bundle_id(id):
+    if not re.match('bun-', id):
+        raise exceptions.BundleValidationError
 

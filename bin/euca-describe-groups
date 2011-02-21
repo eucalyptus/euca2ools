@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 # Software License Agreement (BSD License)
@@ -32,14 +32,13 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 # Author: Neil Soman neil@eucalyptus.com
+#         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import getopt
-import sys
-import os
-from euca2ools import Euca2ool, Util, ConnectionFailed
+import euca2ools.controller
+import euca2ools.exceptions
 
-usage_string = \
-    """
+USAGE = \
+"""
 Shows information about groups.
 
 euca-describe-groups [-h, --help] [--version] [--debug] [group1 group2...groupN] 
@@ -50,26 +49,8 @@ group1 group2...groupN		groups to describe.
 
 """
 
-
-def usage(status=1):
-    print usage_string
-    Util().usage()
-    sys.exit(status)
-
-
-def version():
-    print Util().version()
-    sys.exit()
-
-
-def display_groups(groups, group_ids):
-    check_group_ids = False
-    if len(group_ids) > 0:
-        check_group_ids = True
+def display_groups(groups):
     for group in groups:
-        if check_group_ids:
-            if not group.name in group_ids:
-                continue
         group_string = '%s\t%s\t%s' % (group.owner_id, group.name,
                 group.description)
         print 'GROUP\t%s' % group_string
@@ -89,34 +70,14 @@ def display_groups(groups, group_ids):
                 permission_string += grant_string
                 print 'PERMISSION\t%s' % permission_string
 
-
 def main():
-    euca = None
-    try:
-        euca = Euca2ool()
-    except Exception, e:
-        print e
-        usage()
+    controller = euca2ools.controller.Controller(cmd_usage=USAGE)
+    euca_conn = controller.make_connection_cli()
+    groups = controller.make_request_cli(euca_conn,
+                                         'get_all_security_groups',
+                                         groupnames=controller.args)
 
-    for (name, value) in euca.opts:
-        if name in ('-h', '--help'):
-            usage(0)
-        elif name == '--version':
-            version()
-
-    group_ids = euca.process_args()
-    try:
-        euca_conn = euca.make_connection()
-    except ConnectionFailed, e:
-        print e.message
-        sys.exit(1)
-    try:
-        groups = euca_conn.get_all_security_groups()
-    except Exception, ex:
-        euca.display_error_and_exit('%s' % ex)
-
-    display_groups(groups, group_ids)
-
+    display_groups(groups)
 
 if __name__ == '__main__':
     main()
