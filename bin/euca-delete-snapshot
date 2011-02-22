@@ -1,9 +1,9 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -32,15 +32,11 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 # Author: Neil Soman neil@eucalyptus.com
+#         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import getopt
-import sys
-import os
-from euca2ools import Euca2ool, SnapshotValidationError, Util, \
-    ConnectionFailed
+import euca2ools.controller
 
-usage_string = \
-    """
+USAGE = """
 Deletes a snapshot.
 
 euca-delete-snapshot [-h, --help] [--version] [--debug] snapshot_id
@@ -53,58 +49,22 @@ OPTIONAL PARAMETERS
 
 """
 
-
-def usage(status=1):
-    print usage_string
-    Util().usage()
-    sys.exit(status)
-
-
-def version():
-    print Util().version()
-    sys.exit()
-
-
 def main():
-    euca = None
-    try:
-        euca = Euca2ool()
-    except Exception, e:
-        print e
-        usage()
-
-    snapshot_id = None
-
-    for (name, value) in euca.opts:
-        if name in ('-h', '--help'):
-            usage(0)
-        elif name == '--version':
-            version()
-
-    for arg in euca.args:
-        snapshot_id = arg
-        break
-
-    if snapshot_id:
-        try:
-            euca.validate_snapshot_id(snapshot_id)
-        except SnapshotValidationError:
-            print 'Invalid snapshot id'
-            sys.exit(1)
-
-        try:
-            euca_conn = euca.make_connection()
-        except ConnectionFailed, e:
-            print e.message
-            sys.exit(1)
-
-        return_code = euca_conn.delete_snapshot(snapshot_id)
-        if return_code:
-            print 'SNAPSHOT\t%s' % snapshot_id
+    controller = euca2ools.controller.Controller(cmd_usage=USAGE)
+    
+    if len(controller.args) < 1:
+        msg = 'snapshot_id must be specified'
+        controller.display_error_and_exit(msg)
     else:
-        print 'snapshot_id must be specified'
-        usage()
+        snapshot_id = controller.args[0]
+    controller.validate_snapshot_id(snapshot_id)
 
+    euca_conn = controller.make_connection_cli()
+    return_code = controller.make_request_cli(euca_conn,
+                                              'delete_snapshot',
+                                              snapshot_id=snapshot_id)
+    if return_code:
+        print 'SNAPSHOT\t%s' % snapshot_id
 
 if __name__ == '__main__':
     main()

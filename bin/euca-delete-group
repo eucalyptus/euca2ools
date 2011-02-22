@@ -1,9 +1,9 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -32,14 +32,11 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 # Author: Neil Soman neil@eucalyptus.com
+#         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import getopt
-import sys
-import os
-from euca2ools import Euca2ool, Util, ConnectionFailed
+import euca2ools.controller
 
-usage_string = \
-    """
+USAGE = """
 Deletes a security group.
 
 euca-delete-group [-h, --help] [--version] [--debug] group_name
@@ -52,56 +49,21 @@ OPTIONAL PARAMETER
 
 """
 
-
-def usage(status=1):
-    print usage_string
-    Util().usage()
-    sys.exit(status)
-
-
-def version():
-    print Util().version()
-    sys.exit()
-
-
 def main():
-    euca = None
-    try:
-        euca = Euca2ool()
-    except Exception, e:
-        print e
-        usage()
-
-    group_name = None
-
-    for (name, value) in euca.opts:
-        if name in ('-h', '--help'):
-            usage(0)
-        elif name == '--version':
-            version()
-
-    for arg in euca.args:
-        group_name = arg
-        break
-
-    if group_name:
-        try:
-            euca_conn = euca.make_connection()
-        except ConnectionFailed, e:
-            print e.message
-            sys.exit(1)
-        try:
-            return_code = \
-                euca_conn.delete_security_group(name=group_name)
-        except Exception, ex:
-            euca.display_error_and_exit('%s' % ex)
-
-        if return_code:
-            print 'GROUP\t%s' % group_name
+    controller = euca2ools.controller.Controller(cmd_usage=USAGE)
+    
+    if len(controller.args) < 1:
+        msg = 'group_name must be specified'
+        controller.display_error_and_exit(msg)
     else:
-        print 'group_name must be specified'
-        usage()
-
+        group_name = controller.args[0]
+        
+    euca_conn = controller.make_connection_cli()
+    return_code = controller.make_request_cli(euca_conn,
+                                              'delete_security_group',
+                                              name=group_name)
+    if return_code:
+        print 'GROUP\t%s' % group_name
 
 if __name__ == '__main__':
     main()
