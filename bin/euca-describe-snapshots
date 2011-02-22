@@ -1,9 +1,9 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -32,15 +32,11 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 # Author: Neil Soman neil@eucalyptus.com
+#         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import getopt
-import sys
-import os
-from euca2ools import Euca2ool, SnapshotValidationError, Util, \
-    ConnectionFailed
+import euca2ools.controller
 
-usage_string = \
-    """
+USAGE = """
 Shows information about snapshots.
 
 euca-describe-snapshots [-o owner_id] [-r user_id] [snapshot1 snapshot2...snapshotN] 
@@ -56,74 +52,30 @@ snapshot1 snapshot2...snapshotN		Snapshots to describe.
 
 """
 
-
-def usage(status=1):
-    print usage_string
-    Util().usage()
-    sys.exit(status)
-
-
-def version():
-    print Util().version()
-    sys.exit()
-
-
-def display_snapshots(snapshots, snapshot_ids):
-    check_snapshot_ids = False
-    if len(snapshot_ids) > 0:
-        check_snapshot_ids = True
-
+def display_snapshots(snapshots):
     for snapshot in snapshots:
-        if check_snapshot_ids:
-            if not snapshot.id in snapshot_ids:
-                continue
         snapshot_string = '%s\t%s\t%s\t%s\t%s' % (snapshot.id,
                 snapshot.volume_id, snapshot.status,
                 snapshot.start_time, snapshot.progress)
         print 'SNAPSHOT\t%s' % snapshot_string
 
-
 def main():
-    euca = None
     owner = None
     restorable_by = None
-    try:
-        euca = Euca2ool('o:r:')
-    except Exception, e:
-        print e
-        usage()
-
-    for (name, value) in euca.opts:
+    controller = euca2ools.controller.Controller('o:r:', cmd_usage=USAGE)
+    for (name, value) in controller.opts:
         if name == "-o":
             owner = value
         elif name == "-r":
             restorable_by = value
-        elif name in ('-h', '--help'):
-            usage(0)
-        elif name == '--version':
-            version()
-
-    snapshot_ids = euca.process_args()
-    try:
-        for id in snapshot_ids:
-            euca.validate_snapshot_id(id)
-    except SnapshotValidationError:
-        print 'Invalid snapshot id'
-        sys.exit(1)
-
-    try:
-        euca_conn = euca.make_connection()
-    except ConnectionFailed, e:
-        print e.message
-        sys.exit(1)
-    try:
-        snapshots = euca_conn.get_all_snapshots(owner=owner,
-                                                restorable_by=restorable_by)
-    except Exception, ex:
-        euca.display_error_and_exit('%s' % ex)
-
-    display_snapshots(snapshots, snapshot_ids)
-
+    for snapshot_id in controller.args:
+        controller.validate_snapshot_id(snapshot_id)
+    euca_conn = controller.make_connection_cli()
+    snapshots = controller.make_request_cli(euca_conn,
+                                            'get_all_snapshots',
+                                            owner=owner,
+                                            restorable_by=restorable_by)
+    display_snapshots(snapshots)
 
 if __name__ == '__main__':
     main()

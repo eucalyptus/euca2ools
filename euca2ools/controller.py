@@ -394,56 +394,56 @@ class Controller(object):
 
     def validate_instance_id(self, id):
         try:
-            validate.validate_instance_id(address)
+            validate.validate_instance_id(id)
         except exceptions.ValidationError as ex:
             print ex.message
             sys.exit(1)
             
     def validate_volume_id(self, id):
         try:
-            validate.validate_volume_id(address)
+            validate.validate_volume_id(id)
         except exceptions.ValidationError as ex:
             print ex.message
             sys.exit(1)
 
     def validate_volume_size(self, size):
         try:
-            validate.validate_volume_size(address)
+            validate.validate_volume_size(size)
         except exceptions.ValidationError as ex:
             print ex.message
             sys.exit(1)
 
     def validate_snapshot_id(self, id):
         try:
-            validate.validate_snapshot_id(address)
+            validate.validate_snapshot_id(id)
         except exceptions.ValidationError as ex:
             print ex.message
             sys.exit(1)
 
     def validate_protocol(self, proto):
         try:
-            validate.validate_protocol(address)
+            validate.validate_protocol(proto)
         except exceptions.ValidationError as ex:
             print ex.message
             sys.exit(1)
 
     def validate_file(self, path):
         try:
-            validate.validate_file(address)
+            validate.validate_file(path)
         except exceptions.ValidationError as ex:
             print ex.message
             sys.exit(1)
 
     def validate_dir(self, path):
         try:
-            validate.validate_dir(address)
+            validate.validate_dir(path)
         except exceptions.ValidationError as ex:
             print ex.message
             sys.exit(1)
 
     def validate_bundle_id(self, id):
         try:
-            validate.validate_bundle_id(address)
+            validate.validate_bundle_id(id)
         except exceptions.ValidationError as ex:
             print ex.message
             sys.exit(1)
