@@ -50,19 +50,21 @@ OPTIONAL PARAMETERS
 """
 
 def main():
+    volume_id = None
     controller = euca2ools.controller.Controller(cmd_usage=USAGE)
-    if len(controller.args) < 1:
+    if len(controller.args) >= 1:
+        volume_id = controller.args[0]
+    if volume_id:
+        controller.validate_volume_id(volume_id)
+        euca_conn = controller.make_connection_cli()
+        return_code = controller.make_request_cli(euca_conn,
+                                                  'delete_volume',
+                                                  volume_id=volume_id)
+        if return_code:
+            print 'VOLUME\t%s' % volume_id
+    else:
         msg = 'volume_id must be specified'
         controller.display_error_and_exit(msg)
-    else:
-        volume_id = controller.args[0]
-    controller.validate_volume_id(volume_id)
-    euca_conn = controller.make_connection_cli()
-    return_code = controller.make_request_cli(euca_conn,
-                                              'delete_volume',
-                                              volume_id=volume_id)
-    if return_code:
-        print 'VOLUME\t%s' % volume_id
 
 if __name__ == '__main__':
     main()

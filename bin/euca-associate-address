@@ -58,7 +58,7 @@ def main():
     controller = euca2ools.controller.Controller('i:', ['instance='],
                                                  cmd_usage=USAGE)
 
-    for (name, value) in euca.opts:
+    for (name, value) in controller.opts:
         if name in ('-i', '--instance'):
             instance_id = value
     if len(controller.args) >= 1:

@@ -1,9 +1,9 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009, Eucalyptus Systems, Inc.
+# Copyright (c) 20092011, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -32,12 +32,11 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 # Author: Neil Soman neil@eucalyptus.com
+#         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import sys
-from euca2ools import Euca2ool, Util, ConnectionFailed
+import euca2ools.controller
 
-usage_string = \
-    """
+USAGE = """
 Cancels a previously submitted bundle task.
 
 euca-cancel-bundle-task bundle_id [-h, --help] [--version] [--debug]
@@ -50,18 +49,6 @@ OPTIONAL PARAMETERS
 
 """
 
-
-def usage(status=1):
-    print usage_string
-    Util().usage()
-    sys.exit(status)
-
-
-def version():
-    print Util().version()
-    sys.exit()
-
-
 def display_bundle(bundle):
     bundle_string = '%s\t%s\t%s\t%s\t%s\t%s\t%s' % (
         bundle.id,
@@ -70,50 +57,25 @@ def display_bundle(bundle):
         bundle.prefix,
         bundle.state,
         bundle.start_time,
-        bundle.update_time,
-        )
+        bundle.update_time)
     print 'BUNDLE\t%s' % bundle_string
 
-
 def main():
-    euca = None
-    try:
-        euca = Euca2ool()
-    except Exception, e:
-        print e
-        usage()
-
     bundle_id = None
-
-    for (name, value) in euca.opts:
-        if name in ('-h', '--help'):
-            usage(0)
-        elif name == '--version':
-            version()
-
-    for arg in euca.args:
-        bundle_id = arg
-        break
+    controller = euca2ools.controller.Controller(cmd_usage=USAGE)
+    if len(controller.args) >= 1:
+        bundle_id = controller.args[0]
 
     if bundle_id:
-        try:
-            euca_conn = euca.make_connection()
-        except ConnectionFailed, e:
-            print e.message
-            sys.exit(1)
-        try:
-            bundle_task = \
-                euca_conn.cancel_bundle_task(bundle_id=bundle_id)
-        except Exception, ex:
-            euca.display_error_and_exit('%s' % ex)
-
+        euca_conn = controller.make_connection_cli()
+        bundle_task = controller.make_request_cli(euca_conn,
+                                                  'cancel_bundle_task',
+                                                  bundle_id=bundle_id)
         if bundle_task:
             display_bundle(bundle_task)
     else:
-        if not bundle_id:
-            print 'bundle_id must be specified.'
-        usage(1)
-
+        msg = 'bundle_id must be specified.'
+        controller.display_error_and_exit(msg)
 
 if __name__ == '__main__':
     main()

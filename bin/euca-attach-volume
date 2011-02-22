@@ -58,9 +58,9 @@ def main():
     volume_id = None
     instance_id = None
     device = None
-    controller = euca2ools.controller.Controller('i:d:', ['instance', 'device='],
+    controller = euca2ools.controller.Controller('i:d:', ['instance=', 'device='],
                                                  cmd_usage=USAGE)
-    for (name, value) in euca.opts:
+    for (name, value) in controller.opts:
         if name in ('-i', '--instance'):
             instance_id = value
         elif name in ('-d', '--device'):
