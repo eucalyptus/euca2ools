@@ -1,9 +1,9 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009, Eucalyptus Systems, Inc.
+# Copyright (c) 20092011, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -32,14 +32,11 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 # Author: Neil Soman neil@eucalyptus.com
+#         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import getopt
-import sys
-import os
-from euca2ools import Euca2ool, Util, ConnectionFailed
+import euca2ools.controller
 
-usage_string = \
-    """
+USAGE = """
 Registers a manifest for use with the cloud.
 
 euca-register [-h, --help] [--version] [--debug] image_location 
@@ -67,35 +64,7 @@ OPTIONAL PARAMETERS
 -s, --snapshot			The snapshot ID to use as the root device.
 """
 
-
-def usage(status=1):
-    print usage_string
-    Util().usage(compat=True)
-    sys.exit(status)
-
-
-def version():
-    print Util().version()
-    sys.exit()
-
-
 def main():
-    euca = None
-    try:
-        euca = Euca2ool('b:d:n:a:s:', [
-            'block-device-mapping=',
-            'description=',
-            'name=',
-            'architecture=',
-            'kernel=',
-            'ramdisk=',
-            'root-device-name=',
-            'snapshot=',
-            ], compat=True)
-    except Exception, e:
-        print e
-        usage()
-
     image_location = None
     block_device_map_args = []
     block_device_map = None
@@ -107,7 +76,19 @@ def main():
     root_device_name = None
     snapshot = None
 
-    for (name, value) in euca.opts:
+    controller = euca2ools.controller.Controller('b:d:n:a:s:',
+                                                 ['block-device-mapping=',
+                                                  'description=',
+                                                  'name=',
+                                                  'architecture=',
+                                                  'kernel=',
+                                                  'ramdisk=',
+                                                  'root-device-name=',
+                                                  'snapshot='],
+                                                 compat=True,
+                                                 cmd_usage=USAGE)
+
+    for (name, value) in controller.opts:
         if name in ('-b', '--block-device-mapping'):
             block_device_map_args.append(value)
         elif name in ('-d', '--description'):
@@ -124,21 +105,11 @@ def main():
             root_device_name = value
         elif name in ('-s', '--snapshot'):
             snapshot = value
-        elif name in ('-h', '--help'):
-            usage(0)
-        elif name == '--version':
-            version()
 
-    for arg in euca.args:
-        image_location = arg
-        break
+    if len(controller.args) >= 1:
+        image_location = controller.args[0]
 
     if image_location:
-        try:
-            euca_conn = euca.make_connection()
-        except ConnectionFailed, e:
-            print e.message
-            sys.exit(1)
         if snapshot:
             if not root_device_name:
                 root_device_name = '/dev/sda1'
@@ -146,27 +117,24 @@ def main():
                     snapshot))
         if block_device_map_args:
             block_device_map = \
-                euca.parse_block_device_args(block_device_map_args)
-        try:
-            image_id = euca_conn.register_image(
-                name=image_name,
-                description=description,
-                image_location=image_location,
-                architecture=architecture,
-                kernel_id=kernel,
-                ramdisk_id=ramdisk,
-                root_device_name=root_device_name,
-                block_device_map=block_device_map,
-                )
-        except Exception, ex:
-            euca.display_error_and_exit('%s' % ex)
+                controller.parse_block_device_args(block_device_map_args)
+        euca_conn = controller.make_connection_cli()
+        image_id = controller.make_request_cli(euca_conn,
+                                               'register_image',
+                                               name=image_name,
+                                               description=description,
+                                               image_location=image_location,
+                                               architecture=architecture,
+                                               kernel_id=kernel,
+                                               ramdisk_id=ramdisk,
+                                               root_device_name=root_device_name,
+                                               block_device_map=block_device_map)
 
         if image_id:
             print 'IMAGE\t%s' % image_id
     else:
-        print 'image location must be specified'
-        usage()
-
+        msg = 'image location must be specified'
+        controller.display_error_and_exit(msg)
 
 if __name__ == '__main__':
     main()
