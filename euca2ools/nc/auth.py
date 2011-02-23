@@ -37,10 +37,10 @@ from boto.exception import BotoClientError
 from hashlib import sha1 as sha
 from M2Crypto import RSA
         
-class EucaAdminAuthHandler(boto.auth_handler.AuthHandler):
-    """Provides Eucalyptus Admin Authentication."""
+class EucaNCAuthHandler(boto.auth_handler.AuthHandler):
+    """Provides Eucalyptus NC Authentication."""
 
-    capability = ['euca-admin']
+    capability = ['euca-nc']
 
     def _calc_signature(self, params, headers, verb, path):
         boto.log.debug('using calc_signature')

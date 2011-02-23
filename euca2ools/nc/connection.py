@@ -62,7 +62,7 @@ class EucaConnection(AWSAuthConnection):
                                    path=path)
 
     def _required_auth_capability(self):
-        return ['euca-admin']
+        return ['euca-nc']
 
     def make_request(self, verb='GET', bucket='', key='', headers=None,
                      data='', query_args=None, sender=None, action=None,

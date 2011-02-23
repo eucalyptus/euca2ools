@@ -1,9 +1,6 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -32,28 +29,71 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 # Author: Neil Soman neil@eucalyptus.com
+#         Mitch Garnaat mgarnaat@eucalyptus.com
 
-try:
-    from setuptools import setup
-except ImportError:
-    from distutils.core import setup
+from distutils.core import setup
 
-setup(
-    name='euca2ools',
-    version='1.2',
-    description='API tools compatible with Amazon AWS',
-    long_description="API tools compliant with Amazon's AWS API. Work with Amazon AWS and Eucalyptus."
-        ,
-    author='Neil Soman',
-    author_email='neil@eucalyptus.com',
-    url='http://www.eucalyptus.com',
-    packages=['euca2ools'],
-    license='BSD (Simplified)',
-    platforms='Posix; MacOS X; Windows',
-    classifiers=['Development Status :: 3 - Alpha',
-                 'Intended Audience :: Users',
-                 'License :: OSI Approved :: Simplified BSD License',
-                 'Operating System :: OS Independent',
-                 'Topic :: Internet'],
-    )
-
+setup(name = "euca2ools",
+      version = "1.4",
+      description = "Elastic Utility Computing Architecture Command Line Tools",
+      long_description="Elastic Utility Computing Architecture Command Line Tools",
+      author = "Mitch Garnaat",
+      author_email = "mgarnaat@eucalyptus.com",
+      scripts = ["bin/euca-add-group",
+                 "bin/euca-add-keypair",
+                 "bin/euca-allocate-address",
+                 "bin/euca-associate-address",
+                 "bin/euca-attach-volume",
+                 "bin/euca-authorize",
+                 "bin/euca-bundle-image",
+                 "bin/euca-bundle-instance",
+                 "bin/euca-bundle-vol",
+                 "bin/euca-cancel-bundle-task",
+                 "bin/euca-confirm-product-instance",
+                 "bin/euca-create-snapshot",
+                 "bin/euca-create-volume",
+                 "bin/euca-delete-bundle",
+                 "bin/euca-delete-group",
+                 "bin/euca-delete-keypair",
+                 "bin/euca-delete-snapshot",
+                 "bin/euca-delete-volume",
+                 "bin/euca-deregister",
+                 "bin/euca-describe-addresses",
+                 "bin/euca-describe-availability-zones",
+                 "bin/euca-describe-bundle-tasks",
+                 "bin/euca-describe-groups",
+                 "bin/euca-describe-image-attribute",
+                 "bin/euca-describe-images",
+                 "bin/euca-describe-instances",
+                 "bin/euca-describe-keypairs",
+                 "bin/euca-describe-regions",
+                 "bin/euca-describe-snapshots",
+                 "bin/euca-describe-volumes",
+                 "bin/euca-detach-volume",
+                 "bin/euca-disassociate-address",
+                 "bin/euca-download-bundle",
+                 "bin/euca-get-console-output",
+                 "bin/euca-get-password",
+                 "bin/euca-get-password-data",
+                 "bin/euca-modify-image-attribute",
+                 "bin/euca-reboot-instances",
+                 "bin/euca-register",
+                 "bin/euca-release-address",
+                 "bin/euca-reset-image-attribute",
+                 "bin/euca-revoke",
+                 "bin/euca-run-instances",
+                 "bin/euca-terminate-instances",
+                 "bin/euca-unbundle",
+                 "bin/euca-upload-bundle",
+                 "bin/euca-version"],
+      url = "http://open.eucalyptus.com",
+      packages = ["euca2ools", "euca2ools.nc"],
+      license = 'BSD (Simplified)',
+      platforms = 'Posix; MacOS X; Windows',
+      classifiers = [ 'Development Status :: 4 - Beta',
+                      'Intended Audience :: Users',
+                      'License :: OSI Approved :: Simplified BSD License',
+                      'Operating System :: OS Independent',
+                      'Topic :: Internet',
+                      ],
+      )
