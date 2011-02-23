@@ -1,8 +1,6 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -31,9 +29,8 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 # Author: Neil Soman neil@eucalyptus.com
+#         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import boto
-import getopt
 import sys
 import os
 import tarfile
@@ -45,14 +42,8 @@ from binascii import hexlify, unhexlify
 from subprocess import *
 import subprocess
 import platform
-import urllib
-import urlparse
 import re
 import shutil
-from boto.ec2.regioninfo import RegionInfo
-from boto.ec2.blockdevicemapping import BlockDeviceMapping
-from boto.ec2.blockdevicemapping import BlockDeviceType
-from boto.s3.connection import OrdinaryCallingFormat
 import logging
 import base64
 
@@ -129,13 +120,8 @@ class Bundler(object):
             print 'Image Size:', image_size, 'bytes'
         return image_size
 
-    def tarzip_image(
-        self,
-        prefix,
-        file,
-        path,
-        ):
-        Util().check_prerequisite_command('tar')
+    def tarzip_image(self, prefix, file, path):
+        check_prerequisite_command('tar')
 
         targz = '%s.tar.gz' % os.path.join(path, prefix)
         targzfile = open(targz, 'w')
@@ -175,12 +161,7 @@ class Bundler(object):
 
         return ''.join(bytes)
 
-    def crypt_file(
-        self,
-        cipher,
-        in_file,
-        out_file,
-        ):
+    def crypt_file(self, cipher, in_file, out_file):
         while 1:
             buf = in_file.read(IMAGE_IO_CHUNK)
             if not buf:
@@ -255,13 +236,7 @@ class Bundler(object):
                 encrypted_iv = node.data
         return (parts, encrypted_key, encrypted_iv)
 
-    def assemble_parts(
-        self,
-        src_directory,
-        directory,
-        manifest_path,
-        parts,
-        ):
+    def assemble_parts(self, src_directory, directory, manifest_path, parts):
         manifest_filename = self.get_relative_filename(manifest_path)
         encrypted_filename = os.path.join(directory,
                 manifest_filename.replace('.manifest.xml', '.enc.tar.gz'
@@ -283,13 +258,8 @@ class Bundler(object):
             encrypted_file.close()
         return encrypted_filename
 
-    def decrypt_image(
-        self,
-        encrypted_filename,
-        encrypted_key,
-        encrypted_iv,
-        private_key_path,
-        ):
+    def decrypt_image(self, encrypted_filename, encrypted_key,
+                      encrypted_iv, private_key_path):
         user_priv_key = RSA.load_key(private_key_path)
         key = user_priv_key.private_decrypt(unhexlify(encrypted_key),
                 RSA.pkcs1_padding)
@@ -306,12 +276,7 @@ class Bundler(object):
         decrypted_file.close()
         return decrypted_filename
 
-    def decrypt_string(
-        self,
-        encrypted_string,
-        private_key_path,
-        encoded=False,
-        ):
+    def decrypt_string(self, encrypted_string, private_key_path, encoded=False):
         user_priv_key = RSA.load_key(private_key_path)
         string_to_decrypt = encrypted_string
         if encoded:
@@ -342,29 +307,13 @@ class Bundler(object):
 
         return (virtual, devices)
 
-    def generate_manifest(
-        self,
-        path,
-        prefix,
-        parts,
-        parts_digest,
-        file,
-        key,
-        iv,
-        cert_path,
-        ec2cert_path,
-        private_key_path,
-        target_arch,
-        image_size,
-        bundled_size,
-        image_digest,
-        user,
-        kernel,
-        ramdisk,
-        mapping=None,
-        product_codes=None,
-        ancestor_ami_ids=None,
-        ):
+    def generate_manifest(self, path, prefix, parts, parts_digest,
+                          file, key, iv, cert_path, ec2cert_path,
+                          private_key_path, target_arch,
+                          image_size, bundled_size,
+                          image_digest, user, kernel,
+                          ramdisk, mapping=None,
+                          product_codes=None, ancestor_ami_ids=None):
         user_pub_key = X509.load_cert(cert_path).get_pubkey().get_rsa()
         cloud_pub_key = \
             X509.load_cert(ec2cert_path).get_pubkey().get_rsa()
@@ -623,14 +572,9 @@ class Bundler(object):
         for banned in self.img.BANNED_MOUNTS:
             excludes.append(banned)
 
-    def make_image(
-        self,
-        size_in_MB,
-        excludes,
-        prefix,
-        destination_path,
-        fs_type = None, uuid = None, label = None
-        ):
+    def make_image(self, size_in_MB, excludes, prefix,
+                   destination_path, fs_type = None,
+                   uuid = None, label = None):
         image_file = '%s.img' % prefix
         image_path = '%s/%s' % (destination_path, image_file)
         if not os.path.exists(destination_path):
@@ -643,7 +587,7 @@ class Bundler(object):
         return image_path
 
     def create_loopback(self, image_path):
-        Util().check_prerequisite_command('losetup')
+        check_prerequisite_command('losetup')
         tries = 0
         while tries < MAX_LOOP_DEVS:
             loop_dev = Popen(['losetup', '-f'],
@@ -661,7 +605,7 @@ class Bundler(object):
             tries += 1
 
     def mount_image(self, image_path):
-        Util().check_prerequisite_command('mount')
+        check_prerequisite_command('mount')
 
         tmp_mnt_point = '/tmp/%s' % hex(BN.rand(16))[2:6]
         if not os.path.exists(tmp_mnt_point):
@@ -675,14 +619,9 @@ class Bundler(object):
               stdout=PIPE).communicate()
         return (tmp_mnt_point, loop_dev)
 
-    def copy_to_image(
-        self,
-        mount_point,
-        volume_path,
-        excludes,
-        ):
+    def copy_to_image(self, mount_point, volume_path, excludes):
         try:
-            Util().check_prerequisite_command('rsync')
+            check_prerequisite_command('rsync')
         except NotFoundError:
             raise CopyError
         rsync_cmd = ['rsync', '-aXS']
@@ -736,21 +675,15 @@ class Bundler(object):
                 raise CopyError
 
     def unmount_image(self, mount_point):
-        Util().check_prerequisite_command('umount')
+        check_prerequisite_command('umount')
         if self.debug:
             print 'Unmounting image...'
         Popen(['umount', '-d', mount_point],
               stdout=PIPE).communicate()[0]
         os.rmdir(mount_point)
 
-    def copy_volume(
-        self,
-        image_path,
-        volume_path,
-        excludes,
-        generate_fstab,
-        fstab_path,
-        ):
+    def copy_volume(self, image_path, volume_path, excludes,
+                    generate_fstab, fstab_path):
         (mount_point, loop_dev) = self.mount_image(image_path)
         try:
             output = self.copy_to_image(mount_point, volume_path,
@@ -793,51 +726,3 @@ class Bundler(object):
             print msg
         sys.exit(1)
 
-
-# read the config file 'config', update 'dict', setting
-# the value from the config file for each element in array 'keylist'
-# "config" is a bash syntax file defining bash variables
-
-
-def parse_config(config, dict, keylist):
-    fmt = ''
-    str = ''
-    for v in keylist:
-        str = '%s "${%s}" ' % (str, v)
-        fmt = fmt + '%s%s' % ('%s', '\\0')
-
-    cmd = ['bash', '-ec', ". '%s' >/dev/null; printf '%s' %s"
-           % (config, fmt, str)]
-
-    handle = Popen(cmd, stderr=PIPE, stdout=PIPE)
-    (stdout, stderr) = handle.communicate()
-    if handle.returncode != 0:
-        raise ParseError('Parsing config file %s failed:\n\t%s'
-                         % (config, stderr))
-
-    values = stdout.split("\0")
-    for i in range(len(values) - 1):
-        if values[i] != '':
-            dict[keylist[i]] = values[i]
-
-
-def print_instances(instances, nil=""):
-    members=( "id", "image_id", "public_dns_name", "private_dns_name",
-        "state", "key_name", "ami_launch_index", "product_codes",
-        "instance_type", "launch_time", "placement", "kernel",
-        "ramdisk" )
-
-    for instance in instances:
-        # in old describe-instances, there was a check for 'if instance:'
-        # I (smoser) have carried this over, but dont know how instance
-        # could be false
-        if not instance: continue
-        items=[ ]
-        for member in members:
-            val = getattr(instance,member,nil)
-            # product_codes is a list
-            if val is None: val = nil
-            if hasattr(val,'__iter__'):
-                val = ','.join(val)
-            items.append(val)
-        print "INSTANCE\t%s" % '\t'.join(items)

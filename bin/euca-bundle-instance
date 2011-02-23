@@ -1,9 +1,9 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009, Eucalyptus Systems, Inc.
+# Copyright (c) 20092011, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -32,15 +32,11 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 # Author: Neil Soman neil@eucalyptus.com
+#         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import sys
-from euca2ools import Euca2ool, Util, InstanceValidationError, \
-    ConnectionFailed
-import base64
-from datetime import datetime, timedelta
+import euca2ools.controller
 
-usage_string = \
-    """
+USAGE = """
 Bundle a Windows instance.
 
 euca-bundle-instance instance_id -b, --bucket bucket -p, --prefix prefix -o access_key_id [-c policy] -w secret_key [-h, --help] [--version] [--debug]
@@ -66,37 +62,14 @@ OPTIONAL PARAMETERS
 
 """
 
-
-def usage(status=1):
-    print usage_string
-    Util().usage()
-    sys.exit(status)
-
-
-def version():
-    print Util().version()
-    sys.exit()
-
-
 def display_bundle(bundle):
-    bundle_string = '%s\t%s\t%s\t%s\t%s\t%s\t%s' % (
-        bundle.id,
-        bundle.instance_id,
-        bundle.bucket,
-        bundle.prefix,
-        bundle.state,
-        bundle.start_time,
-        bundle.update_time,
-        )
+    bundle_string = '%s\t%s\t%s\t%s\t%s\t%s\t%s' % (bundle.id, bundle.instance_id,
+                                                    bundle.bucket, bundle.prefix,
+                                                    bundle.state, bundle.start_time,
+                                                    bundle.update_time)
     print 'BUNDLE\t%s' % bundle_string
 
-
-def generate_default_policy(
-    bucket,
-    prefix,
-    expiration,
-    acl,
-    ):
+def generate_default_policy(bucket, prefix, expiration, acl):
     delta = timedelta(hours=expiration)
     expiration_time = (datetime.utcnow() + delta).replace(microsecond=0)
     expiration_str = expiration_time.isoformat()
@@ -108,22 +81,7 @@ def generate_default_policy(
     encoded_policy = base64.b64encode(policy)
     return encoded_policy
 
-
 def main():
-    euca = None
-    try:
-        euca = Euca2ool('b:p:o:c:w:x:', [
-            'bucket=',
-            'prefix=',
-            'policy=',
-            'user-access-key-id=',
-            'user-secret-key=',
-            'expires=',
-            ])
-    except Exception, e:
-        print e
-        usage()
-
     bucket = None
     prefix = None
     access_key_id = None
@@ -132,7 +90,16 @@ def main():
     instance_id = None
     expiration = 24
 
-    for (name, value) in euca.opts:
+    controller = euca2ools.controller.Controller('b:p:o:c:w:x:',
+                                                 ['bucket=',
+                                                  'prefix=',
+                                                  'policy=',
+                                                  'user-access-key-id=',
+                                                  'user-secret-key=',
+                                                  'expires='],
+                                                 cmd_usage=USAGE)
+
+    for (name, value) in controller.opts:
         if name in ('-b', '--bucket'):
             bucket = value
         elif name in ('-p', '--prefix'):
@@ -152,53 +119,38 @@ def main():
             except ValueError:
                 print 'Expiration must be an integer value.'
                 sys.exit(1)
-        elif name in ('-h', '--help'):
-            usage(0)
-        elif name == '--version':
-            version()
 
-    for arg in euca.args:
-        instance_id = arg
-        break
+    if controller.args >= 1:
+        instance_id = controller.args[0]
 
-    if instance_id and bucket and prefix and access_key_id \
-        and secret_key:
-        try:
-            euca.validate_instance_id(instance_id)
-        except InstanceValidationError:
-            print 'Invalid instance id'
-            sys.exit(1)
-        try:
-            euca_conn = euca.make_connection()
-        except ConnectionFailed, e:
-            print e.message
-            sys.exit(1)
+    if instance_id and bucket and prefix and access_key_id and secret_key:
+        controller.validate_instance_id(instance_id)
+        euca_conn = controller.make_connection_cli()
+        
         if not policy:
             policy = generate_default_policy(bucket, prefix,
                     expiration, 'ec2-bundle-read')
-        try:
-            bundle_task = \
-                euca_conn.bundle_instance(instance_id=instance_id,
-                    s3_bucket=bucket, s3_prefix=prefix,
-                    s3_upload_policy=policy)
-        except Exception, ex:
-            euca.display_error_and_exit('%s' % ex)
-
+        bundle_task = controller.make_request_cli(euca_conn,
+                                                  'bundle_instance',
+                                                  instance_id=instance_id,
+                                                  s3_bucket=bucket,
+                                                  s3_prefix=prefix,
+                                                  s3_upload_policy=policy)
         if bundle_task:
             display_bundle(bundle_task)
     else:
+        msgs = ['Error:']
         if not instance_id:
-            print 'instance_id must be specified.'
+            msgs.append('instance_id must be specified.')
         if not bucket:
-            print 'bucket must be specified.'
+            msgs.append('bucket must be specified.')
         if not prefix:
-            print 'prefix must be specified.'
+            msgs.append('prefix must be specified.')
         if not access_key_id:
-            print 'access_key_id must be specified.'
+            msgs.append('access_key_id must be specified.')
         if not secret_key:
-            print 'secret_key must be specified.'
-        usage(1)
-
+            msgs.append('secret_key must be specified.')
+        controller.display_error_and_exit('\n'.join(msgs))
 
 if __name__ == '__main__':
     main()

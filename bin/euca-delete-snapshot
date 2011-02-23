@@ -52,19 +52,21 @@ OPTIONAL PARAMETERS
 def main():
     controller = euca2ools.controller.Controller(cmd_usage=USAGE)
     
-    if len(controller.args) < 1:
+    if len(controller.args) >= 1:
+        snapshot_id = controller.args[0]
+
+    if snapshot_id:
+        controller.validate_snapshot_id(snapshot_id)
+
+        euca_conn = controller.make_connection_cli()
+        return_code = controller.make_request_cli(euca_conn,
+                                                  'delete_snapshot',
+                                                  snapshot_id=snapshot_id)
+        if return_code:
+            print 'SNAPSHOT\t%s' % snapshot_id
+    else:
         msg = 'snapshot_id must be specified'
         controller.display_error_and_exit(msg)
-    else:
-        snapshot_id = controller.args[0]
-    controller.validate_snapshot_id(snapshot_id)
-
-    euca_conn = controller.make_connection_cli()
-    return_code = controller.make_request_cli(euca_conn,
-                                              'delete_snapshot',
-                                              snapshot_id=snapshot_id)
-    if return_code:
-        print 'SNAPSHOT\t%s' % snapshot_id
 
 if __name__ == '__main__':
     main()
