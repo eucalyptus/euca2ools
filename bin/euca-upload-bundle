@@ -1,9 +1,9 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -32,18 +32,16 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 # Author: Neil Soman neil@eucalyptus.com
+#         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import getopt
+import euca2ools.controller
 import sys
 import os
 from xml.dom import minidom
-from euca2ools import Euca2ool, FileValidationError, Util, \
-    ConnectionFailed
 from boto.exception import S3ResponseError, S3CreateError
 from boto.s3.key import Key
 
-usage_string = \
-    """
+USAGE = """
 Upload a previously bundled image to the cloud.
 
 euca-upload-bundle -b, --bucket bucket -m, --manifest manifest_path [-a, --access-key access_key_id] 
@@ -70,22 +68,9 @@ OPTIONAL PARAMETERS
 
 """
 
-
-def usage(status=1):
-    print usage_string
-    Util().usage()
-    sys.exit(status)
-
-
-def version():
-    print Util().version()
-    sys.exit()
-
-
 def create_bucket(connection, bucket, canned_acl=None):
     print 'Creating bucket:', bucket
     return connection.create_bucket(bucket, policy=canned_acl)
-
 
 def ensure_bucket(connection, bucket, canned_acl=None):
     bucket_instance = None
@@ -109,7 +94,6 @@ def ensure_bucket(connection, bucket, canned_acl=None):
             sys.exit()
     return bucket_instance
 
-
 def get_parts(manifest_filename):
     parts = []
     dom = minidom.parse(manifest_filename)
@@ -121,7 +105,6 @@ def get_parts(manifest_filename):
             if node.nodeType == node.TEXT_NODE:
                 parts.append(node.data)
     return parts
-
 
 def upload_manifest(euca, bucket_instance, manifest_filename,
                     canned_acl=None):
@@ -139,14 +122,8 @@ def upload_manifest(euca, bucket_instance, manifest_filename,
             print s3error_string
         sys.exit()
 
-
-def upload_parts(
-    bucket_instance,
-    directory,
-    parts,
-    part_to_start_from,
-    canned_acl=None,
-    ):
+def upload_parts(bucket_instance, directory, parts,
+                 part_to_start_from, canned_acl=None):
     if part_to_start_from:
         okay_to_upload = False
     else:
@@ -172,21 +149,6 @@ def upload_parts(
 
 
 def main():
-    euca = None
-    try:
-        euca = Euca2ool('b:m:a:s:d:', [
-            'bucket=',
-            'manifest=',
-            'acl=',
-            'ec2cert=',
-            'directory=',
-            'part=',
-            'skipmanifest',
-            ], is_s3=True)
-    except Exception, e:
-        print e
-        usage()
-
     bucket = None
     manifest_path = None
     ec2cert_path = None
@@ -196,9 +158,17 @@ def main():
     skipmanifest = False
     debug = False
 
-    for (name, value) in euca.opts:
-        if name in ('-h', '--help'):
-            usage(0)
+    controller = euca2ools.controller.Controller('b:m:a:s:d:',
+                                                 ['bucket=',
+                                                  'manifest=',
+                                                  'acl=',
+                                                  'ec2cert=',
+                                                  'directory=',
+                                                  'part=',
+                                                  'skipmanifest'],
+                                                 is_s3=True,
+                                                 cmd_usage=USAGE)
+    for (name, value) in controller.opts:
         elif name in ('-b', '--bucket'):
             bucket = value
         elif name in ('-m', '--manifest'):
@@ -215,40 +185,31 @@ def main():
             url = value
         elif name == '--skipmanifest':
             skipmanifest = True
-        elif name == '--version':
-            version()
 
     if bucket and manifest_path:
-        try:
-            euca.validate_file(manifest_path)
-        except FileValidationError:
-            print 'Invalid manifest'
-            sys.exit(1)
-
-        try:
-            conn = euca.make_connection()
-        except ConnectionFailed, e:
-            print e.message
-            sys.exit(1)
-
-        bucket_instance = ensure_bucket(conn, bucket, canned_acl)
+        controller.validate_file(manifest_path)
+        euca_conn = controller.make_connection_cli()
+        return_code = controller.make_request_cli(euca_conn,
+                                                  'delete_snapshot',
+                                                  snapshot_id=snapshot_id)
+        bucket_instance = ensure_bucket(euca_conn, bucket, canned_acl)
         parts = get_parts(manifest_path)
         manifest_directory, manifest_file = os.path.split(manifest_path)
         if not directory:
             directory = manifest_directory
         if not skipmanifest and not part:
-            upload_manifest(euca, bucket_instance, manifest_path, canned_acl)
+            upload_manifest(controller, bucket_instance, manifest_path, canned_acl)
         upload_parts(bucket_instance, directory, parts, part,
                      canned_acl)
         print 'Uploaded image as %s/%s' % (bucket,
                 euca.get_relative_filename(manifest_path))
     else:
+        msgs = ['Error:']
         if not bucket:
-            print 'bucket must be specified.'
+            msgs.append('bucket must be specified.')
         if not manifest_path:
-            print 'manifest must be specified.'
-        usage()
-
+            msgs.append('manifest must be specified.')
+        controller.display_error_and_exit('\n'.join(msgs))
 
 if __name__ == '__main__':
     main()

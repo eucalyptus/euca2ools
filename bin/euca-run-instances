@@ -89,15 +89,9 @@ def display_reservations(reservation):
     print_instances(reservation.instances)
 
 def read_user_data(user_data_filename):
-    USER_DATA_CHUNK_SIZE = 512
-    user_data = ''
-    user_data_file = open(user_data_filename, 'r')
-    while 1:
-        data = user_data_file.read(USER_DATA_CHUNK_SIZE)
-        if not data:
-            break
-        user_data += data
-    user_data_file.close()
+    fp = open(user_data_filename)
+    user_data = fp.read()
+    fp.close()
     return user_data
 
 def main():
@@ -142,7 +136,7 @@ def main():
             ramdisk_id = value
         elif name in ('-n', '--instance-count'):
             counts = value.split('-')
-            try:
+            Try:
                 if (len(counts) > 1):
                     min_count = int(counts[0])
                     max_count = int(counts[1])
