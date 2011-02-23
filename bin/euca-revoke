@@ -1,9 +1,9 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009, Eucalyptus Systems, Inc.
+# Copyright (c) 20092011, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -32,15 +32,11 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 # Author: Neil Soman neil@eucalyptus.com
+#         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import getopt
-import sys
-import os
-from euca2ools import Euca2ool, AddressValidationError, \
-    ProtocolValidationError, Util, ConnectionFailed
+import euca2ools.controller
 
-usage_string = \
-    """
+USAGE = """
 Revoke a rule for a security group.
 
 euca-revoke [-P | --protocol protocol] [-p | --port-range port_range] 
@@ -68,32 +64,7 @@ OPTIONAL PARAMETERS
 
 """
 
-
-def usage(status=1):
-    print usage_string
-    Util().usage(compat=True)
-    sys.exit(status)
-
-def version():
-    print Util().version()
-    sys.exit(status)
-
-
 def main():
-    euca = None
-    try:
-        euca = Euca2ool('P:p:o:u:s:t:', [
-            'protocol=',
-            'port-range=',
-            'source-group=',
-            'source-group-user=',
-            'source-subnet=',
-            'icmp-type-code=',
-            ], compat=True)
-    except Exception, e:
-        print e
-        usage()
-
     group_name = None
     protocol = 'tcp'
     from_port = None
@@ -101,8 +72,17 @@ def main():
     source_group_name = None
     source_group_owner_id = None
     cidr_ip = None
-
-    for (name, value) in euca.opts:
+    
+    controller = euca2ools.controller.Controller('P:p:o:u:s:t:',
+                                                 ['protocol=',
+                                                  'port-range=',
+                                                  'source-group=',
+                                                  'source-group-user=',
+                                                  'source-subnet=',
+                                                  'icmp-type-code='],
+                                                 compat=True,
+                                                 cmd_usage=USAGE)
+    for (name, value) in controller.opts:
         if name in ('-P', '--protocol'):
             protocol = value
         elif name in ('-p', '--port-range'):
@@ -128,52 +108,30 @@ def main():
                 except ValueError:
                     print 'port must be an integer.'
                     sys.exit(1)
-        elif name in ('-h', '--help'):
-            usage(0)
-        elif name == '--version':
-            version()
 
     if source_group_name:
         from_port = None
         to_port = None
         protocol = None
 
-    for arg in euca.args:
-        group_name = arg
-        break
-
+    if len(controller.args) >= 1:
+        group_name = controller.args[0]
+        
     if group_name:
         if cidr_ip:
-            try:
-                euca.validate_address(cidr_ip)
-            except AddressValidationError:
-                print 'Invalid address', cidr_ip
-                sys.exit(1)
+            controller.validate_address(cidr_ip)
         if protocol:
-            try:
-                euca.validate_protocol(protocol)
-            except ProtocolValidationError:
-                print 'Invalid protocol', protocol
-                sys.exit(1)
-
-        try:
-            euca_conn = euca.make_connection()
-        except ConnectionFailed, e:
-            print e.message
-            sys.exit(1)
-        try:
-            return_code = euca_conn.revoke_security_group(
-                group_name=group_name,
-                src_security_group_name=source_group_name,
-                src_security_group_owner_id=source_group_owner_id,
-                ip_protocol=protocol,
-                from_port=from_port,
-                to_port=to_port,
-                cidr_ip=cidr_ip,
-                )
-        except Exception, ex:
-            euca.display_error_and_exit('%s' % ex)
-
+            controller.validate_protocol(protocol)
+        euca_conn = controller.make_connection_cli()
+        return_code = controller.make_request_cli(euca_conn,
+                                                  'revoke_security_group',
+                                                  group_name=group_name,
+                                                  src_security_group_name=source_group_name,
+                                                  src_security_group_owner_id=source_group_owner_id,
+                                                  ip_protocol=protocol,
+                                                  from_port=from_port,
+                                                  to_port=to_port,
+                                                  cidr_ip=cidr_ip)
         if return_code:
             print 'GROUP\t%s' % group_name
             permission_string = 'PERMISSION\t%s\tALLOWS' % group_name
@@ -192,10 +150,8 @@ def main():
                 permission_string += '\tFROM\tCIDR\t%s' % cidr_ip
             print permission_string
     else:
-
-        print 'group_name must be specified'
-        usage()
-
+        msg = 'group_name must be specified'
+        controller.display_error_and_exit(msg)
 
 if __name__ == '__main__':
     main()

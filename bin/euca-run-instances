@@ -1,9 +1,9 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009, Eucalyptus Systems, Inc.
+# Copyright (c) 20092011, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -32,14 +32,11 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 # Author: Neil Soman neil@eucalyptus.com
+#         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import getopt
-import sys
-import os
-from euca2ools import Euca2ool, Util, ConnectionFailed, print_instances
+import euca2ools.controller
 
-usage_string = \
-    """
+USAGE = """
 Starts instances.
 
 euca-run-instances [-n, --instance-count count] [-g, --group group_name] [-k, --key keyname] 
@@ -81,18 +78,6 @@ OPTIONAL PARAMETERS
 
 """
 
-
-def usage(status=1):
-    print usage_string
-    Util().usage()
-    sys.exit(status)
-
-
-def version():
-    print Util().version()
-    sys.exit()
-
-
 def display_reservations(reservation):
     reservation_string = '%s\t%s' % (reservation.id,
             reservation.owner_id)
@@ -115,29 +100,7 @@ def read_user_data(user_data_filename):
     user_data_file.close()
     return user_data
 
-
 def main():
-    euca = None
-    try:
-        euca = Euca2ool('k:n:t:g:d:f:z:b:', [
-            'key=',
-            'kernel=',
-            'ramdisk=',
-            'instance-count=',
-            'instance-type=',
-            'group=',
-            'user-data=',
-            'user-data-file=',
-            'addressing=',
-            'availability-zone=',
-            'block-device-mapping=',
-            'monitor',
-            'subnet_id=',
-            ])
-    except Exception, e:
-        print e
-        usage()
-
     image_id = None
     keyname = None
     kernel_id = None
@@ -154,7 +117,23 @@ def main():
     block_device_map = None
     monitor = False
     subnet_id = None
-    for (name, value) in euca.opts:
+
+    controller = euca2ools.controller.Controller('k:n:t:g:d:f:z:b:',
+                                                 ['key=',
+                                                  'kernel=',
+                                                  'ramdisk=',
+                                                  'instance-count=',
+                                                  'instance-type=',
+                                                  'group=',
+                                                  'user-data=',
+                                                  'user-data-file=',
+                                                  'addressing=',
+                                                  'availability-zone=',
+                                                  'block-device-mapping=',
+                                                  'monitor',
+                                                  'subnet_id='],
+                                                 cmd_usage=USAGE)
+    for (name, value) in controller.opts:
         if name in ('-k', '--key'):
             keyname = value
         elif name == '--kernel':
@@ -190,57 +169,40 @@ def main():
             monitor = True
         elif name in ('-s', '--subnet'):
             subnet_id = value
-        elif name in ('-h', '--help'):
-            usage(0)
-        elif name == '--version':
-            version()
 
-    for arg in euca.args:
-        image_id = arg
-        break
+    if len(controller.args) >= 1:
+        image_id = controller.args[0]
 
     if image_id:
         if not user_data:
             if user_data_file:
-                try:
-                    euca.validate_file(user_data_file)
-                except FileValidationError:
-                    print 'Invalid user data file path'
-                    sys.exit(1)
+                controller.validate_file(user_data_file)
                 user_data = read_user_data(user_data_file)
-        try:
-            euca_conn = euca.make_connection()
-        except ConnectionFailed, e:
-            print e.message
-            sys.exit(1)
+        euca_conn = controller.make_connection_cli()
+
         if block_device_map_args:
             block_device_map = \
                 euca.parse_block_device_args(block_device_map_args)
-        try:
-            reservation = euca_conn.run_instances(
-                image_id=image_id,
-                min_count=min_count,
-                max_count=max_count,
-                key_name=keyname,
-                security_groups=group_names,
-                user_data=user_data,
-                addressing_type=addressing_type,
-                instance_type=instance_type,
-                placement=zone,
-                kernel_id=kernel_id,
-                ramdisk_id=ramdisk_id,
-                block_device_map=block_device_map,
-                monitoring_enabled=monitor,
-                subnet_id=subnet_id
-                )
-        except Exception, ex:
-            euca.display_error_and_exit('%s' % ex)
-
+        reservation = controller.make_request_cli(euca_conn,
+                                                  'run_instances',
+                                                  image_id=image_id,
+                                                  min_count=min_count,
+                                                  max_count=max_count,
+                                                  key_name=keyname,
+                                                  security_groups=group_names,
+                                                  user_data=user_data,
+                                                  addressing_type=addressing_type,
+                                                  instance_type=instance_type,
+                                                  placement=zone,
+                                                  kernel_id=kernel_id,
+                                                  ramdisk_id=ramdisk_id,
+                                                  block_device_map=block_device_map,
+                                                  monitoring_enabled=monitor,
+                                                  subnet_id=subnet_id)
         display_reservations(reservation)
     else:
-        print 'image_id must be specified'
-        usage()
-
+        msg = 'image_id must be specified'
+        controller.display_error_and_exit(msg)
 
 if __name__ == '__main__':
     main()
