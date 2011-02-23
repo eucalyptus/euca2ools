@@ -1,9 +1,9 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009, Eucalyptus Systems, Inc.
+# Copyright (c) 20092011, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -32,18 +32,11 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 # Author: Neil Soman neil@eucalyptus.com
+#         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import getopt
-import sys
-import os
-from xml.dom import minidom
-from euca2ools import Euca2ool, FileValidationError, Util, \
-    ConnectionFailed
-from boto.exception import S3ResponseError
-from boto.s3.key import Key
+import euca2ools.controller
 
-usage_string = \
-    """
+USAGE = """
 Downloads a bundled image from a bucket.
 
 euca-download-bundle -b, --bucket bucket [-m, --manifest manifest_path] [-d, --directory directory]
@@ -63,18 +56,6 @@ OPTIONAL PARAMETERS
 
 """
 
-
-def usage(status=1):
-    print usage_string
-    Util().usage()
-    sys.exit(status)
-
-
-def version():
-    print Util().version()
-    sys.exit()
-
-
 def ensure_bucket(connection, bucket):
     bucket_instance = None
     try:
@@ -83,7 +64,6 @@ def ensure_bucket(connection, bucket):
         print 'Unable to get bucket %s' % bucket
         sys.exit()
     return bucket_instance
-
 
 def get_parts(manifest_filename):
     parts = []
@@ -96,7 +76,6 @@ def get_parts(manifest_filename):
             if node.nodeType == node.TEXT_NODE:
                 parts.append(node.data)
     return parts
-
 
 def get_manifests(bucket, image_prefix=None):
     manifests = []
@@ -111,7 +90,6 @@ def get_manifests(bucket, image_prefix=None):
                     manifests.append(k.name)
     return manifests
 
-
 def download_manifests(bucket, manifests, directory):
     if len(manifests) > 0:
         if not os.path.exists(directory):
@@ -123,7 +101,6 @@ def download_manifests(bucket, manifests, directory):
         manifest_file = open(os.path.join(directory, manifest), 'wb')
         k.get_contents_to_file(manifest_file)
         manifest_file.close()
-
 
 def download_parts(bucket, manifests, directory):
     for manifest in manifests:
@@ -137,25 +114,22 @@ def download_parts(bucket, manifests, directory):
             k.get_contents_to_file(part_file)
             part_file.close()
 
-
 def main():
-    euca = None
-    try:
-        euca = Euca2ool('b:p:m:d:', ['bucket=', 'prefix=', 'manifest=', 'directory='
-                        ], is_s3=True)
-    except Exception, e:
-        print e
-        usage()
-
     bucket = None
     image_prefix = None
     manifest_path = None
     directory = os.path.abspath('/tmp')
     conn = None
+    
+    controller = euca2ools.controller.Controller('b:p:m:d:',
+                                                 ['bucket=',
+                                                  'prefix=',
+                                                  'manifest=',
+                                                  'directory='],
+                                                 is_s3=True,
+                                                 cmd_usage=USAGE)
 
-    for (name, value) in euca.opts:
-        if name in ('-h', '--help'):
-            usage(0)
+    for (name, value) in controller.opts:
         elif name in ('-d', '--directory'):
             directory = value
         elif name in ('-b', '--bucket'):
@@ -167,26 +141,17 @@ def main():
 
     if bucket:
         if manifest_path:
-            try:
-                euca.validate_file(manifest_path)
-            except FileValidationError:
-                print 'Invalid manifest', manifest_path
-                sys.exit(1)
+            controller.validate_file(manifest_path)
 
-        try:
-            conn = euca.make_connection()
-        except ConnectionFailed, e:
-            print e.message
-            sys.exit(1)
+        euca_conn = controller.make_connection_cli()
 
-        bucket_instance = ensure_bucket(conn, bucket)
+        bucket_instance = ensure_bucket(euca_conn, bucket)
         manifests = get_manifests(bucket_instance, image_prefix)
         download_manifests(bucket_instance, manifests, directory)
         download_parts(bucket_instance, manifests, directory)
     else:
-        print 'bucket must be specified.'
-        usage()
-
+        msg = 'bucket must be specified.'
+        controller.display_error_and_exit(msg)
 
 if __name__ == '__main__':
     main()
