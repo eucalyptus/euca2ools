@@ -114,8 +114,8 @@ def main():
             if not image_attribute:
                 image_attribute = 'ramdisk'
 
-    if len(command.args) >= 1:
-        image_id = command.args[0]
+    if len(controller.args) >= 1:
+        image_id = controller.args[0]
         
     if image_id and image_attribute:
         euca_conn = controller.make_connection_cli()

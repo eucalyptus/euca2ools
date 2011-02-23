@@ -55,49 +55,23 @@ def display_console_output(console_output):
     print console_output.output
 
 def main():
-    try:
-        euca = Euca2ool()
-    except Exception, e:
-        print e
-        usage()
-
     instance_id = None
 
-    for (name, value) in euca.opts:
-        if name in ('-h', '--help'):
-            usage(0)
-        elif name == '--version':
-            version()
-        elif name == '--debug':
-            debug = True
-
-    for arg in euca.args:
-        instance_id = arg
-        break
+    controller = euca2ools.controller.Controller(cmd_usage=USAGE)
+    if len(controller.args) >= 1:
+        instance_id = controller.args[0]
 
     if instance_id:
-        try:
-            euca.validate_instance_id(instance_id)
-        except InstanceValidationError:
-            print 'Invalid instance id'
-            sys.exit(1)
-
-        try:
-            euca_conn = euca.make_connection()
-        except ConnectionFailed, e:
-            print e.message
-            sys.exit(1)
-        try:
-            console_output = euca_conn.get_console_output(instance_id)
-        except Exception, ex:
-            euca.display_error_and_exit('%s' % ex)
-
+        controller.validate_instance_id(instance_id)
+        euca_conn = controller.make_connection_cli()
+        console_output = controller.make_request_cli(euca_conn,
+                                                     'get_console_output',
+                                                     instance_id=instance_id)
         display_console_output(console_output)
     else:
-        print 'instance_id must be specified'
-        usage()
-
-
+        msg = 'instance_id must be specified'
+        controller.display_error_and_exit(msg)
+        
 if __name__ == '__main__':
     main()
 

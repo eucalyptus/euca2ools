@@ -60,7 +60,7 @@ def main():
         euca_conn = controller.make_connection_cli()
         return_code = controller.make_request_cli(euca_conn,
                                                   'release_address',
-                                                  address=ip)
+                                                  public_ip=ip)
         if return_code:
             print 'ADDRESS\t%s' % ip
     else:

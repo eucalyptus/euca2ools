@@ -136,7 +136,7 @@ def main():
             ramdisk_id = value
         elif name in ('-n', '--instance-count'):
             counts = value.split('-')
-            Try:
+            try:
                 if (len(counts) > 1):
                     min_count = int(counts[0])
                     max_count = int(counts[1])
