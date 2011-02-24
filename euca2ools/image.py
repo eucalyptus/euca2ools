@@ -100,7 +100,6 @@ class LinuxImage:
             mkfs = [ mkfs_prog , image_path ]
             if label: mkfs.extend([ '-L', label ])
             tunecmd = [ 'xfs_admin', '-U', uuid ]
-
         elif fs_type == "btrfs":
             if uuid: raise(UnsupportedException("btrfs with uuid not supported"))
             if label: mkfs.extend([ '-L', label ])

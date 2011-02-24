@@ -93,7 +93,7 @@ def main():
                                               'create_volume',
                                               size=size,
                                               zone=zone,
-                                              snapshot_id=snapshot_id)
+                                              snapshot=snapshot_id)
         if volume:
             display_volume(volume)
     else:

@@ -39,7 +39,6 @@ from xml.dom import minidom
 from hashlib import sha1 as sha
 from M2Crypto import BN, EVP, RSA, X509
 from binascii import hexlify, unhexlify
-from subprocess import *
 import subprocess
 import platform
 import re
@@ -120,6 +119,38 @@ class Bundler(object):
             print 'Image Size:', image_size, 'bytes'
         return image_size
 
+    def get_fs_info(self, path):
+        fs_type = None
+        uuid = None
+        label = None
+        devpth = None
+        tmpd = None
+        try:
+            st_dev=os.stat(path).st_dev
+            dev=os.makedev(os.major(st_dev),os.minor(st_dev))
+            tmpd=tempfile.mkdtemp()
+            devpth=("%s/dev" % tmpd)
+            os.mknod(devpth,0400 | stat.S_IFBLK ,dev)
+        except:
+            raise
+
+        ret = { }
+        pairs = { 'LABEL' : 'label', 'UUID' : 'uuid' , 'FS_TYPE' : 'fs_type' }
+        for (blkid_n, my_n) in pairs.iteritems():
+            cmd = [ 'blkid', '-s%s' % blkid_n, '-ovalue', devpth ]
+            print cmd
+            try:
+                output = subprocess.Popen(cmd, stdout=PIPE).communicate()[0]
+                ret[my_n]=output.rstrip()
+            except Exception, e:
+                os.unlink(devpth)
+                os.rmdir(tmpd)
+                raise UnsupportedException("Unable to determine %s for %s" % (blkid_n, path))
+
+        os.unlink(devpth)
+        os.rmdir(tmpd)
+        return(ret)
+   
     def tarzip_image(self, prefix, file, path):
         check_prerequisite_command('tar')
 
@@ -590,13 +621,12 @@ class Bundler(object):
         check_prerequisite_command('losetup')
         tries = 0
         while tries < MAX_LOOP_DEVS:
-            loop_dev = Popen(['losetup', '-f'],
-                             stdout=PIPE).communicate()[0].replace('\n'
-                    , '')
+            loop_dev = subprocess.Popen(['losetup', '-f'],
+                                        stdout=PIPE).communicate()[0].replace('\n', '')
             if loop_dev:
-                output = Popen(['losetup', '%s' % loop_dev, '%s'
-                               % image_path], stdout=PIPE,
-                               stderr=PIPE).communicate()
+                output = subprocess.Popen(['losetup', '%s' % loop_dev, '%s'
+                                           % image_path], stdout=PIPE,
+                                          stderr=PIPE).communicate()
                 if not output[1]:
                     return loop_dev
             else:
@@ -635,7 +665,7 @@ class Bundler(object):
             for exclude in excludes:
                 print 'Excluding:', exclude
 
-        pipe = Popen(rsync_cmd, stdout=PIPE, stderr=PIPE)
+        pipe = subprocess.Popen(rsync_cmd, stdout=PIPE, stderr=PIPE)
         output = pipe.communicate()
         for dir in self.img.ESSENTIAL_DIRS:
             dir_path = os.path.join(mount_point, dir)
@@ -678,8 +708,8 @@ class Bundler(object):
         check_prerequisite_command('umount')
         if self.debug:
             print 'Unmounting image...'
-        Popen(['umount', '-d', mount_point],
-              stdout=PIPE).communicate()[0]
+        subprocess.Popen(['umount', '-d', mount_point],
+                         stdout=PIPE).communicate()[0]
         os.rmdir(mount_point)
 
     def copy_volume(self, image_path, volume_path, excludes,
