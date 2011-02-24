@@ -65,7 +65,7 @@ def main():
     if keypair_name:
         euca_conn = controller.make_connection_cli()
         keypair = controller.make_request_cli(euca_conn,
-                                              'create_keypair',
+                                              'create_key_pair',
                                               key_name=keypair_name)
         display_keypair(keypair)
     else:
