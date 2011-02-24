@@ -86,7 +86,7 @@ def display_reservations(reservation):
         reservation_string += '%s%s' % (group_delim, group.id)
         group_delim = ', '
     print 'RESERVATION\t%s' % reservation_string
-    print_instances(reservation.instances)
+    euca2ools.print_instances(reservation.instances)
 
 def read_user_data(user_data_filename):
     fp = open(user_data_filename)
