@@ -50,20 +50,22 @@ OPTIONAL PARAMETER
 """
 
 def main():
+    group_name = None
     controller = euca2ools.controller.Controller(cmd_usage=USAGE)
     
-    if len(controller.args) < 1:
+    if len(controller.args) >= 1:
+        group_name = controller.args[0]
+
+    if group_name:
+        euca_conn = controller.make_connection_cli()
+        return_code = controller.make_request_cli(euca_conn,
+                                                  'delete_security_group',
+                                                  name=group_name)
+        if return_code:
+            print 'GROUP\t%s' % group_name
+    else:
         msg = 'group_name must be specified'
         controller.display_error_and_exit(msg)
-    else:
-        group_name = controller.args[0]
-        
-    euca_conn = controller.make_connection_cli()
-    return_code = controller.make_request_cli(euca_conn,
-                                              'delete_security_group',
-                                              name=group_name)
-    if return_code:
-        print 'GROUP\t%s' % group_name
 
 if __name__ == '__main__':
     main()
