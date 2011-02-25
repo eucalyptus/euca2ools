@@ -59,7 +59,11 @@ USAGE = \
 -U, --url			URL of the Cloud to connect to.
 
 --config			Read credentials and cloud settings from the 
-				specified config file (defaults to $HOME/.eucarc or /etc/euca2ools/eucarc).
+				specified config file (defaults to
+                                $HOME/.eucarc or /etc/euca2ools/eucarc).
+
+--filter                        A filter for limiting results.  Can be
+                                specified multiple times.
 
 -h, --help			Display this help message.
 
@@ -91,6 +95,7 @@ class Controller(object):
         self.ec2_user_access_key = None
         self.ec2_user_secret_key = None
         self.url = None
+        self.filters = {}
         self.region_name = None
         self.region = RegionInfo()
         self.config_file_path = None
@@ -111,12 +116,13 @@ class Controller(object):
         if not short_opts:
             short_opts = ''
         if not long_opts:
-            long_opts = ['']
+            long_opts = []
         short_opts += 'hU:'
         short_opts += '%s:' % self.secret_key_opt
         short_opts += '%s:' % self.access_key_opt
         long_opts += ['access-key=', 'secret-key=', 'url=', 'help',
-                      'version', 'debug', 'config=', 'euca-auth', 'region=']
+                      'version', 'debug', 'config=', 'euca-auth',
+                      'region=', 'filter=']
         (opts, args) = getopt.gnu_getopt(sys.argv[1:], short_opts,
                 long_opts)
         self.opts = opts
@@ -140,11 +146,19 @@ class Controller(object):
             elif name == '--region':
                 self.region_name = value
             elif name == '--debug':
-                self.debug = True
+                boto.set_stream_logger('euca2ools')
+                self.debug = 2
             elif name == '--config':
                 self.config_file_path = value
             elif name == '--euca-auth':
                 self.is_euca = True
+            elif name == '--filter':
+                try:
+                    name, value = value.split('=')
+                except ValueError:
+                    msg = 'Filters must be of the form name=value'
+                    self.display_error_and_exit(msg)
+                self.filters[name] = value
         self.setup_environ()
 
         h = NullHandler()
@@ -299,6 +313,7 @@ class Controller(object):
         return boto.connect_ec2(aws_access_key_id=self.ec2_user_access_key,
                                 aws_secret_access_key=self.ec2_user_secret_key,
                                 is_secure=self.is_secure,
+                                debug=self.debug,
                                 region=self.region,
                                 port=self.port,
                                 path=self.service_path)
@@ -366,6 +381,7 @@ class Controller(object):
             print 'Unknown request: %s' % request_name
             sys.exit(1)
         try:
+            params['filters'] = self.filters
             return method(**params)
         except Exception as ex:
             self.display_error_and_exit(ex)
