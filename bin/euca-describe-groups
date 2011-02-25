@@ -47,6 +47,9 @@ OPTIONAL PARAMETERS
 
 group1 group2...groupN		groups to describe. 
 
+--filter                        A filter for limiting results.  Can be
+                                specified multiple times.
+
 """
 
 def display_groups(groups):
@@ -71,7 +74,8 @@ def display_groups(groups):
                 print 'PERMISSION\t%s' % permission_string
 
 def main():
-    controller = euca2ools.controller.Controller(cmd_usage=USAGE)
+    controller = euca2ools.controller.Controller(long_opts=['filter='],
+                                                 cmd_usage=USAGE)
     euca_conn = controller.make_connection_cli()
     groups = controller.make_request_cli(euca_conn,
                                          'get_all_security_groups',

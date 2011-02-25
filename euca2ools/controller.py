@@ -62,9 +62,6 @@ USAGE = \
 				specified config file (defaults to
                                 $HOME/.eucarc or /etc/euca2ools/eucarc).
 
---filter                        A filter for limiting results.  Can be
-                                specified multiple times.
-
 -h, --help			Display this help message.
 
 --version 			Display the version of this tool.
@@ -376,12 +373,13 @@ class Controller(object):
         out of all the command files.
         """
         try:
+            if self.filters:
+                params['filters'] = self.filters
             method = getattr(connection, request_name)
         except AttributeError:
             print 'Unknown request: %s' % request_name
             sys.exit(1)
         try:
-            params['filters'] = self.filters
             return method(**params)
         except Exception as ex:
             self.display_error_and_exit(ex)

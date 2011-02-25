@@ -47,6 +47,9 @@ OPTIONAL PARAMETERS
 
 zone1 zone2...zoneN		zones to describe. 
 
+--filter                        A filter for limiting results.  Can be
+                                specified multiple times.
+
 """
 
 def display_zones(zones):
@@ -55,7 +58,8 @@ def display_zones(zones):
         print 'AVAILABILITYZONE\t%s' % zone_string
 
 def main():
-    controller = euca2ools.controller.Controller(cmd_usage=USAGE)
+    controller = euca2ools.controller.Controller(long_opts=['filter='],
+                                                 cmd_usage=USAGE)
     euca_conn = controller.make_connection_cli()
     zones = controller.make_request_cli(euca_conn,
                                         'get_all_zones',

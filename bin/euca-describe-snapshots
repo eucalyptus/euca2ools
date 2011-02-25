@@ -50,6 +50,9 @@ OPTIONAL PARAMETERS
 	
 snapshot1 snapshot2...snapshotN		Snapshots to describe. 
 
+--filter                        A filter for limiting results.  Can be
+                                specified multiple times.
+
 """
 
 def display_snapshots(snapshots):
@@ -62,7 +65,9 @@ def display_snapshots(snapshots):
 def main():
     owner = None
     restorable_by = None
-    controller = euca2ools.controller.Controller('o:r:', cmd_usage=USAGE)
+    controller = euca2ools.controller.Controller('o:r:',
+                                                 long_opts=['filter='],
+                                                 cmd_usage=USAGE)
     for (name, value) in controller.opts:
         if name == "-o":
             owner = value

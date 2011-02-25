@@ -51,6 +51,9 @@ image1 image2 ... imageN	Images to describe.
 
 -x 				Show only images that the specified user is permitted to launch.
 
+--filter                        A filter for limiting results.  Can be
+                                specified multiple times.
+
 """
 
 def display_images(images):
@@ -84,6 +87,7 @@ def display_images(images):
 
 def main():
     controller = euca2ools.controller.Controller('ao:x:',
+                                                 long_opts=['filter='],
                                                  compat=True,
                                                  cmd_usage=USAGE)
     all_ids = False

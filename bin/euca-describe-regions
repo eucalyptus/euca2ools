@@ -46,6 +46,9 @@ OPTIONAL PARAMETERS
 	
 region1 region2...regionN	regions to describe. 
 
+--filter                        A filter for limiting results.  Can be
+                                specified multiple times.
+
 """
 
 def display_regions(regions):
@@ -54,7 +57,8 @@ def display_regions(regions):
         print 'REGION\t%s' % region_string
 
 def main():
-    controller = euca2ools.controller.Controller(cmd_usage=USAGE)
+    controller = euca2ools.controller.Controller(long_opts=['filter='],
+                                                 cmd_usage=USAGE)
     euca_conn = controller.make_connection_cli()
     regions = controller.make_request_cli(euca_conn,
                                           'get_all_regions',

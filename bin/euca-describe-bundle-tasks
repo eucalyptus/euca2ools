@@ -50,6 +50,9 @@ all bundle tasks are returned.
 
 OPTIONAL PARAMETERS
 
+--filter                        A filter for limiting results.  Can be
+                                specified multiple times.
+
 """
 
 def display_bundles(bundles):
@@ -66,7 +69,8 @@ def display_bundles(bundles):
         print 'BUNDLE\t%s' % bundle_string
 
 def main():
-    controller = euca2ools.controller.Controller(cmd_usage=USAGE)
+    controller = euca2ools.controller.Controller(long_opts=['filter='],
+                                                 cmd_usage=USAGE)
     for bundle_id in controller.args:
         controller.validate_bundle_id(bundle_id)
     euca_conn = controller.make_connection_cli()

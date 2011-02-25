@@ -3,7 +3,7 @@
 
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
+# Copyright (c) 20092011, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -37,34 +37,48 @@
 import euca2ools.controller
 
 USAGE = """
-Shows information about keypairs.
+Deletes the specified tags from the specified resource or resources.
 
-euca-describe-keypairs [-h, --help] [--version] [--debug]
-[keypair1 keypair2...keypairN] 
+euca-delete-tags --tag key[=value] [--tag key[=value]] resource_id [resource_id]
+
+REQUIRED PARAMETERS
+	
+resource_id                     The resource you want to remove the tag from.
+--tag key or --tag key=value    The key and optional value, separated by = sign.
 
 OPTIONAL PARAMETERS
-	
-keypair1 keypair2...keypairN 	keypairs to describe. 
-
---filter                        A filter for limiting results.  Can be
-                                specified multiple times.
 
 """
 
-def display_keypairs(keypairs):
-    for keypair in keypairs:
-        keypair_string = '%s\t%s' % (keypair.name, keypair.fingerprint)
-        print 'KEYPAIR\t%s' % keypair_string
-
 def main():
-    controller = euca2ools.controller.Controller(long_opts=['filter='],
+    tags = {}
+
+    controller = euca2ools.controller.Controller(None,
+                                                 ['tag='],
                                                  cmd_usage=USAGE)
 
+    for (name, value) in controller.opts:
+        if name == '--tag':
+            t = value.split('=')
+            name = t[0]
+            if len(t) == 1:
+                value = ''
+            else:
+                value = t[1]
+            tags[name] = value
+
+    if len(controller.args) == 0:
+        msg = 'at least one resource_id must be specified'
+        controller.display_error_and_exit(msg)
+    if len(tags.keys()) == 0:
+        msg = 'at least one tag must be specified'
+        controller.display_error_and_exit(msg)
+
     euca_conn = controller.make_connection_cli()
-    keypairs = controller.make_request_cli(euca_conn,
-                                           'get_all_key_pairs',
-                                           keynames=controller.args)
-    display_keypairs(keypairs)
+    status = controller.make_request_cli(euca_conn,
+                                         'delete_tags',
+                                         resource_ids=controller.args,
+                                         tags=tags)
 
 if __name__ == '__main__':
     main()

@@ -46,6 +46,9 @@ OPTIONAL PARAMETERS
 
 instance1... instanceN		instances to describe.
 
+--filter                        A filter for limiting results.  Can be
+                                specified multiple times.
+
 """
 
 def display_reservations(reservations):
@@ -64,7 +67,8 @@ def display_reservations(reservations):
         euca2ools.print_instances(instances)
 
 def main():
-    controller = euca2ools.controller.Controller(cmd_usage=USAGE)
+    controller = euca2ools.controller.Controller(long_opts=['filter='],
+                                                 cmd_usage=USAGE)
 
     for id in controller.args:
         controller.validate_instance_id(id)

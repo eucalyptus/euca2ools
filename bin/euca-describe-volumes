@@ -46,6 +46,9 @@ OPTIONAL PARAMETERS
 
 volume1 volume2...volumeN	volumes to describe. 
 
+--filter                        A filter for limiting results.  Can be
+                                specified multiple times.
+
 """
 
 def display_volumes(volumes):
@@ -75,7 +78,8 @@ def display_volumes(volumes):
             print 'ATTACHMENT\t%s' % attachment_string
 
 def main():
-    controller = euca2ools.controller.Controller(cmd_usage=USAGE)
+    controller = euca2ools.controller.Controller(long_opts=['filter='],
+                                                 cmd_usage=USAGE)
     for volume_id in controller.args:
         euca.validate_volume_id(volume_id)
     euca_conn = controller.make_connection_cli()

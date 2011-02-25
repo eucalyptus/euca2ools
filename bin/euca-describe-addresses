@@ -48,6 +48,9 @@ OPTIONAL PARAMETERS
 
 ip1 ip2...ipN			IP addresses to display information about.
 
+--filter                        A filter for limiting results.  Can be
+                                specified multiple times.
+
 """
 
 def display_addresses(addresses):
@@ -57,7 +60,8 @@ def display_addresses(addresses):
         print 'ADDRESS\t%s' % address_string
 
 def main():
-    controller = euca2ools.controller.Controller(cmd_usage=USAGE)
+    controller = euca2ools.controller.Controller(long_opts=['filter='],
+                                                 cmd_usage=USAGE)
     for address in controller.args:
         controller.validate_address(address)
     euca_conn = controller.make_connection_cli()
