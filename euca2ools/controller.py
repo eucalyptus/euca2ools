@@ -399,68 +399,42 @@ class Controller(object):
     # and, as such, they should print an appropriate message and exit
     # when invalid input is detected.
     #
-    def validate_address(self, address):
+    def _try_validate(self, method, value, msg):
         try:
-            validate.validate_address(address)
+            method(value)
         except exceptions.ValidationError as ex:
-            print ex.message
-            sys.exit(1)
-
-    def validate_instance_id(self, id):
-        try:
-            validate.validate_instance_id(id)
-        except exceptions.ValidationError as ex:
-            print ex.message
+            if msg:
+                print msg
+            else:
+                print ex.message
             sys.exit(1)
             
-    def validate_volume_id(self, id):
-        try:
-            validate.validate_volume_id(id)
-        except exceptions.ValidationError as ex:
-            print ex.message
-            sys.exit(1)
+    def validate_address(self, address, msg=None):
+        self._try_validate(validate.validate_address, address, msg)
 
-    def validate_volume_size(self, size):
-        try:
-            validate.validate_volume_size(size)
-        except exceptions.ValidationError as ex:
-            print ex.message
-            sys.exit(1)
+    def validate_instance_id(self, id, msg=None):
+        self._try_validate(validate.validate_instance, id, msg)
+            
+    def validate_volume_id(self, id, msg=None):
+        self._try_validate(validate.validate_volume_id, id, msg)
 
-    def validate_snapshot_id(self, id):
-        try:
-            validate.validate_snapshot_id(id)
-        except exceptions.ValidationError as ex:
-            print ex.message
-            sys.exit(1)
+    def validate_volume_size(self, size, msg=None):
+        self._try_validate(validate.validate_volume_size, size, msg)
 
-    def validate_protocol(self, proto):
-        try:
-            validate.validate_protocol(proto)
-        except exceptions.ValidationError as ex:
-            print ex.message
-            sys.exit(1)
+    def validate_snapshot_id(self, id, msg=None):
+        self._try_validate(validate.validate_snapshot_id, id, msg)
 
-    def validate_file(self, path):
-        try:
-            validate.validate_file(path)
-        except exceptions.ValidationError as ex:
-            print ex.message
-            sys.exit(1)
+    def validate_protocol(self, proto, msg=None):
+        self._try_validate(validate.validate_protocol, proto, msg)
 
-    def validate_dir(self, path):
-        try:
-            validate.validate_dir(path)
-        except exceptions.ValidationError as ex:
-            print ex.message
-            sys.exit(1)
+    def validate_file(self, path, msg=None):
+        self._try_validate(validate.validate_file, path, msg)
 
-    def validate_bundle_id(self, id):
-        try:
-            validate.validate_bundle_id(id)
-        except exceptions.ValidationError as ex:
-            print ex.message
-            sys.exit(1)
+    def validate_dir(self, path, msg=None):
+        self._try_validate(validate.validate_dir, path, msg)
+
+    def validate_bundle_id(self, id, msg=None):
+        self._try_validate(validate.validate_bundle_id, id, msg)
 
     def get_relative_filename(self, filename):
         return os.path.split(filename)[-1]
