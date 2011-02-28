@@ -35,11 +35,8 @@
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
 import euca2ools.controller
-import euca2ools.exceptions
-import sys
 
-USAGE = \
-"""
+USAGE = """
 Shows information about addresses.
 
 euca-describe-addresses [-h, --help] [--version] [--debug] [ip1 ip2...ipN] 
