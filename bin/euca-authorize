@@ -113,9 +113,9 @@ def main():
 
     if group_name:
         if cidr_ip:
-            euca.validate_address(cidr_ip)
+            controller.validate_address(cidr_ip)
         if protocol:
-            euca.validate_protocol(protocol)
+            controller.validate_protocol(protocol)
 
         print group_name, source_group_name, source_group_owner_id, \
               protocol, from_port, to_port, cidr_ip
