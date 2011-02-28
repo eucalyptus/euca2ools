@@ -81,7 +81,7 @@ def main():
     controller = euca2ools.controller.Controller(long_opts=['filter='],
                                                  cmd_usage=USAGE)
     for volume_id in controller.args:
-        euca.validate_volume_id(volume_id)
+        controller.validate_volume_id(volume_id)
     euca_conn = controller.make_connection_cli()
     volumes = controller.make_request_cli(euca_conn,
                                           'get_all_volumes',
