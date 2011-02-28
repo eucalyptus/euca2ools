@@ -37,9 +37,9 @@
 import euca2ools.controller
 
 USAGE = """
-Terminates specified instances.
+Stops specified instances which use EBS as root volume devices.
 
-euca-terminate-instances [-h, --help] [--version] [--debug]
+euca-stop-instances [-h, --help] [--version] [--debug] [-f, --force]
 [instance1... instanceN] 
 
 REQUIRED PARAMETERS
@@ -48,6 +48,8 @@ instance1... instanceN		instances to terminate.
 
 OPTIONAL PARAMETERS
 
+-f, --force                     forces the instance to stop.
+
 """
 
 def display_instances(instances):
@@ -55,15 +57,20 @@ def display_instances(instances):
         print 'INSTANCE\t%s' % instance.id
 
 def main():
+    force=False
     controller = euca2ools.controller.Controller(cmd_usage=USAGE)
+    for (name, value) in controller.opts:
+        if name in ('-f', '--force'):
+            force = True
     instance_ids = controller.args
     if len(instance_ids) > 0:
         for id in instance_ids:
             controller.validate_instance_id(id)
         euca_conn = controller.make_connection_cli()
         instances = controller.make_request_cli(euca_conn,
-                                                'terminate_instances',
-                                                instance_ids=instance_ids)
+                                                'stop_instances',
+                                                instance_ids=instance_ids,
+                                                force=force)
 
         display_instances(instances)
     else:

@@ -37,9 +37,9 @@
 import euca2ools.controller
 
 USAGE = """
-Terminates specified instances.
+Starts specified instances using EBS root volumes.
 
-euca-terminate-instances [-h, --help] [--version] [--debug]
+euca-start-instances [-h, --help] [--version] [--debug]
 [instance1... instanceN] 
 
 REQUIRED PARAMETERS
@@ -62,7 +62,7 @@ def main():
             controller.validate_instance_id(id)
         euca_conn = controller.make_connection_cli()
         instances = controller.make_request_cli(euca_conn,
-                                                'terminate_instances',
+                                                'start_instances',
                                                 instance_ids=instance_ids)
 
         display_instances(instances)
