@@ -413,7 +413,7 @@ class Controller(object):
         self._try_validate(validate.validate_address, address, msg)
 
     def validate_instance_id(self, id, msg=None):
-        self._try_validate(validate.validate_instance, id, msg)
+        self._try_validate(validate.validate_instance_id, id, msg)
             
     def validate_volume_id(self, id, msg=None):
         self._try_validate(validate.validate_volume_id, id, msg)
