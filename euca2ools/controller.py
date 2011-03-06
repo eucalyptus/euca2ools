@@ -220,8 +220,8 @@ class Controller(object):
         if self.environ.has_key(name):
             return self.environ[name]
         else:
-            print '%s not found' % name
-            raise NotFoundError
+            msg = '%s not found' % name
+            self.display_error_and_exit(msg)
 
     def get_credentials(self):
         if self.is_euca:

@@ -213,16 +213,13 @@ def main():
                                                   'generate-fstab',
                                                   'productcodes='],
                                                  cmd_usage=USAGE)
-    try:
-        cert_path = euca.get_environ('EC2_CERT')
-        private_key_path = euca.get_environ('EC2_PRIVATE_KEY')
-        ec2cert_path = euca.get_environ('EUCALYPTUS_CERT')
-        user = euca.get_environ('EC2_USER_ID')
-    except NotFoundError:
-        sys.exit(1)
+    cert_path = controller.get_environ('EC2_CERT')
+    private_key_path = controller.get_environ('EC2_PRIVATE_KEY')
+    ec2cert_path = controller.get_environ('EUCALYPTUS_CERT')
+    user = controller.get_environ('EC2_USER_ID')
 
     for (name, value) in controller.opts:
-        elif name in ('-c', '--cert'):
+        if name in ('-c', '--cert'):
             cert_path = value
         elif name in ('-k', '--privatekey'):
             private_key_path = value

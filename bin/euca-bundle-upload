@@ -228,12 +228,9 @@ def main():
 	elif name == '--version':
 	    version()
     
-    try:
-        cert_path=euca.get_environ('EC2_CERT')
-        ec2cert_path=euca.get_environ('EUCALYPTUS_CERT')
-        user_string = euca.get_environ('EC2_USER_ID')
-    except NotFoundError:
-	sys.exit(1)
+    cert_path = controller.get_environ('EC2_CERT')
+    ec2cert_path = controller.get_environ('EUCALYPTUS_CERT')
+    user_string = controller.get_environ('EC2_USER_ID')
 
     if user_string:
         try:

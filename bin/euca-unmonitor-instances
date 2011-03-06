@@ -37,9 +37,9 @@
 import euca2ools.controller
 
 USAGE = """
-Enables monitoring for running instances.
+Disables monitoring for running instances.
 
-euca-monitor-instances [-h, --help] [--version] [--debug]
+euca-unmonitor-instances [-h, --help] [--version] [--debug]
 [instance1... instanceN] 
 
 REQUIRED PARAMETERS
@@ -50,9 +50,9 @@ OPTIONAL PARAMETERS
 
 """
 
-def display_instances(instances):
-    for instance in instances:
-        print 'INSTANCE\t%s' % instance.id
+def display_monitor_info(info):
+    for item in info:
+        print '%s\t%s' % (item.id, item.state)
 
 def main():
     controller = euca2ools.controller.Controller(cmd_usage=USAGE)
@@ -61,11 +61,11 @@ def main():
         for id in instance_ids:
             controller.validate_instance_id(id)
         euca_conn = controller.make_connection_cli()
-        instances = controller.make_request_cli(euca_conn,
-                                                'monitor_instances',
-                                                instance_ids=instance_ids)
+        info = controller.make_request_cli(euca_conn,
+                                           'unmonitor_instances',
+                                           instance_ids=instance_ids)
 
-        display_instances(instances)
+        display_monitor_info(info)
     else:
         msg = 'instance id(s) must be specified.'
         controller.display_error_and_exit(msg)
