@@ -1,9 +1,6 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 20092011, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -34,9 +31,21 @@
 # Author: Neil Soman neil@eucalyptus.com
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.commands.releaseaddress
+import eucacommand
+from boto.roboto.param import Param
 
-if __name__ == '__main__':
-    cmd = euca2ools.commands.releaseaddress.ReleaseAddress()
-    cmd.main()
+class AssociateAddress(eucacommand.EucaCommand):
+
+    Description = 'Disassociate a public IP address from an instance.'
+    Args = [Param(name='ip', ptype='string',
+                  doc='IP address to disassociate',
+                  cardinality=1, optional=False)]
+
+    def main(self):
+        euca_conn = self.make_connection_cli()
+        return_code = self.make_request_cli(euca_conn,
+                                            'disassociate_address',
+                                            public_ip=self.arguments['ip'])
+        if return_code:
+            print 'ADDRESS\t%s' % ip
 

@@ -1,9 +1,6 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 20092011, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -34,9 +31,28 @@
 # Author: Neil Soman neil@eucalyptus.com
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.commands.releaseaddress
+import eucacommand
+from boto.roboto.param import Param
 
-if __name__ == '__main__':
-    cmd = euca2ools.commands.releaseaddress.ReleaseAddress()
-    cmd.main()
+class AssociateAddress(eucacommand.EucaCommand):
+
+    Description = 'Associate an instance with a public IP address.'
+    Options = [Param(name='instance_id', short_name='i', long_name='instance',
+                     optional=False, ptype='string',
+                     doc="""unique identifier for a running instance
+                     to associate the address with.""")]
+    Args = [Param(name='ip', ptype='string',
+                  doc='IP address to associate',
+                  cardinality=1, optional=False)]
+
+    def main(self):
+        euca_conn = self.make_connection_cli()
+        return_code = self.make_request_cli(euca_conn,
+                                            'associate_address',
+                                            instance_id=self.options['instance_id'],
+                                            public_ip=self.arguments['ip'])
+        if return_code:
+            print 'ADDRESS\t%s\t%s' % (self.arguments['ip'],
+                                       self.options['instance_id'])
+
 

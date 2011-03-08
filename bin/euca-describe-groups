@@ -34,55 +34,9 @@
 # Author: Neil Soman neil@eucalyptus.com
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.controller
-import euca2ools.exceptions
-
-USAGE = \
-"""
-Shows information about groups.
-
-euca-describe-groups [-h, --help] [--version] [--debug] [group1 group2...groupN] 
-
-OPTIONAL PARAMETERS
-
-group1 group2...groupN		groups to describe. 
-
---filter                        A filter for limiting results.  Can be
-                                specified multiple times.
-
-"""
-
-def display_groups(groups):
-    for group in groups:
-        group_string = '%s\t%s\t%s' % (group.owner_id, group.name,
-                group.description)
-        print 'GROUP\t%s' % group_string
-        for rule in group.rules:
-            permission_string = '%s\t%s\tALLOWS\t%s\t%s\t%s' \
-                % (group.owner_id, group.name, rule.ip_protocol,
-                   rule.from_port, rule.to_port)
-            for grant in rule.grants:
-                grant_string = '\tFROM'
-                if grant.owner_id or grant.name:
-                    if grant.owner_id:
-                        grant_string = '\tUSER\t%s' % grant.owner_id
-                    if grant.name:
-                        grant_string = '\tGRPNAME\t%s' % grant.name
-                else:
-                    grant_string += '\tCIDR\t%s' % grant.cidr_ip
-                permission_string += grant_string
-                print 'PERMISSION\t%s' % permission_string
-
-def main():
-    controller = euca2ools.controller.Controller(long_opts=['filter='],
-                                                 cmd_usage=USAGE)
-    euca_conn = controller.make_connection_cli()
-    groups = controller.make_request_cli(euca_conn,
-                                         'get_all_security_groups',
-                                         groupnames=controller.args)
-
-    display_groups(groups)
+import euca2ools.commands.describegroups
 
 if __name__ == '__main__':
-    main()
+    cmd = euca2ools.commands.describegroups.DescribeGroups()
+    cmd.main()
 

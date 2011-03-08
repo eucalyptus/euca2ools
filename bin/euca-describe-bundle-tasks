@@ -34,52 +34,8 @@
 # Author: Neil Soman neil@eucalyptus.com
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.controller
-import euca2ools.exceptions
-
-USAGE = \
-"""
-Retrieves previously submitted bundle tasks.
-
-euca-describe-bundle-tasks [bundle_id1... bundle_idN] [-h, --help] [--version] [--debug]
-
-REQUIRED PARAMETERS
-
-bundle_id1... bundle_idN	Identifiers of bundle tasks to describe. If no bundle task ids are specified
-all bundle tasks are returned.
-
-OPTIONAL PARAMETERS
-
---filter                        A filter for limiting results.  Can be
-                                specified multiple times.
-
-"""
-
-def display_bundles(bundles):
-    for bundle in bundles:
-        bundle_string = '%s\t%s\t%s\t%s\t%s\t%s\t%s' % (
-            bundle.id,
-            bundle.instance_id,
-            bundle.bucket,
-            bundle.prefix,
-            bundle.state,
-            bundle.start_time,
-            bundle.update_time,
-            )
-        print 'BUNDLE\t%s' % bundle_string
-
-def main():
-    controller = euca2ools.controller.Controller(long_opts=['filter='],
-                                                 cmd_usage=USAGE)
-    for bundle_id in controller.args:
-        controller.validate_bundle_id(bundle_id)
-    euca_conn = controller.make_connection_cli()
-    bundles = controller.make_request_cli(euca_conn,
-                                          'get_all_bundle_tasks',
-                                          bundle_ids=controller.args)
-    if bundles:
-        display_bundles(bundles)
+import euca2ools.commands.describebundletasks
 
 if __name__ == '__main__':
-    main()
-
+    cmd = euca2ools.commands.describebundletasks.DescribeBundleTasks()
+    cmd.main()

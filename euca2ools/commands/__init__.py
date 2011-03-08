@@ -1,9 +1,6 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 20092011, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -32,11 +29,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 # Author: Neil Soman neil@eucalyptus.com
-#         Mitch Garnaat mgarnaat@eucalyptus.com
+#       : Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.commands.releaseaddress
 
-if __name__ == '__main__':
-    cmd = euca2ools.commands.releaseaddress.ReleaseAddress()
-    cmd.main()
 

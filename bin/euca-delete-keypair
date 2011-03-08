@@ -34,37 +34,8 @@
 # Author: Neil Soman neil@eucalyptus.com
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.controller
-
-USAGE = """
-Delete a key pair.
-
-euca-delete-keypair [-h, --help] [--version] [--debug] keypair_name
-
-REQUIRED PARAMETERS	
-
-keypair_name 			unique name for the keypair to delete. 
-
-OPTIONAL PARAMETERS
-
-"""
-
-def main():
-    controller = euca2ools.controller.Controller(cmd_usage=USAGE)
-
-    if len(controller.args) < 1:
-        msg = 'keypair_name must be specified'
-        controller.display_error_and_exit(msg)
-    else:
-        keypair_name = controller.args[0]
-        
-    euca_conn = controller.make_connection_cli()
-    return_code = controller.make_request_cli(euca_conn,
-                                              'delete_key_pair',
-                                              key_name=keypair_name)
-    if return_code:
-        print 'KEYPAIR\t%s' % keypair_name
+import euca2ools.commands.deletekeypair
 
 if __name__ == '__main__':
-    main()
-
+    cmd = euca2ools.commands.deletekeypair.DeleteKeyPair()
+    cmd.main()

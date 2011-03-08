@@ -34,54 +34,9 @@
 # Author: Neil Soman neil@eucalyptus.com
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.controller
-
-USAGE = """
-Associate an instance with a public IP address.
-
-euca-associate-address -i, --instance instance_id
-[-h, --help] [--version] [--debug] ip
-
-REQUIRED PARAMETERS
-	
--i, --instance			unique identifier for a running instance to associate the address with.
-
-ip				IP address to associate. 
-
-OPTIONAL PARAMETERS
-
-"""
-
-def main():
-    ip = None
-    instance_id = None
-    controller = euca2ools.controller.Controller('i:', ['instance='],
-                                                 cmd_usage=USAGE)
-
-    for (name, value) in controller.opts:
-        if name in ('-i', '--instance'):
-            instance_id = value
-    if len(controller.args) >= 1:
-        ip = controller.args[0]
-        
-    if ip and instance_id:
-        controller.validate_instance_id(instance_id)
-        controller.validate_address(ip)
-        euca_conn = controller.make_connection_cli()
-        return_code = controller.make_request_cli(euca_conn,
-                                                  'associate_address',
-                                                  instance_id=instance_id,
-                                                  public_ip=ip)
-        if return_code:
-            print 'ADDRESS\t%s\t%s' % (ip, instance_id)
-    else:
-        if not ip:
-            msg = 'ip must be specified'
-            controller.display_error_and_exit(msg)
-        if not instance_id:
-            msg = 'instance id must be specified'
-            controller.display_error_and_exit(msg)
+import euca2ools.commands.associateaddress
 
 if __name__ == '__main__':
-    main()
+    cmd = euca2ools.commands.associateaddress.AssociateAddress()
+    cmd.main()
 

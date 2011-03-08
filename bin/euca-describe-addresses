@@ -34,39 +34,9 @@
 # Author: Neil Soman neil@eucalyptus.com
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.controller
-
-USAGE = """
-Shows information about addresses.
-
-euca-describe-addresses [-h, --help] [--version] [--debug] [ip1 ip2...ipN] 
-
-OPTIONAL PARAMETERS
-
-ip1 ip2...ipN			IP addresses to display information about.
-
---filter                        A filter for limiting results.  Can be
-                                specified multiple times.
-
-"""
-
-def display_addresses(addresses):
-    for address in addresses:
-        address_string = '%s\t%s' % (address.public_ip,
-                address.instance_id)
-        print 'ADDRESS\t%s' % address_string
-
-def main():
-    controller = euca2ools.controller.Controller(long_opts=['filter='],
-                                                 cmd_usage=USAGE)
-    for address in controller.args:
-        controller.validate_address(address)
-    euca_conn = controller.make_connection_cli()
-    addresses = controller.make_request_cli(euca_conn,
-                                            'get_all_addresses',
-                                            addresses=controller.args)
-    display_addresses(addresses)
+import euca2ools.commands.describeaddresses
 
 if __name__ == '__main__':
-    main()
+    cmd = euca2ools.commands.describeaddresses.DescribeAddresses()
+    cmd.main()
 

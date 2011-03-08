@@ -1,9 +1,6 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 20092011, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -34,9 +31,29 @@
 # Author: Neil Soman neil@eucalyptus.com
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.commands.releaseaddress
+import eucacommand
+from boto.roboto.param import Param
 
-if __name__ == '__main__':
-    cmd = euca2ools.commands.releaseaddress.ReleaseAddress()
-    cmd.main()
+class AddGroup(eucacommand.EucaCommand):
+
+    Description = 'Creates a new security group.'
+    Options = [Param(name='group_description', short_name='d', long_name='description',
+                     optional=False, ptype='string',
+                     doc='Description for the group to be created')]
+    Args = [Param(name='group_name', ptype='string',
+                  doc='unique name for the group to be created',
+                  cardinality=1, optional=False)]
+
+    def display_group(self, group):
+        group_string = '%s\t%s' % (group.name, group.description)
+        print 'GROUP\t%s' % group_string
+
+    def main(self):
+        euca_conn = self.make_connection_cli()
+        group = self.make_request_cli(euca_conn,
+                                      'create_security_group',
+                                      name=self.arguments['group_name'],
+                                      description=self.options['group_description'])
+        self.display_group(group)
+
 

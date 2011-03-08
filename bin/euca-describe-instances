@@ -34,52 +34,8 @@
 # Author: Neil Soman neil@eucalyptus.com
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.controller
-
-USAGE = """
-Shows information about instances.
-
-euca-describe-instances [-h, --help] [--version] [--debug]
-[instance1... instanceN] 
-
-OPTIONAL PARAMETERS
-
-instance1... instanceN		instances to describe.
-
---filter                        A filter for limiting results.  Can be
-                                specified multiple times.
-
-"""
-
-def display_reservations(reservations):
-    for reservation in reservations:
-        instances = []
-        instances = reservation.instances
-        if len(instances) == 0:
-            continue
-        reservation_string = '%s\t%s' % (reservation.id,
-                reservation.owner_id)
-        group_delim = '\t'
-        for group in reservation.groups:
-            reservation_string += '%s%s' % (group_delim, group.id)
-            group_delim = ', '
-        print 'RESERVATION\t%s' % reservation_string
-        euca2ools.print_instances(instances)
-
-def main():
-    controller = euca2ools.controller.Controller(long_opts=['filter='],
-                                                 cmd_usage=USAGE)
-
-    for id in controller.args:
-        controller.validate_instance_id(id)
-
-    euca_conn = controller.make_connection_cli()
-    reservations = controller.make_request_cli(euca_conn,
-                                               'get_all_instances',
-                                               instance_ids=controller.args)
-
-    display_reservations(reservations)
+import euca2ools.commands.describeinstances
 
 if __name__ == '__main__':
-    main()
-
+    cmd = euca2ools.commands.describeinstances.DescribeInstances()
+    cmd.main()

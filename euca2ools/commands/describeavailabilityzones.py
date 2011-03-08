@@ -1,9 +1,6 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 20092011, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -34,9 +31,34 @@
 # Author: Neil Soman neil@eucalyptus.com
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.commands.releaseaddress
+import eucacommand
+from boto.roboto.param import Param
 
-if __name__ == '__main__':
-    cmd = euca2ools.commands.releaseaddress.ReleaseAddress()
-    cmd.main()
+class DescribeAvailabilityZones(eucacommand.EucaCommand):
+
+    Description = 'Shows information about availability zones.'
+    Args = [Param(name='zone', ptype='string',
+                  cardinality='+', optional=True)]
+    Filters = [Param(name='message', ptype='string',
+                     doc='Message giving information about the Availability Zone.'),
+               Param(name='region-name', ptype='string',
+                     doc='Region the Availability Zone is in (e.g., us-east-1).'),
+               Param(name='state', ptype='string',
+                     doc='State of the Availability Zone'),
+               Param(name='zone-name', ptype='string',
+                     doc='Name of the zone.')]
+    
+    def display_zones(self, zones):
+        for zone in zones:
+            zone_string = '%s\t%s' % (zone.name, zone.state)
+            print 'AVAILABILITYZONE\t%s' % zone_string
+
+    def main(self):
+        euca_conn = self.make_connection_cli()
+        zones = self.make_request_cli(euca_conn,
+                                      'get_all_zones',
+                                      zones=self.arguments['zone'])
+        
+        self.display_zones(zones)
+
 

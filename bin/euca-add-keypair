@@ -34,45 +34,9 @@
 # Author: Neil Soman neil@eucalyptus.com
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.controller
-
-USAGE = """
-Creates a new key pair for use with instances.
-
-euca-add-keypair [-h, --help] [--version] [--debug] keypair_name
-
-REQUIRED PARAMETERS
-
-keypair_name - unique name for a keypair to create. 
-
-OPTIONAL PARAMETERS
-
-"""
-
-def display_keypair(keypair):
-    keypair_string = '%s\t%s' % (keypair.name, keypair.fingerprint)
-    print 'KEYPAIR\t%s' % keypair_string
-    print keypair.material
-
-def main():
-    keypair_name = None
-    controller = euca2ools.controller.Controller('d:', ['description='],
-                                                 cmd_usage=USAGE)
-
-    if len(controller.args) >= 1:
-        keypair_name = controller.args[0]
-
-    if keypair_name:
-        euca_conn = controller.make_connection_cli()
-        keypair = controller.make_request_cli(euca_conn,
-                                              'create_key_pair',
-                                              key_name=keypair_name)
-        display_keypair(keypair)
-    else:
-        msg = 'keypair_name must be specified'
-        controller.display_error_and_exit(msg)
-
+import euca2ools.commands.eucaaddkeypair
 
 if __name__ == '__main__':
-    main()
+    cmd = euca2ools.commands.addkeypair.AddKeyPair()
+    cmd.main()
 

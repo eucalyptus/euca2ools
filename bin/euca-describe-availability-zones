@@ -34,38 +34,9 @@
 # Author: Neil Soman neil@eucalyptus.com
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.controller
-import euca2ools.exceptions
-
-USAGE = \
-"""
-Shows information about availability zones.
-
-euca-describe-availability-zones [-h, --help] [--version] [--debug] [zone1 zone2...zoneN] [verbose]
-
-OPTIONAL PARAMETERS
-
-zone1 zone2...zoneN		zones to describe. 
-
---filter                        A filter for limiting results.  Can be
-                                specified multiple times.
-
-"""
-
-def display_zones(zones):
-    for zone in zones:
-        zone_string = '%s\t%s' % (zone.name, zone.state)
-        print 'AVAILABILITYZONE\t%s' % zone_string
-
-def main():
-    controller = euca2ools.controller.Controller(long_opts=['filter='],
-                                                 cmd_usage=USAGE)
-    euca_conn = controller.make_connection_cli()
-    zones = controller.make_request_cli(euca_conn,
-                                        'get_all_zones',
-                                        zones=controller.args)
-    display_zones(zones)
+import euca2ools.commands.describeavailabilityzones
 
 if __name__ == '__main__':
-    main()
+    cmd = euca2ools.commands.describeavailabilityzones.DescribeAvailabilityZones()
+    cmd.main()
 

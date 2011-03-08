@@ -166,7 +166,6 @@ def add_product_codes(product_code_string, product_codes):
 
     return product_codes
 
-
 def cleanup(path):
     if os.path.exists(path):
         os.remove(path)

@@ -34,53 +34,9 @@
 # Author: Neil Soman neil@eucalyptus.com
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.controller
-
-USAGE = """
-Creates a new security group.
-
-euca-add-group -d, --description group_description
-[-h, --help] [--version] [--debug] group_name 
-
-REQUIRED PARAMETERS
-
--d, --description		Description for the group to be created.
-
-OPTIONAL PARAMETERS
-
-"""
-
-def display_group(group):
-    group_string = '%s\t%s' % (group.name, group.description)
-    print 'GROUP\t%s' % group_string
-
-def main():
-    group_name = None
-    group_description = None
-    controller = euca2ools.controller.Controller('d:', ['description='],
-                                                 cmd_usage=USAGE)
-
-    for (name, value) in controller.opts:
-        if name in ('-d', '--description'):
-            group_description = value
-
-    if len(controller.args) >= 1:
-        group_name = controller.args[0]
-    if group_name and group_description:
-        euca_conn = controller.make_connection_cli()
-        group = controller.make_request_cli(euca_conn,
-                                            'create_security_group',
-                                            name=group_name,
-                                            description=group_description)
-        display_group(group)
-    else:
-        if not group_name:
-            msg = 'group name must be specified.'
-            controller.display_error_and_exit(msg)
-        if not group_description:
-            msg = 'group description must be specified.'
-            controller.display_error_and_exit(msg)
+import euca2ools.commands.addgroup
 
 if __name__ == '__main__':
-    main()
+    cmd = euca2ools.commands.addgroup.AddGroup()
+    cmd.main()
 

@@ -34,38 +34,8 @@
 # Author: Neil Soman neil@eucalyptus.com
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.controller
-
-USAGE = """
-Shows information about keypairs.
-
-euca-describe-keypairs [-h, --help] [--version] [--debug]
-[keypair1 keypair2...keypairN] 
-
-OPTIONAL PARAMETERS
-	
-keypair1 keypair2...keypairN 	keypairs to describe. 
-
---filter                        A filter for limiting results.  Can be
-                                specified multiple times.
-
-"""
-
-def display_keypairs(keypairs):
-    for keypair in keypairs:
-        keypair_string = '%s\t%s' % (keypair.name, keypair.fingerprint)
-        print 'KEYPAIR\t%s' % keypair_string
-
-def main():
-    controller = euca2ools.controller.Controller(long_opts=['filter='],
-                                                 cmd_usage=USAGE)
-
-    euca_conn = controller.make_connection_cli()
-    keypairs = controller.make_request_cli(euca_conn,
-                                           'get_all_key_pairs',
-                                           keynames=controller.args)
-    display_keypairs(keypairs)
+import euca2ools.commands.describekeypairs
 
 if __name__ == '__main__':
-    main()
-
+    cmd = euca2ools.commands.describekeypairs.DescribeKeyPairs()
+    cmd.main()

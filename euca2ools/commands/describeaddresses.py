@@ -1,9 +1,6 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 20092011, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -34,9 +31,31 @@
 # Author: Neil Soman neil@eucalyptus.com
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.commands.releaseaddress
+import eucacommand
+from boto.roboto.param import Param
 
-if __name__ == '__main__':
-    cmd = euca2ools.commands.releaseaddress.ReleaseAddress()
-    cmd.main()
+class DescribeAddresses(eucacommand.EucaCommand):
+
+    Description = 'Shows information about addresses.'
+    Args = [Param(name='ip', ptype='string',
+                  cardinality='+', optional=True)]
+    Filters = [Param(name='instance-id', ptype='string',
+                     doc='Instance the address is associated with (if any).'),
+               Param(name='public-ip', ptype='string',
+                     doc='The elastic IP address.')]
+    
+    def display_addresses(self, addresses):
+        for address in addresses:
+            address_string = '%s\t%s' % (address.public_ip,
+                    address.instance_id)
+            print 'ADDRESS\t%s' % address_string
+
+    def main(self):
+        euca_conn = self.make_connection_cli()
+        addresses = self.make_request_cli(euca_conn,
+                                          'get_all_addresses',
+                                          addresses=self.arguments['ip'])
+        
+        self.display_addresses(addresses)
+
 

@@ -34,40 +34,9 @@
 # Author: Neil Soman neil@eucalyptus.com
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.controller
-
-USAGE = """
-Disassociate a public IP address from an instance.
-
-euca-disassociate-address [-h, --help] [--version] [--debug] ip
-
-REQUIRED PARAMETERS
-
-ip				IP address to disassociate.
-
-OPTIONAL PARAMETERS
-	
-"""
-
-def main():
-    ip = None
-    
-    controller = euca2ools.controller.Controller(cmd_usage=USAGE)
-    if len(controller.args) >= 1:
-        ip = controller.args[0]
-
-    if ip:
-        controller.validate_address(ip)
-        euca_conn = controller.make_connection_cli()
-        return_code = controller.make_request_cli(euca_conn,
-                                                  'disassociate_address',
-                                                  public_ip=ip)
-        if return_code:
-            print 'ADDRESS\t%s' % ip
-    else:
-        msg = 'ip must be specified'
-        controller.display_error_and_exit(msg)
+import euca2ools.commands.disassociateaddress
 
 if __name__ == '__main__':
-    main()
+    cmd = euca2ools.commands.disassociateaddress.DisassociateAddress()
+    cmd.main()
 

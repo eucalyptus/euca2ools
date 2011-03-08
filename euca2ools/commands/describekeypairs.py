@@ -1,9 +1,6 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 20092011, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -34,9 +31,29 @@
 # Author: Neil Soman neil@eucalyptus.com
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.commands.releaseaddress
+import eucacommand
+from boto.roboto.param import Param
 
-if __name__ == '__main__':
-    cmd = euca2ools.commands.releaseaddress.ReleaseAddress()
-    cmd.main()
+class DescribeKeyPairs(eucacommand.EucaCommand):
+
+    Description = 'Shows information about keypairs.'
+    Args = [Param(name='keypair', ptype='string',
+                  cardinality='+', optional=True)]
+    Filters = [Param(name='fingerprint', ptype='string',
+                     doc='Fingerprint of the key pair.'),
+               Param(name='key-name', ptype='string',
+                     doc='Name of the keypair.')]
+    
+    def display_keypairs(self, keypairs):
+        for keypair in keypairs:
+            keypair_string = '%s\t%s' % (keypair.name, keypair.fingerprint)
+            print 'KEYPAIR\t%s' % keypair_string
+
+    def main(self):
+        euca_conn = self.make_connection_cli()
+        keypairs = self.make_request_cli(euca_conn,
+                                         'get_all_key_pairs',
+                                         keynames=self.arguments['keypair'])
+        
+        self.display_keypairs(keypairs)
 
