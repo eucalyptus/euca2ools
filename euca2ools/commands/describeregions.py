@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 # Software License Agreement (BSD License)
 #
 # Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
@@ -34,9 +31,30 @@
 # Author: Neil Soman neil@eucalyptus.com
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.commands.describeregions
+import eucacommand
+from boto.roboto.param import Param
 
-if __name__ == '__main__':
-    cmd = euca2ools.commands.describeregions.DescribeRegions()
-    cmd.main()
+class DescribeRegions(eucacommand.EucaCommand):
+
+    Description = 'Shows information about regions.'
+    Args = [Param(name='region', ptype='string',
+                  doc='region to describe',
+                  cardinality='+', optional=True)]
+    Filters = [Param(name='endpoint', ptype='string',
+                     doc='Endpoint of the region.'),
+               Param(name='region-name', ptype='string',
+                     doc='Name of the region.')]
+    
+    def display_regions(self, regions):
+        for region in regions:
+            region_string = '%s\t%s' % (region.name, region.endpoint)
+            print 'REGION\t%s' % region_string
+
+    def main(self):
+        euca_conn = self.make_connection_cli()
+        regions = self.make_request_cli(euca_conn,
+                                        'get_all_regions',
+                                        region_names=self.arguments['region'])
+        
+        self.display_regions(regions)
 

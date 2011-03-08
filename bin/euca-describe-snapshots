@@ -34,54 +34,9 @@
 # Author: Neil Soman neil@eucalyptus.com
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.controller
-
-USAGE = """
-Shows information about snapshots.
-
-euca-describe-snapshots [-o owner_id] [-r user_id] [snapshot1 snapshot2...snapshotN] 
-[-h, --help] [--version] [--debug]
-
-OPTIONAL PARAMETERS
-
--o					owner_id of the user who owns the snapshot.
-
--r					restorable by (user id of the user that can create volumes from the snapshot).
-	
-snapshot1 snapshot2...snapshotN		Snapshots to describe. 
-
---filter                        A filter for limiting results.  Can be
-                                specified multiple times.
-
-"""
-
-def display_snapshots(snapshots):
-    for snapshot in snapshots:
-        snapshot_string = '%s\t%s\t%s\t%s\t%s' % (snapshot.id,
-                snapshot.volume_id, snapshot.status,
-                snapshot.start_time, snapshot.progress)
-        print 'SNAPSHOT\t%s' % snapshot_string
-
-def main():
-    owner = None
-    restorable_by = None
-    controller = euca2ools.controller.Controller('o:r:',
-                                                 long_opts=['filter='],
-                                                 cmd_usage=USAGE)
-    for (name, value) in controller.opts:
-        if name == "-o":
-            owner = value
-        elif name == "-r":
-            restorable_by = value
-    for snapshot_id in controller.args:
-        controller.validate_snapshot_id(snapshot_id)
-    euca_conn = controller.make_connection_cli()
-    snapshots = controller.make_request_cli(euca_conn,
-                                            'get_all_snapshots',
-                                            owner=owner,
-                                            restorable_by=restorable_by)
-    display_snapshots(snapshots)
+import euca2ools.commands.describesnapshots
 
 if __name__ == '__main__':
-    main()
+    cmd = euca2ools.commands.describesnapshots.DescribeSnapshots()
+    cmd.main()
 

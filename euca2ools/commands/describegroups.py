@@ -38,6 +38,7 @@ class DescribeGroups(eucacommand.EucaCommand):
 
     Description = 'Shows information about groups.'
     Args = [Param(name='group_name', ptype='string',
+                  doc='group to describe',
                   cardinality='+', optional=True)]
     Filters = [Param(name='description', ptype='string',
                      doc='Description of the security group.'),
@@ -90,8 +91,7 @@ class DescribeGroups(eucacommand.EucaCommand):
         euca_conn = self.make_connection_cli()
         groups = self.make_request_cli(euca_conn,
                                        'get_all_security_groups',
-                                       groupnames=self.arguments['group_name'],
-                                       filters=self.filters)
+                                       groupnames=self.arguments['group_name'])
         
         self.display_groups(groups)
 
