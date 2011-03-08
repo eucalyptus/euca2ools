@@ -3,7 +3,7 @@
 
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 20092011, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -34,89 +34,9 @@
 # Author: Neil Soman neil@eucalyptus.com
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.controller
-import euca2ools.bundler
-
-USAGE = """
-Unbundles a previously bundled image.    
-
-euca-unbundle-image -m, --manifest manifest_path [-k, --privatekey private_key_path] 
-[-s, --source source_directory] [-d, --destination destination_directory]
-[-h, --help] [--version] [--debug]
-
-REQUIRED PARAMETERS
-
--m, --manifest			Path to the manifest file for the bundled image.
-
-OPTIONAL PARAMETERS
-
--d, --destination		Directory to store the image to (defaults to the current directory). 
-
--s, --source			Source directory for the bundled image parts (defaults to manifest directory).
-
-"""
-
-def main():
-    manifest_path = None
-    batch = False
-    directory = '.'
-    src_directory = None
-    controller = euca2ools.controller.Controller('m:k:d:s:',
-                                                 ['manifest=',
-                                                  'privatekey=',
-                                                  'destination=',
-                                                  'source='],
-                                                 cmd_usage=USAGE)
-    bundler = euca2ools.bundler.Bundler(controller)
-    try:
-        private_key_path = euca.get_environ('EC2_PRIVATE_KEY')
-    except NotFoundError:
-        sys.exit(1)
-
-    for (name, value) in controller.opts:
-        if name in ('-k', '--privatekey'):
-            private_key_path = value
-        elif name in ('-m', '--manifest'):
-            manifest_path = value
-        elif name in ('-d', '--directory'):
-            directory = value
-        elif name in ('-s', '--source'):
-            src_directory = value
-
-    if manifest_path and private_key_path:
-        controller.validate_file(manifest_path)
-        controller.validate_file(private_key_path)
-
-        if src_directory:
-            controller.validate_dir(src_directory)
-
-        (parts, encrypted_key, encrypted_iv) = \
-            bundler.parse_manifest(manifest_path)
-        if not src_directory:
-            src_directory = euca.get_file_path(manifest_path)
-        image = bundler.assemble_parts(src_directory, directory,
-                                       manifest_path, parts)
-        print 'Decrypting image'
-        decrypted_image = bundler.decrypt_image(image, encrypted_key,
-                                                encrypted_iv, private_key_path)
-        os.remove(image)
-        print 'Uncompressing image'
-        try:
-            unencrypted_image = bundler.untarzip_image(directory,
-                                                       decrypted_image)
-        except NotFoundError:
-            sys.exit(1)
-        except CommandFailed:
-            sys.exit(1)
-        os.remove(decrypted_image)
-    else:
-        msgs = ['Error:']
-        if not manifest_path:
-            msgs.append('manifest path must be specified.')
-        if not private_key_path:
-            msgs.append('private key must be specified.')
-        controller.display_error_and_exit('\n'.join(msgs))
+import euca2ools.commands.unbundle
 
 if __name__ == '__main__':
-    main()
+    cmd = euca2ools.commands.unbundle.Unbundle()
+    cmd.main()
 

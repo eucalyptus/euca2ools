@@ -3,7 +3,7 @@
 
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 20092011, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -34,122 +34,9 @@
 # Author: Neil Soman neil@eucalyptus.com
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.controller
-
-USAGE = """
-Add a new rule to a security group.
-
-euca-authorize [-P, --protocol protocol] [-p, --port-range port_range] 
-[-t, --icmp-type-code type:code] [-o, --source-group source_group]
-[-u, --source-group-user source_group_user] [-s, --source-subnet source_subnet]
-[-h, --help] [--version] [--debug] group_name
-
-REQUIRED PARAMETERS
-
-group_name			Name of the group to add the rule to.
-
-OPTIONAL PARAMETERS
-
--P, --protocol                  Protocol ("tcp" "udp" or "icmp").
-
--p, --port-range		Range of ports for the rule (specified as "from-to").
-
--t, --icmp-type-code		ICMP type and code specified as "type:code"	
-
--o, --source-group		Group from which traffic is authorized by the rule.
-
--u, --source-group-user		User ID for the source group.
-
--s, --source-subnet		The source subnet for the rule.  Defaults to 0.0.0.0/0.
-				
-"""
-
-def main():
-    group_name = None
-    protocol = 'tcp'
-    from_port = None
-    to_port = None
-    source_group_name = None
-    source_group_owner_id = None
-    cidr_ip = '0.0.0.0/0'
-
-    controller = euca2ools.controller.Controller('P:p:o:u:s:t:',
-                                                 ['protocol=',
-                                                  'port-range=',
-                                                  'source-group=',
-                                                  'source-group-user=',
-                                                  'source-subnet=',
-                                                  'icmp-type-code='],
-                                                 compat=True,
-                                                 cmd_usage=USAGE)
-    for (name, value) in controller.opts:
-        if name in ('-P', '--protocol'):
-            protocol = value
-        elif name in ('-p', '--port-range'):
-            ports = value.split('-')
-            if len(ports) > 1:
-                from_port = int(ports[0])
-                to_port = int(ports[1])
-            else:
-                from_port = to_port = int(ports[0])
-        elif name in ('-o', '--source-group'):
-            source_group_name = value
-        elif name in ('-u', '--source-group-user'):
-            source_group_owner_id = value
-        elif name in ('-s', '--source-subnet'):
-            cidr_ip = value
-        elif name in ('-t', '--icmp-type-code'):
-            code_parts = value.split(':')
-            if len(code_parts) > 1:
-                try:
-                    from_port = int(code_parts[0])
-                    to_port = int(code_parts[1])
-                except ValueError:
-                    print 'port must be an integer.'
-                    sys.exit(1)
-
-    if len(controller.args) >= 1:
-        group_name = controller.args[0]
-
-    if group_name:
-        if cidr_ip:
-            controller.validate_address(cidr_ip)
-        if protocol:
-            controller.validate_protocol(protocol)
-
-        print group_name, source_group_name, source_group_owner_id, \
-              protocol, from_port, to_port, cidr_ip
-        euca_conn = controller.make_connection_cli()
-        return_code = controller.make_request_cli(euca_conn,
-                                                  'authorize_security_group',
-                                                  group_name=group_name,
-                                                  src_security_group_name=source_group_name,
-                                                  src_security_group_owner_id=source_group_owner_id,
-                                                  ip_protocol=protocol,
-                                                  from_port=from_port,
-                                                  to_port=to_port,
-                                                  cidr_ip=cidr_ip)
-        if return_code:
-            print 'GROUP\t%s' % group_name
-            permission_string = 'PERMISSION\t%s\tALLOWS' % group_name
-            if protocol:
-                permission_string += '\t%s' % protocol
-            if from_port:
-                permission_string += '\t%s' % from_port
-            if to_port:
-                permission_string += '\t%s' % to_port
-            if source_group_owner_id:
-                permission_string += '\tUSER\t%s' \
-                    % source_group_owner_id
-            if source_group_name:
-                permission_string += '\tGRPNAME\t%s' % source_group_name
-            if cidr_ip:
-                permission_string += '\tFROM\tCIDR\t%s' % cidr_ip
-            print permission_string
-    else:
-        msg = 'group_name must be specified'
-        controller.display_error_and_exit(msg)
+import euca2ools.commands.authorize
 
 if __name__ == '__main__':
-    main()
+    cmd = euca2ools.commands.authorize.Authorize()
+    cmd.main()
 

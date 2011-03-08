@@ -34,60 +34,9 @@
 # Author: Neil Soman neil@eucalyptus.com
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.controller
-
-USAGE = """
-Shows information about volumes.
-
-euca-describe-volumes [-h, --help] [--version] [--debug]
-[volume1 volume2...volumeN] 
-
-OPTIONAL PARAMETERS
-
-volume1 volume2...volumeN	volumes to describe. 
-
---filter                        A filter for limiting results.  Can be
-                                specified multiple times.
-
-"""
-
-def display_volumes(volumes):
-    for volume in volumes:
-        volume_string = '%s\t ' % volume.id
-        if volume.size:
-            volume_string += '%d' % volume.size
-        if volume.snapshot_id:
-            volume_string += '\t%s' % volume.snapshot_id
-        else:
-            volume_string += '\t'
-
-        az = getattr(volume, 'availabilityZone', object)
-        if az is object:
-            az = volume.zone
-        if az:
-            volume_string += '\t%s' % az
-
-        volume_string += '\t%s\t%s' % (volume.status,
-                volume.create_time)
-        print 'VOLUME\t%s' % volume_string
-        if volume.status == 'in-use':
-            attachment_string = '%s\t%s\t%s\t%s' % (volume.id,
-                    volume.attach_data.instance_id,
-                    volume.attach_data.device,
-                    volume.attach_data.attach_time)
-            print 'ATTACHMENT\t%s' % attachment_string
-
-def main():
-    controller = euca2ools.controller.Controller(long_opts=['filter='],
-                                                 cmd_usage=USAGE)
-    for volume_id in controller.args:
-        controller.validate_volume_id(volume_id)
-    euca_conn = controller.make_connection_cli()
-    volumes = controller.make_request_cli(euca_conn,
-                                          'get_all_volumes',
-                                          volume_ids=controller.args)
-    display_volumes(volumes)
+import euca2ools.commands.describevolumes
 
 if __name__ == '__main__':
-    main()
+    cmd = euca2ools.commands.describevolumes.DescribeVolumes()
+    cmd.main()
 

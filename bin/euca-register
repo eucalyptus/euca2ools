@@ -3,7 +3,7 @@
 
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 20092011, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -34,108 +34,9 @@
 # Author: Neil Soman neil@eucalyptus.com
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.controller
-
-USAGE = """
-Registers a manifest for use with the cloud.
-
-euca-register [-h, --help] [--version] [--debug] image_location 
-
-REQUIRED PARAMETERS
-	
-image_location - path to the uploaded image (bucket/manifest).
-
-OPTIONAL PARAMETERS
-
--b, --block-device-mapping      Block device mapping for the instance(s). Option may be used multiple times.
- 
--d, --description		Description of the image.
-
--n, --name			Name of the image.
-
--a, --architecture	 	Architecture of the image. Can be 'i386' or 'x86_64'. Defaults to 'i386'.
-
---kernel			The kernel ID to be associated with the image.
-
---ramdisk			The ramdisk ID to be associated with the image.
-
---root-device-name		The root device name for the image (for example, '/dev/sda1').
-
--s, --snapshot			The snapshot ID to use as the root device.
-"""
-
-def main():
-    image_location = None
-    block_device_map_args = []
-    block_device_map = None
-    description = None
-    image_name = None
-    architecture = None
-    kernel = None
-    ramdisk = None
-    root_device_name = None
-    snapshot = None
-
-    controller = euca2ools.controller.Controller('b:d:n:a:s:',
-                                                 ['block-device-mapping=',
-                                                  'description=',
-                                                  'name=',
-                                                  'architecture=',
-                                                  'kernel=',
-                                                  'ramdisk=',
-                                                  'root-device-name=',
-                                                  'snapshot='],
-                                                 compat=True,
-                                                 cmd_usage=USAGE)
-
-    for (name, value) in controller.opts:
-        if name in ('-b', '--block-device-mapping'):
-            block_device_map_args.append(value)
-        elif name in ('-d', '--description'):
-            description = value
-        elif name in ('-n', '--name'):
-            image_name = value
-        elif name in ('-a', '--architecture'):
-            architecture = value
-        elif name == '--kernel':
-            kernel = value
-        elif name == '--ramdisk':
-            ramdisk = value
-        elif name == '--root-device-name':
-            root_device_name = value
-        elif name in ('-s', '--snapshot'):
-            snapshot = value
-
-    if len(controller.args) >= 1:
-        image_location = controller.args[0]
-
-    if image_location:
-        if snapshot:
-            if not root_device_name:
-                root_device_name = '/dev/sda1'
-            block_device_map_args.append('%s=%s' % (root_device_name,
-                    snapshot))
-        if block_device_map_args:
-            block_device_map = \
-                controller.parse_block_device_args(block_device_map_args)
-        euca_conn = controller.make_connection_cli()
-        image_id = controller.make_request_cli(euca_conn,
-                                               'register_image',
-                                               name=image_name,
-                                               description=description,
-                                               image_location=image_location,
-                                               architecture=architecture,
-                                               kernel_id=kernel,
-                                               ramdisk_id=ramdisk,
-                                               root_device_name=root_device_name,
-                                               block_device_map=block_device_map)
-
-        if image_id:
-            print 'IMAGE\t%s' % image_id
-    else:
-        msg = 'image location must be specified'
-        controller.display_error_and_exit(msg)
+import euca2ools.commands.register
 
 if __name__ == '__main__':
-    main()
+    cmd = euca2ools.commands.register.Register()
+    cmd.main()
 

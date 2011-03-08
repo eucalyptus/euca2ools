@@ -34,54 +34,9 @@
 # Author: Neil Soman neil@eucalyptus.com
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.controller
-
-USAGEl = """
-Confirm if instance is running with product code attached.
-
-euca-confirm-product-instance -i, --instance instance_id [-h, --help] [--version] [--debug] product_code
-
-REQUIRED PARAMETERS
-
--i, --instance 			Unique identifier for a running instance.
-
-product_code			The product code to verify.
-
-OPTIONAL PARAMETERS
-
-"""
-
-def main():
-    instance_id = None
-    product_code = None
-    controller = euca2ools.controller.Controller('i:', ['instance='],
-                                                 cmd_usage=USAGE)
-    for (name, value) in controller.opts:
-        if name in ('-i', '--instance'):
-            instance_id = value
-    if len(controller.args) >= 1:
-        product_code = controller.args[0]
-    if instance_id and product_code:
-        controller.validate_instance_id(instance_id)
-        euca_conn = controller.make_connection_cli()
-        rs = controller.make_request_cli(euca_conn,
-                                         'confirm_product_instance',
-                                         product_code=product_code,
-                                         instance_id=instance_id)
-        product_string = '%s\t%s\t' % (product_code, instance_id)
-        if rs and rs[0] is True:
-            product_string += 'true'
-        else:
-            product_string += 'false'
-        print product_string
-    else:
-        if not instance_id:
-            msg = 'instance_id must be specified'
-            controller.display_error_and_exit(msg)
-        if not product_code:
-            msg = 'product_code must be specified'
-            controller.display_error_and_exit(msg)
+import euca2ools.commands.confirmproductinstance
 
 if __name__ == '__main__':
-    main()
+    cmd = euca2ools.commands.confirmproductinstance.ConfirmProductInstance()
+    cmd.main()
 

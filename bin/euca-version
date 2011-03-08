@@ -34,19 +34,9 @@
 # Author: Neil Soman neil@eucalyptus.com
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.controller
-
-USAGE = \
-"""
-Shows the Euca2ools version
-
-euca-version [-h, --help] [--debug]
-"""
-
-def main():
-    controller = euca2ools.controller.Controller(cmd_usage=USAGE)
-    controller.display_tools_version()
+import euca2ools.commands.version
 
 if __name__ == '__main__':
-    main()
+    cmd = euca2ools.commands.version.Version()
+    cmd.main()
 

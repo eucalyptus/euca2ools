@@ -34,44 +34,9 @@
 # Author: Neil Soman neil@eucalyptus.com
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.controller
+import euca2ools.commands.getconsoleoutput
 
-USAGE = """
-Prints console output from a running instance.
-
-euca-get-console-output [-h, --help] [--version] [--debug] instance_id
-
-REQUIRED PARAMETERS
-	
-instance_id			unique identifier for the instance show the console output for.
-
-OPTIONAL PARAMETERS
-
-"""
-
-def display_console_output(console_output):
-    print console_output.instance_id
-    print console_output.timestamp
-    print console_output.output
-
-def main():
-    instance_id = None
-
-    controller = euca2ools.controller.Controller(cmd_usage=USAGE)
-    if len(controller.args) >= 1:
-        instance_id = controller.args[0]
-
-    if instance_id:
-        controller.validate_instance_id(instance_id)
-        euca_conn = controller.make_connection_cli()
-        console_output = controller.make_request_cli(euca_conn,
-                                                     'get_console_output',
-                                                     instance_id=instance_id)
-        display_console_output(console_output)
-    else:
-        msg = 'instance_id must be specified'
-        controller.display_error_and_exit(msg)
-        
 if __name__ == '__main__':
-    main()
+    cmd = euca2ools.commands.getconsoleoutput.GetConsoleOutput()
+    cmd.main()
 

@@ -3,7 +3,7 @@
 
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 20092011, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -34,93 +34,9 @@
 # Author: Neil Soman neil@eucalyptus.com
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.controller
-
-USAGE = """
-Modify attributes for an image.
-
-euca-modify-image-attribute [-l, --launch-permission] [-p, --product-code] 
-[-a, --add entity ] [-r, --remove entity]
-[-h, --help] [--version] [--debug] image_id 
-
-REQUIRED PARAMETERS
-	
-image_id			Unique identifier for the image that you want to modify the attributes for.
-
-OPTIONAL PARAMETERS
-
--l, --launch-permission 	Launch permissions.
-
--p, --product-code		Product codes associated with the image.
-
--a, -add			Entity (typically, user id) to add.
-
--r, --remove			Entity (typically, user id) to remove.
-"""
-
-def main():
-    image_id = None
-    code = None
-    entity = None
-    image_attribute = None
-    operation_type = None
-    user_ids = None
-    groups = None
-    product_codes = []
-
-    controller = euca2ools.controller.Controller('lp:a:r:',
-                                                 ['launch-permission',
-                                                  'product-code=',
-                                                  'add=',
-                                                  'remove='],
-                                                 compat=True,
-                                                 cmd_usage=USAGE)
-
-    for (name, value) in controller.opts:
-        if name in ('-p', '--product-code'):
-            if not image_attribute:
-                image_attribute = 'productCodes'
-            product_codes.append(value)
-        elif name in ('-l', '--launch-permission'):
-            if not image_attribute:
-                image_attribute = 'launchPermission'
-        elif name in ('-a', '--add'):
-            entity = value
-            operation_type = 'add'
-        elif name in ('-r', '--remove'):
-            entity = value
-            operation_type = 'remove'
-
-    if len(controller.args) >= 1:
-        image_id = controller.args[0]
-
-    if image_attribute == 'launchPermission':
-        if entity == 'all':
-            groups = [entity]
-        else:
-            user_ids = [entity]
-
-    if image_id and image_attribute:
-        euca_conn = controller.make_connection_cli()
-        return_code = controller.make_request_cli(euca_conn,
-                                                  'modify_image_attribute',
-                                                  image_id=image_id,
-                                                  attribute=image_attribute,
-                                                  operation=operation_type,
-                                                  user_ids=user_ids,
-                                                  groups=groups,
-                                                  product_codes=product_codes)
-        if return_code:
-            print 'IMAGE\t%s' % image_id
-    else:
-        msgs = ['Error:']
-        if not image_id:
-            msgs.append('image_id must be specified')
-        if not image_attribute:
-            msg.append('-l or -p must be specified')
-        controller.display_error_and_exit('\n'.join(msg))
-
+import euca2ools.commands.modifyimageattribute
 
 if __name__ == '__main__':
-    main()
+    cmd = euca2ools.commands.modifyimageattribute.ModifyImageAttribute()
+    cmd.main()
 

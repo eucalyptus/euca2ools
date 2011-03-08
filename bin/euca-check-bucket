@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 # Software License Agreement (BSD License)
 #
@@ -31,50 +32,11 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 # Author: Neil Soman neil@eucalyptus.com
+#         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.controller
-from boto.exception import S3ResponseError, S3CreateError
+import euca2ools.commands.checkbucket
 
-USAGE = """
-Check if a bucket exists.
+if __name__ == '__main__':
+    cmd = euca2ools.commands.checkbucket.CheckBucket()
+    cmd.main()
 
-euca-check-bucket -b, --bucket bucket [--euca-auth] [--debug] [-h, --help] [--version]
-
-REQUIRED PARAMETERS
-
--b, --bucket 			The name of the bucket to check.
-
-OPTIONAL PARAMETERS
-
-"""
-
-def ensure_bucket(connection, bucket):
-    bucket_instance = None
-    try:
-	print 'Checking bucket:', bucket
-	bucket_instance = connection.get_bucket(bucket)
-    except S3ResponseError, s3error:
-	sys.exit(1)
-    return bucket_instance
- 
-def main():
-    bucket=None
-
-    controller = euca2ools.controller.Controller('b:',
-                                                 ['bucket='],
-                                                 is_s3=True,
-                                                 cmd_usage=USAGE)
-    for name, value in controller.opts:
-        if name in ('-b', '--bucket'):
-            bucket = value
-    
-    if bucket:
-        euca_conn = controller.make_connection_cli()
-	bucket_instance = ensure_bucket(euca_conn, bucket)
-    else:
-        msg = 'bucket must be specified.'	
-        controller.display_error_and_exit(msg)
-
-if __name__ == "__main__":
-    main()
- 

@@ -34,48 +34,9 @@
 # Author: Neil Soman neil@eucalyptus.com
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.controller
-
-USAGE = """
-Creates a snapshot from an existing volume.
-
-euca-create-snapshot [-h, --help] [--version] [--debug] volume_id 
-
-REQUIRED PARAMETERS
-	
-volume_id			unique id for a volume to snapshot.
-
-OPTIONAL PARAMETERS
-
-"""
-
-def display_snapshot(snapshot):
-    if not snapshot.id:
-        return
-    snapshot_string = '%s\t%s\t%s\t%s\t%s' % (snapshot.id,
-            snapshot.volume_id, snapshot.status, snapshot.start_time,
-            snapshot.progress)
-    print 'SNAPSHOT\t%s' % snapshot_string
-
-def main():
-    volume_id = None
-    controller = euca2ools.controller.Controller(cmd_usage=USAGE)
-
-    if len(controller.args) >= 1:
-        volume_id = controller.args[0]
-    if volume_id:
-        controller.validate_volume_id(volume_id)
-        euca_conn = controller.make_connection_cli()
-        snapshot = controller.make_request_cli(euca_conn,
-                                              'create_snapshot',
-                                              volume_id=volume_id)
-
-        if snapshot:
-            display_snapshot(snapshot)
-    else:
-        msg = 'volume_id must be specified'
-        controller.display_error_and_exit(msg)
+import euca2ools.commands.createsnapshot
 
 if __name__ == '__main__':
-    main()
+    cmd = euca2ools.commands.createsnapshot.CreateSnapshot()
+    cmd.main()
 

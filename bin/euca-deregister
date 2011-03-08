@@ -34,36 +34,9 @@
 # Author: Neil Soman neil@eucalyptus.com
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.controller
-
-USAGE = """
-Deregisters an image from the cloud.
-
-euca-deregister [-h, --help] [--version] [--debug] image_id
-
-REQUIRED PARAMETER
-
-image_id			unique identifier for the image to be deregistered.
-
-OPTIONAL PARAMETER
-
-"""
-
-def main():
-    controller = euca2ools.controller.Controller(cmd_usage=USAGE)
-    if len(controller.args) < 1:
-        msg = 'image_id must be specified'
-        controller.display_error_and_exit(msg)
-    else:
-        image_id = controller.args[0]
-
-    euca_conn = controller.make_connection_cli()
-    return_code = controller.make_request_cli(euca_conn,
-                                              'deregister_image',
-                                              image_id=image_id)
-    if return_code:
-        print 'IMAGE\t%s' % image_id
+import euca2ools.commands.deregister
 
 if __name__ == '__main__':
-    main()
+    cmd = euca2ools.commands.deregister.Deregister()
+    cmd.main()
 

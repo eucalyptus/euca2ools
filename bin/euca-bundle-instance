@@ -3,7 +3,7 @@
 
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 20092011, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -34,124 +34,9 @@
 # Author: Neil Soman neil@eucalyptus.com
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.controller
-
-USAGE = """
-Bundle a Windows instance.
-
-euca-bundle-instance instance_id -b, --bucket bucket -p, --prefix prefix -o access_key_id [-c policy] -w secret_key [-h, --help] [--version] [--debug]
-
-REQUIRED PARAMETERS
-
-instance_id			Identifier of the instance to be bundled.
-
--b, --bucket 			The name of the bucket to upload to. Bucket will be created if it does not exist.
-
--p, --prefix			The prefix for the image file name.
-
--o, --user-access-key-id	Access Key ID of the owner of the bucket.
-
--c, --policy			Base64 encoded upload policy that defines upload permissions and conditions. 
-				If no policy is specified, a default policy is generated.
-
--w, --user-secret-key		Secret key used to sign the upload policy.
-
--x, --expires			Expiration for the generated upload policy (hours).
-
-OPTIONAL PARAMETERS
-
-"""
-
-def display_bundle(bundle):
-    bundle_string = '%s\t%s\t%s\t%s\t%s\t%s\t%s' % (bundle.id, bundle.instance_id,
-                                                    bundle.bucket, bundle.prefix,
-                                                    bundle.state, bundle.start_time,
-                                                    bundle.update_time)
-    print 'BUNDLE\t%s' % bundle_string
-
-def generate_default_policy(bucket, prefix, expiration, acl):
-    delta = timedelta(hours=expiration)
-    expiration_time = (datetime.utcnow() + delta).replace(microsecond=0)
-    expiration_str = expiration_time.isoformat()
-
-    policy = '{"expiration": "%s",' % expiration_str \
-        + '"conditions": [' + '{"bucket": "%s" },' % bucket \
-        + '{"acl": "%s" },' % acl + '["starts-with", "$key", "%s"]' \
-        % prefix + ']' + '}'
-    encoded_policy = base64.b64encode(policy)
-    return encoded_policy
-
-def main():
-    bucket = None
-    prefix = None
-    access_key_id = None
-    policy = None
-    secret_key = None
-    instance_id = None
-    expiration = 24
-
-    controller = euca2ools.controller.Controller('b:p:o:c:w:x:',
-                                                 ['bucket=',
-                                                  'prefix=',
-                                                  'policy=',
-                                                  'user-access-key-id=',
-                                                  'user-secret-key=',
-                                                  'expires='],
-                                                 cmd_usage=USAGE)
-
-    for (name, value) in controller.opts:
-        if name in ('-b', '--bucket'):
-            bucket = value
-        elif name in ('-p', '--prefix'):
-            prefix = value
-        elif name in ('-o', '--user-access-key-id'):
-            access_key_id = value
-        elif name in ('-c', '--policy'):
-            policy = value
-        elif name in ('-w', '--user-secret-key'):
-            secret_key = value
-        elif name in ('-x', '--expires'):
-            try:
-                expiration = int(value)
-                if expiration < 0:
-                    print 'Expiration needs to be > 0.'
-                    sys.exit(1)
-            except ValueError:
-                print 'Expiration must be an integer value.'
-                sys.exit(1)
-
-    if controller.args >= 1:
-        instance_id = controller.args[0]
-
-    if instance_id and bucket and prefix and access_key_id and secret_key:
-        controller.validate_instance_id(instance_id)
-        euca_conn = controller.make_connection_cli()
-        
-        if not policy:
-            policy = generate_default_policy(bucket, prefix,
-                    expiration, 'ec2-bundle-read')
-        bundle_task = controller.make_request_cli(euca_conn,
-                                                  'bundle_instance',
-                                                  instance_id=instance_id,
-                                                  s3_bucket=bucket,
-                                                  s3_prefix=prefix,
-                                                  s3_upload_policy=policy)
-        if bundle_task:
-            display_bundle(bundle_task)
-    else:
-        msgs = ['Error:']
-        if not instance_id:
-            msgs.append('instance_id must be specified.')
-        if not bucket:
-            msgs.append('bucket must be specified.')
-        if not prefix:
-            msgs.append('prefix must be specified.')
-        if not access_key_id:
-            msgs.append('access_key_id must be specified.')
-        if not secret_key:
-            msgs.append('secret_key must be specified.')
-        controller.display_error_and_exit('\n'.join(msgs))
+import euca2ools.commands.bundleinstance
 
 if __name__ == '__main__':
-    main()
+    cmd = euca2ools.commands.bundleinstance.BundleInstance()
+    cmd.main()
 

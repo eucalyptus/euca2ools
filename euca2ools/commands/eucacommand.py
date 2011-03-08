@@ -84,6 +84,8 @@ class EucaCommand(object):
     Filters = []
 
     def __init__(self, compat=False, is_s3=False, is_euca=False):
+        # TODO: handle compat mode
+        # TODO: validations?
         self.ec2_user_access_key = None
         self.ec2_user_secret_key = None
         self.url = None
@@ -153,17 +155,16 @@ class EucaCommand(object):
         self.check_required_options()
 
         for arg in self.Args:
-            if arg.cardinality == '+':
+            if not arg.optional and len(args)==0:
+                msg = 'Argument (%s) was not provided' % arg.name
+                self.display_error_and_exit(msg)
+            if arg.cardinality in ('*', '+'):
                 self.arguments[arg.name] = args
             elif arg.cardinality == 1:
-                if not arg.optional and len(args)==0:
-                    msg = 'Argument (%s) was not provided' % arg.name
-                    self.display_error_and_exit(msg)
+                self.arguments[arg.name] = args[0]
                 if len(args) > 1:
                     msg = 'Only 1 argument (%s) permitted' % arg.name
                     self.display_error_and_exit(msg)
-                self.arguments[arg.name] = args[0]
-                    
 
     def find_option(self, op_name):
         for option in self.StandardOptions+self.Options:
@@ -235,7 +236,7 @@ class EucaCommand(object):
                 if not names:
                     names.append(opt.name)
                 doc = textwrap.dedent(opt.doc)
-                doclines = textwrap.wrap(doc, nn)
+                doclines = textwrap.wrap(doc, nn, drop_whitespace=True)
                 if doclines:
                     print '    %s%s' % (','.join(names).ljust(n), doclines[0])
                     for line in doclines[1:]:
@@ -247,7 +248,8 @@ class EucaCommand(object):
             print '\nAVAILABLE FILTERS'
             for filter in self.Filters:
                 doc = textwrap.dedent(filter.doc)
-                doclines = textwrap.wrap(doc, nn)
+                doclines = textwrap.wrap(doc, nn, drop_whitespace=True,
+                                         fix_sentence_endings=True)
                 print '    %s%s' % (filter.name.ljust(n), doclines[0])
                 for line in doclines[1:]:
                     print '%s%s' % (' '*(n+4), line)

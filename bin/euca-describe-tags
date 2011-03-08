@@ -34,34 +34,9 @@
 # Author: Neil Soman neil@eucalyptus.com
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.controller
-
-USAGE = """
-List tags associated with your account.
-
-euca-describe-tags [-h, --help] [--version] [--debug]
-
-OPTIONAL PARAMETERS
-
---filter                        A filter for limiting results.  Can be
-                                specified multiple times.
-
-"""
-
-def display_tags(tags):
-    for tag in tags:
-        tag_string = '%s\t%s\t%s\t%s' % (tag.res_id, tag.res_type,
-                                         tag.name, tag.value)
-        print 'TAG\t%s' % tag_string
-
-def main():
-    controller = euca2ools.controller.Controller(long_opts=['filter='],
-                                                 cmd_usage=USAGE)
-    euca_conn = controller.make_connection_cli()
-    tags = controller.make_request_cli(euca_conn,
-                                       'get_all_tags')
-    display_tags(tags)
+import euca2ools.commands.describetags
 
 if __name__ == '__main__':
-    main()
+    cmd = euca2ools.commands.describetags.DescribeTags()
+    cmd.main()
 

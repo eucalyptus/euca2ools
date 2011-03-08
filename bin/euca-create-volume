@@ -34,76 +34,9 @@
 # Author: Neil Soman neil@eucalyptus.com
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.controller
-
-USAGE = """
-Creates a volume in a specified availability zone.
-
-euca-create-volume -s, --size size | --snapshot snapshot_id -z zone
-[-h, --help] [--version] [--debug]
-
-REQUIRED PARAMETERS	
-
--s, --size			size of the volume (in GiB). 
-	
---snapshot			snapshot id to create the volume from. Either size or snapshot can be specified (not both).
-	
--z, --zone 			availability zone to create the volume in
-	
-OPTIONAL PARAMETERS
-
-"""
-def display_volume(volume):
-    if not volume.id:
-        return
-    volume_string = '%s' % volume.id
-    if volume.size:
-        volume_string += '\t%d' % volume.size
-    if volume.snapshot_id:
-        volume_string += '\t%s' % volume.snapshot_id
-    volume_string += '\t%s\t%s' % (volume.status, volume.create_time)
-    print 'VOLUME\t%s' % volume_string
-
-def main():
-    size = None
-    zone = None
-    snapshot_id = None
-    controller = euca2ools.controller.Controller('s:z:',
-                                                 ['zone=', 'snapshot=', 'size='],
-                                                 cmd_usage=USAGE)
-    for (name, value) in controller.opts:
-        if name in ('-s', '--size'):
-            try:
-                size = int(value)
-            except ValueError:
-                print 'Invalid size'
-                sys.exit(1)
-        elif name in ('-z', '--zone'):
-            zone = value
-        elif name == '--snapshot':
-            snapshot_id = value
-            
-    if (size or snapshot_id) and zone:
-        if size:
-            controller.validate_volume_size(size)
-        if snapshot_id:
-            controller.validate_snapshot_id(snapshot_id)
-        euca_conn = controller.make_connection_cli()
-        volume = controller.make_request_cli(euca_conn,
-                                              'create_volume',
-                                              size=size,
-                                              zone=zone,
-                                              snapshot=snapshot_id)
-        if volume:
-            display_volume(volume)
-    else:
-        if not zone:
-            msg = 'availability zone must be specified.'
-            controller.display_error_and_exit(msg)
-        if not (size or snapshot_id):
-            msg = 'size or snapshot id must be specified.'
-            controller.display_error_and_exit(msg)
+import euca2ools.commands.createvolume
 
 if __name__ == '__main__':
-    main()
+    cmd = euca2ools.commands.createvolume.CreateVolume()
+    cmd.main()
 
