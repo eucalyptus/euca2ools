@@ -45,6 +45,8 @@ import re
 import shutil
 import logging
 import base64
+import image
+import utils
 
 BUNDLER_NAME = 'euca-tools'
 BUNDLER_VERSION = '1.3.2'
@@ -56,27 +58,15 @@ IMAGE_IO_CHUNK = 10 * 1024
 IMAGE_SPLIT_CHUNK = IMAGE_IO_CHUNK * 1024
 MAX_LOOP_DEVS = 256
 
-def check_prerequisite_command(command):
-    cmd = [command]
-    try:
-        output = subprocess.Popen(cmd, stdout=PIPE, stderr=PIPE).communicate()
-    except OSError, e:
-        error_string = '%s' % e
-        if 'No such' in error_string:
-            print 'Command %s not found. Is it installed?' % command
-            raise exceptions.NotFoundError
-        else:
-            raise OSError(e)
-
 class Bundler(object):
 
     def __init__(self, euca):
         self.euca = euca
         system_string = platform.system()
         if system_string == 'Linux':
-            self.img = LinuxImage(self.debug)
+            self.img = image.LinuxImage(self.euca.debug)
         elif system_string == 'SunOS':
-            self.img = SolarisImage(self.debug)
+            self.img = image.SolarisImage(self.euca.debug)
         else:
             self.img = 'Unsupported'
 
@@ -92,7 +82,7 @@ class Bundler(object):
             filename = '%s.%02d' % (file, i)
             part_digest = sha()
             file_part = open(filename, 'wb')
-            print 'Part:', self.get_relative_filename(filename)
+            print 'Part:', self.euca.get_relative_filename(filename)
             part_bytes_written = 0
             while part_bytes_written < IMAGE_SPLIT_CHUNK:
                 data = in_file.read(IMAGE_IO_CHUNK)
@@ -115,7 +105,7 @@ class Bundler(object):
         if not os.path.exists(path):
             os.makedirs(path)
         image_size = os.path.getsize(image_file)
-        if self.debug:
+        if self.euca.debug:
             print 'Image Size:', image_size, 'bytes'
         return image_size
 
@@ -140,7 +130,7 @@ class Bundler(object):
             cmd = [ 'blkid', '-s%s' % blkid_n, '-ovalue', devpth ]
             print cmd
             try:
-                output = subprocess.Popen(cmd, stdout=PIPE).communicate()[0]
+                output = subprocess.Popen(cmd, stdout=subprocess.PIPE).communicate()[0]
                 ret[my_n]=output.rstrip()
             except Exception, e:
                 os.unlink(devpth)
@@ -152,18 +142,18 @@ class Bundler(object):
         return(ret)
    
     def tarzip_image(self, prefix, file, path):
-        check_prerequisite_command('tar')
+        utils.check_prerequisite_command('tar')
 
         targz = '%s.tar.gz' % os.path.join(path, prefix)
         targzfile = open(targz, 'w')
 
         # make process pipes
         tar_cmd = ['tar', 'ch', '-S']
-        file_path = self.get_file_path(file)
+        file_path = self.euca.get_file_path(file)
         if file_path:
             tar_cmd.append('-C')
             tar_cmd.append(file_path)
-            tar_cmd.append(self.get_relative_filename(file))
+            tar_cmd.append(self.euca.get_relative_filename(file))
         else:
             tar_cmd.append(file)
         tarproc = subprocess.Popen(tar_cmd, stdout=subprocess.PIPE)
@@ -208,10 +198,10 @@ class Bundler(object):
         # convert to a hex string like '0x<34 hex chars>L'
         # then take the last 32 of the hex digits, giving 32 random hex chars
         key = hex(BN.rand(17 * 8,top=0))[4:36]
-        if self.debug:
+        if self.euca.debug:
             print 'Key: %s' % key
         iv = hex(BN.rand(17 * 8,top=0))[4:36]
-        if self.debug:
+        if self.euca.debug:
             print 'IV: %s' % iv
              
         k = EVP.Cipher(alg='aes_128_cbc', key=unhexlify(key),
@@ -268,7 +258,7 @@ class Bundler(object):
         return (parts, encrypted_key, encrypted_iv)
 
     def assemble_parts(self, src_directory, directory, manifest_path, parts):
-        manifest_filename = self.get_relative_filename(manifest_path)
+        manifest_filename = self.euca.get_relative_filename(manifest_path)
         encrypted_filename = os.path.join(directory,
                 manifest_filename.replace('.manifest.xml', '.enc.tar.gz'
                 ))
@@ -277,7 +267,7 @@ class Bundler(object):
                 os.makedirs(directory)
             encrypted_file = open(encrypted_filename, 'wb')
             for part in parts:
-                print 'Part:', self.get_relative_filename(part)
+                print 'Part:', self.euca.get_relative_filename(part)
                 part_filename = os.path.join(src_directory, part)
                 part_file = open(part_filename, 'rb')
                 while 1:
@@ -362,7 +352,7 @@ class Bundler(object):
         user_priv_key = RSA.load_key(private_key_path)
 
         manifest_file = '%s.manifest.xml' % os.path.join(path, prefix)
-        if self.debug:
+        if self.euca.debug:
             print 'Manifest: ', manifest_file
 
         print 'Generating manifest %s' % manifest_file
@@ -462,7 +452,7 @@ class Bundler(object):
 
         image_name_elem = doc.createElement('name')
         image_name_value = \
-            doc.createTextNode(self.get_relative_filename(file))
+            doc.createTextNode(self.euca.get_relative_filename(file))
         image_name_elem.appendChild(image_name_value)
         image_elem.appendChild(image_name_elem)
 
@@ -553,7 +543,7 @@ class Bundler(object):
             part_elem = doc.createElement('part')
             filename_elem = doc.createElement('filename')
             filename_value = \
-                doc.createTextNode(self.get_relative_filename(part))
+                doc.createTextNode(self.euca.get_relative_filename(part))
             filename_elem.appendChild(filename_value)
             part_elem.appendChild(filename_elem)
 
@@ -584,15 +574,15 @@ class Bundler(object):
         manifest_out_file.close()
 
     def create_loopback(self, image_path):
-        check_prerequisite_command('losetup')
+        utils.check_prerequisite_command('losetup')
         tries = 0
         while tries < MAX_LOOP_DEVS:
             loop_dev = subprocess.Popen(['losetup', '-f'],
-                                        stdout=PIPE).communicate()[0].replace('\n', '')
+                                        stdout=subprocess.PIPE).communicate()[0].replace('\n', '')
             if loop_dev:
                 output = subprocess.Popen(['losetup', '%s' % loop_dev, '%s'
-                                           % image_path], stdout=PIPE,
-                                          stderr=PIPE).communicate()
+                                           % image_path], stdout=subprocess.PIPE,
+                                          stderr=subprocess.PIPE).communicate()
                 if not output[1]:
                     return loop_dev
             else:
@@ -601,23 +591,23 @@ class Bundler(object):
             tries += 1
 
     def mount_image(self, image_path):
-        check_prerequisite_command('mount')
+        utils.check_prerequisite_command('mount')
 
         tmp_mnt_point = '/tmp/%s' % hex(BN.rand(16))[2:6]
         if not os.path.exists(tmp_mnt_point):
             os.makedirs(tmp_mnt_point)
-        if self.debug:
+        if self.euca.debug:
             print 'Creating loopback device...'
         loop_dev = self.create_loopback(image_path)
-        if self.debug:
+        if self.euca.debug:
             print 'Mounting image...'
         Popen(['mount', loop_dev, tmp_mnt_point],
-              stdout=PIPE).communicate()
+              stdout=subprocess.PIPE).communicate()
         return (tmp_mnt_point, loop_dev)
 
     def copy_to_image(self, mount_point, volume_path, excludes):
         try:
-            check_prerequisite_command('rsync')
+            utils.check_prerequisite_command('rsync')
         except NotFoundError:
             raise CopyError
         rsync_cmd = ['rsync', '-aXS']
@@ -626,12 +616,12 @@ class Bundler(object):
             rsync_cmd.append(exclude)
         rsync_cmd.append(volume_path)
         rsync_cmd.append(mount_point)
-        if self.debug:
+        if self.euca.debug:
             print 'Copying files...'
             for exclude in excludes:
                 print 'Excluding:', exclude
 
-        pipe = subprocess.Popen(rsync_cmd, stdout=PIPE, stderr=PIPE)
+        pipe = subprocess.Popen(rsync_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         output = pipe.communicate()
         for dir in self.img.ESSENTIAL_DIRS:
             dir_path = os.path.join(mount_point, dir)
@@ -652,7 +642,7 @@ class Bundler(object):
                 mount_location = mount_location[1:]
                 dir_path = os.path.join(mount_point, mount_location)
                 if not os.path.exists(dir_path):
-                    if self.debug:
+                    if self.euca.debug:
                         print 'Making essential directory %s' \
                             % mount_location
                     os.makedirs(dir_path)
@@ -671,11 +661,11 @@ class Bundler(object):
                 raise CopyError
 
     def unmount_image(self, mount_point):
-        check_prerequisite_command('umount')
-        if self.debug:
+        utils.check_prerequisite_command('umount')
+        if self.euca.debug:
             print 'Unmounting image...'
         subprocess.Popen(['umount', '-d', mount_point],
-                         stdout=PIPE).communicate()[0]
+                         stdout=subprocess.PIPE).communicate()[0]
         os.rmdir(mount_point)
 
     def display_error_and_exit(self, msg):

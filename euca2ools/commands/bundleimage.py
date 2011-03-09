@@ -29,9 +29,10 @@
 # Author: Neil Soman neil@eucalyptus.com
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
+import os
 import eucacommand
 from boto.roboto.param import Param
-#import euca2ools.bundler
+import euca2ools.bundler
 from euca2ools.exceptions import NotFoundError, CommandFailed
 
 class BundleImage(eucacommand.EucaCommand):
@@ -61,6 +62,9 @@ class BundleImage(eucacommand.EucaCommand):
                Param(name='ramdisk_id', long_name='ramdisk',
                      optional=True, ptype='string',
                      doc='ID of the ramdisk to be associated with the image.'),
+               Param(name='product_codes', long_name='product-codes',
+                     optional=True, ptype='string',
+                     doc='Product code to be associated with the image.'),
                Param(name='block_device_mapping',
                      short_name='b', long_name='block-device-mapping',
                      optional=True, ptype='string', cardinality='*',
@@ -108,10 +112,10 @@ class BundleImage(eucacommand.EucaCommand):
         cert_path = self.options.get('cert_path',
                                      self.get_environ('EC2_CERT'))
         private_key_path = self.options.get('private_key_path',
-                                       self.get_environ('EC2_PRIVATE_KEY'))
+                                            self.get_environ('EC2_PRIVATE_KEY'))
         user = self.options.get('user', self.get_environ('EC2_USER_ID'))
-        ec2_cert_path = self.options.get('ec2_cert_path',
-                                    self.get_environ('EUCALYPTUS_CERT'))
+        ec2cert_path = self.options.get('ec2cert_path',
+                                        self.get_environ('EUCALYPTUS_CERT'))
         kernel = self.options.get('kernel_id', None)
         ramdisk = self.options.get('ramdisk_id', None)
         prefix = self.options.get('prefix', None)
@@ -120,7 +124,7 @@ class BundleImage(eucacommand.EucaCommand):
         block_device_map = self.options.get('block_device_map', None)
         product_codes = self.options.get('product_codes', None)
         
-        #bundler = euca2ools.bundler.Bundler(self)
+        bundler = euca2ools.bundler.Bundler(self)
         
         user = user.replace('-', '')
 
@@ -142,11 +146,10 @@ class BundleImage(eucacommand.EucaCommand):
         (encrypted_file, key, iv, bundled_size) = bundler.encrypt_image(tgz_file)
         os.remove(tgz_file)
         (parts, parts_digest) = bundler.split_image(encrypted_file)
-        if mapping:
-            mapping = self.get_block_devs(mapping)
-        if product_code_string:
-            product_codes = self.add_product_codes(product_code_string,
-                    product_codes)
+        if block_device_map:
+            block_device_map = self.get_block_devs(block_device_map)
+        if product_codes:
+            product_codes = self.add_product_codes(product_codes)
         bundler.generate_manifest(destination_path, prefix,
                                   parts, parts_digest,
                                   image_path, key, iv,
@@ -155,6 +158,6 @@ class BundleImage(eucacommand.EucaCommand):
                                   target_arch, image_size,
                                   bundled_size, sha_tar_digest,
                                   user, kernel, ramdisk,
-                                  mapping, product_codes)
+                                  block_device_map, product_codes)
         os.remove(encrypted_file)
 

@@ -33,7 +33,7 @@
 import os
 import shutil
 import subprocess
-import util
+import utils
 
 IMAGE_IO_CHUNK = 10 * 1024
 IMAGE_SPLIT_CHUNK = IMAGE_IO_CHUNK * 1024
@@ -106,7 +106,7 @@ class LinuxImage:
         else:
             raise(UnsupportedException("unsupported fs %s" % fs_type))
 
-        util.Util().check_prerequisite_command(mkfs_prog)
+        utils.check_prerequisite_command(mkfs_prog)
 
         if self.debug:
             print 'Creating filesystem with %s' % mkfs
@@ -114,7 +114,7 @@ class LinuxImage:
         makefs_cmd = subprocess.Popen(mkfs,PIPE).communicate()[0]
 
         if len(tunecmd):
-            util.Util().check_prerequisite_command(tunecmd[0])
+            utils.check_prerequisite_command(tunecmd[0])
             tune_cmd = subprocess.Popen(tunecmd,PIPE).communicate[0]
 
     def add_fstab(self, mount_point, generate_fstab, fstab_path):
