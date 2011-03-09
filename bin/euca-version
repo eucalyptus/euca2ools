@@ -34,9 +34,9 @@
 # Author: Neil Soman neil@eucalyptus.com
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.commands.version
+import euca2ools.commands.eucacommand
 
 if __name__ == '__main__':
-    cmd = euca2ools.commands.version.Version()
-    cmd.main()
+    cmd = euca2ools.commands.eucacommand.EucaCommand()
+    cmd.display_tools_version()
 
