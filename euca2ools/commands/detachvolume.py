@@ -53,13 +53,18 @@ class DetachVolume(eucacommand.EucaCommand):
                   cardinality=1, optional=False)]
 
     def main(self):
+        volume_id = self.arguments['volume_id']
+        instance_id = self.options.get('instance_id', None)
+        device = self.options.get('device', None)
+        force = self.options.get('force', False)
+        
         euca_conn = self.make_connection_cli()
         return_code = self.make_request_cli(euca_conn,
                                             'detach_volume',
-                                            volume_id=self.arguments['volume_id'],
-                                            instance_id=self.options['instance_id'],
-                                            device=self.options['device'],
-                                            force=self.options['force'])
+                                            volume_id=volume_id,
+                                            instance_id=instance_id,
+                                            device=device,
+                                            force=force)
         if return_code:
-            print 'VOLUME\t%s' % self.arguments['volume_id']
+            print 'VOLUME\t%s' % volume_id
 

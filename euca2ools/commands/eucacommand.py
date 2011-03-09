@@ -55,15 +55,18 @@ EC2RegionData = {
 class EucaCommand(object):
 
     Description = 'Base class'
-    StandardOptions = [Param(name='access_key', short_name='a', long_name='access-key',
+    StandardOptions = [Param(name='access_key',
+                             short_name='A', long_name='access-key',
                              doc="User's Access Key ID.",
                              optional=True),
-                       Param(name='secret_key', short_name='s', long_name='secret-key',
+                       Param(name='secret_key',
+                             short_name='S', long_name='secret-key',
                              doc="User's Secret Key.",
                              optional=True),
-                       Param(name='config_path', short_name=None, long_name='config',
-                             doc="""Read credentials and cloud settings from the 
-                             specified config file (defaults to
+                       Param(name='config_path',
+                             short_name=None, long_name='config',
+                             doc="""Read credentials and cloud settings
+                             from the specified config file (defaults to
                              $HOME/.eucarc or /etc/euca2ools/eucarc).""",
                              optional=True),
                        Param(short_name=None, long_name='debug',
@@ -72,7 +75,8 @@ class EucaCommand(object):
                        Param(short_name='h', long_name='help',
                              doc='Display this help message.',
                              optional=True, ptype='boolean'),
-                       Param(name='region_name', short_name=None, long_name='region',
+                       Param(name='region_name',
+                             short_name=None, long_name='region',
                              doc='region to direct requests to',
                              optional=True),
                        Param(short_name='U', long_name='url',
@@ -124,9 +128,10 @@ class EucaCommand(object):
             elif name == '--debug':
                 boto.set_stream_logger('euca2ools')
                 self.debug = 2
-            elif name in ('-a', '-A', '--access-key'):
+            # TODO: that rascally compat mode
+            elif name in ('-A', '--access-key'):
                 self.ec2_user_access_key = value
-            elif name in ('-s', '-S', '--secret-key'):
+            elif name in ('-S', '--secret-key'):
                 self.ec2_user_secret_key = value
             elif name in ('-U', '--url'):
                 self.url = value

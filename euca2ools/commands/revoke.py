@@ -66,6 +66,7 @@ class Revoke(eucacommand.EucaCommand):
                   cardinality=1, optional=False)]
 
     def main(self):
+        group_name = self.arguments['group_name']
         protocol = self.options.get('protocol', 'tcp')
         from_port = None
         to_port = None
@@ -95,8 +96,8 @@ class Revoke(eucacommand.EucaCommand):
         return_code = self.make_request_cli(euca_conn,
                                             'revoke_security_group',
                                             group_name=group_name,
-                                            src_security_group_name=source_group_name,
-                                            src_security_group_owner_id=source_group_owner_id,
+                                            src_security_group_name=source_group,
+                                            src_security_group_owner_id=source_group_user,
                                             ip_protocol=protocol,
                                             from_port=from_port,
                                             to_port=to_port,
@@ -110,11 +111,11 @@ class Revoke(eucacommand.EucaCommand):
                 permission_string += '\t%s' % from_port
             if to_port:
                 permission_string += '\t%s' % to_port
-            if source_group_owner_id:
+            if source_group_user:
                 permission_string += '\tUSER\t%s' \
-                    % source_group_owner_id
-            if source_group_name:
-                permission_string += '\tGRPNAME\t%s' % source_group_name
+                    % source_group_user
+            if source_group:
+                permission_string += '\tGRPNAME\t%s' % source_group
             if cidr_ip:
                 permission_string += '\tFROM\tCIDR\t%s' % cidr_ip
             print permission_string

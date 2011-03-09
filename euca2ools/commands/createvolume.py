@@ -48,7 +48,7 @@ class CreateVolume(eucacommand.EucaCommand):
                      optional=False, ptype='string',
                      doc='availability zone to create the volume in')]
 
-    def display_volume(volume):
+    def display_volume(self, volume):
         if not volume.id:
             return
         volume_string = '%s' % volume.id
@@ -62,6 +62,7 @@ class CreateVolume(eucacommand.EucaCommand):
     def main(self):
         size = self.options.get('size', None)
         snapshot_id = self.options.get('snapshot', None)
+        zone = self.options.get('zone')
 
         if (size or snapshot_id) and zone:
             euca_conn = self.make_connection_cli()

@@ -152,5 +152,5 @@ class RunInstances(eucacommand.EucaCommand):
                                             block_device_map=block_device_map,
                                             monitoring_enabled=monitor,
                                             subnet_id=subnet_id)
-        display_reservations(reservation)
+        self.display_reservations(reservation)
 
