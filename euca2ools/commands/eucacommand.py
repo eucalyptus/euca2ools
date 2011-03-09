@@ -38,6 +38,7 @@ import textwrap
 import urlparse
 import boto
 import euca2ools
+import euca2ools.validate
 import euca2ools.exceptions
 from boto.ec2.regioninfo import RegionInfo
 from boto.roboto.param import Param
@@ -315,7 +316,7 @@ class EucaCommand(object):
         except:
             print '%s' % exc
         finally:
-            exit(1)
+            sys.exit(1)
             
     def setup_environ(self):
         envlist = ('EC2_ACCESS_KEY', 'EC2_SECRET_KEY',
@@ -347,10 +348,11 @@ class EucaCommand(object):
 
     def get_environ(self, name):
         if self.environ.has_key(name):
-            return self.environ[name]
-        else:
-            msg = '%s not found' % name
-            self.display_error_and_exit(msg)
+            value = self.environ[name]
+            if value:
+                return self.environ[name]
+        msg = 'Environment variable: %s not found' % name
+        self.display_error_and_exit(msg)
 
     def get_credentials(self):
         if self.is_euca:
@@ -539,31 +541,31 @@ class EucaCommand(object):
             sys.exit(1)
             
     def validate_address(self, address, msg=None):
-        self._try_validate(validate.validate_address, address, msg)
+        self._try_validate(euca2ools.validate.validate_address, address, msg)
 
     def validate_instance_id(self, id, msg=None):
-        self._try_validate(validate.validate_instance_id, id, msg)
+        self._try_validate(euca2ools.validate.validate_instance_id, id, msg)
             
     def validate_volume_id(self, id, msg=None):
-        self._try_validate(validate.validate_volume_id, id, msg)
+        self._try_validate(euca2ools.validate.validate_volume_id, id, msg)
 
     def validate_volume_size(self, size, msg=None):
-        self._try_validate(validate.validate_volume_size, size, msg)
+        self._try_validate(euca2ools.validate.validate_volume_size, size, msg)
 
     def validate_snapshot_id(self, id, msg=None):
-        self._try_validate(validate.validate_snapshot_id, id, msg)
+        self._try_validate(euca2ools.validate.validate_snapshot_id, id, msg)
 
     def validate_protocol(self, proto, msg=None):
-        self._try_validate(validate.validate_protocol, proto, msg)
+        self._try_validate(euca2ools.validate.validate_protocol, proto, msg)
 
     def validate_file(self, path, msg=None):
-        self._try_validate(validate.validate_file, path, msg)
+        self._try_validate(euca2ools.validate.validate_file, path, msg)
 
     def validate_dir(self, path, msg=None):
-        self._try_validate(validate.validate_dir, path, msg)
+        self._try_validate(euca2ools.validate.validate_dir, path, msg)
 
     def validate_bundle_id(self, id, msg=None):
-        self._try_validate(validate.validate_bundle_id, id, msg)
+        self._try_validate(euca2ools.validate.validate_bundle_id, id, msg)
 
     def get_relative_filename(self, filename):
         return os.path.split(filename)[-1]

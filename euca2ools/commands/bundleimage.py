@@ -31,7 +31,7 @@
 
 import eucacommand
 from boto.roboto.param import Param
-import euca2ools.bundler
+#import euca2ools.bundler
 from euca2ools.exceptions import NotFoundError, CommandFailed
 
 class BundleImage(eucacommand.EucaCommand):
@@ -104,22 +104,23 @@ class BundleImage(eucacommand.EucaCommand):
         return product_codes
 
     def main(self):
-        image_path = options.get('image_path', None)
-        cert_path = options.get('cert_path', self.get_environ('EC2_CERT'))
-        private_key_path = options.get('private_key_path',
+        image_path = self.options.get('image_path', None)
+        cert_path = self.options.get('cert_path',
+                                     self.get_environ('EC2_CERT'))
+        private_key_path = self.options.get('private_key_path',
                                        self.get_environ('EC2_PRIVATE_KEY'))
-        user = options.get('user', self.get_environ('EC2_USER_ID'))
-        ec2_cert_path = options.get('ec2_cert_path',
+        user = self.options.get('user', self.get_environ('EC2_USER_ID'))
+        ec2_cert_path = self.options.get('ec2_cert_path',
                                     self.get_environ('EUCALYPTUS_CERT'))
-        kernel = options.get('kernel_id', None)
-        ramdisk = options.get('ramdisk_id', None)
-        prefix = options.get('prefix', None)
-        destination_path = options.get('destination_path', '/tmp')
-        target_arch = options.get('target_arch', 'x86_64')
-        block_device_map = options.get('block_device_map', None)
-        product_codes = options.get('product_codes', None)
+        kernel = self.options.get('kernel_id', None)
+        ramdisk = self.options.get('ramdisk_id', None)
+        prefix = self.options.get('prefix', None)
+        destination_path = self.options.get('destination_path', '/tmp')
+        target_arch = self.options.get('target_arch', 'x86_64')
+        block_device_map = self.options.get('block_device_map', None)
+        product_codes = self.options.get('product_codes', None)
         
-        bundler = euca2ools.bundler.Bundler(self)
+        #bundler = euca2ools.bundler.Bundler(self)
         
         user = user.replace('-', '')
 
