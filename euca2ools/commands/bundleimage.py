@@ -118,7 +118,7 @@ class BundleImage(eucacommand.EucaCommand):
                                         self.get_environ('EUCALYPTUS_CERT'))
         kernel = self.options.get('kernel_id', None)
         ramdisk = self.options.get('ramdisk_id', None)
-        prefix = self.options.get('prefix', None)
+        prefix = self.options.get('prefix', 'image')
         destination_path = self.options.get('destination_path', '/tmp')
         target_arch = self.options.get('target_arch', 'x86_64')
         block_device_map = self.options.get('block_device_map', None)
