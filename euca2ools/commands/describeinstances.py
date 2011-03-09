@@ -33,6 +33,7 @@
 
 import eucacommand
 from boto.roboto.param import Param
+import euca2ools.utils
 
 class DescribeInstances(eucacommand.EucaCommand):
 
@@ -157,7 +158,7 @@ class DescribeInstances(eucacommand.EucaCommand):
                 reservation_string += '%s%s' % (group_delim, group.id)
                 group_delim = ', '
             print 'RESERVATION\t%s' % reservation_string
-            euca2ools.print_instances(instances)
+            euca2ools.utils.print_instances(instances)
 
     def main(self):
         euca_conn = self.make_connection_cli()

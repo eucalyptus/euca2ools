@@ -38,6 +38,7 @@ import textwrap
 import urlparse
 import boto
 import euca2ools
+import euca2ools.utils
 import euca2ools.validate
 import euca2ools.exceptions
 from boto.ec2.regioninfo import RegionInfo
@@ -341,7 +342,7 @@ class EucaCommand(object):
         elif os.path.exists(SYSTEM_EUCARC_PATH):
             read_config = SYSTEM_EUCARC_PATH
         if read_config:
-            parse_config(read_config, self.environ, envlist)
+            euca2ools.utils.parse_config(read_config, self.environ, envlist)
         else:
             for v in envlist:
                 self.environ[v] = os.getenv(v)

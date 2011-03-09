@@ -33,6 +33,7 @@
 
 import eucacommand
 from boto.roboto.param import Param
+import euca2ools.utils
 
 class RunInstances(eucacommand.EucaCommand):
 
@@ -78,7 +79,7 @@ class RunInstances(eucacommand.EucaCommand):
                      optional=True, ptype='string',
                      doc='Amazon VPC subnet ID for the instance.'),
                Param(name='zone', short_name='z', long_name='availability-zone',
-                     optional=False, ptype='string',
+                     optional=True, ptype='string',
                      doc='availability zone to run the instance in')]
     Args = [Param(name='image_id', ptype='string',
                   optional=False,
@@ -92,7 +93,7 @@ class RunInstances(eucacommand.EucaCommand):
             reservation_string += '%s%s' % (group_delim, group.id)
             group_delim = ', '
         print 'RESERVATION\t%s' % reservation_string
-        euca2ools.print_instances(reservation.instances)
+        euca2ools.utils.print_instances(reservation.instances)
 
     def read_user_data(self, user_data_filename):
         fp = open(user_data_filename)

@@ -38,25 +38,3 @@ __tools_version__ = 'main-31337'
 __api_version__ = '2009-04-04'
 
 
-def print_instances(instances, nil=""):
-    members=( "id", "image_id", "public_dns_name", "private_dns_name",
-        "state", "key_name", "ami_launch_index", "product_codes",
-        "instance_type", "launch_time", "placement", "kernel",
-        "ramdisk" )
-
-    for instance in instances:
-        # in old describe-instances, there was a check for 'if instance:'
-        # I (smoser) have carried this over, but dont know how instance
-        # could be false
-        if not instance: continue
-        items=[ ]
-        for member in members:
-            val = getattr(instance,member,nil)
-            # product_codes is a list
-            if val is None: val = nil
-            if hasattr(val,'__iter__'):
-                val = ','.join(val)
-            items.append(val)
-        print "INSTANCE\t%s" % '\t'.join(items)
-
-

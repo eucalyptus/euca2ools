@@ -34,7 +34,7 @@
 # Author: Neil Soman neil@eucalyptus.com
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.commands.eucaaddkeypair
+import euca2ools.commands.addkeypair
 
 if __name__ == '__main__':
     cmd = euca2ools.commands.addkeypair.AddKeyPair()
