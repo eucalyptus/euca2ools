@@ -152,13 +152,17 @@ class EucaCommand(object):
             else:
                 option = self.find_option(name)
                 if option:
+                    try:
+                        value = option.convert(value)
+                    except:
+                        msg = '%s should be of type %s' % (option.long_name,
+                                                           option.ptype)
+                        self.display_error_and_exit(msg)
                     if option.cardinality in ('*', '+'):
                         if option.name not in self.options:
                             self.options[option.name] = []
                         self.options[option.name].append(value)
                     else:
-                        if option.ptype == 'boolean':
-                            value = True
                         self.options[option.name] = value
         self.check_required_options()
 
@@ -169,7 +173,14 @@ class EucaCommand(object):
             if arg.cardinality in ('*', '+'):
                 self.arguments[arg.name] = args
             elif arg.cardinality == 1:
-                self.arguments[arg.name] = args[0]
+                if len(args) == 0 and arg.optional:
+                    continue
+                try:
+                    value = arg.convert(args[0])
+                except:
+                    msg = '%s should be of type %s' % (arg.name,
+                                                       arg.ptype)
+                self.arguments[arg.name] = value
                 if len(args) > 1:
                     msg = 'Only 1 argument (%s) permitted' % arg.name
                     self.display_error_and_exit(msg)

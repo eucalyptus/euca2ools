@@ -120,16 +120,10 @@ class BundleVol(eucacommand.EucaCommand):
             print 'Must be superuser to execute this command.'
             sys.exit()
 
-    def check_image_size(self, size_str):
-        try:
-            size_in_mb = int(size_str)
-        except ValueError:
-            msg = 'Size must be an integer value'
-            self.display_error_and_exit(msg)
-        if size_in_mb > MAX_IMAGE_SIZE:
+    def check_image_size(self, size):
+        if size > MAX_IMAGE_SIZE:
             msg = 'Image Size is too large (Max = %d MB)' % MAX_IMAGE_SIZE
             self.display_error_and_exit(msg)
-        return size_in_mb
 
     def parse_excludes(self, excludes_string):
         excludes = []
@@ -209,7 +203,7 @@ class BundleVol(eucacommand.EucaCommand):
         return mapping
 
     def main(self):
-        size = self.options.get('size', '%d' % MAX_IMAGE_SIZE)
+        size = self.options.get('size', MAX_IMAGE_SIZE)
         volume_path = self.options.get('volume_path', '/')
         cert_path = self.options.get('cert_path',
                                      self.get_environ('EC2_CERT'))
@@ -252,7 +246,9 @@ class BundleVol(eucacommand.EucaCommand):
             else:
                 fstab_path = 'new'
         self.check_root()
-        size_in_mb = self.check_image_size(size)
+        if size > MAX_IMAGE_SIZE:
+            msg = 'Image Size is too large (Max = %d MB)' % MAX_IMAGE_SIZE
+            self.display_error_and_exit(msg)
         volume_path = os.path.normpath(volume_path)
 
         noex='EUCA_BUNDLE_VOL_EMPTY_EXCLUDES'
@@ -279,7 +275,7 @@ class BundleVol(eucacommand.EucaCommand):
             print e
             sys.exit(1)
         try:
-            image_path = bundler.make_image(size_in_mb, excludes, prefix,
+            image_path = bundler.make_image(size, excludes, prefix,
                                             destination_path,
                                             fs_type=fsinfo['fs_type'],
                                             uuid=fsinfo['uuid'],

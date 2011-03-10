@@ -128,12 +128,6 @@ class BundleImage(eucacommand.EucaCommand):
         
         user = user.replace('-', '')
 
-        # TODO: these should be handled automatically with ftype="file"
-        self.validate_file(image_path)
-        self.validate_file(cert_path)
-        self.validate_file(private_key_path)
-        self.validate_file(ec2cert_path)
-
         image_size = bundler.check_image(image_path, destination_path)
         if not prefix:
             prefix = self.get_relative_filename(image_path)
