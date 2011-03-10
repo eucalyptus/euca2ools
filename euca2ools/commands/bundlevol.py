@@ -36,6 +36,7 @@ import platform
 import eucacommand
 from boto.roboto.param import Param
 import euca2ools.bundler
+import euca2ools.metadata
 from euca2ools.exceptions import *
 
 MAX_IMAGE_SIZE = 1024 * 10
@@ -136,43 +137,43 @@ class BundleVol(eucacommand.EucaCommand):
             excludes = excludes_string.split(',')
         return excludes
 
-    def get_instance_metadata(self, euca, ramdisk, kernel, mapping):
+    def get_instance_metadata(self, ramdisk, kernel, mapping):
+        md = euca2ools.metadata.MetaData()
         product_codes = None
         ramdisk_id = ramdisk
         kernel_id = kernel
         block_dev_mapping = mapping
         ancestor_ami_ids = None
         try:
-            euca.can_read_instance_metadata()
             if not ramdisk_id:
                 try:
-                    ramdisk_id = euca.get_instance_ramdisk()
+                    ramdisk_id = md.get_instance_ramdisk()
                 except MetadataReadError:
                     print 'Unable to read ramdisk id'
 
             if not kernel_id:
                 try:
-                    kernel_id = euca.get_instance_kernel()
+                    kernel_id = md.get_instance_kernel()
                 except MetadataReadError:
                     print 'Unable to read kernel id'
 
             if not block_dev_mapping:
                 try:
                     block_dev_mapping = \
-                        euca.get_instance_block_device_mappings()
+                        md.get_instance_block_device_mappings()
                 except MetadataReadError:
                     print 'Unable to read block device mapping'
 
             try:
-                product_codes = euca.get_instance_product_codes().split('\n'
+                product_codes = md.get_instance_product_codes().split('\n'
                         )
             except MetadataReadError:
                 print 'Unable to read product codes'
 
             try:
-                ancestor_ami_ids = euca.get_ancestor_ami_ids().split('\n')
+                ancestor_ami_ids = md.get_ancestor_ami_ids().split('\n')
             except MetadataReadError:
-                print 'Unable to read product codes'
+                print 'Unable to read ancestor ids'
         except IOError:
 
             print 'Unable to read instance metadata. Pass the --no-inherit option if you wish to exclude instance metadata.'
@@ -232,7 +233,7 @@ class BundleVol(eucacommand.EucaCommand):
         user = user.replace('-', '')
 
         # TODO: these should be handled automatically with ftype="file"
-        self.validate_file(volume_path)
+        self.validate_dir(volume_path)
         self.validate_file(cert_path)
         self.validate_file(private_key_path)
         self.validate_file(ec2cert_path)
@@ -262,12 +263,12 @@ class BundleVol(eucacommand.EucaCommand):
             excludes.extend(self.parse_excludes(excludes_string))
             self.add_excludes(volume_path, excludes)
         if inherit:
-            (ramdisk, kernel, mapping, product_codes,
-             ancestor_ami_ids) = self.get_instance_metadata(euca, ramdisk,
-                                                            kernel, mapping)
-        if product_code_string:
-            product_codes = self.add_product_codes(product_code_string,
-                                                   product_codes)
+            (ramdisk, kernel, block_device_map, product_codes,
+             ancestor_ami_ids) = self.get_instance_metadata(ramdisk,
+                                                            kernel,
+                                                            block_device_map)
+        if product_codes:
+            product_codes = self.add_product_codes(product_codes)
 
         try:
             fsinfo = bundler.get_fs_info(volume_path)
@@ -324,6 +325,6 @@ class BundleVol(eucacommand.EucaCommand):
                                   private_key_path, target_arch,
                                   image_size, bundled_size,
                                   sha_tar_digest, user, kernel,
-                                  ramdisk, mapping, product_codes,
+                                  ramdisk, block_device_map, product_codes,
                                   ancestor_ami_ids)
         os.remove(encrypted_file)

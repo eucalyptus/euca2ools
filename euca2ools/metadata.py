@@ -42,7 +42,7 @@ class MetaData(object):
     def get_instance_metadata(self, key):
         try:
             value = self.md[key]
-        except IndexError:
+        except KeyError:
             raise MetadataReadError
         return value
 

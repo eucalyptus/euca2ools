@@ -40,6 +40,8 @@ from hashlib import sha1 as sha
 from M2Crypto import BN, EVP, RSA, X509
 from binascii import hexlify, unhexlify
 import subprocess
+import tempfile
+import stat
 import platform
 import re
 import shutil
