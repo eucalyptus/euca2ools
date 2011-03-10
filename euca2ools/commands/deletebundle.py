@@ -114,7 +114,7 @@ class DeleteBundle(eucacommand.EucaCommand):
     def delete_parts(self, bucket, manifests, directory=None):
         for manifest in manifests:
             manifest_filename = os.path.join(directory, manifest)
-            parts = get_parts(manifest_filename)
+            parts = self.get_parts(manifest_filename)
             for part in parts:
                 k = Key(bucket)
                 k.key = part
