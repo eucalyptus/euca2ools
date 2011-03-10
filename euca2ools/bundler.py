@@ -575,6 +575,38 @@ class Bundler(object):
         manifest_out_file.write(doc.toxml())
         manifest_out_file.close()
 
+    def add_excludes(self, path, excludes):
+        if self.debug:
+            print 'Reading /etc/mtab...'
+        mtab_file = open('/etc/mtab', 'r')
+        while 1:
+            mtab_line = mtab_file.readline()
+            if not mtab_line:
+                break
+            mtab_line_parts = mtab_line.split(' ')
+            mount_point = mtab_line_parts[1]
+            fs_type = mtab_line_parts[2]
+            if mount_point.find(path) == 0 and fs_type \
+                not in self.img.ALLOWED_FS_TYPES:
+                if self.debug:
+                    print 'Excluding %s...' % mount_point
+                excludes.append(mount_point)
+        mtab_file.close()
+        for banned in self.img.BANNED_MOUNTS:
+            excludes.append(banned)
+
+    def make_image(self, size_in_MB, excludes, prefix, destination_path):
+        image_file = '%s.img' % prefix
+        image_path = '%s/%s' % (destination_path, image_file)
+        if not os.path.exists(destination_path):
+            os.makedirs(destination_path)
+        if self.img == 'Unsupported':
+            print 'Platform not fully supported.'
+            raise UnsupportedException
+        self.img.create_image(size_in_MB, image_path)
+        self.img.make_fs(image_path)
+        return image_path
+
     def create_loopback(self, image_path):
         utils.check_prerequisite_command('losetup')
         tries = 0
@@ -670,6 +702,21 @@ class Bundler(object):
                          stdout=subprocess.PIPE).communicate()[0]
         os.rmdir(mount_point)
 
+    def copy_volume(self, image_path, volume_path, excludes,
+                    generate_fstab, fstab_path):
+        (mount_point, loop_dev) = self.mount_image(image_path)
+        try:
+            output = self.copy_to_image(mount_point, volume_path,
+                    excludes)
+            if self.img == 'Unsupported':
+                print 'Platform not fully supported.'
+                raise UnsupportedException
+            self.img.add_fstab(mount_point, generate_fstab, fstab_path)
+        except CopyError:
+            raise CopyError
+        finally:
+            self.unmount_image(mount_point)
+            
     def display_error_and_exit(self, msg):
         code = None
         message = None
