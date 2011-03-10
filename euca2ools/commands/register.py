@@ -48,7 +48,7 @@ class Register(eucacommand.EucaCommand):
                      optional=True, ptype='string',
                      doc='Description of the image.'),
                Param(name='name', short_name='n', long_name='name',
-                     optional=False, ptype='string',
+                     optional=True, ptype='string',
                      doc='Name of the image.'),
                Param(name='architecture',
                      short_name='a', long_name='architecture',
@@ -72,7 +72,7 @@ class Register(eucacommand.EucaCommand):
                   doc='path to the uploaded image (bucket/manifest).')]
                
     def main(self):
-        image_location = self.arguments('image_location')
+        image_location = self.arguments['image_location']
         block_device_map = self.options.get('block_device_mapping', [])
         description = self.options.get('description', None)
         image_name = self.options.get('name', None)

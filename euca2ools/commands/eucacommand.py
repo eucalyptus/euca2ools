@@ -42,6 +42,7 @@ import euca2ools.utils
 import euca2ools.validate
 import euca2ools.exceptions
 from boto.ec2.regioninfo import RegionInfo
+from boto.s3.connection import OrdinaryCallingFormat
 from boto.roboto.param import Param
 
 SYSTEM_EUCARC_PATH = os.path.join('/etc', 'euca2ools', 'eucarc')
@@ -478,17 +479,19 @@ class EucaCommand(object):
             port=self.port,
             path=self.service_path)
 
-    def make_connection(self):
+    def make_connection(self, conn_type='ec2'):
         self.get_credentials()
-        if self.is_euca:
+        if conn_type == 'nc':
             conn = self.make_nc_connection()
-        elif self.is_s3:
+        elif conn_type == 's3':
             conn = self.make_s3_connection()
-        else:
+        elif conn_type == 'ec2':
             conn = self.make_ec2_connection()
+        else:
+            conn = None
         return conn
 
-    def make_connection_cli(self):
+    def make_connection_cli(self, conn_type='ec2'):
         """
         This just wraps up the make_connection call with appropriate
         try/except logic to print out an error message and exit if
@@ -496,10 +499,13 @@ class EucaCommand(object):
         out of all the command files.
         """
         try:
-            return self.make_connection()
+            conn = self.make_connection(conn_type)
+            if not conn:
+                msg = 'Unknown connection type: %s' % conn_type
+                self.display_error_and_exit(msg)
+            return conn
         except euca2ools.exceptions.EucaError as ex:
-            print ex.message
-            sys.exit(1)
+            self.display_error_and_exit(ex)
 
     def make_request_cli(self, connection, request_name, **params):
         """
