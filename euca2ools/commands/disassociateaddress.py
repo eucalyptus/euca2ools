@@ -34,7 +34,7 @@
 import eucacommand
 from boto.roboto.param import Param
 
-class AssociateAddress(eucacommand.EucaCommand):
+class DisassociateAddress(eucacommand.EucaCommand):
 
     Description = 'Disassociate a public IP address from an instance.'
     Args = [Param(name='ip', ptype='string',
