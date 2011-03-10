@@ -47,5 +47,5 @@ class DisassociateAddress(eucacommand.EucaCommand):
                                             'disassociate_address',
                                             public_ip=self.arguments['ip'])
         if return_code:
-            print 'ADDRESS\t%s' % ip
+            print 'ADDRESS\t%s' % self.arguments['ip']
 
