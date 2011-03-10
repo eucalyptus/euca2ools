@@ -87,7 +87,7 @@ class BundleVol(eucacommand.EucaCommand):
                      optional=True, ptype='string', cardinality='*',
                      doc="""Default block device mapping for the image
                      (comma-separated list of key=value pairs)."""),
-               Param(name='destination',
+               Param(name='destination_path',
                      short_name='d', long_name='destination',
                      optional=True, ptype='string',
                      doc="""Directory to store the bundled image in.
