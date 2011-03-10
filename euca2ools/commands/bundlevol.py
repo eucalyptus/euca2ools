@@ -32,6 +32,7 @@
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
 import os
+import sys
 import platform
 import eucacommand
 from boto.roboto.param import Param
@@ -193,7 +194,7 @@ class BundleVol(eucacommand.EucaCommand):
 
         return product_codes
 
-    def cleanup(path):
+    def cleanup(self, path):
         if os.path.exists(path):
             os.remove(path)
 
@@ -227,6 +228,8 @@ class BundleVol(eucacommand.EucaCommand):
         inherit = not self.options.get('no_inherit', False)
         generate_fstab = self.options.get('generate_fstab', False)
         fstab_path = self.options.get('fstab_path', None)
+        excludes_string = self.options.get('excludes', '')
+        all_flg = self.options.get('all', False)
         
         bundler = euca2ools.bundler.Bundler(self)
         
@@ -259,9 +262,9 @@ class BundleVol(eucacommand.EucaCommand):
             excludes = ['/etc/udev/rules.d/70-persistent-net.rules',
                         '/etc/udev/rules.d/z25_persistent-net.rules']
 
-        if not all:
+        if not all_flg:
             excludes.extend(self.parse_excludes(excludes_string))
-            self.add_excludes(volume_path, excludes)
+            bundler.add_excludes(volume_path, excludes)
         if inherit:
             (ramdisk, kernel, block_device_map, product_codes,
              ancestor_ami_ids) = self.get_instance_metadata(ramdisk,
@@ -276,7 +279,7 @@ class BundleVol(eucacommand.EucaCommand):
             print e
             sys.exit(1)
         try:
-            image_path = bundler.make_image(size_in_MB, excludes, prefix,
+            image_path = bundler.make_image(size_in_mb, excludes, prefix,
                                             destination_path,
                                             fs_type=fsinfo['fs_type'],
                                             uuid=fsinfo['uuid'],

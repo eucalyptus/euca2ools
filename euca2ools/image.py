@@ -82,7 +82,7 @@ class LinuxImage:
         dd_cmd.append('seek=%s' % (size_in_MB - 1))
         if self.debug:
             print 'Creating disk image...', image_path
-        subprocess.Popen(dd_cmd, PIPE).communicate()[0]
+        subprocess.Popen(dd_cmd, subprocess.PIPE).communicate()[0]
 
     def make_fs(self, image_path, fs_type = None, uuid = None, label = None):
         mkfs_prog = self.MAKEFS_CMD
@@ -111,11 +111,11 @@ class LinuxImage:
         if self.debug:
             print 'Creating filesystem with %s' % mkfs
 
-        makefs_cmd = subprocess.Popen(mkfs,PIPE).communicate()[0]
+        makefs_cmd = subprocess.Popen(mkfs,subprocess.PIPE).communicate()[0]
 
         if len(tunecmd):
             utils.check_prerequisite_command(tunecmd[0])
-            tune_cmd = subprocess.Popen(tunecmd,PIPE).communicate[0]
+            tune_cmd = subprocess.Popen(tunecmd,subprocess.PIPE).communicate[0]
 
     def add_fstab(self, mount_point, generate_fstab, fstab_path):
         if not fstab_path:
@@ -159,7 +159,7 @@ class LinuxImage:
             cmd = ['mknod']
             entry[0] = os.path.join(image_path, entry[0])
             cmd.extend(entry)
-            subprocess.Popen(cmd, stdout=PIPE, stderr=PIPE).communicate()
+            subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
 
 class SolarisImage:
 

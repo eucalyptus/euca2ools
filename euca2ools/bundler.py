@@ -49,6 +49,7 @@ import logging
 import base64
 import image
 import utils
+from exceptions import *
 
 BUNDLER_NAME = 'euca-tools'
 BUNDLER_VERSION = '1.3.2'
@@ -576,7 +577,7 @@ class Bundler(object):
         manifest_out_file.close()
 
     def add_excludes(self, path, excludes):
-        if self.debug:
+        if self.euca.debug:
             print 'Reading /etc/mtab...'
         mtab_file = open('/etc/mtab', 'r')
         while 1:
@@ -588,14 +589,16 @@ class Bundler(object):
             fs_type = mtab_line_parts[2]
             if mount_point.find(path) == 0 and fs_type \
                 not in self.img.ALLOWED_FS_TYPES:
-                if self.debug:
+                if self.euca.debug:
                     print 'Excluding %s...' % mount_point
                 excludes.append(mount_point)
         mtab_file.close()
         for banned in self.img.BANNED_MOUNTS:
             excludes.append(banned)
 
-    def make_image(self, size_in_MB, excludes, prefix, destination_path):
+    def make_image(self, size_in_MB, excludes, prefix,
+                   destination_path, fs_type = None,
+                   uuid = None, label = None):
         image_file = '%s.img' % prefix
         image_path = '%s/%s' % (destination_path, image_file)
         if not os.path.exists(destination_path):
@@ -604,7 +607,7 @@ class Bundler(object):
             print 'Platform not fully supported.'
             raise UnsupportedException
         self.img.create_image(size_in_MB, image_path)
-        self.img.make_fs(image_path)
+        self.img.make_fs(image_path, fs_type=fs_type, uuid=uuid, label=label)
         return image_path
 
     def create_loopback(self, image_path):
@@ -635,7 +638,7 @@ class Bundler(object):
         loop_dev = self.create_loopback(image_path)
         if self.euca.debug:
             print 'Mounting image...'
-        Popen(['mount', loop_dev, tmp_mnt_point],
+        subprocess.Popen(['mount', loop_dev, tmp_mnt_point],
               stdout=subprocess.PIPE).communicate()
         return (tmp_mnt_point, loop_dev)
 
