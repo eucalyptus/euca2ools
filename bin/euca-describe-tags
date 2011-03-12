@@ -34,9 +34,9 @@
 # Author: Neil Soman neil@eucalyptus.com
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.commands.describetags
+import euca2ools.commands.euca.describetags
 
 if __name__ == '__main__':
-    cmd = euca2ools.commands.describetags.DescribeTags()
+    cmd = euca2ools.commands.euca.describetags.DescribeTags()
     cmd.main()
 

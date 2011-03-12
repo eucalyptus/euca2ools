@@ -29,7 +29,5 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 # Author: Neil Soman neil@eucalyptus.com
-#       : Mitch Garnaat mgarnaat@eucalyptus.com
-
-
+#         Mitch Garnaat mgarnaat@eucalyptus.com
 

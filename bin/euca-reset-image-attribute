@@ -34,9 +34,9 @@
 # Author: Neil Soman neil@eucalyptus.com
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.commands.resetimageattribute
+import euca2ools.commands.euca.resetimageattribute
 
 if __name__ == '__main__':
-    cmd = euca2ools.commands.resetimageattribute.ResetImageAttribute()
+    cmd = euca2ools.commands.euca.resetimageattribute.ResetImageAttribute()
     cmd.main()
 

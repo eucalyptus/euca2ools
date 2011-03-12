@@ -34,9 +34,9 @@
 # Author: Neil Soman neil@eucalyptus.com
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.commands.describesnapshots
+import euca2ools.commands.euca.describesnapshots
 
 if __name__ == '__main__':
-    cmd = euca2ools.commands.describesnapshots.DescribeSnapshots()
+    cmd = euca2ools.commands.euca.describesnapshots.DescribeSnapshots()
     cmd.main()
 

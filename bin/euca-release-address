@@ -34,9 +34,9 @@
 # Author: Neil Soman neil@eucalyptus.com
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.commands.releaseaddress
+import euca2ools.commands.euca.releaseaddress
 
 if __name__ == '__main__':
-    cmd = euca2ools.commands.releaseaddress.ReleaseAddress()
+    cmd = euca2ools.commands.euca.releaseaddress.ReleaseAddress()
     cmd.main()
 

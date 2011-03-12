@@ -34,9 +34,9 @@
 # Author: Neil Soman neil@eucalyptus.com
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.commands.runinstances
+import euca2ools.commands.euca.runinstances
 
 if __name__ == '__main__':
-    cmd = euca2ools.commands.runinstances.RunInstances()
+    cmd = euca2ools.commands.euca.runinstances.RunInstances()
     cmd.main()
 

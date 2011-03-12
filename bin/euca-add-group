@@ -34,9 +34,9 @@
 # Author: Neil Soman neil@eucalyptus.com
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.commands.addgroup
+import euca2ools.commands.euca.addgroup
 
 if __name__ == '__main__':
-    cmd = euca2ools.commands.addgroup.AddGroup()
+    cmd = euca2ools.commands.euca.addgroup.AddGroup()
     cmd.main()
 

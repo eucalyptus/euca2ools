@@ -34,9 +34,9 @@
 # Author: Neil Soman neil@eucalyptus.com
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.commands.deletegroup
+import euca2ools.commands.euca.deletegroup
 
 if __name__ == '__main__':
-    cmd = euca2ools.commands.deletegroup.DeleteGroup()
+    cmd = euca2ools.commands.euca.deletegroup.DeleteGroup()
     cmd.main()
 

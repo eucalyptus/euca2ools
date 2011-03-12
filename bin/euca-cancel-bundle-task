@@ -34,9 +34,9 @@
 # Author: Neil Soman neil@eucalyptus.com
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.commands.cancelbundletask
+import euca2ools.commands.euca.cancelbundletask
 
 if __name__ == '__main__':
-    cmd = euca2ools.commands.cancelbundletask.CancelBundleTask()
+    cmd = euca2ools.commands.euca.cancelbundletask.CancelBundleTask()
     cmd.main()
 

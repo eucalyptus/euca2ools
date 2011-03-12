@@ -34,8 +34,8 @@
 # Author: Neil Soman neil@eucalyptus.com
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.commands.allocateaddress
+import euca2ools.commands.euca.allocateaddress
 
 if __name__ == '__main__':
-    cmd = euca2ools.commands.allocateaddress.AllocateAddress()
+    cmd = euca2ools.commands.euca.allocateaddress.AllocateAddress()
     cmd.main()

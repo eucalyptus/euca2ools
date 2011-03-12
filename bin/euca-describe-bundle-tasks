@@ -34,8 +34,8 @@
 # Author: Neil Soman neil@eucalyptus.com
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.commands.describebundletasks
+import euca2ools.commands.euca.describebundletasks
 
 if __name__ == '__main__':
-    cmd = euca2ools.commands.describebundletasks.DescribeBundleTasks()
+    cmd = euca2ools.commands.euca.describebundletasks.DescribeBundleTasks()
     cmd.main()

@@ -34,9 +34,9 @@
 # Author: Neil Soman neil@eucalyptus.com
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.commands.unmonitorinstances
+import euca2ools.commands.euca.unmonitorinstances
 
 if __name__ == '__main__':
-    cmd = euca2ools.commands.unmonitorinstances.UnmonitorInstances()
+    cmd = euca2ools.commands.euca.unmonitorinstances.UnmonitorInstances()
     cmd.main()
 

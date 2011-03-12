@@ -34,9 +34,9 @@
 # Author: Neil Soman neil@eucalyptus.com
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.commands.confirmproductinstance
+import euca2ools.commands.euca.confirmproductinstance
 
 if __name__ == '__main__':
-    cmd = euca2ools.commands.confirmproductinstance.ConfirmProductInstance()
+    cmd = euca2ools.commands.euca.confirmproductinstance.ConfirmProductInstance()
     cmd.main()
 

@@ -34,9 +34,9 @@
 # Author: Neil Soman neil@eucalyptus.com
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.commands.checkbucket
+import euca2ools.commands.euca.checkbucket
 
 if __name__ == '__main__':
-    cmd = euca2ools.commands.checkbucket.CheckBucket()
+    cmd = euca2ools.commands.euca.checkbucket.CheckBucket()
     cmd.main()
 

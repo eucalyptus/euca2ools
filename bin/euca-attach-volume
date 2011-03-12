@@ -34,9 +34,9 @@
 # Author: Neil Soman neil@eucalyptus.com
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.commands.attachvolume
+import euca2ools.commands.euca.attachvolume
 
 if __name__ == '__main__':
-    cmd = euca2ools.commands.attachvolume.AttachVolume()
+    cmd = euca2ools.commands.euca.attachvolume.AttachVolume()
     cmd.main()
 

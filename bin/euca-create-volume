@@ -34,9 +34,9 @@
 # Author: Neil Soman neil@eucalyptus.com
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.commands.createvolume
+import euca2ools.commands.euca.createvolume
 
 if __name__ == '__main__':
-    cmd = euca2ools.commands.createvolume.CreateVolume()
+    cmd = euca2ools.commands.euca.createvolume.CreateVolume()
     cmd.main()
 

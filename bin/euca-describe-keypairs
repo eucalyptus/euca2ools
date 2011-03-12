@@ -34,8 +34,8 @@
 # Author: Neil Soman neil@eucalyptus.com
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.commands.describekeypairs
+import euca2ools.commands.euca.describekeypairs
 
 if __name__ == '__main__':
-    cmd = euca2ools.commands.describekeypairs.DescribeKeyPairs()
+    cmd = euca2ools.commands.euca.describekeypairs.DescribeKeyPairs()
     cmd.main()

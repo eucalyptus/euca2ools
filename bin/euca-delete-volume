@@ -34,9 +34,9 @@
 # Author: Neil Soman neil@eucalyptus.com
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.commands.deletevolume
+import euca2ools.commands.euca.deletevolume
 
 if __name__ == '__main__':
-    cmd = euca2ools.commands.deletevolume.DeleteVolume()
+    cmd = euca2ools.commands.euca.deletevolume.DeleteVolume()
     cmd.main()
 

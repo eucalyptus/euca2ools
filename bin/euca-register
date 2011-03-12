@@ -34,9 +34,9 @@
 # Author: Neil Soman neil@eucalyptus.com
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.commands.register
+import euca2ools.commands.euca.register
 
 if __name__ == '__main__':
-    cmd = euca2ools.commands.register.Register()
+    cmd = euca2ools.commands.euca.register.Register()
     cmd.main()
 

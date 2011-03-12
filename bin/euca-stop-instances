@@ -34,9 +34,9 @@
 # Author: Neil Soman neil@eucalyptus.com
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.commands.stopinstances
+import euca2ools.commands.euca.stopinstances
 
 if __name__ == '__main__':
-    cmd = euca2ools.commands.stopinstances.StopInstances()
+    cmd = euca2ools.commands.euca.stopinstances.StopInstances()
     cmd.main()
 

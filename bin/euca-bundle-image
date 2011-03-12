@@ -34,9 +34,9 @@
 # Author: Neil Soman neil@eucalyptus.com
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.commands.bundleimage
+import euca2ools.commands.euca.bundleimage
 
 if __name__ == '__main__':
-    cmd = euca2ools.commands.bundleimage.BundleImage()
+    cmd = euca2ools.commands.euca.bundleimage.BundleImage()
     cmd.main()
 

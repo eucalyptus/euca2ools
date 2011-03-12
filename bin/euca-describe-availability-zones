@@ -34,9 +34,9 @@
 # Author: Neil Soman neil@eucalyptus.com
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.commands.describeavailabilityzones
+import euca2ools.commands.euca.describeavailabilityzones
 
 if __name__ == '__main__':
-    cmd = euca2ools.commands.describeavailabilityzones.DescribeAvailabilityZones()
+    cmd = euca2ools.commands.euca.describeavailabilityzones.DescribeAvailabilityZones()
     cmd.main()
 

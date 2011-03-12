@@ -34,9 +34,9 @@
 # Author: Neil Soman neil@eucalyptus.com
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.commands.deregister
+import euca2ools.commands.euca.deregister
 
 if __name__ == '__main__':
-    cmd = euca2ools.commands.deregister.Deregister()
+    cmd = euca2ools.commands.euca.deregister.Deregister()
     cmd.main()
 

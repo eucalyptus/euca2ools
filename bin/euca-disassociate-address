@@ -34,9 +34,9 @@
 # Author: Neil Soman neil@eucalyptus.com
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.commands.disassociateaddress
+import euca2ools.commands.euca.disassociateaddress
 
 if __name__ == '__main__':
-    cmd = euca2ools.commands.disassociateaddress.DisassociateAddress()
+    cmd = euca2ools.commands.euca.disassociateaddress.DisassociateAddress()
     cmd.main()
 

@@ -34,9 +34,9 @@
 # Author: Neil Soman neil@eucalyptus.com
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.commands.modifyimageattribute
+import euca2ools.commands.euca.modifyimageattribute
 
 if __name__ == '__main__':
-    cmd = euca2ools.commands.modifyimageattribute.ModifyImageAttribute()
+    cmd = euca2ools.commands.euca.modifyimageattribute.ModifyImageAttribute()
     cmd.main()
 

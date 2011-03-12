@@ -34,9 +34,9 @@
 # Author: Neil Soman neil@eucalyptus.com
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.commands.describeaddresses
+import euca2ools.commands.euca.describeaddresses
 
 if __name__ == '__main__':
-    cmd = euca2ools.commands.describeaddresses.DescribeAddresses()
+    cmd = euca2ools.commands.euca.describeaddresses.DescribeAddresses()
     cmd.main()
 

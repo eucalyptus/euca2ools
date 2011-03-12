@@ -34,9 +34,9 @@
 # Author: Neil Soman neil@eucalyptus.com
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.commands.deletetags
+import euca2ools.commands.euca.deletetags
 
 if __name__ == '__main__':
-    cmd = euca2ools.commands.deletetags.DeleteTags()
+    cmd = euca2ools.commands.euca.deletetags.DeleteTags()
     cmd.main()
 

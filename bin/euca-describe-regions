@@ -34,9 +34,9 @@
 # Author: Neil Soman neil@eucalyptus.com
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.commands.describeregions
+import euca2ools.commands.euca.describeregions
 
 if __name__ == '__main__':
-    cmd = euca2ools.commands.describeregions.DescribeRegions()
+    cmd = euca2ools.commands.euca.describeregions.DescribeRegions()
     cmd.main()
 

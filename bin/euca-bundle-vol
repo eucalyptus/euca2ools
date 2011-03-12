@@ -34,9 +34,9 @@
 # Author: Neil Soman neil@eucalyptus.com
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.commands.bundlevol
+import euca2ools.commands.euca.bundlevol
 
 if __name__ == '__main__':
-    cmd = euca2ools.commands.bundlevol.BundleVol()
+    cmd = euca2ools.commands.euca.bundlevol.BundleVol()
     cmd.main()
 
