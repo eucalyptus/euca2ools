@@ -1,0 +1,6 @@
+#!/usr/bin/env python
+
+import euca2ools.commands.euare.listaccesskeys
+
+if __name__ == '__main__':
+    euca2ools.commands.euare.listaccesskeys.main_cli()

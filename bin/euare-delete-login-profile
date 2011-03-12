@@ -1,0 +1,6 @@
+#!/usr/bin/env python
+
+import euca2ools.commands.euare.deleteloginprofile
+
+if __name__ == '__main__':
+    euca2ools.commands.euare.deleteloginprofile.main_cli()
