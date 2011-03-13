@@ -117,8 +117,6 @@ class EucaCommand(object):
         # logging.getLogger('boto').addHandler(h)
 
     def process_cli_args(self):
-        print 'short: ', self.short_options()
-        print 'long: ', self.long_options()
         (opts, args) = getopt.gnu_getopt(sys.argv[1:],
                                          self.short_options(),
                                          self.long_options())
