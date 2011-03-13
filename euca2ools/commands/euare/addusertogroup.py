@@ -1,6 +1,3 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
 # Software License Agreement (BSD License)
 #
 # Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
@@ -66,8 +63,8 @@ class AddUserToGroup(AWSQueryRequest):
         u'type': u'object',
         u'optional': False,
         u'name': u'ResponseMetadata',
-        u'properties': [{u'type': u'string', u'optional': False, u'name'
-                        : u'RequestId'}],
+        u'properties': [{u'type': u'string', u'optional': False,
+                         u'name': u'RequestId'}],
         }]}
 
 
@@ -79,5 +76,3 @@ def main(**args):
 def main_cli():
     req = AddUserToGroup()
     req.do_cli()
-
-

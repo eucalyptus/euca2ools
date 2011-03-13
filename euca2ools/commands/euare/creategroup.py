@@ -1,6 +1,3 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
 # Software License Agreement (BSD License)
 #
 # Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
@@ -51,16 +48,18 @@ class CreateGroup(AWSQueryRequest):
         long_name='path',
         ptype='string',
         optional=True,
-        doc=""" The path to the group. For more information about paths, see Identifiers for IAM Entities in Using AWS Identity and Access Management.  This parameter is optional. If it is not included, it defaults to a slash (/). """
-            ,
-        ), Param(
+        doc=""" The path to the group. For more information about paths, \
+        see Identifiers for IAM Entities in Using AWS Identity and \
+        Access Management.  This parameter is optional. If it is not \
+        included, it defaults to a slash (/). """),
+               Param(
         name='GroupName',
         short_name='g',
         long_name='group-name',
         ptype='string',
         optional=False,
-        doc=""" Name of the group to create. Do not include the path in this value. """
-            ,
+        doc=""" Name of the group to create. Do not include the path in \
+        this value. """,
         )]
 
     response = {u'type': u'object', u'name': u'CreateGroupResponse',
@@ -133,5 +132,3 @@ def main(**args):
 def main_cli():
     req = CreateGroup()
     req.do_cli()
-
-

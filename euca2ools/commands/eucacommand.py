@@ -117,6 +117,8 @@ class EucaCommand(object):
         # logging.getLogger('boto').addHandler(h)
 
     def process_cli_args(self):
+        print 'short: ', self.short_options()
+        print 'long: ', self.long_options()
         (opts, args) = getopt.gnu_getopt(sys.argv[1:],
                                          self.short_options(),
                                          self.long_options())
@@ -187,7 +189,7 @@ class EucaCommand(object):
 
     def find_option(self, op_name):
         for option in self.StandardOptions+self.Options:
-            if option.option_short_name == op_name or option.option_long_name == op_name:
+            if option.getopt_short_name == op_name or option.getopt_long_name == op_name:
                 return option
         return None
 
@@ -195,20 +197,14 @@ class EucaCommand(object):
         s = ''
         for option in self.StandardOptions + self.Options:
             if option.short_name:
-                sn = option.short_name
-                if option.ptype != 'boolean':
-                    sn += ':'
-                s += sn
+                s += option.getopt_short_name
         return s
 
     def long_options(self):
         l = []
         for option in self.StandardOptions+self.Options:
             if option.long_name:
-                ln = option.long_name
-                if option.ptype != 'boolean':
-                    ln += '='
-                l.append(ln)
+                l.append(option.getopt_long_name)
         if self.Filters:
             l.append('filter=')
         return l
@@ -249,9 +245,9 @@ class EucaCommand(object):
             for opt in plist:
                 names = []
                 if opt.short_name:
-                    names.append(opt.option_short_name)
+                    names.append(opt.synopsis_short_name)
                 if opt.long_name:
-                    names.append(opt.option_long_name)
+                    names.append(opt.synopsis_long_name)
                 if not names:
                     names.append(opt.name)
                 doc = textwrap.dedent(opt.doc)
@@ -279,9 +275,9 @@ class EucaCommand(object):
         for option in options:
             names = []
             if option.short_name:
-                names.append(option.option_short_name)
+                names.append(option.synopsis_short_name)
             if option.long_name:
-                names.append(option.option_long_name)
+                names.append(option.synopsis_long_name)
             if option.optional:
                 s += '['
             s += ', '.join(names)

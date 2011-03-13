@@ -1,6 +1,3 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
 # Software License Agreement (BSD License)
 #
 # Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
@@ -56,9 +53,8 @@ class CreateAccessKey(AWSQueryRequest):
 
     response = {u'type': u'object',
                 u'name': u'CreateAccessKeyResponse', u'properties': [{
-        u'doc'
-            : u' Contains the result of a successful invocation of the CreateAccessKey action. '
-            ,
+        u'doc': u' Contains the result of a successful invocation \
+        of the CreateAccessKey action. ',
         u'type': u'object',
         u'name': u'CreateAccessKeyResult',
         u'optional': False,
@@ -71,9 +67,7 @@ class CreateAccessKey(AWSQueryRequest):
                 u'name': u'UserName',
                 u'pattern': u'[\\w+=,.@-]*',
                 u'max_length': 128,
-                u'doc'
-                    : u' Name of the User the key is associated with. '
-                    ,
+                u'doc': u' Name of the User the key is associated with. ',
                 u'optional': False,
                 }, {
                 u'min_length': 16,
@@ -84,9 +78,9 @@ class CreateAccessKey(AWSQueryRequest):
                 u'doc': u' The ID for this access key. ',
                 u'optional': False,
                 }, {
-                u'doc'
-                    : u' The status of the access key. Active means the key is valid for API calls, while Inactive means it is not. '
-                    ,
+                u'doc': u' The status of the access key. Active \
+                means the key is valid for API calls, while Inactive \
+                means it is not. ',
                 u'type': u'enum',
                 u'name': u'Status',
                 u'optional': False,
@@ -109,8 +103,8 @@ class CreateAccessKey(AWSQueryRequest):
         u'type': u'object',
         u'optional': False,
         u'name': u'ResponseMetadata',
-        u'properties': [{u'type': u'string', u'optional': False, u'name'
-                        : u'RequestId'}],
+        u'properties': [{u'type': u'string', u'optional': False,
+                         u'name': u'RequestId'}],
         }]}
 
 
@@ -122,5 +116,3 @@ def main(**args):
 def main_cli():
     req = CreateAccessKey()
     req.do_cli()
-
-

@@ -51,31 +51,26 @@ class ListUsers(AWSQueryRequest):
         long_name='path-prefix',
         ptype='string',
         optional=True,
-        doc=""" The path prefix for filtering the results. For example: /division_abc/subdivision_xyz/, which would get all User names whose path starts with /division_abc/subdivision_xyz/.  This parameter is optional. If it is not included, it defaults to a slash (/), listing all User names. """
-            ,
+        doc=""" The path prefix for filtering the results. For example: /division_abc/subdivision_xyz/, which would get all User names whose path starts with /division_abc/subdivision_xyz/.  This parameter is optional. If it is not included, it defaults to a slash (/), listing all User names. """,
         ), Param(
         name='Marker',
         short_name='m',
         long_name='marker',
         ptype='string',
         optional=True,
-        doc=""" Use this parameter only when paginating results, and only in a subsequent request after you've received a response where the results are truncated. Set it to the value of the Marker element in the response you just received. """
-            ,
+        doc=""" Use this parameter only when paginating results, and only in a subsequent request after you've received a response where the results are truncated. Set it to the value of the Marker element in the response you just received. """,
         ), Param(
         name='MaxItems',
         short_name='None',
         long_name='max-items',
         ptype='integer',
         optional=True,
-        doc=""" Use this parameter only when paginating results to indicate the maximum number of User names you want in the response. If there are additional User names beyond the maximum you specify, the IsTruncated response element is true. """
-            ,
+        doc=""" Use this parameter only when paginating results to indicate the maximum number of User names you want in the response. If there are additional User names beyond the maximum you specify, the IsTruncated response element is true. """,
         )]
 
     response = {u'type': u'object', u'name': u'ListUsersResponse',
                 u'properties': [{
-        u'doc'
-            : u' Contains the result of a successful invocation of the ListUsers action. '
-            ,
+        u'doc': u' Contains the result of a successful invocation of the ListUsers action. ',
         u'type': u'object',
         u'name': u'ListUsersResult',
         u'optional': False,
@@ -86,19 +81,14 @@ class ListUsers(AWSQueryRequest):
                 u'type': u'array',
                 u'optional': False,
                 u'name': u'member',
-                u'items': [{u'doc'
-                           : u' The User data type contains information about a User.   This data type is used as a response element in the following actions:  CreateUser GetUser ListUsers  '
-                           , u'type': u'object', u'properties': [{
+                u'items': [{u'doc': u' The User data type contains information about a User.   This data type is used as a response element in the following actions:  CreateUser GetUser ListUsers  ',
+                            u'type': u'object', u'properties': [{
                     u'min_length': 1,
                     u'type': u'string',
                     u'name': u'Path',
-                    u'pattern'
-                        : u'(\\u002F)|(\\u002F[\\u0021-\\u007F]+\\u002F)'
-                        ,
+                    u'pattern': u'(\\u002F)|(\\u002F[\\u0021-\\u007F]+\\u002F)',
                     u'max_length': 512,
-                    u'doc'
-                        : u' Path to the User name. For more information about paths, see Identifiers for IAM Entities in Using AWS Identity and Access Management. '
-                        ,
+                    u'doc': u' Path to the User name. For more information about paths, see Identifiers for IAM Entities in Using AWS Identity and Access Management. ',
                     u'optional': False,
                     }, {
                     u'min_length': 1,
@@ -114,27 +104,21 @@ class ListUsers(AWSQueryRequest):
                     u'name': u'UserId',
                     u'pattern': u'[\\w]*',
                     u'max_length': 32,
-                    u'doc'
-                        : u' The stable and unique string identifying the User. For more information about IDs, see Identifiers for IAM Entities in Using AWS Identity and Access Management. '
-                        ,
+                    u'doc': u' The stable and unique string identifying the User. For more information about IDs, see Identifiers for IAM Entities in Using AWS Identity and Access Management. ',
                     u'optional': False,
                     }, {
                     u'min_length': 20,
                     u'name': u'Arn',
                     u'optional': False,
                     u'max_length': 2048,
-                    u'doc'
-                        : u' The Amazon Resource Name (ARN) specifying the User. For more information about ARNs and how to use them in policies, see Identifiers for IAM Entities in Using AWS Identity and Access Management. '
-                        ,
+                    u'doc': u' The Amazon Resource Name (ARN) specifying the User. For more information about ARNs and how to use them in policies, see Identifiers for IAM Entities in Using AWS Identity and Access Management. ',
                     u'type': u'string',
                     }]}],
                 }],
             u'optional': False,
             u'name': u'Users',
             }, {
-            u'doc'
-                : u' A flag that indicates whether there are more User names to list. If your results were truncated, you can make a subsequent pagination request using the Marker request parameter to retrieve more Users in the list. '
-                ,
+            u'doc': u' A flag that indicates whether there are more User names to list. If your results were truncated, you can make a subsequent pagination request using the Marker request parameter to retrieve more Users in the list. ',
             u'optional': True,
             u'name': u'IsTruncated',
             u'type': u'boolean',
@@ -144,17 +128,14 @@ class ListUsers(AWSQueryRequest):
             u'name': u'Marker',
             u'pattern': u'[\\u0020-\\u00FF]*',
             u'max_length': 320,
-            u'doc'
-                : u' If IsTruncated is true, this element is present and contains the value to use for the Marker parameter in a subsequent pagination request. '
-                ,
+            u'doc': u' If IsTruncated is true, this element is present and contains the value to use for the Marker parameter in a subsequent pagination request. ',
             u'optional': True,
             }],
         }, {
         u'type': u'object',
         u'optional': False,
         u'name': u'ResponseMetadata',
-        u'properties': [{u'type': u'string', u'optional': False, u'name'
-                        : u'RequestId'}],
+        u'properties': [{u'type': u'string', u'optional': False, u'name': u'RequestId'}],
         }]}
 
 
@@ -166,5 +147,3 @@ def main(**args):
 def main_cli():
     req = ListUsers()
     req.do_cli()
-
-
