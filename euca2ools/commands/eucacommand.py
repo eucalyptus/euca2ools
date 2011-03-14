@@ -187,7 +187,7 @@ class EucaCommand(object):
 
     def find_option(self, op_name):
         for option in self.StandardOptions+self.Options:
-            if option.getopt_short_name == op_name or option.getopt_long_name == op_name:
+            if option.synopsis_short_name == op_name or option.synopsis_long_name == op_name:
                 return option
         return None
 
