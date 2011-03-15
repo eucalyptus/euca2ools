@@ -1,9 +1,9 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -32,81 +32,10 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 # Author: Neil Soman neil@eucalyptus.com
+#         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import getopt
-import sys
-import os
-from euca2ools import Euca2ool, Util, ConnectionFailed
-
-usage_string = \
-    """
-Delete a key pair.
-
-euca-delete-keypair [-h, --help] [--version] [--debug] keypair_name
-
-REQUIRED PARAMETERS	
-
-keypair_name 			unique name for the keypair to delete. 
-
-OPTIONAL PARAMETERS
-
-"""
-
-
-def usage(status=1):
-    print usage_string
-    Util().usage()
-    sys.exit(status)
-
-
-def version():
-    print Util().version()
-    sys.exit()
-
-
-def display_keypair(keypair):
-    keypair_string = '%s\t%s' % (keypair.name, keypair.fingerprint)
-    print 'KEYPAIR\t%s' % keypair_string
-
-
-def main():
-    euca = None
-    try:
-        euca = Euca2ool()
-    except Exception, e:
-        print e
-        usage()
-
-    keypair_name = None
-
-    for (name, value) in euca.opts:
-        if name in ('-h', '--help'):
-            usage(0)
-        elif name == '--version':
-            version()
-
-    for arg in euca.args:
-        keypair_name = arg
-        break
-
-    try:
-        euca_conn = euca.make_connection()
-    except ConnectionFailed, e:
-        print e.message
-        sys.exit(1)
-    if keypair_name:
-        try:
-            return_code = euca_conn.delete_key_pair(keypair_name)
-        except Exception, ex:
-            euca.display_error_and_exit('%s' % ex)
-
-        if return_code:
-            print 'KEYPAIR\t%s' % keypair_name
-    else:
-        print 'keypair_name must be specified'
-        usage()
-
+import euca2ools.commands.euca.deletekeypair
 
 if __name__ == '__main__':
-    main()
-
+    cmd = euca2ools.commands.euca.deletekeypair.DeleteKeyPair()
+    cmd.main()

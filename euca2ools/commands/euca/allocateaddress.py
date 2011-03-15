@@ -1,7 +1,6 @@
-#!/usr/bin/make -f
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -30,15 +29,20 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 # Author: Neil Soman neil@eucalyptus.com
+#         Mitch Garnaat mgarnaat@eucalyptus.com
 
-all: build install
+import euca2ools.commands.eucacommand
+from boto.roboto.param import Param
 
-build: 
-	python setup.py build
+class AllocateAddress(euca2ools.commands.eucacommand.EucaCommand):
 
-install:
-	python setup.py install
+    Description = 'Allocate a public IP address'
 
-clean:
-	python setup.py clean
-	rm -rf build dist
+    def main(self):
+        euca_conn = self.make_connection_cli()
+        address = self.make_request_cli(euca_conn,
+                                      'allocate_address')
+        if address:
+            print 'ADDRESS\t%s' % address.public_ip
+
+

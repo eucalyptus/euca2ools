@@ -1,8 +1,6 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -31,9 +29,8 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 # Author: Neil Soman neil@eucalyptus.com
+#         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import boto
-import getopt
 import sys
 import os
 import tarfile
@@ -42,19 +39,17 @@ from xml.dom import minidom
 from hashlib import sha1 as sha
 from M2Crypto import BN, EVP, RSA, X509
 from binascii import hexlify, unhexlify
-from subprocess import *
 import subprocess
+import tempfile
+import stat
 import platform
-import urllib
-import urlparse
 import re
 import shutil
-from boto.ec2.regioninfo import RegionInfo
-from boto.ec2.blockdevicemapping import BlockDeviceMapping
-from boto.ec2.blockdevicemapping import BlockDeviceType
-from boto.s3.connection import OrdinaryCallingFormat
 import logging
 import base64
+import image
+import utils
+from exceptions import *
 
 BUNDLER_NAME = 'euca-tools'
 BUNDLER_VERSION = '1.3.2'
@@ -62,570 +57,21 @@ VERSION = '2007-10-10'
 RELEASE = '31337'
 AES = 'AES-128-CBC'
 
-IP_PROTOCOLS = ['tcp', 'udp', 'icmp']
-
 IMAGE_IO_CHUNK = 10 * 1024
 IMAGE_SPLIT_CHUNK = IMAGE_IO_CHUNK * 1024
 MAX_LOOP_DEVS = 256
 
-METADATA_URL = 'http://169.254.169.254/latest/meta-data/'
+class Bundler(object):
 
-
-class LinuxImage:
-
-    ALLOWED_FS_TYPES = ['ext2', 'ext3', 'xfs', 'jfs', 'reiserfs']
-    BANNED_MOUNTS = [
-        '/dev',
-        '/media',
-        '/mnt',
-        '/proc',
-        '/sys',
-        '/cdrom',
-        '/tmp',
-        ]
-    ESSENTIAL_DIRS = ['proc', 'tmp', 'dev', 'mnt', 'sys']
-    ESSENTIAL_DEVS = [
-        [os.path.join('dev', 'console'), 'c', '5', '1'],
-        [os.path.join('dev', 'full'), 'c', '1', '7'],
-        [os.path.join('dev', 'null'), 'c', '1', '3'],
-        [os.path.join('dev', 'zero'), 'c', '1', '5'],
-        [os.path.join('dev', 'tty'), 'c', '5', '0'],
-        [os.path.join('dev', 'tty0'), 'c', '4', '0'],
-        [os.path.join('dev', 'tty1'), 'c', '4', '1'],
-        [os.path.join('dev', 'tty2'), 'c', '4', '2'],
-        [os.path.join('dev', 'tty3'), 'c', '4', '3'],
-        [os.path.join('dev', 'tty4'), 'c', '4', '4'],
-        [os.path.join('dev', 'tty5'), 'c', '4', '5'],
-        [os.path.join('dev', 'xvc0'), 'c', '204', '191'],
-        ]
-    MAKEFS_CMD = 'mkfs.ext3'
-    NEW_FSTAB = \
-        """
-/dev/sda1 /     ext3    defaults 1 1
-/dev/sdb  /mnt  ext3    defaults 0 0
-none      /dev/pts devpts  gid=5,mode=620 0 0
-none      /proc proc    defaults 0 0
-none      /sys  sysfs   defaults 0 0
-    """
-
-    OLD_FSTAB = \
-        """/dev/sda1       /             ext3     defaults,errors=remount-ro 0 0
-/dev/sda2	/mnt	      ext3     defaults			  0 0
-/dev/sda3	swap	      swap     defaults			  0 0
-proc            /proc         proc     defaults                   0 0
-devpts          /dev/pts      devpts   gid=5,mode=620             0 0"""
-
-    def __init__(self, debug=False):
-        self.debug = debug
-
-    def create_image(self, size_in_MB, image_path):
-        dd_cmd = ['dd']
-        dd_cmd.append('if=/dev/zero')
-        dd_cmd.append('of=%s' % image_path)
-        dd_cmd.append('count=1')
-        dd_cmd.append('bs=1M')
-        dd_cmd.append('seek=%s' % (size_in_MB - 1))
-        if self.debug:
-            print 'Creating disk image...', image_path
-        Popen(dd_cmd, PIPE).communicate()[0]
-
-    def make_fs(self, image_path, fs_type = None, uuid = None, label = None):
-        mkfs_prog = self.MAKEFS_CMD
-        if fs_type:
-            mkfs_prog = "mkfs.%s" % fs_type
-        else:
-            fs_type = "ext3"
-
-        tunecmd = [ ]
-        if fs_type.startswith("ext"):
-            mkfs = [ mkfs_prog , '-F', image_path ]
-            if uuid: mkfs.extend([ '-U', uuid ])
-            if label: mkfs.extend([ '-L', label ])
-        elif fs_type == "xfs":
-            mkfs = [ mkfs_prog , image_path ]
-            if label: mkfs.extend([ '-L', label ])
-            tunecmd = [ 'xfs_admin', '-U', uuid ]
-
-        elif fs_type == "btrfs":
-            if uuid: raise(UnsupportedException("btrfs with uuid not supported"))
-            if label: mkfs.extend([ '-L', label ])
-        else:
-            raise(UnsupportedException("unsupported fs %s" % fs_type))
-
-
-        Util().check_prerequisite_command(mkfs_prog)
-
-        if self.debug:
-            print 'Creating filesystem with %s' % mkfs
-
-        makefs_cmd = Popen(mkfs,PIPE).communicate()[0]
-
-        if len(tunecmd):
-            Util().check_prerequisite_command(tunecmd[0])
-            tune_cmd = Popen(tunecmd,PIPE).communicate[0]
-
-    def add_fstab(
-        self,
-        mount_point,
-        generate_fstab,
-        fstab_path,
-        ):
-        if not fstab_path:
-            return
-        fstab = None
-        if fstab_path == 'old':
-            if not generate_fstab:
-                return
-            fstab = self.OLD_FSTAB
-        elif fstab_path == 'new':
-            if not generate_fstab:
-                return
-            fstab = self.NEW_FSTAB
-
-        etc_file_path = os.path.join(mount_point, 'etc')
-        fstab_file_path = os.path.join(etc_file_path, 'fstab')
-        if not os.path.exists(etc_file_path):
-            os.mkdir(etc_file_path)
-        else:
-            if os.path.exists(fstab_file_path):
-                fstab_copy_path = fstab_file_path + '.old'
-                shutil.copyfile(fstab_file_path, fstab_copy_path)
-
-        if self.debug:
-            print 'Updating fstab entry'
-        fstab_file = open(fstab_file_path, 'w')
-        if fstab:
-            fstab_file.write(fstab)
-        else:
-            orig_fstab_file = open(fstab_path, 'r')
-            while 1:
-                data = orig_fstab_file.read(IMAGE_IO_CHUNK)
-                if not data:
-                    break
-                fstab_file.write(data)
-            orig_fstab_file.close()
-        fstab_file.close()
-
-    def make_essential_devs(self, image_path):
-        for entry in self.ESSENTIAL_DEVS:
-            cmd = ['mknod']
-            entry[0] = os.path.join(image_path, entry[0])
-            cmd.extend(entry)
-            Popen(cmd, stdout=PIPE, stderr=PIPE).communicate()
-
-
-class SolarisImage:
-
-    ALLOWED_FS_TYPES = ['ext2', 'ext3', 'xfs', 'jfs', 'reiserfs']
-    BANNED_MOUNTS = [
-        '/dev',
-        '/media',
-        '/mnt',
-        '/proc',
-        '/sys',
-        '/cdrom',
-        '/tmp',
-        ]
-    ESSENTIAL_DIRS = ['proc', 'tmp', 'dev', 'mnt', 'sys']
-
-    def __init__(self, debug=False):
-        self.debug = debug
-
-    def create_image(self, size_in_MB, image_path):
-        print 'Sorry. Solaris not supported yet'
-        raise UnsupportedException
-
-    def make_fs(self, image_path, fstype = None, uuid = None, label = None):
-        print 'Sorry. Solaris not supported yet'
-        raise UnsupportedException
-
-    def make_essential_devs(self, image_path):
-        print 'Sorry. Solaris not supported yet'
-        raise UnsupportedException
-
-
-class Util:
-
-    usage_string = \
-        """
--a, --access-key		User's Access Key ID.
-
--s, --secret-key		User's Secret Key.
-
--U, --url			URL of the Cloud to connect to.
-
---config			Read credentials and cloud settings from the 
-				specified config file (defaults to $HOME/.eucarc or /etc/euca2ools/eucarc).
-
--h, --help			Display this help message.
-
---version 			Display the version of this tool.
-
---debug 			Turn on debugging.
-
-Euca2ools will use the environment variables EC2_URL, EC2_ACCESS_KEY, EC2_SECRET_KEY, EC2_CERT, EC2_PRIVATE_KEY, S3_URL, EUCALYPTUS_CERT by default.
-    """
-
-    version_string = """    Version: 1.3.2 (BSD)"""
-
-    def version(self):
-        return self.version_string
-
-    def usage(self, compat=False):
-        if compat:
-            self.usage_string = self.usage_string.replace('-s,', '-S,')
-            self.usage_string = self.usage_string.replace('-a,', '-A,')
-        print self.usage_string
-
-    def check_prerequisite_command(self, command):
-        cmd = [command]
-        try:
-            output = Popen(cmd, stdout=PIPE, stderr=PIPE).communicate()
-        except OSError, e:
-            error_string = '%s' % e
-            if 'No such' in error_string:
-                print 'Command %s not found. Is it installed?' % command
-                raise NotFoundError
-            else:
-                raise OSError(e)
-
-
-class AddressValidationError:
-
-    def __init__(self):
-        self.message = 'Invalid address'
-
-
-class InstanceValidationError:
-
-    def __init__(self):
-        self.message = 'Invalid instance id'
-
-
-class VolumeValidationError:
-
-    def __init__(self):
-        self.message = 'Invalid volume id'
-
-
-class SizeValidationError:
-
-    def __init__(self):
-        self.message = 'Invalid size'
-
-
-class SnapshotValidationError:
-
-    def __init__(self):
-        self.message = 'Invalid snapshot id'
-
-
-class ProtocolValidationError:
-
-    def __init__(self):
-        self.message = 'Invalid protocol'
-
-
-class FileValidationError:
-
-    def __init__(self):
-        self.message = 'Invalid file'
-
-
-class DirValidationError:
-
-    def __init__(self):
-        self.message = 'Invalid directory'
-
-
-class BundleValidationError:
-
-    def __init__(self):
-        self.message = 'Invalid bundle id'
-
-
-class CopyError:
-
-    def __init__(self):
-        self.message = 'Unable to copy'
-
-
-class MetadataReadError:
-
-    def __init__(self):
-        self.message = 'Unable to read metadata'
-
-
-class NullHandler(logging.Handler):
-
-    def emit(self, record):
-        pass
-
-
-class NotFoundError:
-
-    def __init__(self):
-        self.message = 'Unable to find'
-
-
-class UnsupportedException:
-
-    def __init__(self, msg=None):
-        if msg:
-            self.message = 'Not supported: %s' % msg
-        else:
-            self.message = 'Not supported'
-
-
-class CommandFailed:
-
-    def __init__(self):
-        self.message = 'Command failed'
-
-
-class ConnectionFailed:
-
-    def __init__(self):
-        self.message = 'Connection failed'
-
-
-class ParseError:
-
-    def __init__(self, msg):
-        self.message = msg
-
-
-class Euca2ool:
-
-    def process_args(self):
-        ids = []
-        for arg in self.args:
-            ids.append(arg)
-        return ids
-
-    def __init__(
-        self,
-        short_opts=None,
-        long_opts=None,
-        is_s3=False,
-        compat=False,
-        ):
-        self.ec2_user_access_key = None
-        self.ec2_user_secret_key = None
-        self.url = None
-        self.config_file_path = None
-        self.is_s3 = is_s3
-        if compat:
-            self.secret_key_opt = 'S'
-            self.access_key_opt = 'A'
-        else:
-            self.secret_key_opt = 's'
-            self.access_key_opt = 'a'
-        if not short_opts:
-            short_opts = ''
-        if not long_opts:
-            long_opts = ['']
-        short_opts += 'hU:'
-        short_opts += '%s:' % self.secret_key_opt
-        short_opts += '%s:' % self.access_key_opt
-        long_opts += [
-            'access-key=',
-            'secret-key=',
-            'url=',
-            'help',
-            'version',
-            'debug',
-            'config=',
-            ]
-        (opts, args) = getopt.gnu_getopt(sys.argv[1:], short_opts,
-                long_opts)
-        self.opts = opts
-        self.args = args
-        self.debug = False
-        for (name, value) in opts:
-            if name in ('-%s' % self.access_key_opt, '--access-key'):
-                self.ec2_user_access_key = value
-            elif name in ('-%s' % self.secret_key_opt, '--secret-key'):
-                try:
-                    self.ec2_user_secret_key = int(value)
-                    self.ec2_user_secret_key = None
-                except ValueError:
-                    self.ec2_user_secret_key = value
-            elif name in ('-U', '--url'):
-                self.url = value
-            elif name == '--debug':
-                self.debug = True
-            elif name == '--config':
-                self.config_file_path = value
+    def __init__(self, euca):
+        self.euca = euca
         system_string = platform.system()
         if system_string == 'Linux':
-            self.img = LinuxImage(self.debug)
+            self.img = image.LinuxImage(self.euca.debug)
         elif system_string == 'SunOS':
-            self.img = SolarisImage(self.debug)
+            self.img = image.SolarisImage(self.euca.debug)
         else:
             self.img = 'Unsupported'
-        self.setup_environ()
-
-        h = NullHandler()
-        logging.getLogger('boto').addHandler(h)
-
-    SYSTEM_EUCARC_PATH = os.path.join('/etc', 'euca2ools', 'eucarc')
-
-    def setup_environ(self):
-        envlist = (
-            'EC2_ACCESS_KEY',
-            'EC2_SECRET_KEY',
-            'S3_URL',
-            'EC2_URL',
-            'EC2_CERT',
-            'EC2_PRIVATE_KEY',
-            'EUCALYPTUS_CERT',
-            'EC2_USER_ID',
-            )
-        self.environ = {}
-        user_eucarc = None
-        if 'HOME' in os.environ:
-            user_eucarc = os.path.join(os.getenv('HOME'), '.eucarc')
-        read_config = False
-        if self.config_file_path \
-            and os.path.exists(self.config_file_path):
-            read_config = self.config_file_path
-        elif user_eucarc is not None and os.path.exists(user_eucarc):
-            if os.path.isdir(user_eucarc):
-                user_eucarc = os.path.join(user_eucarc, 'eucarc')
-                if os.path.isfile(user_eucarc):
-                    read_config = user_eucarc
-            elif os.path.isfile(user_eucarc):
-                read_config = user_eucarc
-        elif os.path.exists(self.SYSTEM_EUCARC_PATH):
-            read_config = self.SYSTEM_EUCARC_PATH
-        if read_config:
-            parse_config(read_config, self.environ, envlist)
-        else:
-            for v in envlist:
-                self.environ[v] = os.getenv(v)
-
-    def get_environ(self, name):
-        if self.environ.has_key(name):
-            return self.environ[name]
-        else:
-            print '%s not found' % name
-            raise NotFoundError
-
-    def make_connection(self):
-        if not self.ec2_user_access_key:
-            self.ec2_user_access_key = self.environ['EC2_ACCESS_KEY']
-            if not self.ec2_user_access_key:
-                print 'EC2_ACCESS_KEY environment variable must be set.'
-                raise ConnectionFailed
-
-        if not self.ec2_user_secret_key:
-            self.ec2_user_secret_key = self.environ['EC2_SECRET_KEY']
-            if not self.ec2_user_secret_key:
-                print 'EC2_SECRET_KEY environment variable must be set.'
-                raise ConnectionFailed
-
-        if not self.is_s3:
-            if not self.url:
-                self.url = self.environ['EC2_URL']
-                if not self.url:
-                    self.url = \
-                        'http://localhost:8773/services/Eucalyptus'
-                    print 'EC2_URL not specified. Trying %s' \
-                        % self.url
-        else:
-            if not self.url:
-                self.url = self.environ['S3_URL']
-                if not self.url:
-                    self.url = \
-                        'http://localhost:8773/services/Walrus'
-                    print 'S3_URL not specified. Trying %s' \
-                        % self.url
-
-        self.port = None
-        self.service_path = '/'
-        
-        rslt = urlparse.urlparse(self.url)
-        if rslt.scheme == 'https':
-            self.is_secure = True
-        else:
-            self.is_secure = False
-
-        self.host = rslt.netloc
-        l = self.host.split(':')
-        if len(l) > 1:
-            self.host = l[0]
-            self.port = int(l[1])
-
-        if rslt.path:
-            self.service_path = rslt.path
-
-        if not self.is_s3:
-            return boto.connect_ec2(
-                aws_access_key_id=self.ec2_user_access_key,
-                aws_secret_access_key=self.ec2_user_secret_key,
-                is_secure=self.is_secure,
-                region=RegionInfo(None, 'eucalyptus', self.host),
-                port=self.port,
-                path=self.service_path,
-                )
-        else:
-            return boto.connect_s3(
-                aws_access_key_id=self.ec2_user_access_key,
-                aws_secret_access_key=self.ec2_user_secret_key,
-                is_secure=self.is_secure,
-                host=self.host,
-                port=self.port,
-                calling_format=OrdinaryCallingFormat(),
-                path=self.service_path,
-                )
-
-    def validate_address(self, address):
-        if not re.match("[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+(\/[0-9]+)?$",
-                        address):
-            raise AddressValidationError
-
-    def validate_instance_id(self, id):
-        if not re.match('i-', id):
-            raise InstanceValidationError
-
-    def validate_volume_id(self, id):
-        if not re.match('vol-', id):
-            raise VolumeValidationError
-
-    def validate_volume_size(self, size):
-        if size < 0 or size > 1024:
-            raise SizeValidationError
-
-    def validate_snapshot_id(self, id):
-        if not re.match('snap-', id):
-            raise SnapshotValidationError
-
-    def validate_protocol(self, proto):
-        if not proto in IP_PROTOCOLS:
-            raise ProtocolValidationError
-
-    def validate_file(self, path):
-        if not os.path.exists(path) or not os.path.isfile(path):
-            raise FileValidationError
-
-    def validate_dir(self, path):
-        if not os.path.exists(path) or not os.path.isdir(path):
-            raise DirValidationError
-
-    def validate_bundle_id(self, id):
-        if not re.match('bun-', id):
-            raise BundleValidationError
-
-    def get_relative_filename(self, filename):
-        return os.path.split(filename)[-1]
-
-    def get_file_path(self, filename):
-        relative_filename = self.get_relative_filename(filename)
-        file_path = os.path.dirname(filename)
-        if len(file_path) == 0:
-            file_path = '.'
-        return file_path
 
     def split_file(self, file, chunk_size):
         parts = []
@@ -639,7 +85,7 @@ class Euca2ool:
             filename = '%s.%02d' % (file, i)
             part_digest = sha()
             file_part = open(filename, 'wb')
-            print 'Part:', self.get_relative_filename(filename)
+            print 'Part:', self.euca.get_relative_filename(filename)
             part_bytes_written = 0
             while part_bytes_written < IMAGE_SPLIT_CHUNK:
                 data = in_file.read(IMAGE_IO_CHUNK)
@@ -662,28 +108,55 @@ class Euca2ool:
         if not os.path.exists(path):
             os.makedirs(path)
         image_size = os.path.getsize(image_file)
-        if self.debug:
+        if self.euca.debug:
             print 'Image Size:', image_size, 'bytes'
         return image_size
 
-    def tarzip_image(
-        self,
-        prefix,
-        file,
-        path,
-        ):
-        Util().check_prerequisite_command('tar')
+    def get_fs_info(self, path):
+        fs_type = None
+        uuid = None
+        label = None
+        devpth = None
+        tmpd = None
+        try:
+            st_dev=os.stat(path).st_dev
+            dev=os.makedev(os.major(st_dev),os.minor(st_dev))
+            tmpd=tempfile.mkdtemp()
+            devpth=("%s/dev" % tmpd)
+            os.mknod(devpth,0400 | stat.S_IFBLK ,dev)
+        except:
+            raise
+
+        ret = { }
+        pairs = { 'LABEL' : 'label', 'UUID' : 'uuid' , 'FS_TYPE' : 'fs_type' }
+        for (blkid_n, my_n) in pairs.iteritems():
+            cmd = [ 'blkid', '-s%s' % blkid_n, '-ovalue', devpth ]
+            print cmd
+            try:
+                output = subprocess.Popen(cmd, stdout=subprocess.PIPE).communicate()[0]
+                ret[my_n]=output.rstrip()
+            except Exception, e:
+                os.unlink(devpth)
+                os.rmdir(tmpd)
+                raise UnsupportedException("Unable to determine %s for %s" % (blkid_n, path))
+
+        os.unlink(devpth)
+        os.rmdir(tmpd)
+        return(ret)
+   
+    def tarzip_image(self, prefix, file, path):
+        utils.check_prerequisite_command('tar')
 
         targz = '%s.tar.gz' % os.path.join(path, prefix)
         targzfile = open(targz, 'w')
 
         # make process pipes
         tar_cmd = ['tar', 'ch', '-S']
-        file_path = self.get_file_path(file)
+        file_path = self.euca.get_file_path(file)
         if file_path:
             tar_cmd.append('-C')
             tar_cmd.append(file_path)
-            tar_cmd.append(self.get_relative_filename(file))
+            tar_cmd.append(self.euca.get_relative_filename(file))
         else:
             tar_cmd.append(file)
         tarproc = subprocess.Popen(tar_cmd, stdout=subprocess.PIPE)
@@ -712,12 +185,7 @@ class Euca2ool:
 
         return ''.join(bytes)
 
-    def crypt_file(
-        self,
-        cipher,
-        in_file,
-        out_file,
-        ):
+    def crypt_file(self, cipher, in_file, out_file):
         while 1:
             buf = in_file.read(IMAGE_IO_CHUNK)
             if not buf:
@@ -733,10 +201,10 @@ class Euca2ool:
         # convert to a hex string like '0x<34 hex chars>L'
         # then take the last 32 of the hex digits, giving 32 random hex chars
         key = hex(BN.rand(17 * 8,top=0))[4:36]
-        if self.debug:
+        if self.euca.debug:
             print 'Key: %s' % key
         iv = hex(BN.rand(17 * 8,top=0))[4:36]
-        if self.debug:
+        if self.euca.debug:
             print 'IV: %s' % iv
              
         k = EVP.Cipher(alg='aes_128_cbc', key=unhexlify(key),
@@ -792,14 +260,8 @@ class Euca2ool:
                 encrypted_iv = node.data
         return (parts, encrypted_key, encrypted_iv)
 
-    def assemble_parts(
-        self,
-        src_directory,
-        directory,
-        manifest_path,
-        parts,
-        ):
-        manifest_filename = self.get_relative_filename(manifest_path)
+    def assemble_parts(self, src_directory, directory, manifest_path, parts):
+        manifest_filename = self.euca.get_relative_filename(manifest_path)
         encrypted_filename = os.path.join(directory,
                 manifest_filename.replace('.manifest.xml', '.enc.tar.gz'
                 ))
@@ -808,7 +270,7 @@ class Euca2ool:
                 os.makedirs(directory)
             encrypted_file = open(encrypted_filename, 'wb')
             for part in parts:
-                print 'Part:', self.get_relative_filename(part)
+                print 'Part:', self.euca.get_relative_filename(part)
                 part_filename = os.path.join(src_directory, part)
                 part_file = open(part_filename, 'rb')
                 while 1:
@@ -820,13 +282,8 @@ class Euca2ool:
             encrypted_file.close()
         return encrypted_filename
 
-    def decrypt_image(
-        self,
-        encrypted_filename,
-        encrypted_key,
-        encrypted_iv,
-        private_key_path,
-        ):
+    def decrypt_image(self, encrypted_filename, encrypted_key,
+                      encrypted_iv, private_key_path):
         user_priv_key = RSA.load_key(private_key_path)
         key = user_priv_key.private_decrypt(unhexlify(encrypted_key),
                 RSA.pkcs1_padding)
@@ -843,12 +300,7 @@ class Euca2ool:
         decrypted_file.close()
         return decrypted_filename
 
-    def decrypt_string(
-        self,
-        encrypted_string,
-        private_key_path,
-        encoded=False,
-        ):
+    def decrypt_string(self, encrypted_string, private_key_path, encoded=False):
         user_priv_key = RSA.load_key(private_key_path)
         string_to_decrypt = encrypted_string
         if encoded:
@@ -879,29 +331,13 @@ class Euca2ool:
 
         return (virtual, devices)
 
-    def generate_manifest(
-        self,
-        path,
-        prefix,
-        parts,
-        parts_digest,
-        file,
-        key,
-        iv,
-        cert_path,
-        ec2cert_path,
-        private_key_path,
-        target_arch,
-        image_size,
-        bundled_size,
-        image_digest,
-        user,
-        kernel,
-        ramdisk,
-        mapping=None,
-        product_codes=None,
-        ancestor_ami_ids=None,
-        ):
+    def generate_manifest(self, path, prefix, parts, parts_digest,
+                          file, key, iv, cert_path, ec2cert_path,
+                          private_key_path, target_arch,
+                          image_size, bundled_size,
+                          image_digest, user, kernel,
+                          ramdisk, mapping=None,
+                          product_codes=None, ancestor_ami_ids=None):
         user_pub_key = X509.load_cert(cert_path).get_pubkey().get_rsa()
         cloud_pub_key = \
             X509.load_cert(ec2cert_path).get_pubkey().get_rsa()
@@ -919,7 +355,7 @@ class Euca2ool:
         user_priv_key = RSA.load_key(private_key_path)
 
         manifest_file = '%s.manifest.xml' % os.path.join(path, prefix)
-        if self.debug:
+        if self.euca.debug:
             print 'Manifest: ', manifest_file
 
         print 'Generating manifest %s' % manifest_file
@@ -1019,7 +455,7 @@ class Euca2ool:
 
         image_name_elem = doc.createElement('name')
         image_name_value = \
-            doc.createTextNode(self.get_relative_filename(file))
+            doc.createTextNode(self.euca.get_relative_filename(file))
         image_name_elem.appendChild(image_name_value)
         image_elem.appendChild(image_name_elem)
 
@@ -1110,7 +546,7 @@ class Euca2ool:
             part_elem = doc.createElement('part')
             filename_elem = doc.createElement('filename')
             filename_value = \
-                doc.createTextNode(self.get_relative_filename(part))
+                doc.createTextNode(self.euca.get_relative_filename(part))
             filename_elem.appendChild(filename_value)
             part_elem.appendChild(filename_elem)
 
@@ -1141,7 +577,7 @@ class Euca2ool:
         manifest_out_file.close()
 
     def add_excludes(self, path, excludes):
-        if self.debug:
+        if self.euca.debug:
             print 'Reading /etc/mtab...'
         mtab_file = open('/etc/mtab', 'r')
         while 1:
@@ -1153,21 +589,16 @@ class Euca2ool:
             fs_type = mtab_line_parts[2]
             if mount_point.find(path) == 0 and fs_type \
                 not in self.img.ALLOWED_FS_TYPES:
-                if self.debug:
+                if self.euca.debug:
                     print 'Excluding %s...' % mount_point
                 excludes.append(mount_point)
         mtab_file.close()
         for banned in self.img.BANNED_MOUNTS:
             excludes.append(banned)
 
-    def make_image(
-        self,
-        size_in_MB,
-        excludes,
-        prefix,
-        destination_path,
-        fs_type = None, uuid = None, label = None
-        ):
+    def make_image(self, size_in_MB, excludes, prefix,
+                   destination_path, fs_type = None,
+                   uuid = None, label = None):
         image_file = '%s.img' % prefix
         image_path = '%s/%s' % (destination_path, image_file)
         if not os.path.exists(destination_path):
@@ -1180,16 +611,15 @@ class Euca2ool:
         return image_path
 
     def create_loopback(self, image_path):
-        Util().check_prerequisite_command('losetup')
+        utils.check_prerequisite_command('losetup')
         tries = 0
         while tries < MAX_LOOP_DEVS:
-            loop_dev = Popen(['losetup', '-f'],
-                             stdout=PIPE).communicate()[0].replace('\n'
-                    , '')
+            loop_dev = subprocess.Popen(['losetup', '-f'],
+                                        stdout=subprocess.PIPE).communicate()[0].replace('\n', '')
             if loop_dev:
-                output = Popen(['losetup', '%s' % loop_dev, '%s'
-                               % image_path], stdout=PIPE,
-                               stderr=PIPE).communicate()
+                output = subprocess.Popen(['losetup', '%s' % loop_dev, '%s'
+                                           % image_path], stdout=subprocess.PIPE,
+                                          stderr=subprocess.PIPE).communicate()
                 if not output[1]:
                     return loop_dev
             else:
@@ -1198,28 +628,23 @@ class Euca2ool:
             tries += 1
 
     def mount_image(self, image_path):
-        Util().check_prerequisite_command('mount')
+        utils.check_prerequisite_command('mount')
 
         tmp_mnt_point = '/tmp/%s' % hex(BN.rand(16))[2:6]
         if not os.path.exists(tmp_mnt_point):
             os.makedirs(tmp_mnt_point)
-        if self.debug:
+        if self.euca.debug:
             print 'Creating loopback device...'
         loop_dev = self.create_loopback(image_path)
-        if self.debug:
+        if self.euca.debug:
             print 'Mounting image...'
-        Popen(['mount', loop_dev, tmp_mnt_point],
-              stdout=PIPE).communicate()
+        subprocess.Popen(['mount', loop_dev, tmp_mnt_point],
+              stdout=subprocess.PIPE).communicate()
         return (tmp_mnt_point, loop_dev)
 
-    def copy_to_image(
-        self,
-        mount_point,
-        volume_path,
-        excludes,
-        ):
+    def copy_to_image(self, mount_point, volume_path, excludes):
         try:
-            Util().check_prerequisite_command('rsync')
+            utils.check_prerequisite_command('rsync')
         except NotFoundError:
             raise CopyError
         rsync_cmd = ['rsync', '-aXS']
@@ -1228,12 +653,12 @@ class Euca2ool:
             rsync_cmd.append(exclude)
         rsync_cmd.append(volume_path)
         rsync_cmd.append(mount_point)
-        if self.debug:
+        if self.euca.debug:
             print 'Copying files...'
             for exclude in excludes:
                 print 'Excluding:', exclude
 
-        pipe = Popen(rsync_cmd, stdout=PIPE, stderr=PIPE)
+        pipe = subprocess.Popen(rsync_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         output = pipe.communicate()
         for dir in self.img.ESSENTIAL_DIRS:
             dir_path = os.path.join(mount_point, dir)
@@ -1254,7 +679,7 @@ class Euca2ool:
                 mount_location = mount_location[1:]
                 dir_path = os.path.join(mount_point, mount_location)
                 if not os.path.exists(dir_path):
-                    if self.debug:
+                    if self.euca.debug:
                         print 'Making essential directory %s' \
                             % mount_location
                     os.makedirs(dir_path)
@@ -1273,21 +698,15 @@ class Euca2ool:
                 raise CopyError
 
     def unmount_image(self, mount_point):
-        Util().check_prerequisite_command('umount')
-        if self.debug:
+        utils.check_prerequisite_command('umount')
+        if self.euca.debug:
             print 'Unmounting image...'
-        Popen(['umount', '-d', mount_point],
-              stdout=PIPE).communicate()[0]
+        subprocess.Popen(['umount', '-d', mount_point],
+                         stdout=subprocess.PIPE).communicate()[0]
         os.rmdir(mount_point)
 
-    def copy_volume(
-        self,
-        image_path,
-        volume_path,
-        excludes,
-        generate_fstab,
-        fstab_path,
-        ):
+    def copy_volume(self, image_path, volume_path, excludes,
+                    generate_fstab, fstab_path):
         (mount_point, loop_dev) = self.mount_image(image_path)
         try:
             output = self.copy_to_image(mount_point, volume_path,
@@ -1300,41 +719,7 @@ class Euca2ool:
             raise CopyError
         finally:
             self.unmount_image(mount_point)
-
-    def can_read_instance_metadata(self):
-        meta_data = urllib.urlopen(METADATA_URL)
-
-    def get_instance_metadata(self, type):
-        if self.debug:
-            print 'Reading instance metadata', type
-        metadata = urllib.urlopen(METADATA_URL + type).read()
-        if 'Not' in metadata and 'Found' in metadata and '404' \
-            in metadata:
-            raise MetadataReadError
-        return metadata
-
-    def get_instance_ramdisk(self):
-        return self.get_instance_metadata('ramdisk-id')
-
-    def get_instance_kernel(self):
-        return self.get_instance_metadata('kernel-id')
-
-    def get_instance_product_codes(self):
-        return self.get_instance_metadata('product-codes')
-
-    def get_ancestor_ami_ids(self):
-        return self.get_instance_metadata('ancestor-ami-ids')
-
-    def get_instance_block_device_mappings(self):
-        keys = self.get_instance_metadata('block-device-mapping'
-                ).split('\n')
-        mapping = []
-        for k in keys:
-            mapping.append(k)
-            mapping.append(self.get_instance_metadata(os.path.join('block-device-mapping'
-                           , k)))
-        return mapping
-
+            
     def display_error_and_exit(self, msg):
         code = None
         message = None
@@ -1364,72 +749,3 @@ class Euca2ool:
             print msg
         sys.exit(1)
 
-    def parse_block_device_args(self, block_device_maps_args):
-        block_device_map = BlockDeviceMapping()
-        for block_device_map_arg in block_device_maps_args:
-            parts = block_device_map_arg.split('=')
-            if len(parts) > 1:
-                device_name = parts[0]
-                block_dev_type = BlockDeviceType()
-                value_parts = parts[1].split(':')
-                if value_parts[0].startswith('snap'):
-                    block_dev_type.snapshot_id = value_parts[0]
-                else:
-                    if value_parts[0].startswith('ephemeral'):
-                        block_dev_type.ephemeral_name = value_parts[0]
-                if len(value_parts) > 1:
-                    block_dev_type.size = int(value_parts[1])
-                if len(value_parts) > 2:
-                    if value_parts[2] == 'true':
-                        block_dev_type.delete_on_termination = True
-                block_device_map[device_name] = block_dev_type
-        return block_device_map
-
-
-# read the config file 'config', update 'dict', setting
-# the value from the config file for each element in array 'keylist'
-# "config" is a bash syntax file defining bash variables
-
-
-def parse_config(config, dict, keylist):
-    fmt = ''
-    str = ''
-    for v in keylist:
-        str = '%s "${%s}" ' % (str, v)
-        fmt = fmt + '%s%s' % ('%s', '\\0')
-
-    cmd = ['bash', '-ec', ". '%s' >/dev/null; printf '%s' %s"
-           % (config, fmt, str)]
-
-    handle = Popen(cmd, stderr=PIPE, stdout=PIPE)
-    (stdout, stderr) = handle.communicate()
-    if handle.returncode != 0:
-        raise ParseError('Parsing config file %s failed:\n\t%s'
-                         % (config, stderr))
-
-    values = stdout.split("\0")
-    for i in range(len(values) - 1):
-        if values[i] != '':
-            dict[keylist[i]] = values[i]
-
-
-def print_instances(instances, nil=""):
-    members=( "id", "image_id", "public_dns_name", "private_dns_name",
-        "state", "key_name", "ami_launch_index", "product_codes",
-        "instance_type", "launch_time", "placement", "kernel",
-        "ramdisk" )
-
-    for instance in instances:
-        # in old describe-instances, there was a check for 'if instance:'
-        # I (smoser) have carried this over, but dont know how instance
-        # could be false
-        if not instance: continue
-        items=[ ]
-        for member in members:
-            val = getattr(instance,member,nil)
-            # product_codes is a list
-            if val is None: val = nil
-            if hasattr(val,'__iter__'):
-                val = ','.join(val)
-            items.append(val)
-        print "INSTANCE\t%s" % '\t'.join(items)

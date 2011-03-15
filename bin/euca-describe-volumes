@@ -1,9 +1,9 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -32,107 +32,11 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 # Author: Neil Soman neil@eucalyptus.com
+#         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import getopt
-import sys
-import os
-from euca2ools import Euca2ool, VolumeValidationError, Util, \
-    ConnectionFailed
-
-usage_string = \
-    """
-Shows information about volumes.
-
-euca-describe-volumes [-h, --help] [--version] [--debug]
-[volume1 volume2...volumeN] 
-
-OPTIONAL PARAMETERS
-
-volume1 volume2...volumeN	volumes to describe. 
-
-"""
-
-
-def usage(status=1):
-    print usage_string
-    Util().usage()
-    sys.exit(status)
-
-
-def version():
-    print Util().version()
-    sys.exit()
-
-
-def display_volumes(volumes, volume_ids):
-    check_volume_ids = False
-    if len(volume_ids) > 0:
-        check_volume_ids = True
-
-    for volume in volumes:
-        if check_volume_ids:
-            if not volume.id in volume_ids:
-                continue
-        volume_string = '%s\t ' % volume.id
-        if volume.size:
-            volume_string += '%d' % volume.size
-        if volume.snapshot_id:
-            volume_string += '\t%s' % volume.snapshot_id
-        else:
-            volume_string += '\t'
-
-        az = getattr(volume, 'availabilityZone', object)
-        if az is object:
-            az = volume.zone
-        if az:
-            volume_string += '\t%s' % az
-
-        volume_string += '\t%s\t%s' % (volume.status,
-                volume.create_time)
-        print 'VOLUME\t%s' % volume_string
-        if volume.status == 'in-use':
-            attachment_string = '%s\t%s\t%s\t%s' % (volume.id,
-                    volume.attach_data.instance_id,
-                    volume.attach_data.device,
-                    volume.attach_data.attach_time)
-            print 'ATTACHMENT\t%s' % attachment_string
-
-
-def main():
-    euca = None
-    try:
-        euca = Euca2ool()
-    except Exception, e:
-        print e
-        usage()
-
-    for (name, value) in euca.opts:
-        if name in ('-h', '--help'):
-            usage(0)
-        elif name == '--version':
-            version()
-
-    volume_ids = euca.process_args()
-    try:
-        for id in volume_ids:
-            euca.validate_volume_id(id)
-    except VolumeValidationError:
-        print 'Invalid volume id'
-        sys.exit(1)
-
-    try:
-        euca_conn = euca.make_connection()
-    except ConnectionFailed, e:
-        print e.message
-        sys.exit(1)
-    try:
-        volumes = euca_conn.get_all_volumes()
-    except Exception, ex:
-        euca.display_error_and_exit('%s' % ex)
-
-    display_volumes(volumes, volume_ids)
-
+import euca2ools.commands.euca.describevolumes
 
 if __name__ == '__main__':
-    main()
+    cmd = euca2ools.commands.euca.describevolumes.DescribeVolumes()
+    cmd.main()
 

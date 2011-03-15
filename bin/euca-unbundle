@@ -1,9 +1,9 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -32,137 +32,11 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 # Author: Neil Soman neil@eucalyptus.com
+#         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import getopt
-import sys
-import os
-from euca2ools import Euca2ool, FileValidationError, \
-    DirValidationError, Util, NotFoundError, CommandFailed
-import tarfile
-import gzip
-from xml.dom import minidom
-from xml.dom.minidom import Document
-from M2Crypto import BN, EVP, RSA, util, Rand, m2, X509
-from binascii import hexlify, unhexlify
-
-VERSION = '2007-10-10'
-BUNDLER_NAME = 'euca-tools'
-BUNDLER_VERSION = '1.0'
-AES = 'AES-128-CBC'
-
-usage_string = \
-    """
-Unbundles a previously bundled image.    
-
-euca-unbundle-image -m, --manifest manifest_path [-k, --privatekey private_key_path] 
-[-s, --source source_directory] [-d, --destination destination_directory]
-[-h, --help] [--version] [--debug]
-
-REQUIRED PARAMETERS
-
--m, --manifest			Path to the manifest file for the bundled image.
-
-OPTIONAL PARAMETERS
-
--d, --destination		Directory to store the image to (defaults to the current directory). 
-
--s, --source			Source directory for the bundled image parts (defaults to manifest directory).
-
-"""
-
-IMAGE_IO_CHUNK = 8 * 1024
-IMAGE_SPLIT_CHUNK = IMAGE_IO_CHUNK * 1024
-
-
-def usage(status=1):
-    print usage_string
-    Util().usage()
-    sys.exit(status)
-
-
-def version():
-    print Util().version()
-    sys.exit()
-
-
-def main():
-    try:
-        euca = Euca2ool('m:k:d:s:', ['manifest=', 'privatekey=',
-                        'destination=', 'source='])
-    except Exception, e:
-        print e
-        usage()
-
-    try:
-        private_key_path = euca.get_environ('EC2_PRIVATE_KEY')
-    except NotFoundError:
-        sys.exit(1)
-
-    manifest_path = None
-    batch = False
-    directory = '.'
-    src_directory = None
-
-    for (name, value) in euca.opts:
-        if name in ('-h', '--help'):
-            usage(0)
-        elif name in ('-k', '--privatekey'):
-            private_key_path = value
-        elif name in ('-m', '--manifest'):
-            manifest_path = value
-        elif name in ('-d', '--directory'):
-            directory = value
-        elif name in ('-s', '--source'):
-            src_directory = value
-        elif name == '--version':
-            version()
-
-    if manifest_path and private_key_path:
-        try:
-            euca.validate_file(manifest_path)
-        except FileValidationError:
-            print 'Invalid manifest'
-            sys.exit(1)
-        try:
-            euca.validate_file(private_key_path)
-        except FileValidationError:
-            print 'Invalid private key'
-            sys.exit(1)
-
-        if src_directory:
-            try:
-                euca.validate_dir(src_directory)
-            except DirValidationError:
-                print 'Invalid source directory'
-                sys.exit(1)
-
-        (parts, encrypted_key, encrypted_iv) = \
-            euca.parse_manifest(manifest_path)
-        if not src_directory:
-            src_directory = euca.get_file_path(manifest_path)
-        image = euca.assemble_parts(src_directory, directory,
-                                    manifest_path, parts)
-        print 'Decrypting image'
-        decrypted_image = euca.decrypt_image(image, encrypted_key,
-                encrypted_iv, private_key_path)
-        os.remove(image)
-        print 'Uncompressing image'
-        try:
-            unencrypted_image = euca.untarzip_image(directory,
-                    decrypted_image)
-        except NotFoundError:
-            sys.exit(1)
-        except CommandFailed:
-            sys.exit(1)
-        os.remove(decrypted_image)
-    else:
-        if not manifest_path:
-            print 'manifest path must be specified.'
-        if not private_key_path:
-            print 'private key must be specified.'
-        usage()
-
+import euca2ools.commands.euca.unbundle
 
 if __name__ == '__main__':
-    main()
+    cmd = euca2ools.commands.euca.unbundle.Unbundle()
+    cmd.main()
 

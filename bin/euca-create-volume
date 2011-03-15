@@ -1,9 +1,9 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -32,120 +32,11 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 # Author: Neil Soman neil@eucalyptus.com
+#         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import getopt
-import sys
-import os
-from euca2ools import Euca2ool, SizeValidationError, \
-    SnapshotValidationError, Util, ConnectionFailed
-
-usage_string = \
-    """
-Creates a volume in a specified availability zone.
-
-euca-create-volume -s, --size size | --snapshot snapshot_id -z zone
-[-h, --help] [--version] [--debug]
-
-REQUIRED PARAMETERS	
-
--s, --size			size of the volume (in GiB). 
-	
---snapshot			snapshot id to create the volume from. Either size or snapshot can be specified (not both).
-	
--z, --zone 			availability zone to create the volume in
-	
-OPTIONAL PARAMETERS
-
-"""
-
-
-def usage(status=1):
-    print usage_string
-    Util().usage(compat=True)
-    sys.exit(status)
-
-
-def version():
-    print Util().version()
-    sys.exit()
-
-
-def display_volume(volume):
-    if not volume.id:
-        return
-    volume_string = '%s' % volume.id
-    if volume.size:
-        volume_string += '\t%d' % volume.size
-    if volume.snapshot_id:
-        volume_string += '\t%s' % volume.snapshot_id
-    volume_string += '\t%s\t%s' % (volume.status, volume.create_time)
-    print 'VOLUME\t%s' % volume_string
-
-
-def main():
-    euca = None
-    try:
-        euca = Euca2ool('s:z:', ['zone=', 'snapshot=', 'size='],
-                        compat=True)
-    except Exception, e:
-        print e
-        usage()
-
-    size = None
-    zone = None
-    snapshot_id = None
-
-    for (name, value) in euca.opts:
-        if name in ('-s', '--size'):
-            try:
-                size = int(value)
-            except ValueError:
-                print 'Invalid size'
-                sys.exit(1)
-        elif name in ('-z', '--zone'):
-            zone = value
-        elif name == '--snapshot':
-            snapshot_id = value
-        elif name in ('-h', '--help'):
-            usage(0)
-        elif name == '--version':
-            version()
-
-    try:
-        euca_conn = euca.make_connection()
-    except ConnectionFailed, e:
-        print e.message
-        sys.exit(1)
-
-    if (size or snapshot_id) and zone:
-        if size:
-            try:
-                euca.validate_volume_size(size)
-            except SizeValidationError:
-                print 'Invalid volume size'
-                sys.exit(1)
-        if snapshot_id:
-            try:
-                euca.validate_snapshot_id(snapshot_id)
-            except SnapshotValidationError:
-                print 'Invalid snapshot id'
-                sys.exit(1)
-
-        try:
-            volume = euca_conn.create_volume(size, zone, snapshot_id)
-            if volume:
-                display_volume(volume)
-        except Exception, ex:
-            euca.display_error_and_exit('%s' % ex)
-    else:
-
-        if not zone:
-            print 'availability zone must be specified.'
-        if not (size or snapshot_id):
-            print 'size or snapshot id must be specified.'
-        usage()
-
+import euca2ools.commands.euca.createvolume
 
 if __name__ == '__main__':
-    main()
+    cmd = euca2ools.commands.euca.createvolume.CreateVolume()
+    cmd.main()
 

@@ -1,0 +1,6 @@
+#!/usr/bin/env python
+
+import euca2ools.commands.euare.putuserpolicy
+
+if __name__ == '__main__':
+    euca2ools.commands.euare.putuserpolicy.main_cli()

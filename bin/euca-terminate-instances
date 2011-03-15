@@ -1,9 +1,9 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -32,84 +32,11 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 # Author: Neil Soman neil@eucalyptus.com
+#         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import getopt
-import sys
-import os
-from euca2ools import Euca2ool, InstanceValidationError, Util, \
-    ConnectionFailed
-
-usage_string = \
-    """
-Stops specified instances.
-
-euca-terminate-instances [-h, --help] [--version] [--debug]
-[instance1... instanceN] 
-
-REQUIRED PARAMETERS
-
-instance1... instanceN		instances to terminate. 
-
-OPTIONAL PARAMETERS
-
-"""
-
-
-def usage(status=1):
-    print usage_string
-    Util().usage()
-    sys.exit(status)
-
-
-def version():
-    print Util().version()
-    sys.exit()
-
-
-def display_instances(instances, instance_ids):
-    for instance in instances:
-        print 'INSTANCE\t%s' % instance.id
-
-
-def main():
-    euca = None
-    try:
-        euca = Euca2ool()
-    except Exception, e:
-        print e
-        usage()
-
-    for (name, value) in euca.opts:
-        if name in ('-h', '--help'):
-            usage(0)
-        elif name == '--version':
-            version()
-
-    instance_ids = euca.process_args()
-    if len(instance_ids) > 0:
-        try:
-            for id in instance_ids:
-                euca.validate_instance_id(id)
-        except InstanceValidationError, error:
-            print 'Invalid instance id'
-            sys.exit(1)
-
-        try:
-            euca_conn = euca.make_connection()
-        except ConnectionFailed, e:
-            print e.message
-            sys.exit(1)
-        try:
-            instances = euca_conn.terminate_instances(instance_ids)
-        except Exception, ex:
-            euca.display_error_and_exit('%s' % ex)
-
-        display_instances(instances, instance_ids)
-    else:
-        print 'instance id(s) must be specified.'
-        usage()
-
+import euca2ools.commands.euca.terminateinstances
 
 if __name__ == '__main__':
-    main()
+    cmd = euca2ools.commands.euca.terminateinstances.TerminateInstances()
+    cmd.main()
 
