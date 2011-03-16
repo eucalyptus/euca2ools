@@ -47,7 +47,7 @@ class UploadBundle(euca2ools.commands.eucacommand.EucaCommand):
                      doc='Name of the bucket to upload to.'),
                Param(name='manifest_path',
                      short_name='m', long_name='manifest',
-                     optional=False, ptype='string',
+                     optional=False, ptype='file',
                      doc='Path to the manifest file for bundled image.'),
                Param(name='canned_acl',  long_name='acl',
                      optional=True, ptype='string',
@@ -153,8 +153,6 @@ class UploadBundle(euca2ools.commands.eucacommand.EucaCommand):
         canned_acl = self.options.get('canned_acl', 'aws-exec-read')
         skipmanifest = self.options.get('skipmanifest', False)
         debug = False
-        
-        self.validate_file(manifest_path)
         
         bucket_instance = self.ensure_bucket(bucket, canned_acl)
         parts = self.get_parts(manifest_path)

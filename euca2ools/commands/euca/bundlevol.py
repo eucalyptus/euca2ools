@@ -57,7 +57,7 @@ class BundleVol(euca2ools.commands.eucacommand.EucaCommand):
                      doc='Path the users PEM-encoded certificate.'),
                Param(name='private_key_path',
                      short_name='k', long_name='privatekey',
-                     optional=True, ptype='string',
+                     optional=True, ptype='file',
                      doc='Path to users PEM-encoded private key.'),
                Param(name='all', short_name='a', long_name='all',
                      optional=True, ptype='boolean',
@@ -100,8 +100,8 @@ class BundleVol(euca2ools.commands.eucacommand.EucaCommand):
                      optional=True, ptype='string',
                      doc="""Target architecture for the image
                      Valid values: i386 | x86_64."""),
-               Param(name='volume', long_name='volume',
-                     optional=True, ptype='file',
+               Param(name='volume_path', long_name='volume',
+                     optional=True, ptype='dir',
                      doc='Path to mounted volume to bundle.'),
                Param(name='fstab_path', long_name='fstab',
                      optional=True, ptype='file',
@@ -229,17 +229,9 @@ class BundleVol(euca2ools.commands.eucacommand.EucaCommand):
         
         user = user.replace('-', '')
 
-        # TODO: these should be handled automatically with ftype="file"
-        self.validate_dir(volume_path)
-        self.validate_file(cert_path)
-        self.validate_file(private_key_path)
-        self.validate_file(ec2cert_path)
-
         if generate_fstab and fstab_path:
             msg = '--generate-fstab and --fstab path cannot both be set.'
             self.display_error_and_exit(msg)
-        if fstab_path:
-            self.validate_file(fstab_path)
         if not fstab_path:
             if platform.machine() == 'i386':
                 fstab_path = 'old'

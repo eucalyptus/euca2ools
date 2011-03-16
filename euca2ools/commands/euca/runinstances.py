@@ -48,7 +48,7 @@ class RunInstances(euca2ools.commands.eucacommand.EucaCommand):
                      optional=True, ptype='string',
                      doc='Name of a keypair.'),
                Param(name='user_data', short_name='d', long_name='user-data',
-                     optional=True, ptype='string',
+                     optional=True, ptype='file',
                      doc='User data to pass to the instance.'),
                Param(name='user_data_file',
                      short_name='f', long_name='user-data-file',
@@ -130,7 +130,6 @@ class RunInstances(euca2ools.commands.eucacommand.EucaCommand):
 
         if not user_data:
             if user_data_file:
-                self.validate_file(user_data_file)
                 user_data = self.read_user_data(user_data_file)
 
         if block_device_map:

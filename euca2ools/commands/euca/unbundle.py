@@ -34,7 +34,7 @@
 import os
 from boto.roboto.param import Param
 import euca2ools.commands.eucacommand
-#import euca2ools.bundler
+import euca2ools.bundler
 from euca2ools.exceptions import NotFoundError, CommandFailed
 
 class Unbundle(euca2ools.commands.eucacommand.EucaCommand):
@@ -68,7 +68,9 @@ def main():
     bundler = euca2ools.bundler.Bundler(self)
     if not private_key_path:
         private_key_path = self.get_environ('EC2_PRIVATE_KEY')
-        self.validate_file(private_key_path)
+        if not os.path.isfile(private_key_path):
+            msg = 'Private Key not found: %s' % private_key_path
+            self.display_error_and_exit(msg)
 
     (parts, encrypted_key, encrypted_iv) = \
         bundler.parse_manifest(manifest_path)

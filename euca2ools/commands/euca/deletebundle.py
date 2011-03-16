@@ -47,7 +47,7 @@ class DeleteBundle(euca2ools.commands.eucacommand.EucaCommand):
                      doc='Name of the bucket to upload to.'),
                Param(name='manifest_path',
                      short_name='m', long_name='manifest',
-                     optional=True, ptype='string',
+                     optional=True, ptype='file',
                      doc='Path to the manifest file.'),
                Param(name='prefix', short_name='p', long_name='prefix',
                      optional=True, ptype='string',
@@ -170,9 +170,6 @@ class DeleteBundle(euca2ools.commands.eucacommand.EucaCommand):
             msg = 'Either manifestpath or prefix must be specified.'
             self.display_error_and_exit(msg)
 
-        if manifest_path:
-            self.validate_file(manifest_path)
-            
         bucket_instance = self.ensure_bucket(bucket)
         manifests = None
         delete_local_manifests = True

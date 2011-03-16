@@ -39,7 +39,6 @@ import urlparse
 import boto
 import euca2ools
 import euca2ools.utils
-import euca2ools.validate
 import euca2ools.exceptions
 from boto.ec2.regioninfo import RegionInfo
 from boto.s3.connection import OrdinaryCallingFormat
@@ -531,58 +530,6 @@ class EucaCommand(object):
             return method(**params)
         except Exception as ex:
             self.display_error_and_exit(ex)
-
-    def get_relative_filename(self, filename):
-        return os.path.split(filename)[-1]
-
-    def get_file_path(self, filename):
-        relative_filename = self.get_relative_filename(filename)
-        file_path = os.path.dirname(filename)
-        if len(file_path) == 0:
-            file_path = '.'
-        return file_path
-
-    #
-    # These validate_* methods are called by the command line executables
-    # and, as such, they should print an appropriate message and exit
-    # when invalid input is detected.
-    #
-    def _try_validate(self, method, value, msg):
-        try:
-            method(value)
-        except euca2ools.exceptions.ValidationError as ex:
-            if msg:
-                print msg
-            else:
-                print ex.message
-            sys.exit(1)
-            
-    def validate_address(self, address, msg=None):
-        self._try_validate(euca2ools.validate.validate_address, address, msg)
-
-    def validate_instance_id(self, id, msg=None):
-        self._try_validate(euca2ools.validate.validate_instance_id, id, msg)
-            
-    def validate_volume_id(self, id, msg=None):
-        self._try_validate(euca2ools.validate.validate_volume_id, id, msg)
-
-    def validate_volume_size(self, size, msg=None):
-        self._try_validate(euca2ools.validate.validate_volume_size, size, msg)
-
-    def validate_snapshot_id(self, id, msg=None):
-        self._try_validate(euca2ools.validate.validate_snapshot_id, id, msg)
-
-    def validate_protocol(self, proto, msg=None):
-        self._try_validate(euca2ools.validate.validate_protocol, proto, msg)
-
-    def validate_file(self, path, msg=None):
-        self._try_validate(euca2ools.validate.validate_file, path, msg)
-
-    def validate_dir(self, path, msg=None):
-        self._try_validate(euca2ools.validate.validate_dir, path, msg)
-
-    def validate_bundle_id(self, id, msg=None):
-        self._try_validate(euca2ools.validate.validate_bundle_id, id, msg)
 
     def get_relative_filename(self, filename):
         return os.path.split(filename)[-1]
