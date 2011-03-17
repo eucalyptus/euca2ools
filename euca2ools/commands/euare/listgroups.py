@@ -1,6 +1,3 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
 # Software License Agreement (BSD License)
 #
 # Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
@@ -43,9 +40,9 @@ class ListGroups(AWSQueryRequest):
 
     ServiceClass = euca2ools.commands.euare.Euare
 
-    name = """ListGroups"""
+    Name = """ListGroups"""
     Description = """ListGroups"""
-    Options = [Param(
+    Params = [Param(
         name='PathPrefix',
         short_name='p',
         long_name='path-prefix',
@@ -63,7 +60,7 @@ class ListGroups(AWSQueryRequest):
             ,
         ), Param(
         name='MaxItems',
-        short_name='None',
+        short_name=None,
         long_name='max-items',
         ptype='integer',
         optional=True,
@@ -71,7 +68,7 @@ class ListGroups(AWSQueryRequest):
             ,
         )]
 
-    response = {u'type': u'object', u'name': u'ListGroupsResponse',
+    Response = {u'type': u'object', u'name': u'ListGroupsResponse',
                 u'properties': [{
         u'doc'
             : u' Contains the result of a successful invocation of the ListGroups action. '

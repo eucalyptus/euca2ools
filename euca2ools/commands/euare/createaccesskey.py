@@ -40,9 +40,9 @@ class CreateAccessKey(AWSQueryRequest):
 
     ServiceClass = euca2ools.commands.euare.Euare
 
-    name = """CreateAccessKey"""
+    Name = """CreateAccessKey"""
     Description = """CreateAccessKey"""
-    Options = [Param(
+    Params = [Param(
         name='UserName',
         short_name='u',
         long_name='user-name',
@@ -51,7 +51,7 @@ class CreateAccessKey(AWSQueryRequest):
         doc=""" The User name that the new key will belong to. """,
         )]
 
-    response = {u'type': u'object',
+    Response = {u'type': u'object',
                 u'name': u'CreateAccessKeyResponse', u'properties': [{
         u'doc': u' Contains the result of a successful invocation \
         of the CreateAccessKey action. ',

@@ -1,6 +1,3 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
 # Software License Agreement (BSD License)
 #
 # Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
@@ -44,7 +41,7 @@ class ListUsers(AWSQueryRequest):
 
     Name = """ListUsers"""
     Description = """ListUsers"""
-    Params = [Param(
+    Options = [Param(
         name='PathPrefix',
         short_name='p',
         long_name='path-prefix',

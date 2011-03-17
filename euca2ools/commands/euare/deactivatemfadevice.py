@@ -1,6 +1,3 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
 # Software License Agreement (BSD License)
 #
 # Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
@@ -43,9 +40,9 @@ class DeactivateMFADevice(AWSQueryRequest):
 
     ServiceClass = euca2ools.commands.euare.Euare
 
-    name = """DeactivateMFADevice"""
+    Name = """DeactivateMFADevice"""
     Description = """DeactivateMFADevice"""
-    Options = [Param(
+    Params = [Param(
         name='UserName',
         short_name='u',
         long_name='user-name',
@@ -63,7 +60,7 @@ class DeactivateMFADevice(AWSQueryRequest):
             ,
         )]
 
-    response = {u'type': u'object',
+    Response = {u'type': u'object',
                 u'name': u'DeactivateMFADeviceResponse',
                 u'properties': [{
         u'type': u'object',

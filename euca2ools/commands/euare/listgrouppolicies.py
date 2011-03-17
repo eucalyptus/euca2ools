@@ -1,6 +1,3 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
 # Software License Agreement (BSD License)
 #
 # Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
@@ -43,9 +40,9 @@ class ListGroupPolicies(AWSQueryRequest):
 
     ServiceClass = euca2ools.commands.euare.Euare
 
-    name = """ListGroupPolicies"""
+    Name = """ListGroupPolicies"""
     Description = """ListGroupPolicies"""
-    Options = [Param(
+    Params = [Param(
         name='GroupName',
         short_name='g',
         long_name='group-name',
@@ -62,7 +59,7 @@ class ListGroupPolicies(AWSQueryRequest):
             ,
         ), Param(
         name='MaxItems',
-        short_name='None',
+        short_name=None,
         long_name='max-items',
         ptype='integer',
         optional=True,
@@ -70,7 +67,7 @@ class ListGroupPolicies(AWSQueryRequest):
             ,
         )]
 
-    response = {u'type': u'object',
+    Response = {u'type': u'object',
                 u'name': u'ListGroupPoliciesResponse', u'properties': [{
         u'doc'
             : u' Contains the result of a successful invocation of the ListGroupPolicies action. '

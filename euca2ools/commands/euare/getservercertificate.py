@@ -1,6 +1,3 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
 # Software License Agreement (BSD License)
 #
 # Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
@@ -43,9 +40,9 @@ class GetServerCertificate(AWSQueryRequest):
 
     ServiceClass = euca2ools.commands.euare.Euare
 
-    name = """GetServerCertificate"""
+    Name = """GetServerCertificate"""
     Description = """GetServerCertificate"""
-    Options = [Param(
+    Params = [Param(
         name='ServerCertificateName',
         short_name='s',
         long_name='server-certificate-name',
@@ -55,7 +52,7 @@ class GetServerCertificate(AWSQueryRequest):
             ,
         )]
 
-    response = {u'type': u'object',
+    Response = {u'type': u'object',
                 u'name': u'GetServerCertificateResponse',
                 u'properties': [{
         u'doc'

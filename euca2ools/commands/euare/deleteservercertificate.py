@@ -1,6 +1,3 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
 # Software License Agreement (BSD License)
 #
 # Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
@@ -43,9 +40,9 @@ class DeleteServerCertificate(AWSQueryRequest):
 
     ServiceClass = euca2ools.commands.euare.Euare
 
-    name = """DeleteServerCertificate"""
+    Name = """DeleteServerCertificate"""
     Description = """DeleteServerCertificate"""
-    Options = [Param(
+    Params = [Param(
         name='ServerCertificateName',
         short_name='s',
         long_name='server-certificate-name',
@@ -55,7 +52,7 @@ class DeleteServerCertificate(AWSQueryRequest):
             ,
         )]
 
-    response = {u'type': u'object',
+    Response = {u'type': u'object',
                 u'name': u'DeleteServerCertificateResponse',
                 u'properties': [{
         u'type': u'object',

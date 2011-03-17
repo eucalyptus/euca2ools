@@ -1,6 +1,3 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
 # Software License Agreement (BSD License)
 #
 # Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
@@ -43,9 +40,9 @@ class DeleteGroup(AWSQueryRequest):
 
     ServiceClass = euca2ools.commands.euare.Euare
 
-    name = """DeleteGroup"""
+    Name = """DeleteGroup"""
     Description = """DeleteGroup"""
-    Options = [Param(
+    Params = [Param(
         name='GroupName',
         short_name='g',
         long_name='group-name',
@@ -54,7 +51,7 @@ class DeleteGroup(AWSQueryRequest):
         doc=""" Name of the group to delete. """,
         )]
 
-    response = {u'type': u'object', u'name': u'DeleteGroupResponse',
+    Response = {u'type': u'object', u'name': u'DeleteGroupResponse',
                 u'properties': [{
         u'type': u'object',
         u'optional': False,

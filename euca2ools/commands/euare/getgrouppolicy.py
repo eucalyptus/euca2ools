@@ -1,6 +1,3 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
 # Software License Agreement (BSD License)
 #
 # Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
@@ -43,9 +40,9 @@ class GetGroupPolicy(AWSQueryRequest):
 
     ServiceClass = euca2ools.commands.euare.Euare
 
-    name = """GetGroupPolicy"""
+    Name = """GetGroupPolicy"""
     Description = """GetGroupPolicy"""
-    Options = [Param(
+    Params = [Param(
         name='GroupName',
         short_name='g',
         long_name='group-name',
@@ -61,7 +58,7 @@ class GetGroupPolicy(AWSQueryRequest):
         doc=""" Name of the policy document to get. """,
         )]
 
-    response = {u'type': u'object', u'name': u'GetGroupPolicyResponse',
+    Response = {u'type': u'object', u'name': u'GetGroupPolicyResponse',
                 u'properties': [{
         u'doc'
             : u' Contains the result of a successful invocation of the GetGroupPolicy action. '

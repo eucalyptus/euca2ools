@@ -1,6 +1,3 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
 # Software License Agreement (BSD License)
 #
 # Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
@@ -43,9 +40,9 @@ class CreateUser(AWSQueryRequest):
 
     ServiceClass = euca2ools.commands.euare.Euare
 
-    name = """CreateUser"""
+    Name = """CreateUser"""
     Description = """CreateUser"""
-    Options = [Param(
+    Params = [Param(
         name='Path',
         short_name='p',
         long_name='path',
@@ -62,7 +59,7 @@ class CreateUser(AWSQueryRequest):
         doc=""" Name of the User to create. """,
         )]
 
-    response = {u'type': u'object', u'name': u'CreateUserResponse',
+    Response = {u'type': u'object', u'name': u'CreateUserResponse',
                 u'properties': [{
         u'doc'
             : u' Contains the result of a successful invocation of the CreateUser action. '

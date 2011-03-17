@@ -1,6 +1,3 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
 # Software License Agreement (BSD License)
 #
 # Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
@@ -43,9 +40,9 @@ class UploadSigningCertificate(AWSQueryRequest):
 
     ServiceClass = euca2ools.commands.euare.Euare
 
-    name = """UploadSigningCertificate"""
+    Name = """UploadSigningCertificate"""
     Description = """UploadSigningCertificate"""
-    Options = [Param(
+    Params = [Param(
         name='UserName',
         short_name='u',
         long_name='user-name',
@@ -61,7 +58,7 @@ class UploadSigningCertificate(AWSQueryRequest):
         doc=""" The contents of the signing certificate. """,
         )]
 
-    response = {u'type': u'object',
+    Response = {u'type': u'object',
                 u'name': u'UploadSigningCertificateResponse',
                 u'properties': [{
         u'doc'

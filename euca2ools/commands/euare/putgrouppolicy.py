@@ -1,6 +1,3 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
 # Software License Agreement (BSD License)
 #
 # Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
@@ -43,9 +40,9 @@ class PutGroupPolicy(AWSQueryRequest):
 
     ServiceClass = euca2ools.commands.euare.Euare
 
-    name = """PutGroupPolicy"""
+    Name = """PutGroupPolicy"""
     Description = """PutGroupPolicy"""
-    Options = [Param(
+    Params = [Param(
         name='GroupName',
         short_name='g',
         long_name='group-name',
@@ -61,14 +58,14 @@ class PutGroupPolicy(AWSQueryRequest):
         doc=""" Name of the policy document. """,
         ), Param(
         name='PolicyDocument',
-        short_name='None',
+        short_name=None,
         long_name='policy-document',
         ptype='string',
         optional=False,
         doc=""" The policy document. """,
         )]
 
-    response = {u'type': u'object', u'name': u'PutGroupPolicyResponse',
+    Response = {u'type': u'object', u'name': u'PutGroupPolicyResponse',
                 u'properties': [{
         u'type': u'object',
         u'optional': False,

@@ -1,6 +1,3 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
 # Software License Agreement (BSD License)
 #
 # Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
@@ -43,9 +40,9 @@ class ListServerCertificates(AWSQueryRequest):
 
     ServiceClass = euca2ools.commands.euare.Euare
 
-    name = """ListServerCertificates"""
+    Name = """ListServerCertificates"""
     Description = """ListServerCertificates"""
-    Options = [Param(
+    Params = [Param(
         name='PathPrefix',
         short_name='p',
         long_name='path-prefix',
@@ -63,7 +60,7 @@ class ListServerCertificates(AWSQueryRequest):
             ,
         ), Param(
         name='MaxItems',
-        short_name='None',
+        short_name=None,
         long_name='max-items',
         ptype='integer',
         optional=True,
@@ -71,7 +68,7 @@ class ListServerCertificates(AWSQueryRequest):
             ,
         )]
 
-    response = {u'type': u'object',
+    Response = {u'type': u'object',
                 u'name': u'ListServerCertificatesResponse',
                 u'properties': [{
         u'doc'

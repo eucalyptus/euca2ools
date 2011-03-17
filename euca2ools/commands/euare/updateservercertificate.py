@@ -1,6 +1,3 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
 # Software License Agreement (BSD License)
 #
 # Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
@@ -43,9 +40,9 @@ class UpdateServerCertificate(AWSQueryRequest):
 
     ServiceClass = euca2ools.commands.euare.Euare
 
-    name = """UpdateServerCertificate"""
+    Name = """UpdateServerCertificate"""
     Description = """UpdateServerCertificate"""
-    Options = [Param(
+    Params = [Param(
         name='ServerCertificateName',
         short_name='s',
         long_name='server-certificate-name',
@@ -63,7 +60,7 @@ class UpdateServerCertificate(AWSQueryRequest):
             ,
         ), Param(
         name='NewServerCertificateName',
-        short_name='None',
+        short_name=None,
         long_name='new-server-certificate-name',
         ptype='string',
         optional=True,
@@ -71,7 +68,7 @@ class UpdateServerCertificate(AWSQueryRequest):
             ,
         )]
 
-    response = {u'type': u'object',
+    Response = {u'type': u'object',
                 u'name': u'UpdateServerCertificateResponse',
                 u'properties': [{
         u'type': u'object',

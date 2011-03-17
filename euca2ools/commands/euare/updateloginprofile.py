@@ -1,6 +1,3 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
 # Software License Agreement (BSD License)
 #
 # Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
@@ -43,9 +40,9 @@ class UpdateLoginProfile(AWSQueryRequest):
 
     ServiceClass = euca2ools.commands.euare.Euare
 
-    name = """UpdateLoginProfile"""
+    Name = """UpdateLoginProfile"""
     Description = """UpdateLoginProfile"""
-    Options = [Param(
+    Params = [Param(
         name='UserName',
         short_name='u',
         long_name='user-name',
@@ -62,7 +59,7 @@ class UpdateLoginProfile(AWSQueryRequest):
         doc=""" The new password for the User name. """,
         )]
 
-    response = {u'type': u'object',
+    Response = {u'type': u'object',
                 u'name': u'UpdateLoginProfileResponse',
                 u'properties': [{
         u'type': u'object',
