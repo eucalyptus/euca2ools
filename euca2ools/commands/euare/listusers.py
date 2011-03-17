@@ -41,7 +41,7 @@ class ListUsers(AWSQueryRequest):
 
     Name = """ListUsers"""
     Description = """ListUsers"""
-    Options = [Param(
+    Params = [Param(
         name='PathPrefix',
         short_name='p',
         long_name='path-prefix',
