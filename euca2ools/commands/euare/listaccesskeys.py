@@ -147,6 +147,11 @@ class ListAccessKeys(AWSQueryRequest):
                         : u'RequestId'}],
         }]}
 
+    def cli_formatter(self, data):
+        for key in data.AccessKeyMetadata:
+            print key['AccessKeyId']
+            print key['Status']
+
 
 def main(**args):
     req = ListAccessKeys(**args)

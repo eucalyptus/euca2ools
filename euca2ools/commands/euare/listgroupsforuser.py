@@ -153,6 +153,9 @@ class ListGroupsForUser(AWSQueryRequest):
                         : u'RequestId'}],
         }]}
 
+    def cli_formatter(self, data):
+        for group in data.Groups:
+            print group['Arn']
 
 def main(**args):
     req = ListGroupsForUser(**args)

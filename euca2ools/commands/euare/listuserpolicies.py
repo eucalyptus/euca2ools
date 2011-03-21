@@ -117,6 +117,13 @@ class ListUserPolicies(AWSQueryRequest):
                         : u'RequestId'}],
         }]}
 
+    def cli_formatter(self, data):
+        #TODO: Add -v option to print actual policy.
+        #      This will require another round trip
+        #      for each policy name.
+        for policy in data.PolicyNames:
+            print policy
+
 
 def main(**args):
     req = ListUserPolicies(**args)

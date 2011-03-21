@@ -135,6 +135,10 @@ class ListMFADevices(AWSQueryRequest):
                         : u'RequestId'}],
         }]}
 
+    def cli_formatter(self, data):
+        for mfa in data.MFADevices:
+            print mfa['SerialNumber']
+
 
 def main(**args):
     req = ListMFADevices(**args)
