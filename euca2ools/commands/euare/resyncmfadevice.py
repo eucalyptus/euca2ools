@@ -40,7 +40,6 @@ class ResyncMFADevice(AWSQueryRequest):
 
     ServiceClass = euca2ools.commands.euare.Euare
 
-    Name = """ResyncMFADevice"""
     Description = """ResyncMFADevice"""
     Params = [Param(
         name='UserName',

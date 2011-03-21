@@ -40,7 +40,6 @@ class GetGroup(AWSQueryRequest):
 
     ServiceClass = euca2ools.commands.euare.Euare
 
-    Name = """GetGroup"""
     Description = """GetGroup"""
     Params = [Param(
         name='GroupName',

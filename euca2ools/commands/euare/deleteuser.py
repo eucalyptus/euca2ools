@@ -40,7 +40,6 @@ class DeleteUser(AWSQueryRequest):
 
     ServiceClass = euca2ools.commands.euare.Euare
 
-    Name = """DeleteUser"""
     Description = """DeleteUser"""
     Params = [Param(
         name='UserName',

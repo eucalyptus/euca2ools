@@ -40,7 +40,6 @@ class UploadServerCertificate(AWSQueryRequest):
 
     ServiceClass = euca2ools.commands.euare.Euare
 
-    Name = """UploadServerCertificate"""
     Description = """UploadServerCertificate"""
     Params = [Param(
         name='Path',

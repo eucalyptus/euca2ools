@@ -40,7 +40,6 @@ class EnableMFADevice(AWSQueryRequest):
 
     ServiceClass = euca2ools.commands.euare.Euare
 
-    Name = """EnableMFADevice"""
     Description = """EnableMFADevice"""
     Params = [Param(
         name='UserName',

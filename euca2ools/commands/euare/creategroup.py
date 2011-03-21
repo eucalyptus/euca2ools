@@ -40,7 +40,6 @@ class CreateGroup(AWSQueryRequest):
 
     ServiceClass = euca2ools.commands.euare.Euare
 
-    Name = """CreateGroup"""
     Description = """CreateGroup"""
     Params = [Param(
         name='Path',

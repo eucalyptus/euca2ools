@@ -40,7 +40,6 @@ class ListServerCertificates(AWSQueryRequest):
 
     ServiceClass = euca2ools.commands.euare.Euare
 
-    Name = """ListServerCertificates"""
     Description = """ListServerCertificates"""
     Params = [Param(
         name='PathPrefix',

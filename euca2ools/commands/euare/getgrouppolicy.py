@@ -40,7 +40,6 @@ class GetGroupPolicy(AWSQueryRequest):
 
     ServiceClass = euca2ools.commands.euare.Euare
 
-    Name = """GetGroupPolicy"""
     Description = """GetGroupPolicy"""
     Params = [Param(
         name='GroupName',

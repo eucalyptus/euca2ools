@@ -40,7 +40,6 @@ class ListGroupsForUser(AWSQueryRequest):
 
     ServiceClass = euca2ools.commands.euare.Euare
 
-    Name = """ListGroupsForUser"""
     Description = """ListGroupsForUser"""
     Params = [Param(
         name='UserName',

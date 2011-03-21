@@ -40,7 +40,6 @@ class DeleteAccessKey(AWSQueryRequest):
 
     ServiceClass = euca2ools.commands.euare.Euare
 
-    Name = """DeleteAccessKey"""
     Description = """DeleteAccessKey"""
     Params = [Param(
         name='UserName',

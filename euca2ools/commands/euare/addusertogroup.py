@@ -40,7 +40,6 @@ class AddUserToGroup(AWSQueryRequest):
 
     ServiceClass = euca2ools.commands.euare.Euare
 
-    Name = """AddUserToGroup"""
     Description = """AddUserToGroup"""
     Params = [Param(
         name='GroupName',

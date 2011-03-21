@@ -40,7 +40,6 @@ class UpdateLoginProfile(AWSQueryRequest):
 
     ServiceClass = euca2ools.commands.euare.Euare
 
-    Name = """UpdateLoginProfile"""
     Description = """UpdateLoginProfile"""
     Params = [Param(
         name='UserName',

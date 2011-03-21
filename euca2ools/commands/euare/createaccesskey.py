@@ -40,7 +40,6 @@ class CreateAccessKey(AWSQueryRequest):
 
     ServiceClass = euca2ools.commands.euare.Euare
 
-    Name = """CreateAccessKey"""
     Description = """CreateAccessKey"""
     Params = [Param(
         name='UserName',

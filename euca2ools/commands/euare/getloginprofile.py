@@ -40,7 +40,6 @@ class GetLoginProfile(AWSQueryRequest):
 
     ServiceClass = euca2ools.commands.euare.Euare
 
-    Name = """GetLoginProfile"""
     Description = """GetLoginProfile"""
     Params = [Param(
         name='UserName',

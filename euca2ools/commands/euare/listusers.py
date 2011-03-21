@@ -39,7 +39,6 @@ class ListUsers(AWSQueryRequest):
 
     ServiceClass = euca2ools.commands.euare.Euare
 
-    Name = """ListUsers"""
     Description = """ListUsers"""
     Params = [Param(
         name='PathPrefix',

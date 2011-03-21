@@ -40,7 +40,6 @@ class CreateUser(AWSQueryRequest):
 
     ServiceClass = euca2ools.commands.euare.Euare
 
-    Name = """CreateUser"""
     Description = """CreateUser"""
     Params = [Param(
         name='Path',

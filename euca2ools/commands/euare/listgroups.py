@@ -40,7 +40,6 @@ class ListGroups(AWSQueryRequest):
 
     ServiceClass = euca2ools.commands.euare.Euare
 
-    Name = """ListGroups"""
     Description = """ListGroups"""
     Params = [Param(
         name='PathPrefix',

@@ -40,7 +40,6 @@ class UpdateServerCertificate(AWSQueryRequest):
 
     ServiceClass = euca2ools.commands.euare.Euare
 
-    Name = """UpdateServerCertificate"""
     Description = """UpdateServerCertificate"""
     Params = [Param(
         name='ServerCertificateName',

@@ -40,7 +40,6 @@ class DeleteSigningCertificate(AWSQueryRequest):
 
     ServiceClass = euca2ools.commands.euare.Euare
 
-    Name = """DeleteSigningCertificate"""
     Description = """DeleteSigningCertificate"""
     Params = [Param(
         name='UserName',

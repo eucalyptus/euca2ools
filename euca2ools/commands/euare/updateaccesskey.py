@@ -40,7 +40,6 @@ class UpdateAccessKey(AWSQueryRequest):
 
     ServiceClass = euca2ools.commands.euare.Euare
 
-    Name = """UpdateAccessKey"""
     Description = """UpdateAccessKey"""
     Params = [Param(
         name='UserName',

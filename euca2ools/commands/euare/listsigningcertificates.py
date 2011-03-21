@@ -40,7 +40,6 @@ class ListSigningCertificates(AWSQueryRequest):
 
     ServiceClass = euca2ools.commands.euare.Euare
 
-    Name = """ListSigningCertificates"""
     Description = """ListSigningCertificates"""
     Params = [Param(
         name='UserName',

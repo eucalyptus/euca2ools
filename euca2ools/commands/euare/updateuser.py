@@ -40,7 +40,6 @@ class UpdateUser(AWSQueryRequest):
 
     ServiceClass = euca2ools.commands.euare.Euare
 
-    Name = """UpdateUser"""
     Description = """UpdateUser"""
     Params = [Param(
         name='UserName',

@@ -40,7 +40,6 @@ class UploadSigningCertificate(AWSQueryRequest):
 
     ServiceClass = euca2ools.commands.euare.Euare
 
-    Name = """UploadSigningCertificate"""
     Description = """UploadSigningCertificate"""
     Params = [Param(
         name='UserName',

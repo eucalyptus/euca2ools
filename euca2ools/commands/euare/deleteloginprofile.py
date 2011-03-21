@@ -40,7 +40,6 @@ class DeleteLoginProfile(AWSQueryRequest):
 
     ServiceClass = euca2ools.commands.euare.Euare
 
-    Name = """DeleteLoginProfile"""
     Description = """DeleteLoginProfile"""
     Params = [Param(
         name='UserName',

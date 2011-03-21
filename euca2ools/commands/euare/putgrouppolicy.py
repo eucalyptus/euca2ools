@@ -40,7 +40,6 @@ class PutGroupPolicy(AWSQueryRequest):
 
     ServiceClass = euca2ools.commands.euare.Euare
 
-    Name = """PutGroupPolicy"""
     Description = """PutGroupPolicy"""
     Params = [Param(
         name='GroupName',

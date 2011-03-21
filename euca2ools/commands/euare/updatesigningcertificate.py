@@ -40,7 +40,6 @@ class UpdateSigningCertificate(AWSQueryRequest):
 
     ServiceClass = euca2ools.commands.euare.Euare
 
-    Name = """UpdateSigningCertificate"""
     Description = """UpdateSigningCertificate"""
     Params = [Param(
         name='UserName',

@@ -40,7 +40,6 @@ class DeleteGroupPolicy(AWSQueryRequest):
 
     ServiceClass = euca2ools.commands.euare.Euare
 
-    Name = """DeleteGroupPolicy"""
     Description = """DeleteGroupPolicy"""
     Params = [Param(
         name='GroupName',

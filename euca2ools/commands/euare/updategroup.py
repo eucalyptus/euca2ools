@@ -40,7 +40,6 @@ class UpdateGroup(AWSQueryRequest):
 
     ServiceClass = euca2ools.commands.euare.Euare
 
-    Name = """UpdateGroup"""
     Description = """UpdateGroup"""
     Params = [Param(
         name='GroupName',

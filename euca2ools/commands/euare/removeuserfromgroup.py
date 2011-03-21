@@ -40,7 +40,6 @@ class RemoveUserFromGroup(AWSQueryRequest):
 
     ServiceClass = euca2ools.commands.euare.Euare
 
-    Name = """RemoveUserFromGroup"""
     Description = """RemoveUserFromGroup"""
     Params = [Param(
         name='GroupName',

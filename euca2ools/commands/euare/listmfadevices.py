@@ -40,7 +40,6 @@ class ListMFADevices(AWSQueryRequest):
 
     ServiceClass = euca2ools.commands.euare.Euare
 
-    Name = """ListMFADevices"""
     Description = """ListMFADevices"""
     Params = [Param(
         name='UserName',

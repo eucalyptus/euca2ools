@@ -40,7 +40,6 @@ class DeleteGroup(AWSQueryRequest):
 
     ServiceClass = euca2ools.commands.euare.Euare
 
-    Name = """DeleteGroup"""
     Description = """DeleteGroup"""
     Params = [Param(
         name='GroupName',

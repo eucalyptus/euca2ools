@@ -40,7 +40,6 @@ class DeleteUserPolicy(AWSQueryRequest):
 
     ServiceClass = euca2ools.commands.euare.Euare
 
-    Name = """DeleteUserPolicy"""
     Description = """DeleteUserPolicy"""
     Params = [Param(
         name='UserName',

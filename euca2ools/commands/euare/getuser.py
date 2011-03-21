@@ -40,7 +40,6 @@ class GetUser(AWSQueryRequest):
 
     ServiceClass = euca2ools.commands.euare.Euare
 
-    Name = """GetUser"""
     Description = """GetUser"""
     Params = [Param(
         name='UserName',

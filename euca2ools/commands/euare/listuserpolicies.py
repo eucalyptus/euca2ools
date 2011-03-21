@@ -40,7 +40,6 @@ class ListUserPolicies(AWSQueryRequest):
 
     ServiceClass = euca2ools.commands.euare.Euare
 
-    Name = """ListUserPolicies"""
     Description = """ListUserPolicies"""
     Params = [Param(
         name='UserName',
