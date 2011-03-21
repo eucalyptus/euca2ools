@@ -135,6 +135,10 @@ class ListUsers(AWSQueryRequest):
         }]}
 
 
+    def cli_formatter(self, data):
+        for user in data.Users:
+            print user['Arn']
+            
 def main(**args):
     req = ListUsers(**args)
     return req.send()

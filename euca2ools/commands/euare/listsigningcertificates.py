@@ -50,6 +50,13 @@ class ListSigningCertificates(AWSQueryRequest):
         optional=True,
         doc=""" The name of the User. """,
         ), Param(
+        name='_verbose',
+        short_name='v',
+        long_name='verbose',
+        ptype='boolean',
+        optional=True,
+        doc='Causes output to include the certificate body',
+        ), Param(
         name='Marker',
         short_name='m',
         long_name='marker',
@@ -162,6 +169,13 @@ class ListSigningCertificates(AWSQueryRequest):
         }]}
 
 
+    def cli_formatter(self, data):
+        for cert in data.Certificates:
+            print cert['CertificateId']
+            if self.cli_options.verbose:
+                print cert['CertificateBody']
+            print cert['Status']
+            
 def main(**args):
     req = ListSigningCertificates(**args)
     return req.send()
