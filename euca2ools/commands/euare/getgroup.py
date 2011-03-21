@@ -198,6 +198,12 @@ class GetGroup(AWSQueryRequest):
         }]}
 
 
+    def cli_formatter(self, data):
+        print data.Group['Arn']
+        print '\tusers'
+        for user in data.Users:
+            print '\t%s' % user['Arn']
+            
 def main(**args):
     req = GetGroup(**args)
     return req.send()
