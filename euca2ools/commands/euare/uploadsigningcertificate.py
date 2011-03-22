@@ -42,19 +42,26 @@ class UploadSigningCertificate(AWSQueryRequest):
 
     Description = """UploadSigningCertificate"""
     Params = [Param(
+        name='CertificateBody',
+        short_name='c',
+        long_name='certificate-body',
+        ptype='string',
+        optional=True,
+        doc=""" The contents of the signing certificate. """,
+        ), Param(
+        name='CertificateBody',
+        short_name='f',
+        long_name='certificate-file',
+        ptype='file',
+        optional=True,
+        doc="""A file containing the signing certificate. """,
+        ), Param(
         name='UserName',
         short_name='u',
         long_name='user-name',
         ptype='string',
         optional=True,
         doc=""" Name of the User the signing certificate is for. """,
-        ), Param(
-        name='CertificateBody',
-        short_name='c',
-        long_name='certificate-body',
-        ptype='string',
-        optional=False,
-        doc=""" The contents of the signing certificate. """,
         )]
 
     Response = {u'type': u'object',
