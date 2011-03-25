@@ -37,7 +37,7 @@ from boto.roboto.param import Param
 class DescribeRegions(euca2ools.commands.eucacommand.EucaCommand):
 
     Description = 'Shows information about regions.'
-    Args = [Param(name='region', ptype='string',
+    Args = [Param(name='region_name', ptype='string',
                   doc='region to describe',
                   cardinality='+', optional=True)]
     Filters = [Param(name='endpoint', ptype='string',

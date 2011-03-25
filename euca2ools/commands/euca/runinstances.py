@@ -117,22 +117,22 @@ class RunInstances(euca2ools.commands.eucacommand.EucaCommand):
             if self.user_data_file:
                 self.user_data = self.read_user_data(self.user_data_file)
 
-        if self.block_device_map:
-            self.block_device_map = self.parse_block_device_args(self.block_device_map)
+        if self.block_device_mapping:
+            self.block_device_mapping = self.parse_block_device_args(self.block_device_mapping)
         conn = self.make_connection_cli()
         return self.make_request_cli(conn, 'run_instances',
                                      image_id=self.image_id,
                                      min_count=min_count,
                                      max_count=max_count,
                                      key_name=self.keyname,
-                                     security_groups=self.group,
+                                     security_groups=self.group_name,
                                      user_data=self.user_data,
                                      addressing_type=self.addressing,
                                      instance_type=self.instance_type,
                                      placement=self.zone,
                                      kernel_id=self.kernel,
                                      ramdisk_id=self.ramdisk,
-                                     block_device_map=self.block_device_map,
+                                     block_device_map=self.block_device_mapping,
                                      monitoring_enabled=self.monitor,
                                      subnet_id=self.subnet)
 
