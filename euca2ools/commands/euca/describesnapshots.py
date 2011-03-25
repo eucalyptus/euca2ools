@@ -84,9 +84,6 @@ class DescribeSnapshots(euca2ools.commands.eucacommand.EucaCommand):
             print 'SNAPSHOT\t%s' % snapshot_string
 
     def main(self):
-        snapshot_ids = self.arguments['snapshot']
-        owner = self.options.get('owner', None)
-        restorable_by = self.options.get('restorable_by', None)
         conn = self.make_connection_cli()
         return self.make_request_cli(conn, 'get_all_snapshots',
                                      snapshot_ids=self.snapshot,

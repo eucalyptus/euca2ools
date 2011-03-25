@@ -95,11 +95,11 @@ class ModifyImageAttribute(euca2ools.commands.eucacommand.EucaCommand):
         if self.adds and self.removes:
             msg = 'You cannot add and remove in the same call'
             self.display_error_and_exit(msg)
-        if self.adds:
+        if self.add:
             operation_type = 'add'
-        if self.removes:
+        if self.remove:
             operation_type = 'remove'
-        users = self.adds + self.removes
+        users = self.add + self.remove
         if 'all' in users:
             users.remove('all')
             groups.append('all')
