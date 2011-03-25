@@ -88,38 +88,38 @@ class ModifyImageAttribute(euca2ools.commands.eucacommand.EucaCommand):
         users = []
         groups = []
         image_attribute = None
-        image_id = self.arguments['image_id']
-        product_codes = self.options.get('product_codes', None)
-        if product_codes:
+        if self.product_codes:
             image_attribute = 'productCodes'
         launch_permission = self.options.get('launch_permissions', False)
-        if not image_attribute and launch_permission:
+        if not image_attribute and self.launch_permission:
             image_attribute = 'launchPermission'
         adds = self.options.get('add', [])
         removes = self.options.get('remove', [])
-        if adds and removes:
+        if self.adds and self.removes:
             msg = 'You cannot add and remove in the same call'
             self.display_error_and_exit(msg)
-        if adds:
+        if self.adds:
             operation_type = 'add'
-        if removes:
+        if self.removes:
             operation_type = 'remove'
         users = adds + removes
         if 'all' in users:
             users.remove('all')
             groups.append('all')
         if image_attribute:
-            euca_conn = self.make_connection_cli()
-            return_code = self.make_request_cli(euca_conn,
-                                                'modify_image_attribute',
-                                                image_id=image_id,
-                                                attribute=image_attribute,
-                                                operation=operation_type,
-                                                user_ids=users,
-                                                groups=groups,
-                                                product_codes=product_codes)
-            print 'IMAGE\t%s' % image_id
+            conn = self.make_connection_cli()
+            return self.make_request_cli(conn, 'modify_image_attribute',
+                                         image_id=self.image_id,
+                                         attribute=image_attribute,
+                                         operation=operation_type,
+                                         user_ids=users,
+                                         groups=groups,
+                                         product_codes=self.product_codes)
         else:
             msg = 'No attributes were specified'
             self.display_error_and_exit(msg)
+
+    def main_cli(self):
+        self.main()
+        print 'IMAGE\t%s' % self.image_id
 

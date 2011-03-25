@@ -88,10 +88,11 @@ class DescribeGroups(euca2ools.commands.eucacommand.EucaCommand):
                     print 'PERMISSION\t%s' % permission_string
                     
     def main(self):
-        euca_conn = self.make_connection_cli()
-        groups = self.make_request_cli(euca_conn,
-                                       'get_all_security_groups',
-                                       groupnames=self.arguments['group_name'])
-        
+        conn = self.make_connection_cli()
+        return self.make_request_cli(conn, 'get_all_security_groups',
+                                     groupnames=self.group_name)
+
+    def main_cli(self):
+        groups = self.main()
         self.display_groups(groups)
 

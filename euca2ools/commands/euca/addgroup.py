@@ -49,11 +49,13 @@ class AddGroup(euca2ools.commands.eucacommand.EucaCommand):
         print 'GROUP\t%s' % group_string
 
     def main(self):
-        euca_conn = self.make_connection_cli()
-        group = self.make_request_cli(euca_conn,
-                                      'create_security_group',
-                                      name=self.arguments['group_name'],
-                                      description=self.options['group_description'])
+        conn = self.make_connection_cli()
+        return self.make_request_cli(conn, 'create_security_group',
+                                     name=self.group_name,
+                                     description=self.group_description)
+
+    def main_cli(self):
+        group = self.main()
         self.display_group(group)
 
 

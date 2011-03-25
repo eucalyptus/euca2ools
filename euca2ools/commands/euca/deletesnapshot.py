@@ -46,9 +46,11 @@ class DeleteSnapshot(euca2ools.commands.eucacommand.EucaCommand):
         print 'GROUP\t%s' % group_string
 
     def main(self):
-        euca_conn = self.make_connection_cli()
-        return_code = self.make_request_cli(euca_conn,
-                                            'delete_snapshot',
-                                            snapshot_id=self.arguments['snapshot_id'])
-        if return_code:
-            print 'SNAPSHOT\t%s' % self.arguments['snapshot_id']
+        conn = self.make_connection_cli()
+        return self.make_request_cli(conn, 'delete_snapshot',
+                                     snapshot_id=self.snapshot_id)
+
+    def main_cli(self):
+        status = self.main()
+        if status:
+            print 'SNAPSHOT\t%s' % self.snapshot_id

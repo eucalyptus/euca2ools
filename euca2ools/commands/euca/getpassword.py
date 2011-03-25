@@ -47,14 +47,17 @@ class GetPassword(euca2ools.commands.eucacommand.EucaCommand):
                      doc='unique identifier for the Windows instance')]
 
     def main(self):
-        euca_conn = self.make_connection_cli()
-        pd = self.make_request_cli(euca_conn,
-                                   'get_password_data',
-                                   instance_id=self.arguments['instance_id'])
-        if password_data:
+        conn = self.make_connection_cli()
+        pd = self.make_request_cli(conn, 'get_password_data',
+                                   instance_id=self.instance_id)
+        if pd:
             # TODO - this is actually in the bundler
             # TODO validate file?
-            print self.decrypt_string(password_data,
-                                      private_key_path,
-                                      encoded=True)
+            return self.decrypt_string(password_data,
+                                       self.privatekey,
+                                       encoded=True)
+
+    def main_cli(self):
+        pw = self.main()
+        print pw
 

@@ -38,5 +38,5 @@ import euca2ools.commands.euca.bundleupload
 
 if __name__ == '__main__':
     cmd = euca2ools.commands.euca.bundleupload.BundleUpload()
-    cmd.main()
+    cmd.main_cli()
 

@@ -38,7 +38,7 @@ class StopInstances(euca2ools.commands.eucacommand.EucaCommand):
 
     Description = 'Stops the specified EBS-based instances.'
     Options = [Param(name='force', short_name='f', long_name='force',
-                    optional=True, ptype='boolean',
+                    optional=True, ptype='boolean', default=False,
                     doc='Forces the instance to stop.')]
     Args = [Param(name='instance_id', ptype='string',
                   optional=False, cardinality='+',
@@ -49,11 +49,12 @@ class StopInstances(euca2ools.commands.eucacommand.EucaCommand):
             print 'INSTANCE\t%s' % instance.id
             
     def main(self):
-        force = self.options.get('force', False)
-        euca_conn = self.make_connection_cli()
-        instances = self.make_request_cli(euca_conn,
-                                          'stop_instances',
-                                          instance_ids=self.arguments['instance_id'],
-                                          force=force)
+        conn = self.make_connection_cli()
+        return self.make_request_cli(conn, 'stop_instances',
+                                     instance_ids=self.instance_id,
+                                     force=self.force)
+
+    def main_cli(self):
+        instances = self.main()
         self.display_instances(instances)
 

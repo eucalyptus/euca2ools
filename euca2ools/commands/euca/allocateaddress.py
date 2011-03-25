@@ -39,9 +39,11 @@ class AllocateAddress(euca2ools.commands.eucacommand.EucaCommand):
     Description = 'Allocate a public IP address'
 
     def main(self):
-        euca_conn = self.make_connection_cli()
-        address = self.make_request_cli(euca_conn,
-                                      'allocate_address')
+        conn = self.make_connection_cli()
+        return self.make_request_cli(conn, 'allocate_address')
+
+    def main_cli(self):
+        address = self.main()
         if address:
             print 'ADDRESS\t%s' % address.public_ip
 

@@ -54,11 +54,12 @@ class DescribeAvailabilityZones(euca2ools.commands.eucacommand.EucaCommand):
             print 'AVAILABILITYZONE\t%s' % zone_string
 
     def main(self):
-        euca_conn = self.make_connection_cli()
-        zones = self.make_request_cli(euca_conn,
-                                      'get_all_zones',
-                                      zones=self.arguments['zone'])
-        
+        conn = self.make_connection_cli()
+        return self.make_request_cli(conn, 'get_all_zones',
+                                      zones=self.zone)
+
+    def main_cli(self):
+        zones = self.main()
         self.display_zones(zones)
 
 

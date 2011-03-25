@@ -161,9 +161,11 @@ class DescribeInstances(euca2ools.commands.eucacommand.EucaCommand):
             euca2ools.utils.print_instances(instances)
 
     def main(self):
-        euca_conn = self.make_connection_cli()
-        reservations = self.make_request_cli(euca_conn,
-                                             'get_all_instances',
-                                             instance_ids=self.arguments['instance'])
+        conn = self.make_connection_cli()
+        return self.make_request_cli(conn, 'get_all_instances',
+                                     instance_ids=self.instance)
+
+    def main_cli(self):
+        reservations = self.main()
         self.display_reservations(reservations)
 

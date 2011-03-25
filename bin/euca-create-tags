@@ -38,5 +38,5 @@ import euca2ools.commands.euca.createtags
 
 if __name__ == '__main__':
     cmd = euca2ools.commands.euca.createtags.CreateTags()
-    cmd.main()
+    cmd.main_cli()
 

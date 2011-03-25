@@ -38,5 +38,5 @@ import euca2ools.commands.euca.describetags
 
 if __name__ == '__main__':
     cmd = euca2ools.commands.euca.describetags.DescribeTags()
-    cmd.main()
+    cmd.main_cli()
 

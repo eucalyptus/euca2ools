@@ -50,8 +50,8 @@ class UploadBundle(euca2ools.commands.eucacommand.EucaCommand):
                      optional=False, ptype='file',
                      doc='Path to the manifest file for bundled image.'),
                Param(name='canned_acl',  long_name='acl',
-                     optional=True, ptype='string',
-                     doc='Canned access policy (defaults to aws-exec-read)'),
+                     optional=True, ptype='string', default='aws-exec-read',
+                     doc='Canned access policy'),
                Param(name='ec2cert_path', long_name='ec2cert',
                      optional=True, ptype='file',
                      doc="Path to the Cloud's X509 public key certificate."),
@@ -64,7 +64,7 @@ class UploadBundle(euca2ools.commands.eucacommand.EucaCommand):
                      optional=True, ptype='integer',
                      doc='Uploads specified part and all subsequent parts.'),
                Param(name='skip_manifest', long_name='skipmanifest',
-                     optional=True, ptype='boolean',
+                     optional=True, ptype='boolean', default=False,
                      doc='Do not  upload the manifest.')]
 
     def ensure_bucket(self, bucket, canned_acl=None):
@@ -154,16 +154,20 @@ class UploadBundle(euca2ools.commands.eucacommand.EucaCommand):
         skipmanifest = self.options.get('skipmanifest', False)
         debug = False
         
-        bucket_instance = self.ensure_bucket(bucket, canned_acl)
-        parts = self.get_parts(manifest_path)
-        manifest_directory, manifest_file = os.path.split(manifest_path)
-        if not directory:
-            directory = manifest_directory
-        if not skipmanifest and not part:
-            self.upload_manifest(bucket_instance, manifest_path, canned_acl)
-        self.upload_parts(bucket_instance, directory,
-                          parts, part, canned_acl)
+        bucket_instance = self.ensure_bucket(self.bucket, self.canned_acl)
+        parts = self.get_parts(self.manifest_path)
+        manifest_directory, manifest_file = os.path.split(self.manifest_path)
+        if not self.directory:
+            self.directory = manifest_directory
+        if not self.skipmanifest and not part:
+            self.upload_manifest(bucket_instance, self.manifest_path,
+                                 self.canned_acl)
+        self.upload_parts(bucket_instance, self.directory,
+                          parts, self.part, self.canned_acl)
         print 'Uploaded image as %s/%s' % (bucket,
-                self.get_relative_filename(manifest_path))
+                self.get_relative_filename(self.manifest_path))
+
+    def main_cli(self):
+        self.main()
 
 

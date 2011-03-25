@@ -46,13 +46,14 @@ class AssociateAddress(euca2ools.commands.eucacommand.EucaCommand):
                   cardinality=1, optional=False)]
 
     def main(self):
-        euca_conn = self.make_connection_cli()
-        return_code = self.make_request_cli(euca_conn,
-                                            'associate_address',
-                                            instance_id=self.options['instance_id'],
-                                            public_ip=self.arguments['ip'])
-        if return_code:
-            print 'ADDRESS\t%s\t%s' % (self.arguments['ip'],
-                                       self.options['instance_id'])
+        conn = self.make_connection_cli()
+        return self.make_request_cli(conn, 'associate_address',
+                                     instance_id=self.instance_id,
+                                     public_ip=self.ip)
+
+    def main_cli(self):
+        status = self.main()
+        if status:
+            print 'ADDRESS\t%s\t%s' % (self.ip, self.instance_id)
 
 

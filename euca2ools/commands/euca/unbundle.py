@@ -50,7 +50,7 @@ class Unbundle(euca2ools.commands.eucacommand.EucaCommand):
                      doc='Path to private key used to encrypt bundle.'),
                Param(name='destination_dir',
                      short_name='d', long_name='destination',
-                     optional=True, ptype='dir',
+                     optional=True, ptype='dir', default='.',
                      doc="""Directory to store the image to.
                      Defaults to the current directory."""),
                Param(name='source_dir',
@@ -60,33 +60,33 @@ class Unbundle(euca2ools.commands.eucacommand.EucaCommand):
                      Defaults to manifest directory.""")]
 
 def main():
-    manifest_path = self.arguments('manifest_path')
-    private_key_path = self.options('private_key_path', None)
-    directory = self.options.get('dst_dir', '.')
-    src_directory = self.options.get('src_dir',
-                                     self.get_file_path(manifest_path))
-    bundler = euca2ools.bundler.Bundler(self)
-    if not private_key_path:
-        private_key_path = self.get_environ('EC2_PRIVATE_KEY')
-        if not os.path.isfile(private_key_path):
-            msg = 'Private Key not found: %s' % private_key_path
+    if not self.source_dir:
+        self.source_dir = self.get_file_path(self.manifest_path))
+    if not self.private_key_path:
+        self.private_key_path = self.get_environ('EC2_PRIVATE_KEY')
+        if not os.path.isfile(self.private_key_path):
+            msg = 'Private Key not found: %s' % self.private_key_path
             self.display_error_and_exit(msg)
 
+    bundler = euca2ools.bundler.Bundler(self)
     (parts, encrypted_key, encrypted_iv) = \
-        bundler.parse_manifest(manifest_path)
-    image = bundler.assemble_parts(src_directory, directory,
-                                   manifest_path, parts)
+        bundler.parse_manifest(self.manifest_path)
+    image = bundler.assemble_parts(self.source_dir, self.directory,
+                                   self.manifest_path, parts)
     print 'Decrypting image'
     decrypted_image = bundler.decrypt_image(image, encrypted_key,
-                                            encrypted_iv, private_key_path)
+                                            encrypted_iv, self.private_key_path)
     os.remove(image)
     print 'Uncompressing image'
     try:
-        unencrypted_image = bundler.untarzip_image(directory,
+        unencrypted_image = bundler.untarzip_image(self.directory,
                                                    decrypted_image)
     except NotFoundError:
         sys.exit(1)
     except CommandFailed:
         sys.exit(1)
     os.remove(decrypted_image)
+
+def main_cli(self):
+    self.main()
 

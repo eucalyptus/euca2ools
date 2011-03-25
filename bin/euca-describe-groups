@@ -38,5 +38,5 @@ import euca2ools.commands.euca.describegroups
 
 if __name__ == '__main__':
     cmd = euca2ools.commands.euca.describegroups.DescribeGroups()
-    cmd.main()
+    cmd.main_cli()
 

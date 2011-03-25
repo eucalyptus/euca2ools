@@ -42,9 +42,12 @@ class DeleteGroup(euca2ools.commands.eucacommand.EucaCommand):
     
     def main(self):
         euca_conn = self.make_connection_cli()
-        return_code = self.make_request_cli(euca_conn,
-                                            'delete_security_group',
-                                            name=self.arguments['group_name'])
-        if return_code:
-            print 'GROUP\t%s' % self.arguments['group_name']
+        return self.make_request_cli(euca_conn,
+                                     'delete_security_group',
+                                     name=self.group_name)
+
+    def main_cli(self):
+        status = self.main()
+        if status:
+            print 'GROUP\t%s' % self.group_name
 

@@ -38,5 +38,5 @@ import euca2ools.commands.euca.attachvolume
 
 if __name__ == '__main__':
     cmd = euca2ools.commands.euca.attachvolume.AttachVolume()
-    cmd.main()
+    cmd.main_cli()
 

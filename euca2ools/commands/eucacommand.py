@@ -95,8 +95,6 @@ class EucaCommand(object):
         self.ec2_user_access_key = None
         self.ec2_user_secret_key = None
         self.url = None
-        self.options = {}
-        self.arguments = {}
         self.filters = {}
         self.region_name = None
         self.region = RegionInfo()
@@ -158,11 +156,12 @@ class EucaCommand(object):
                                                            option.ptype)
                         self.display_error_and_exit(msg)
                     if option.cardinality in ('*', '+'):
-                        if option.name not in self.options:
-                            self.options[option.name] = []
-                        self.options[option.name].append(value)
+                        if not hasattr(self, option.name):
+                            setattr(self, option.name, [])
+                        getattr(self, option.name).append(value)
                     else:
-                        self.options[option.name] = value
+                        setattr(self, option.name, value)
+        self.handle_defaults()
         self.check_required_options()
 
         for arg in self.Args:
@@ -170,7 +169,7 @@ class EucaCommand(object):
                 msg = 'Argument (%s) was not provided' % arg.name
                 self.display_error_and_exit(msg)
             if arg.cardinality in ('*', '+'):
-                self.arguments[arg.name] = args
+                setattr(self, arg.name, args)
             elif arg.cardinality == 1:
                 if len(args) == 0 and arg.optional:
                     continue
@@ -179,7 +178,7 @@ class EucaCommand(object):
                 except:
                     msg = '%s should be of type %s' % (arg.name,
                                                        arg.ptype)
-                self.arguments[arg.name] = value
+                setattr(self, arg.name, value)
                 if len(args) > 1:
                     msg = 'Only 1 argument (%s) permitted' % arg.name
                     self.display_error_and_exit(msg)
@@ -218,10 +217,22 @@ class EucaCommand(object):
     def optional_args(self):
         return [ arg for arg in self.Args if arg.optional ]
 
+    def handle_defaults(self):
+        for option in self.Options:
+            if not hasattr(self, option.name):
+                value = option.default
+                if value is None and option.cardinality in ('+', '*'):
+                    value = []
+                elif value is None and option.ptype == 'boolean':
+                    value = False
+                elif value is None and option.ptype == 'integer':
+                    value = 0
+                setattr(self, option.name, value)
+
     def check_required_options(self):
         missing = []
         for option in self.required():
-            if option.name not in self.options:
+            if not hasattr(self, option.name) or getattr(self, option.name) is None:
                 missing.append(option.long_name)
         if missing:
             msg = 'These required options are missing: %s' % ','.join(missing)

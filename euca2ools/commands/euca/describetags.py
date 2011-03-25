@@ -56,8 +56,9 @@ class DescribeTags(euca2ools.commands.eucacommand.EucaCommand):
             print 'TAG\t%s' % tag_string
             
     def main(self):
-        euca_conn = self.make_connection_cli()
-        tags = self.make_request_cli(euca_conn,
-                                     'get_all_tags')
-        
+        conn = self.make_connection_cli()
+        return self.make_request_cli(conn, 'get_all_tags')
+
+    def main_cli(self):
+        tags = self.main()
         self.display_tags(tags)

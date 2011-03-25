@@ -45,14 +45,14 @@ class ConfirmProductInstance(euca2ools.commands.eucacommand.EucaCommand):
                   cardinality=1, optional=False)]
 
     def main(self):
-        product_code = self.options['product_code']
-        instance_id = self.arguments['instance_id']
-        euca_conn = self.make_connection_cli()
-        rs = self.make_request_cli(euca_conn,
-                                   'confirm_product_instance',
-                                   product_code=product_code,
-                                   instance_id=instance_id)
-        product_string = '%s\t%s\t' % (product_code, instance_id)
+        conn = self.make_connection_cli()
+        return self.make_request_cli(conn, 'confirm_product_instance',
+                                   product_code=self.product_code,
+                                   instance_id=self.instance_id)
+
+    def main_cli(self):
+        rs = self.main()
+        product_string = '%s\t%s\t' % (self.product_code, self.instance_id)
         if rs and rs[0] is True:
             product_string += 'true'
         else:

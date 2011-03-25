@@ -38,5 +38,5 @@ import euca2ools.commands.euca.checkbucket
 
 if __name__ == '__main__':
     cmd = euca2ools.commands.euca.checkbucket.CheckBucket()
-    cmd.main()
+    cmd.main_cli()
 

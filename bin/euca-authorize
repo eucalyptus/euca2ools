@@ -38,5 +38,5 @@ import euca2ools.commands.euca.authorize
 
 if __name__ == '__main__':
     cmd = euca2ools.commands.euca.authorize.Authorize()
-    cmd.main()
+    cmd.main_cli()
 

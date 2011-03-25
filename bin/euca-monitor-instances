@@ -38,5 +38,5 @@ import euca2ools.commands.euca.monitorinstances
 
 if __name__ == '__main__':
     cmd = euca2ools.commands.euca.monitorinstances.MonitorInstances()
-    cmd.main()
+    cmd.main_cli()
 
