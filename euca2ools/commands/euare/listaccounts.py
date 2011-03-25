@@ -42,14 +42,6 @@ class ListAccounts(AWSQueryRequest):
 
     Name = 'ListAccounts'
     Description = 'List accounts in the system.'
-    Params = [
-        Param(name='NamePattern',
-              short_name='p',
-              long_name='name-pattern',
-              ptype='string',
-              optional=True,
-              doc="""The pattern of account name (only wildcard * and ? are allowed).""")
-        ]
 
     Response = {u'type': u'object', u'name': u'ListAccountsResponse',
                 u'properties': [{
