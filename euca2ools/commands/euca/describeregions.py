@@ -53,7 +53,7 @@ class DescribeRegions(euca2ools.commands.eucacommand.EucaCommand):
     def main(self):
         conn = self.make_connection_cli()
         return self.make_request_cli(conn, 'get_all_regions',
-                                     region_names=self.region)
+                                     region_names=self.region_name)
 
     def main_cli(self):
         regions = self.main()

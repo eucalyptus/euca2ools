@@ -92,8 +92,6 @@ class ModifyImageAttribute(euca2ools.commands.eucacommand.EucaCommand):
             image_attribute = 'productCodes'
         if not image_attribute and self.launchPermission:
             image_attribute = 'launchPermission'
-        adds = self.options.get('add', [])
-        removes = self.options.get('remove', [])
         if self.adds and self.removes:
             msg = 'You cannot add and remove in the same call'
             self.display_error_and_exit(msg)
@@ -101,7 +99,7 @@ class ModifyImageAttribute(euca2ools.commands.eucacommand.EucaCommand):
             operation_type = 'add'
         if self.removes:
             operation_type = 'remove'
-        users = adds + removes
+        users = self.adds + self.removes
         if 'all' in users:
             users.remove('all')
             groups.append('all')
