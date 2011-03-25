@@ -88,10 +88,9 @@ class ModifyImageAttribute(euca2ools.commands.eucacommand.EucaCommand):
         users = []
         groups = []
         image_attribute = None
-        if self.product_code:
+        if self.productCode:
             image_attribute = 'productCodes'
-        launch_permission = self.options.get('launch_permissions', False)
-        if not image_attribute and self.launch_permission:
+        if not image_attribute and self.launchPermission:
             image_attribute = 'launchPermission'
         adds = self.options.get('add', [])
         removes = self.options.get('remove', [])
@@ -114,7 +113,7 @@ class ModifyImageAttribute(euca2ools.commands.eucacommand.EucaCommand):
                                          operation=operation_type,
                                          user_ids=users,
                                          groups=groups,
-                                         product_codes=self.product_code)
+                                         product_codes=self.productCode)
         else:
             msg = 'No attributes were specified'
             self.display_error_and_exit(msg)
