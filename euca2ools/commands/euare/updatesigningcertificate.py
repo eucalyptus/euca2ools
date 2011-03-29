@@ -62,6 +62,7 @@ class UpdateSigningCertificate(AWSQueryRequest):
         short_name='s',
         long_name='status',
         ptype='enum',
+        choices=['Active', 'Inactive'],
         optional=False,
         doc=""" The status you want to assign to the certificate. Active means the certificate can be used for API calls to AWS, while Inactive means the certificate cannot be used. """
             ,

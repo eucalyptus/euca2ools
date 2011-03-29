@@ -50,8 +50,8 @@ class UpdateAccessKey(AWSQueryRequest):
         doc=""" Name of the User whose key you want to update. """,
         ), Param(
         name='AccessKeyId',
-        short_name='a',
-        long_name='access-key-id',
+        short_name='k',
+        long_name='user-key-id',
         ptype='string',
         optional=False,
         doc=""" The Access Key ID of the Secret Access Key you want to update. """
@@ -61,6 +61,7 @@ class UpdateAccessKey(AWSQueryRequest):
         short_name='s',
         long_name='status',
         ptype='enum',
+        choices=['Active', 'Inactive'],
         optional=False,
         doc=""" The status you want to assign to the Secret Access Key. Active means the key can be used for API calls to AWS, while Inactive means the key cannot be used. """
             ,
