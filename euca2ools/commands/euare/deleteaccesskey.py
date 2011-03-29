@@ -50,8 +50,8 @@ class DeleteAccessKey(AWSQueryRequest):
         doc=""" Name of the User whose key you want to delete. """,
         ), Param(
         name='AccessKeyId',
-        short_name='a',
-        long_name='access-key-id',
+        short_name='k',
+        long_name='user-key-id',
         ptype='string',
         optional=False,
         doc=""" The Access Key ID for the Access Key ID and Secret Access Key you want to delete. """
