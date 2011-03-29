@@ -112,6 +112,10 @@ class GetUser(AWSQueryRequest):
                         : u'RequestId'}],
         }]}
 
+    def cli_formatter(self, data):
+        print data.User['Arn']
+        print data.User['UserId']
+
 
 def main(**args):
     req = GetUser(**args)
