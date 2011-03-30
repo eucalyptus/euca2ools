@@ -106,6 +106,9 @@ class CreateAccessKey(AWSQueryRequest):
                          u'name': u'RequestId'}],
         }]}
 
+    def cli_formatter(self, data):
+        print data.AccessKey['AccessKeyId']
+        print data.AccessKey['SecretAccessKey']
 
 def main(**args):
     req = CreateAccessKey(**args)
