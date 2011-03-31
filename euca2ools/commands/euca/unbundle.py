@@ -61,7 +61,7 @@ class Unbundle(euca2ools.commands.eucacommand.EucaCommand):
 
 def main():
     if not self.source_dir:
-        self.source_dir = self.get_file_path(self.manifest_path))
+        self.source_dir = self.get_file_path(self.manifest_path)
     if not self.private_key_path:
         self.private_key_path = self.get_environ('EC2_PRIVATE_KEY')
         if not os.path.isfile(self.private_key_path):

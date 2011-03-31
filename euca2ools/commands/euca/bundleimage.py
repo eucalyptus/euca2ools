@@ -115,7 +115,7 @@ class BundleImage(euca2ools.commands.eucacommand.EucaCommand):
         if self.user is None:
             self.user = self.get_environ('EC2_USER_ID')
         if self.ec2cert_path is None:
-            self.ec2cert_path = self.get_environ('EUCALYPTUS_CERT'))
+            self.ec2cert_path = self.get_environ('EUCALYPTUS_CERT')
         
         bundler = euca2ools.bundler.Bundler(self)
         
@@ -125,7 +125,8 @@ class BundleImage(euca2ools.commands.eucacommand.EucaCommand):
         if not self.prefix:
             self.prefix = self.get_relative_filename(self.image_path)
         try:
-            (tgz_file, sha_tar_digest) = bundler.tarzip_image(self.prefix, self.image_path,
+            (tgz_file, sha_tar_digest) = bundler.tarzip_image(self.prefix,
+                                                              self.image_path,
                                                               self.destination)
         except (NotFoundError, CommandFailed):
             sys.exit(1)
