@@ -59,9 +59,7 @@ Eucalyptus.  These tools are also compatible with Amazon AWS.
 
 
 %build
-pushd %{name}
 %{__python} setup.py build
-popd
 
 %if 0%{?__python_ver:1}
 for file in bin/* `find %{name} -name '*.py'`; do
@@ -72,10 +70,8 @@ done
 
 %install
 rm -rf %{buildroot}
-pushd %{name}
 %{__python} setup.py install --prefix=%{_prefix} --skip-build --root %{buildroot}
 %{__python} setup.py install -O1 --prefix=%{_prefix} --skip-build --root %{buildroot}
-popd
 
 mkdir -p %{buildroot}/%{_bindir}
 mkdir -p %{buildroot}/%{_mandir}/man1
@@ -89,6 +85,7 @@ rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root,-)
+%{_bindir}/euare-*
 %{_bindir}/euca-*
 %{_mandir}/man1/euca*
 %{python_sitelib}/%{name}-*.egg-info
