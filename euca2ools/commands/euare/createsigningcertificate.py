@@ -124,6 +124,8 @@ class CreateSigningCertificate(AWSQueryRequest):
         }]}
 
     def cli_formatter(self, data):
+        print data.Certificate['CertificateId']
+        print data.Certificate['CertificateBody']
         print data.Certificate['PrivateKey']
 
 
