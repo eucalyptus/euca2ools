@@ -44,6 +44,7 @@ class Euare(AWSQueryService):
     Path = '/'
     Port = 443
     Provider = 'aws'
+    EnvURL = 'EUARE_URL'
 
     Regions = [{"endpoint": "iam.amazonaws.com", 
                 "name": "us-east-1", 
