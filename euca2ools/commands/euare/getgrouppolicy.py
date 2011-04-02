@@ -98,6 +98,8 @@ class GetGroupPolicy(AWSQueryRequest):
                         : u'RequestId'}],
         }]}
 
+    def cli_formatter(self, data):
+        print data.PolicyDocument
 
 def main(**args):
     req = GetGroupPolicy(**args)

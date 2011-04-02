@@ -57,11 +57,18 @@ class PutGroupPolicy(AWSQueryRequest):
         doc=""" Name of the policy document. """,
         ), Param(
         name='PolicyDocument',
-        short_name=None,
-        long_name='policy-document',
+        short_name='o',
+        long_name='policy-content',
         ptype='string',
-        optional=False,
-        doc=""" The policy document. """,
+        optional=True,
+        doc=""" The policy document content. """,
+        ), Param(
+        name='PolicyDocument',
+        short_name='f',
+        long_name='policy-document',
+        ptype='file',
+        optional=True,
+        doc=""" The policy document as file. """,
         )]
 
     Response = {u'type': u'object', u'name': u'PutGroupPolicyResponse',
