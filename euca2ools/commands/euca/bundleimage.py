@@ -134,8 +134,8 @@ class BundleImage(euca2ools.commands.eucacommand.EucaCommand):
         (encrypted_file, key, iv, bundled_size) = bundler.encrypt_image(tgz_file)
         os.remove(tgz_file)
         (parts, parts_digest) = bundler.split_image(encrypted_file)
-        if self.block_device_map:
-            self.block_device_map = self.get_block_devs(self.block_device_map)
+        if self.block_device_mapping:
+            self.block_device_mapping = self.get_block_devs(self.block_device_mapping)
         if self.product_codes:
             self.product_codes = self.add_product_codes(self.product_codes)
         bundler.generate_manifest(self.destination, self.prefix,
@@ -145,9 +145,9 @@ class BundleImage(euca2ools.commands.eucacommand.EucaCommand):
                                   self.private_key_path,
                                   self.target_architecture, image_size,
                                   bundled_size, sha_tar_digest,
-                                  user, self.kernel_id, self.ramdisk_id,
-                                  self.block_device_map, self.product_codes)
+                                  self.user, self.kernel_id, self.ramdisk_id,
+                                  self.block_device_mapping, self.product_codes)
         os.remove(encrypted_file)
 
-    def main_cli(self):
-        self.main()
+    main_cli = main
+

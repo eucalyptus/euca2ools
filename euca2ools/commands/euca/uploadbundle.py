@@ -145,26 +145,17 @@ class UploadBundle(euca2ools.commands.eucacommand.EucaCommand):
                     sys.exit()
 
     def main(self):
-        bucket = self.options['bucket']
-        manifest_path = self.options['manifest_path']
-        ec2cert_path = self.options.get('ec2cert_path', None)
-        directory = self.options.get('bundle_path', None)
-        part = self.options.get('part', None)
-        canned_acl = self.options.get('canned_acl', 'aws-exec-read')
-        skipmanifest = self.options.get('skipmanifest', False)
-        debug = False
-        
         bucket_instance = self.ensure_bucket(self.bucket, self.canned_acl)
         parts = self.get_parts(self.manifest_path)
         manifest_directory, manifest_file = os.path.split(self.manifest_path)
         if not self.directory:
             self.directory = manifest_directory
-        if not self.skipmanifest and not part:
+        if not self.skip_manifest and not self.part:
             self.upload_manifest(bucket_instance, self.manifest_path,
                                  self.canned_acl)
-        self.upload_parts(bucket_instance, self.directory,
+        self.upload_parts(bucket_instance, self.destinati
                           parts, self.part, self.canned_acl)
-        print 'Uploaded image as %s/%s' % (bucket,
+        print 'Uploaded image as %s/%s' % (self.bucket,
                 self.get_relative_filename(self.manifest_path))
 
     def main_cli(self):

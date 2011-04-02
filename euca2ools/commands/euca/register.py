@@ -72,33 +72,23 @@ class Register(euca2ools.commands.eucacommand.EucaCommand):
                   doc='path to the uploaded image (bucket/manifest).')]
                
     def main(self):
-        image_location = self.arguments['image_location']
-        block_device_map = self.options.get('block_device_mapping', [])
-        description = self.options.get('description', None)
-        image_name = self.options.get('name', None)
-        architecture = self.options.get('architecture', 'i386')
-        kernel = self.options.get('kernel', None)
-        ramdisk = self.options.get('ramdisk', None)
-        root_device_name = self.options.get('root_device_name', None)
-        snapshot = self.options.get('snapshot', None)
-
         if self.snapshot:
             if not self.root_device_name:
                 self.root_device_name = '/dev/sda1'
-            self.block_device_map.append('%s=%s' % (self.root_device_name,
+            self.block_device_mapping.append('%s=%s' % (self.root_device_name,
                                                     self.snapshot))
-        if self.block_device_map:
-            self.block_device_map = self.parse_block_device_args(self.block_device_map)
+        if self.block_device_mapping:
+            self.block_device_mapping = self.parse_block_device_args(self.block_device_mapping)
         conn = self.make_connection_cli()
         return self.make_request_cli(conn, 'register_image',
-                                     name=self.image_name,
+                                     name=self.name,
                                      description=self.description,
                                      image_location=self.image_location,
                                      architecture=self.architecture,
                                      kernel_id=self.kernel,
                                      ramdisk_id=self.ramdisk,
                                      root_device_name=self.root_device_name,
-                                     block_device_map=self.block_device_map)
+                                     block_device_map=self.block_device_mapping)
 
     def main_cli(self):
         image_id = self.main()

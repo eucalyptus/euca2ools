@@ -132,12 +132,9 @@ class BundleVol(euca2ools.commands.eucacommand.EucaCommand):
             excludes = excludes_string.split(',')
         return excludes
 
-    def get_instance_metadata(self, ramdisk, kernel, mapping):
+    def get_instance_metadata(self, ramdisk_id, kernel_id, block_dev_mapping):
         md = euca2ools.metadata.MetaData()
         product_codes = None
-        ramdisk_id = ramdisk
-        kernel_id = kernel
-        block_dev_mapping = mapping
         ancestor_ami_ids = None
         try:
             if not ramdisk_id:
@@ -305,9 +302,9 @@ class BundleVol(euca2ools.commands.eucacommand.EucaCommand):
                                   key, iv, self.cert_path, self.ec2cert_path,
                                   self.private_key_path, self.target_architecture,
                                   image_size, bundled_size,
-                                  sha_tar_digest, self.user, kernel,
-                                  ramdisk, self.block_device_mapping, self.product_codes,
-                                  ancestor_ami_ids)
+                                  sha_tar_digest, self.user, self.kernel_id,
+                                  self.ramdisk_id, self.block_device_mapping,
+                                  self.product_codes, ancestor_ami_ids)
         os.remove(encrypted_file)
 
     def main_cli(self):
