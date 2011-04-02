@@ -149,10 +149,5 @@ class BundleImage(euca2ools.commands.eucacommand.EucaCommand):
                                   self.block_device_map, self.product_codes)
         os.remove(encrypted_file)
 
-    def main(self):
-        conn = self.make_connection_cli()
-        return self.make_request_cli(conn, 'get_all_security_groups',
-                                     groupnames=self.group_name)
-
     def main_cli(self):
         self.main()
