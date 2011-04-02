@@ -99,6 +99,8 @@ class GetUserPolicy(AWSQueryRequest):
                         : u'RequestId'}],
         }]}
 
+    def cli_formatter(self, data):
+        print data.PolicyDocument
 
 def main(**args):
     req = GetUserPolicy(**args)
