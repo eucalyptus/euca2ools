@@ -310,5 +310,5 @@ class BundleVol(euca2ools.commands.eucacommand.EucaCommand):
                                   ancestor_ami_ids)
         os.remove(encrypted_file)
 
-def main_cli(self):
-    self.main()
+    def main_cli(self):
+        self.main()
