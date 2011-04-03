@@ -46,6 +46,10 @@ from boto.roboto.param import Param
 
 SYSTEM_EUCARC_PATH = os.path.join('/etc', 'euca2ools', 'eucarc')
 
+# This allows us to freeze the API version we use when talking
+# to EC2 regardless of the version used by default in boto
+EC2_API_VERSION = '2009-11-30'
+
 EC2RegionData = {
     'us-east-1' : 'ec2.us-east-1.amazonaws.com',
     'us-west-1' : 'ec2.us-west-1.amazonaws.com',
@@ -466,8 +470,9 @@ class EucaCommand(object):
                                 debug=self.debug,
                                 region=self.region,
                                 port=self.port,
-                                path=self.service_path)
-
+                                path=self.service_path,
+                                api_version=EC2_API_VERSION)
+    
     def make_nc_connection(self):
         self.port = None
         self.service_path = '/'
