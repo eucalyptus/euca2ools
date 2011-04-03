@@ -153,7 +153,7 @@ class UploadBundle(euca2ools.commands.eucacommand.EucaCommand):
         if not self.skip_manifest and not self.part:
             self.upload_manifest(bucket_instance, self.manifest_path,
                                  self.canned_acl)
-        self.upload_parts(bucket_instance, self.destinati
+        self.upload_parts(bucket_instance, self.bundle_path,
                           parts, self.part, self.canned_acl)
         print 'Uploaded image as %s/%s' % (self.bucket,
                 self.get_relative_filename(self.manifest_path))
