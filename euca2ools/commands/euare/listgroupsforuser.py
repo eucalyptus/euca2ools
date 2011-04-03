@@ -156,13 +156,8 @@ class ListGroupsForUser(AWSQueryRequest):
         for group in data.Groups:
             print group['Arn']
 
-def main(**args):
-    req = ListGroupsForUser(**args)
-    return req.send()
+    def main(self, **args):
+        return self.send()
 
-
-def main_cli():
-    req = ListGroupsForUser()
-    req.do_cli()
-
-
+    def main_cli(self):
+        self.do_cli()

@@ -3,4 +3,5 @@
 import euca2ools.commands.euare.updateuserinfo
 
 if __name__ == '__main__':
-    euca2ools.commands.euare.updateuserinfo.main_cli()
+    r = euca2ools.commands.euare.updateuserinfo.UpdateUserInfo()
+    r.main_cli()

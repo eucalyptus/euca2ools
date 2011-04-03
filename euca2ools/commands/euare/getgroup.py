@@ -203,13 +203,8 @@ class GetGroup(AWSQueryRequest):
         for user in data.Users:
             print '\t%s' % user['Arn']
             
-def main(**args):
-    req = GetGroup(**args)
-    return req.send()
+    def main(self, **args):
+        return self.send()
 
-
-def main_cli():
-    req = GetGroup()
-    req.do_cli()
-
-
+    def main_cli(self):
+        self.do_cli()

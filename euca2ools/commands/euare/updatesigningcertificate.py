@@ -78,14 +78,8 @@ class UpdateSigningCertificate(AWSQueryRequest):
                         : u'RequestId'}],
         }]}
 
+    def main(self, **args):
+        return self.send()
 
-def main(**args):
-    req = UpdateSigningCertificate(**args)
-    return req.send()
-
-
-def main_cli():
-    req = UpdateSigningCertificate()
-    req.do_cli()
-
-
+    def main_cli(self):
+        self.do_cli()

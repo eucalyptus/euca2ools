@@ -80,14 +80,8 @@ class PutUserPolicy(AWSQueryRequest):
                         : u'RequestId'}],
         }]}
 
+    def main(self, **args):
+        return self.send()
 
-def main(**args):
-    req = PutUserPolicy(**args)
-    return req.send()
-
-
-def main_cli():
-    req = PutUserPolicy()
-    req.do_cli()
-
-
+    def main_cli(self):
+        self.do_cli()

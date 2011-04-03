@@ -72,13 +72,8 @@ class UpdateUserInfo(AWSQueryRequest):
         u'properties': [{u'type': u'string', u'optional': False, u'name': u'RequestId'}],
         }]}
 
-def main(**args):
-    req = UpdateUserInfo(**args)
-    return req.send()
+    def main(self, **args):
+        return self.send()
 
-
-def main_cli():
-    req = UpdateUserInfo()
-    req.do_cli()
-
-
+    def main_cli(self):
+        self.do_cli()

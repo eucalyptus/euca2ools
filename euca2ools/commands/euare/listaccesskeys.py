@@ -151,14 +151,8 @@ class ListAccessKeys(AWSQueryRequest):
             print key['AccessKeyId']
             print key['Status']
 
+    def main(self, **args):
+        return self.send()
 
-def main(**args):
-    req = ListAccessKeys(**args)
-    return req.send()
-
-
-def main_cli():
-    req = ListAccessKeys()
-    req.do_cli()
-
-
+    def main_cli(self):
+        self.do_cli()

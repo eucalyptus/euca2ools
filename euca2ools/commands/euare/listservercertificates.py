@@ -163,14 +163,8 @@ class ListServerCertificates(AWSQueryRequest):
                         : u'RequestId'}],
         }]}
 
+    def main(self, **args):
+        return self.send()
 
-def main(**args):
-    req = ListServerCertificates(**args)
-    return req.send()
-
-
-def main_cli():
-    req = ListServerCertificates()
-    req.do_cli()
-
-
+    def main_cli(self):
+        self.do_cli()

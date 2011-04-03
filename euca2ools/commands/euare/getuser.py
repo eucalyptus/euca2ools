@@ -117,13 +117,8 @@ class GetUser(AWSQueryRequest):
         print data.User['UserId']
 
 
-def main(**args):
-    req = GetUser(**args)
-    return req.send()
+    def main(self, **args):
+        return self.send()
 
-
-def main_cli():
-    req = GetUser()
-    req.do_cli()
-
-
+    def main_cli(self):
+        self.do_cli()

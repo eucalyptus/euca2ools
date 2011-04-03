@@ -3,4 +3,5 @@
 import euca2ools.commands.euare.getuserinfo
 
 if __name__ == '__main__':
-    euca2ools.commands.euare.getuserinfo.main_cli()
+    r = euca2ools.commands.euare.getuserinfo.GetUserInfo()
+    r.main_cli()

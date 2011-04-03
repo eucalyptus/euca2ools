@@ -3,4 +3,5 @@
 import euca2ools.commands.euare.deactivatemfadevice
 
 if __name__ == '__main__':
-    euca2ools.commands.euare.deactivatemfadevice.main_cli()
+    r = euca2ools.commands.euare.deactivatemfadevice.DeactivateMFADevice()
+    r.main_cli()

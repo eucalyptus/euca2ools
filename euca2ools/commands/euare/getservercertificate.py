@@ -151,13 +151,8 @@ class GetServerCertificate(AWSQueryRequest):
         }]}
 
 
-def main(**args):
-    req = GetServerCertificate(**args)
-    return req.send()
+    def main(self, **args):
+        return self.send()
 
-
-def main_cli():
-    req = GetServerCertificate()
-    req.do_cli()
-
-
+    def main_cli(self):
+        self.do_cli()

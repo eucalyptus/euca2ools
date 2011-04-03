@@ -149,28 +149,8 @@ class MyRequest(AWSQueryRequest):
         print 'Output from MyRequest:'
         print data
 
+    def main(self, **args):
+        return self.send()
 
-def main(**args):
-    """
-    This is not currently used by the CLI interface but it's handy
-    to use at the interactive prompt.  You can simply do an:
-    
-        from myrequest import main
-
-    and then call main() at the prompt (or include keyword arguments)
-    and it will create an instance of your request class, invoke it
-    and return the response data.
-    """
-    req = MyRequest(**args)
-    return req.send()
-
-
-def main_cli():
-    """
-    This is the function called by the wrapper script when actually
-    running the CLI command.
-    """
-    req = MyRequest()
-    req.do_cli()
-
-
+    def main_cli(self):
+        self.do_cli()

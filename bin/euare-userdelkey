@@ -3,4 +3,5 @@
 import euca2ools.commands.euare.deleteaccesskey
 
 if __name__ == '__main__':
-    euca2ools.commands.euare.deleteaccesskey.main_cli()
+    r = euca2ools.commands.euare.deleteaccesskey.DeleteAccessKey()
+    r.main_cli()

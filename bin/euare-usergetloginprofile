@@ -3,4 +3,5 @@
 import euca2ools.commands.euare.getloginprofile
 
 if __name__ == '__main__':
-    euca2ools.commands.euare.getloginprofile.main_cli()
+    r = euca2ools.commands.euare.getloginprofile.GetLoginProfile()
+    r.main_cli()

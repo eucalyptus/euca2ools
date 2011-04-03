@@ -59,14 +59,8 @@ class DeleteAccount(AWSQueryRequest):
         u'properties': [{u'type': u'string', u'optional': False, u'name': u'RequestId'}],
         }]}
 
+    def main(self, **args):
+        return self.send()
 
-def main(**args):
-    req = DeleteAccount(**args)
-    return req.send()
-
-
-def main_cli():
-    req = DeleteAccount()
-    req.do_cli()
-
-
+    def main_cli(self):
+        self.do_cli()

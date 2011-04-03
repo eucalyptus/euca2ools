@@ -61,14 +61,8 @@ class DeleteLoginProfile(AWSQueryRequest):
                         : u'RequestId'}],
         }]}
 
+    def main(self, **args):
+        return self.send()
 
-def main(**args):
-    req = DeleteLoginProfile(**args)
-    return req.send()
-
-
-def main_cli():
-    req = DeleteLoginProfile()
-    req.do_cli()
-
-
+    def main_cli(self):
+        self.do_cli()

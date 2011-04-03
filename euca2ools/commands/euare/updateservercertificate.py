@@ -77,14 +77,8 @@ class UpdateServerCertificate(AWSQueryRequest):
                         : u'RequestId'}],
         }]}
 
+    def main(self, **args):
+        return self.send()
 
-def main(**args):
-    req = UpdateServerCertificate(**args)
-    return req.send()
-
-
-def main_cli():
-    req = UpdateServerCertificate()
-    req.do_cli()
-
-
+    def main_cli(self):
+        self.do_cli()

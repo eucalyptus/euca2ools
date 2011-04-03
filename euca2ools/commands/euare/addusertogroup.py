@@ -67,11 +67,8 @@ class AddUserToGroup(AWSQueryRequest):
         }]}
 
 
-def main(**args):
-    req = AddUserToGroup(**args)
-    return req.send()
+    def main(self, **args):
+       return self.send()
 
-
-def main_cli():
-    req = AddUserToGroup()
-    req.do_cli()
+    def main_cli(self):
+        self.do_cli()

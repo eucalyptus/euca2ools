@@ -175,13 +175,8 @@ class ListSigningCertificates(AWSQueryRequest):
                 print cert['CertificateBody']
             print cert['Status']
             
-def main(**args):
-    req = ListSigningCertificates(**args)
-    return req.send()
+    def main(self, **args):
+        return self.send()
 
-
-def main_cli():
-    req = ListSigningCertificates()
-    req.do_cli()
-
-
+    def main_cli(self):
+        self.do_cli()

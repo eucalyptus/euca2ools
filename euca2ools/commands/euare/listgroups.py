@@ -158,14 +158,8 @@ class ListGroups(AWSQueryRequest):
         for group in data.Groups:
             print '\t%s' % group['Arn']
 
+    def main(self, **args):
+        return self.send()
 
-def main(**args):
-    req = ListGroups(**args)
-    return req.send()
-
-
-def main_cli():
-    req = ListGroups()
-    req.do_cli()
-
-
+    def main_cli(self):
+        self.do_cli()

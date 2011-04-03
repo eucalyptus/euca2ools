@@ -3,4 +3,5 @@
 import euca2ools.commands.euare.listusers
 
 if __name__ == '__main__':
-    euca2ools.commands.euare.listusers.main_cli()
+    r = euca2ools.commands.euare.listusers.ListUsers()
+    r.main_cli()

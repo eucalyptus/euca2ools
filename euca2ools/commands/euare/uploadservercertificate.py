@@ -156,14 +156,8 @@ class UploadServerCertificate(AWSQueryRequest):
                         : u'RequestId'}],
         }]}
 
+    def main(self, **args):
+        return self.send()
 
-def main(**args):
-    req = UploadServerCertificate(**args)
-    return req.send()
-
-
-def main_cli():
-    req = UploadServerCertificate()
-    req.do_cli()
-
-
+    def main_cli(self):
+        self.do_cli()

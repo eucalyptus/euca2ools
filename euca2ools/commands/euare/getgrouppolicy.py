@@ -101,13 +101,8 @@ class GetGroupPolicy(AWSQueryRequest):
     def cli_formatter(self, data):
         print data.PolicyDocument
 
-def main(**args):
-    req = GetGroupPolicy(**args)
-    return req.send()
+    def main(self, **args):
+        return self.send()
 
-
-def main_cli():
-    req = GetGroupPolicy()
-    req.do_cli()
-
-
+    def main_cli(self):
+        self.do_cli()

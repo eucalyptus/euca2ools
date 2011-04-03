@@ -59,14 +59,8 @@ class DeleteGroup(AWSQueryRequest):
                         : u'RequestId'}],
         }]}
 
+    def main(self, **args):
+        return self.send()
 
-def main(**args):
-    req = DeleteGroup(**args)
-    return req.send()
-
-
-def main_cli():
-    req = DeleteGroup()
-    req.do_cli()
-
-
+    def main_cli(self):
+        self.do_cli()

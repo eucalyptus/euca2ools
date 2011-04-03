@@ -3,4 +3,5 @@
 import euca2ools.commands.euare.updateservercertificate
 
 if __name__ == '__main__':
-    euca2ools.commands.euare.updateservercertificate.main_cli()
+    r = euca2ools.commands.euare.updateservercertificate.UpdateServerCertificate()
+    r.main_cli()

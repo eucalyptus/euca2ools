@@ -3,4 +3,5 @@
 import euca2ools.commands.euare.putgrouppolicy
 
 if __name__ == '__main__':
-    euca2ools.commands.euare.putgrouppolicy.main_cli()
+    r = euca2ools.commands.euare.putgrouppolicy.PutGroupPolicy()
+    r.main_cli()

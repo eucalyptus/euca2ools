@@ -3,4 +3,5 @@
 import euca2ools.commands.euare.updateaccesskey
 
 if __name__ == '__main__':
-    euca2ools.commands.euare.updateaccesskey.main_cli()
+    r = euca2ools.commands.euare.updateaccesskey.UpdateAccessKey()
+    r.main_cli()

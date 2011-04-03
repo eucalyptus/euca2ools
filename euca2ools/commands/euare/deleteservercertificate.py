@@ -61,14 +61,8 @@ class DeleteServerCertificate(AWSQueryRequest):
                         : u'RequestId'}],
         }]}
 
+    def main(self, **args):
+        return self.send()
 
-def main(**args):
-    req = DeleteServerCertificate(**args)
-    return req.send()
-
-
-def main_cli():
-    req = DeleteServerCertificate()
-    req.do_cli()
-
-
+    def main_cli(self):
+        self.do_cli()

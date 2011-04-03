@@ -69,13 +69,8 @@ class DeleteSigningCertificate(AWSQueryRequest):
         }]}
 
 
-def main(**args):
-    req = DeleteSigningCertificate(**args)
-    return req.send()
+    def main(self, **args):
+        return self.send()
 
-
-def main_cli():
-    req = DeleteSigningCertificate()
-    req.do_cli()
-
-
+    def main_cli(self):
+        self.do_cli()

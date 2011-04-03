@@ -102,13 +102,8 @@ class GetUserPolicy(AWSQueryRequest):
     def cli_formatter(self, data):
         print data.PolicyDocument
 
-def main(**args):
-    req = GetUserPolicy(**args)
-    return req.send()
+    def main(self, **args):
+        return self.send()
 
-
-def main_cli():
-    req = GetUserPolicy()
-    req.do_cli()
-
-
+    def main_cli(self):
+        self.do_cli()

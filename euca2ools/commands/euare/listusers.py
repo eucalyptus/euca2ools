@@ -138,11 +138,8 @@ class ListUsers(AWSQueryRequest):
         for user in data.Users:
             print user['Arn']
             
-def main(**args):
-    req = ListUsers(**args)
-    return req.send()
+    def main(self, **args):
+        return self.send()
 
-
-def main_cli():
-    req = ListUsers()
-    req.do_cli()
+    def main_cli(self):
+        self.do_cli()

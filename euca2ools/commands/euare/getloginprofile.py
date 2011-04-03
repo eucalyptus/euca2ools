@@ -85,13 +85,8 @@ class GetLoginProfile(AWSQueryRequest):
         }]}
 
 
-def main(**args):
-    req = GetLoginProfile(**args)
-    return req.send()
+    def main(self, **args):
+        return self.send()
 
-
-def main_cli():
-    req = GetLoginProfile()
-    req.do_cli()
-
-
+    def main_cli(self):
+        self.do_cli()

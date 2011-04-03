@@ -3,4 +3,5 @@
 import euca2ools.commands.euare.listgroupsforuser
 
 if __name__ == '__main__':
-    euca2ools.commands.euare.listgroupsforuser.main_cli()
+    r = euca2ools.commands.euare.listgroupsforuser.ListGroupsForUser()
+    r.main_cli()

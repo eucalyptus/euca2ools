@@ -3,4 +3,5 @@
 import euca2ools.commands.euare.deleteuserpolicy
 
 if __name__ == '__main__':
-    euca2ools.commands.euare.deleteuserpolicy.main_cli()
+    r = euca2ools.commands.euare.deleteuserpolicy.DeleteUserPolicy()
+    r.main_cli()

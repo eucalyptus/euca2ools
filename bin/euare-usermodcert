@@ -3,4 +3,5 @@
 import euca2ools.commands.euare.updatesigningcertificate
 
 if __name__ == '__main__':
-    euca2ools.commands.euare.updatesigningcertificate.main_cli()
+    r = euca2ools.commands.euare.updatesigningcertificate.UpdateSigningCertificate()
+    r.main_cli()

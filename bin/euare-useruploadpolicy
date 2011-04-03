@@ -3,4 +3,5 @@
 import euca2ools.commands.euare.putuserpolicy
 
 if __name__ == '__main__':
-    euca2ools.commands.euare.putuserpolicy.main_cli()
+    r = euca2ools.commands.euare.putuserpolicy.PutUserPolicy()
+    r.main_cli()

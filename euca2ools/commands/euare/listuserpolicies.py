@@ -123,14 +123,8 @@ class ListUserPolicies(AWSQueryRequest):
         for policy in data.PolicyNames:
             print policy
 
+    def main(self, **args):
+        return self.send()
 
-def main(**args):
-    req = ListUserPolicies(**args)
-    return req.send()
-
-
-def main_cli():
-    req = ListUserPolicies()
-    req.do_cli()
-
-
+    def main_cli(self):
+        self.do_cli()

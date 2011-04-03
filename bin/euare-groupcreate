@@ -3,4 +3,5 @@
 import euca2ools.commands.euare.creategroup
 
 if __name__ == '__main__':
-    euca2ools.commands.euare.creategroup.main_cli()
+    r = euca2ools.commands.euare.creategroup.CreateGroup()
+    r.main_cli()

@@ -3,4 +3,5 @@
 import euca2ools.commands.euare.resyncmfadevice
 
 if __name__ == '__main__':
-    euca2ools.commands.euare.resyncmfadevice.main_cli()
+    r = euca2ools.commands.euare.resyncmfadevice.ResyncMFADevice()
+    r.main_cli()

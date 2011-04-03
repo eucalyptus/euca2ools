@@ -110,11 +110,8 @@ class CreateAccessKey(AWSQueryRequest):
         print data.AccessKey['AccessKeyId']
         print data.AccessKey['SecretAccessKey']
 
-def main(**args):
-    req = CreateAccessKey(**args)
-    return req.send()
+    def main(self, **args):
+       return self.send()
 
-
-def main_cli():
-    req = CreateAccessKey()
-    req.do_cli()
+    def main_cli(self):
+        self.do_cli()

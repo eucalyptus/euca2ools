@@ -89,14 +89,8 @@ class ListAccounts(AWSQueryRequest):
         for account in data.Accounts:
             print account['AccountName'], '\t', account['AccountId']
 
+    def main(self, **args):
+        return self.send()
 
-def main(**args):
-    req = ListAccounts(**args)
-    return req.send()
-
-
-def main_cli():
-    req = ListAccounts()
-    req.do_cli()
-
-
+    def main_cli(self):
+        self.do_cli()

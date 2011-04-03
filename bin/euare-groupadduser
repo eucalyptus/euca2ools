@@ -3,4 +3,5 @@
 import euca2ools.commands.euare.addusertogroup
 
 if __name__ == '__main__':
-    euca2ools.commands.euare.addusertogroup.main_cli()
+    r = euca2ools.commands.euare.addusertogroup.AddUserToGroup()
+    r.main_cli()

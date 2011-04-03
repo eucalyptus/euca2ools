@@ -102,13 +102,8 @@ class GetUserInfo(AWSQueryRequest):
             print info['Key'], "\t", info['Value']
 
 
-def main(**args):
-    req = GetUserInfo(**args)
-    return req.send()
+    def main(self, **args):
+        return self.send()
 
-
-def main_cli():
-    req = GetUserInfo()
-    req.do_cli()
-
-
+    def main_cli(self):
+        self.do_cli()

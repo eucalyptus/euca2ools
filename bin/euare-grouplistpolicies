@@ -3,4 +3,5 @@
 import euca2ools.commands.euare.listgrouppolicies
 
 if __name__ == '__main__':
-    euca2ools.commands.euare.listgrouppolicies.main_cli()
+    r = euca2ools.commands.euare.listgrouppolicies.ListGroupPolicies()
+    r.main_cli()

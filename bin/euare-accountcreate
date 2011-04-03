@@ -3,4 +3,5 @@
 import euca2ools.commands.euare.createaccount
 
 if __name__ == '__main__':
-    euca2ools.commands.euare.createaccount.main_cli()
+    r = euca2ools.commands.euare.createaccount.CreateAccount()
+    r.main_cli()

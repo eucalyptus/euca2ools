@@ -94,14 +94,9 @@ class CreateAccount(AWSQueryRequest):
     def cli_formatter(self, data):
         print data.Account['AccountName'], '\t', data.Account['AccountId']
 
+    def main(self, **args):
+        return self.send()
 
-def main(**args):
-    req = CreateAccount(**args)
-    return req.send()
-
-
-def main_cli():
-    req = CreateAccount()
-    req.do_cli()
-
+    def main_cli(self):
+        self.do_cli()
 

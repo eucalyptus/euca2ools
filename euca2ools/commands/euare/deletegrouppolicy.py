@@ -66,14 +66,8 @@ class DeleteGroupPolicy(AWSQueryRequest):
                         : u'RequestId'}],
         }]}
 
+    def main(self, **args):
+        return self.send()
 
-def main(**args):
-    req = DeleteGroupPolicy(**args)
-    return req.send()
-
-
-def main_cli():
-    req = DeleteGroupPolicy()
-    req.do_cli()
-
-
+    def main_cli(self):
+        self.do_cli()

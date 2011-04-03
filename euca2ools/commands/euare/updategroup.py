@@ -76,14 +76,8 @@ class UpdateGroup(AWSQueryRequest):
                         : u'RequestId'}],
         }]}
 
+    def main(self, **args):
+        return self.send()
 
-def main(**args):
-    req = UpdateGroup(**args)
-    return req.send()
-
-
-def main_cli():
-    req = UpdateGroup()
-    req.do_cli()
-
-
+    def main_cli(self):
+        self.do_cli()
