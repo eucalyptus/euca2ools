@@ -56,11 +56,11 @@ class EucaCommand(object):
 
     Description = 'Base class'
     StandardOptions = [Param(name='access_key',
-                             short_name='A', long_name='access-key',
+                             short_name='a', long_name='access-key',
                              doc="User's Access Key ID.",
                              optional=True),
                        Param(name='secret_key',
-                             short_name='S', long_name='secret-key',
+                             short_name='s', long_name='secret-key',
                              doc="User's Secret Key.",
                              optional=True),
                        Param(name='config_path',

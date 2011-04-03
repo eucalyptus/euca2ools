@@ -200,6 +200,7 @@ class BundleVol(euca2ools.commands.eucacommand.EucaCommand):
         return mapping
 
     def main(self):
+        ancestor_ami_ids = None
         if self.cert_path is None:
             self.cert_path = self.get_environ('EC2_CERT')
         if self.private_key_path is None:
@@ -209,7 +210,7 @@ class BundleVol(euca2ools.commands.eucacommand.EucaCommand):
         if self.ec2cert_path is None:
             self.ec2cert_path = self.get_environ('EUCALYPTUS_CERT')
         self.inherit = not self.no_inherit
-        excludes_string = self.excludes
+        excludes_string = self.exclude
         
         bundler = euca2ools.bundler.Bundler(self)
         
@@ -239,7 +240,7 @@ class BundleVol(euca2ools.commands.eucacommand.EucaCommand):
         if not self.all:
             excludes.extend(self.parse_excludes(excludes_string))
             bundler.add_excludes(self.volume_path, excludes)
-        if inherit:
+        if self.inherit:
             (self.ramdisk_id, self.kernel_id, self.block_device_mapping, self.product_codes,
              ancestor_ami_ids) = self.get_instance_metadata(self.ramdisk_id,
                                                             self.kernel_id,
@@ -263,9 +264,9 @@ class BundleVol(euca2ools.commands.eucacommand.EucaCommand):
             sys.exit(1)
         except UnsupportedException:
             sys.exit(1)
-        self.image_path = os.path.normpath(self.image_path)
-        if self.image_path.find(self.volume_path) == 0:
-            exclude_image = self.image_path.replace(self.volume_path, '', 1)
+        image_path = os.path.normpath(image_path)
+        if image_path.find(self.volume_path) == 0:
+            exclude_image = image_path.replace(self.volume_path, '', 1)
             image_path_parts = exclude_image.split('/')
             if len(image_path_parts) > 1:
                 exclude_image = \
@@ -273,7 +274,7 @@ class BundleVol(euca2ools.commands.eucacommand.EucaCommand):
                         , 1)
             excludes.append(exclude_image)
         try:
-            bundler.copy_volume(self.image_path, self.volume_path, excludes,
+            bundler.copy_volume(image_path, self.volume_path, excludes,
                                 self.generate_fstab, self.fstab_path)
         except CopyError:
             print 'Unable to copy files'
@@ -283,12 +284,12 @@ class BundleVol(euca2ools.commands.eucacommand.EucaCommand):
             self.cleanup(image_path)
             sys.exit(1)
 
-        image_size = bundler.check_image(self.image_path, self.destination_path)
+        image_size = bundler.check_image(image_path, self.destination_path)
         if not self.prefix:
-            self.prefix = self.get_relative_filename(self.image_path)
+            self.prefix = self.get_relative_filename(image_path)
         try:
             (tgz_file, sha_tar_digest) = bundler.tarzip_image(self.prefix,
-                                                              self.image_path,
+                                                              image_path,
                                                               self.destination_path)
         except (NotFoundError, CommandFailed):
             sys.exit(1)
@@ -298,7 +299,7 @@ class BundleVol(euca2ools.commands.eucacommand.EucaCommand):
         os.remove(tgz_file)
         (parts, parts_digest) = bundler.split_image(encrypted_file)
         bundler.generate_manifest(self.destination_path, self.prefix,
-                                  parts, parts_digest, self.image_path,
+                                  parts, parts_digest, image_path,
                                   key, iv, self.cert_path, self.ec2cert_path,
                                   self.private_key_path, self.target_architecture,
                                   image_size, bundled_size,
