@@ -1,0 +1,7 @@
+#!/usr/bin/env python
+
+import euca2ools.commands.euare.getaccountpolicy
+
+if __name__ == '__main__':
+    r = euca2ools.commands.euare.getaccountpolicy.GetAccountPolicy()
+    r.main_cli()
