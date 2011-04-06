@@ -40,9 +40,9 @@ PREFIX			=	/usr/local
 BASH_COMPLETION		=	/etc/bash_completion.d
 UTILDIR			=	util
  
-.PHONY: man all build install clean distclean
+.PHONY: man all install clean distclean
 
-all: man install
+all: install
 
 man: $(BINLIST)
 	@echo "Re-generating manpages..."
@@ -55,7 +55,7 @@ man: $(BINLIST)
 	        help2man $$x -N -o "$(MANDIR)/$${x##*/}.1" -n "Eucalyptus tool: $${DESCR}  " || exit; \
 	    done
 
-install: build
+install:
 	python setup.py install --prefix $(PREFIX)
 	@install -o root -m 755 -d $(PREFIX)/man/man1
 	@if [ -d $(MANDIR) ]; then install -o root -m 644  $(MANDIR)/* $(PREFIX)/man/man1; fi
