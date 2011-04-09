@@ -544,7 +544,7 @@ class EucaCommand(object):
             sys.exit(1)
         try:
             return method(**params)
-        except Exception as ex:
+        except Exception, ex:
             self.display_error_and_exit(ex)
 
     def get_relative_filename(self, filename):
