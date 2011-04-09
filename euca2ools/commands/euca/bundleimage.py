@@ -53,7 +53,7 @@ class BundleImage(euca2ools.commands.eucacommand.EucaCommand):
                      optional=True, ptype='string',
                      doc='Path to users PEM-encoded private key.'),
                Param(name='prefix', short_name='p', long_name='prefix',
-                     optional=True, ptype='string', default='image',
+                     optional=True, ptype='string',
                      doc="""The prefix for the bundle image files.
                      (default: image name)."""),
                Param(name='kernel_id', long_name='kernel',
