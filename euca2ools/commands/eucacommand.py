@@ -524,7 +524,7 @@ class EucaCommand(object):
                 msg = 'Unknown connection type: %s' % conn_type
                 self.display_error_and_exit(msg)
             return conn
-        except euca2ools.exceptions.EucaError as ex:
+        except euca2ools.exceptions.EucaError, ex:
             self.display_error_and_exit(ex)
 
     def make_request_cli(self, connection, request_name, **params):
