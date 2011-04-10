@@ -148,8 +148,8 @@ class UploadBundle(euca2ools.commands.eucacommand.EucaCommand):
         bucket_instance = self.ensure_bucket(self.bucket, self.canned_acl)
         parts = self.get_parts(self.manifest_path)
         manifest_directory, manifest_file = os.path.split(self.manifest_path)
-        if not self.directory:
-            self.directory = manifest_directory
+        if not self.bundle_path:
+            self.bundle_path = manifest_directory
         if not self.skip_manifest and not self.part:
             self.upload_manifest(bucket_instance, self.manifest_path,
                                  self.canned_acl)
