@@ -56,7 +56,7 @@ man: $(BINLIST)
 	    done
 
 install:
-	python setup.py install --prefix $(PREFIX)
+	python setup.py install
 	@install -o root -m 755 -d $(PREFIX)/man/man1
 	@if [ -d $(MANDIR) ]; then install -o root -m 644  $(MANDIR)/* $(PREFIX)/man/man1; fi
 	@if [ -d $(BASH_COMPLETION) ]; then install -o root -m 644  $(UTILDIR)/* $(BASH_COMPLETION); fi
