@@ -96,6 +96,8 @@ class EucaCommand(object):
     def __init__(self, compat=False, is_s3=False, is_euca=False):
         # TODO: handle compat mode
         # TODO: validations?
+        self.access_key_short_name = '-a'
+        self.secret_key_short_name = '-s'
         self.ec2_user_access_key = None
         self.ec2_user_secret_key = None
         self.url = None
@@ -113,6 +115,7 @@ class EucaCommand(object):
         self.debug = False
         self.cmd_name = os.path.basename(sys.argv[0])
         self.setup_environ()
+        self.check_for_conflict()
         self.process_cli_args()
         # h = NullHandler()
         # logging.getLogger('boto').addHandler(h)
@@ -131,9 +134,9 @@ class EucaCommand(object):
                 boto.set_stream_logger('euca2ools')
                 self.debug = 2
             # TODO: that rascally compat mode
-            elif name in ('-A', '--access-key'):
+            elif name in (self.access_key_short_name, '--access-key'):
                 self.ec2_user_access_key = value
-            elif name in ('-S', '--secret-key'):
+            elif name in (self.secret_key_short_name, '--secret-key'):
                 self.ec2_user_secret_key = value
             elif name in ('-U', '--url'):
                 self.url = value
@@ -186,6 +189,16 @@ class EucaCommand(object):
                 if len(args) > 1:
                     msg = 'Only 1 argument (%s) permitted' % arg.name
                     self.display_error_and_exit(msg)
+
+    def check_for_conflict(self):
+        for option in self.Options:
+            if option.short_name == 'a' or option.short_name == 's':
+                self.access_key_short_name = '-A'
+                self.secret_key_short_name = '-S'
+                opt = self.find_option('--access-key')
+                opt.short_name = 'A'
+                opt = self.find_option('--secret-key')
+                opt.short_name = 'A'
 
     def find_option(self, op_name):
         for option in self.StandardOptions+self.Options:
