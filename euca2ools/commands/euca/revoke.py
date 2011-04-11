@@ -89,7 +89,8 @@ class Revoke(euca2ools.commands.eucacommand.EucaCommand):
                     self.display_error_and_exit('port must be an integer.')
         
         conn = self.make_connection_cli()
-        return self.make_request_cli(conn, 'revoke_security_group',
+        return self.make_request_cli(conn,
+                                     'revoke_security_group_deprecated',
                                      group_name=self.group_name,
                                      src_security_group_name=self.source_group,
                                      src_security_group_owner_id=self.source_group_user,
