@@ -168,6 +168,8 @@ class DescribeImages(euca2ools.commands.eucacommand.EucaCommand):
             image_set.update(launchable)
             images = list(image_set)
         else:
+            if self.all:
+                self.executable_by.append('all')
             images = self.make_request_cli(conn, 'get_all_images',
                                            image_ids=self.image,
                                            owners=self.owner,
