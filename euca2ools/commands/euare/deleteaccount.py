@@ -48,7 +48,13 @@ class DeleteAccount(AWSQueryRequest):
               long_name='account-name',
               ptype='string',
               optional=False,
-              doc="""The name of the account to delete.""")
+              doc="""The name of the account to delete."""),
+        Param(name='Recursive',
+              short_name='r',
+              long_name='recursive',
+              ptype='boolean',
+              optional=True,
+              doc="""True if to delete the account recursively."""),
         ]
 
     Response = {u'type': u'object', u'name': u'DeleteUserResponse',
