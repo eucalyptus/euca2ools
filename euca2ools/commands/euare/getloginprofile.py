@@ -84,6 +84,8 @@ class GetLoginProfile(AWSQueryRequest):
                         : u'RequestId'}],
         }]}
 
+    def cli_formatter(self, data):
+        print data.LoginProfile['UserName']
 
     def main(self, **args):
         return self.send()
