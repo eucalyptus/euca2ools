@@ -172,6 +172,14 @@ class Bundler(object):
 
         zipproc.stdin.close();
         targzfile.close()
+
+        tarproc.wait()
+        zipproc.wait()
+        for p, pname in [(tarproc, 'tar'), (zipproc, 'gzip')]:
+            if p.returncode != 0:
+                print "'%s' returned error (%i)" % (pname, p.returncode)
+                raise CommandFailed
+            
         if os.path.getsize(targz) <= 0:
             print 'Could not tar/compress image'
             raise CommandFailed
