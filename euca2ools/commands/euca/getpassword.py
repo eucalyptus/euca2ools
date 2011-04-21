@@ -32,6 +32,7 @@
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
 import euca2ools.commands.eucacommand
+import euca2ools.bundler
 from boto.roboto.param import Param
 
 class GetPassword(euca2ools.commands.eucacommand.EucaCommand):
@@ -53,9 +54,7 @@ class GetPassword(euca2ools.commands.eucacommand.EucaCommand):
         if pd:
             # TODO - this is actually in the bundler
             # TODO validate file?
-            return self.decrypt_string(password_data,
-                                       self.privatekey,
-                                       encoded=True)
+ 	    return euca2ools.bundler.Bundler(self).decrypt_string(pd, self.privatekey, encoded=True)
 
     def main_cli(self):
         pw = self.main()
