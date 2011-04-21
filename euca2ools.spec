@@ -14,8 +14,8 @@
 %{!?python_sitelib: %global python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")}
 
 Name:          euca2ools
-Version:       1.3.2
-Release:       0%{?dist}
+Version:       1.4
+Release:       0.1.alpha1%{?dist}
 Summary:       Elastic Utility Computing Architecture Command Line Tools
 
 Group:         Applications/System
@@ -44,15 +44,13 @@ Requires:       python-m2crypto >= 0.20.2
 %endif
 
 %description
-Eucalyptus is an open source service overlay that implements elastic
-computing using existing resources.  The goal of Eucalyptus is to allow
-sites with existing clusters and server infrastructure to co-host elastic
-computing services that are interface-compatible with Amazon's AWS (EC2,
-S3, EBS).
+EUCALYPTUS is a service overlay that implements elastic computing
+using existing resources. The goal of EUCALYPTUS is to allow sites
+with existing clusters and server infrastructure to co-host an elastic
+computing service that is interface-compatible with Amazon AWS.
 
 This package contains the command line tools used to interact with
 Eucalyptus.  These tools are also compatible with Amazon AWS.
-
 
 %prep
 %setup -q
@@ -97,6 +95,9 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Thu Apr 21 2011 Eucalyptus Release Engineering <support@eucalyptus.com> - 1.4-0.1.alpha1
+- Update to 1.4 alpha 1 (bzr rev 399)
+
 * Thu Jan 20 2011 Eucalyptus Release Engineering <support@eucalyptus.com> - 1.3.2-0
 - Update to nightly builds of 1.3.2
 
