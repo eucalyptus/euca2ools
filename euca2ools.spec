@@ -86,6 +86,7 @@ rm -rf %{buildroot}
 %{_bindir}/euare-*
 %{_bindir}/euca-*
 %{_mandir}/man1/euca*
+%{_mandir}/man1/euare*
 %{python_sitelib}/%{name}-*.egg-info
 %{python_sitelib}/%{name}/
 %doc CHANGELOG
