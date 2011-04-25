@@ -40,6 +40,7 @@ import boto
 import euca2ools
 import euca2ools.utils
 import euca2ools.exceptions
+import euca2ools.nc.connection
 from boto.ec2.regioninfo import RegionInfo
 from boto.s3.connection import OrdinaryCallingFormat
 from boto.roboto.param import Param
@@ -497,12 +498,7 @@ class EucaCommand(object):
             self.is_secure = False
 
         self.get_connection_details()
-        
-        # I'm importing these here because they depend
-        # on a boto version > 2.0b3
-        import admin.connection
-        import admin.auth
-        return admin.connection.EucaConnection(
+        return euca2ools.nc.connection.EucaConnection(
             aws_access_key_id=self.ec2_user_access_key,
             aws_secret_access_key=self.ec2_user_secret_key,
             cert_path=self.euca_cert_path,
