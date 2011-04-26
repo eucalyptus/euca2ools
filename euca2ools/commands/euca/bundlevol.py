@@ -46,7 +46,7 @@ class BundleVol(euca2ools.commands.eucacommand.EucaCommand):
 
     Description = 'Bundles an image for use with Eucalyptus or Amazon EC2.'
     Options = [Param(name='size', short_name='s', long_name='size',
-                     optional=False, ptype='file', default=MAX_IMAGE_SIZE,
+                     optional=False, ptype='integer', default=MAX_IMAGE_SIZE,
                      doc='Size of the image in MB'),
                Param(name='user', short_name='u', long_name='user',
                      optional=True, ptype='string',
