@@ -40,6 +40,7 @@ import boto
 import euca2ools
 import euca2ools.utils
 import euca2ools.exceptions
+import euca2ools.nc.auth
 import euca2ools.nc.connection
 from boto.ec2.regioninfo import RegionInfo
 from boto.s3.connection import OrdinaryCallingFormat
@@ -491,6 +492,14 @@ class EucaCommand(object):
         self.port = None
         self.service_path = '/'
         
+        if not self.url:
+            self.url = self.environ['EC2_URL']
+            if not self.url:
+                self.url = \
+                    'http://localhost:8773/services/Eucalyptus'
+                print 'EC2_URL not specified. Trying %s' \
+                    % self.url
+                
         rslt = urlparse.urlparse(self.url)
         if rslt.scheme == 'https':
             self.is_secure = True
