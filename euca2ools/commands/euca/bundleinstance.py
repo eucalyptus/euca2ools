@@ -93,17 +93,17 @@ class BundleInstance(euca2ools.commands.eucacommand.EucaCommand):
         return encoded_policy
 
     def main(self):
-        conn = self.make_connection_cli(conn_type='nc')
+        conn = self.make_connection_cli()
         if not self.policy:
-            policy = self.generate_default_policy(self.bucket,
-                                                  self.prefix,
-                                                  self.expiration,
-                                                  'ec2-bundle-read')
-        return self.make_request(conn, 'bundle_instance',
-                                 instance_id=instance_id,
-                                 s3_bucket=bucket,
-                                 s3_prefix=prefix,
-                                 s3_upload_policy=policy)
+            self.policy = self.generate_default_policy(self.bucket,
+                                                       self.prefix,
+                                                       self.expires,
+                                                       'ec2-bundle-read')
+        return self.make_request_cli(conn, 'bundle_instance',
+                                     instance_id=self.instance_id,
+                                     s3_bucket=self.bucket,
+                                     s3_prefix=self.prefix,
+                                     s3_upload_policy=policy)
 
     def main_cli(self):
 	bundle_task = self.main()
