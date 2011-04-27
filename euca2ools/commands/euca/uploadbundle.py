@@ -104,27 +104,42 @@ class UploadBundle(euca2ools.commands.eucacommand.EucaCommand):
         return parts
 
     def upload_manifest(self, bucket_instance, manifest_filename,
-                        canned_acl=None):
+                        canned_acl=None, upload_policy=None,
+                        upload_policy_signature=None):
         print 'Uploading manifest file'
         k = Key(bucket_instance)
         k.key = self.get_relative_filename(manifest_filename)
         manifest_file = open(manifest_filename, 'rb')
+        headers = {}
+        if upload_policy:
+            headers['S3UploadPolicy'] = upload_policy
+        if upload_policy_signature:
+            headers['S3UploadPolicySignature']=upload_policy_signature
+
         try:
-            k.set_contents_from_file(manifest_file, policy=canned_acl)
+            k.set_contents_from_file(manifest_file, policy=canned_acl,
+                                     headers=headers)
         except S3ResponseError, s3error:
             s3error_string = '%s' % s3error
             if s3error_string.find('403') >= 0:
                 print 'Permission denied while writing:', k.key
             else:
                 print s3error_string
-            sys.exit()
+            sys.exit(1)
 
     def upload_parts(self, bucket_instance, directory, parts,
-                     part_to_start_from, canned_acl=None):
+                     part_to_start_from, canned_acl=None,
+                     upload_policy=None, upload_policy_signature=None):
         if part_to_start_from:
             okay_to_upload = False
         else:
             okay_to_upload = True
+
+        headers = {}
+        if upload_policy:
+            headers['S3UploadPolicy'] = upload_policy
+        if upload_policy_signature:
+            headers['S3UploadPolicySignature']=upload_policy_signature
 
         for part in parts:
             if part == part_to_start_from:
@@ -135,14 +150,15 @@ class UploadBundle(euca2ools.commands.eucacommand.EucaCommand):
                 k.key = part
                 part_file = open(os.path.join(directory, part), 'rb')
                 try:
-                    k.set_contents_from_file(part_file, policy=canned_acl)
+                    k.set_contents_from_file(part_file, policy=canned_acl,
+                                             headers=headers)
                 except S3ResponseError, s3error:
                     s3error_string = '%s' % s3error
                     if s3error_string.find('403') >= 0:
                         print 'Permission denied while writing:', k.key
                     else:
                         print s3error_string
-                    sys.exit()
+                    sys.exit(1)
 
     def main(self):
         bucket_instance = self.ensure_bucket(self.bucket, self.canned_acl)

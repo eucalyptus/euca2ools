@@ -90,14 +90,15 @@ class EucaCommand(object):
                              optional=True),
                        Param(short_name=None, long_name='version',
                              doc='Display the version of this tool.',
+                             optional=True, ptype='boolean'),
+                       Param(long_name='euca-auth',
+                             doc='Use NC authentication mode',
                              optional=True, ptype='boolean')]
     Options = []
     Args = []
     Filters = []
 
-    def __init__(self, compat=False, is_s3=False, is_euca=False):
-        # TODO: handle compat mode
-        # TODO: validations?
+    def __init__(self, is_euca=False, debug=False):
         self.access_key_short_name = '-a'
         self.secret_key_short_name = '-s'
         self.ec2_user_access_key = None
@@ -110,17 +111,22 @@ class EucaCommand(object):
         self.is_secure = True
         self.port = 443
         self.service_path = '/'
-        self.is_s3 = is_s3
         self.is_euca = is_euca
         self.euca_cert_path = None
         self.euca_private_key_path = None
-        self.debug = False
+        self.debug = 0
+        self.set_debug(debug)
         self.cmd_name = os.path.basename(sys.argv[0])
         self.setup_environ()
         self.check_for_conflict()
         self.process_cli_args()
         # h = NullHandler()
         # logging.getLogger('boto').addHandler(h)
+
+    def set_debug(self, debug=False):
+        if debug:
+            boto.set_stream_logger('euca2ools')
+            self.debug = 2
 
     def process_cli_args(self):
         (opts, args) = getopt.gnu_getopt(sys.argv[1:],
@@ -133,9 +139,7 @@ class EucaCommand(object):
             elif name == '--version':
                 self.version()
             elif name == '--debug':
-                boto.set_stream_logger('euca2ools')
-                self.debug = 2
-            # TODO: that rascally compat mode
+                self.set_debug(True)
             elif name in (self.access_key_short_name, '--access-key'):
                 self.ec2_user_access_key = value
             elif name in (self.secret_key_short_name, '--secret-key'):
@@ -278,7 +282,7 @@ class EucaCommand(object):
                 if not names:
                     names.append(opt.name)
                 doc = textwrap.dedent(opt.doc)
-                doclines = textwrap.wrap(doc, nn, drop_whitespace=True)
+                doclines = textwrap.wrap(doc, nn)
                 if doclines:
                     print '    %s%s' % (','.join(names).ljust(n), doclines[0])
                     for line in doclines[1:]:
@@ -290,8 +294,7 @@ class EucaCommand(object):
             print '\nAVAILABLE FILTERS'
             for filter in self.Filters:
                 doc = textwrap.dedent(filter.doc)
-                doclines = textwrap.wrap(doc, nn, drop_whitespace=True,
-                                         fix_sentence_endings=True)
+                doclines = textwrap.wrap(doc, nn, fix_sentence_endings=True)
                 print '    %s%s' % (filter.name.ljust(n), doclines[0])
                 for line in doclines[1:]:
                     print '%s%s' % (' '*(n+4), line)
@@ -449,14 +452,26 @@ class EucaCommand(object):
                     % self.url
 
         self.get_connection_details()
-        
-        return boto.connect_s3(aws_access_key_id=self.ec2_user_access_key,
-                               aws_secret_access_key=self.ec2_user_secret_key,
-                               is_secure=self.is_secure,
-                               host=self.host,
-                               port=self.port,
-                               calling_format=OrdinaryCallingFormat(),
-                               path=self.service_path)
+
+        if self.is_euca:
+            return euca2ools.nc.connection.EucaConnection(
+                aws_access_key_id=self.ec2_user_access_key,
+                aws_secret_access_key=self.ec2_user_secret_key,
+                cert_path=self.euca_cert_path,
+                private_key_path=self.euca_private_key_path,
+                is_secure=self.is_secure, debug=self.debug,
+                host=self.host,
+                port=self.port,
+                path=self.service_path)
+        else:
+            return boto.connect_s3(
+                aws_access_key_id=self.ec2_user_access_key,
+                aws_secret_access_key=self.ec2_user_secret_key,
+                is_secure=self.is_secure, debug=self.debug,
+                host=self.host,
+                port=self.port,
+                calling_format=OrdinaryCallingFormat(),
+                path=self.service_path)
 
     def make_ec2_connection(self):
         if self.region_name:
@@ -488,40 +503,9 @@ class EucaCommand(object):
                                 path=self.service_path,
                                 api_version=EC2_API_VERSION)
     
-    def make_nc_connection(self):
-        self.port = None
-        self.service_path = '/'
-        
-        if not self.url:
-            self.url = self.environ['EC2_URL']
-            if not self.url:
-                self.url = \
-                    'http://localhost:8773/services/Eucalyptus'
-                print 'EC2_URL not specified. Trying %s' \
-                    % self.url
-                
-        rslt = urlparse.urlparse(self.url)
-        if rslt.scheme == 'https':
-            self.is_secure = True
-        else:
-            self.is_secure = False
-
-        self.get_connection_details()
-        return euca2ools.nc.connection.EucaConnection(
-            aws_access_key_id=self.ec2_user_access_key,
-            aws_secret_access_key=self.ec2_user_secret_key,
-            cert_path=self.euca_cert_path,
-            private_key_path=self.euca_private_key_path,
-            is_secure=self.is_secure,
-            host=self.host,
-            port=self.port,
-            path=self.service_path)
-
     def make_connection(self, conn_type='ec2'):
         self.get_credentials()
-        if conn_type == 'nc':
-            conn = self.make_nc_connection()
-        elif conn_type == 's3':
+        if conn_type == 's3':
             conn = self.make_s3_connection()
         elif conn_type == 'ec2':
             conn = self.make_ec2_connection()

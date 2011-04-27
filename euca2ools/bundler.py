@@ -583,6 +583,7 @@ class Bundler(object):
         manifest_elem.appendChild(signature_elem)
         manifest_out_file.write(doc.toxml())
         manifest_out_file.close()
+        return manifest_file
 
     def add_excludes(self, path, excludes):
         if self.euca.debug:
