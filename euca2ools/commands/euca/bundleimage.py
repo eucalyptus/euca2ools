@@ -78,7 +78,7 @@ class BundleImage(euca2ools.commands.eucacommand.EucaCommand):
                Param(name='ec2cert_path', long_name='ec2cert',
                      optional=True, ptype='file',
                      doc="Path to the Cloud's X509 public key certificate."),
-               Param(name='target_architecture',
+               Param(name='target_arch',
                      short_name='r', long_name='arch',
                      optional=True, ptype='string', default='x86_64',
                      doc="""Target architecture for the image
@@ -87,7 +87,8 @@ class BundleImage(euca2ools.commands.eucacommand.EucaCommand):
                      optional=True, ptype='boolean',
                      doc='Run in batch mode.  Compatibility only, has no effect')]
 
-    def get_block_devs(self, mapping_str):
+    def get_block_devs(self):
+        mapping_str = self.block_device_mapping
         mapping = []
         mapping_pairs = mapping_str.split(',')
         for m in mapping_pairs:
@@ -97,10 +98,9 @@ class BundleImage(euca2ools.commands.eucacommand.EucaCommand):
                 mapping.append(m_parts[1])
         return mapping
 
-    def add_product_codes(self, product_code_string, product_codes):
-        if not product_codes:
-            product_codes = []
-        product_code_values = product_code_string.split(',')
+    def add_product_codes(self):
+        product_codes = []
+        product_code_values = self.product_codes.split(',')
 
         for p in product_code_values:
             product_codes.append(p)
@@ -135,7 +135,7 @@ class BundleImage(euca2ools.commands.eucacommand.EucaCommand):
         os.remove(tgz_file)
         (parts, parts_digest) = bundler.split_image(encrypted_file)
         if self.block_device_mapping:
-            self.block_device_mapping = self.get_block_devs(self.block_device_mapping)
+            self.block_device_mapping = self.get_block_devs()
         if self.product_codes:
             self.product_codes = self.add_product_codes(self.product_codes)
         bundler.generate_manifest(self.destination, self.prefix,

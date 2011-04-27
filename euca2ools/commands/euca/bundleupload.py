@@ -53,7 +53,7 @@ class BundleUpload(UploadBundle, BundleImage):
                      optional=False, ptype='file',
                      doc='The path to the image file to bundle'),
                Param(name='user', short_name='u', long_name='user',
-                     optional=False, ptype='string',
+                     optional=True, ptype='string',
                      doc='ID of the user doing the bundling'),
                Param(name='directory', short_name='d', long_name='directory',
                      optional=True, ptype='string', default='/tmp',
@@ -65,6 +65,10 @@ class BundleUpload(UploadBundle, BundleImage):
                      long_name='policysignature',
                      optional=True, ptype='string',
                      doc='Signature for the upload policy'),
+               Param(name='prefix', short_name='p', long_name='prefix',
+                     optional=True, ptype='string',
+                     doc="""The prefix for the bundle image files.
+                     (default: image name)."""),
                Param(name='kernel_id', long_name='kernel',
                      optional=True, ptype='string',
                      doc='ID of the kernel to be associated with the image.'),
@@ -79,7 +83,7 @@ class BundleUpload(UploadBundle, BundleImage):
                      optional=True, ptype='string', cardinality='*',
                      doc="""Default block device mapping for the image
                      (comma-separated list of key=value pairs)."""),
-               Param(name='target_architecture',
+               Param(name='target_arch',
                      short_name='r', long_name='arch',
                      optional=True, ptype='string', default='x86_64',
                      doc="""Target architecture for the image
@@ -121,13 +125,13 @@ class BundleUpload(UploadBundle, BundleImage):
                                                   None, self.target_arch,
                                                   image_size, bundled_size,
                                                   sha_tar_digest,
-                                                  self.user, self.kernel,
-                                                  self.ramdisk,
+                                                  self.user, self.kernel_id,
+                                                  self.ramdisk_id,
                                                   self.block_device_mapping,
                                                   self.product_codes)
         os.remove(encrypted_file)
             
-        bucket_instance = self.ensure_bucket(bucket, self.acl)
+        bucket_instance = self.ensure_bucket(self.bucket, self.acl)
         parts = self.get_parts(manifest_path)
         manifest_directory, manifest_file = os.path.split(self.manifest_path)
         if not self.directory:
@@ -141,7 +145,7 @@ class BundleUpload(UploadBundle, BundleImage):
         bucket_instance.connection.make_request(bucket=self.bucket,
                                                 key=manifest_path,
                                                 action='ValidateImage')
-        print 'Validated manifest %s/%s' % (bucket, manifest_path)
+        print 'Validated manifest %s/%s' % (self.bucket, manifest_path)
  
     def main_cli(self):
         self.main()

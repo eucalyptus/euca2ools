@@ -410,18 +410,17 @@ class EucaCommand(object):
                 if not self.euca_private_key_path:
                     print 'EUCA_PRIVATE_KEY variable must be set.'
                     raise euca2ools.exceptions.ConnectionFailed
-        else:
+        if not self.ec2_user_access_key:
+            self.ec2_user_access_key = self.environ['EC2_ACCESS_KEY']
             if not self.ec2_user_access_key:
-                self.ec2_user_access_key = self.environ['EC2_ACCESS_KEY']
-                if not self.ec2_user_access_key:
-                    print 'EC2_ACCESS_KEY environment variable must be set.'
-                    raise euca2ools.exceptions.ConnectionFailed
+                print 'EC2_ACCESS_KEY environment variable must be set.'
+                raise euca2ools.exceptions.ConnectionFailed
 
+        if not self.ec2_user_secret_key:
+            self.ec2_user_secret_key = self.environ['EC2_SECRET_KEY']
             if not self.ec2_user_secret_key:
-                self.ec2_user_secret_key = self.environ['EC2_SECRET_KEY']
-                if not self.ec2_user_secret_key:
-                    print 'EC2_SECRET_KEY environment variable must be set.'
-                    raise euca2ools.exceptions.ConnectionFailed
+                print 'EC2_SECRET_KEY environment variable must be set.'
+                raise euca2ools.exceptions.ConnectionFailed
 
     def get_connection_details(self):
         self.port = None
@@ -455,10 +454,10 @@ class EucaCommand(object):
 
         if self.is_euca:
             return euca2ools.nc.connection.EucaConnection(
+                private_key_path=self.euca_private_key_path,
+                cert_path=self.euca_cert_path,
                 aws_access_key_id=self.ec2_user_access_key,
                 aws_secret_access_key=self.ec2_user_secret_key,
-                cert_path=self.euca_cert_path,
-                private_key_path=self.euca_private_key_path,
                 is_secure=self.is_secure, debug=self.debug,
                 host=self.host,
                 port=self.port,

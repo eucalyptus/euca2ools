@@ -69,14 +69,17 @@ class DeleteBundle(euca2ools.commands.eucacommand.EucaCommand):
 
     def get_parts(self, manifest_filename):
         parts = []
-        dom = minidom.parse(manifest_filename)
-        manifest_elem = dom.getElementsByTagName('manifest')[0]
-        parts_list = manifest_elem.getElementsByTagName('filename')
-        for part_elem in parts_list:
-            nodes = part_elem.childNodes
-            for node in nodes:
-                if node.nodeType == node.TEXT_NODE:
-                    parts.append(node.data)
+        try:
+            dom = minidom.parse(manifest_filename)
+            manifest_elem = dom.getElementsByTagName('manifest')[0]
+            parts_list = manifest_elem.getElementsByTagName('filename')
+            for part_elem in parts_list:
+                nodes = part_elem.childNodes
+                for node in nodes:
+                    if node.nodeType == node.TEXT_NODE:
+                        parts.append(node.data)
+        except:
+            print 'problem parsing: %s' % manifest_filename
         return parts
 
     def get_manifests(self, bucket):
@@ -87,7 +90,6 @@ class DeleteBundle(euca2ools.commands.eucacommand.EucaCommand):
                 if k.name.find('manifest') >= 0:
                     manifests.append(k.name)
         return manifests
-
 
     def download_manifests(self, bucket, manifests, directory):
         if len(manifests) > 0:
@@ -184,7 +186,7 @@ class DeleteBundle(euca2ools.commands.eucacommand.EucaCommand):
         if return_code:
             self.delete_parts(bucket_instance, manifests, directory)
         self.delete_manifests(bucket_instance, manifests,
-                              self.clear, bucket)
+                              self.clear, self.bucket)
         if delete_local_manifests:
             self.remove_manifests(manifests, directory)
 

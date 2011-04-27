@@ -64,8 +64,9 @@ class EucaConnection(AWSAuthConnection):
     def _required_auth_capability(self):
         return ['euca-nc']
 
-    def make_request(self, verb='GET', bucket='', key='', headers=None,
-                     data='', query_args=None, sender=None, action=None,
+    def make_request(self, method='GET', bucket='', key='', headers=None,
+                     data='', query_args=None, sender=None,
+                     override_num_retries=None, action=None,
                      effective_user_id = None, params=None):
         if headers is None:
             headers = {}
@@ -87,12 +88,11 @@ class EucaConnection(AWSAuthConnection):
                                             time.gmtime())
         utf8_params = {}
         for key in params:
-            utfi_params[key] = self.get_utf8_value(params[key])
+            utf8_params[key] = self.get_utf8_value(params[key])
         path_base = '/'
         path_base += "%s/" % bucket
         path = path_base + urllib.quote(key)
-        path = self.get_path(path)
-        http_request = self.build_base_http_request(verb, path, None,
+        http_request = self.build_base_http_request(method, path, None,
                                                     utf8_params,
                                                     headers, data,
                                                     self.server_name())
@@ -148,55 +148,14 @@ class EucaConnection(AWSAuthConnection):
         if response.status == 200:
             return Bucket(self, bucket_name)
         else:
-            raise S3ResponseError(response.status, response.reason, body)
+            raise self.provider.storage_response_error(
+                response.status, response.reason, body)
 
-    # generics
-
-    def get_list(self, action, params, markers, path='/', parent=None, verb='GET'):
-        if not parent:
-            parent = self
-        response = self.make_request(action, params, path, verb)
+    def delete_bucket(self, bucket, headers=None):
+        response = self.make_request('DELETE', bucket, headers=headers)
         body = response.read()
-        boto.log.debug(body)
-        if response.status == 200:
-            rs = ResultSet(markers)
-            h = handler.XmlHandler(rs, parent)
-            xml.sax.parseString(body, h)
-            return rs
-        else:
-            boto.log.error('%s %s' % (response.status, response.reason))
-            boto.log.error('%s' % body)
-            raise self.ResponseError(response.status, response.reason, body)
+        if response.status != 204:
+            raise self.provider.storage_response_error(
+                response.status, response.reason, body)
 
-    def get_object(self, action, params, cls, path='/', parent=None, verb='GET'):
-        if not parent:
-            parent = self
-        response = self.make_request(action, params, path, verb)
-        body = response.read()
-        boto.log.debug(body)
-        if response.status == 200:
-            obj = cls(parent)
-            h = handler.XmlHandler(obj, parent)
-            xml.sax.parseString(body, h)
-            return obj
-        else:
-            boto.log.error('%s %s' % (response.status, response.reason))
-            boto.log.error('%s' % body)
-            raise self.ResponseError(response.status, response.reason, body)
-
-    def get_status(self, action, params, path='/', parent=None, verb='GET'):
-        if not parent:
-            parent = self
-        response = self.make_request(action, params, path, verb)
-        body = response.read()
-        boto.log.debug(body)
-        if response.status == 200:
-            rs = ResultSet()
-            h = handler.XmlHandler(rs, parent)
-            xml.sax.parseString(body, h)
-            return rs.status
-        else:
-            boto.log.error('%s %s' % (response.status, response.reason))
-            boto.log.error('%s' % body)
-            raise self.ResponseError(response.status, response.reason, body)
 
