@@ -143,7 +143,7 @@ class BundleImage(euca2ools.commands.eucacommand.EucaCommand):
                                   self.image_path, key, iv,
                                   self.cert_path, self.ec2cert_path,
                                   self.private_key_path,
-                                  self.target_architecture, image_size,
+                                  self.target_arch, image_size,
                                   bundled_size, sha_tar_digest,
                                   self.user, self.kernel_id, self.ramdisk_id,
                                   self.block_device_mapping, self.product_codes)
