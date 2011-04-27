@@ -133,7 +133,7 @@ class BundleUpload(UploadBundle, BundleImage):
             
         bucket_instance = self.ensure_bucket(self.bucket, self.acl)
         parts = self.get_parts(manifest_path)
-        manifest_directory, manifest_file = os.path.split(self.manifest_path)
+        manifest_directory, manifest_file = os.path.split(manifest_path)
         if not self.directory:
             self.directory = manifest_directory
         self.upload_manifest(bucket_instance, manifest_path,
