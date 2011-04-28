@@ -103,7 +103,7 @@ class BundleInstance(euca2ools.commands.eucacommand.EucaCommand):
                                      instance_id=self.instance_id,
                                      s3_bucket=self.bucket,
                                      s3_prefix=self.prefix,
-                                     s3_upload_policy=policy)
+                                     s3_upload_policy=self.policy)
 
     def main_cli(self):
 	bundle_task = self.main()
