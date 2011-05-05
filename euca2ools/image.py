@@ -115,7 +115,7 @@ class LinuxImage:
 
         if len(tunecmd):
             utils.check_prerequisite_command(tunecmd[0])
-            tune_cmd = subprocess.Popen(tunecmd,subprocess.PIPE).communicate[0]
+            tune_cmd = subprocess.Popen(tunecmd,subprocess.PIPE).communicate()[0]
 
     def add_fstab(self, mount_point, generate_fstab, fstab_path):
         if not fstab_path:
