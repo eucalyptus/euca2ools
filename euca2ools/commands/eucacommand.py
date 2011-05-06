@@ -44,6 +44,7 @@ import euca2ools.nc.auth
 import euca2ools.nc.connection
 from boto.ec2.regioninfo import RegionInfo
 from boto.s3.connection import OrdinaryCallingFormat
+from boto.ec2.blockdevicemapping import BlockDeviceMapping, BlockDeviceType
 from boto.roboto.param import Param
 
 SYSTEM_EUCARC_PATH = os.path.join('/etc', 'euca2ools', 'eucarc')
