@@ -242,7 +242,7 @@ class EucaCommand(object):
         return [ arg for arg in self.Args if arg.optional ]
 
     def handle_defaults(self):
-        for option in self.Options:
+        for option in self.Options+self.Args:
             if not hasattr(self, option.name):
                 value = option.default
                 if value is None and option.cardinality in ('+', '*'):
