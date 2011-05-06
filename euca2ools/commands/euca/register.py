@@ -68,8 +68,9 @@ class Register(euca2ools.commands.eucacommand.EucaCommand):
                      optional=True, ptype='string',
                      doc='The snapshot ID to use as the root device.')]
     Args = [Param(name='image_location',
-                  optional=False, ptype='string',
-                  doc='path to the uploaded image (bucket/manifest).')]
+                  optional=True, ptype='string',
+                  doc="""Path to the uploaded image (bucket/manifest).
+                         Required if registering an S3-based image""")]
                
     def main(self):
         if self.snapshot:
