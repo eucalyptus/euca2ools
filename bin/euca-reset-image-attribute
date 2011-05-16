@@ -38,5 +38,5 @@ import euca2ools.commands.euca.resetimageattribute
 
 if __name__ == '__main__':
     cmd = euca2ools.commands.euca.resetimageattribute.ResetImageAttribute()
-    cmd.main()
+    cmd.main_cli()
 

@@ -1,6 +1,3 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
 # Software License Agreement (BSD License)
 #
 # Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
@@ -43,9 +40,8 @@ class UpdateUser(AWSQueryRequest):
 
     ServiceClass = euca2ools.commands.euare.Euare
 
-    name = """UpdateUser"""
     Description = """UpdateUser"""
-    Options = [Param(
+    Params = [Param(
         name='UserName',
         short_name='u',
         long_name='user-name',
@@ -63,7 +59,7 @@ class UpdateUser(AWSQueryRequest):
             ,
         ), Param(
         name='NewUserName',
-        short_name='None',
+        short_name=None,
         long_name='new-user-name',
         ptype='string',
         optional=True,
@@ -71,7 +67,7 @@ class UpdateUser(AWSQueryRequest):
             ,
         )]
 
-    response = {u'type': u'object', u'name': u'UpdateUserResponse',
+    Response = {u'type': u'object', u'name': u'UpdateUserResponse',
                 u'properties': [{
         u'type': u'object',
         u'optional': False,
@@ -80,14 +76,8 @@ class UpdateUser(AWSQueryRequest):
                         : u'RequestId'}],
         }]}
 
+    def main(self, **args):
+        return self.send()
 
-def main(**args):
-    req = UpdateUser(**args)
-    return req.send()
-
-
-def main_cli():
-    req = UpdateUser()
-    req.do_cli()
-
-
+    def main_cli(self):
+        self.do_cli()

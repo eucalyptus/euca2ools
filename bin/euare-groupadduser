@@ -1,0 +1,7 @@
+#!/usr/bin/env python
+
+import euca2ools.commands.euare.addusertogroup
+
+if __name__ == '__main__':
+    r = euca2ools.commands.euare.addusertogroup.AddUserToGroup()
+    r.main_cli()

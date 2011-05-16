@@ -46,8 +46,8 @@ class BundleVol(euca2ools.commands.eucacommand.EucaCommand):
 
     Description = 'Bundles an image for use with Eucalyptus or Amazon EC2.'
     Options = [Param(name='size', short_name='s', long_name='size',
-                     optional=False, ptype='file',
-                     doc='Size of the image in MB (default 10240)'),
+                     optional=True, ptype='integer', default=MAX_IMAGE_SIZE,
+                     doc='Size of the image in MB'),
                Param(name='user', short_name='u', long_name='user',
                      optional=True, ptype='string',
                      doc="""User ID (12-digit) of the user who is
@@ -57,21 +57,21 @@ class BundleVol(euca2ools.commands.eucacommand.EucaCommand):
                      doc='Path the users PEM-encoded certificate.'),
                Param(name='private_key_path',
                      short_name='k', long_name='privatekey',
-                     optional=True, ptype='string',
+                     optional=True, ptype='file',
                      doc='Path to users PEM-encoded private key.'),
                Param(name='all', short_name='a', long_name='all',
-                     optional=True, ptype='boolean',
+                     optional=True, ptype='boolean', default=False,
                      doc="""Bundle all directories (including
                      mounted filesystems."""),
                Param(name='prefix', short_name='p', long_name='prefix',
-                     optional=True, ptype='string',
+                     optional=True, ptype='string', default='image',
                      doc="""The prefix for the bundle image files.
                      (default: image name)."""),
                Param(name='no_inherit',  long_name='no-inherit',
-                     optional=True, ptype='boolean',
+                     optional=True, ptype='boolean', default=True,
                      doc='Do not add instance metadata to the bundled image.'),
                Param(name='exclude',  short_name='e', long_name='exclude',
-                     optional=True, ptype='string',
+                     optional=True, ptype='string', default='',
                      doc='Comma-separated list of directories to exclude.'),
                Param(name='kernel_id', long_name='kernel',
                      optional=True, ptype='string',
@@ -89,7 +89,7 @@ class BundleVol(euca2ools.commands.eucacommand.EucaCommand):
                      (comma-separated list of key=value pairs)."""),
                Param(name='destination_path',
                      short_name='d', long_name='destination',
-                     optional=True, ptype='string',
+                     optional=True, ptype='string', default='/disk1',
                      doc="""Directory to store the bundled image in.
                      Defaults to /tmp.  Recommended."""),
                Param(name='ec2cert_path', long_name='ec2cert',
@@ -97,17 +97,17 @@ class BundleVol(euca2ools.commands.eucacommand.EucaCommand):
                      doc="Path to the Cloud's X509 public key certificate."),
                Param(name='target_architecture',
                      short_name='r', long_name='arch',
-                     optional=True, ptype='string',
+                     optional=True, ptype='string', default='x86_64',
                      doc="""Target architecture for the image
                      Valid values: i386 | x86_64."""),
-               Param(name='volume', long_name='volume',
-                     optional=True, ptype='file',
+               Param(name='volume_path', long_name='volume',
+                     optional=True, ptype='dir', default='/',
                      doc='Path to mounted volume to bundle.'),
                Param(name='fstab_path', long_name='fstab',
                      optional=True, ptype='file',
                      doc='Path to the fstab to be bundled with image.'),
                Param(name='generate_fstab', long_name='generate-fstab',
-                     optional=True, ptype='boolean',
+                     optional=True, ptype='boolean', default=False,
                      doc='Generate fstab to bundle in image.'),
                Param(name='batch', long_name='batch',
                      optional=True, ptype='boolean',
@@ -132,12 +132,9 @@ class BundleVol(euca2ools.commands.eucacommand.EucaCommand):
             excludes = excludes_string.split(',')
         return excludes
 
-    def get_instance_metadata(self, ramdisk, kernel, mapping):
+    def get_instance_metadata(self, ramdisk_id, kernel_id, block_dev_mapping):
         md = euca2ools.metadata.MetaData()
         product_codes = None
-        ramdisk_id = ramdisk
-        kernel_id = kernel
-        block_dev_mapping = mapping
         ancestor_ami_ids = None
         try:
             if not ramdisk_id:
@@ -203,53 +200,35 @@ class BundleVol(euca2ools.commands.eucacommand.EucaCommand):
         return mapping
 
     def main(self):
-        size = self.options.get('size', MAX_IMAGE_SIZE)
-        volume_path = self.options.get('volume_path', '/')
-        cert_path = self.options.get('cert_path',
-                                     self.get_environ('EC2_CERT'))
-        private_key_path = self.options.get('private_key_path',
-                                            self.get_environ('EC2_PRIVATE_KEY'))
-        user = self.options.get('user', self.get_environ('EC2_USER_ID'))
-        ec2cert_path = self.options.get('ec2cert_path',
-                                        self.get_environ('EUCALYPTUS_CERT'))
-        kernel = self.options.get('kernel_id', None)
-        ramdisk = self.options.get('ramdisk_id', None)
-        prefix = self.options.get('prefix', 'prefix')
-        destination_path = self.options.get('destination_path', '/disk1')
-        target_arch = self.options.get('target_arch', 'x86_64')
-        block_device_map = self.options.get('block_device_map', None)
-        product_codes = self.options.get('product_codes', None)
-        inherit = not self.options.get('no_inherit', False)
-        generate_fstab = self.options.get('generate_fstab', False)
-        fstab_path = self.options.get('fstab_path', None)
-        excludes_string = self.options.get('excludes', '')
-        all_flg = self.options.get('all', False)
+        ancestor_ami_ids = None
+        if self.cert_path is None:
+            self.cert_path = self.get_environ('EC2_CERT')
+        if self.private_key_path is None:
+            self.private_key_path = self.get_environ('EC2_PRIVATE_KEY')
+        if self.user is None:
+            self.user = self.get_environ('EC2_USER_ID')
+        if self.ec2cert_path is None:
+            self.ec2cert_path = self.get_environ('EUCALYPTUS_CERT')
+        self.inherit = not self.no_inherit
+        excludes_string = self.exclude
         
         bundler = euca2ools.bundler.Bundler(self)
         
-        user = user.replace('-', '')
+        self.user = self.user.replace('-', '')
 
-        # TODO: these should be handled automatically with ftype="file"
-        self.validate_dir(volume_path)
-        self.validate_file(cert_path)
-        self.validate_file(private_key_path)
-        self.validate_file(ec2cert_path)
-
-        if generate_fstab and fstab_path:
+        if self.generate_fstab and self.fstab_path:
             msg = '--generate-fstab and --fstab path cannot both be set.'
             self.display_error_and_exit(msg)
-        if fstab_path:
-            self.validate_file(fstab_path)
-        if not fstab_path:
+        if not self.fstab_path:
             if platform.machine() == 'i386':
-                fstab_path = 'old'
+                self.fstab_path = 'old'
             else:
-                fstab_path = 'new'
+                self.fstab_path = 'new'
         self.check_root()
-        if size > MAX_IMAGE_SIZE:
+        if self.size > MAX_IMAGE_SIZE:
             msg = 'Image Size is too large (Max = %d MB)' % MAX_IMAGE_SIZE
             self.display_error_and_exit(msg)
-        volume_path = os.path.normpath(volume_path)
+        self.volume_path = os.path.normpath(self.volume_path)
 
         noex='EUCA_BUNDLE_VOL_EMPTY_EXCLUDES'
         if noex in os.environ and os.environ[noex] != "0":
@@ -258,25 +237,25 @@ class BundleVol(euca2ools.commands.eucacommand.EucaCommand):
             excludes = ['/etc/udev/rules.d/70-persistent-net.rules',
                         '/etc/udev/rules.d/z25_persistent-net.rules']
 
-        if not all_flg:
+        if not self.all:
             excludes.extend(self.parse_excludes(excludes_string))
-            bundler.add_excludes(volume_path, excludes)
-        if inherit:
-            (ramdisk, kernel, block_device_map, product_codes,
-             ancestor_ami_ids) = self.get_instance_metadata(ramdisk,
-                                                            kernel,
-                                                            block_device_map)
-        if product_codes:
-            product_codes = self.add_product_codes(product_codes)
+            bundler.add_excludes(self.volume_path, excludes)
+        if self.inherit:
+            (self.ramdisk_id, self.kernel_id, self.block_device_mapping, self.product_codes,
+             ancestor_ami_ids) = self.get_instance_metadata(self.ramdisk_id,
+                                                            self.kernel_id,
+                                                            self.block_device_mapping)
+        if self.product_codes:
+            self.product_codes = self.add_product_codes(self.product_codes)
 
         try:
-            fsinfo = bundler.get_fs_info(volume_path)
+            fsinfo = bundler.get_fs_info(self.volume_path)
         except UnsupportedException, e:
             print e
             sys.exit(1)
         try:
-            image_path = bundler.make_image(size, excludes, prefix,
-                                            destination_path,
+            image_path = bundler.make_image(self.size, excludes, self.prefix,
+                                            self.destination_path,
                                             fs_type=fsinfo['fs_type'],
                                             uuid=fsinfo['uuid'],
                                             label=fsinfo['label'])
@@ -286,8 +265,8 @@ class BundleVol(euca2ools.commands.eucacommand.EucaCommand):
         except UnsupportedException:
             sys.exit(1)
         image_path = os.path.normpath(image_path)
-        if image_path.find(volume_path) == 0:
-            exclude_image = image_path.replace(volume_path, '', 1)
+        if image_path.find(self.volume_path) == 0:
+            exclude_image = image_path.replace(self.volume_path, '', 1)
             image_path_parts = exclude_image.split('/')
             if len(image_path_parts) > 1:
                 exclude_image = \
@@ -295,8 +274,8 @@ class BundleVol(euca2ools.commands.eucacommand.EucaCommand):
                         , 1)
             excludes.append(exclude_image)
         try:
-            bundler.copy_volume(image_path, volume_path, excludes,
-                                generate_fstab, fstab_path)
+            bundler.copy_volume(image_path, self.volume_path, excludes,
+                                self.generate_fstab, self.fstab_path)
         except CopyError:
             print 'Unable to copy files'
             self.cleanup(image_path)
@@ -305,12 +284,13 @@ class BundleVol(euca2ools.commands.eucacommand.EucaCommand):
             self.cleanup(image_path)
             sys.exit(1)
 
-        image_size = bundler.check_image(image_path, destination_path)
-        if not prefix:
-            prefix = self.get_relative_filename(image_path)
+        image_size = bundler.check_image(image_path, self.destination_path)
+        if not self.prefix:
+            self.prefix = self.get_relative_filename(image_path)
         try:
-            (tgz_file, sha_tar_digest) = bundler.tarzip_image(prefix, image_path,
-                                                              destination_path)
+            (tgz_file, sha_tar_digest) = bundler.tarzip_image(self.prefix,
+                                                              image_path,
+                                                              self.destination_path)
         except (NotFoundError, CommandFailed):
             sys.exit(1)
 
@@ -318,12 +298,15 @@ class BundleVol(euca2ools.commands.eucacommand.EucaCommand):
             bundler.encrypt_image(tgz_file)
         os.remove(tgz_file)
         (parts, parts_digest) = bundler.split_image(encrypted_file)
-        bundler.generate_manifest(destination_path, prefix,
+        bundler.generate_manifest(self.destination_path, self.prefix,
                                   parts, parts_digest, image_path,
-                                  key, iv, cert_path, ec2cert_path,
-                                  private_key_path, target_arch,
+                                  key, iv, self.cert_path, self.ec2cert_path,
+                                  self.private_key_path, self.target_architecture,
                                   image_size, bundled_size,
-                                  sha_tar_digest, user, kernel,
-                                  ramdisk, block_device_map, product_codes,
-                                  ancestor_ami_ids)
+                                  sha_tar_digest, self.user, self.kernel_id,
+                                  self.ramdisk_id, self.block_device_mapping,
+                                  self.product_codes, ancestor_ami_ids)
         os.remove(encrypted_file)
+
+    def main_cli(self):
+        self.main()

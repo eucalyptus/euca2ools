@@ -47,7 +47,7 @@ class DeleteTags(euca2ools.commands.eucacommand.EucaCommand):
 
     def main(self):
         tags = {}
-        for tagpair in self.options['tag']:
+        for tagpair in self.tag:
             t = tagpair.split('=')
             name = t[0]
             if len(t) == 1:
@@ -55,9 +55,11 @@ class DeleteTags(euca2ools.commands.eucacommand.EucaCommand):
             else:
                 value = t[1]
             tags[name] = value
-        euca_conn = self.make_connection_cli()
-        status = self.make_request_cli(euca_conn,
-                                       'delete_tags',
-                                       resource_ids=self.arguments['resource_id'],
-                                       tags=tags)
+        conn = self.make_connection_cli()
+        return self.make_request_cli(conn, 'delete_tags',
+                                     resource_ids=self.resource_id,
+                                     tags=tags)
+
+    def main_cli(self):
+        self.main()
 

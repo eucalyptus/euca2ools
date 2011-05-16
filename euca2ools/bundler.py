@@ -172,6 +172,14 @@ class Bundler(object):
 
         zipproc.stdin.close();
         targzfile.close()
+
+        tarproc.wait()
+        zipproc.wait()
+        for p, pname in [(tarproc, 'tar'), (zipproc, 'gzip')]:
+            if p.returncode != 0:
+                print "'%s' returned error (%i)" % (pname, p.returncode)
+                raise CommandFailed
+            
         if os.path.getsize(targz) <= 0:
             print 'Could not tar/compress image'
             raise CommandFailed
@@ -352,7 +360,9 @@ class Bundler(object):
         cloud_encrypted_iv = hexlify(cloud_pub_key.public_encrypt(iv,
                 RSA.pkcs1_padding))
 
-        user_priv_key = RSA.load_key(private_key_path)
+        user_priv_key = None
+        if private_key_path:
+            user_priv_key = RSA.load_key(private_key_path)
 
         manifest_file = '%s.manifest.xml' % os.path.join(path, prefix)
         if self.euca.debug:
@@ -565,16 +575,19 @@ class Bundler(object):
 
         manifest_string = doc.toxml()
 
-        string_to_sign = self.get_verification_string(manifest_string)
-        signature_elem = doc.createElement('signature')
-        sha_manifest = sha()
-        sha_manifest.update(string_to_sign)
-        signature_value = doc.createTextNode('%s'
-                % hexlify(user_priv_key.sign(sha_manifest.digest())))
-        signature_elem.appendChild(signature_value)
-        manifest_elem.appendChild(signature_elem)
+        if user_priv_key:
+            string_to_sign = self.get_verification_string(manifest_string)
+            signature_elem = doc.createElement('signature')
+            sha_manifest = sha()
+            sha_manifest.update(string_to_sign)
+            signature_value = doc.createTextNode('%s'
+                    % hexlify(user_priv_key.sign(sha_manifest.digest())))
+            signature_elem.appendChild(signature_value)
+            manifest_elem.appendChild(signature_elem)
+            
         manifest_out_file.write(doc.toxml())
         manifest_out_file.close()
+        return manifest_file
 
     def add_excludes(self, path, excludes):
         if self.euca.debug:

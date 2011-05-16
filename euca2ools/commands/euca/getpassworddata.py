@@ -42,9 +42,10 @@ class GetPasswordData(euca2ools.commands.eucacommand.EucaCommand):
                      doc='unique identifier for the Windows instance')]
 
     def main(self):
-        euca_conn = self.make_connection_cli()
-        pd = self.make_request_cli(euca_conn,
-                                   'get_password_data',
-                                   instance_id=self.arguments['instance_id'])
-        print pd
+        conn = self.make_connection_cli()
+        return self.make_request_cli(conn, 'get_password_data',
+                                   instance_id=self.instance_id)
+
+    def main_cli(self):
+        print self.main()
 

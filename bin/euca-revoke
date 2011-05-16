@@ -38,5 +38,5 @@ import euca2ools.commands.euca.revoke
 
 if __name__ == '__main__':
     cmd = euca2ools.commands.euca.revoke.Revoke()
-    cmd.main()
+    cmd.main_cli()
 

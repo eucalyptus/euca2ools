@@ -50,9 +50,11 @@ class CreateSnapshot(euca2ools.commands.eucacommand.EucaCommand):
         print 'SNAPSHOT\t%s' % snapshot_string
 
     def main(self):
-        euca_conn = self.make_connection_cli()
-        snapshot = self.make_request_cli(euca_conn,
-                                         'create_snapshot',
-                                         volume_id=self.arguments['volume_id'])
+        conn = self.make_connection_cli()
+        return self.make_request_cli(conn, 'create_snapshot',
+                                     volume_id=self.volume_id)
+
+    def main_cli(self):
+        snapshot = self.main()
         self.display_snapshot(snapshot)
 

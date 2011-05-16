@@ -38,14 +38,16 @@ class Deregister(euca2ools.commands.eucacommand.EucaCommand):
 
     Description = 'Deregisters an image in the cloud.'
     Args = [Param(name='image_id', ptype='string', optional=False,
-                     doc='unique identifier for image to be deregistered.')]
+                  doc='unique identifier for image to be deregistered.')]
 
     def main(self):
-        euca_conn = self.make_connection_cli()
-        status = self.make_request_cli(euca_conn,
-                                       'deregister_image',
-                                       image_id=self.arguments['image_id'])
+        conn = self.make_connection_cli()
+        return self.make_request_cli(conn, 'deregister_image',
+                                     image_id=self.image_id)
+
+    def main_cli(self):
+        status = self.main()
         if status:
-                print 'IMAGE\t%s' % self.arguments['image_id']
+                print 'IMAGE\t%s' % self.image_id
 
 

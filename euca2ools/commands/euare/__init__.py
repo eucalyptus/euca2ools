@@ -37,15 +37,16 @@ from boto.roboto.param import Param
 
 class Euare(AWSQueryService):
 
-    name = 'euare'
-    description = 'Eucalyptus User, Authorization and Reporting Environment'
+    Name = 'euare'
+    Description = 'Eucalyptus User, Authorization and Reporting Environment'
     APIVersion = '2010-05-08'
-    authentication = 'sign-v2'
-    path = '/'
-    port = 443
-    provider = 'aws'
+    Authentication = 'sign-v2'
+    Path = '/'
+    Port = 443
+    Provider = 'aws'
+    EnvURL = 'EUARE_URL'
 
-    regions = [{"endpoint": "iam.amazonaws.com", 
+    Regions = [{"endpoint": "iam.amazonaws.com", 
                 "name": "us-east-1", 
                 "description": "US-East (Northern Virginia)"}]
 

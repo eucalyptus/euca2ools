@@ -45,7 +45,7 @@ class DetachVolume(euca2ools.commands.eucacommand.EucaCommand):
                      optional=True, ptype='string',
                      doc='local device name (inside the guest VM) to use.'),
                Param(name='force', short_name='f', long_name='force',
-                     optional=True, ptype='boolean',
+                     optional=True, ptype='boolean', default=False,
                      doc="""Forces detachment if the previous detachment
                      attempt did not occur cleanly""")]
     Args = [Param(name='volume_id', ptype='string',
@@ -53,18 +53,15 @@ class DetachVolume(euca2ools.commands.eucacommand.EucaCommand):
                   cardinality=1, optional=False)]
 
     def main(self):
-        volume_id = self.arguments['volume_id']
-        instance_id = self.options.get('instance_id', None)
-        device = self.options.get('device', None)
-        force = self.options.get('force', False)
-        
-        euca_conn = self.make_connection_cli()
-        return_code = self.make_request_cli(euca_conn,
-                                            'detach_volume',
-                                            volume_id=volume_id,
-                                            instance_id=instance_id,
-                                            device=device,
-                                            force=force)
-        if return_code:
-            print 'VOLUME\t%s' % volume_id
+        conn = self.make_connection_cli()
+        return self.make_request_cli(conn, 'detach_volume',
+                                     volume_id=self.volume_id,
+                                     instance_id=self.instance_id,
+                                     device=self.device,
+                                     force=self.force)
+
+    def main_cli(self):
+        status = self.main()
+        if status:
+            print 'VOLUME\t%s' % self.volume_id
 

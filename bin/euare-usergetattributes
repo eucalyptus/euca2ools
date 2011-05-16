@@ -1,0 +1,7 @@
+#!/usr/bin/env python
+
+import euca2ools.commands.euare.getuser
+
+if __name__ == '__main__':
+    r = euca2ools.commands.euare.getuser.GetUser()
+    r.main_cli()

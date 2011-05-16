@@ -1,6 +1,3 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
 # Software License Agreement (BSD License)
 #
 # Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
@@ -43,15 +40,21 @@ class ListSigningCertificates(AWSQueryRequest):
 
     ServiceClass = euca2ools.commands.euare.Euare
 
-    name = """ListSigningCertificates"""
     Description = """ListSigningCertificates"""
-    Options = [Param(
+    Params = [Param(
         name='UserName',
         short_name='u',
         long_name='user-name',
         ptype='string',
         optional=True,
         doc=""" The name of the User. """,
+        ), Param(
+        name='_verbose',
+        short_name='v',
+        long_name='verbose',
+        ptype='boolean',
+        optional=True,
+        doc='Causes output to include the certificate body',
         ), Param(
         name='Marker',
         short_name='m',
@@ -62,7 +65,7 @@ class ListSigningCertificates(AWSQueryRequest):
             ,
         ), Param(
         name='MaxItems',
-        short_name='None',
+        short_name=None,
         long_name='max-items',
         ptype='integer',
         optional=True,
@@ -70,7 +73,7 @@ class ListSigningCertificates(AWSQueryRequest):
             ,
         )]
 
-    response = {u'type': u'object',
+    Response = {u'type': u'object',
                 u'name': u'ListSigningCertificatesResponse',
                 u'properties': [{
         u'doc'
@@ -165,13 +168,15 @@ class ListSigningCertificates(AWSQueryRequest):
         }]}
 
 
-def main(**args):
-    req = ListSigningCertificates(**args)
-    return req.send()
+    def cli_formatter(self, data):
+        for cert in data.Certificates:
+            print cert['CertificateId']
+            if self.cli_options.verbose:
+                print cert['CertificateBody']
+            print cert['Status']
+            
+    def main(self, **args):
+        return self.send()
 
-
-def main_cli():
-    req = ListSigningCertificates()
-    req.do_cli()
-
-
+    def main_cli(self):
+        self.do_cli()

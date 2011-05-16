@@ -47,14 +47,14 @@ class DeleteBundle(euca2ools.commands.eucacommand.EucaCommand):
                      doc='Name of the bucket to upload to.'),
                Param(name='manifest_path',
                      short_name='m', long_name='manifest',
-                     optional=True, ptype='string',
+                     optional=True, ptype='file',
                      doc='Path to the manifest file.'),
                Param(name='prefix', short_name='p', long_name='prefix',
                      optional=True, ptype='string',
                      doc="""The filename prefix for bundled files.
                      Defaults to image name."""),
                Param(name='clear', long_name='clear',
-                     optional=True, ptype='boolean',
+                     optional=True, ptype='boolean', default=False,
                      doc='Delete the bucket containing the image.')]
 
     def ensure_bucket(self, bucket):
@@ -69,14 +69,17 @@ class DeleteBundle(euca2ools.commands.eucacommand.EucaCommand):
 
     def get_parts(self, manifest_filename):
         parts = []
-        dom = minidom.parse(manifest_filename)
-        manifest_elem = dom.getElementsByTagName('manifest')[0]
-        parts_list = manifest_elem.getElementsByTagName('filename')
-        for part_elem in parts_list:
-            nodes = part_elem.childNodes
-            for node in nodes:
-                if node.nodeType == node.TEXT_NODE:
-                    parts.append(node.data)
+        try:
+            dom = minidom.parse(manifest_filename)
+            manifest_elem = dom.getElementsByTagName('manifest')[0]
+            parts_list = manifest_elem.getElementsByTagName('filename')
+            for part_elem in parts_list:
+                nodes = part_elem.childNodes
+                for node in nodes:
+                    if node.nodeType == node.TEXT_NODE:
+                        parts.append(node.data)
+        except:
+            print 'problem parsing: %s' % manifest_filename
         return parts
 
     def get_manifests(self, bucket):
@@ -87,7 +90,6 @@ class DeleteBundle(euca2ools.commands.eucacommand.EucaCommand):
                 if k.name.find('manifest') >= 0:
                     manifests.append(k.name)
         return manifests
-
 
     def download_manifests(self, bucket, manifests, directory):
         if len(manifests) > 0:
@@ -160,37 +162,33 @@ class DeleteBundle(euca2ools.commands.eucacommand.EucaCommand):
                 os.remove(manifest_filename)
 
     def main(self):
-        bucket = self.options['bucket']
-        manifest_path = self.options.get('manifest_path', None)
         directory = os.path.abspath('/tmp')
-        clear = self.options.get('skipmanifest', False)
-        prefix = self.options.get('prefix', None)
 
-        if not manifest_path and not prefix:
+        if not self.manifest_path and not self.prefix:
             msg = 'Either manifestpath or prefix must be specified.'
             self.display_error_and_exit(msg)
 
-        if manifest_path:
-            self.validate_file(manifest_path)
-            
-        bucket_instance = self.ensure_bucket(bucket)
+        bucket_instance = self.ensure_bucket(self.bucket)
         manifests = None
         delete_local_manifests = True
-        if not manifest_path:
-            if not prefix:
+        if not self.manifest_path:
+            if not self.prefix:
                 manifests = self.get_manifests(bucket_instance)
             else:
-                manifests = ['%s.manifest.xml' % prefix]
+                manifests = ['%s.manifest.xml' % self.prefix]
         else:
             manifests = ['%s'
-                         % self.get_relative_filename(manifest_path)]
-            directory = '%s' % self.get_file_path(manifest_path)
+                         % self.get_relative_filename(self.manifest_path)]
+            directory = '%s' % self.get_file_path(self.manifest_path)
             delete_local_manifests = False
         return_code = self.download_manifests(bucket_instance, manifests,
                                               directory)
         if return_code:
             self.delete_parts(bucket_instance, manifests, directory)
         self.delete_manifests(bucket_instance, manifests,
-                              clear, bucket)
+                              self.clear, self.bucket)
         if delete_local_manifests:
             self.remove_manifests(manifests, directory)
+
+    def main_cli(self):
+        self.main()

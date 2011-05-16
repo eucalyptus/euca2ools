@@ -38,5 +38,5 @@ import euca2ools.commands.euca.createsnapshot
 
 if __name__ == '__main__':
     cmd = euca2ools.commands.euca.createsnapshot.CreateSnapshot()
-    cmd.main()
+    cmd.main_cli()
 

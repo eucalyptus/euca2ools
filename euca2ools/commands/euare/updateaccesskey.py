@@ -1,6 +1,3 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
 # Software License Agreement (BSD License)
 #
 # Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
@@ -43,9 +40,8 @@ class UpdateAccessKey(AWSQueryRequest):
 
     ServiceClass = euca2ools.commands.euare.Euare
 
-    name = """UpdateAccessKey"""
     Description = """UpdateAccessKey"""
-    Options = [Param(
+    Params = [Param(
         name='UserName',
         short_name='u',
         long_name='user-name',
@@ -54,8 +50,8 @@ class UpdateAccessKey(AWSQueryRequest):
         doc=""" Name of the User whose key you want to update. """,
         ), Param(
         name='AccessKeyId',
-        short_name='a',
-        long_name='access-key-id',
+        short_name='k',
+        long_name='user-key-id',
         ptype='string',
         optional=False,
         doc=""" The Access Key ID of the Secret Access Key you want to update. """
@@ -65,12 +61,13 @@ class UpdateAccessKey(AWSQueryRequest):
         short_name='s',
         long_name='status',
         ptype='enum',
+        choices=['Active', 'Inactive'],
         optional=False,
         doc=""" The status you want to assign to the Secret Access Key. Active means the key can be used for API calls to AWS, while Inactive means the key cannot be used. """
             ,
         )]
 
-    response = {u'type': u'object',
+    Response = {u'type': u'object',
                 u'name': u'UpdateAccessKeyResponse', u'properties': [{
         u'type': u'object',
         u'optional': False,
@@ -79,14 +76,8 @@ class UpdateAccessKey(AWSQueryRequest):
                         : u'RequestId'}],
         }]}
 
+    def main(self, **args):
+        return self.send()
 
-def main(**args):
-    req = UpdateAccessKey(**args)
-    return req.send()
-
-
-def main_cli():
-    req = UpdateAccessKey()
-    req.do_cli()
-
-
+    def main_cli(self):
+        self.do_cli()

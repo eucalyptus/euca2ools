@@ -51,11 +51,12 @@ class DescribeAddresses(euca2ools.commands.eucacommand.EucaCommand):
             print 'ADDRESS\t%s' % address_string
 
     def main(self):
-        euca_conn = self.make_connection_cli()
-        addresses = self.make_request_cli(euca_conn,
-                                          'get_all_addresses',
-                                          addresses=self.arguments['ip'])
-        
+        conn = self.make_connection_cli()
+        return self.make_request_cli(conn, 'get_all_addresses',
+                                     addresses=self.ip)
+
+    def main_cli(self):
+        addresses = self.main()
         self.display_addresses(addresses)
 
 

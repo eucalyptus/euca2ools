@@ -38,4 +38,4 @@ import euca2ools.commands.euca.describeimages
 
 if __name__ == '__main__':
     cmd = euca2ools.commands.euca.describeimages.DescribeImages()
-    cmd.main()
+    cmd.main_cli()

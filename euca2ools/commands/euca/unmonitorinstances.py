@@ -46,9 +46,11 @@ class UnmonitorInstances(euca2ools.commands.eucacommand.EucaCommand):
             print '%s\t%s' % (item.id, item.state)
             
     def main(self):
-        euca_conn = self.make_connection_cli()
-        info = self.make_request_cli(euca_conn,
-                                     'unmonitor_instances',
-                                     instance_ids=self.arguments['instance_id'])
+        conn = self.make_connection_cli()
+        return self.make_request_cli(conn, 'unmonitor_instances',
+                                     instance_ids=self.instance_id)
+
+    def main_cli(self):
+        info = self.main()
         self.display_monitor_info(info)
 

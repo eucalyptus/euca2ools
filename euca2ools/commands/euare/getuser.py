@@ -1,6 +1,3 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
 # Software License Agreement (BSD License)
 #
 # Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
@@ -43,9 +40,8 @@ class GetUser(AWSQueryRequest):
 
     ServiceClass = euca2ools.commands.euare.Euare
 
-    name = """GetUser"""
     Description = """GetUser"""
-    Options = [Param(
+    Params = [Param(
         name='UserName',
         short_name='u',
         long_name='user-name',
@@ -55,7 +51,7 @@ class GetUser(AWSQueryRequest):
             ,
         )]
 
-    response = {u'type': u'object', u'name': u'GetUserResponse',
+    Response = {u'type': u'object', u'name': u'GetUserResponse',
                 u'properties': [{
         u'doc'
             : u' Contains the result of a successful invocation of the GetUser action. '
@@ -116,14 +112,13 @@ class GetUser(AWSQueryRequest):
                         : u'RequestId'}],
         }]}
 
-
-def main(**args):
-    req = GetUser(**args)
-    return req.send()
-
-
-def main_cli():
-    req = GetUser()
-    req.do_cli()
+    def cli_formatter(self, data):
+        print data.User['Arn']
+        print data.User['UserId']
 
 
+    def main(self, **args):
+        return self.send()
+
+    def main_cli(self):
+        self.do_cli()

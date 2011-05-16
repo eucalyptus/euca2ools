@@ -1,0 +1,7 @@
+#!/usr/bin/env python
+
+import euca2ools.commands.euare.listgrouppolicies
+
+if __name__ == '__main__':
+    r = euca2ools.commands.euare.listgrouppolicies.ListGroupPolicies()
+    r.main_cli()

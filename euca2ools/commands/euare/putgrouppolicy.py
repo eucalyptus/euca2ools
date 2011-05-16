@@ -1,6 +1,3 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
 # Software License Agreement (BSD License)
 #
 # Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
@@ -43,9 +40,8 @@ class PutGroupPolicy(AWSQueryRequest):
 
     ServiceClass = euca2ools.commands.euare.Euare
 
-    name = """PutGroupPolicy"""
     Description = """PutGroupPolicy"""
-    Options = [Param(
+    Params = [Param(
         name='GroupName',
         short_name='g',
         long_name='group-name',
@@ -61,14 +57,21 @@ class PutGroupPolicy(AWSQueryRequest):
         doc=""" Name of the policy document. """,
         ), Param(
         name='PolicyDocument',
-        short_name='None',
-        long_name='policy-document',
+        short_name='o',
+        long_name='policy-content',
         ptype='string',
-        optional=False,
-        doc=""" The policy document. """,
+        optional=True,
+        doc=""" The policy document content. """,
+        ), Param(
+        name='PolicyDocument',
+        short_name='f',
+        long_name='policy-document',
+        ptype='file',
+        optional=True,
+        doc=""" The policy document as file. """,
         )]
 
-    response = {u'type': u'object', u'name': u'PutGroupPolicyResponse',
+    Response = {u'type': u'object', u'name': u'PutGroupPolicyResponse',
                 u'properties': [{
         u'type': u'object',
         u'optional': False,
@@ -77,14 +80,8 @@ class PutGroupPolicy(AWSQueryRequest):
                         : u'RequestId'}],
         }]}
 
+    def main(self, **args):
+        return self.send()
 
-def main(**args):
-    req = PutGroupPolicy(**args)
-    return req.send()
-
-
-def main_cli():
-    req = PutGroupPolicy()
-    req.do_cli()
-
-
+    def main_cli(self):
+        self.do_cli()

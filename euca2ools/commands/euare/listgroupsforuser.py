@@ -1,6 +1,3 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
 # Software License Agreement (BSD License)
 #
 # Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
@@ -43,9 +40,8 @@ class ListGroupsForUser(AWSQueryRequest):
 
     ServiceClass = euca2ools.commands.euare.Euare
 
-    name = """ListGroupsForUser"""
     Description = """ListGroupsForUser"""
-    Options = [Param(
+    Params = [Param(
         name='UserName',
         short_name='u',
         long_name='user-name',
@@ -62,7 +58,7 @@ class ListGroupsForUser(AWSQueryRequest):
             ,
         ), Param(
         name='MaxItems',
-        short_name='None',
+        short_name=None,
         long_name='max-items',
         ptype='integer',
         optional=True,
@@ -70,7 +66,7 @@ class ListGroupsForUser(AWSQueryRequest):
             ,
         )]
 
-    response = {u'type': u'object',
+    Response = {u'type': u'object',
                 u'name': u'ListGroupsForUserResponse', u'properties': [{
         u'doc'
             : u' Contains the result of a successful invocation of the ListGroupsForUser action. '
@@ -156,14 +152,12 @@ class ListGroupsForUser(AWSQueryRequest):
                         : u'RequestId'}],
         }]}
 
+    def cli_formatter(self, data):
+        for group in data.Groups:
+            print group['Arn']
 
-def main(**args):
-    req = ListGroupsForUser(**args)
-    return req.send()
+    def main(self, **args):
+        return self.send()
 
-
-def main_cli():
-    req = ListGroupsForUser()
-    req.do_cli()
-
-
+    def main_cli(self):
+        self.do_cli()

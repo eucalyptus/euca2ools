@@ -38,13 +38,15 @@ class DeleteVolume(euca2ools.commands.eucacommand.EucaCommand):
 
     Description = 'Creates a volume in a specified availability zone.'
     Args = [Param(name='volume_id', ptype='string', optional=False,
-                     doc='unique identifier for volume to be deleted.')]
+                  doc='unique identifier for volume to be deleted.')]
 
     def main(self):
-        euca_conn = self.make_connection_cli()
-        status = self.make_request_cli(euca_conn,
-                                       'delete_volume',
-                                       volume_id=self.arguments['volume_id'])
+        conn = self.make_connection_cli()
+        return self.make_request_cli(conn, 'delete_volume',
+                                     volume_id=self.volume_id)
+
+    def main_cli(self):
+        status = self.main()
         if status:
-                print 'VOLUME\t%s' % self.arguments['volume_id']
+                print 'VOLUME\t%s' % self.volume_id
 

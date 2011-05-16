@@ -40,9 +40,8 @@ class CreateGroup(AWSQueryRequest):
 
     ServiceClass = euca2ools.commands.euare.Euare
 
-    name = """CreateGroup"""
     Description = """CreateGroup"""
-    Options = [Param(
+    Params = [Param(
         name='Path',
         short_name='p',
         long_name='path',
@@ -62,7 +61,7 @@ class CreateGroup(AWSQueryRequest):
         this value. """,
         )]
 
-    response = {u'type': u'object', u'name': u'CreateGroupResponse',
+    Response = {u'type': u'object', u'name': u'CreateGroupResponse',
                 u'properties': [{
         u'doc'
             : u' Contains the result of a successful invocation of the CreateGroup action. '
@@ -123,12 +122,8 @@ class CreateGroup(AWSQueryRequest):
                         : u'RequestId'}],
         }]}
 
+    def main(self, **args):
+        return self.send()
 
-def main(**args):
-    req = CreateGroup(**args)
-    return req.send()
-
-
-def main_cli():
-    req = CreateGroup()
-    req.do_cli()
+    def main_cli(self):
+        self.do_cli()

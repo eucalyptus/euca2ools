@@ -47,9 +47,11 @@ class GetConsoleOutput(euca2ools.commands.eucacommand.EucaCommand):
         print console_output.output
         
     def main(self):
-        euca_conn = self.make_connection_cli()
-        co = self.make_request_cli(euca_conn,
-                                   'get_console_output',
-                                   instance_id=self.arguments['instance_id'])
+        conn = self.make_connection_cli()
+        return self.make_request_cli(conn, 'get_console_output',
+                                   instance_id=self.instance_id)
+
+    def main_cli(self):
+        co = self.main()
         self.display_console_output(co)
 

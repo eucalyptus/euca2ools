@@ -76,11 +76,12 @@ class DescribeBundleTasks(euca2ools.commands.eucacommand.EucaCommand):
             print 'BUNDLE\t%s' % bundle_string
 
     def main(self):
-        euca_conn = self.make_connection_cli()
-        bundles = self.make_request_cli(euca_conn,
-                                        'get_all_bundle_tasks',
-                                        bundle_ids=self.arguments['bundle_id'])
-        
+        conn = self.make_connection_cli()
+        return self.make_request_cli(conn, 'get_all_bundle_tasks',
+                                     bundle_ids=self.bundle_id)
+
+    def main_cli(self):
+        bundles = self.main()
         self.display_bundles(bundles)
 
 

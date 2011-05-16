@@ -32,6 +32,7 @@
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
 import subprocess
+from euca2ools import exceptions
 
 def check_prerequisite_command(command):
     cmd = [command]

@@ -39,7 +39,7 @@ class RunInstances(euca2ools.commands.eucacommand.EucaCommand):
 
     Description = 'Starts instances.'
     Options = [Param(name='count', short_name='n', long_name='instance-count',
-                     optional=True, ptype='string',
+                     optional=True, ptype='string', default='1',
                      doc='Number of instances to run.'),
                Param(name='group_name', short_name='g', long_name='group',
                      optional=True, ptype='string', cardinality='*',
@@ -48,7 +48,7 @@ class RunInstances(euca2ools.commands.eucacommand.EucaCommand):
                      optional=True, ptype='string',
                      doc='Name of a keypair.'),
                Param(name='user_data', short_name='d', long_name='user-data',
-                     optional=True, ptype='string',
+                     optional=True, ptype='file',
                      doc='User data to pass to the instance.'),
                Param(name='user_data_file',
                      short_name='f', long_name='user-data-file',
@@ -59,7 +59,7 @@ class RunInstances(euca2ools.commands.eucacommand.EucaCommand):
                      doc='Deprecated.'),
                Param(name='instance_type',
                      short_name='t', long_name='instance-type',
-                     optional=True, ptype='string',
+                     optional=True, ptype='string', default='m1.small',
                      doc='VM Image type to run the instance as.'),
                Param(name='kernel', long_name='kernel',
                      optional=True, ptype='string',
@@ -73,7 +73,7 @@ class RunInstances(euca2ools.commands.eucacommand.EucaCommand):
                      doc="""Block device mapping for the instance(s).
                      Option may be used multiple times"""),
                Param(name='monitor', long_name='monitor',
-                     optional=True, ptype='boolean',
+                     optional=True, ptype='boolean', default=False,
                      doc='Enable monitoring for the instance.'),
                Param(name='subnet', short_name='s', long_name='subnet',
                      optional=True, ptype='string',
@@ -102,12 +102,7 @@ class RunInstances(euca2ools.commands.eucacommand.EucaCommand):
         return user_data
 
     def main(self):
-        image_id = self.arguments['image_id']
-        keyname = self.options.get('keyname', None)
-        kernel_id = self.options.get('kernel', None)
-        ramdisk_id = self.options.get('ramdisk', None)
-        count = self.options.get('count', '1')
-        t = count.split('-')
+        t = self.count.split('-')
         try:
             if len(t) > 1:
                 min_count = int(t[0])
@@ -118,39 +113,30 @@ class RunInstances(euca2ools.commands.eucacommand.EucaCommand):
             msg = 'Invalid value for --instance-count: %s' % count
             self.display_error_and_exit(msg)
                 
-        instance_type = self.options.get('instance_type', 'm1.small')
-        group_names = self.options.get('group', [])
-        user_data = self.options.get('user_data', None)
-        user_data_file = self.options.get('user_data_file', None)
-        addressing_type = self.options.get('addressing', None)
-        zone = self.options.get('zone', None)
-        block_device_map = self.options.get('block_device_mappings', [])
-        monitor = self.options.get('monitor', False)
-        subnet_id = self.options.get('subnet', None)
+        if not self.user_data:
+            if self.user_data_file:
+                self.user_data = self.read_user_data(self.user_data_file)
 
-        if not user_data:
-            if user_data_file:
-                self.validate_file(user_data_file)
-                user_data = self.read_user_data(user_data_file)
+        if self.block_device_mapping:
+            self.block_device_mapping = self.parse_block_device_args(self.block_device_mapping)
+        conn = self.make_connection_cli()
+        return self.make_request_cli(conn, 'run_instances',
+                                     image_id=self.image_id,
+                                     min_count=min_count,
+                                     max_count=max_count,
+                                     key_name=self.keyname,
+                                     security_groups=self.group_name,
+                                     user_data=self.user_data,
+                                     addressing_type=self.addressing,
+                                     instance_type=self.instance_type,
+                                     placement=self.zone,
+                                     kernel_id=self.kernel,
+                                     ramdisk_id=self.ramdisk,
+                                     block_device_map=self.block_device_mapping,
+                                     monitoring_enabled=self.monitor,
+                                     subnet_id=self.subnet)
 
-        if block_device_map:
-            block_device_map = self.parse_block_device_args(block_device_map)
-        euca_conn = self.make_connection_cli()
-        reservation = self.make_request_cli(euca_conn,
-                                            'run_instances',
-                                            image_id=image_id,
-                                            min_count=min_count,
-                                            max_count=max_count,
-                                            key_name=keyname,
-                                            security_groups=group_names,
-                                            user_data=user_data,
-                                            addressing_type=addressing_type,
-                                            instance_type=instance_type,
-                                            placement=zone,
-                                            kernel_id=kernel_id,
-                                            ramdisk_id=ramdisk_id,
-                                            block_device_map=block_device_map,
-                                            monitoring_enabled=monitor,
-                                            subnet_id=subnet_id)
+    def main_cli(self):
+        reservation = self.main()
         self.display_reservations(reservation)
 

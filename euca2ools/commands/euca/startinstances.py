@@ -46,9 +46,11 @@ class StartInstances(euca2ools.commands.eucacommand.EucaCommand):
             print 'INSTANCE\t%s' % instance.id
             
     def main(self):
-        euca_conn = self.make_connection_cli()
-        instances = self.make_request_cli(euca_conn,
-                                          'start_instances',
-                                          instance_ids=self.arguments['instance_id'])
+        conn = self.make_connection_cli()
+        return self.make_request_cli(conn, 'start_instances',
+                                     instance_ids=self.instance_id)
+
+    def main_cli(self):
+        instances = self.main()
         self.display_instances(instances)
 

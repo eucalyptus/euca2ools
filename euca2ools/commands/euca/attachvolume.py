@@ -52,12 +52,14 @@ class AttachVolume(euca2ools.commands.eucacommand.EucaCommand):
                   cardinality=1, optional=False)]
 
     def main(self):
-        euca_conn = self.make_connection_cli()
-        return_code = self.make_request_cli(euca_conn,
-                                            'attach_volume',
-                                            volume_id=self.arguments['volume_id'],
-                                            instance_id=self.options['instance_id'],
-                                            device=self.options['device'])
-        if return_code:
-            print 'VOLUME\t%s' % self.arguments['volume_id']
+        conn = self.make_connection_cli()
+        return self.make_request_cli(conn, 'attach_volume',
+                                     volume_id=self.volume_id,
+                                     instance_id=self.instance_id,
+                                     device=self.device)
+
+    def main_cli(self):
+        status = self.main()
+        if status:
+            print 'VOLUME\t%s' % self.volume_id
 

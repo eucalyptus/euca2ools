@@ -47,11 +47,11 @@ class UploadBundle(euca2ools.commands.eucacommand.EucaCommand):
                      doc='Name of the bucket to upload to.'),
                Param(name='manifest_path',
                      short_name='m', long_name='manifest',
-                     optional=False, ptype='string',
+                     optional=False, ptype='file',
                      doc='Path to the manifest file for bundled image.'),
                Param(name='canned_acl',  long_name='acl',
-                     optional=True, ptype='string',
-                     doc='Canned access policy (defaults to aws-exec-read)'),
+                     optional=True, ptype='string', default='aws-exec-read',
+                     doc='Canned access policy'),
                Param(name='ec2cert_path', long_name='ec2cert',
                      optional=True, ptype='file',
                      doc="Path to the Cloud's X509 public key certificate."),
@@ -64,7 +64,7 @@ class UploadBundle(euca2ools.commands.eucacommand.EucaCommand):
                      optional=True, ptype='integer',
                      doc='Uploads specified part and all subsequent parts.'),
                Param(name='skip_manifest', long_name='skipmanifest',
-                     optional=True, ptype='boolean',
+                     optional=True, ptype='boolean', default=False,
                      doc='Do not  upload the manifest.')]
 
     def ensure_bucket(self, bucket, canned_acl=None):
@@ -104,27 +104,42 @@ class UploadBundle(euca2ools.commands.eucacommand.EucaCommand):
         return parts
 
     def upload_manifest(self, bucket_instance, manifest_filename,
-                        canned_acl=None):
+                        canned_acl=None, upload_policy=None,
+                        upload_policy_signature=None):
         print 'Uploading manifest file'
         k = Key(bucket_instance)
         k.key = self.get_relative_filename(manifest_filename)
         manifest_file = open(manifest_filename, 'rb')
+        headers = {}
+        if upload_policy:
+            headers['S3UploadPolicy'] = upload_policy
+        if upload_policy_signature:
+            headers['S3UploadPolicySignature']=upload_policy_signature
+
         try:
-            k.set_contents_from_file(manifest_file, policy=canned_acl)
+            k.set_contents_from_file(manifest_file, policy=canned_acl,
+                                     headers=headers)
         except S3ResponseError, s3error:
             s3error_string = '%s' % s3error
             if s3error_string.find('403') >= 0:
                 print 'Permission denied while writing:', k.key
             else:
                 print s3error_string
-            sys.exit()
+            sys.exit(1)
 
     def upload_parts(self, bucket_instance, directory, parts,
-                     part_to_start_from, canned_acl=None):
+                     part_to_start_from, canned_acl=None,
+                     upload_policy=None, upload_policy_signature=None):
         if part_to_start_from:
             okay_to_upload = False
         else:
             okay_to_upload = True
+
+        headers = {}
+        if upload_policy:
+            headers['S3UploadPolicy'] = upload_policy
+        if upload_policy_signature:
+            headers['S3UploadPolicySignature']=upload_policy_signature
 
         for part in parts:
             if part == part_to_start_from:
@@ -135,37 +150,31 @@ class UploadBundle(euca2ools.commands.eucacommand.EucaCommand):
                 k.key = part
                 part_file = open(os.path.join(directory, part), 'rb')
                 try:
-                    k.set_contents_from_file(part_file, policy=canned_acl)
+                    k.set_contents_from_file(part_file, policy=canned_acl,
+                                             headers=headers)
                 except S3ResponseError, s3error:
                     s3error_string = '%s' % s3error
                     if s3error_string.find('403') >= 0:
                         print 'Permission denied while writing:', k.key
                     else:
                         print s3error_string
-                    sys.exit()
+                    sys.exit(1)
 
     def main(self):
-        bucket = self.options['bucket']
-        manifest_path = self.options['manifest_path']
-        ec2cert_path = self.options.get('ec2cert_path', None)
-        directory = self.options.get('bundle_path', None)
-        part = self.options.get('part', None)
-        canned_acl = self.options.get('canned_acl', 'aws-exec-read')
-        skipmanifest = self.options.get('skipmanifest', False)
-        debug = False
-        
-        self.validate_file(manifest_path)
-        
-        bucket_instance = self.ensure_bucket(bucket, canned_acl)
-        parts = self.get_parts(manifest_path)
-        manifest_directory, manifest_file = os.path.split(manifest_path)
-        if not directory:
-            directory = manifest_directory
-        if not skipmanifest and not part:
-            self.upload_manifest(bucket_instance, manifest_path, canned_acl)
-        self.upload_parts(bucket_instance, directory,
-                          parts, part, canned_acl)
-        print 'Uploaded image as %s/%s' % (bucket,
-                self.get_relative_filename(manifest_path))
+        bucket_instance = self.ensure_bucket(self.bucket, self.canned_acl)
+        parts = self.get_parts(self.manifest_path)
+        manifest_directory, manifest_file = os.path.split(self.manifest_path)
+        if not self.bundle_path:
+            self.bundle_path = manifest_directory
+        if not self.skip_manifest and not self.part:
+            self.upload_manifest(bucket_instance, self.manifest_path,
+                                 self.canned_acl)
+        self.upload_parts(bucket_instance, self.bundle_path,
+                          parts, self.part, self.canned_acl)
+        print 'Uploaded image as %s/%s' % (self.bucket,
+                self.get_relative_filename(self.manifest_path))
+
+    def main_cli(self):
+        self.main()
 
 

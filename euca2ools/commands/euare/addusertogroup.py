@@ -40,9 +40,8 @@ class AddUserToGroup(AWSQueryRequest):
 
     ServiceClass = euca2ools.commands.euare.Euare
 
-    name = """AddUserToGroup"""
     Description = """AddUserToGroup"""
-    Options = [Param(
+    Params = [Param(
         name='GroupName',
         short_name='g',
         long_name='group-name',
@@ -58,7 +57,7 @@ class AddUserToGroup(AWSQueryRequest):
         doc=""" Name of the User to add. """,
         )]
 
-    response = {u'type': u'object', u'name': u'AddUserToGroupResponse',
+    Response = {u'type': u'object', u'name': u'AddUserToGroupResponse',
                 u'properties': [{
         u'type': u'object',
         u'optional': False,
@@ -68,11 +67,8 @@ class AddUserToGroup(AWSQueryRequest):
         }]}
 
 
-def main(**args):
-    req = AddUserToGroup(**args)
-    return req.send()
+    def main(self, **args):
+       return self.send()
 
-
-def main_cli():
-    req = AddUserToGroup()
-    req.do_cli()
+    def main_cli(self):
+        self.do_cli()

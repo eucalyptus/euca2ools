@@ -38,16 +38,18 @@ class DescribeImages(euca2ools.commands.eucacommand.EucaCommand):
 
     Description = 'Shows information about machine images.'
     Options = [Param(name='all', short_name='a', long_name='all',
-                     optional=True, ptype='boolean',
+                     optional=True, ptype='boolean', default=False,
                      doc='Show all images that the user has access to.'),
                Param(name='owner', short_name='o', long_name='owner',
                      optional=True, ptype='string', cardinality='*',
-                     doc='Show only images owned by the user.'),
+                     doc="""Show only images owned by the user.
+                            Valid values: account ID|self|amazon"""),
                Param(name='executable_by',
                      short_name='x', long_name='executable-by',
                      optional=True, ptype='string', cardinality='*',
                      doc="""Show only images for which user has
-                     explicit launch permissions.""")]
+                     explicit launch permissions.
+                     Valid values: account ID|self|all""")]
     Args = [Param(name='image', ptype='string',
                   cardinality='+', optional=True)]
     Filters = [Param(name='architecture', ptype='string',
@@ -148,35 +150,28 @@ class DescribeImages(euca2ools.commands.eucacommand.EucaCommand):
                     print 'BLOCKDEVICEMAPPING\t%s' % block_dev_string
 
     def main(self):
-        all_ids = self.options.get('all', False)
-        owners = self.options.get('owner', [])
-        executable_by = self.options.get('executable_by', [])
-        image_ids = self.arguments.get('image', [])
-        if all_ids and (owners or executable_by or image_ids):
+        if self.all and (self.owner or self.executable_by or self.image):
             msg = '-a cannot be combined with owner, launch, or image list'
             self.display_error_and_exit(msg)
+
+        # default behavior is to list all images you have
+        # permission to launch
+        if len(self.owner) == 0 and len(self.executable_by) == 0 and \
+           len(self.image) == 0 and not self.all:
+            self.executable_by.append('self')
+
+        # if you specify "-a" then it means return ALL images
+        if self.all:
+            self.executable_by = []
+            self.owner = []
             
-        euca_conn = self.make_connection_cli()
-        if len(owners) == 0 and len(executable_by) == 0 and \
-           len(image_ids) == 0 and not all_ids:
-            owned = self.make_request_cli(euca_conn,
-                                          'get_all_images',
-                                          image_ids=None,
-                                          owners=['self'],
-                                          executable_by=None)
-            launchable = self.make_request_cli(euca_conn,
-                                               'get_all_images',
-                                               image_ids=None,
-                                               owners=None,
-                                               executable_by=['self'])
-            image_set = set()
-            image_set.update(owned)
-            image_set.update(launchable)
-            images = list(image_set)
-        else:
-            images = self.make_request_cli(euca_conn,
-                                           'get_all_images',
-                                           image_ids=image_ids,
-                                           owners=owners,
-                                           executable_by=executable_by)
+        conn = self.make_connection_cli()
+        images = self.make_request_cli(conn, 'get_all_images',
+                                       image_ids=self.image,
+                                       owners=self.owner,
+                                       executable_by=self.executable_by)
+        return images
+
+    def main_cli(self):
+        images = self.main()
         self.display_images(images)

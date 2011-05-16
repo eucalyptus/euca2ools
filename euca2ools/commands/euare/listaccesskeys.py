@@ -1,6 +1,3 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
 # Software License Agreement (BSD License)
 #
 # Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
@@ -43,9 +40,8 @@ class ListAccessKeys(AWSQueryRequest):
 
     ServiceClass = euca2ools.commands.euare.Euare
 
-    name = """ListAccessKeys"""
     Description = """ListAccessKeys"""
-    Options = [Param(
+    Params = [Param(
         name='UserName',
         short_name='u',
         long_name='user-name',
@@ -62,7 +58,7 @@ class ListAccessKeys(AWSQueryRequest):
             ,
         ), Param(
         name='MaxItems',
-        short_name='None',
+        short_name=None,
         long_name='max-items',
         ptype='integer',
         optional=True,
@@ -70,7 +66,7 @@ class ListAccessKeys(AWSQueryRequest):
             ,
         )]
 
-    response = {u'type': u'object', u'name': u'ListAccessKeysResponse',
+    Response = {u'type': u'object', u'name': u'ListAccessKeysResponse',
                 u'properties': [{
         u'doc'
             : u' Contains the result of a successful invocation of the ListAccessKeys action. '
@@ -150,14 +146,13 @@ class ListAccessKeys(AWSQueryRequest):
                         : u'RequestId'}],
         }]}
 
+    def cli_formatter(self, data):
+        for key in data.AccessKeyMetadata:
+            print key['AccessKeyId']
+            print key['Status']
 
-def main(**args):
-    req = ListAccessKeys(**args)
-    return req.send()
+    def main(self, **args):
+        return self.send()
 
-
-def main_cli():
-    req = ListAccessKeys()
-    req.do_cli()
-
-
+    def main_cli(self):
+        self.do_cli()

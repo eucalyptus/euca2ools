@@ -1,6 +1,3 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
 # Software License Agreement (BSD License)
 #
 # Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
@@ -43,9 +40,8 @@ class EnableMFADevice(AWSQueryRequest):
 
     ServiceClass = euca2ools.commands.euare.Euare
 
-    name = """EnableMFADevice"""
     Description = """EnableMFADevice"""
-    Options = [Param(
+    Params = [Param(
         name='UserName',
         short_name='u',
         long_name='user-name',
@@ -70,7 +66,7 @@ class EnableMFADevice(AWSQueryRequest):
         doc=""" An authentication code emitted by the device. """,
         ), Param(
         name='AuthenticationCode2',
-        short_name='None',
+        short_name=None,
         long_name='authentication-code2',
         ptype='string',
         optional=False,
@@ -78,7 +74,7 @@ class EnableMFADevice(AWSQueryRequest):
             ,
         )]
 
-    response = {u'type': u'object',
+    Response = {u'type': u'object',
                 u'name': u'EnableMFADeviceResponse', u'properties': [{
         u'type': u'object',
         u'optional': False,
@@ -88,13 +84,8 @@ class EnableMFADevice(AWSQueryRequest):
         }]}
 
 
-def main(**args):
-    req = EnableMFADevice(**args)
-    return req.send()
+    def main(self, **args):
+        return self.send()
 
-
-def main_cli():
-    req = EnableMFADevice()
-    req.do_cli()
-
-
+    def main_cli(self):
+        self.do_cli()

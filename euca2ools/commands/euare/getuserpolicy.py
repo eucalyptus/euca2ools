@@ -1,6 +1,3 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
 # Software License Agreement (BSD License)
 #
 # Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
@@ -43,9 +40,8 @@ class GetUserPolicy(AWSQueryRequest):
 
     ServiceClass = euca2ools.commands.euare.Euare
 
-    name = """GetUserPolicy"""
     Description = """GetUserPolicy"""
-    Options = [Param(
+    Params = [Param(
         name='UserName',
         short_name='u',
         long_name='user-name',
@@ -62,7 +58,7 @@ class GetUserPolicy(AWSQueryRequest):
         doc=""" Name of the policy document to get. """,
         )]
 
-    response = {u'type': u'object', u'name': u'GetUserPolicyResponse',
+    Response = {u'type': u'object', u'name': u'GetUserPolicyResponse',
                 u'properties': [{
         u'doc'
             : u' Contains the result of a successful invocation of the GetUserPolicy action. '
@@ -103,14 +99,11 @@ class GetUserPolicy(AWSQueryRequest):
                         : u'RequestId'}],
         }]}
 
+    def cli_formatter(self, data):
+        print data.PolicyDocument
 
-def main(**args):
-    req = GetUserPolicy(**args)
-    return req.send()
+    def main(self, **args):
+        return self.send()
 
-
-def main_cli():
-    req = GetUserPolicy()
-    req.do_cli()
-
-
+    def main_cli(self):
+        self.do_cli()

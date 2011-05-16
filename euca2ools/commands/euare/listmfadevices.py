@@ -1,6 +1,3 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
 # Software License Agreement (BSD License)
 #
 # Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
@@ -43,9 +40,8 @@ class ListMFADevices(AWSQueryRequest):
 
     ServiceClass = euca2ools.commands.euare.Euare
 
-    name = """ListMFADevices"""
     Description = """ListMFADevices"""
-    Options = [Param(
+    Params = [Param(
         name='UserName',
         short_name='u',
         long_name='user-name',
@@ -63,7 +59,7 @@ class ListMFADevices(AWSQueryRequest):
             ,
         ), Param(
         name='MaxItems',
-        short_name='None',
+        short_name=None,
         long_name='max-items',
         ptype='integer',
         optional=True,
@@ -71,7 +67,7 @@ class ListMFADevices(AWSQueryRequest):
             ,
         )]
 
-    response = {u'type': u'object', u'name': u'ListMFADevicesResponse',
+    Response = {u'type': u'object', u'name': u'ListMFADevicesResponse',
                 u'properties': [{
         u'doc'
             : u' Contains the result of a successful invocation of the ListMFADevices action. '
@@ -138,14 +134,12 @@ class ListMFADevices(AWSQueryRequest):
                         : u'RequestId'}],
         }]}
 
+    def cli_formatter(self, data):
+        for mfa in data.MFADevices:
+            print mfa['SerialNumber']
 
-def main(**args):
-    req = ListMFADevices(**args)
-    return req.send()
+    def main(self, **args):
+        return self.send()
 
-
-def main_cli():
-    req = ListMFADevices()
-    req.do_cli()
-
-
+    def main_cli(self):
+        self.do_cli()

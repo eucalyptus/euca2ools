@@ -1,6 +1,0 @@
-#!/usr/bin/env python
-
-import euca2ools.commands.euare.getuserpolicy
-
-if __name__ == '__main__':
-    euca2ools.commands.euare.getuserpolicy.main_cli()

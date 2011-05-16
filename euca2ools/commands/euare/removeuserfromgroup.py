@@ -1,6 +1,3 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
 # Software License Agreement (BSD License)
 #
 # Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
@@ -43,9 +40,8 @@ class RemoveUserFromGroup(AWSQueryRequest):
 
     ServiceClass = euca2ools.commands.euare.Euare
 
-    name = """RemoveUserFromGroup"""
     Description = """RemoveUserFromGroup"""
-    Options = [Param(
+    Params = [Param(
         name='GroupName',
         short_name='g',
         long_name='group-name',
@@ -61,7 +57,7 @@ class RemoveUserFromGroup(AWSQueryRequest):
         doc=""" Name of the User to remove. """,
         )]
 
-    response = {u'type': u'object',
+    Response = {u'type': u'object',
                 u'name': u'RemoveUserFromGroupResponse',
                 u'properties': [{
         u'type': u'object',
@@ -71,14 +67,8 @@ class RemoveUserFromGroup(AWSQueryRequest):
                         : u'RequestId'}],
         }]}
 
+    def main(self, **args):
+        return self.send()
 
-def main(**args):
-    req = RemoveUserFromGroup(**args)
-    return req.send()
-
-
-def main_cli():
-    req = RemoveUserFromGroup()
-    req.do_cli()
-
-
+    def main_cli(self):
+        self.do_cli()

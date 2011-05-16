@@ -38,5 +38,5 @@ import euca2ools.commands.euca.unbundle
 
 if __name__ == '__main__':
     cmd = euca2ools.commands.euca.unbundle.Unbundle()
-    cmd.main()
+    cmd.main_cli()
 

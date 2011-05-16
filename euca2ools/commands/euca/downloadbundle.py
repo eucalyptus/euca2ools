@@ -54,7 +54,7 @@ class DownloadBundle(euca2ools.commands.eucacommand.EucaCommand):
                      doc='Prefix used to identify the image in the bucket'),
                Param(name='directory',
                      short_name='d', long_name='directory',
-                     optional=True, ptype='dir',
+                     optional=True, ptype='dir', default='/tmp',
                      doc='The directory to download the parts to.')]
 
     def ensure_bucket(self, bucket):
@@ -117,13 +117,10 @@ class DownloadBundle(euca2ools.commands.eucacommand.EucaCommand):
                 part_file.close()
 
     def main(self):
-        bucket = self.options['bucket']
-        manifest_path = self.options('manifest_path', None)
-        directory = self.options.get('bundle_path', os.path.abspath('/tmp'))
-        image_prefix = self.options.get('prefix', None)
+        bucket_instance = self.ensure_bucket(self.bucket)
+        manifests = self.get_manifests(bucket_instance, self.image_prefix)
+        self.download_manifests(bucket_instance, manifests, self.directory)
+        self.download_parts(bucket_instance, manifests, self.directory)
 
-        bucket_instance = self.ensure_bucket(bucket)
-        manifests = self.get_manifests(bucket_instance, image_prefix)
-        self.download_manifests(bucket_instance, manifests, directory)
-        self.download_parts(bucket_instance, manifests, directory)
-
+    def main_cli(self):
+        self.main()

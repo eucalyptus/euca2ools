@@ -47,10 +47,12 @@ class AddKeyPair(euca2ools.commands.eucacommand.EucaCommand):
         print keypair.material
 
     def main(self):
-        euca_conn = self.make_connection_cli()
-        keypair = self.make_request_cli(euca_conn,
-                                      'create_key_pair',
-                                      key_name=self.arguments['keypair_name'])
+        conn = self.make_connection_cli()
+        return self.make_request_cli(conn, 'create_key_pair',
+                                      key_name=self.keypair_name)
+
+    def main_cli(self):
+        keypair = self.main()
         self.display_keypair(keypair)
 
 

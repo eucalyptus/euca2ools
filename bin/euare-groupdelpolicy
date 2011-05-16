@@ -1,0 +1,7 @@
+#!/usr/bin/env python
+
+import euca2ools.commands.euare.deletegrouppolicy
+
+if __name__ == '__main__':
+    r = euca2ools.commands.euare.deletegrouppolicy.DeleteGroupPolicy()
+    r.main_cli()

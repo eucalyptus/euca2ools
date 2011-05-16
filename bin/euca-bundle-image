@@ -38,5 +38,5 @@ import euca2ools.commands.euca.bundleimage
 
 if __name__ == '__main__':
     cmd = euca2ools.commands.euca.bundleimage.BundleImage()
-    cmd.main()
+    cmd.main_cli()
 

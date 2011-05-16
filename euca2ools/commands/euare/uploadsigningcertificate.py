@@ -1,6 +1,3 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
 # Software License Agreement (BSD License)
 #
 # Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
@@ -43,25 +40,31 @@ class UploadSigningCertificate(AWSQueryRequest):
 
     ServiceClass = euca2ools.commands.euare.Euare
 
-    name = """UploadSigningCertificate"""
     Description = """UploadSigningCertificate"""
-    Options = [Param(
+    Params = [Param(
+        name='CertificateBody',
+        short_name='c',
+        long_name='certificate-body',
+        ptype='string',
+        optional=True,
+        doc=""" The contents of the signing certificate. """,
+        ), Param(
+        name='CertificateBody',
+        short_name='f',
+        long_name='certificate-file',
+        ptype='file',
+        optional=True,
+        doc="""A file containing the signing certificate. """,
+        ), Param(
         name='UserName',
         short_name='u',
         long_name='user-name',
         ptype='string',
         optional=True,
         doc=""" Name of the User the signing certificate is for. """,
-        ), Param(
-        name='CertificateBody',
-        short_name='c',
-        long_name='certificate-body',
-        ptype='string',
-        optional=False,
-        doc=""" The contents of the signing certificate. """,
         )]
 
-    response = {u'type': u'object',
+    Response = {u'type': u'object',
                 u'name': u'UploadSigningCertificateResponse',
                 u'properties': [{
         u'doc'
@@ -126,14 +129,8 @@ class UploadSigningCertificate(AWSQueryRequest):
                         : u'RequestId'}],
         }]}
 
+    def main(self, **args):
+        return self.send()
 
-def main(**args):
-    req = UploadSigningCertificate(**args)
-    return req.send()
-
-
-def main_cli():
-    req = UploadSigningCertificate()
-    req.do_cli()
-
-
+    def main_cli(self):
+        self.do_cli()

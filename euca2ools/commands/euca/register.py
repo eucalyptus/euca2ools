@@ -52,7 +52,7 @@ class Register(euca2ools.commands.eucacommand.EucaCommand):
                      doc='Name of the image.'),
                Param(name='architecture',
                      short_name='a', long_name='architecture',
-                     optional=True, ptype='string',
+                     optional=True, ptype='string', default='i386',
                      doc="""The architecture of the image.
                      Valid values are: i386 | x86_64"""),
                Param(name='kernel', long_name='kernel',
@@ -68,37 +68,30 @@ class Register(euca2ools.commands.eucacommand.EucaCommand):
                      optional=True, ptype='string',
                      doc='The snapshot ID to use as the root device.')]
     Args = [Param(name='image_location',
-                  optional=False, ptype='string',
-                  doc='path to the uploaded image (bucket/manifest).')]
+                  optional=True, ptype='string',
+                  doc="""Path to the uploaded image (bucket/manifest).
+                         Required if registering an S3-based image""")]
                
     def main(self):
-        image_location = self.arguments['image_location']
-        block_device_map = self.options.get('block_device_mapping', [])
-        description = self.options.get('description', None)
-        image_name = self.options.get('name', None)
-        architecture = self.options.get('architecture', 'i386')
-        kernel = self.options.get('kernel', None)
-        ramdisk = self.options.get('ramdisk', None)
-        root_device_name = self.options.get('root_device_name', None)
-        snapshot = self.options.get('snapshot', None)
+        if self.snapshot:
+            if not self.root_device_name:
+                self.root_device_name = '/dev/sda1'
+            self.block_device_mapping.append('%s=%s' % (self.root_device_name,
+                                                    self.snapshot))
+        if self.block_device_mapping:
+            self.block_device_mapping = self.parse_block_device_args(self.block_device_mapping)
+        conn = self.make_connection_cli()
+        return self.make_request_cli(conn, 'register_image',
+                                     name=self.name,
+                                     description=self.description,
+                                     image_location=self.image_location,
+                                     architecture=self.architecture,
+                                     kernel_id=self.kernel,
+                                     ramdisk_id=self.ramdisk,
+                                     root_device_name=self.root_device_name,
+                                     block_device_map=self.block_device_mapping)
 
-        if snapshot:
-            if not root_device_name:
-                root_device_name = '/dev/sda1'
-            block_device_map.append('%s=%s' % (root_device_name, snapshot))
-        if block_device_map:
-            block_device_map = self.parse_block_device_args(block_device_map)
-        euca_conn = self.make_connection_cli()
-        image_id = self.make_request_cli(euca_conn,
-                                         'register_image',
-                                         name=image_name,
-                                         description=description,
-                                         image_location=image_location,
-                                         architecture=architecture,
-                                         kernel_id=kernel,
-                                         ramdisk_id=ramdisk,
-                                         root_device_name=root_device_name,
-                                         block_device_map=block_device_map)
-
+    def main_cli(self):
+        image_id = self.main()
         if image_id:
             print 'IMAGE\t%s' % image_id

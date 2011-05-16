@@ -51,15 +51,19 @@ class ResetImageAttribute(euca2ools.commands.eucacommand.EucaCommand):
         attr_names = [ opt.name for opt in self.Options ]
         for name in attr_names:
             if not attribute:
-                if self.options.get(name, False):
+                if getattr(self, name):
                     attribute = name
         if attribute:
-            euca_conn = self.make_connection_cli()
-            return_code = self.make_request_cli(euca_conn,
-                                                'reset_image_attribute',
-                                                image_id=self.arguments['image_id'],
-                                                attribute=attribute)
-            print 'IMAGE\t%s' % self.arguments['image_id']
+            conn = self.make_connection_cli()
+            return self.make_request_cli(conn, 'reset_image_attribute',
+                                         image_id=self.image_id,
+                                         attribute=attribute)
         else:
             msg = 'image attribute must be specified'
             self.display_error_and_exit(msg)
+
+    def main_cli(self):
+        status = self.main()
+        if status:
+            print 'IMAGE\t%s' % self.image_id
+        

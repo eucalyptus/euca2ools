@@ -1,6 +1,3 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
 # Software License Agreement (BSD License)
 #
 # Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
@@ -43,9 +40,8 @@ class DeleteUserPolicy(AWSQueryRequest):
 
     ServiceClass = euca2ools.commands.euare.Euare
 
-    name = """DeleteUserPolicy"""
     Description = """DeleteUserPolicy"""
-    Options = [Param(
+    Params = [Param(
         name='UserName',
         short_name='u',
         long_name='user-name',
@@ -61,7 +57,7 @@ class DeleteUserPolicy(AWSQueryRequest):
         doc=""" Name of the policy document to delete. """,
         )]
 
-    response = {u'type': u'object',
+    Response = {u'type': u'object',
                 u'name': u'DeleteUserPolicyResponse', u'properties': [{
         u'type': u'object',
         u'optional': False,
@@ -71,13 +67,8 @@ class DeleteUserPolicy(AWSQueryRequest):
         }]}
 
 
-def main(**args):
-    req = DeleteUserPolicy(**args)
-    return req.send()
+    def main(self, **args):
+        return self.send()
 
-
-def main_cli():
-    req = DeleteUserPolicy()
-    req.do_cli()
-
-
+    def main_cli(self):
+        self.do_cli()

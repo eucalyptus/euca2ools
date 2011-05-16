@@ -40,9 +40,8 @@ class CreateAccessKey(AWSQueryRequest):
 
     ServiceClass = euca2ools.commands.euare.Euare
 
-    name = """CreateAccessKey"""
     Description = """CreateAccessKey"""
-    Options = [Param(
+    Params = [Param(
         name='UserName',
         short_name='u',
         long_name='user-name',
@@ -51,7 +50,7 @@ class CreateAccessKey(AWSQueryRequest):
         doc=""" The User name that the new key will belong to. """,
         )]
 
-    response = {u'type': u'object',
+    Response = {u'type': u'object',
                 u'name': u'CreateAccessKeyResponse', u'properties': [{
         u'doc': u' Contains the result of a successful invocation \
         of the CreateAccessKey action. ',
@@ -107,12 +106,12 @@ class CreateAccessKey(AWSQueryRequest):
                          u'name': u'RequestId'}],
         }]}
 
+    def cli_formatter(self, data):
+        print data.AccessKey['AccessKeyId']
+        print data.AccessKey['SecretAccessKey']
 
-def main(**args):
-    req = CreateAccessKey(**args)
-    return req.send()
+    def main(self, **args):
+       return self.send()
 
-
-def main_cli():
-    req = CreateAccessKey()
-    req.do_cli()
+    def main_cli(self):
+        self.do_cli()

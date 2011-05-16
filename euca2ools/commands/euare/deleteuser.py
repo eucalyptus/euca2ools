@@ -1,6 +1,3 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
 # Software License Agreement (BSD License)
 #
 # Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
@@ -43,9 +40,8 @@ class DeleteUser(AWSQueryRequest):
 
     ServiceClass = euca2ools.commands.euare.Euare
 
-    name = """DeleteUser"""
     Description = """DeleteUser"""
-    Options = [Param(
+    Params = [Param(
         name='UserName',
         short_name='u',
         long_name='user-name',
@@ -54,7 +50,7 @@ class DeleteUser(AWSQueryRequest):
         doc=""" Name of the User to delete. """,
         )]
 
-    response = {u'type': u'object', u'name': u'DeleteUserResponse',
+    Response = {u'type': u'object', u'name': u'DeleteUserResponse',
                 u'properties': [{
         u'type': u'object',
         u'optional': False,
@@ -64,13 +60,8 @@ class DeleteUser(AWSQueryRequest):
         }]}
 
 
-def main(**args):
-    req = DeleteUser(**args)
-    return req.send()
+    def main(self, **args):
+        return self.send()
 
-
-def main_cli():
-    req = DeleteUser()
-    req.do_cli()
-
-
+    def main_cli(self):
+        self.do_cli()

@@ -38,5 +38,5 @@ import euca2ools.commands.euca.getconsoleoutput
 
 if __name__ == '__main__':
     cmd = euca2ools.commands.euca.getconsoleoutput.GetConsoleOutput()
-    cmd.main()
+    cmd.main_cli()
 

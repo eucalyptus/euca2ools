@@ -72,22 +72,23 @@ class BundleImage(euca2ools.commands.eucacommand.EucaCommand):
                      (comma-separated list of key=value pairs)."""),
                Param(name='destination',
                      short_name='d', long_name='destination',
-                     optional=True, ptype='string',
+                     optional=True, ptype='string', default='/tmp',
                      doc="""Directory to store the bundled image in.
                      Defaults to /tmp.  Recommended."""),
                Param(name='ec2cert_path', long_name='ec2cert',
                      optional=True, ptype='file',
                      doc="Path to the Cloud's X509 public key certificate."),
-               Param(name='target_architecture',
+               Param(name='target_arch',
                      short_name='r', long_name='arch',
-                     optional=True, ptype='string',
+                     optional=True, ptype='string', default='x86_64',
                      doc="""Target architecture for the image
                      Valid values: i386 | x86_64."""),
                Param(name='batch', long_name='batch',
                      optional=True, ptype='boolean',
                      doc='Run in batch mode.  Compatibility only, has no effect')]
 
-    def get_block_devs(self, mapping_str):
+    def get_block_devs(self):
+        mapping_str = self.block_device_mapping
         mapping = []
         mapping_pairs = mapping_str.split(',')
         for m in mapping_pairs:
@@ -97,10 +98,9 @@ class BundleImage(euca2ools.commands.eucacommand.EucaCommand):
                 mapping.append(m_parts[1])
         return mapping
 
-    def add_product_codes(self, product_code_string, product_codes):
-        if not product_codes:
-            product_codes = []
-        product_code_values = product_code_string.split(',')
+    def add_product_codes(self):
+        product_codes = []
+        product_code_values = self.product_codes.split(',')
 
         for p in product_code_values:
             product_codes.append(p)
@@ -108,50 +108,46 @@ class BundleImage(euca2ools.commands.eucacommand.EucaCommand):
         return product_codes
 
     def main(self):
-        image_path = self.options.get('image_path', None)
-        cert_path = self.options.get('cert_path',
-                                     self.get_environ('EC2_CERT'))
-        private_key_path = self.options.get('private_key_path',
-                                            self.get_environ('EC2_PRIVATE_KEY'))
-        user = self.options.get('user', self.get_environ('EC2_USER_ID'))
-        ec2cert_path = self.options.get('ec2cert_path',
-                                        self.get_environ('EUCALYPTUS_CERT'))
-        kernel = self.options.get('kernel_id', None)
-        ramdisk = self.options.get('ramdisk_id', None)
-        prefix = self.options.get('prefix', 'image')
-        destination_path = self.options.get('destination_path', '/tmp')
-        target_arch = self.options.get('target_arch', 'x86_64')
-        block_device_map = self.options.get('block_device_map', None)
-        product_codes = self.options.get('product_codes', None)
+        if self.cert_path is None:
+            self.cert_path = self.get_environ('EC2_CERT')
+        if self.private_key_path is None:
+            self.private_key_path = self.get_environ('EC2_PRIVATE_KEY')
+        if self.user is None:
+            self.user = self.get_environ('EC2_USER_ID')
+        if self.ec2cert_path is None:
+            self.ec2cert_path = self.get_environ('EUCALYPTUS_CERT')
         
         bundler = euca2ools.bundler.Bundler(self)
         
-        user = user.replace('-', '')
+        self.user = self.user.replace('-', '')
 
-        image_size = bundler.check_image(image_path, destination_path)
-        if not prefix:
-            prefix = self.get_relative_filename(image_path)
+        image_size = bundler.check_image(self.image_path, self.destination)
+        if not self.prefix:
+            self.prefix = self.get_relative_filename(self.image_path)
         try:
-            (tgz_file, sha_tar_digest) = bundler.tarzip_image(prefix, image_path,
-                                                              destination_path)
+            (tgz_file, sha_tar_digest) = bundler.tarzip_image(self.prefix,
+                                                              self.image_path,
+                                                              self.destination)
         except (NotFoundError, CommandFailed):
             sys.exit(1)
 
         (encrypted_file, key, iv, bundled_size) = bundler.encrypt_image(tgz_file)
         os.remove(tgz_file)
         (parts, parts_digest) = bundler.split_image(encrypted_file)
-        if block_device_map:
-            block_device_map = self.get_block_devs(block_device_map)
-        if product_codes:
-            product_codes = self.add_product_codes(product_codes)
-        bundler.generate_manifest(destination_path, prefix,
+        if self.block_device_mapping:
+            self.block_device_mapping = self.get_block_devs()
+        if self.product_codes:
+            self.product_codes = self.add_product_codes(self.product_codes)
+        bundler.generate_manifest(self.destination, self.prefix,
                                   parts, parts_digest,
-                                  image_path, key, iv,
-                                  cert_path, ec2cert_path,
-                                  private_key_path,
-                                  target_arch, image_size,
+                                  self.image_path, key, iv,
+                                  self.cert_path, self.ec2cert_path,
+                                  self.private_key_path,
+                                  self.target_arch, image_size,
                                   bundled_size, sha_tar_digest,
-                                  user, kernel, ramdisk,
-                                  block_device_map, product_codes)
+                                  self.user, self.kernel_id, self.ramdisk_id,
+                                  self.block_device_mapping, self.product_codes)
         os.remove(encrypted_file)
+
+    main_cli = main
 

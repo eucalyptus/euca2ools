@@ -93,18 +93,20 @@ class DescribeImageAttribute(euca2ools.commands.eucacommand.EucaCommand):
         attr_names = [ opt.name for opt in self.Options ]
         for name in attr_names:
             if not attribute:
-                if self.options.get(name, False):
+                if getattr(self, name):
                     attribute = name
         if attribute:
-            euca_conn = self.make_connection_cli()
-            image_attribute = self.make_request_cli(euca_conn,
-                                                    'get_image_attribute',
-                                                    image_id=self.arguments['image_id'],
-                                                    attribute=attribute)
-            if image_attribute:
-                self.display_image_attribute(self.arguments['image_id'],
-                                             image_attribute)
-            else:
-                msg = 'image attribute must be specified'
-                self.display_error_and_exit(msg)
+            conn = self.make_connection_cli()
+            return self.make_request_cli(conn, 'get_image_attribute',
+                                         image_id=self.image_id,
+                                         attribute=attribute)
+        else:
+            msg = 'image attribute must be specified'
+            self.display_error_and_exit(msg)
+
+    def main_cli(self):
+        image_attribute = self.main()
+        if image_attribute:
+            self.display_image_attribute(self.image_id,
+                                         image_attribute)
 

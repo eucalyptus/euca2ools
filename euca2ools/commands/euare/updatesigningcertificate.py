@@ -1,6 +1,3 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
 # Software License Agreement (BSD License)
 #
 # Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
@@ -43,9 +40,8 @@ class UpdateSigningCertificate(AWSQueryRequest):
 
     ServiceClass = euca2ools.commands.euare.Euare
 
-    name = """UpdateSigningCertificate"""
     Description = """UpdateSigningCertificate"""
-    Options = [Param(
+    Params = [Param(
         name='UserName',
         short_name='u',
         long_name='user-name',
@@ -66,12 +62,13 @@ class UpdateSigningCertificate(AWSQueryRequest):
         short_name='s',
         long_name='status',
         ptype='enum',
+        choices=['Active', 'Inactive'],
         optional=False,
         doc=""" The status you want to assign to the certificate. Active means the certificate can be used for API calls to AWS, while Inactive means the certificate cannot be used. """
             ,
         )]
 
-    response = {u'type': u'object',
+    Response = {u'type': u'object',
                 u'name': u'UpdateSigningCertificateResponse',
                 u'properties': [{
         u'type': u'object',
@@ -81,14 +78,8 @@ class UpdateSigningCertificate(AWSQueryRequest):
                         : u'RequestId'}],
         }]}
 
+    def main(self, **args):
+        return self.send()
 
-def main(**args):
-    req = UpdateSigningCertificate(**args)
-    return req.send()
-
-
-def main_cli():
-    req = UpdateSigningCertificate()
-    req.do_cli()
-
-
+    def main_cli(self):
+        self.do_cli()

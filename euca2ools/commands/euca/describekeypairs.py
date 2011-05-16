@@ -50,10 +50,11 @@ class DescribeKeyPairs(euca2ools.commands.eucacommand.EucaCommand):
             print 'KEYPAIR\t%s' % keypair_string
 
     def main(self):
-        euca_conn = self.make_connection_cli()
-        keypairs = self.make_request_cli(euca_conn,
-                                         'get_all_key_pairs',
-                                         keynames=self.arguments['keypair'])
-        
+        conn = self.make_connection_cli()
+        return self.make_request_cli(conn, 'get_all_key_pairs',
+                                     keynames=self.keypair)
+
+    def main_cli(self):
+        keypairs = self.main()
         self.display_keypairs(keypairs)
 

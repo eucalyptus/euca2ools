@@ -1,6 +1,3 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
 # Software License Agreement (BSD License)
 #
 # Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
@@ -43,9 +40,8 @@ class UpdateGroup(AWSQueryRequest):
 
     ServiceClass = euca2ools.commands.euare.Euare
 
-    name = """UpdateGroup"""
     Description = """UpdateGroup"""
-    Options = [Param(
+    Params = [Param(
         name='GroupName',
         short_name='g',
         long_name='group-name',
@@ -63,7 +59,7 @@ class UpdateGroup(AWSQueryRequest):
             ,
         ), Param(
         name='NewGroupName',
-        short_name='None',
+        short_name=None,
         long_name='new-group-name',
         ptype='string',
         optional=True,
@@ -71,7 +67,7 @@ class UpdateGroup(AWSQueryRequest):
             ,
         )]
 
-    response = {u'type': u'object', u'name': u'UpdateGroupResponse',
+    Response = {u'type': u'object', u'name': u'UpdateGroupResponse',
                 u'properties': [{
         u'type': u'object',
         u'optional': False,
@@ -80,14 +76,8 @@ class UpdateGroup(AWSQueryRequest):
                         : u'RequestId'}],
         }]}
 
+    def main(self, **args):
+        return self.send()
 
-def main(**args):
-    req = UpdateGroup(**args)
-    return req.send()
-
-
-def main_cli():
-    req = UpdateGroup()
-    req.do_cli()
-
-
+    def main_cli(self):
+        self.do_cli()

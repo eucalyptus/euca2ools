@@ -60,19 +60,17 @@ class CreateVolume(euca2ools.commands.eucacommand.EucaCommand):
         print 'VOLUME\t%s' % volume_string
 
     def main(self):
-        size = self.options.get('size', None)
-        snapshot_id = self.options.get('snapshot', None)
-        zone = self.options.get('zone')
-
-        if (size or snapshot_id) and zone:
-            euca_conn = self.make_connection_cli()
-            volume = self.make_request_cli(euca_conn,
-                                           'create_volume',
-                                           size=size, zone=zone,
-                                           snapshot=snapshot_id)
-            if volume:
-                self.display_volume(volume)
+        if (self.size or self.snapshot) and self.zone:
+            conn = self.make_connection_cli()
+            return self.make_request_cli(conn, 'create_volume',
+                                         size=self.size, zone=self.zone,
+                                         snapshot=self.snapshot)
         else:
             msg = 'Either size or snapshot_id must be specified'
             self.display_error_and_exit(msg)
+
+    def main_cli(self):
+        volume = self.main()
+        if volume:
+            self.display_volume(volume)
 

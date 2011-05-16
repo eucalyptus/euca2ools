@@ -1,6 +1,3 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
 # Software License Agreement (BSD License)
 #
 # Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
@@ -43,9 +40,8 @@ class DeleteAccessKey(AWSQueryRequest):
 
     ServiceClass = euca2ools.commands.euare.Euare
 
-    name = """DeleteAccessKey"""
     Description = """DeleteAccessKey"""
-    Options = [Param(
+    Params = [Param(
         name='UserName',
         short_name='u',
         long_name='user-name',
@@ -54,15 +50,15 @@ class DeleteAccessKey(AWSQueryRequest):
         doc=""" Name of the User whose key you want to delete. """,
         ), Param(
         name='AccessKeyId',
-        short_name='a',
-        long_name='access-key-id',
+        short_name='k',
+        long_name='user-key-id',
         ptype='string',
         optional=False,
         doc=""" The Access Key ID for the Access Key ID and Secret Access Key you want to delete. """
             ,
         )]
 
-    response = {u'type': u'object',
+    Response = {u'type': u'object',
                 u'name': u'DeleteAccessKeyResponse', u'properties': [{
         u'type': u'object',
         u'optional': False,
@@ -71,14 +67,8 @@ class DeleteAccessKey(AWSQueryRequest):
                         : u'RequestId'}],
         }]}
 
+    def main(self, **args):
+        return self.send()
 
-def main(**args):
-    req = DeleteAccessKey(**args)
-    return req.send()
-
-
-def main_cli():
-    req = DeleteAccessKey()
-    req.do_cli()
-
-
+    def main_cli(self):
+        self.do_cli()

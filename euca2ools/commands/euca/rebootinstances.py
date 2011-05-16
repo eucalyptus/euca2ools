@@ -42,10 +42,12 @@ class RebootInstances(euca2ools.commands.eucacommand.EucaCommand):
                   doc='unique identifier for instance to reboot')]
 
     def main(self):
-        euca_conn = self.make_connection_cli()
-        status = self.make_request_cli(euca_conn,
-                                       'reboot_instances',
-                                       instance_ids=self.arguments['instance_id'])
-        for instance_id in self.arguments['instance_ids']:
+        conn = self.make_connection_cli()
+        return self.make_request_cli(conn, 'reboot_instances',
+                                     instance_ids=self.instance_id)
+
+    def main_cli(self):
+        self.main()
+        for instance_id in self.instance_id:
             print 'INSTANCE\t%s' % instance_id
 

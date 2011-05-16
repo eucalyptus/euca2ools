@@ -47,7 +47,7 @@ class CreateTags(euca2ools.commands.eucacommand.EucaCommand):
 
     def main(self):
         tags = {}
-        for tagpair in self.options['tag']:
+        for tagpair in self.tag:
             t = tagpair.split('=')
             name = t[0]
             if len(t) == 1:
@@ -55,13 +55,15 @@ class CreateTags(euca2ools.commands.eucacommand.EucaCommand):
             else:
                 value = t[1]
             tags[name] = value
-        euca_conn = self.make_connection_cli()
-        status = self.make_request_cli(euca_conn,
-                                       'create_tags',
-                                       resource_ids=self.arguments['resource_id'],
+        conn = self.make_connection_cli()
+        return self.make_request_cli(conn, 'create_tags',
+                                       resource_ids=self.resource_id,
                                        tags=tags)
+
+    def main_cli(self):
+        status = self.main()
         if status:
-            for resource_id in self.arguments['resource_id']:
+            for resource_id in self.resource_id:
                 for name in tags:
                     value = tags.get(name, '')
                     s = 'TAG\t%s\t%s\t%s' % (resource_id, name, value)

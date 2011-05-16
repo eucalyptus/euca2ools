@@ -42,10 +42,12 @@ class ReleaseAddress(euca2ools.commands.eucacommand.EucaCommand):
                   cardinality=1, optional=False)]
 
     def main(self):
-        euca_conn = self.make_connection_cli()
-        return_code = self.make_request_cli(euca_conn,
-                                            'release_address',
-                                            public_ip=self.arguments['ip'])
-        if return_code:
-            print 'ADDRESS\t%s' % (self.arguments['ip'])
+        conn = self.make_connection_cli()
+        return self.make_request_cli(conn, 'release_address',
+                                     public_ip=self.ip)
+
+    def main_cli(self):
+        status = self.main()
+        if self:
+            print 'ADDRESS\t%s' % (self.ip)
 

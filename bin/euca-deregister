@@ -38,5 +38,5 @@ import euca2ools.commands.euca.deregister
 
 if __name__ == '__main__':
     cmd = euca2ools.commands.euca.deregister.Deregister()
-    cmd.main()
+    cmd.main_cli()
 

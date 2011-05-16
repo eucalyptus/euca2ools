@@ -39,13 +39,19 @@ import urlparse
 import boto
 import euca2ools
 import euca2ools.utils
-import euca2ools.validate
 import euca2ools.exceptions
+import euca2ools.nc.auth
+import euca2ools.nc.connection
 from boto.ec2.regioninfo import RegionInfo
 from boto.s3.connection import OrdinaryCallingFormat
+from boto.ec2.blockdevicemapping import BlockDeviceMapping, BlockDeviceType
 from boto.roboto.param import Param
 
 SYSTEM_EUCARC_PATH = os.path.join('/etc', 'euca2ools', 'eucarc')
+
+# This allows us to freeze the API version we use when talking
+# to EC2 regardless of the version used by default in boto
+EC2_API_VERSION = '2009-11-30'
 
 EC2RegionData = {
     'us-east-1' : 'ec2.us-east-1.amazonaws.com',
@@ -57,11 +63,11 @@ class EucaCommand(object):
 
     Description = 'Base class'
     StandardOptions = [Param(name='access_key',
-                             short_name='A', long_name='access-key',
+                             short_name='a', long_name='access-key',
                              doc="User's Access Key ID.",
                              optional=True),
                        Param(name='secret_key',
-                             short_name='S', long_name='secret-key',
+                             short_name='s', long_name='secret-key',
                              doc="User's Secret Key.",
                              optional=True),
                        Param(name='config_path',
@@ -85,19 +91,20 @@ class EucaCommand(object):
                              optional=True),
                        Param(short_name=None, long_name='version',
                              doc='Display the version of this tool.',
+                             optional=True, ptype='boolean'),
+                       Param(long_name='euca-auth',
+                             doc='Use NC authentication mode',
                              optional=True, ptype='boolean')]
     Options = []
     Args = []
     Filters = []
 
-    def __init__(self, compat=False, is_s3=False, is_euca=False):
-        # TODO: handle compat mode
-        # TODO: validations?
+    def __init__(self, is_euca=False, debug=False):
+        self.access_key_short_name = '-a'
+        self.secret_key_short_name = '-s'
         self.ec2_user_access_key = None
         self.ec2_user_secret_key = None
         self.url = None
-        self.options = {}
-        self.arguments = {}
         self.filters = {}
         self.region_name = None
         self.region = RegionInfo()
@@ -105,16 +112,22 @@ class EucaCommand(object):
         self.is_secure = True
         self.port = 443
         self.service_path = '/'
-        self.is_s3 = is_s3
         self.is_euca = is_euca
         self.euca_cert_path = None
         self.euca_private_key_path = None
-        self.debug = False
+        self.debug = 0
+        self.set_debug(debug)
         self.cmd_name = os.path.basename(sys.argv[0])
         self.setup_environ()
+        self.check_for_conflict()
         self.process_cli_args()
         # h = NullHandler()
         # logging.getLogger('boto').addHandler(h)
+
+    def set_debug(self, debug=False):
+        if debug:
+            boto.set_stream_logger('euca2ools')
+            self.debug = 2
 
     def process_cli_args(self):
         (opts, args) = getopt.gnu_getopt(sys.argv[1:],
@@ -127,12 +140,10 @@ class EucaCommand(object):
             elif name == '--version':
                 self.version()
             elif name == '--debug':
-                boto.set_stream_logger('euca2ools')
-                self.debug = 2
-            # TODO: that rascally compat mode
-            elif name in ('-A', '--access-key'):
+                self.set_debug(True)
+            elif name in (self.access_key_short_name, '--access-key'):
                 self.ec2_user_access_key = value
-            elif name in ('-S', '--secret-key'):
+            elif name in (self.secret_key_short_name, '--secret-key'):
                 self.ec2_user_secret_key = value
             elif name in ('-U', '--url'):
                 self.url = value
@@ -159,11 +170,12 @@ class EucaCommand(object):
                                                            option.ptype)
                         self.display_error_and_exit(msg)
                     if option.cardinality in ('*', '+'):
-                        if option.name not in self.options:
-                            self.options[option.name] = []
-                        self.options[option.name].append(value)
+                        if not hasattr(self, option.name):
+                            setattr(self, option.name, [])
+                        getattr(self, option.name).append(value)
                     else:
-                        self.options[option.name] = value
+                        setattr(self, option.name, value)
+        self.handle_defaults()
         self.check_required_options()
 
         for arg in self.Args:
@@ -171,7 +183,7 @@ class EucaCommand(object):
                 msg = 'Argument (%s) was not provided' % arg.name
                 self.display_error_and_exit(msg)
             if arg.cardinality in ('*', '+'):
-                self.arguments[arg.name] = args
+                setattr(self, arg.name, args)
             elif arg.cardinality == 1:
                 if len(args) == 0 and arg.optional:
                     continue
@@ -180,10 +192,20 @@ class EucaCommand(object):
                 except:
                     msg = '%s should be of type %s' % (arg.name,
                                                        arg.ptype)
-                self.arguments[arg.name] = value
+                setattr(self, arg.name, value)
                 if len(args) > 1:
                     msg = 'Only 1 argument (%s) permitted' % arg.name
                     self.display_error_and_exit(msg)
+
+    def check_for_conflict(self):
+        for option in self.Options:
+            if option.short_name == 'a' or option.short_name == 's':
+                self.access_key_short_name = '-A'
+                self.secret_key_short_name = '-S'
+                opt = self.find_option('--access-key')
+                opt.short_name = 'A'
+                opt = self.find_option('--secret-key')
+                opt.short_name = 'A'
 
     def find_option(self, op_name):
         for option in self.StandardOptions+self.Options:
@@ -219,10 +241,22 @@ class EucaCommand(object):
     def optional_args(self):
         return [ arg for arg in self.Args if arg.optional ]
 
+    def handle_defaults(self):
+        for option in self.Options+self.Args:
+            if not hasattr(self, option.name):
+                value = option.default
+                if value is None and option.cardinality in ('+', '*'):
+                    value = []
+                elif value is None and option.ptype == 'boolean':
+                    value = False
+                elif value is None and option.ptype == 'integer':
+                    value = 0
+                setattr(self, option.name, value)
+
     def check_required_options(self):
         missing = []
         for option in self.required():
-            if option.name not in self.options:
+            if not hasattr(self, option.name) or getattr(self, option.name) is None:
                 missing.append(option.long_name)
         if missing:
             msg = 'These required options are missing: %s' % ','.join(missing)
@@ -249,7 +283,7 @@ class EucaCommand(object):
                 if not names:
                     names.append(opt.name)
                 doc = textwrap.dedent(opt.doc)
-                doclines = textwrap.wrap(doc, nn, drop_whitespace=True)
+                doclines = textwrap.wrap(doc, nn)
                 if doclines:
                     print '    %s%s' % (','.join(names).ljust(n), doclines[0])
                     for line in doclines[1:]:
@@ -261,8 +295,7 @@ class EucaCommand(object):
             print '\nAVAILABLE FILTERS'
             for filter in self.Filters:
                 doc = textwrap.dedent(filter.doc)
-                doclines = textwrap.wrap(doc, nn, drop_whitespace=True,
-                                         fix_sentence_endings=True)
+                doclines = textwrap.wrap(doc, nn, fix_sentence_endings=True)
                 print '    %s%s' % (filter.name.ljust(n), doclines[0])
                 for line in doclines[1:]:
                     print '%s%s' % (' '*(n+4), line)
@@ -378,18 +411,17 @@ class EucaCommand(object):
                 if not self.euca_private_key_path:
                     print 'EUCA_PRIVATE_KEY variable must be set.'
                     raise euca2ools.exceptions.ConnectionFailed
-        else:
+        if not self.ec2_user_access_key:
+            self.ec2_user_access_key = self.environ['EC2_ACCESS_KEY']
             if not self.ec2_user_access_key:
-                self.ec2_user_access_key = self.environ['EC2_ACCESS_KEY']
-                if not self.ec2_user_access_key:
-                    print 'EC2_ACCESS_KEY environment variable must be set.'
-                    raise euca2ools.exceptions.ConnectionFailed
+                print 'EC2_ACCESS_KEY environment variable must be set.'
+                raise euca2ools.exceptions.ConnectionFailed
 
+        if not self.ec2_user_secret_key:
+            self.ec2_user_secret_key = self.environ['EC2_SECRET_KEY']
             if not self.ec2_user_secret_key:
-                self.ec2_user_secret_key = self.environ['EC2_SECRET_KEY']
-                if not self.ec2_user_secret_key:
-                    print 'EC2_SECRET_KEY environment variable must be set.'
-                    raise euca2ools.exceptions.ConnectionFailed
+                print 'EC2_SECRET_KEY environment variable must be set.'
+                raise euca2ools.exceptions.ConnectionFailed
 
     def get_connection_details(self):
         self.port = None
@@ -420,14 +452,26 @@ class EucaCommand(object):
                     % self.url
 
         self.get_connection_details()
-        
-        return boto.connect_s3(aws_access_key_id=self.ec2_user_access_key,
-                               aws_secret_access_key=self.ec2_user_secret_key,
-                               is_secure=self.is_secure,
-                               host=self.host,
-                               port=self.port,
-                               calling_format=OrdinaryCallingFormat(),
-                               path=self.service_path)
+
+        if self.is_euca:
+            return euca2ools.nc.connection.EucaConnection(
+                private_key_path=self.euca_private_key_path,
+                cert_path=self.euca_cert_path,
+                aws_access_key_id=self.ec2_user_access_key,
+                aws_secret_access_key=self.ec2_user_secret_key,
+                is_secure=self.is_secure, debug=self.debug,
+                host=self.host,
+                port=self.port,
+                path=self.service_path)
+        else:
+            return boto.connect_s3(
+                aws_access_key_id=self.ec2_user_access_key,
+                aws_secret_access_key=self.ec2_user_secret_key,
+                is_secure=self.is_secure, debug=self.debug,
+                host=self.host,
+                port=self.port,
+                calling_format=OrdinaryCallingFormat(),
+                path=self.service_path)
 
     def make_ec2_connection(self):
         if self.region_name:
@@ -456,39 +500,12 @@ class EucaCommand(object):
                                 debug=self.debug,
                                 region=self.region,
                                 port=self.port,
-                                path=self.service_path)
-
-    def make_nc_connection(self):
-        self.port = None
-        self.service_path = '/'
-        
-        rslt = urlparse.urlparse(self.url)
-        if rslt.scheme == 'https':
-            self.is_secure = True
-        else:
-            self.is_secure = False
-
-        self.get_connection_details()
-        
-        # I'm importing these here because they depend
-        # on a boto version > 2.0b3
-        import admin.connection
-        import admin.auth
-        return admin.connection.EucaConnection(
-            aws_access_key_id=self.ec2_user_access_key,
-            aws_secret_access_key=self.ec2_user_secret_key,
-            cert_path=self.euca_cert_path,
-            private_key_path=self.euca_private_key_path,
-            is_secure=self.is_secure,
-            host=self.host,
-            port=self.port,
-            path=self.service_path)
-
+                                path=self.service_path,
+                                api_version=EC2_API_VERSION)
+    
     def make_connection(self, conn_type='ec2'):
         self.get_credentials()
-        if conn_type == 'nc':
-            conn = self.make_nc_connection()
-        elif conn_type == 's3':
+        if conn_type == 's3':
             conn = self.make_s3_connection()
         elif conn_type == 'ec2':
             conn = self.make_ec2_connection()
@@ -509,7 +526,7 @@ class EucaCommand(object):
                 msg = 'Unknown connection type: %s' % conn_type
                 self.display_error_and_exit(msg)
             return conn
-        except euca2ools.exceptions.EucaError as ex:
+        except euca2ools.exceptions.EucaError, ex:
             self.display_error_and_exit(ex)
 
     def make_request_cli(self, connection, request_name, **params):
@@ -529,60 +546,8 @@ class EucaCommand(object):
             sys.exit(1)
         try:
             return method(**params)
-        except Exception as ex:
+        except Exception, ex:
             self.display_error_and_exit(ex)
-
-    def get_relative_filename(self, filename):
-        return os.path.split(filename)[-1]
-
-    def get_file_path(self, filename):
-        relative_filename = self.get_relative_filename(filename)
-        file_path = os.path.dirname(filename)
-        if len(file_path) == 0:
-            file_path = '.'
-        return file_path
-
-    #
-    # These validate_* methods are called by the command line executables
-    # and, as such, they should print an appropriate message and exit
-    # when invalid input is detected.
-    #
-    def _try_validate(self, method, value, msg):
-        try:
-            method(value)
-        except euca2ools.exceptions.ValidationError as ex:
-            if msg:
-                print msg
-            else:
-                print ex.message
-            sys.exit(1)
-            
-    def validate_address(self, address, msg=None):
-        self._try_validate(euca2ools.validate.validate_address, address, msg)
-
-    def validate_instance_id(self, id, msg=None):
-        self._try_validate(euca2ools.validate.validate_instance_id, id, msg)
-            
-    def validate_volume_id(self, id, msg=None):
-        self._try_validate(euca2ools.validate.validate_volume_id, id, msg)
-
-    def validate_volume_size(self, size, msg=None):
-        self._try_validate(euca2ools.validate.validate_volume_size, size, msg)
-
-    def validate_snapshot_id(self, id, msg=None):
-        self._try_validate(euca2ools.validate.validate_snapshot_id, id, msg)
-
-    def validate_protocol(self, proto, msg=None):
-        self._try_validate(euca2ools.validate.validate_protocol, proto, msg)
-
-    def validate_file(self, path, msg=None):
-        self._try_validate(euca2ools.validate.validate_file, path, msg)
-
-    def validate_dir(self, path, msg=None):
-        self._try_validate(euca2ools.validate.validate_dir, path, msg)
-
-    def validate_bundle_id(self, id, msg=None):
-        self._try_validate(euca2ools.validate.validate_bundle_id, id, msg)
 
     def get_relative_filename(self, filename):
         return os.path.split(filename)[-1]

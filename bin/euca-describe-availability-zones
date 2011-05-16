@@ -38,5 +38,5 @@ import euca2ools.commands.euca.describeavailabilityzones
 
 if __name__ == '__main__':
     cmd = euca2ools.commands.euca.describeavailabilityzones.DescribeAvailabilityZones()
-    cmd.main()
+    cmd.main_cli()
 

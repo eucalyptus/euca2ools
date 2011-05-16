@@ -42,10 +42,12 @@ class DeleteKeyPair(euca2ools.commands.eucacommand.EucaCommand):
                   cardinality=1, optional=False)]
 
     def main(self):
-        euca_conn = self.make_connection_cli()
-        return_code = self.make_request_cli(euca_conn,
-                                            'delete_key_pair',
-                                            key_name=self.arguments['keypair_name'])
-        if return_code:
-            print 'KEYPAIR\t%s' % self.arguments['keypair_name']
+        conn = self.make_connection_cli()
+        return self.make_request_cli(conn, 'delete_key_pair',
+                                     key_name=self.keypair_name)
+
+    def main_cli(self):
+        status = self.main()
+        if status:
+            print 'KEYPAIR\t%s' % self.keypair_name
 

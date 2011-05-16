@@ -1,6 +1,3 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
 # Software License Agreement (BSD License)
 #
 # Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
@@ -38,14 +35,12 @@ from boto.roboto.awsqueryrequest import AWSQueryRequest
 from boto.roboto.param import Param
 import euca2ools.commands.euare
 
-
 class ListUsers(AWSQueryRequest):
 
     ServiceClass = euca2ools.commands.euare.Euare
 
-    name = """ListUsers"""
     Description = """ListUsers"""
-    Options = [Param(
+    Params = [Param(
         name='PathPrefix',
         short_name='p',
         long_name='path-prefix',
@@ -61,14 +56,14 @@ class ListUsers(AWSQueryRequest):
         doc=""" Use this parameter only when paginating results, and only in a subsequent request after you've received a response where the results are truncated. Set it to the value of the Marker element in the response you just received. """,
         ), Param(
         name='MaxItems',
-        short_name='None',
+        short_name=None,
         long_name='max-items',
         ptype='integer',
         optional=True,
         doc=""" Use this parameter only when paginating results to indicate the maximum number of User names you want in the response. If there are additional User names beyond the maximum you specify, the IsTruncated response element is true. """,
         )]
 
-    response = {u'type': u'object', u'name': u'ListUsersResponse',
+    Response = {u'type': u'object', u'name': u'ListUsersResponse',
                 u'properties': [{
         u'doc': u' Contains the result of a successful invocation of the ListUsers action. ',
         u'type': u'object',
@@ -139,11 +134,12 @@ class ListUsers(AWSQueryRequest):
         }]}
 
 
-def main(**args):
-    req = ListUsers(**args)
-    return req.send()
+    def cli_formatter(self, data):
+        for user in data.Users:
+            print user['Arn']
+            
+    def main(self, **args):
+        return self.send()
 
-
-def main_cli():
-    req = ListUsers()
-    req.do_cli()
+    def main_cli(self):
+        self.do_cli()
