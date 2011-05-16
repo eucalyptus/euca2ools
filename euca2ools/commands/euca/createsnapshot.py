@@ -40,7 +40,7 @@ class CreateSnapshot(euca2ools.commands.eucacommand.EucaCommand):
     Options = [Param(name='description',
                      short_name='d', long_name='description',
                      optional=True, ptype='string',
-                     doc='A description of the new snapshot'),
+                     doc='A description of the new snapshot')]
     Args = [Param(name='volume_id', ptype='string',
                   doc='unique name for a volume to snapshot.',
                   cardinality=1, optional=False)]
