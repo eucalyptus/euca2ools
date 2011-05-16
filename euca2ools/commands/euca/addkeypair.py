@@ -42,8 +42,7 @@ class AddKeyPair(euca2ools.commands.eucacommand.EucaCommand):
                   cardinality=1, optional=False)]
 
     def display_keypair(self, keypair):
-        keypair_string = '%s\t%s' % (keypair.name, keypair.fingerprint)
-        print 'KEYPAIR\t%s' % keypair_string
+        print 'KEYPAIR\t%s\t%s' % (keypair.name, keypair.fingerprint)
         print keypair.material
 
     def main(self):

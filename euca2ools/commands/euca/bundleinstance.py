@@ -40,7 +40,7 @@ from datetime import datetime, timedelta
 
 class BundleInstance(euca2ools.commands.eucacommand.EucaCommand):
 
-    Description = 'Bundles a Windows instance.'
+    Description = 'Bundles an S3-backed Windows instance.'
     Options = [Param(name='bucket', short_name='b', long_name='bucket',
                      optional=False, ptype='string',
                      doc='Name of the bucket to upload.'),

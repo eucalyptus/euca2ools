@@ -34,19 +34,25 @@
 import euca2ools.commands.eucacommand
 from boto.roboto.param import Param
 
-class DeleteSnapshot(euca2ools.commands.eucacommand.EucaCommand):
+class ImportKeyPair(euca2ools.commands.eucacommand.EucaCommand):
 
-    Description = 'Deletes a snapshot.'
-    Args = [Param(name='snapshot_id', ptype='string',
-                  doc='unique identifier for the snapshot to be deleted.',
-                  cardinality=1, optional=False)]
-
+    Description = 'Import a public key created with 3rd party tool'
+    Options = [Param(name='file_name',
+                     short_name='f', long_name='public-key-file',
+                     optional=False, ptype='file',
+                     doc='Path to file containing the public key.')]
+    Args = [Param(name='key_name', ptype='string',
+                  doc='A unique name for the key pair.',
+                  optional=False)]
+    
     def main(self):
         conn = self.make_connection_cli()
-        return self.make_request_cli(conn, 'delete_snapshot',
-                                     snapshot_id=self.snapshot_id)
+        return self.make_request_cli(conn, 'import_key_pair',
+                                     key_name=self.key_name,
+                                     public_key_material=self.file_name)
 
     def main_cli(self):
-        status = self.main()
-        if status:
-            print 'SNAPSHOT\t%s' % self.snapshot_id
+        keypair = self.main()
+        if keypair:
+            print 'KEYPAIR\t%s\t%s' % (keypair.name, keypair.fingerprint)
+

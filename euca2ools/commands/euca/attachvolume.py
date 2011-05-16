@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 # Software License Agreement (BSD License)
 #
 # Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
@@ -39,7 +36,7 @@ from boto.roboto.param import Param
 
 class AttachVolume(euca2ools.commands.eucacommand.EucaCommand):
 
-    Description = 'Attaches a volume to an instance.'
+    Description = 'Attaches an EBS volume to an instance.'
     Options = [Param(name='instance_id', short_name='i', long_name='instance',
                      optional=False, ptype='string',
                      doc="""unique id of a running instance to attach
