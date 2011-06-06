@@ -100,7 +100,6 @@ class Authorize(euca2ools.commands.eucacommand.EucaCommand):
                                      cidr_ip=self.source_subnet)
 
     def main_cli(self):
-        print 'cmd_name=%s' % self.cmd_name
         status = self.main()
         if status:
             print 'GROUP\t%s' % self.group_name

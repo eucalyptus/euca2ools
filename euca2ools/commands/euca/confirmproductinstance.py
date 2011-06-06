@@ -40,7 +40,7 @@ class ConfirmProductInstance(euca2ools.commands.eucacommand.EucaCommand):
     Options = [Param(name='instance_id', short_name='i', long_name='instance',
                      optional=False, ptype='string',
                      doc='Unique identifier for a running instance')]
-    Args = [Param(name='produce_code', ptype='string',
+    Args = [Param(name='product_code', ptype='string',
                   doc='The product code to verify',
                   cardinality=1, optional=False)]
 

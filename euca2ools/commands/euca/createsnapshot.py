@@ -37,6 +37,10 @@ from boto.roboto.param import Param
 class CreateSnapshot(euca2ools.commands.eucacommand.EucaCommand):
 
     Description = 'Creates a snapshot from an existing volume.'
+    Options = [Param(name='description',
+                     short_name='d', long_name='description',
+                     optional=True, ptype='string',
+                     doc='A description of the new snapshot')]
     Args = [Param(name='volume_id', ptype='string',
                   doc='unique name for a volume to snapshot.',
                   cardinality=1, optional=False)]
@@ -44,15 +48,16 @@ class CreateSnapshot(euca2ools.commands.eucacommand.EucaCommand):
     def display_snapshot(self, snapshot):
         if not snapshot.id:
             return
-        snapshot_string = '%s\t%s\t%s\t%s\t%s' % (snapshot.id,
+        snapshot_string = '%s\t%s\t%s\t%s\t%s\t%s' % (snapshot.id,
                 snapshot.volume_id, snapshot.status, snapshot.start_time,
-                snapshot.progress)
+                snapshot.progress, snapshot.description)
         print 'SNAPSHOT\t%s' % snapshot_string
 
     def main(self):
         conn = self.make_connection_cli()
         return self.make_request_cli(conn, 'create_snapshot',
-                                     volume_id=self.volume_id)
+                                     volume_id=self.volume_id,
+                                     description=self.description)
 
     def main_cli(self):
         snapshot = self.main()

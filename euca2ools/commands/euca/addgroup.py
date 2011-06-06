@@ -37,7 +37,8 @@ from boto.roboto.param import Param
 class AddGroup(euca2ools.commands.eucacommand.EucaCommand):
 
     Description = 'Creates a new security group.'
-    Options = [Param(name='group_description', short_name='d', long_name='description',
+    Options = [Param(name='group_description', short_name='d',
+                     long_name='description',
                      optional=False, ptype='string',
                      doc='Description for the group to be created')]
     Args = [Param(name='group_name', ptype='string',
@@ -45,8 +46,7 @@ class AddGroup(euca2ools.commands.eucacommand.EucaCommand):
                   cardinality=1, optional=False)]
 
     def display_group(self, group):
-        group_string = '%s\t%s' % (group.name, group.description)
-        print 'GROUP\t%s' % group_string
+        print 'GROUP\t%s\t%s' % (group.name, group.description)
 
     def main(self):
         conn = self.make_connection_cli()
