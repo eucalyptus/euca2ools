@@ -34,6 +34,7 @@
 from boto.roboto.awsqueryrequest import AWSQueryRequest
 from boto.roboto.param import Param
 import euca2ools.commands.euare
+import euca2ools.commands.euare.getgrouppolicy
 
 
 class ListGroupPolicies(AWSQueryRequest):
@@ -41,30 +42,40 @@ class ListGroupPolicies(AWSQueryRequest):
     ServiceClass = euca2ools.commands.euare.Euare
 
     Description = """ListGroupPolicies"""
-    Params = [Param(
-        name='GroupName',
-        short_name='g',
-        long_name='group-name',
-        ptype='string',
-        optional=False,
-        doc=""" The name of the group to list policies for. """,
-        ), Param(
-        name='Marker',
-        short_name='m',
-        long_name='marker',
-        ptype='string',
-        optional=True,
-        doc=""" Use this only when paginating results, and only in a subsequent request after you've received a response where the results are truncated. Set it to the value of the Marker element in the response you just received. """
-            ,
-        ), Param(
-        name='MaxItems',
-        short_name=None,
-        long_name='max-items',
-        ptype='integer',
-        optional=True,
-        doc=""" Use this only when paginating results to indicate the maximum number of policy names you want in the response. If there are additional policy names beyond the maximum you specify, the IsTruncated response element is true. """
-            ,
-        )]
+    Params = [
+        Param(name='GroupName',
+              short_name='g',
+              long_name='group-name',
+              ptype='string',
+              optional=False,
+              doc=""" The name of the group to list policies for. """),
+        Param(name='policy_name',
+              short_name='p',
+              long_name='policy-name',
+              ptype='string',
+              optional=True,
+              local_param=True,
+              doc="""Name of the policy document to display."""),
+        Param(name='verbose',
+              short_name='v',
+              long_name='verbose',
+              ptype='boolean',
+              optional=True,
+              default=False,
+              local_param=True,
+              doc="""Displays the contents of the resulting policies (in addition to the policy names)."""),
+        Param(name='Marker',
+              short_name='m',
+              long_name='marker',
+              ptype='string',
+              optional=True,
+              doc=""" Use this only when paginating results, and only in a subsequent request after you've received a response where the results are truncated. Set it to the value of the Marker element in the response you just received. """),
+        Param(name='MaxItems',
+              short_name=None,
+              long_name='max-items',
+              ptype='integer',
+              optional=True,
+              doc=""" Use this only when paginating results to indicate the maximum number of policy names you want in the response. If there are additional policy names beyond the maximum you specify, the IsTruncated response element is true. """)]
 
     Response = {u'type': u'object',
                 u'name': u'ListGroupPoliciesResponse', u'properties': [{
@@ -117,14 +128,22 @@ class ListGroupPolicies(AWSQueryRequest):
         }]}
 
     def cli_formatter(self, data):
-        #TODO: Add -v option to print actual policy.
-        #      This will require another round trip
-        #      for each policy name.
-        for policy in data.PolicyNames:
-            print policy
+        group_name = self.request_params['GroupName']
+        verbose = self.local_params.get('verbose', False)
+        policy_name = self.local_params.get('policy_name', None)
+        if data:
+            for policy in data.PolicyNames:
+                if policy_name and policy != policy_name:
+                    continue
+                if verbose:
+                    obj = euca2ools.commands.euare.getgrouppolicy.GetGroupPolicy()
+                    data = obj.main(group_name=group_name, policy_name=policy)
+                    obj.cli_formatter(data)
+                else:
+                    print policy
 
     def main(self, **args):
-        return self.send()
+        return self.send(**args)
 
     def main_cli(self):
         self.do_cli()

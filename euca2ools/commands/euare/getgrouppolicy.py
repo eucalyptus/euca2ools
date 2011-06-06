@@ -34,6 +34,7 @@
 from boto.roboto.awsqueryrequest import AWSQueryRequest
 from boto.roboto.param import Param
 import euca2ools.commands.euare
+import urllib
 
 
 class GetGroupPolicy(AWSQueryRequest):
@@ -99,10 +100,10 @@ class GetGroupPolicy(AWSQueryRequest):
         }]}
 
     def cli_formatter(self, data):
-        print data.PolicyDocument
+        print urllib.unquote(data.PolicyDocument)
 
     def main(self, **args):
-        return self.send()
+        return self.send(**args)
 
     def main_cli(self):
         self.do_cli()
