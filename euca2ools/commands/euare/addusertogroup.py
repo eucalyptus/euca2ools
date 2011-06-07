@@ -35,27 +35,25 @@ from boto.roboto.awsqueryrequest import AWSQueryRequest
 from boto.roboto.param import Param
 import euca2ools.commands.euare
 
-
 class AddUserToGroup(AWSQueryRequest):
 
     ServiceClass = euca2ools.commands.euare.Euare
 
     Description = """AddUserToGroup"""
-    Params = [Param(
-        name='GroupName',
-        short_name='g',
-        long_name='group-name',
-        ptype='string',
-        optional=False,
-        doc=""" Name of the group to update. """,
-        ), Param(
-        name='UserName',
-        short_name='u',
-        long_name='user-name',
-        ptype='string',
-        optional=False,
-        doc=""" Name of the User to add. """,
-        )]
+    Params = [
+        Param(name='GroupName',
+              short_name='g',
+              long_name='group-name',
+              ptype='string',
+              optional=False,
+              doc=""" Name of the group to update. """),
+        Param(name='UserName',
+              short_name='u',
+              long_name='user-name',
+              ptype='string',
+              cardinality='+',
+              optional=False,
+              doc=""" Name of the User to add. """)]
 
     Response = {u'type': u'object', u'name': u'AddUserToGroupResponse',
                 u'properties': [{
@@ -68,7 +66,13 @@ class AddUserToGroup(AWSQueryRequest):
 
 
     def main(self, **args):
-       return self.send()
+        data = []
+        if self.cli_options and self.cli_options.user_name:
+            for user_name in self.cli_options.user_name:
+                data.append(self.send(user_name=user_name, **args))
+        else:
+            data = self.send(**args)
+        return data
 
     def main_cli(self):
         self.do_cli()
