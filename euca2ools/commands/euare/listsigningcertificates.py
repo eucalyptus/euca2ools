@@ -54,6 +54,7 @@ class ListSigningCertificates(AWSQueryRequest):
         long_name='verbose',
         ptype='boolean',
         optional=True,
+        local_param=True,
         doc='Causes output to include the certificate body',
         ), Param(
         name='Marker',

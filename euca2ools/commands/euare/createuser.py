@@ -34,6 +34,8 @@
 from boto.roboto.awsqueryrequest import AWSQueryRequest
 from boto.roboto.param import Param
 import euca2ools.commands.euare
+import euca2ools.commands.euare.addusertogroup
+import euca2ools.commands.euare.createaccesskey
 
 
 class CreateUser(AWSQueryRequest):
@@ -41,22 +43,43 @@ class CreateUser(AWSQueryRequest):
     ServiceClass = euca2ools.commands.euare.Euare
 
     Description = """CreateUser"""
-    Params = [Param(
-        name='Path',
-        short_name='p',
-        long_name='path',
-        ptype='string',
-        optional=True,
-        doc=""" The path for the User name. For more information about paths, see Identifiers for IAM Entities in Using AWS Identity and Access Management.  This parameter is optional. If it is not included, it defaults to a slash (/). """
-            ,
-        ), Param(
-        name='UserName',
-        short_name='u',
-        long_name='user-name',
-        ptype='string',
-        optional=False,
-        doc=""" Name of the User to create. """,
-        )]
+    Params = [
+        Param(name='Path',
+              short_name='p',
+              long_name='path',
+              ptype='string',
+              optional=True,
+              doc=""" The path for the User name. For more information about paths, see Identifiers for IAM Entities in Using AWS Identity and Access Management.  This parameter is optional. If it is not included, it defaults to a slash (/). """),
+        Param(name='UserName',
+              short_name='u',
+              long_name='user-name',
+              ptype='string',
+              optional=False,
+              doc=""" Name of the User to create. """),
+        Param(name='group_name',
+              short_name='g',
+              long_name='group-name',
+              ptype='string',
+              optional=True,
+              cardinality='*',
+              request_param=False,
+              doc="Name of a group you want to add the User to."),
+        Param(name='create_accesskey',
+              short_name='k',
+              long_name='create-accesskey',
+              ptype='boolean',
+              optional=True,
+              default=False,
+              request_param=False,
+              doc="Creates an access key for the User."),
+        Param(name='verbose',
+              short_name='v',
+              long_name='verbose',
+              ptype='boolean',
+              optional=True,
+              default=False,
+              request_param=False,
+              doc="causes the response to include the newly created User's ARN and GUID")]
 
     Response = {u'type': u'object', u'name': u'CreateUserResponse',
                 u'properties': [{
@@ -119,8 +142,26 @@ class CreateUser(AWSQueryRequest):
                         : u'RequestId'}],
         }]}
 
+    def cli_formatter(self, data):
+        if self.cli_options.verbose:
+            print data['user_data'].Arn
+            print data['user_data'].UserId
+        if self.cli_options.create_accesskey:
+            print data['access_key'].AccessKey['AccessKeyId']
+            print data['access_key'].AccessKey['SecretAccessKey']
+
     def main(self, **args):
-        return self.send()
+        data = {}
+        data['user_data']  = self.send(**args)
+        if self.cli_options.group_name:
+            obj = euca2ools.commands.euare.addusertogroup.AddUserToGroup()
+            for group_name in self.cli_options.group_name:
+                data['group_name'] = obj.main(group_name=group_name,
+                                              user_name=self.request_params['UserName'])
+        if self.cli_options.create_accesskey:
+            obj = euca2ools.commands.euare.createaccesskey.CreateAccessKey()
+            data['access_key'] = obj.main(user_name=self.request_params['UserName'])
+        return data
 
     def main_cli(self):
         self.do_cli()

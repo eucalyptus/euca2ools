@@ -41,25 +41,31 @@ class CreateGroup(AWSQueryRequest):
     ServiceClass = euca2ools.commands.euare.Euare
 
     Description = """CreateGroup"""
-    Params = [Param(
-        name='Path',
-        short_name='p',
-        long_name='path',
-        ptype='string',
-        optional=True,
-        doc=""" The path to the group. For more information about paths, \
-        see Identifiers for IAM Entities in Using AWS Identity and \
-        Access Management.  This parameter is optional. If it is not \
-        included, it defaults to a slash (/). """),
-               Param(
-        name='GroupName',
-        short_name='g',
-        long_name='group-name',
-        ptype='string',
-        optional=False,
-        doc=""" Name of the group to create. Do not include the path in \
-        this value. """,
-        )]
+    Params = [
+        Param(name='Path',
+              short_name='p',
+              long_name='path',
+              ptype='string',
+              optional=True,
+              doc=""" The path to the group. For more information about paths, \
+              see Identifiers for IAM Entities in Using AWS Identity and \
+              Access Management.  This parameter is optional. If it is not \
+              included, it defaults to a slash (/). """),
+        Param(name='GroupName',
+              short_name='g',
+              long_name='group-name',
+              ptype='string',
+              optional=False,
+              doc=""" Name of the group to create. Do not include the path in \
+              this value. """),
+        Param(name='verbose',
+              short_name='v',
+              long_name='verbose',
+              optional=True,
+              ptype='boolean',
+              default=False,
+              request_param=False,
+              doc="Causes the response to include the newly created group's ARN and GUID.")]
 
     Response = {u'type': u'object', u'name': u'CreateGroupResponse',
                 u'properties': [{
@@ -122,8 +128,13 @@ class CreateGroup(AWSQueryRequest):
                         : u'RequestId'}],
         }]}
 
+    def cli_formatter(self, data):
+        if self.cli_options.verbose:
+            print data.Arn
+            print data.GroupId
+
     def main(self, **args):
-        return self.send()
+        return self.send(**args)
 
     def main_cli(self):
         self.do_cli()

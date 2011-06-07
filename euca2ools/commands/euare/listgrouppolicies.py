@@ -54,7 +54,7 @@ class ListGroupPolicies(AWSQueryRequest):
               long_name='policy-name',
               ptype='string',
               optional=True,
-              local_param=True,
+              request_param=False,
               doc="""Name of the policy document to display."""),
         Param(name='verbose',
               short_name='v',
@@ -62,7 +62,7 @@ class ListGroupPolicies(AWSQueryRequest):
               ptype='boolean',
               optional=True,
               default=False,
-              local_param=True,
+              request_param=False,
               doc="""Displays the contents of the resulting policies (in addition to the policy names)."""),
         Param(name='Marker',
               short_name='m',
@@ -129,13 +129,11 @@ class ListGroupPolicies(AWSQueryRequest):
 
     def cli_formatter(self, data):
         group_name = self.request_params['GroupName']
-        verbose = self.local_params.get('verbose', False)
-        policy_name = self.local_params.get('policy_name', None)
         if data:
             for policy in data.PolicyNames:
-                if policy_name and policy != policy_name:
+                if self.cli_options.policy_name and policy != self.cli_options.policy_name:
                     continue
-                if verbose:
+                if self.cli_options.verbose:
                     obj = euca2ools.commands.euare.getgrouppolicy.GetGroupPolicy()
                     data = obj.main(group_name=group_name, policy_name=policy)
                     obj.cli_formatter(data)
