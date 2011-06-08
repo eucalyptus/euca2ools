@@ -67,7 +67,7 @@ class BundleImage(euca2ools.commands.eucacommand.EucaCommand):
                      doc='Product code to be associated with the image.'),
                Param(name='block_device_mapping',
                      short_name='b', long_name='block-device-mapping',
-                     optional=True, ptype='string', cardinality='*',
+                     optional=True, ptype='string',
                      doc="""Default block device mapping for the image
                      (comma-separated list of key=value pairs)."""),
                Param(name='destination',
