@@ -1,0 +1,7 @@
+#!/usr/bin/env python
+
+import euca2ools.commands.euare.addgrouppolicy
+
+if __name__ == '__main__':
+    r = euca2ools.commands.euare.addgrouppolicy.AddGroupPolicy()
+    r.main_cli()
