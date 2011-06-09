@@ -62,6 +62,13 @@ class UpdateUserInfo(AWSQueryRequest):
         ptype='string',
         optional=True,
         doc=""" Specify the value of the user information to set, without setting this will effectively remove the specified information. """,
+        ), Param(
+        name='DelegateAccount',
+        short_name=None,
+        long_name='delegate',
+        ptype='string',
+        optional=True,
+        doc=""" User the parameter only as the system admin to act as the account admin of the specified account without changing to account admin's role. """,
         )]
 
     Response = {u'type': u'object', u'name': u'UpdateUserInfoResponse',

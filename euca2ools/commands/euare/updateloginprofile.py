@@ -47,8 +47,7 @@ class UpdateLoginProfile(AWSQueryRequest):
         long_name='user-name',
         ptype='string',
         optional=False,
-        doc=""" Name of the User whose login profile you want to update. """
-            ,
+        doc=""" Name of the User whose login profile you want to update. """ ,
         ), Param(
         name='Password',
         short_name='p',
@@ -56,6 +55,13 @@ class UpdateLoginProfile(AWSQueryRequest):
         ptype='string',
         optional=True,
         doc=""" The new password for the User name. """,
+        ), Param(
+        name='DelegateAccount',
+        short_name=None,
+        long_name='delegate',
+        ptype='string',
+        optional=True,
+        doc=""" User the parameter only as the system admin to act as the account admin of the specified account without changing to account admin's role. """,
         )]
 
     Response = {u'type': u'object',

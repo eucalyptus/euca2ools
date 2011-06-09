@@ -56,8 +56,7 @@ class CreateGroup(AWSQueryRequest):
               long_name='group-name',
               ptype='string',
               optional=False,
-              doc=""" Name of the group to create. Do not include the path in \
-              this value. """),
+              doc=""" Name of the group to create. Do not include the path in this value. """),
         Param(name='verbose',
               short_name='v',
               long_name='verbose',
@@ -65,7 +64,13 @@ class CreateGroup(AWSQueryRequest):
               ptype='boolean',
               default=False,
               request_param=False,
-              doc="Causes the response to include the newly created group's ARN and GUID.")]
+              doc="Causes the response to include the newly created group's ARN and GUID."),
+        Param(name='DelegateAccount',
+              short_name=None,
+              long_name='delegate',
+              ptype='string',
+              optional=True,
+              doc=""" User the parameter only as the system admin to act as the account admin of the specified account without changing to account admin's role. """)]
 
     Response = {u'type': u'object', u'name': u'CreateGroupResponse',
                 u'properties': [{

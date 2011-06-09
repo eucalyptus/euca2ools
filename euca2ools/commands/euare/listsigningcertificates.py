@@ -62,16 +62,21 @@ class ListSigningCertificates(AWSQueryRequest):
         long_name='marker',
         ptype='string',
         optional=True,
-        doc=""" Use this only when paginating results, and only in a subsequent request after you've received a response where the results are truncated. Set it to the value of the Marker element in the response you just received. """
-            ,
+        doc=""" Use this only when paginating results, and only in a subsequent request after you've received a response where the results are truncated. Set it to the value of the Marker element in the response you just received. """ ,
         ), Param(
         name='MaxItems',
         short_name=None,
         long_name='max-items',
         ptype='integer',
         optional=True,
-        doc=""" Use this only when paginating results to indicate the maximum number of certificate IDs you want in the response. If there are additional certificate IDs beyond the maximum you specify, the IsTruncated response element is true. """
-            ,
+        doc=""" Use this only when paginating results to indicate the maximum number of certificate IDs you want in the response. If there are additional certificate IDs beyond the maximum you specify, the IsTruncated response element is true. """ ,
+        ), Param(
+        name='DelegateAccount',
+        short_name=None,
+        long_name='delegate',
+        ptype='string',
+        optional=True,
+        doc=""" User the parameter only as the system admin to act as the account admin of the specified account without changing to account admin's role. """,
         )]
 
     Response = {u'type': u'object',

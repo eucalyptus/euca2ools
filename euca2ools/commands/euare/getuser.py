@@ -47,8 +47,14 @@ class GetUser(AWSQueryRequest):
         long_name='user-name',
         ptype='string',
         optional=True,
-        doc=""" Name of the User to get information about.  This parameter is optional. If it is not included, it defaults to the User making the request. """
-            ,
+        doc=""" Name of the User to get information about.  This parameter is optional. If it is not included, it defaults to the User making the request. """ ,
+        ), Param(
+        name='DelegateAccount',
+        short_name=None,
+        long_name='delegate',
+        ptype='string',
+        optional=True,
+        doc=""" User the parameter only as the system admin to act as the account admin of the specified account without changing to account admin's role. """,
         )]
 
     Response = {u'type': u'object', u'name': u'GetUserResponse',
