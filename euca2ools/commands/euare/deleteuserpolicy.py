@@ -61,7 +61,7 @@ class DeleteUserPolicy(AWSQueryRequest):
         long_name='delegate',
         ptype='string',
         optional=True,
-        doc=""" User the parameter only as the system admin to act as the account admin of the specified account without changing to account admin's role. """,
+        doc=""" [Eucalyptus extension] Use the parameter only as the system admin to act as the account admin of the specified account without changing to account admin's role. """,
         )]
 
     Response = {u'type': u'object',

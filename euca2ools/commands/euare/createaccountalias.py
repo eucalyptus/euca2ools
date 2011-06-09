@@ -47,7 +47,13 @@ class CreateAccountAlias(AWSQueryRequest):
               long_name='account-alias',
               ptype='string',
               optional=False,
-              doc="""The new alias for the account.""")
+              doc="""The new alias for the account."""),
+        Param(name='DelegateAccount',
+              short_name=None,
+              long_name='delegate',
+              ptype='string',
+              optional=True,
+              doc=""" [Eucalyptus extension] Use the parameter only as the system admin to act as the account admin of the specified account without changing to account admin's role. """)
         ]
 
 

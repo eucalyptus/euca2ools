@@ -47,7 +47,13 @@ class DeleteAccountAlias(AWSQueryRequest):
               long_name='account-alias',
               ptype='string',
               optional=False,
-              doc="""The alias to be deleted.""")
+              doc="""The alias to be deleted."""),
+        Param(name='DelegateAccount',
+              short_name=None,
+              long_name='delegate',
+              ptype='string',
+              optional=True,
+              doc=""" [Eucalyptus extension] Use the parameter only as the system admin to act as the account admin of the specified account without changing to account admin's role. """)
         ]
 
 

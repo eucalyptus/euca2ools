@@ -41,21 +41,26 @@ class DeleteUser(AWSQueryRequest):
     ServiceClass = euca2ools.commands.euare.Euare
 
     Description = """DeleteUser"""
-    Params = [Param(
-        name='UserName',
-        short_name='u',
-        long_name='user-name',
-        ptype='string',
-        optional=False,
-        doc=""" Name of the User to delete. """,
-        ), Param(
-        name='DelegateAccount',
-        short_name=None,
-        long_name='delegate',
-        ptype='string',
-        optional=True,
-        doc=""" User the parameter only as the system admin to act as the account admin of the specified account without changing to account admin's role. """,
-        )]
+    Params = [
+        Param(name='UserName',
+              short_name='u',
+              long_name='user-name',
+              ptype='string',
+              optional=False,
+              doc=""" Name of the User to delete. """),
+        Param(name='DelegateAccount',
+              short_name=None,
+              long_name='delegate',
+              ptype='string',
+              optional=True,
+              doc=""" [Eucalyptus extension] Use the parameter only as the system admin to act as the account admin of the specified account without changing to account admin's role. """),
+        Param(name='IsRecursive',
+              short_name='r',
+              long_name='recursive',
+              ptype='boolean',
+              optional=True,
+              doc=""" Deletes the User from associated groups and deletes the User's credentials and policies along with the User. """)
+        ]
 
     Response = {u'type': u'object', u'name': u'DeleteUserResponse',
                 u'properties': [{
