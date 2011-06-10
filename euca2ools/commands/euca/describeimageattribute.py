@@ -86,8 +86,9 @@ class DescribeImageAttribute(euca2ools.commands.eucacommand.EucaCommand):
             for dev_name in block_device_mapping:
                 print 'blockDeviceMapping\t%s\tblockDeviceMap\t%s: %s' \
                     % (image_id, dev_name,
-                       block_device_mapping[dev_name])
-
+                       (block_device_mapping[dev_name].ephemeral_name or
+                        block_device_mapping[dev_name].snapshot_id))
+ 
     def main(self):
         attribute = None
         attr_names = [ opt.name for opt in self.Options ]
