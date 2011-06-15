@@ -55,21 +55,13 @@ Eucalyptus.  These tools are also compatible with Amazon AWS.
 %build
 %{__python} setup.py build
 
-%if 0%{?__python_ver:1}
-for file in bin/* `find %{name} -name '*.py'`; do
-    sed -i '1s|^#!.*python|#!%{__python}|' $file
-done
-%endif
-
 
 %install
 rm -rf %{buildroot}
 %{__python} setup.py install --prefix=%{_prefix} --skip-build --root %{buildroot}
 %{__python} setup.py install -O1 --prefix=%{_prefix} --skip-build --root %{buildroot}
 
-mkdir -p %{buildroot}/%{_bindir}
 mkdir -p %{buildroot}/%{_mandir}/man1
-cp -p bin/* %{buildroot}/%{_bindir}
 cp -p man/* %{buildroot}/%{_mandir}/man1
 
 
