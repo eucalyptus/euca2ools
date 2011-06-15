@@ -19,6 +19,9 @@ Vcs-Svn: svn://svn.debian.org/svn/pkg-eucalyptus/euca2ools/
 Package: euca2ools
 Architecture: all
 Depends: ${python:Depends}, python-m2crypto (>= 0.20.1), python-boto (>= 1.9b), ${misc:Depends}
+Replaces: euca2ools-eee (<< 1.3)
+Breaks: euca2ools-eee (<< 1.3)
+Conflicts: euca2ools-eee (<< 1.3)
 XB-Python-Version: ${python:Versions}
 Description: managing cloud instances for Eucalyptus
  EUCALYPTUS is an open source service overlay that implements elastic
