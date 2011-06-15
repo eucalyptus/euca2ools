@@ -1,6 +1,0 @@
-version=3
-
-http://eucalyptussoftware.com/downloads/releases/euca2ools-(.*).tar.gz
-
-# Nightly builds
-#http://eucalyptussoftware.com/downloads/releases/nightly/euca2ools-(.*)-src.tar.gz
