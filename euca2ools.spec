@@ -19,21 +19,18 @@ Source:        http://eucalyptussoftware.com/downloads/releases/euca2ools-%{vers
 BuildRoot:     %(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
 BuildArch:     noarch
 
-# %%elseif behaves like %endif followed by %if.  Avoid it to reduce confusion.
-
-%if 0%{?el5}
 BuildRequires:  python%{?__python_ver}-devel
 Requires:       python%{?__python_ver}-boto >= 2.0
+Requires:       rsync
+Requires:       util-linux
+# %%elseif behaves like %%endif followed by %%if.  Avoid it to reduce confusion.
+%if 0%{?el5}
 Requires:       python%{?__python_ver}-m2crypto >= 0.20.2
 %endif
 %if 0%{?rhel} > 5 || 0%{?fedora}
-BuildRequires:  python-devel
-Requires:       python-boto >= 2.0
 Requires:       m2crypto
 %endif
 %if !0%{?rhel} && !0%{?fedora}
-BuildRequires:  python-devel
-Requires:       python-boto >= 2.0
 Requires:       python-m2crypto >= 0.20.2
 %endif
 
