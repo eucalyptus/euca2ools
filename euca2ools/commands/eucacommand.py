@@ -59,6 +59,33 @@ EC2RegionData = {
     'eu-west-1' : 'ec2.eu-west-1.amazonaws.com',
     'ap-southeast-1' : 'ec2.ap-southeast-1.amazonaws.com'}
 
+import bdb
+import traceback
+try:
+    import epdb as debugger
+except ImportError:
+    import pdb as debugger
+
+def euca_except_hook(debugger_flag, debug_flag):
+    def excepthook(typ, value, tb):
+        if typ is bdb.BdbQuit:
+            sys.exit(1)
+        sys.excepthook = sys.__excepthook__
+
+        if debugger_flag and sys.stdout.isatty() and sys.stdin.isatty():
+            if debugger.__name__ == 'epdb':
+                debugger.post_mortem(tb, typ, value)
+            else:
+                debugger.post_mortem(tb)
+        elif debug_flag:
+            print traceback.print_tb(tb)
+            sys.exit(1)
+        else:
+            print value
+            sys.exit(1)
+
+    return excepthook
+
 class EucaCommand(object):
 
     Description = 'Base class'
@@ -78,6 +105,9 @@ class EucaCommand(object):
                              optional=True),
                        Param(short_name=None, long_name='debug',
                              doc='Turn on debugging output.',
+                             optional=True, ptype='boolean'),
+                       Param(short_name=None, long_name='debugger',
+                             doc='Enable interactive debugger on error',
                              optional=True, ptype='boolean'),
                        Param(short_name='h', long_name='help',
                              doc='Display this help message.',
@@ -116,6 +146,7 @@ class EucaCommand(object):
         self.euca_cert_path = None
         self.euca_private_key_path = None
         self.debug = 0
+        self.debugger = False
         self.set_debug(debug)
         self.cmd_name = os.path.basename(sys.argv[0])
         self.setup_environ()
@@ -141,6 +172,8 @@ class EucaCommand(object):
                 self.version()
             elif name == '--debug':
                 self.set_debug(True)
+            elif name == '--debugger':
+                self.debugger = True
             elif name in (self.access_key_short_name, '--access-key'):
                 self.ec2_user_access_key = value
             elif name in (self.secret_key_short_name, '--secret-key'):
@@ -196,6 +229,9 @@ class EucaCommand(object):
                 if len(args) > 1:
                     msg = 'Only 1 argument (%s) permitted' % arg.name
                     self.display_error_and_exit(msg)
+
+        sys.excepthook = euca_except_hook(self.debugger, self.debug)
+
 
     def check_for_conflict(self):
         for option in self.Options:
