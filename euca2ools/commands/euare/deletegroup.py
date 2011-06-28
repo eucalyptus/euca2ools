@@ -34,7 +34,10 @@
 from boto.roboto.awsqueryrequest import AWSQueryRequest
 from boto.roboto.param import Param
 import euca2ools.commands.euare
-
+from euca2ools.commands.euare.listgrouppolicies import ListGroupPolicies
+from euca2ools.commands.euare.deletegrouppolicy import DeleteGroupPolicy
+from euca2ools.commands.euare.getgroup import GetGroup
+from euca2ools.commands.euare.removeuserfromgroup import RemoveUserFromGroup
 
 class DeleteGroup(AWSQueryRequest):
 
@@ -54,12 +57,24 @@ class DeleteGroup(AWSQueryRequest):
               ptype='string',
               optional=True,
               doc=""" [Eucalyptus extension] Use the parameter only as the system admin to act as the account admin of the specified account without changing to account admin's role. """),
-        Param(name='IsRecursive',
+        Param(name='recursive',
               short_name='r',
               long_name='recursive',
               ptype='boolean',
               optional=True,
-              doc=""" Deletes the User from associated groups and deletes the User's credentials and policies along with the User. """),
+              doc=""" Deletes the Group, removes all Users from the Group and deletes all Policies associated with the Group."""),
+        Param(name='IsRecursive',
+              short_name='R',
+              long_name='recursive-euca',
+              ptype='boolean',
+              optional=True,
+              doc="""[Eucalyptus extension] Exactly like the -r option but performs operations server-side rather than in the client."""),
+        Param(name='pretend',
+              short_name='p',
+              long_name='pretend',
+              ptype='boolean',
+              optional=True,
+              doc="""Returns a list of Users and Policies that would be deleted if the -r or -R option were actually performed.""")
         ]
 
     Response = {u'type': u'object', u'name': u'DeleteGroupResponse',
@@ -71,8 +86,43 @@ class DeleteGroup(AWSQueryRequest):
                         : u'RequestId'}],
         }]}
 
+    def cli_formatter(self, data):
+        if self.pretend:
+            print 'users'
+            for user in data['users']:
+                print '\t%s' % user['Arn']
+            print 'policies'
+            for policy in data['policies']:
+                print '\t%s' % policy
+        else:
+
+            AWSQueryRequest.cli_formatter(self, data)
+
     def main(self, **args):
-        return self.send()
+        recursive_local = self.cli_options.recursive or \
+            args.get('recursive', False)
+        recursive_server = self.cli_options.recursive_euca or \
+            args.get('recursive_euca', False)
+        self.pretend = self.cli_options.pretend or args.get('pretend', False)
+        group_name = self.cli_options.group_name or args.get('group_name', None)
+        if recursive_local or (recursive_server and pretend):
+            obj = ListGroupPolicies()
+            d = obj.main(group_name=group_name)
+            data = {'policies' : d.PolicyNames}
+            obj = GetGroup()
+            d = obj.main(group_name=group_name)
+            data['users'] = d.Users
+            if self.pretend:
+                return data
+            else:
+                obj = RemoveUserFromGroup()
+                for user in data['users']:
+                    obj.main(group_name=group_name, user_name=user['UserName'])
+                obj = DeleteGroupPolicy()
+                for policy in data['policies']:
+                    obj.main(group_name=group_name, policy_name=policy)
+        if not self.pretend:
+            return self.send()
 
     def main_cli(self):
         self.do_cli()
