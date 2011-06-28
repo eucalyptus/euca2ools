@@ -28,12 +28,9 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 #
-# Author: Neil Soman neil@eucalyptus.com
-#         Mitch Garnaat mgarnaat@eucalyptus.com
+# Author: Mitch Garnaat mgarnaat@eucalyptus.com
 
 from boto.roboto.awsqueryservice import AWSQueryService
-from boto.roboto.awsqueryrequest import AWSQueryRequest
-from boto.roboto.param import Param
 
 class Euare(AWSQueryService):
 
