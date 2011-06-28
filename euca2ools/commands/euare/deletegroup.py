@@ -121,7 +121,7 @@ class DeleteGroup(AWSQueryRequest):
                 for policy in data['policies']:
                     obj.main(group_name=group_name, policy_name=policy)
         if not self.pretend:
-            return self.send()
+            return self.send(**args)
 
     def main_cli(self):
         self.do_cli()

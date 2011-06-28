@@ -144,7 +144,7 @@ class DeleteUser(AWSQueryRequest):
                 for group in data['groups']:
                     obj.main(group_name=group['GroupName'], user_name=user_name)
         if not self.pretend:
-            return self.send()
+            return self.send(**args)
         
     def main_cli(self):
         self.do_cli()

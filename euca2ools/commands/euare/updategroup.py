@@ -81,7 +81,7 @@ class UpdateGroup(AWSQueryRequest):
         }]}
 
     def main(self, **args):
-        return self.send()
+        return self.send(**args)
 
     def main_cli(self):
         self.do_cli()

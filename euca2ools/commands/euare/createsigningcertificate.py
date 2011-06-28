@@ -136,7 +136,7 @@ class CreateSigningCertificate(AWSQueryRequest):
         print data.Certificate['PrivateKey']
 
     def main(self, **args):
-        return self.send()
+        return self.send(**args)
 
     def main_cli(self):
         self.do_cli()
