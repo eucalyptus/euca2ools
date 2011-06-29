@@ -96,9 +96,7 @@ class EucaConnection(AWSAuthConnection):
                                                     utf8_params,
                                                     headers, data,
                                                     self.server_name())
-        http_request = self.fill_in_auth(http_request,
-                                         private_key_path=self.private_key_path)
-        return self._send_http_request(http_request, sender)
+        return self._mexe(http_request, sender)
 
     def get_bucket(self, bucket_name, validate=True, headers=None):
         bucket = Bucket(self, bucket_name)
