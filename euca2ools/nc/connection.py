@@ -60,6 +60,7 @@ class EucaConnection(AWSAuthConnection):
                                    debug=debug,
                                    https_connection_factory=https_connection_factory,
                                    path=path)
+        self._auth_handler.private_key_path = self.private_key_path
 
     def _required_auth_capability(self):
         return ['euca-nc']
