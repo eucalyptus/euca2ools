@@ -46,7 +46,7 @@ from euca2ools.exceptions import NotFoundError, CommandFailed
 class BundleUpload(UploadBundle, BundleImage):
 
     Description = """Bundles an image and uploads on behalf of user.
-                     NOTE: For use by the Eucalyptus Node Controller only"
+                     NOTE: For use by the Eucalyptus Node Controller only"""
     
     Options = [Param(name='bucket', short_name='b', long_name='bucket',
                      optional=False, ptype='string',
