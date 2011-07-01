@@ -38,6 +38,7 @@ import os
 from xml.dom import minidom
 from boto.exception import S3ResponseError, S3CreateError
 from boto.s3.key import Key
+from boto.s3.connection import Location
 
 class UploadBundle(euca2ools.commands.eucacommand.EucaCommand):
 
@@ -67,9 +68,9 @@ class UploadBundle(euca2ools.commands.eucacommand.EucaCommand):
                      optional=True, ptype='boolean', default=False,
                      doc='Do not  upload the manifest.'),
                Param(name='location', long_name='location',
-                     optional=True, ptype='string',
+                     optional=True, ptype='string', default=Location.DEFAULT,
                      doc="""The location of the destination S3 bucket
-                            Valid values: US|EU|us-west-1|ap-southeast-1"""]
+                            Valid values: US|EU|us-west-1|ap-southeast-1|ap-northeast-1"""]
 
     def ensure_bucket(self):
         bucket_instance = None
