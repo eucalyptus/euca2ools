@@ -133,17 +133,16 @@ class BundleUpload(UploadBundle, BundleImage):
                                                   self.product_codes)
         os.remove(encrypted_file)
             
-        bucket_instance = self.ensure_bucket(self.bucket, self.acl)
+        bucket_instance = self.ensure_bucket(self.acl)
         parts = self.get_parts(manifest_path)
         manifest_directory, manifest_file = os.path.split(manifest_path)
         if not self.directory:
             self.directory = manifest_directory
         # TODO: Since Walrus does not fully support S3 policies
         #       we are going to simply ignore the policy for now.
-        self.upload_manifest(bucket_instance, manifest_path,
-                             self.acl, None, None)
+        self.upload_manifest(bucket_instance, manifest_path, self.acl)
         self.upload_parts(bucket_instance, self.directory, parts,
-                          None, self.acl, None, None)
+                          None, self.acl)
         manifest_path = self.get_relative_filename(manifest_path)
         print "Uploaded image as %s/%s" % (self.bucket, manifest_path)
         bucket_instance.connection.make_request(bucket=self.bucket,

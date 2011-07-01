@@ -72,7 +72,7 @@ class UploadBundle(euca2ools.commands.eucacommand.EucaCommand):
                      doc="""The location of the destination S3 bucket
                             Valid values: US|EU|us-west-1|ap-southeast-1|ap-northeast-1""")]
 
-    def ensure_bucket(self):
+    def ensure_bucket(self, acl, location=Location.DEFAULT):
         bucket_instance = None
         s3conn = self.make_connection_cli('s3')
         try:
@@ -88,8 +88,8 @@ class UploadBundle(euca2ools.commands.eucacommand.EucaCommand):
                 try:
                     print 'Creating bucket:', self.bucket
                     bucket_instance = s3conn.create_bucket(self.bucket,
-                                                           policy=self.canned_acl,
-                                                           location=self.location)
+                                                           policy=acl,
+                                                           location=location)
                 except S3CreateError:
                     msg = 'Unable to create bucket %s' % self.bucket
                     self.display_error_and_exit(msg)
@@ -170,7 +170,7 @@ class UploadBundle(euca2ools.commands.eucacommand.EucaCommand):
                     self.display_error_and_exit(msg)
 
     def main(self):
-        bucket_instance = self.ensure_bucket(self.bucket, self.canned_acl)
+        bucket_instance = self.ensure_bucket(self.canned_acl, self.location)
         parts = self.get_parts(self.manifest_path)
         manifest_directory, manifest_file = os.path.split(self.manifest_path)
         if not self.bundle_path:
