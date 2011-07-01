@@ -70,7 +70,7 @@ class UploadBundle(euca2ools.commands.eucacommand.EucaCommand):
                Param(name='location', long_name='location',
                      optional=True, ptype='string', default=Location.DEFAULT,
                      doc="""The location of the destination S3 bucket
-                            Valid values: US|EU|us-west-1|ap-southeast-1|ap-northeast-1"""]
+                            Valid values: US|EU|us-west-1|ap-southeast-1|ap-northeast-1""")]
 
     def ensure_bucket(self):
         bucket_instance = None
