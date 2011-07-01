@@ -45,7 +45,9 @@ from euca2ools.exceptions import NotFoundError, CommandFailed
 
 class BundleUpload(UploadBundle, BundleImage):
 
-    Description = 'Bundles an image and uploads on behalf of user'
+    Description = """Bundles an image and uploads on behalf of user.
+                     NOTE: For use by the Eucalyptus Node Controller only"
+    
     Options = [Param(name='bucket', short_name='b', long_name='bucket',
                      optional=False, ptype='string',
                      doc='Name of the bucket to upload to.'),
@@ -89,7 +91,7 @@ class BundleUpload(UploadBundle, BundleImage):
                      doc="""Target architecture for the image
                      Valid values: i386 | x86_64."""),
                Param(name='acl', long_name='acl',
-                     optional=True, ptype='string', default='aws-exec-read',
+                     optional=True, ptype='string', default='ec2-bundle-read',
                      doc='Canned ACL policy')]
 
     def main(self):
@@ -136,10 +138,12 @@ class BundleUpload(UploadBundle, BundleImage):
         manifest_directory, manifest_file = os.path.split(manifest_path)
         if not self.directory:
             self.directory = manifest_directory
+        # TODO: Since Walrus does not fully support S3 policies
+        #       we are going to simply ignore the policy for now.
         self.upload_manifest(bucket_instance, manifest_path,
-                             self.acl, self.policy, self.policy_signature)
+                             self.acl, None, None)
         self.upload_parts(bucket_instance, self.directory, parts,
-                          None, self.acl, self.policy, self.policy_signature)
+                          None, self.acl, None, None)
         manifest_path = self.get_relative_filename(manifest_path)
         print "Uploaded image as %s/%s" % (self.bucket, manifest_path)
         bucket_instance.connection.make_request(bucket=self.bucket,
