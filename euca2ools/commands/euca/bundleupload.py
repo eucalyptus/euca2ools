@@ -140,9 +140,9 @@ class BundleUpload(UploadBundle, BundleImage):
             self.directory = manifest_directory
         # TODO: Since Walrus does not fully support S3 policies
         #       we are going to simply ignore the policy for now.
-        self.upload_manifest(bucket_instance, manifest_path, self.acl)
+        self.upload_manifest(bucket_instance, manifest_path, self.acl, self.policy, self.policy_signature)
         self.upload_parts(bucket_instance, self.directory, parts,
-                          None, self.acl)
+                          None, self.acl, self.policy, self.policy_signature)
         manifest_path = self.get_relative_filename(manifest_path)
         print "Uploaded image as %s/%s" % (self.bucket, manifest_path)
         bucket_instance.connection.make_request(bucket=self.bucket,

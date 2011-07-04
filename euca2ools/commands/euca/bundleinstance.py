@@ -51,12 +51,13 @@ class BundleInstance(euca2ools.commands.eucacommand.EucaCommand):
                      short_name='o', long_name='user-access-key',
                      optional=False, ptype='string',
                      doc='Access Key ID of the owner of the bucket'),
-               Param(name='policy', short_name='c', long_name='policy',
-                     optional=True, ptype='string',
-                     doc="""Base64 encoded upload policy that defines
-                            upload permissions and conditions.  If no
-                            policy is specified, a default policy
-                            is generated."""),
+               # CUSTOM UPLOAD POLICY IS NOT SUPPORTED YET 
+               #Param(name='policy', short_name='c', long_name='policy',
+               #      optional=True, ptype='string',
+               #      doc="""Base64 encoded upload policy that defines
+               #             upload permissions and conditions.  If no
+               #             policy is specified, a default policy
+               #             is generated."""),
                Param(name='secret_key',
                      short_name='w', long_name='user-secret-key',
                      optional=False, ptype='string',
@@ -94,8 +95,8 @@ class BundleInstance(euca2ools.commands.eucacommand.EucaCommand):
 
     def main(self):
         conn = self.make_connection_cli()
-        if not self.policy:
-            self.policy = self.generate_default_policy(self.bucket,
+        #if not self.policy:
+        self.policy = self.generate_default_policy(self.bucket,
                                                        self.prefix,
                                                        self.expires,
                                                        'ec2-bundle-read')
