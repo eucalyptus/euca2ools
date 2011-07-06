@@ -33,11 +33,9 @@
 
 import sys
 import os
-from xml.dom import minidom
 import euca2ools.commands.eucacommand
 from boto.roboto.param import Param
 from boto.exception import S3ResponseError, S3CreateError
-from boto.s3.key import Key
 from euca2ools.commands.euca.uploadbundle import UploadBundle
 from euca2ools.commands.euca.bundleimage import BundleImage
 import euca2ools.bundler
@@ -140,7 +138,8 @@ class BundleUpload(UploadBundle, BundleImage):
             self.directory = manifest_directory
         # TODO: Since Walrus does not fully support S3 policies
         #       we are going to simply ignore the policy for now.
-        self.upload_manifest(bucket_instance, manifest_path, self.acl, self.policy, self.policy_signature)
+        self.upload_manifest(bucket_instance, manifest_path, self.acl,
+                             self.policy, self.policy_signature)
         self.upload_parts(bucket_instance, self.directory, parts,
                           None, self.acl, self.policy, self.policy_signature)
         manifest_path = self.get_relative_filename(manifest_path)
