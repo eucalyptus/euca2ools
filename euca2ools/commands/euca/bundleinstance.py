@@ -95,8 +95,8 @@ class BundleInstance(euca2ools.commands.eucacommand.EucaCommand):
 
     def main(self):
         conn = self.make_connection_cli()
-        #if not self.policy:
-        self.policy = self.generate_default_policy(self.bucket,
+        if not self.policy:
+            self.policy = self.generate_default_policy(self.bucket,
                                                        self.prefix,
                                                        self.expires,
                                                        'ec2-bundle-read')
