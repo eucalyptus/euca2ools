@@ -92,7 +92,7 @@ class ModifyImageAttribute(euca2ools.commands.eucacommand.EucaCommand):
             image_attribute = 'productCodes'
         if not image_attribute and self.launchPermission:
             image_attribute = 'launchPermission'
-        if self.adds and self.removes:
+        if self.add and self.remove:
             msg = 'You cannot add and remove in the same call'
             self.display_error_and_exit(msg)
         if self.add:
