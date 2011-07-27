@@ -78,8 +78,8 @@ class UploadBundle(euca2ools.commands.eucacommand.EucaCommand):
         try:
             print 'Checking bucket:', self.bucket
             bucket_instance = s3conn.get_bucket(self.bucket)
-            if self.location:
-                if self.location != bucket_instance.get_location():
+            if location:
+                if location != bucket_instance.get_location():
                     msg = 'Supplied location does not match bucket location'
                     self.display_error_and_exit(msg)
         except S3ResponseError, s3error:
