@@ -213,6 +213,7 @@ class EucaCommand(object):
 
         for arg in self.Args:
             if not arg.optional and len(args)==0:
+                self.usage()
                 msg = 'Argument (%s) was not provided' % arg.name
                 self.display_error_and_exit(msg)
             if arg.cardinality in ('*', '+'):
