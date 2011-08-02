@@ -88,6 +88,7 @@ class ModifyImageAttribute(euca2ools.commands.eucacommand.EucaCommand):
         users = []
         groups = []
         image_attribute = None
+        operation_type = 'add'
         if self.productCode:
             image_attribute = 'productCodes'
         if not image_attribute and self.launchPermission:
