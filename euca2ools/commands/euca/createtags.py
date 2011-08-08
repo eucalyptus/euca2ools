@@ -55,7 +55,7 @@ class CreateTags(euca2ools.commands.eucacommand.EucaCommand):
             else:
                 value = t[1]
             tags[name] = value
-        conn = self.make_connection_cli()
+        conn = self.make_connection_cli(api_version='2010-08-31')
         return self.make_request_cli(conn, 'create_tags',
                                        resource_ids=self.resource_id,
                                        tags=tags)

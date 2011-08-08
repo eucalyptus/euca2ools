@@ -510,7 +510,7 @@ class EucaCommand(object):
                 calling_format=OrdinaryCallingFormat(),
                 path=self.service_path)
 
-    def make_ec2_connection(self):
+    def make_ec2_connection(self, api_version=EC2_API_VERSION):
         if self.region_name:
             self.region.name = self.region_name
             try:
@@ -538,19 +538,20 @@ class EucaCommand(object):
                                 region=self.region,
                                 port=self.port,
                                 path=self.service_path,
-                                api_version=EC2_API_VERSION)
+                                api_version=api_version)
     
-    def make_connection(self, conn_type='ec2'):
+    def make_connection(self, conn_type='ec2', api_version=EC2_API_VERSION):
         self.get_credentials()
         if conn_type == 's3':
             conn = self.make_s3_connection()
         elif conn_type == 'ec2':
-            conn = self.make_ec2_connection()
+            conn = self.make_ec2_connection(api_version)
         else:
             conn = None
         return conn
 
-    def make_connection_cli(self, conn_type='ec2'):
+    def make_connection_cli(self, conn_type='ec2',
+                            api_version=EC2_API_VERSION):
         """
         This just wraps up the make_connection call with appropriate
         try/except logic to print out an error message and exit if
@@ -558,7 +559,7 @@ class EucaCommand(object):
         out of all the command files.
         """
         try:
-            conn = self.make_connection(conn_type)
+            conn = self.make_connection(conn_type, api_version)
             if not conn:
                 msg = 'Unknown connection type: %s' % conn_type
                 self.display_error_and_exit(msg)
