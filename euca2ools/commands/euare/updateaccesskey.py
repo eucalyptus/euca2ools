@@ -54,8 +54,7 @@ class UpdateAccessKey(AWSQueryRequest):
         long_name='user-key-id',
         ptype='string',
         optional=False,
-        doc=""" The Access Key ID of the Secret Access Key you want to update. """
-            ,
+        doc=""" The Access Key ID of the Secret Access Key you want to update. """ ,
         ), Param(
         name='Status',
         short_name='s',
@@ -63,8 +62,14 @@ class UpdateAccessKey(AWSQueryRequest):
         ptype='enum',
         choices=['Active', 'Inactive'],
         optional=False,
-        doc=""" The status you want to assign to the Secret Access Key. Active means the key can be used for API calls to AWS, while Inactive means the key cannot be used. """
-            ,
+        doc=""" The status you want to assign to the Secret Access Key. Active means the key can be used for API calls to AWS, while Inactive means the key cannot be used. """ ,
+        ), Param(
+        name='DelegateAccount',
+        short_name=None,
+        long_name='delegate',
+        ptype='string',
+        optional=True,
+        doc=""" [Eucalyptus extension] Use the parameter only as the system admin to act as the account admin of the specified account without changing to account admin's role. """,
         )]
 
     Response = {u'type': u'object',
@@ -77,7 +82,7 @@ class UpdateAccessKey(AWSQueryRequest):
         }]}
 
     def main(self, **args):
-        return self.send()
+        return self.send(**args)
 
     def main_cli(self):
         self.do_cli()

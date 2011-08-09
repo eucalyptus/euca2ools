@@ -46,8 +46,9 @@ class EucaNCAuthHandler(boto.auth_handler.AuthHandler):
     def __init__(self, host, config, provider):
         boto.auth_handler.AuthHandler.__init__(self, host, config, provider)
         self.hmac = hmac.new(provider.secret_key, digestmod=sha)
+        self.private_key_path = None
         
-    def _calc_signature(self, params, headers, verb, path, private_key_path):
+    def _calc_signature(self, params, headers, verb, path):
         boto.log.debug('using euca_signature')
         string_to_sign = '%s\n%s\n%s\n' % (verb, headers['Date'], path)
         keys = params.keys()
@@ -63,7 +64,7 @@ class EucaNCAuthHandler(boto.auth_handler.AuthHandler):
         hmac.update(string_to_sign)
         sha_manifest = sha()
         sha_manifest.update(string_to_sign)
-        private_key = RSA.load_key(private_key_path) 
+        private_key = RSA.load_key(self.private_key_path)
         signature_value = private_key.sign(sha_manifest.digest())
         b64 = base64.b64encode(signature_value)
         boto.log.debug('len(b64)=%d' % len(b64))
@@ -71,14 +72,12 @@ class EucaNCAuthHandler(boto.auth_handler.AuthHandler):
         return (qs, b64)
 
     def add_auth(self, http_request, **kwargs):
-        private_key_path = kwargs.get('private_key_path')
         headers = http_request.headers
         params = http_request.params
         qs, signature = self._calc_signature(http_request.params,
                                              http_request.headers,
                                              http_request.method,
-                                             http_request.path,
-                                             private_key_path)
+                                             http_request.path)
 	headers['EucaSignature'] = signature
         boto.log.debug('query_string: %s Signature: %s' % (qs, signature))
         if http_request.method == 'POST':
@@ -86,7 +85,4 @@ class EucaNCAuthHandler(boto.auth_handler.AuthHandler):
             http_request.body = qs
         else:
             http_request.body = ''
-        # Now that query params are part of the path, clear the 'params' field
-        # in request.
-        http_request.params = {}
 

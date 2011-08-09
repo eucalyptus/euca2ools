@@ -79,7 +79,13 @@ class CreateUser(AWSQueryRequest):
               optional=True,
               default=False,
               request_param=False,
-              doc="causes the response to include the newly created User's ARN and GUID")]
+              doc="causes the response to include the newly created User's ARN and GUID"),
+        Param(name='DelegateAccount',
+              short_name=None,
+              long_name='delegate',
+              ptype='string',
+              optional=True,
+              doc=""" [Eucalyptus extension] Use the parameter only as the system admin to act as the account admin of the specified account without changing to account admin's role. """)]
 
     Response = {u'type': u'object', u'name': u'CreateUserResponse',
                 u'properties': [{

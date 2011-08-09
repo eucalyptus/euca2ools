@@ -47,24 +47,28 @@ class UpdateGroup(AWSQueryRequest):
         long_name='group-name',
         ptype='string',
         optional=False,
-        doc=""" Name of the group to update. If you're changing the name of the group, this is the original name. """
-            ,
+        doc=""" Name of the group to update. If you're changing the name of the group, this is the original name. """ ,
         ), Param(
         name='NewPath',
         short_name='n',
         long_name='new-path',
         ptype='string',
         optional=True,
-        doc=""" New path for the group. Only include this if changing the group's path. """
-            ,
+        doc=""" New path for the group. Only include this if changing the group's path. """ ,
         ), Param(
         name='NewGroupName',
         short_name=None,
         long_name='new-group-name',
         ptype='string',
         optional=True,
-        doc=""" New name for the group. Only include this if changing the group's name. """
-            ,
+        doc=""" New name for the group. Only include this if changing the group's name. """ ,
+        ), Param(
+        name='DelegateAccount',
+        short_name=None,
+        long_name='delegate',
+        ptype='string',
+        optional=True,
+        doc=""" [Eucalyptus extension] Use the parameter only as the system admin to act as the account admin of the specified account without changing to account admin's role. """,
         )]
 
     Response = {u'type': u'object', u'name': u'UpdateGroupResponse',
@@ -77,7 +81,7 @@ class UpdateGroup(AWSQueryRequest):
         }]}
 
     def main(self, **args):
-        return self.send()
+        return self.send(**args)
 
     def main_cli(self):
         self.do_cli()

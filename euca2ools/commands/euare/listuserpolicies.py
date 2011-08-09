@@ -54,7 +54,7 @@ class ListUserPolicies(AWSQueryRequest):
               long_name='policy-name',
               ptype='string',
               optional=True,
-              local_param=True,
+              request_param=False,
               doc="""Name of the policy document to display."""),
         Param(name='verbose',
               short_name='v',
@@ -62,7 +62,7 @@ class ListUserPolicies(AWSQueryRequest):
               ptype='boolean',
               optional=True,
               default=False,
-              local_param=True,
+              request_param=False,
               doc="""Displays the contents of the resulting policies (in addition to the policy names)."""),
         Param(name='Marker',
               short_name='m',
@@ -75,7 +75,13 @@ class ListUserPolicies(AWSQueryRequest):
               long_name='max-items',
               ptype='integer',
               optional=True,
-              doc=""" Use this only when paginating results to indicate the maximum number of policy names you want in the response. If there are additional policy names beyond the maximum you specify, the IsTruncated response element is true. """)]
+              doc=""" Use this only when paginating results to indicate the maximum number of policy names you want in the response. If there are additional policy names beyond the maximum you specify, the IsTruncated response element is true. """),
+        Param(name='DelegateAccount',
+              short_name=None,
+              long_name='delegate',
+              ptype='string',
+              optional=True,
+              doc=""" [Eucalyptus extension] Use the parameter only as the system admin to act as the account admin of the specified account without changing to account admin's role. """)]
 
     Response = {u'type': u'object',
                 u'name': u'ListUserPoliciesResponse', u'properties': [{

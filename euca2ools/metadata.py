@@ -59,5 +59,5 @@ class MetaData(object):
         return self.get_instance_metadata('ancestor-ami-ids')
 
     def get_instance_block_device_mappings(self):
-        return self.get_instance_metadata('ancestor-ami-ids')
+        return self.get_instance_metadata('block-device-mapping')
 

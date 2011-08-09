@@ -47,8 +47,7 @@ class DeleteSigningCertificate(AWSQueryRequest):
         long_name='user-name',
         ptype='string',
         optional=True,
-        doc=""" Name of the User the signing certificate belongs to. """
-            ,
+        doc=""" Name of the User the signing certificate belongs to. """,
         ), Param(
         name='CertificateId',
         short_name='c',
@@ -56,6 +55,13 @@ class DeleteSigningCertificate(AWSQueryRequest):
         ptype='string',
         optional=False,
         doc=""" ID of the signing certificate to delete. """,
+        ), Param(
+        name='DelegateAccount',
+        short_name=None,
+        long_name='delegate',
+        ptype='string',
+        optional=True,
+        doc=""" [Eucalyptus extension] Use the parameter only as the system admin to act as the account admin of the specified account without changing to account admin's role. """,
         )]
 
     Response = {u'type': u'object',
@@ -70,7 +76,7 @@ class DeleteSigningCertificate(AWSQueryRequest):
 
 
     def main(self, **args):
-        return self.send()
+        return self.send(**args)
 
     def main_cli(self):
         self.do_cli()

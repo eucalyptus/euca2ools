@@ -59,6 +59,33 @@ EC2RegionData = {
     'eu-west-1' : 'ec2.eu-west-1.amazonaws.com',
     'ap-southeast-1' : 'ec2.ap-southeast-1.amazonaws.com'}
 
+import bdb
+import traceback
+try:
+    import epdb as debugger
+except ImportError:
+    import pdb as debugger
+
+def euca_except_hook(debugger_flag, debug_flag):
+    def excepthook(typ, value, tb):
+        if typ is bdb.BdbQuit:
+            sys.exit(1)
+        sys.excepthook = sys.__excepthook__
+
+        if debugger_flag and sys.stdout.isatty() and sys.stdin.isatty():
+            if debugger.__name__ == 'epdb':
+                debugger.post_mortem(tb, typ, value)
+            else:
+                debugger.post_mortem(tb)
+        elif debug_flag:
+            print traceback.print_tb(tb)
+            sys.exit(1)
+        else:
+            print value
+            sys.exit(1)
+
+    return excepthook
+
 class EucaCommand(object):
 
     Description = 'Base class'
@@ -78,6 +105,9 @@ class EucaCommand(object):
                              optional=True),
                        Param(short_name=None, long_name='debug',
                              doc='Turn on debugging output.',
+                             optional=True, ptype='boolean'),
+                       Param(short_name=None, long_name='debugger',
+                             doc='Enable interactive debugger on error',
                              optional=True, ptype='boolean'),
                        Param(short_name='h', long_name='help',
                              doc='Display this help message.',
@@ -116,6 +146,7 @@ class EucaCommand(object):
         self.euca_cert_path = None
         self.euca_private_key_path = None
         self.debug = 0
+        self.debugger = False
         self.set_debug(debug)
         self.cmd_name = os.path.basename(sys.argv[0])
         self.setup_environ()
@@ -141,6 +172,8 @@ class EucaCommand(object):
                 self.version()
             elif name == '--debug':
                 self.set_debug(True)
+            elif name == '--debugger':
+                self.debugger = True
             elif name in (self.access_key_short_name, '--access-key'):
                 self.ec2_user_access_key = value
             elif name in (self.secret_key_short_name, '--secret-key'):
@@ -180,6 +213,7 @@ class EucaCommand(object):
 
         for arg in self.Args:
             if not arg.optional and len(args)==0:
+                self.usage()
                 msg = 'Argument (%s) was not provided' % arg.name
                 self.display_error_and_exit(msg)
             if arg.cardinality in ('*', '+'):
@@ -196,6 +230,9 @@ class EucaCommand(object):
                 if len(args) > 1:
                     msg = 'Only 1 argument (%s) permitted' % arg.name
                     self.display_error_and_exit(msg)
+
+        sys.excepthook = euca_except_hook(self.debugger, self.debug)
+
 
     def check_for_conflict(self):
         for option in self.Options:
@@ -473,7 +510,7 @@ class EucaCommand(object):
                 calling_format=OrdinaryCallingFormat(),
                 path=self.service_path)
 
-    def make_ec2_connection(self):
+    def make_ec2_connection(self, api_version=EC2_API_VERSION):
         if self.region_name:
             self.region.name = self.region_name
             try:
@@ -501,19 +538,20 @@ class EucaCommand(object):
                                 region=self.region,
                                 port=self.port,
                                 path=self.service_path,
-                                api_version=EC2_API_VERSION)
+                                api_version=api_version)
     
-    def make_connection(self, conn_type='ec2'):
+    def make_connection(self, conn_type='ec2', api_version=EC2_API_VERSION):
         self.get_credentials()
         if conn_type == 's3':
             conn = self.make_s3_connection()
         elif conn_type == 'ec2':
-            conn = self.make_ec2_connection()
+            conn = self.make_ec2_connection(api_version)
         else:
             conn = None
         return conn
 
-    def make_connection_cli(self, conn_type='ec2'):
+    def make_connection_cli(self, conn_type='ec2',
+                            api_version=EC2_API_VERSION):
         """
         This just wraps up the make_connection call with appropriate
         try/except logic to print out an error message and exit if
@@ -521,7 +559,7 @@ class EucaCommand(object):
         out of all the command files.
         """
         try:
-            conn = self.make_connection(conn_type)
+            conn = self.make_connection(conn_type, api_version)
             if not conn:
                 msg = 'Unknown connection type: %s' % conn_type
                 self.display_error_and_exit(msg)

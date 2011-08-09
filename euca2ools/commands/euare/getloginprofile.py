@@ -47,8 +47,14 @@ class GetLoginProfile(AWSQueryRequest):
         long_name='user-name',
         ptype='string',
         optional=False,
-        doc=""" Name of the User whose login profile you want to retrieve. """
-            ,
+        doc=""" Name of the User whose login profile you want to retrieve. """ ,
+        ), Param(
+        name='DelegateAccount',
+        short_name=None,
+        long_name='delegate',
+        ptype='string',
+        optional=True,
+        doc=""" [Eucalyptus extension] Use the parameter only as the system admin to act as the account admin of the specified account without changing to account admin's role. """,
         )]
 
     Response = {u'type': u'object',
@@ -88,7 +94,7 @@ class GetLoginProfile(AWSQueryRequest):
         print data.LoginProfile['UserName']
 
     def main(self, **args):
-        return self.send()
+        return self.send(**args)
 
     def main_cli(self):
         self.do_cli()

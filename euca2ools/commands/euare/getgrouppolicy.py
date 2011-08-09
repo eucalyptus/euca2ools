@@ -56,6 +56,13 @@ class GetGroupPolicy(AWSQueryRequest):
         ptype='string',
         optional=False,
         doc=""" Name of the policy document to get. """,
+        ), Param(
+        name='DelegateAccount',
+        short_name=None,
+        long_name='delegate',
+        ptype='string',
+        optional=True,
+        doc=""" [Eucalyptus extension] Use the parameter only as the system admin to act as the account admin of the specified account without changing to account admin's role. """,
         )]
 
     Response = {u'type': u'object', u'name': u'GetGroupPolicyResponse',

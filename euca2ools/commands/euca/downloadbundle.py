@@ -118,7 +118,7 @@ class DownloadBundle(euca2ools.commands.eucacommand.EucaCommand):
 
     def main(self):
         bucket_instance = self.ensure_bucket(self.bucket)
-        manifests = self.get_manifests(bucket_instance, self.image_prefix)
+        manifests = self.get_manifests(bucket_instance, self.prefix)
         self.download_manifests(bucket_instance, manifests, self.directory)
         self.download_parts(bucket_instance, manifests, self.directory)
 

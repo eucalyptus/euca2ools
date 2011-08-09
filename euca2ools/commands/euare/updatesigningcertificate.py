@@ -47,16 +47,14 @@ class UpdateSigningCertificate(AWSQueryRequest):
         long_name='user-name',
         ptype='string',
         optional=True,
-        doc=""" Name of the User the signing certificate belongs to. """
-            ,
+        doc=""" Name of the User the signing certificate belongs to. """ ,
         ), Param(
         name='CertificateId',
         short_name='c',
         long_name='certificate-id',
         ptype='string',
         optional=False,
-        doc=""" The ID of the signing certificate you want to update. """
-            ,
+        doc=""" The ID of the signing certificate you want to update. """ ,
         ), Param(
         name='Status',
         short_name='s',
@@ -64,8 +62,14 @@ class UpdateSigningCertificate(AWSQueryRequest):
         ptype='enum',
         choices=['Active', 'Inactive'],
         optional=False,
-        doc=""" The status you want to assign to the certificate. Active means the certificate can be used for API calls to AWS, while Inactive means the certificate cannot be used. """
-            ,
+        doc=""" The status you want to assign to the certificate. Active means the certificate can be used for API calls to AWS, while Inactive means the certificate cannot be used. """ ,
+        ), Param(
+        name='DelegateAccount',
+        short_name=None,
+        long_name='delegate',
+        ptype='string',
+        optional=True,
+        doc=""" [Eucalyptus extension] Use the parameter only as the system admin to act as the account admin of the specified account without changing to account admin's role. """,
         )]
 
     Response = {u'type': u'object',
@@ -79,7 +83,7 @@ class UpdateSigningCertificate(AWSQueryRequest):
         }]}
 
     def main(self, **args):
-        return self.send()
+        return self.send(**args)
 
     def main_cli(self):
         self.do_cli()

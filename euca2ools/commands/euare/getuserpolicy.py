@@ -48,8 +48,7 @@ class GetUserPolicy(AWSQueryRequest):
         long_name='user-name',
         ptype='string',
         optional=False,
-        doc=""" Name of the User who the policy is associated with. """
-            ,
+        doc=""" Name of the User who the policy is associated with. """ ,
         ), Param(
         name='PolicyName',
         short_name='p',
@@ -57,6 +56,13 @@ class GetUserPolicy(AWSQueryRequest):
         ptype='string',
         optional=False,
         doc=""" Name of the policy document to get. """,
+        ), Param(
+        name='DelegateAccount',
+        short_name=None,
+        long_name='delegate',
+        ptype='string',
+        optional=True,
+        doc=""" [Eucalyptus extension] Use the parameter only as the system admin to act as the account admin of the specified account without changing to account admin's role. """,
         )]
 
     Response = {u'type': u'object', u'name': u'GetUserPolicyResponse',
@@ -104,7 +110,7 @@ class GetUserPolicy(AWSQueryRequest):
         print urllib.unquote(data.PolicyDocument)
 
     def main(self, **args):
-        return self.send()
+        return self.send(**args)
 
     def main_cli(self):
         self.do_cli()

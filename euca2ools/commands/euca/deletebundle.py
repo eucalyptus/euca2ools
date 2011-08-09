@@ -165,8 +165,8 @@ class DeleteBundle(euca2ools.commands.eucacommand.EucaCommand):
         directory = os.path.abspath('/tmp')
 
         if not self.manifest_path and not self.prefix:
-            msg = 'Either manifestpath or prefix must be specified.'
-            self.display_error_and_exit(msg)
+            print 'Neither manifestpath nor prefix was specified.'
+            print 'All manifest data in bucket will be deleted.'
 
         bucket_instance = self.ensure_bucket(self.bucket)
         manifests = None

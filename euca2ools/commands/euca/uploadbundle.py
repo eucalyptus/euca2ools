@@ -38,6 +38,7 @@ import os
 from xml.dom import minidom
 from boto.exception import S3ResponseError, S3CreateError
 from boto.s3.key import Key
+from boto.s3.connection import Location
 
 class UploadBundle(euca2ools.commands.eucacommand.EucaCommand):
 
@@ -65,30 +66,38 @@ class UploadBundle(euca2ools.commands.eucacommand.EucaCommand):
                      doc='Uploads specified part and all subsequent parts.'),
                Param(name='skip_manifest', long_name='skipmanifest',
                      optional=True, ptype='boolean', default=False,
-                     doc='Do not  upload the manifest.')]
+                     doc='Do not  upload the manifest.'),
+               Param(name='location', long_name='location',
+                     optional=True, ptype='string', default=Location.DEFAULT,
+                     doc="""The location of the destination S3 bucket
+                            Valid values: US|EU|us-west-1|ap-southeast-1|ap-northeast-1""")]
 
-    def ensure_bucket(self, bucket, canned_acl=None):
+    def ensure_bucket(self, acl, location=Location.DEFAULT):
         bucket_instance = None
         s3conn = self.make_connection_cli('s3')
         try:
-            print 'Checking bucket:', bucket
-            bucket_instance = s3conn.get_bucket(bucket)
+            print 'Checking bucket:', self.bucket
+            bucket_instance = s3conn.get_bucket(self.bucket)
+            if location:
+                if location != bucket_instance.get_location():
+                    msg = 'Supplied location does not match bucket location'
+                    self.display_error_and_exit(msg)
         except S3ResponseError, s3error:
             s3error_string = '%s' % s3error
             if s3error_string.find('404') >= 0:
                 try:
-                    print 'Creating bucket:', bucket
-                    bucket_instance = s3conn.create_bucket(bucket,
-                                                           policy=canned_acl)
+                    print 'Creating bucket:', self.bucket
+                    bucket_instance = s3conn.create_bucket(self.bucket,
+                                                           policy=acl,
+                                                           location=location)
                 except S3CreateError:
-                    print 'Unable to create bucket %s' % bucket
-                    sys.exit()
+                    msg = 'Unable to create bucket %s' % self.bucket
+                    self.display_error_and_exit(msg)
             elif s3error_string.find('403') >= 0:
-                print 'You do not have permission to access bucket:', bucket
-                sys.exit()
+                msg = 'You do not have permission to access bucket:', self.bucket
+                self.display_error_and_exit(msg)
             else:
-                print s3error_string
-                sys.exit()
+                self.display_error_and_exit(s3error_string)
         return bucket_instance
 
     def get_parts(self, manifest_filename):
@@ -122,10 +131,10 @@ class UploadBundle(euca2ools.commands.eucacommand.EucaCommand):
         except S3ResponseError, s3error:
             s3error_string = '%s' % s3error
             if s3error_string.find('403') >= 0:
-                print 'Permission denied while writing:', k.key
+                msg = 'Permission denied while writing:', k.key
             else:
-                print s3error_string
-            sys.exit(1)
+                msg = s3error_string
+            self.display_error_and_exit(msg)
 
     def upload_parts(self, bucket_instance, directory, parts,
                      part_to_start_from, canned_acl=None,
@@ -155,13 +164,13 @@ class UploadBundle(euca2ools.commands.eucacommand.EucaCommand):
                 except S3ResponseError, s3error:
                     s3error_string = '%s' % s3error
                     if s3error_string.find('403') >= 0:
-                        print 'Permission denied while writing:', k.key
+                        msg = 'Permission denied while writing:', k.key
                     else:
-                        print s3error_string
-                    sys.exit(1)
+                        msg = s3error_string
+                    self.display_error_and_exit(msg)
 
     def main(self):
-        bucket_instance = self.ensure_bucket(self.bucket, self.canned_acl)
+        bucket_instance = self.ensure_bucket(self.canned_acl, self.location)
         parts = self.get_parts(self.manifest_path)
         manifest_directory, manifest_file = os.path.split(self.manifest_path)
         if not self.bundle_path:

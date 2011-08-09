@@ -1,10 +1,4 @@
 # Use Python 2.6 on el5
-# Something (e.g. mock) must define el5 on that release for that check to work.
-# For now we define it ourselves like this, though it means we can't build on
-# RHEL 5.
-%{!?el5:  %global el5  %(grep -q 'CentOS release 5' /etc/redhat-release && echo 5)}
-%{!?rhel: %global rhel %(grep -q 'CentOS release 5' /etc/redhat-release && echo 5)}
-
 %if 0%{?el5}
 %global __python_ver 26
 %global __python %{_bindir}/python2.6
@@ -14,8 +8,8 @@
 %{!?python_sitelib: %global python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")}
 
 Name:          euca2ools
-Version:       1.4
-Release:       0.1.alpha1%{?dist}
+Version:       2.0
+Release:       0%{?dist}
 Summary:       Elastic Utility Computing Architecture Command Line Tools
 
 Group:         Applications/System
@@ -25,23 +19,22 @@ Source:        http://eucalyptussoftware.com/downloads/releases/euca2ools-%{vers
 BuildRoot:     %(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
 BuildArch:     noarch
 
-# %%elseif behaves like %endif followed by %if.  Avoid it to reduce confusion.
-
-%if 0%{?el5}
 BuildRequires:  python%{?__python_ver}-devel
 Requires:       python%{?__python_ver}-boto >= 2.0
+Requires:       rsync
+Requires:       util-linux
+# %%elseif behaves like %%endif followed by %%if.  Avoid it to reduce confusion.
+%if 0%{?el5}
 Requires:       python%{?__python_ver}-m2crypto >= 0.20.2
 %endif
 %if 0%{?rhel} > 5 || 0%{?fedora}
-BuildRequires:  python-devel
-Requires:       python-boto >= 2.0
 Requires:       m2crypto
 %endif
 %if !0%{?rhel} && !0%{?fedora}
-BuildRequires:  python-devel
-Requires:       python-boto >= 2.0
 Requires:       python-m2crypto >= 0.20.2
 %endif
+
+Obsoletes:      euca2ools-eee < 1.3
 
 %description
 EUCALYPTUS is a service overlay that implements elastic computing
@@ -59,21 +52,13 @@ Eucalyptus.  These tools are also compatible with Amazon AWS.
 %build
 %{__python} setup.py build
 
-%if 0%{?__python_ver:1}
-for file in bin/* `find %{name} -name '*.py'`; do
-    sed -i '1s|^#!.*python|#!%{__python}|' $file
-done
-%endif
-
 
 %install
 rm -rf %{buildroot}
 %{__python} setup.py install --prefix=%{_prefix} --skip-build --root %{buildroot}
 %{__python} setup.py install -O1 --prefix=%{_prefix} --skip-build --root %{buildroot}
 
-mkdir -p %{buildroot}/%{_bindir}
 mkdir -p %{buildroot}/%{_mandir}/man1
-cp -p bin/* %{buildroot}/%{_bindir}
 cp -p man/* %{buildroot}/%{_mandir}/man1
 
 
@@ -96,6 +81,9 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Wed Jun 15 2011 Eucalyptus Release Engineering <support@eucalyptus.com> - 2.0-0
+- Update to 2.0
+
 * Thu Apr 21 2011 Eucalyptus Release Engineering <support@eucalyptus.com> - 1.4-0.1.alpha1
 - Update to 1.4 alpha 1 (bzr rev 399)
 

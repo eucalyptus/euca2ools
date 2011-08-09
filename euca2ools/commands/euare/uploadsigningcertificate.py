@@ -62,6 +62,13 @@ class UploadSigningCertificate(AWSQueryRequest):
         ptype='string',
         optional=True,
         doc=""" Name of the User the signing certificate is for. """,
+        ), Param(
+        name='DelegateAccount',
+        short_name=None,
+        long_name='delegate',
+        ptype='string',
+        optional=True,
+        doc=""" [Eucalyptus extension] Use the parameter only as the system admin to act as the account admin of the specified account without changing to account admin's role. """,
         )]
 
     Response = {u'type': u'object',
@@ -130,7 +137,7 @@ class UploadSigningCertificate(AWSQueryRequest):
         }]}
 
     def main(self, **args):
-        return self.send()
+        return self.send(**args)
 
     def main_cli(self):
         self.do_cli()

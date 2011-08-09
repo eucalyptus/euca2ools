@@ -52,11 +52,12 @@ class BundleInstance(euca2ools.commands.eucacommand.EucaCommand):
                      optional=False, ptype='string',
                      doc='Access Key ID of the owner of the bucket'),
                Param(name='policy', short_name='c', long_name='policy',
-                     optional=True, ptype='string',
-                     doc="""Base64 encoded upload policy that defines
-                            upload permissions and conditions.  If no
-                            policy is specified, a default policy
-                            is generated."""),
+                    optional=True, ptype='string',
+                    doc="""Base64 encoded upload policy that defines
+                           upload permissions and conditions.  If no
+                           policy is specified, a default policy
+                           is generated.
+                           NOTE: Not supported on Eucalyptus."""),
                Param(name='secret_key',
                      short_name='w', long_name='user-secret-key',
                      optional=False, ptype='string',

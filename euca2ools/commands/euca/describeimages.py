@@ -154,12 +154,6 @@ class DescribeImages(euca2ools.commands.eucacommand.EucaCommand):
             msg = '-a cannot be combined with owner, launch, or image list'
             self.display_error_and_exit(msg)
 
-        # default behavior is to list all images you have
-        # permission to launch
-        if len(self.owner) == 0 and len(self.executable_by) == 0 and \
-           len(self.image) == 0 and not self.all:
-            self.executable_by.append('self')
-
         # if you specify "-a" then it means return ALL images
         if self.all:
             self.executable_by = []
