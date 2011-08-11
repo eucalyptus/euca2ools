@@ -66,6 +66,7 @@ class DeleteUser(AWSQueryRequest):
               long_name='recursive',
               ptype='boolean',
               optional=True,
+              request_param=False,
               doc=""" Deletes the Group, removes all Users from the Group and deletes all Policies associated with the Group."""),
         Param(name='IsRecursive',
               short_name='R',
@@ -115,7 +116,7 @@ class DeleteUser(AWSQueryRequest):
             args.get('recursive_euca', False)
         self.pretend = self.cli_options.pretend or args.get('pretend', False)
         user_name = self.cli_options.user_name or args.get('user_name', None)
-        if recursive_local or (recursive_server and pretend):
+        if recursive_local or (recursive_server and self.pretend):
             obj = ListUserPolicies()
             d = obj.main(user_name=user_name)
             data = {'policies' : d.PolicyNames}
