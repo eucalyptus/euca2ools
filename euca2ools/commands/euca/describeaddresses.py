@@ -36,6 +36,7 @@ from boto.roboto.param import Param
 
 class DescribeAddresses(euca2ools.commands.eucacommand.EucaCommand):
 
+    APIVersion = '2010-08-31'
     Description = 'Shows information about addresses.'
     Args = [Param(name='ip', ptype='string',
                   cardinality='+', optional=True)]

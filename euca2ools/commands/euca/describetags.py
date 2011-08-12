@@ -35,6 +35,7 @@ from boto.roboto.param import Param
 
 class DescribeTags(euca2ools.commands.eucacommand.EucaCommand):
 
+    APIVersion = '2010-08-31'
     Description = 'List tags associated with your account.'
     Filters = [Param(name='key', ptype='string',
                      doc='Tag key.'),
@@ -56,7 +57,7 @@ class DescribeTags(euca2ools.commands.eucacommand.EucaCommand):
             print 'TAG\t%s' % tag_string
             
     def main(self):
-        conn = self.make_connection_cli(api_version='2010-08-31')
+        conn = self.make_connection_cli()
         return self.make_request_cli(conn, 'get_all_tags')
 
     def main_cli(self):

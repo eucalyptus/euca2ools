@@ -36,6 +36,7 @@ from boto.roboto.param import Param
 
 class CreateTags(euca2ools.commands.eucacommand.EucaCommand):
 
+    APIVersion = '2010-08-31'
     Description = """Adds or overwrites one or more tags for the
     specified resource or resources"""
     Options = [Param(name='tag', long_name='tag',
@@ -46,7 +47,7 @@ class CreateTags(euca2ools.commands.eucacommand.EucaCommand):
                   cardinality='+', optional=False)]
 
     def main(self):
-        tags = {}
+        self.tags = {}
         for tagpair in self.tag:
             t = tagpair.split('=')
             name = t[0]
@@ -54,17 +55,17 @@ class CreateTags(euca2ools.commands.eucacommand.EucaCommand):
                 value = ''
             else:
                 value = t[1]
-            tags[name] = value
-        conn = self.make_connection_cli(api_version='2010-08-31')
+            self.tags[name] = value
+        conn = self.make_connection_cli()
         return self.make_request_cli(conn, 'create_tags',
                                        resource_ids=self.resource_id,
-                                       tags=tags)
+                                       tags=self.tags)
 
     def main_cli(self):
         status = self.main()
         if status:
             for resource_id in self.resource_id:
-                for name in tags:
-                    value = tags.get(name, '')
+                for name in self.tags:
+                    value = self.tags.get(name, '')
                     s = 'TAG\t%s\t%s\t%s' % (resource_id, name, value)
                     print s

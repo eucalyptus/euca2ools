@@ -36,6 +36,7 @@ from boto.roboto.param import Param
 
 class ImportKeyPair(euca2ools.commands.eucacommand.EucaCommand):
 
+    APIVersion = '2010-08-31'
     Description = 'Import a public key created with 3rd party tool'
     Options = [Param(name='file_name',
                      short_name='f', long_name='public-key-file',
@@ -46,7 +47,7 @@ class ImportKeyPair(euca2ools.commands.eucacommand.EucaCommand):
                   optional=False)]
     
     def main(self):
-        conn = self.make_connection_cli(api_version='2010-08-31')
+        conn = self.make_connection_cli()
         return self.make_request_cli(conn, 'import_key_pair',
                                      key_name=self.key_name,
                                      public_key_material=self.file_name)

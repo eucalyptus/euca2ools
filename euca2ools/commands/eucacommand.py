@@ -49,10 +49,6 @@ from boto.roboto.param import Param
 
 SYSTEM_EUCARC_PATH = os.path.join('/etc', 'euca2ools', 'eucarc')
 
-# This allows us to freeze the API version we use when talking
-# to EC2 regardless of the version used by default in boto
-EC2_API_VERSION = '2009-11-30'
-
 EC2RegionData = {
     'us-east-1' : 'ec2.us-east-1.amazonaws.com',
     'us-west-1' : 'ec2.us-west-1.amazonaws.com',
@@ -128,6 +124,7 @@ class EucaCommand(object):
     Options = []
     Args = []
     Filters = []
+    APIVersion = '2009-11-30'
 
     def __init__(self, is_euca=False, debug=False):
         self.access_key_short_name = '-a'
@@ -302,10 +299,6 @@ class EucaCommand(object):
     def version(self):
         print '\tVersion: %s (BSD)' % euca2ools.__version__
         sys.exit(0)
-
-    def display_tools_version(self):
-        print '\t%s %s' % (euca2ools.__tools_version__,
-                           euca2ools.__api_version__)
 
     def param_usage(self, plist, label, n=30):
         nn = 80 - n - 4
@@ -510,7 +503,7 @@ class EucaCommand(object):
                 calling_format=OrdinaryCallingFormat(),
                 path=self.service_path)
 
-    def make_ec2_connection(self, api_version=EC2_API_VERSION):
+    def make_ec2_connection(self):
         if self.region_name:
             self.region.name = self.region_name
             try:
@@ -538,20 +531,19 @@ class EucaCommand(object):
                                 region=self.region,
                                 port=self.port,
                                 path=self.service_path,
-                                api_version=api_version)
+                                api_version=self.APIVersion)
     
-    def make_connection(self, conn_type='ec2', api_version=EC2_API_VERSION):
+    def make_connection(self, conn_type='ec2'):
         self.get_credentials()
         if conn_type == 's3':
             conn = self.make_s3_connection()
         elif conn_type == 'ec2':
-            conn = self.make_ec2_connection(api_version)
+            conn = self.make_ec2_connection()
         else:
             conn = None
         return conn
 
-    def make_connection_cli(self, conn_type='ec2',
-                            api_version=EC2_API_VERSION):
+    def make_connection_cli(self, conn_type='ec2'):
         """
         This just wraps up the make_connection call with appropriate
         try/except logic to print out an error message and exit if
@@ -559,7 +551,7 @@ class EucaCommand(object):
         out of all the command files.
         """
         try:
-            conn = self.make_connection(conn_type, api_version)
+            conn = self.make_connection(conn_type)
             if not conn:
                 msg = 'Unknown connection type: %s' % conn_type
                 self.display_error_and_exit(msg)

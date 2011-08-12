@@ -36,6 +36,7 @@ from boto.roboto.param import Param
 
 class DeleteTags(euca2ools.commands.eucacommand.EucaCommand):
 
+    APIVersion = '2010-08-31'
     Description = """Deletes the specified tags from the
     specified resource or resources"""
     Options = [Param(name='tag', long_name='tag',
@@ -55,7 +56,7 @@ class DeleteTags(euca2ools.commands.eucacommand.EucaCommand):
             else:
                 value = t[1]
             tags[name] = value
-        conn = self.make_connection_cli(api_version='2010-08-31')
+        conn = self.make_connection_cli()
         return self.make_request_cli(conn, 'delete_tags',
                                      resource_ids=self.resource_id,
                                      tags=tags)

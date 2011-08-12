@@ -36,6 +36,7 @@ from boto.roboto.param import Param
 
 class DescribeGroups(euca2ools.commands.eucacommand.EucaCommand):
 
+    APIVersion = '2010-08-31'
     Description = 'Shows information about groups.'
     Args = [Param(name='group_name', ptype='string',
                   doc='group to describe',
