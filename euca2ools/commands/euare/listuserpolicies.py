@@ -140,8 +140,8 @@ class ListUserPolicies(AWSQueryRequest):
                 if self.cli_options.policy_name and policy != self.cli_options.policy_name:
                     continue
                 if self.cli_options.verbose:
-                    obj = euca2ools.commands.euare.getgrouppolicy.GetGroupPolicy()
-                    data = obj.main(group_name=group_name, policy_name=policy)
+                    obj = euca2ools.commands.euare.getuserpolicy.GetUserPolicy()
+                    data = obj.main(user_name=user_name, policy_name=policy)
                     obj.cli_formatter(data)
                 else:
                     print policy
