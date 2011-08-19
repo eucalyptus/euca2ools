@@ -136,6 +136,10 @@ class UploadSigningCertificate(AWSQueryRequest):
                         : u'RequestId'}],
         }]}
 
+    def cli_formatter(self, data):
+        print data.Certificate['CertificateId']
+
+
     def main(self, **args):
         return self.send(**args)
 
