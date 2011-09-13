@@ -39,7 +39,8 @@ class Authorize(euca2ools.commands.eucacommand.EucaCommand):
     Description = 'Authorize a rule for a security group.'
     Options = [Param(name='protocol', short_name='P', long_name='protocol',
                      optional=True, ptype='string', default='tcp',
-                     doc='Protocol ("tcp" "udp" or "icmp").'),
+                     choices=['tcp', 'udp', 'icmp', '6', '17', '1'],
+                     doc='The protocol.'),
                Param(name='port_range', short_name='p', long_name='port-range',
                      optional=True, ptype='string',
                      doc='Range of ports for the rule (specified as "from-to").'),

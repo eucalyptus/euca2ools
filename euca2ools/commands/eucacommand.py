@@ -199,6 +199,10 @@ class EucaCommand(object):
                         msg = '%s should be of type %s' % (option.long_name,
                                                            option.ptype)
                         self.display_error_and_exit(msg)
+                    if option.choices:
+                        if value not in option.choices:
+                            msg = 'Value must be one of: %s' % '|'.join(option.choices)
+                            self.display_error_and_exit(msg)
                     if option.cardinality in ('*', '+'):
                         if not hasattr(self, option.name):
                             setattr(self, option.name, [])
@@ -314,6 +318,9 @@ class EucaCommand(object):
                     names.append(opt.name)
                 doc = textwrap.dedent(opt.doc)
                 doclines = textwrap.wrap(doc, nn)
+                if opt.choices:
+                    vv = 'Valid Values: %s' % '|'.join(opt.choices)
+                    doclines += textwrap.wrap(vv, nn)
                 if doclines:
                     print '    %s%s' % (','.join(names).ljust(n), doclines[0])
                     for line in doclines[1:]:
