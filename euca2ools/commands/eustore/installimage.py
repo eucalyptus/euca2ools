@@ -218,13 +218,13 @@ class InstallImage(AWSQueryRequest):
                 req = urllib2.urlopen(imageURL)
                 file_size = int(req.info()['Content-Length'])/1000
                 size_count = 0;
-                prog_bar = euca2ools.commands.eustore.progressbarClass(file_size, '#')
+                prog_bar = euca2ools.commands.eustore.progressBar(file_size)
                 BUF_SIZE = 128*1024
                 with open('./eucaimage.tar.gz', 'wb') as fp:
                     while True:
                         buf = req.read(BUF_SIZE)
                         size_count += len(buf)
-                        prog_bar.progress(size_count/1000)
+                        prog_bar.update(size_count/1000)
                         if not buf: break
                         fp.write(buf)
                 fp.close()
