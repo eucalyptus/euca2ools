@@ -114,23 +114,19 @@ class InstallImage(AWSQueryRequest):
         return file_path
 
     def bundleFile(self, path, name, image, kernel_id=None, ramdisk_id=None):
-        destination = "/tmp/"
-        if self.cli_options.dir:
-            destination = self.cli_options.dir
-        if not(destination.endswith('/')):
-            destination += '/'
         bundler = euca2ools.bundler.Bundler(self)
+        path = self.destination + path
 
-        image_size = bundler.check_image(path, destination)
+        image_size = bundler.check_image(path, self.destination)
         try:
-            (tgz_file, sha_tar_digest) = bundler.tarzip_image(name, path, destination)
+            (tgz_file, sha_tar_digest) = bundler.tarzip_image(name, path, self.destination)
         except (NotFoundError, CommandFailed):
             sys.exit(1)
 
         (encrypted_file, key, iv, bundled_size) = bundler.encrypt_image(tgz_file)
         os.remove(tgz_file)
         (parts, parts_digest) = bundler.split_image(encrypted_file)
-        bundler.generate_manifest(destination, name,
+        bundler.generate_manifest(self.destination, name,
                                   parts, parts_digest,
                                   path, key, iv,
                                   self.cert_path, self.ec2cert_path,
@@ -144,7 +140,7 @@ class InstallImage(AWSQueryRequest):
         obj = LocalUploadBundle()
         obj.bucket=self.cli_options.bucket
         obj.location=Location.DEFAULT
-        obj.manifest_path=destination+name+".manifest.xml"
+        obj.manifest_path=self.destination+name+".manifest.xml"
         obj.canned_acl='aws-exec-read'
         obj.bundle_path=None
         obj.skip_manifest=False
@@ -167,7 +163,7 @@ class InstallImage(AWSQueryRequest):
     def bundleAll(self, file, image):
         print "Unwrapping tarball"
         bundler = euca2ools.bundler.Bundler(self)
-        names = bundler.untarzip_image('./', file)
+        names = bundler.untarzip_image(self.destination, file)
         kernel_dir = self.cli_options.kernel_type+'-kernel'
         #iterate, and install kernel/ramdisk first, store the ids
         kernel_id=self.cli_options.kernel
@@ -201,9 +197,17 @@ class InstallImage(AWSQueryRequest):
            (not(self.cli_options.kernel) and self.cli_options.ramdisk):
             print "Error: kernel and ramdisk must both be overrided"
             sys.exit(-1)
+
         self.eustore_url = self.ServiceClass.StoreBaseURL
         if os.environ.has_key('EUSTORE_URL'):
             self.eustore_url = os.environ['EUSTORE_URL']
+
+        self.destination = "/tmp/"
+        if self.cli_options.dir:
+            self.destination = self.cli_options.dir
+        if not(self.destination.endswith('/')):
+            self.destination += '/'
+
         catURL = self.eustore_url + "catalog.json"
         response = urllib2.urlopen(catURL).read()
         parsed_cat = json.loads(response)
@@ -222,7 +226,7 @@ class InstallImage(AWSQueryRequest):
                 size_count = 0;
                 prog_bar = euca2ools.commands.eustore.progressBar(file_size)
                 BUF_SIZE = 128*1024
-                with open('./eucaimage.tar.gz', 'wb') as fp:
+                with open(self.destination+'eucaimage.tar.gz', 'wb') as fp:
                     while True:
                         buf = req.read(BUF_SIZE)
                         size_count += len(buf)
@@ -231,7 +235,6 @@ class InstallImage(AWSQueryRequest):
                         fp.write(buf)
                 fp.close()
                 print "Installed image: "+self.bundleAll(fp.name, image)
-#                print "Installed image: "+self.bundleAll('eucaimage.tar.gz', image)
                 os.remove(fp.name)
             else:
                 print "Image name not found, please run euca-describe-imagestore"
