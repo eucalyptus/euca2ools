@@ -51,6 +51,13 @@ class DescribeImages(AWSQueryRequest):
     Params = [
         ]
 
+    def fmtCol(self, value, width):
+        valLen = len(value)
+        if valLen > width:
+            return value[0:width-2]+".."
+        else:
+            return value.ljust(width, ' ')
+
     def main(self):
         params = {'ContentType' : 'JSON'}
         catURL = self.ServiceClass.StoreBaseURL + "catalog.json"
@@ -59,10 +66,10 @@ class DescribeImages(AWSQueryRequest):
         if len(parsed_cat) > 0:
             image_list = parsed_cat['images']
             for image in image_list:
-                print '{:<25}'.format(image['name'])+image['description']
-                print "    OS:"+'{:<12}'.format(image['os'])+ \
-                      " Arch:"+'{:<8}'.format(image['architecture'])+ \
-                      " Vers:"+'{:<15}'.format(image['version'])
+                print self.fmtCol(image['name'],25)+image['description']
+                print "    OS:"+self.fmtCol(image['os'],12)+ \
+                      " Arch:"+self.fmtCol(image['architecture'],8)+ \
+                      " Vers:"+self.fmtCol(image['version'],15)
 
     def main_cli(self):
         self.do_cli()
