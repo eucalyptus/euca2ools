@@ -33,6 +33,7 @@
 #
 # Author: David Kavanagh david.kavanagh@eucalyptus.com
 
+import os
 import urllib2
 from boto.roboto.param import Param
 from boto.roboto.awsqueryrequest import AWSQueryRequest
@@ -48,8 +49,6 @@ class DescribeImages(AWSQueryRequest):
     ServiceClass = euca2ools.commands.eustore.Eustore
 
     Description = """lists images from Eucalyptus.com"""
-    Params = [
-        ]
 
     def fmtCol(self, value, width):
         valLen = len(value)
@@ -59,8 +58,11 @@ class DescribeImages(AWSQueryRequest):
             return value.ljust(width, ' ')
 
     def main(self):
-        params = {'ContentType' : 'JSON'}
-        catURL = self.ServiceClass.StoreBaseURL + "catalog.json"
+        self.eustore_url = self.ServiceClass.StoreBaseURL
+        if os.environ.has_key('EUSTORE_URL'):
+            self.eustore_url = os.environ['EUSTORE_URL']
+        print self.eustore_url
+        catURL = self.eustore_url + "catalog.json"
         response = urllib2.urlopen(catURL).read()
         parsed_cat = json.loads(response)
         if len(parsed_cat) > 0:

@@ -201,8 +201,10 @@ class InstallImage(AWSQueryRequest):
            (not(self.cli_options.kernel) and self.cli_options.ramdisk):
             print "Error: kernel and ramdisk must both be overrided"
             sys.exit(-1)
-        params = {'ContentType' : 'JSON'}
-        catURL = self.ServiceClass.StoreBaseURL + "catalog.json"
+        self.eustore_url = self.ServiceClass.StoreBaseURL
+        if os.environ.has_key('EUSTORE_URL'):
+            self.eustore_url = os.environ['EUSTORE_URL']
+        catURL = self.eustore_url + "catalog.json"
         response = urllib2.urlopen(catURL).read()
         parsed_cat = json.loads(response)
         if len(parsed_cat) > 0:
