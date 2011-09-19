@@ -158,9 +158,13 @@ class EucaCommand(object):
             self.debug = 2
 
     def process_cli_args(self):
-        (opts, args) = getopt.gnu_getopt(sys.argv[1:],
-                                         self.short_options(),
-                                         self.long_options())
+        try:
+            (opts, args) = getopt.gnu_getopt(sys.argv[1:],
+                                             self.short_options(),
+                                             self.long_options())
+        except getopt.GetoptError, e:
+            print e
+            sys.exit(1)
         for (name, value) in opts:
             if name in ('-h', '--help'):
                 self.usage()
