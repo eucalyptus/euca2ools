@@ -107,6 +107,6 @@ class BundleInstance(euca2ools.commands.eucacommand.EucaCommand):
                                      s3_upload_policy=self.policy)
 
     def main_cli(self):
-	bundle_task = self.main()
+        bundle_task = self.main()
         self.display_bundle(bundle_task)
  
