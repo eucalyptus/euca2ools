@@ -404,7 +404,10 @@ class EucaCommand(object):
             print '%s' % exc
         finally:
             sys.exit(1)
-            
+
+    def error_exit(self):
+        sys.exit(1)
+        
     def setup_environ(self):
         envlist = ('EC2_ACCESS_KEY', 'EC2_SECRET_KEY',
                    'S3_URL', 'EC2_URL', 'EC2_CERT', 'EC2_PRIVATE_KEY',

@@ -69,3 +69,5 @@ class CreateTags(euca2ools.commands.eucacommand.EucaCommand):
                     value = self.tags.get(name, '')
                     s = 'TAG\t%s\t%s\t%s' % (resource_id, name, value)
                     print s
+        else:
+            self.error_exit()

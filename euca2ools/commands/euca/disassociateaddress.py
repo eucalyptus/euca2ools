@@ -50,4 +50,6 @@ class DisassociateAddress(euca2ools.commands.eucacommand.EucaCommand):
         status = self.main()
         if status:
             print 'ADDRESS\t%s' % self.ip
+        else:
+            self.error_exit()
 

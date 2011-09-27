@@ -48,6 +48,8 @@ class ReleaseAddress(euca2ools.commands.eucacommand.EucaCommand):
 
     def main_cli(self):
         status = self.main()
-        if self:
+        if status:
             print 'ADDRESS\t%s' % (self.ip)
+        else:
+            self.error_exit()
 

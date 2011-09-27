@@ -50,4 +50,5 @@ class DeleteKeyPair(euca2ools.commands.eucacommand.EucaCommand):
         status = self.main()
         if status:
             print 'KEYPAIR\t%s' % self.keypair_name
-
+        else:
+            self.error_exit()

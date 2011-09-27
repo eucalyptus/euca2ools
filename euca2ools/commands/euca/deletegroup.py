@@ -50,4 +50,5 @@ class DeleteGroup(euca2ools.commands.eucacommand.EucaCommand):
         status = self.main()
         if status:
             print 'GROUP\t%s' % self.group_name
-
+        else:
+            self.error_exit()

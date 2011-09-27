@@ -118,4 +118,6 @@ class Revoke(euca2ools.commands.eucacommand.EucaCommand):
             if self.source_subnet:
                 permission_string += '\tFROM\tCIDR\t%s' % self.source_subnet
             print permission_string
+        else:
+            self.error_exit()
             

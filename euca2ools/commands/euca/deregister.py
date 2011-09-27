@@ -48,6 +48,8 @@ class Deregister(euca2ools.commands.eucacommand.EucaCommand):
     def main_cli(self):
         status = self.main()
         if status:
-                print 'IMAGE\t%s' % self.image_id
+            print 'IMAGE\t%s' % self.image_id
+        else:
+            self.error_exit()
 
 
