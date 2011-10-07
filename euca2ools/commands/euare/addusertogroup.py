@@ -61,16 +61,9 @@ class AddUserToGroup(AWSQueryRequest):
               optional=True,
               doc=""" [Eucalyptus extension] Use the parameter only as the system admin to act as the account admin of the specified account without changing to account admin's role. """)]
 
-    Response = {u'type': u'object', u'name': u'AddUserToGroupResponse',
-                u'properties': [{
-        u'type': u'object',
-        u'optional': False,
-        u'name': u'ResponseMetadata',
-        u'properties': [{u'type': u'string', u'optional': False,
-                         u'name': u'RequestId'}],
-        }]}
-
-
+    def cli_formatter(self, data):
+        pass
+    
     def main(self, **args):
         data = []
         if self.cli_options and self.cli_options.user_name:

@@ -51,46 +51,6 @@ class CreateAccount(AWSQueryRequest):
               doc="""The name of the new account.""")
         ]
 
-    Response = {u'type': u'object', u'name': u'CreateAccountResponse',
-                u'properties': [{
-        u'doc'
-            : u' Contains the result of a successful invocation of the CreateAccount action. '
-            ,
-        u'type': u'object',
-        u'name': u'CreateAccountResult',
-        u'optional': False,
-        u'properties': [{
-            u'doc': u' Information about the Account. ',
-            u'type': u'object',
-            u'properties': [{
-                u'min_length': 1,
-                u'type': u'string',
-                u'name': u'AccountName',
-                u'pattern': u'[\\w+=,.@-]*',
-                u'max_length': 128,
-                u'doc': u' The name identifying the Account. ',
-                u'optional': False,
-                }, {
-                u'min_length': 16,
-                u'type': u'string',
-                u'name': u'AccountId',
-                u'pattern': u'[\\w]*',
-                u'max_length': 32,
-                u'doc'
-                    : u' The stable and unique string identifying the Account. For more information about IDs, see Identifiers for IAM Entities in Using AWS Identity and Access Management. '
-                    ,
-                u'optional': False,
-                }],
-            u'optional': True,
-            u'name': u'Account',
-            }],
-        }, {
-        u'type': u'object',
-        u'optional': False,
-        u'name': u'ResponseMetadata',
-        u'properties': [{u'type': u'string', u'optional': False, u'name': u'RequestId'}],
-        }]}
-
     def cli_formatter(self, data):
         print data.Account['AccountName'], '\t', data.Account['AccountId']
 

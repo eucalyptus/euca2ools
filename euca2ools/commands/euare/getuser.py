@@ -57,71 +57,9 @@ class GetUser(AWSQueryRequest):
         doc=""" [Eucalyptus extension] Use the parameter only as the system admin to act as the account admin of the specified account without changing to account admin's role. """,
         )]
 
-    Response = {u'type': u'object', u'name': u'GetUserResponse',
-                u'properties': [{
-        u'doc'
-            : u' Contains the result of a successful invocation of the GetUser action. '
-            ,
-        u'type': u'object',
-        u'name': u'GetUserResult',
-        u'optional': False,
-        u'properties': [{
-            u'doc': u' Information about the User. ',
-            u'type': u'object',
-            u'properties': [{
-                u'min_length': 1,
-                u'type': u'string',
-                u'name': u'Path',
-                u'pattern'
-                    : u'(\\u002F)|(\\u002F[\\u0021-\\u007F]+\\u002F)',
-                u'max_length': 512,
-                u'doc'
-                    : u' Path to the User name. For more information about paths, see Identifiers for IAM Entities in Using AWS Identity and Access Management. '
-                    ,
-                u'optional': False,
-                }, {
-                u'min_length': 1,
-                u'type': u'string',
-                u'name': u'UserName',
-                u'pattern': u'[\\w+=,.@-]*',
-                u'max_length': 128,
-                u'doc': u' The name identifying the User. ',
-                u'optional': False,
-                }, {
-                u'min_length': 16,
-                u'type': u'string',
-                u'name': u'UserId',
-                u'pattern': u'[\\w]*',
-                u'max_length': 32,
-                u'doc'
-                    : u' The stable and unique string identifying the User. For more information about IDs, see Identifiers for IAM Entities in Using AWS Identity and Access Management. '
-                    ,
-                u'optional': False,
-                }, {
-                u'min_length': 20,
-                u'name': u'Arn',
-                u'optional': False,
-                u'max_length': 2048,
-                u'doc'
-                    : u' The Amazon Resource Name (ARN) specifying the User. For more information about ARNs and how to use them in policies, see Identifiers for IAM Entities in Using AWS Identity and Access Management. '
-                    ,
-                u'type': u'string',
-                }],
-            u'optional': False,
-            u'name': u'User',
-            }],
-        }, {
-        u'type': u'object',
-        u'optional': False,
-        u'name': u'ResponseMetadata',
-        u'properties': [{u'type': u'string', u'optional': False, u'name'
-                        : u'RequestId'}],
-        }]}
-
     def cli_formatter(self, data):
         print data.User['Arn']
         print data.User['UserId']
-
 
     def main(self, **args):
         return self.send(**args)

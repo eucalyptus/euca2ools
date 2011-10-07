@@ -209,6 +209,8 @@ class GetGroup(AWSQueryRequest):
             print '\t%s' % user['Arn']
             
     def main(self, **args):
+        self.list_markers.append('Users')
+        self.item_markers.append('member')
         return self.send(**args)
 
     def main_cli(self):

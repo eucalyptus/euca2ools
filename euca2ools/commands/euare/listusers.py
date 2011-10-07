@@ -70,82 +70,13 @@ class ListUsers(AWSQueryRequest):
         doc=""" [Eucalyptus extension] Use the parameter only as the system admin to act as the account admin of the specified account without changing to account admin's role. """,
         )]
 
-    Response = {u'type': u'object', u'name': u'ListUsersResponse',
-                u'properties': [{
-        u'doc': u' Contains the result of a successful invocation of the ListUsers action. ',
-        u'type': u'object',
-        u'name': u'ListUsersResult',
-        u'optional': False,
-        u'properties': [{
-            u'doc': u' A list of User names. ',
-            u'type': u'object',
-            u'properties': [{
-                u'type': u'array',
-                u'optional': False,
-                u'name': u'member',
-                u'items': [{u'doc': u' The User data type contains information about a User.   This data type is used as a response element in the following actions:  CreateUser GetUser ListUsers  ',
-                            u'type': u'object', u'properties': [{
-                    u'min_length': 1,
-                    u'type': u'string',
-                    u'name': u'Path',
-                    u'pattern': u'(\\u002F)|(\\u002F[\\u0021-\\u007F]+\\u002F)',
-                    u'max_length': 512,
-                    u'doc': u' Path to the User name. For more information about paths, see Identifiers for IAM Entities in Using AWS Identity and Access Management. ',
-                    u'optional': False,
-                    }, {
-                    u'min_length': 1,
-                    u'type': u'string',
-                    u'name': u'UserName',
-                    u'pattern': u'[\\w+=,.@-]*',
-                    u'max_length': 128,
-                    u'doc': u' The name identifying the User. ',
-                    u'optional': False,
-                    }, {
-                    u'min_length': 16,
-                    u'type': u'string',
-                    u'name': u'UserId',
-                    u'pattern': u'[\\w]*',
-                    u'max_length': 32,
-                    u'doc': u' The stable and unique string identifying the User. For more information about IDs, see Identifiers for IAM Entities in Using AWS Identity and Access Management. ',
-                    u'optional': False,
-                    }, {
-                    u'min_length': 20,
-                    u'name': u'Arn',
-                    u'optional': False,
-                    u'max_length': 2048,
-                    u'doc': u' The Amazon Resource Name (ARN) specifying the User. For more information about ARNs and how to use them in policies, see Identifiers for IAM Entities in Using AWS Identity and Access Management. ',
-                    u'type': u'string',
-                    }]}],
-                }],
-            u'optional': False,
-            u'name': u'Users',
-            }, {
-            u'doc': u' A flag that indicates whether there are more User names to list. If your results were truncated, you can make a subsequent pagination request using the Marker request parameter to retrieve more Users in the list. ',
-            u'optional': True,
-            u'name': u'IsTruncated',
-            u'type': u'boolean',
-            }, {
-            u'min_length': 1,
-            u'type': u'string',
-            u'name': u'Marker',
-            u'pattern': u'[\\u0020-\\u00FF]*',
-            u'max_length': 320,
-            u'doc': u' If IsTruncated is true, this element is present and contains the value to use for the Marker parameter in a subsequent pagination request. ',
-            u'optional': True,
-            }],
-        }, {
-        u'type': u'object',
-        u'optional': False,
-        u'name': u'ResponseMetadata',
-        u'properties': [{u'type': u'string', u'optional': False, u'name': u'RequestId'}],
-        }]}
-
-
     def cli_formatter(self, data):
         for user in data.Users:
             print user['Arn']
             
     def main(self, **args):
+        self.list_markers.append('Users')
+        self.item_markers.append('member')
         return self.send(**args)
 
     def main_cli(self):

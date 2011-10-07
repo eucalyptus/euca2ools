@@ -71,74 +71,8 @@ class UploadSigningCertificate(AWSQueryRequest):
         doc=""" [Eucalyptus extension] Use the parameter only as the system admin to act as the account admin of the specified account without changing to account admin's role. """,
         )]
 
-    Response = {u'type': u'object',
-                u'name': u'UploadSigningCertificateResponse',
-                u'properties': [{
-        u'doc'
-            : u' Contains the result of a successful invocation of the UploadSigningCertificate action. '
-            ,
-        u'type': u'object',
-        u'name': u'UploadSigningCertificateResult',
-        u'optional': False,
-        u'properties': [{
-            u'doc': u' Information about the certificate. ',
-            u'type': u'object',
-            u'properties': [{
-                u'min_length': 1,
-                u'type': u'string',
-                u'name': u'UserName',
-                u'pattern': u'[\\w+=,.@-]*',
-                u'max_length': 128,
-                u'doc'
-                    : u' Name of the User the signing certificate is associated with. '
-                    ,
-                u'optional': False,
-                }, {
-                u'min_length': 24,
-                u'type': u'string',
-                u'name': u'CertificateId',
-                u'pattern': u'[\\w]*',
-                u'max_length': 128,
-                u'doc': u' The ID for the signing certificate. ',
-                u'optional': False,
-                }, {
-                u'min_length': 1,
-                u'type': u'string',
-                u'name': u'CertificateBody',
-                u'pattern': u'[\\u0009\\u000A\\u000D\\u0020-\\u00FF]+',
-                u'max_length': 16384,
-                u'doc': u' The contents of the signing certificate. ',
-                u'optional': False,
-                }, {
-                u'doc'
-                    : u' The status of the signing certificate. Active means the key is valid for API calls, while Inactive means it is not. '
-                    ,
-                u'type': u'enum',
-                u'name': u'Status',
-                u'optional': False,
-                u'choices': [u'Active', u'Inactive'],
-                }, {
-                u'doc'
-                    : u' The date when the signing certificate was uploaded. '
-                    ,
-                u'optional': True,
-                u'name': u'UploadDate',
-                u'type': u'dateTime',
-                }],
-            u'optional': False,
-            u'name': u'Certificate',
-            }],
-        }, {
-        u'type': u'object',
-        u'optional': False,
-        u'name': u'ResponseMetadata',
-        u'properties': [{u'type': u'string', u'optional': False, u'name'
-                        : u'RequestId'}],
-        }]}
-
     def cli_formatter(self, data):
         print data.Certificate['CertificateId']
-
 
     def main(self, **args):
         return self.send(**args)

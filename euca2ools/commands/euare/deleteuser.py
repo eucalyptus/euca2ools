@@ -82,16 +82,6 @@ class DeleteUser(AWSQueryRequest):
               doc="""Returns a list of credentials and policies that would be deleted, as well as the groups the user would be removed from, if the -r or -R option were actually performed.""")
         ]
 
-    Response = {u'type': u'object', u'name': u'DeleteUserResponse',
-                u'properties': [{
-        u'type': u'object',
-        u'optional': False,
-        u'name': u'ResponseMetadata',
-        u'properties': [{u'type': u'string', u'optional': False, u'name'
-                        : u'RequestId'}],
-        }]}
-
-
     def cli_formatter(self, data):
         if self.pretend:
             print 'accesskeys'

@@ -64,52 +64,13 @@ class GetUserInfo(AWSQueryRequest):
         doc=""" [Eucalyptus extension] Use the parameter only as the system admin to act as the account admin of the specified account without changing to account admin's role. """,
         )]
 
-    Response = {u'type': u'object', u'name': u'GetUserInfoResponse',
-                u'properties': [{
-        u'doc': u' Contains the result of a successful invocation of the GetUserInfo action. ',
-        u'type': u'object',
-        u'name': u'GetUserInfoResult',
-        u'optional': False,
-        u'properties': [{
-            u'doc': u' A list of user information name value pairs. ',
-            u'type': u'object',
-            u'properties': [{
-                u'type': u'array',
-                u'optional': False,
-                u'name': u'member',
-                u'items': [{u'doc': u' The User data type contains information about a User.   This data type is used as a response element in the following actions:  CreateUser GetUser GetUserInfo  ',
-                    u'type': u'object', u'properties': [{
-                    u'min_length': 1,
-                    u'type': u'string',
-                    u'name': u'Key',
-                    u'max_length': 512,
-                    u'doc': u' User information name. ',
-                    u'optional': False,
-                    }, {
-                    u'min_length': 1,
-                    u'name': u'Value',
-                    u'optional': False,
-                    u'max_length': 2048,
-                    u'doc': u' User information value. ',
-                    u'type': u'string',
-                    }]}],
-                }],
-            u'optional': False,
-            u'name': u'Infos',
-            }],
-        }, {
-        u'type': u'object',
-        u'optional': False,
-        u'name': u'ResponseMetadata',
-        u'properties': [{u'type': u'string', u'optional': False, u'name': u'RequestId'}],
-        }]}
-
     def cli_formatter(self, data):
         for info in data.Infos:
             print info['Key'], "\t", info['Value']
 
-
     def main(self, **args):
+        self.list_markers.append('Infos')
+        self.item_markers.append('member')
         return self.send(**args)
 
     def main_cli(self):

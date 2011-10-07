@@ -72,67 +72,6 @@ class CreateGroup(AWSQueryRequest):
               optional=True,
               doc=""" [Eucalyptus extension] Use the parameter only as the system admin to act as the account admin of the specified account without changing to account admin's role. """)]
 
-    Response = {u'type': u'object', u'name': u'CreateGroupResponse',
-                u'properties': [{
-        u'doc'
-            : u' Contains the result of a successful invocation of the CreateGroup action. '
-            ,
-        u'type': u'object',
-        u'name': u'CreateGroupResult',
-        u'optional': False,
-        u'properties': [{
-            u'doc': u' Information about the group. ',
-            u'type': u'object',
-            u'properties': [{
-                u'min_length': 1,
-                u'type': u'string',
-                u'name': u'Path',
-                u'pattern'
-                    : u'(\\u002F)|(\\u002F[\\u0021-\\u007F]+\\u002F)',
-                u'max_length': 512,
-                u'doc'
-                    : u' Path to the group. For more information about paths, see Identifiers for IAM Entities in Using AWS Identity and Access Management. '
-                    ,
-                u'optional': False,
-                }, {
-                u'min_length': 1,
-                u'type': u'string',
-                u'name': u'GroupName',
-                u'pattern': u'[\\w+=,.@-]*',
-                u'max_length': 128,
-                u'doc': u' The name that identifies the group. ',
-                u'optional': False,
-                }, {
-                u'min_length': 16,
-                u'type': u'string',
-                u'name': u'GroupId',
-                u'pattern': u'[\\w]*',
-                u'max_length': 32,
-                u'doc'
-                    : u' The stable and unique string identifying the group. For more information about IDs, see Identifiers for IAM Entities in Using AWS Identity and Access Management. '
-                    ,
-                u'optional': False,
-                }, {
-                u'min_length': 20,
-                u'name': u'Arn',
-                u'optional': False,
-                u'max_length': 2048,
-                u'doc'
-                    : u' The Amazon Resource Name (ARN) specifying the group. For more information about ARNs and how to use them in policies, see Identifiers for IAM Entities in Using AWS Identity and Access Management. '
-                    ,
-                u'type': u'string',
-                }],
-            u'optional': False,
-            u'name': u'Group',
-            }],
-        }, {
-        u'type': u'object',
-        u'optional': False,
-        u'name': u'ResponseMetadata',
-        u'properties': [{u'type': u'string', u'optional': False, u'name'
-                        : u'RequestId'}],
-        }]}
-
     def cli_formatter(self, data):
         if self.cli_options.verbose:
             print data.Arn

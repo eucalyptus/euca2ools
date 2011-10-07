@@ -57,62 +57,6 @@ class CreateAccessKey(AWSQueryRequest):
         doc=""" [Eucalyptus extension] Use the parameter only as the system admin to act as the account admin of the specified account without changing to account admin's role. """,
         )]
 
-    Response = {u'type': u'object',
-                u'name': u'CreateAccessKeyResponse', u'properties': [{
-        u'doc': u' Contains the result of a successful invocation \
-        of the CreateAccessKey action. ',
-        u'type': u'object',
-        u'name': u'CreateAccessKeyResult',
-        u'optional': False,
-        u'properties': [{
-            u'doc': u' Information about the access key. ',
-            u'type': u'object',
-            u'properties': [{
-                u'min_length': 1,
-                u'type': u'string',
-                u'name': u'UserName',
-                u'pattern': u'[\\w+=,.@-]*',
-                u'max_length': 128,
-                u'doc': u' Name of the User the key is associated with. ',
-                u'optional': False,
-                }, {
-                u'min_length': 16,
-                u'type': u'string',
-                u'name': u'AccessKeyId',
-                u'pattern': u'[\\w]*',
-                u'max_length': 32,
-                u'doc': u' The ID for this access key. ',
-                u'optional': False,
-                }, {
-                u'doc': u' The status of the access key. Active \
-                means the key is valid for API calls, while Inactive \
-                means it is not. ',
-                u'type': u'enum',
-                u'name': u'Status',
-                u'optional': False,
-                u'choices': [u'Active', u'Inactive'],
-                }, {
-                u'doc': u' The secret key used to sign requests. ',
-                u'optional': False,
-                u'name': u'SecretAccessKey',
-                u'type': u'string',
-                }, {
-                u'doc': u' The date when the access key was created. ',
-                u'optional': True,
-                u'name': u'CreateDate',
-                u'type': u'dateTime',
-                }],
-            u'optional': False,
-            u'name': u'AccessKey',
-            }],
-        }, {
-        u'type': u'object',
-        u'optional': False,
-        u'name': u'ResponseMetadata',
-        u'properties': [{u'type': u'string', u'optional': False,
-                         u'name': u'RequestId'}],
-        }]}
-
     def cli_formatter(self, data):
         print data.AccessKey['AccessKeyId']
         print data.AccessKey['SecretAccessKey']

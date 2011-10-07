@@ -41,29 +41,6 @@ class GetLdapSyncStatus(AWSQueryRequest):
 
     Description = """GetLdapSyncStatus"""
     Params = []
-    Response = {u'type': u'object', u'name': u'GetLdapSyncStatusResponse',
-                u'properties': [{
-        u'doc': u' Contains the result of a successful invocation of the GetLdapSyncStatus action. ',
-        u'type': u'object',
-        u'name': u'GetLdapSyncStatusResult',
-        u'optional': False,
-        u'properties': [{
-            u'doc': u' A flag that indicates whether LDAP sync is enabled',
-            u'optional': False,
-            u'name': u'SyncEnabled',
-            u'type': u'boolean',
-            }, {
-            u'doc': u' A flag that indicates whether LDAP sync is in progress',
-            u'optional': False,
-            u'name': u'InSync',
-            u'type': u'boolean',
-            }],
-        }, {
-        u'type': u'object',
-        u'optional': False,
-        u'name': u'ResponseMetadata',
-        u'properties': [{u'type': u'string', u'optional': False, u'name': u'RequestId'}],
-        }]}
 
     def cli_formatter(self, data):
         print "SyncEnabled\t", data.SyncEnabled

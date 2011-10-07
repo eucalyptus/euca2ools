@@ -79,101 +79,6 @@ class ListSigningCertificates(AWSQueryRequest):
         doc=""" [Eucalyptus extension] Use the parameter only as the system admin to act as the account admin of the specified account without changing to account admin's role. """,
         )]
 
-    Response = {u'type': u'object',
-                u'name': u'ListSigningCertificatesResponse',
-                u'properties': [{
-        u'doc'
-            : u' Contains the result of a successful invocation of the ListSigningCertificates action. '
-            ,
-        u'type': u'object',
-        u'name': u'ListSigningCertificatesResult',
-        u'optional': False,
-        u'properties': [{
-            u'doc'
-                : u" A list of the User's signing certificate information. "
-                ,
-            u'type': u'object',
-            u'properties': [{
-                u'type': u'array',
-                u'optional': False,
-                u'name': u'member',
-                u'items': [{u'doc'
-                           : u' The SigningCertificate data type contains information about an X.509 signing certificate.   This data type is used as a response element in the actions UploadSigningCertificate and ListSigningCertificates.  '
-                           , u'type': u'object', u'properties': [{
-                    u'min_length': 1,
-                    u'type': u'string',
-                    u'name': u'UserName',
-                    u'pattern': u'[\\w+=,.@-]*',
-                    u'max_length': 128,
-                    u'doc'
-                        : u' Name of the User the signing certificate is associated with. '
-                        ,
-                    u'optional': False,
-                    }, {
-                    u'min_length': 24,
-                    u'type': u'string',
-                    u'name': u'CertificateId',
-                    u'pattern': u'[\\w]*',
-                    u'max_length': 128,
-                    u'doc': u' The ID for the signing certificate. ',
-                    u'optional': False,
-                    }, {
-                    u'min_length': 1,
-                    u'type': u'string',
-                    u'name': u'CertificateBody',
-                    u'pattern'
-                        : u'[\\u0009\\u000A\\u000D\\u0020-\\u00FF]+',
-                    u'max_length': 16384,
-                    u'doc'
-                        : u' The contents of the signing certificate. '
-                        ,
-                    u'optional': False,
-                    }, {
-                    u'doc'
-                        : u' The status of the signing certificate. Active means the key is valid for API calls, while Inactive means it is not. '
-                        ,
-                    u'type': u'enum',
-                    u'name': u'Status',
-                    u'optional': False,
-                    u'choices': [u'Active', u'Inactive'],
-                    }, {
-                    u'doc'
-                        : u' The date when the signing certificate was uploaded. '
-                        ,
-                    u'optional': True,
-                    u'name': u'UploadDate',
-                    u'type': u'dateTime',
-                    }]}],
-                }],
-            u'optional': False,
-            u'name': u'Certificates',
-            }, {
-            u'doc'
-                : u' A flag that indicates whether there are more certificate IDs to list. If your results were truncated, you can make a subsequent pagination request using the Marker request parameter to retrieve more certificates in the list. '
-                ,
-            u'optional': True,
-            u'name': u'IsTruncated',
-            u'type': u'boolean',
-            }, {
-            u'min_length': 1,
-            u'type': u'string',
-            u'name': u'Marker',
-            u'pattern': u'[\\u0020-\\u00FF]*',
-            u'max_length': 320,
-            u'doc'
-                : u' If IsTruncated is true, this element is present and contains the value to use for the Marker parameter in a subsequent pagination request. '
-                ,
-            u'optional': True,
-            }],
-        }, {
-        u'type': u'object',
-        u'optional': False,
-        u'name': u'ResponseMetadata',
-        u'properties': [{u'type': u'string', u'optional': False, u'name'
-                        : u'RequestId'}],
-        }]}
-
-
     def cli_formatter(self, data):
         for cert in data.Certificates:
             print cert['CertificateId']
@@ -182,6 +87,8 @@ class ListSigningCertificates(AWSQueryRequest):
             print cert['Status']
             
     def main(self, **args):
+        self.list_markers.append('Certificates')
+        self.item_markers.append('member')
         return self.send(**args)
 
     def main_cli(self):

@@ -57,47 +57,6 @@ class GetAccountPolicy(AWSQueryRequest):
         doc=""" Name of the policy document to get. """,
         )]
 
-    Response = {u'type': u'object', u'name': u'GetAccountPolicyResponse',
-                u'properties': [{
-        u'doc'
-            : u' Contains the result of a successful invocation of the GetAccountPolicy action. '
-            ,
-        u'type': u'object',
-        u'name': u'GetAccountPolicyResult',
-        u'optional': False,
-        u'properties': [{
-            u'min_length': 1,
-            u'type': u'string',
-            u'name': u'AccountName',
-            u'pattern': u'[\\w+=,.@-]*',
-            u'max_length': 128,
-            u'doc': u' The account the policy is associated with. ',
-            u'optional': False,
-            }, {
-            u'min_length': 1,
-            u'type': u'string',
-            u'name': u'PolicyName',
-            u'pattern': u'[\\w+=,.@-]*',
-            u'max_length': 128,
-            u'doc': u' The name of the policy. ',
-            u'optional': False,
-            }, {
-            u'min_length': 1,
-            u'type': u'string',
-            u'name': u'PolicyDocument',
-            u'pattern': u'[\\u0009\\u000A\\u000D\\u0020-\\u00FF]+',
-            u'max_length': 131072,
-            u'doc': u' The policy document. ',
-            u'optional': False,
-            }],
-        }, {
-        u'type': u'object',
-        u'optional': False,
-        u'name': u'ResponseMetadata',
-        u'properties': [{u'type': u'string', u'optional': False, u'name'
-                        : u'RequestId'}],
-        }]}
-
     def cli_formatter(self, data):
         print data.PolicyDocument
 

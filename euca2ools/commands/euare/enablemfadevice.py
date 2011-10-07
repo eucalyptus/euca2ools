@@ -74,16 +74,9 @@ class EnableMFADevice(AWSQueryRequest):
             ,
         )]
 
-    Response = {u'type': u'object',
-                u'name': u'EnableMFADeviceResponse', u'properties': [{
-        u'type': u'object',
-        u'optional': False,
-        u'name': u'ResponseMetadata',
-        u'properties': [{u'type': u'string', u'optional': False, u'name'
-                        : u'RequestId'}],
-        }]}
-
-
+    def cli_formatter(self, data):
+        pass
+    
     def main(self, **args):
         return self.send(**args)
 

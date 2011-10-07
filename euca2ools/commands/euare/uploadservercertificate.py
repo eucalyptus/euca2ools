@@ -83,79 +83,9 @@ class UploadServerCertificate(AWSQueryRequest):
             ,
         )]
 
-    Response = {u'type': u'object',
-                u'name': u'UploadServerCertificateResponse',
-                u'properties': [{
-        u'doc'
-            : u' Contains the result of a successful invocation of the UploadServerCertificate action. '
-            ,
-        u'type': u'object',
-        u'name': u'UploadServerCertificateResult',
-        u'optional': False,
-        u'properties': [{
-            u'doc'
-                : u' The meta information of the uploaded server certificate without its certificate body, certificate chain, and private key. '
-                ,
-            u'type': u'object',
-            u'properties': [{
-                u'min_length': 1,
-                u'type': u'string',
-                u'name': u'Path',
-                u'pattern'
-                    : u'(\\u002F)|(\\u002F[\\u0021-\\u007F]+\\u002F)',
-                u'max_length': 512,
-                u'doc'
-                    : u' Path to the server certificate. For more information about paths, see Identifiers for IAM Entities in Using AWS Identity and Access Management. '
-                    ,
-                u'optional': False,
-                }, {
-                u'min_length': 1,
-                u'type': u'string',
-                u'name': u'ServerCertificateName',
-                u'pattern': u'[\\w+=,.@-]*',
-                u'max_length': 128,
-                u'doc'
-                    : u' The name that identifies the server certificate. '
-                    ,
-                u'optional': False,
-                }, {
-                u'min_length': 16,
-                u'type': u'string',
-                u'name': u'ServerCertificateId',
-                u'pattern': u'[\\w]*',
-                u'max_length': 32,
-                u'doc'
-                    : u' The stable and unique string identifying the server certificate. For more information about IDs, see Identifiers for IAM Entities in Using AWS Identity and Access Management. '
-                    ,
-                u'optional': False,
-                }, {
-                u'min_length': 20,
-                u'name': u'Arn',
-                u'optional': False,
-                u'max_length': 2048,
-                u'doc'
-                    : u' The Amazon Resource Name (ARN) specifying the server certificate. For more information about ARNs and how to use them in policies, see Identifiers for IAM Entities in Using AWS Identity and Access Management. '
-                    ,
-                u'type': u'string',
-                }, {
-                u'doc'
-                    : u' The date when the server certificate was uploaded. '
-                    ,
-                u'optional': True,
-                u'name': u'UploadDate',
-                u'type': u'dateTime',
-                }],
-            u'optional': True,
-            u'name': u'ServerCertificateMetadata',
-            }],
-        }, {
-        u'type': u'object',
-        u'optional': False,
-        u'name': u'ResponseMetadata',
-        u'properties': [{u'type': u'string', u'optional': False, u'name'
-                        : u'RequestId'}],
-        }]}
-
+    def cli_formatter(self, data):
+        pass
+    
     def main(self, **args):
         return self.send(**args)
 

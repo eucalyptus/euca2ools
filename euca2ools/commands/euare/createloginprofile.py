@@ -64,39 +64,8 @@ class CreateLoginProfile(AWSQueryRequest):
         doc=""" [Eucalyptus extension] Use the parameter only as the system admin to act as the account admin of the specified account without changing to account admin's role. """,
         )]
 
-    Response = {u'type': u'object',
-                u'name': u'CreateLoginProfileResponse',
-                u'properties': [{
-        u'doc'
-            : u' Contains the result of a successful invocation of the CreateLoginProfile action. '
-            ,
-        u'type': u'object',
-        u'name': u'CreateLoginProfileResult',
-        u'optional': False,
-        u'properties': [{
-            u'doc': u' The new login profile. ',
-            u'type': u'object',
-            u'properties': [{
-                u'min_length': 1,
-                u'type': u'string',
-                u'name': u'UserName',
-                u'pattern': u'[\\w+=,.@-]*',
-                u'max_length': 128,
-                u'doc'
-                    : u' The name of the User, which can be used for logins. '
-                    ,
-                u'optional': False,
-                }],
-            u'optional': False,
-            u'name': u'LoginProfile',
-            }],
-        }, {
-        u'type': u'object',
-        u'optional': False,
-        u'name': u'ResponseMetadata',
-        u'properties': [{u'type': u'string', u'optional': False, u'name'
-                        : u'RequestId'}],
-        }]}
+    def cli_formatter(self, data):
+        pass
 
     def main(self, **args):
         return self.send(**args)
