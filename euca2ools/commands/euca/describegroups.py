@@ -36,6 +36,7 @@ from boto.roboto.param import Param
 
 class DescribeGroups(euca2ools.commands.eucacommand.EucaCommand):
 
+    APIVersion = '2011-01-01'
     Description = 'Shows information about groups.'
     Args = [Param(name='group_name', ptype='string',
                   doc='group to describe',
@@ -68,8 +69,12 @@ class DescribeGroups(euca2ools.commands.eucacommand.EucaCommand):
     
     def display_groups(self, groups):
         for group in groups:
-            group_string = '%s\t%s\t%s' % (group.owner_id, group.name,
-                    group.description)
+            if group.id:
+                group_string = '%s\t%s\t%s\t%s' % (group.id, group.owner_id,
+                                                   group.name, group.description)
+            else:
+                group_string = '%s\t%s\t%s' % (group.owner_id,
+                                               group.name, group.description)
             print 'GROUP\t%s' % group_string
             for rule in group.rules:
                 permission_string = '%s\t%s\tALLOWS\t%s\t%s\t%s' \

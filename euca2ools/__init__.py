@@ -33,7 +33,5 @@
 # Author: Neil Soman neil@eucalyptus.com
 #       : Mitch Garnaat mgarnaat@eucalyptus.com
 
-__version__ = '2.0'
-__tools_version__ = 'main-31337'
-__api_version__ = '2009-04-04'
+__version__ = '2.0.0'
 

@@ -50,3 +50,6 @@ class DeleteSnapshot(euca2ools.commands.eucacommand.EucaCommand):
         status = self.main()
         if status:
             print 'SNAPSHOT\t%s' % self.snapshot_id
+        else:
+            self.error_exit()
+

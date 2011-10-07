@@ -1,3 +1,6 @@
+#!/usr/local/bin/python
+# -*- coding: utf-8 -*-
+
 # Software License Agreement (BSD License)
 #
 # Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
@@ -28,27 +31,10 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 #
-# Author: Neil Soman neil@eucalyptus.com
-#         Mitch Garnaat mgarnaat@eucalyptus.com
+# Author: David Kavanagh david.kavanagh@eucalyptus.com
 
-import euca2ools.commands.eucacommand
-from boto.roboto.param import Param
+import euca2ools.commands.eustore.describeimages
 
-class DeleteGroup(euca2ools.commands.eucacommand.EucaCommand):
-
-    Description = 'Deletes a security group.'
-    Args = [Param(name='group_name', ptype='string',
-                  cardinality=1, optional=False)]
-    
-    def main(self):
-        euca_conn = self.make_connection_cli()
-        return self.make_request_cli(euca_conn,
-                                     'delete_security_group',
-                                     name=self.group_name)
-
-    def main_cli(self):
-        status = self.main()
-        if status:
-            print 'GROUP\t%s' % self.group_name
-        else:
-            self.error_exit()
+if __name__ == '__main__':
+    cmd = euca2ools.commands.eustore.describeimages.DescribeImages()
+    cmd.main_cli()

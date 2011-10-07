@@ -29,26 +29,39 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 # Author: Neil Soman neil@eucalyptus.com
-#         Mitch Garnaat mgarnaat@eucalyptus.com
+#       : Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.commands.eucacommand
-from boto.roboto.param import Param
 
-class DeleteGroup(euca2ools.commands.eucacommand.EucaCommand):
+import sys
+from boto.roboto.awsqueryservice import AWSQueryService
 
-    Description = 'Deletes a security group.'
-    Args = [Param(name='group_name', ptype='string',
-                  cardinality=1, optional=False)]
-    
-    def main(self):
-        euca_conn = self.make_connection_cli()
-        return self.make_request_cli(euca_conn,
-                                     'delete_security_group',
-                                     name=self.group_name)
+class Eustore(AWSQueryService):
 
-    def main_cli(self):
-        status = self.main()
-        if status:
-            print 'GROUP\t%s' % self.group_name
-        else:
-            self.error_exit()
+    Name = 'eustore'
+    Description = 'Eucalyptus Image Store'
+    APIVersion = '2011-01-01'
+    Authentication = 'sign-v2'
+    Path = '/'
+    Port = 443
+    Provider = 'aws'
+    EnvURL = 'EC2_URL'
+
+    StoreBaseURL = "http://emis.eucalyptus.com/"
+
+class progressBar:
+    def __init__(self, maxVal):
+        self.maxVal=maxVal
+        self.currVal=0
+        print "0-----1-----2-----3-----4-----5-----6-----7-----8-----9-----10"
+        self.progShowing=0
+
+    def update(self, val):
+        count=min(val, self.maxVal)
+        progDone=62*count/self.maxVal
+        if self.progShowing < progDone:
+            for i in range(progDone - self.progShowing):
+                sys.stdout.write("#")
+            sys.stdout.flush()
+            self.progShowing = progDone
+        if progDone==62:
+            sys.stdout.write("\n")

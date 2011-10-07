@@ -86,8 +86,8 @@ class BundleUpload(UploadBundle, BundleImage):
                Param(name='target_arch',
                      short_name='r', long_name='arch',
                      optional=True, ptype='string', default='x86_64',
-                     doc="""Target architecture for the image
-                     Valid values: i386 | x86_64."""),
+                     choices=['i386', 'x86_64'],
+                     doc='Target architecture for the image.'),
                Param(name='acl', long_name='acl',
                      optional=True, ptype='string', default='ec2-bundle-read',
                      doc='Canned ACL policy')]

@@ -36,6 +36,7 @@ from boto.roboto.param import Param
 
 class DescribeBundleTasks(euca2ools.commands.eucacommand.EucaCommand):
 
+    APIVersion = '2010-08-31'
     Description = 'Retrieves previously submitted bundle tasks.'
     Args = [Param(name='bundle_id', ptype='string',
                   doc="""Identifiers of bundle tasks to describe.

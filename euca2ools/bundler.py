@@ -162,7 +162,7 @@ class Bundler(object):
         tarproc = subprocess.Popen(tar_cmd, stdout=subprocess.PIPE)
         zipproc = subprocess.Popen(['gzip'], stdin=subprocess.PIPE, stdout=targzfile)
 
-	# pass tar output to digest and gzip
+        # pass tar output to digest and gzip
         sha_image = sha()
         buf=os.read(tarproc.stdout.fileno(), 8196)
         while buf:

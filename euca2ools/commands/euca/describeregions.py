@@ -36,6 +36,7 @@ from boto.roboto.param import Param
 
 class DescribeRegions(euca2ools.commands.eucacommand.EucaCommand):
 
+    APIVersion = '2010-08-31'
     Description = 'Shows information about regions.'
     Args = [Param(name='region_name', ptype='string',
                   doc='region to describe',

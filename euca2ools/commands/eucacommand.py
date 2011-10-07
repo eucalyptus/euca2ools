@@ -49,14 +49,11 @@ from boto.roboto.param import Param
 
 SYSTEM_EUCARC_PATH = os.path.join('/etc', 'euca2ools', 'eucarc')
 
-# This allows us to freeze the API version we use when talking
-# to EC2 regardless of the version used by default in boto
-EC2_API_VERSION = '2009-11-30'
-
 EC2RegionData = {
     'us-east-1' : 'ec2.us-east-1.amazonaws.com',
     'us-west-1' : 'ec2.us-west-1.amazonaws.com',
     'eu-west-1' : 'ec2.eu-west-1.amazonaws.com',
+    'ap-northeast-1' : 'ec2.ap-northeast-1.amazonaws.com',
     'ap-southeast-1' : 'ec2.ap-southeast-1.amazonaws.com'}
 
 import bdb
@@ -128,6 +125,7 @@ class EucaCommand(object):
     Options = []
     Args = []
     Filters = []
+    APIVersion = '2009-11-30'
 
     def __init__(self, is_euca=False, debug=False):
         self.access_key_short_name = '-a'
@@ -161,9 +159,13 @@ class EucaCommand(object):
             self.debug = 2
 
     def process_cli_args(self):
-        (opts, args) = getopt.gnu_getopt(sys.argv[1:],
-                                         self.short_options(),
-                                         self.long_options())
+        try:
+            (opts, args) = getopt.gnu_getopt(sys.argv[1:],
+                                             self.short_options(),
+                                             self.long_options())
+        except getopt.GetoptError, e:
+            print e
+            sys.exit(1)
         for (name, value) in opts:
             if name in ('-h', '--help'):
                 self.usage()
@@ -202,6 +204,10 @@ class EucaCommand(object):
                         msg = '%s should be of type %s' % (option.long_name,
                                                            option.ptype)
                         self.display_error_and_exit(msg)
+                    if option.choices:
+                        if value not in option.choices:
+                            msg = 'Value must be one of: %s' % '|'.join(option.choices)
+                            self.display_error_and_exit(msg)
                     if option.cardinality in ('*', '+'):
                         if not hasattr(self, option.name):
                             setattr(self, option.name, [])
@@ -303,10 +309,6 @@ class EucaCommand(object):
         print '\tVersion: %s (BSD)' % euca2ools.__version__
         sys.exit(0)
 
-    def display_tools_version(self):
-        print '\t%s %s' % (euca2ools.__tools_version__,
-                           euca2ools.__api_version__)
-
     def param_usage(self, plist, label, n=30):
         nn = 80 - n - 4
         if plist:
@@ -321,6 +323,9 @@ class EucaCommand(object):
                     names.append(opt.name)
                 doc = textwrap.dedent(opt.doc)
                 doclines = textwrap.wrap(doc, nn)
+                if opt.choices:
+                    vv = 'Valid Values: %s' % '|'.join(opt.choices)
+                    doclines += textwrap.wrap(vv, nn)
                 if doclines:
                     print '    %s%s' % (','.join(names).ljust(n), doclines[0])
                     for line in doclines[1:]:
@@ -399,7 +404,10 @@ class EucaCommand(object):
             print '%s' % exc
         finally:
             sys.exit(1)
-            
+
+    def error_exit(self):
+        sys.exit(1)
+        
     def setup_environ(self):
         envlist = ('EC2_ACCESS_KEY', 'EC2_SECRET_KEY',
                    'S3_URL', 'EC2_URL', 'EC2_CERT', 'EC2_PRIVATE_KEY',
@@ -510,7 +518,7 @@ class EucaCommand(object):
                 calling_format=OrdinaryCallingFormat(),
                 path=self.service_path)
 
-    def make_ec2_connection(self, api_version=EC2_API_VERSION):
+    def make_ec2_connection(self):
         if self.region_name:
             self.region.name = self.region_name
             try:
@@ -538,20 +546,19 @@ class EucaCommand(object):
                                 region=self.region,
                                 port=self.port,
                                 path=self.service_path,
-                                api_version=api_version)
+                                api_version=self.APIVersion)
     
-    def make_connection(self, conn_type='ec2', api_version=EC2_API_VERSION):
+    def make_connection(self, conn_type='ec2'):
         self.get_credentials()
         if conn_type == 's3':
             conn = self.make_s3_connection()
         elif conn_type == 'ec2':
-            conn = self.make_ec2_connection(api_version)
+            conn = self.make_ec2_connection()
         else:
             conn = None
         return conn
 
-    def make_connection_cli(self, conn_type='ec2',
-                            api_version=EC2_API_VERSION):
+    def make_connection_cli(self, conn_type='ec2'):
         """
         This just wraps up the make_connection call with appropriate
         try/except logic to print out an error message and exit if
@@ -559,7 +566,7 @@ class EucaCommand(object):
         out of all the command files.
         """
         try:
-            conn = self.make_connection(conn_type, api_version)
+            conn = self.make_connection(conn_type)
             if not conn:
                 msg = 'Unknown connection type: %s' % conn_type
                 self.display_error_and_exit(msg)

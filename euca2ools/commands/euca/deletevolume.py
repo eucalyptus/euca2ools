@@ -49,4 +49,6 @@ class DeleteVolume(euca2ools.commands.eucacommand.EucaCommand):
         status = self.main()
         if status:
                 print 'VOLUME\t%s' % self.volume_id
+        else:
+            self.error_exit()
 

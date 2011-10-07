@@ -55,5 +55,7 @@ class AssociateAddress(euca2ools.commands.eucacommand.EucaCommand):
         status = self.main()
         if status:
             print 'ADDRESS\t%s\t%s' % (self.ip, self.instance_id)
+        else:
+            self.error_exit()
 
 

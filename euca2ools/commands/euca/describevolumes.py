@@ -35,6 +35,7 @@ from boto.roboto.param import Param
 
 class DescribeVolumes(euca2ools.commands.eucacommand.EucaCommand):
 
+    APIVersion = '2010-08-31'
     Description = 'Shows information about volumes.'
     Args = [Param(name='volume_id', ptype='string',
                   doc='volumes to describe',

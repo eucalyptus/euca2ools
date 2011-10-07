@@ -1,3 +1,6 @@
+#!/usr/local/bin/python
+# -*- coding: utf-8 -*-
+
 # Software License Agreement (BSD License)
 #
 # Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
@@ -28,27 +31,48 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 #
-# Author: Neil Soman neil@eucalyptus.com
-#         Mitch Garnaat mgarnaat@eucalyptus.com
+# Author: David Kavanagh david.kavanagh@eucalyptus.com
 
-import euca2ools.commands.eucacommand
+import os
+import urllib2
 from boto.roboto.param import Param
+from boto.roboto.awsqueryrequest import AWSQueryRequest
+import euca2ools.commands.eustore
 
-class DeleteGroup(euca2ools.commands.eucacommand.EucaCommand):
+try:
+    import simplejson as json
+except ImportError:
+    import json
 
-    Description = 'Deletes a security group.'
-    Args = [Param(name='group_name', ptype='string',
-                  cardinality=1, optional=False)]
-    
+class DescribeImages(AWSQueryRequest):
+
+    ServiceClass = euca2ools.commands.eustore.Eustore
+
+    Description = """lists images from Eucalyptus.com"""
+
+    def fmtCol(self, value, width):
+        valLen = len(value)
+        if valLen > width:
+            return value[0:width-2]+".."
+        else:
+            return value.ljust(width, ' ')
+
     def main(self):
-        euca_conn = self.make_connection_cli()
-        return self.make_request_cli(euca_conn,
-                                     'delete_security_group',
-                                     name=self.group_name)
+        self.eustore_url = self.ServiceClass.StoreBaseURL
+        if os.environ.has_key('EUSTORE_URL'):
+            self.eustore_url = os.environ['EUSTORE_URL']
+        print self.eustore_url
+        catURL = self.eustore_url + "catalog.json"
+        response = urllib2.urlopen(catURL).read()
+        parsed_cat = json.loads(response)
+        if len(parsed_cat) > 0:
+            image_list = parsed_cat['images']
+            for image in image_list:
+                print self.fmtCol(image['name'],25)+image['description']
+                print "    OS:"+self.fmtCol(image['os'],12)+ \
+                      " Arch:"+self.fmtCol(image['architecture'],8)+ \
+                      " Vers:"+self.fmtCol(image['version'],15)
 
     def main_cli(self):
-        status = self.main()
-        if status:
-            print 'GROUP\t%s' % self.group_name
-        else:
-            self.error_exit()
+        self.do_cli()
+

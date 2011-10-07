@@ -78,7 +78,7 @@ class EucaNCAuthHandler(boto.auth_handler.AuthHandler):
                                              http_request.headers,
                                              http_request.method,
                                              http_request.path)
-	headers['EucaSignature'] = signature
+        headers['EucaSignature'] = signature
         boto.log.debug('query_string: %s Signature: %s' % (qs, signature))
         if http_request.method == 'POST':
             headers['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8'
