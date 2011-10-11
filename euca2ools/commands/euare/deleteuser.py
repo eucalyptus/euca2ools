@@ -31,6 +31,7 @@
 # Author: Neil Soman neil@eucalyptus.com
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
+from boto.exception import BotoServerError
 from boto.roboto.awsqueryrequest import AWSQueryRequest
 from boto.roboto.param import Param
 import euca2ools.commands.euare
@@ -42,6 +43,8 @@ from euca2ools.commands.euare.listsigningcertificates import ListSigningCertific
 from euca2ools.commands.euare.deletesigningcertificate import DeleteSigningCertificate
 from euca2ools.commands.euare.listaccesskeys import ListAccessKeys
 from euca2ools.commands.euare.deleteaccesskey import DeleteAccessKey
+from euca2ools.commands.euare.getloginprofile import GetLoginProfile
+from euca2ools.commands.euare.deleteloginprofile import DeleteLoginProfile
 
 class DeleteUser(AWSQueryRequest):
 
@@ -119,6 +122,15 @@ class DeleteUser(AWSQueryRequest):
             obj = ListAccessKeys()
             d = obj.main(user_name=user_name)
             data['access_keys'] = d.AccessKeyMetadata
+            obj = GetLoginProfile()
+            try:
+                d = obj.main(user_name=user_name)
+                data['login_profile'] = d.LoginProfile
+            except BotoServerError as err:
+                if err.error_code == 'NoSuchEntity':
+                    data['login_profile'] = None
+                else:
+                    raise
             if self.pretend:
                 return data
             else:
@@ -134,8 +146,10 @@ class DeleteUser(AWSQueryRequest):
                 obj = RemoveUserFromGroup()
                 for group in data['groups']:
                     obj.main(group_name=group['GroupName'], user_name=user_name)
+                if data['login_profile']:
+                    DeleteLoginProfile().main(user_name=user_name)
         if not self.pretend:
             return self.send(**args)
-        
+
     def main_cli(self):
         self.do_cli()
