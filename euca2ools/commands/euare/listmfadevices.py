@@ -67,78 +67,13 @@ class ListMFADevices(AWSQueryRequest):
             ,
         )]
 
-    Response = {u'type': u'object', u'name': u'ListMFADevicesResponse',
-                u'properties': [{
-        u'doc'
-            : u' Contains the result of a successful invocation of the ListMFADevices action. '
-            ,
-        u'type': u'object',
-        u'name': u'ListMFADevicesResult',
-        u'optional': False,
-        u'properties': [{
-            u'doc': u' A list of MFA devices. ',
-            u'type': u'object',
-            u'properties': [{
-                u'type': u'array',
-                u'optional': False,
-                u'name': u'member',
-                u'items': [{u'doc'
-                           : u' The MFADevice data type contains information about an MFA Device.   This data type is used as a response element in the action ListMFADevices.   '
-                           , u'type': u'object', u'properties': [{
-                    u'min_length': 1,
-                    u'type': u'string',
-                    u'name': u'UserName',
-                    u'pattern': u'[\\w+=,.@-]*',
-                    u'max_length': 128,
-                    u'doc'
-                        : u' The User with whom the MFA device is associated. '
-                        ,
-                    u'optional': False,
-                    }, {
-                    u'min_length': 9,
-                    u'type': u'string',
-                    u'name': u'SerialNumber',
-                    u'pattern': u'[\\w]*',
-                    u'max_length': 48,
-                    u'doc'
-                        : u' Serial number that uniquely identifies the MFA device. '
-                        ,
-                    u'optional': False,
-                    }]}],
-                }],
-            u'optional': False,
-            u'name': u'MFADevices',
-            }, {
-            u'doc'
-                : u' A flag that indicates whether there are more User names to list. If your results were truncated, you can make a subsequent pagination request using the Marker request parameter to retrieve more User names in the list. '
-                ,
-            u'optional': True,
-            u'name': u'IsTruncated',
-            u'type': u'boolean',
-            }, {
-            u'min_length': 1,
-            u'type': u'string',
-            u'name': u'Marker',
-            u'pattern': u'[\\u0020-\\u00FF]*',
-            u'max_length': 320,
-            u'doc'
-                : u' If IsTruncated is true, this element is present and contains the value to use for the Marker parameter in a subsequent pagination request. '
-                ,
-            u'optional': True,
-            }],
-        }, {
-        u'type': u'object',
-        u'optional': False,
-        u'name': u'ResponseMetadata',
-        u'properties': [{u'type': u'string', u'optional': False, u'name'
-                        : u'RequestId'}],
-        }]}
-
     def cli_formatter(self, data):
         for mfa in data.MFADevices:
             print mfa['SerialNumber']
 
     def main(self, **args):
+        self.list_markers.append('MFADevices')
+        self.item_markers.append('member')
         return self.send(**args)
 
     def main_cli(self):

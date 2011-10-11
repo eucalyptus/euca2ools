@@ -64,16 +64,9 @@ class UpdateLoginProfile(AWSQueryRequest):
         doc=""" [Eucalyptus extension] Use the parameter only as the system admin to act as the account admin of the specified account without changing to account admin's role. """,
         )]
 
-    Response = {u'type': u'object',
-                u'name': u'UpdateLoginProfileResponse',
-                u'properties': [{
-        u'type': u'object',
-        u'optional': False,
-        u'name': u'ResponseMetadata',
-        u'properties': [{u'type': u'string', u'optional': False, u'name'
-                        : u'RequestId'}],
-        }]}
-
+    def cli_formatter(self, data):
+        pass
+    
     def main(self, **args):
         return self.send(**args)
 

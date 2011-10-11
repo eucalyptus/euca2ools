@@ -78,17 +78,8 @@ class DeleteGroup(AWSQueryRequest):
               doc="""Returns a list of Users and Policies that would be deleted if the -r or -R option were actually performed.""")
         ]
 
-    Response = {u'type': u'object', u'name': u'DeleteGroupResponse',
-                u'properties': [{
-        u'type': u'object',
-        u'optional': False,
-        u'name': u'ResponseMetadata',
-        u'properties': [{u'type': u'string', u'optional': False, u'name'
-                        : u'RequestId'}],
-        }]}
-
     def cli_formatter(self, data):
-        if self.pretend:
+        if data and self.pretend:
             print 'users'
             for user in data['users']:
                 print '\t%s' % user['Arn']
@@ -99,6 +90,7 @@ class DeleteGroup(AWSQueryRequest):
             AWSQueryRequest.cli_formatter(self, data)
 
     def main(self, **args):
+        data = {}
         recursive_local = self.cli_options.recursive or \
             args.get('recursive', False)
         recursive_server = self.cli_options.recursive_euca or \
@@ -108,7 +100,7 @@ class DeleteGroup(AWSQueryRequest):
         if recursive_local or (recursive_server and self.pretend):
             obj = ListGroupPolicies()
             d = obj.main(group_name=group_name)
-            data = {'policies' : d.PolicyNames}
+            data['policies'] = d.PolicyNames
             obj = GetGroup()
             d = obj.main(group_name=group_name)
             data['users'] = d.Users

@@ -43,53 +43,13 @@ class ListAccounts(AWSQueryRequest):
     Name = 'ListAccounts'
     Description = 'List accounts in the system.'
 
-    Response = {u'type': u'object', u'name': u'ListAccountsResponse',
-                u'properties': [{
-        u'doc': u' Contains the result of a successful invocation of the ListAccounts action. ',
-        u'type': u'object',
-        u'name': u'ListAccountsResult',
-        u'optional': False,
-        u'properties': [{
-            u'doc': u' A list of Account names. ',
-            u'type': u'object',
-            u'properties': [{
-                u'type': u'array',
-                u'optional': False,
-                u'name': u'member',
-                u'items': [{u'doc': u' The Account data type contains information about a Account.   This data type is used as a response element in the following actions:  CreateAccount GetAccount ListAccounts  ',
-                    u'type': u'object', u'properties': [{
-                    u'min_length': 1,
-                    u'type': u'string',
-                    u'name': u'AccountName',
-                    u'pattern': u'[\\w+=,.@-]*',
-                    u'max_length': 128,
-                    u'doc': u' The name identifying the Account. ',
-                    u'optional': False,
-                    }, {
-                    u'min_length': 16,
-                    u'type': u'string',
-                    u'name': u'AccountId',
-                    u'pattern': u'[\\w]*',
-                    u'max_length': 32,
-                    u'doc': u' The stable and unique string identifying the Account. For more information about IDs, see Identifiers for IAM Entities in Using AWS Identity and Access Management. ',
-                    u'optional': False,
-                    }]}],
-                }],
-            u'optional': False,
-            u'name': u'Accounts',
-            }],
-        }, {
-        u'type': u'object',
-        u'optional': False,
-        u'name': u'ResponseMetadata',
-        u'properties': [{u'type': u'string', u'optional': False, u'name': u'RequestId'}],
-        }]}
-
     def cli_formatter(self, data):
         for account in data.Accounts:
             print account['AccountName'], '\t', account['AccountId']
 
     def main(self, **args):
+        self.list_markers.append('Accounts')
+        self.item_markers.append('member')
         return self.send(**args)
 
     def main_cli(self):

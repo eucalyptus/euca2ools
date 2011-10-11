@@ -71,92 +71,14 @@ class ListAccessKeys(AWSQueryRequest):
         doc=""" [Eucalyptus extension] Use the parameter only as the system admin to act as the account admin of the specified account without changing to account admin's role. """,
         )]
 
-    Response = {u'type': u'object', u'name': u'ListAccessKeysResponse',
-                u'properties': [{
-        u'doc'
-            : u' Contains the result of a successful invocation of the ListAccessKeys action. '
-            ,
-        u'type': u'object',
-        u'name': u'ListAccessKeysResult',
-        u'optional': False,
-        u'properties': [{
-            u'doc': u' A list of access key metadata. ',
-            u'type': u'object',
-            u'properties': [{
-                u'type': u'array',
-                u'optional': False,
-                u'name': u'member',
-                u'items': [{u'doc'
-                           : u' The AccessKey data type contains information about an AWS access key, without its secret key.   This data type is used as a response element in the action ListAccessKeys.  '
-                           , u'type': u'object', u'properties': [{
-                    u'min_length': 1,
-                    u'type': u'string',
-                    u'name': u'UserName',
-                    u'pattern': u'[\\w+=,.@-]*',
-                    u'max_length': 128,
-                    u'doc'
-                        : u' Name of the User the key is associated with. '
-                        ,
-                    u'optional': True,
-                    }, {
-                    u'min_length': 16,
-                    u'type': u'string',
-                    u'name': u'AccessKeyId',
-                    u'pattern': u'[\\w]*',
-                    u'max_length': 32,
-                    u'doc': u' The ID for this access key. ',
-                    u'optional': True,
-                    }, {
-                    u'doc'
-                        : u' The status of the access key. Active means the key is valid for API calls, while Inactive means it is not. '
-                        ,
-                    u'type': u'enum',
-                    u'name': u'Status',
-                    u'optional': True,
-                    u'choices': [u'Active', u'Inactive'],
-                    }, {
-                    u'doc'
-                        : u' The date when the access key was created. '
-                        ,
-                    u'optional': True,
-                    u'name': u'CreateDate',
-                    u'type': u'dateTime',
-                    }]}],
-                }],
-            u'optional': False,
-            u'name': u'AccessKeyMetadata',
-            }, {
-            u'doc'
-                : u' A flag that indicates whether there are more keys to list. If your results were truncated, you can make a subsequent pagination request using the Marker request parameter to retrieve more keys in the list. '
-                ,
-            u'optional': True,
-            u'name': u'IsTruncated',
-            u'type': u'boolean',
-            }, {
-            u'min_length': 1,
-            u'type': u'string',
-            u'name': u'Marker',
-            u'pattern': u'[\\u0020-\\u00FF]*',
-            u'max_length': 320,
-            u'doc'
-                : u' If IsTruncated is true, this element is present and contains the value to use for the Marker parameter in a subsequent pagination request. '
-                ,
-            u'optional': True,
-            }],
-        }, {
-        u'type': u'object',
-        u'optional': False,
-        u'name': u'ResponseMetadata',
-        u'properties': [{u'type': u'string', u'optional': False, u'name'
-                        : u'RequestId'}],
-        }]}
-
     def cli_formatter(self, data):
         for key in data.AccessKeyMetadata:
             print key['AccessKeyId']
             print key['Status']
 
     def main(self, **args):
+        self.list_markers.append('AccessKeyMetadata')
+        self.item_markers.append('member')
         return self.send(**args)
 
     def main_cli(self):
