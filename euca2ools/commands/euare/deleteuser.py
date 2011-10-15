@@ -126,7 +126,7 @@ class DeleteUser(AWSQueryRequest):
             try:
                 d = obj.main(user_name=user_name)
                 data['login_profile'] = d.LoginProfile
-            except BotoServerError as err:
+            except BotoServerError, err:
                 if err.error_code == 'NoSuchEntity':
                     data['login_profile'] = None
                 else:
