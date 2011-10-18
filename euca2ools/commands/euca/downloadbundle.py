@@ -107,7 +107,7 @@ class DownloadBundle(euca2ools.commands.eucacommand.EucaCommand):
     def download_parts(self, bucket, manifests, directory):
         for manifest in manifests:
             manifest_filename = os.path.join(directory, manifest)
-            parts = get_parts(manifest_filename)
+            parts = self.get_parts(manifest_filename)
             for part in parts:
                 k = Key(bucket)
                 k.key = part
