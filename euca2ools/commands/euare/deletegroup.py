@@ -86,8 +86,6 @@ class DeleteGroup(AWSQueryRequest):
             print 'policies'
             for policy in data['policies']:
                 print '\t%s' % policy
-        else:
-            AWSQueryRequest.cli_formatter(self, data)
 
     def main(self, **args):
         data = {}

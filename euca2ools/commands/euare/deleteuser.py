@@ -99,8 +99,6 @@ class DeleteUser(AWSQueryRequest):
             print 'groups'
             for group in data['groups']:
                 print '\t%s' % group['Arn']
-        else:
-            AWSQueryRequest.cli_formatter(self, data)
             
     def main(self, **args):
         recursive_local = self.cli_options.recursive or \
