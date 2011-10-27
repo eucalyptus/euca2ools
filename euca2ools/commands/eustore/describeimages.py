@@ -61,7 +61,6 @@ class DescribeImages(AWSQueryRequest):
         self.eustore_url = self.ServiceClass.StoreBaseURL
         if os.environ.has_key('EUSTORE_URL'):
             self.eustore_url = os.environ['EUSTORE_URL']
-        print self.eustore_url
         catURL = self.eustore_url + "catalog.json"
         response = urllib2.urlopen(catURL).read()
         parsed_cat = json.loads(response)
