@@ -20,7 +20,7 @@ BuildRoot:     %(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
 BuildArch:     noarch
 
 BuildRequires:  python%{?__python_ver}-devel
-Requires:       python%{?__python_ver}-boto >= 2.0
+Requires:       python%{?__python_ver}-boto >= 2.1
 Requires:       rsync
 Requires:       util-linux
 # %%elseif behaves like %%endif followed by %%if.  Avoid it to reduce confusion.
