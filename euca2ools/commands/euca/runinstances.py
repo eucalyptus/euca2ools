@@ -34,6 +34,7 @@
 import euca2ools.commands.eucacommand
 from boto.roboto.param import Param
 import euca2ools.utils
+import os.path
 
 class RunInstances(euca2ools.commands.eucacommand.EucaCommand):
 
@@ -112,6 +113,11 @@ class RunInstances(euca2ools.commands.eucacommand.EucaCommand):
             msg = 'Invalid value for --instance-count: %s' % count
             self.display_error_and_exit(msg)
                 
+        if self.user_data and os.path.isfile(self.user_data):
+            msg = 'string provided by user_data (%s) is a file. try %s' % (
+                (self.user_data, '--user-data-file'))
+            self.display_error_and_exit(msg)
+
         if not self.user_data:
             if self.user_data_file:
                 self.user_data = self.read_user_data(self.user_data_file)
