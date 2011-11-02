@@ -50,6 +50,9 @@ class RunInstances(euca2ools.commands.eucacommand.EucaCommand):
                      doc='Name of a keypair.'),
                Param(name='user_data', short_name='d', long_name='user-data',
                      optional=True, doc='User data to pass to the instance.'),
+               Param(name='user_data_force', long_name='user-data-force',
+                     optional=True,
+                     doc='Just like --user-data, but ignore any checks.'),
                Param(name='user_data_file',
                      short_name='f', long_name='user-data-file',
                      optional=True, ptype='file',
@@ -114,9 +117,12 @@ class RunInstances(euca2ools.commands.eucacommand.EucaCommand):
             self.display_error_and_exit(msg)
                 
         if self.user_data and os.path.isfile(self.user_data):
-            msg = 'string provided by user_data (%s) is a file. try %s' % (
-                (self.user_data, '--user-data-file'))
+            msg = ('string provided as user-data [%s] is a file.\nTry %s or %s'
+                    % (self.user_data, '--user-data-file', '--user-data-force'))
             self.display_error_and_exit(msg)
+
+        if self.user_data_force:
+            self.user_data = self.user_data_force
 
         if not self.user_data:
             if self.user_data_file:
