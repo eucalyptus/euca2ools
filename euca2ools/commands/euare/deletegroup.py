@@ -63,19 +63,19 @@ class DeleteGroup(AWSQueryRequest):
               ptype='boolean',
               optional=True,
               request_param=False,
-              doc=""" Deletes the Group, removes all Users from the Group and deletes all Policies associated with the Group."""),
+              doc=""" Removes all Users from the Group, deletes all Policies associated with the Group, then deletes the Group."""),
         Param(name='IsRecursive',
               short_name='R',
               long_name='recursive-euca',
               ptype='boolean',
               optional=True,
-              doc="""[Eucalyptus extension] Exactly like the -r option but performs operations server-side rather than in the client."""),
+              doc=""" [Eucalyptus extension] Same as -r, but all operations are performed by the server instead of the client."""),
         Param(name='pretend',
               short_name='p',
               long_name='pretend',
               ptype='boolean',
               optional=True,
-              doc="""Returns a list of Users and Policies that would be deleted if the -r or -R option were actually performed.""")
+              doc=""" Returns a list of Users and Policies that would be deleted if the -r or -R option were actually performed.""")
         ]
 
     def cli_formatter(self, data):

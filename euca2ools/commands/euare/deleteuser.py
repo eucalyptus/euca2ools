@@ -70,19 +70,19 @@ class DeleteUser(AWSQueryRequest):
               ptype='boolean',
               optional=True,
               request_param=False,
-              doc=""" Deletes the Group, removes all Users from the Group and deletes all Policies associated with the Group."""),
+              doc=""" Deletes the user from associated groups; deletes the user's credentials, policies, and login profiles; and finally deletes the user."""),
         Param(name='IsRecursive',
               short_name='R',
               long_name='recursive-euca',
               ptype='boolean',
               optional=True,
-              doc=""" Deletes the User from associated groups and deletes the User's credentials and policies along with the User. """),
+              doc=""" [Eucalyptus extension] Same as -r, but all operations are performed by the server instead of the client."""),
         Param(name='pretend',
               short_name='p',
               long_name='pretend',
               ptype='boolean',
               optional=True,
-              doc="""Returns a list of credentials and policies that would be deleted, as well as the groups the user would be removed from, if the -r or -R option were actually performed.""")
+              doc=""" Returns a list of credentials and policies that would be deleted, as well as the groups the user would be removed from, if the -r or -R option were actually performed.""")
         ]
 
     def cli_formatter(self, data):
@@ -99,7 +99,7 @@ class DeleteUser(AWSQueryRequest):
             print 'groups'
             for group in data['groups']:
                 print '\t%s' % group['Arn']
-            
+
     def main(self, **args):
         recursive_local = self.cli_options.recursive or \
             args.get('recursive', False)
