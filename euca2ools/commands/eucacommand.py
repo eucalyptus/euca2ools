@@ -52,6 +52,7 @@ SYSTEM_EUCARC_PATH = os.path.join('/etc', 'euca2ools', 'eucarc')
 EC2RegionData = {
     'us-east-1' : 'ec2.us-east-1.amazonaws.com',
     'us-west-1' : 'ec2.us-west-1.amazonaws.com',
+    'us-west-2' : 'ec2.us-west-2.amazonaws.com',
     'eu-west-1' : 'ec2.eu-west-1.amazonaws.com',
     'ap-northeast-1' : 'ec2.ap-northeast-1.amazonaws.com',
     'ap-southeast-1' : 'ec2.ap-southeast-1.amazonaws.com'}
