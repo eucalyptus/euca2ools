@@ -60,6 +60,8 @@ class GetUser(AWSQueryRequest):
     def cli_formatter(self, data):
         print data.User['Arn']
         print data.User['UserId']
+        if data.User['Enabled'] != 'true':
+            print data.User['Enabled']
 
     def main(self, **args):
         return self.send(**args)

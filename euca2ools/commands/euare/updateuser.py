@@ -64,6 +64,13 @@ class UpdateUser(AWSQueryRequest):
         optional=True,
         doc=""" New name for the User. Include this parameter only if you're changing the User's name. """ ,
         ), Param(
+        name='Enabled',
+        short_name=None,
+        long_name='enabled',
+        ptype='string',
+        optional=True,
+        doc=""" 'true' if to set user to be enabled. Otherwise 'false'. """ ,
+        ), Param(
         name='DelegateAccount',
         short_name=None,
         long_name='delegate',
