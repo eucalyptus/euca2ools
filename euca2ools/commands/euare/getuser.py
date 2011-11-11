@@ -49,6 +49,13 @@ class GetUser(AWSQueryRequest):
         optional=True,
         doc=""" Name of the User to get information about.  This parameter is optional. If it is not included, it defaults to the User making the request. """ ,
         ), Param(
+        name='ShowExtra',
+        short_name=None,
+        long_name='show-extra',
+        ptype='boolean',
+        optional=True,
+        doc=""" [Eucalyptus extension] Display the extra user attributes. """,
+        ), Param(
         name='DelegateAccount',
         short_name=None,
         long_name='delegate',
@@ -60,8 +67,10 @@ class GetUser(AWSQueryRequest):
     def cli_formatter(self, data):
         print data.User['Arn']
         print data.User['UserId']
-        if data.User['Enabled'] != 'true':
+        if 'Enabled' in data.User:
             print data.User['Enabled']
+            print data.User['RegStatus']
+            print data.User['PasswordExpiration']
 
     def main(self, **args):
         return self.send(**args)

@@ -69,7 +69,21 @@ class UpdateUser(AWSQueryRequest):
         long_name='enabled',
         ptype='string',
         optional=True,
-        doc=""" 'true' if to set user to be enabled. Otherwise 'false'. """ ,
+        doc=""" [Eucalyptus extension] 'true' if to set user to be enabled. Otherwise 'false'. """ ,
+        ), Param(
+        name='RegStatus',
+        short_name=None,
+        long_name='reg-status',
+        ptype='string',
+        optional=True,
+        doc=""" [Eucalyptus extension] New registration status for user. Pick one from REGISTERED, APPROVED or CONFIRMED (use any case combination as you want). Only CONFIRMED user is valid to access the system. """ ,
+        ), Param(
+        name='PasswordExpiration',
+        short_name=None,
+        long_name='pwd-expires',
+        ptype='string',
+        optional=True,
+        doc=""" [Eucalyptus extension] New password expiration date. Use ISO8601 format. """ ,
         ), Param(
         name='DelegateAccount',
         short_name=None,
