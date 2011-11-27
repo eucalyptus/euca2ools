@@ -32,6 +32,7 @@
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
 import os
+import sys
 from boto.roboto.param import Param
 import euca2ools.commands.eucacommand
 import euca2ools.bundler
@@ -59,34 +60,34 @@ class Unbundle(euca2ools.commands.eucacommand.EucaCommand):
                      doc="""Source directory for the bundled image parts.
                      Defaults to manifest directory.""")]
 
-def main():
-    if not self.source_dir:
-        self.source_dir = self.get_file_path(self.manifest_path)
-    if not self.private_key_path:
-        self.private_key_path = self.get_environ('EC2_PRIVATE_KEY')
-        if not os.path.isfile(self.private_key_path):
-            msg = 'Private Key not found: %s' % self.private_key_path
-            self.display_error_and_exit(msg)
+    def main(self):
+        if not self.source_dir:
+            self.source_dir = self.get_file_path(self.manifest_path)
+        if not self.private_key_path:
+            self.private_key_path = self.get_environ('EC2_PRIVATE_KEY')
+            if not os.path.isfile(self.private_key_path):
+                msg = 'Private Key not found: %s' % self.private_key_path
+                self.display_error_and_exit(msg)
 
-    bundler = euca2ools.bundler.Bundler(self)
-    (parts, encrypted_key, encrypted_iv) = \
-        bundler.parse_manifest(self.manifest_path)
-    image = bundler.assemble_parts(self.source_dir, self.directory,
-                                   self.manifest_path, parts)
-    print 'Decrypting image'
-    decrypted_image = bundler.decrypt_image(image, encrypted_key,
-                                            encrypted_iv, self.private_key_path)
-    os.remove(image)
-    print 'Uncompressing image'
-    try:
-        unencrypted_image = bundler.untarzip_image(self.directory,
-                                                   decrypted_image)
-    except NotFoundError:
-        sys.exit(1)
-    except CommandFailed:
-        sys.exit(1)
-    os.remove(decrypted_image)
+        bundler = euca2ools.bundler.Bundler(self)
+        (parts, encrypted_key, encrypted_iv) = \
+            bundler.parse_manifest(self.manifest_path)
+        image = bundler.assemble_parts(self.source_dir, self.destination_dir,
+                                       self.manifest_path, parts)
+        print 'Decrypting image'
+        decrypted_image = bundler.decrypt_image(image, encrypted_key,
+                                                encrypted_iv, self.private_key_path)
+        os.remove(image)
+        print 'Uncompressing image'
+        try:
+            decrypted_image = bundler.untarzip_image(self.destination_dir,
+                                                       decrypted_image)
+        except NotFoundError:
+            sys.exit(1)
+        except CommandFailed:
+            sys.exit(1)
+        os.remove(decrypted_image)
 
-def main_cli(self):
-    self.main()
+    def main_cli(self):
+        self.main()
 
