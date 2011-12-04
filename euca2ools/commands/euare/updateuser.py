@@ -51,14 +51,14 @@ class UpdateUser(AWSQueryRequest):
             ,
         ), Param(
         name='NewPath',
-        short_name='n',
+        short_name='p',
         long_name='new-path',
         ptype='string',
         optional=True,
         doc=""" New path for the User. Include this parameter only if you're changing the User's path. """ ,
         ), Param(
         name='NewUserName',
-        short_name=None,
+        short_name='n',
         long_name='new-user-name',
         ptype='string',
         optional=True,

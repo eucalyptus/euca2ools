@@ -50,14 +50,14 @@ class UpdateGroup(AWSQueryRequest):
         doc=""" Name of the group to update. If you're changing the name of the group, this is the original name. """ ,
         ), Param(
         name='NewPath',
-        short_name='n',
+        short_name='p',
         long_name='new-path',
         ptype='string',
         optional=True,
         doc=""" New path for the group. Only include this if changing the group's path. """ ,
         ), Param(
         name='NewGroupName',
-        short_name=None,
+        short_name='n',
         long_name='new-group-name',
         ptype='string',
         optional=True,
