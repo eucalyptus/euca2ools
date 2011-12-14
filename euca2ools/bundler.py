@@ -208,15 +208,27 @@ class Bundler(object):
         # get 17 bytes of randomness with top bit a '1'.
         # convert to a hex string like '0x<34 hex chars>L'
         # then take the last 32 of the hex digits, giving 32 random hex chars
-        key = hex(BN.rand(17 * 8,top=0))[4:36]
+        key = hex(BN.rand(17 * 8,top=0))
         if self.euca.debug:
-            print 'Key: %s' % key
-        iv = hex(BN.rand(17 * 8,top=0))[4:36]
+            print 'Key: %s' % key[4:36]
+        iv = hex(BN.rand(17 * 8,top=0))
         if self.euca.debug:
-            print 'IV: %s' % iv
+            print 'IV: %s' % iv[4:36]
              
-        k = EVP.Cipher(alg='aes_128_cbc', key=unhexlify(key),
-                       iv=unhexlify(iv), op=1)
+        try:
+            k = EVP.Cipher(alg='aes_128_cbc', key=unhexlify(key[4:36]),
+                           iv=unhexlify(iv[4:36]), op=1)
+        except TypeError:
+            print
+            print 'WARNING: retrying encryption to work around a rare RNG bug'
+            print 'Please report the following values to Eucalyptus Systems at'
+            print 'https://bugs.launchpad.net/bugs/904062 to help diagnose'
+            print 'this issue.'
+            print 'k: ', key
+            print 'iv:', iv
+            print
+            self.encrypt_image(file)
+            return
 
         in_file = open(file, 'rb')
         out_file = open(enc_file, 'wb')
