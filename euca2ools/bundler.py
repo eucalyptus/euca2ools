@@ -214,7 +214,7 @@ class Bundler(object):
         iv = hex(BN.rand(17 * 8,top=0))
         if self.euca.debug:
             print 'IV: %s' % iv[4:36]
-             
+
         try:
             k = EVP.Cipher(alg='aes_128_cbc', key=unhexlify(key[4:36]),
                            iv=unhexlify(iv[4:36]), op=1)
@@ -227,8 +227,7 @@ class Bundler(object):
             print 'k: ', key
             print 'iv:', iv
             print
-            self.encrypt_image(file)
-            return
+            return self.encrypt_image(file)
 
         in_file = open(file, 'rb')
         out_file = open(enc_file, 'wb')
