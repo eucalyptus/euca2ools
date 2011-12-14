@@ -62,8 +62,7 @@ install:
 	@if [ -d $(BASH_COMPLETION) ]; then install -o root -m 644  $(UTILDIR)/* $(BASH_COMPLETION); fi
  
 distclean clean:
-	@for subdir in $(SUBDIRS); do \
-		(cd $$subdir && $(MAKE) $@) || exit $$? ; done
+	echo "Nothing to do for clean"
 
 uninstall:
 	@for x in $(BINLIST); do \
