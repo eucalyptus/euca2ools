@@ -38,8 +38,8 @@ class DescribeRegions(euca2ools.commands.eucacommand.EucaCommand):
 
     APIVersion = '2010-08-31'
     Description = 'Shows information about regions.'
-    Args = [Param(name='region_name', ptype='string',
-                  doc='region to describe',
+    Args = [Param(name='described_region_name', ptype='string',
+                  doc='name of the region to describe',
                   cardinality='+', optional=True)]
     Filters = [Param(name='endpoint', ptype='string',
                      doc='Endpoint of the region.'),
@@ -54,7 +54,7 @@ class DescribeRegions(euca2ools.commands.eucacommand.EucaCommand):
     def main(self):
         conn = self.make_connection_cli()
         return self.make_request_cli(conn, 'get_all_regions',
-                                     region_names=self.region_name)
+                                     region_names=self.described_region_name)
 
     def main_cli(self):
         regions = self.main()
