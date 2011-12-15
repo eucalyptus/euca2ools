@@ -31,12 +31,13 @@
 # Author: Neil Soman neil@eucalyptus.com
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
+import boto
 import getopt
-import sys
 import os
+import socket
+import sys
 import textwrap
 import urlparse
-import boto
 import euca2ools
 import euca2ools.utils
 import euca2ools.exceptions
@@ -48,14 +49,6 @@ from boto.ec2.blockdevicemapping import BlockDeviceMapping, BlockDeviceType
 from boto.roboto.param import Param
 
 SYSTEM_EUCARC_PATH = os.path.join('/etc', 'euca2ools', 'eucarc')
-
-EC2RegionData = {
-    'us-east-1' : 'ec2.us-east-1.amazonaws.com',
-    'us-west-1' : 'ec2.us-west-1.amazonaws.com',
-    'us-west-2' : 'ec2.us-west-2.amazonaws.com',
-    'eu-west-1' : 'ec2.eu-west-1.amazonaws.com',
-    'ap-northeast-1' : 'ec2.ap-northeast-1.amazonaws.com',
-    'ap-southeast-1' : 'ec2.ap-southeast-1.amazonaws.com'}
 
 import bdb
 import traceback
@@ -523,10 +516,9 @@ class EucaCommand(object):
         if self.region_name:
             self.region.name = self.region_name
             try:
-                self.region.endpoint = EC2RegionData[self.region_name]
-            except KeyError:
-                print 'Unknown region: %s' % self.region_name
-                sys.exit(1)
+                self.url = self.get_endpoint_url(self.region.name)
+            except KeyError, err:
+                self.display_error_and_exit(err.message)
         elif not self.url:
             self.url = self.environ['EC2_URL']
             if not self.url:
@@ -537,8 +529,9 @@ class EucaCommand(object):
 
         if not self.region.endpoint:
             self.get_connection_details()
-            self.region.name = 'eucalyptus'
             self.region.endpoint = self.host
+        if not self.region.name:
+            self.region.name = 'eucalyptus'
 
         return boto.connect_ec2(aws_access_key_id=self.ec2_user_access_key,
                                 aws_secret_access_key=self.ec2_user_secret_key,
@@ -629,3 +622,18 @@ class EucaCommand(object):
                 block_device_map[device_name] = block_dev_type
         return block_device_map
 
+    def get_endpoint_url(self, region_name):
+        """
+        Get the URL needed to reach a region with a given name.
+
+        This currently only works with EC2.  In the future it may use other
+        means to also work with Eucalyptus.
+        """
+        endpoint_template = 'https://ec2.%s.amazonaws.com/'
+        endpoint_url      = endpoint_template % region_name
+        endpoint_dnsname  = urlparse.urlparse(endpoint_url).hostname
+        try:
+            socket.getaddrinfo(endpoint_dnsname, None)
+        except socket.gaierror:
+            raise KeyError('Cannot resolve endpoint %s' % endpoint_dnsname)
+        return endpoint_url
