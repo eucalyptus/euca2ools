@@ -208,16 +208,18 @@ class Bundler(object):
         # get 17 bytes of randomness with top bit a '1'.
         # convert to a hex string like '0x<34 hex chars>L'
         # then take the last 32 of the hex digits, giving 32 random hex chars
-        key = hex(BN.rand(17 * 8,top=0))
+        gen_key = hex(BN.rand(17 * 8,top=0))
+        key     = gen_key[4:36]
         if self.euca.debug:
-            print 'Key: %s' % key[4:36]
-        iv = hex(BN.rand(17 * 8,top=0))
+            print 'Key: %s' % gen_key
+        gen_iv = hex(BN.rand(17 * 8,top=0))
+        iv     = gen_iv[4:36]
         if self.euca.debug:
-            print 'IV: %s' % iv[4:36]
+            print 'IV: %s' % gen_iv
 
         try:
-            k = EVP.Cipher(alg='aes_128_cbc', key=unhexlify(key[4:36]),
-                           iv=unhexlify(iv[4:36]), op=1)
+            k = EVP.Cipher(alg='aes_128_cbc', key=unhexlify(key),
+                           iv=unhexlify(iv), op=1)
         except TypeError:
             print
             print 'WARNING: retrying encryption to work around a rare RNG bug'
