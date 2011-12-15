@@ -193,6 +193,11 @@ class InstallImage(AWSQueryRequest):
 
     def main(self, **args):
         self.process_args()
+        self.cert_path = os.environ['EC2_CERT']
+        self.private_key_path = os.environ['EC2_PRIVATE_KEY']
+        self.user = os.environ['EC2_USER_ID']
+        self.ec2cert_path = os.environ['EUCALYPTUS_CERT']
+
         if (self.cli_options.kernel and not(self.cli_options.ramdisk)) or \
            (not(self.cli_options.kernel) and self.cli_options.ramdisk):
             print "Error: kernel and ramdisk must both be overrided"
@@ -240,10 +245,6 @@ class InstallImage(AWSQueryRequest):
                 print "Image name not found, please run euca-describe-imagestore"
 
     def main_cli(self):
-        self.cert_path = os.environ['EC2_CERT']
-        self.private_key_path = os.environ['EC2_PRIVATE_KEY']
-        self.user = os.environ['EC2_USER_ID']
-        self.ec2cert_path = os.environ['EUCALYPTUS_CERT']
         self.debug=False
         self.do_cli()
 
