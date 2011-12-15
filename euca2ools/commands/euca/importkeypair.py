@@ -47,10 +47,13 @@ class ImportKeyPair(euca2ools.commands.eucacommand.EucaCommand):
                   optional=False)]
     
     def main(self):
+        fp = open(self.file_name)
+        key_material = fp.read()
+        fp.close()
         conn = self.make_connection_cli()
         return self.make_request_cli(conn, 'import_key_pair',
                                      key_name=self.key_name,
-                                     public_key_material=self.file_name)
+                                     public_key_material=key_material)
 
     def main_cli(self):
         keypair = self.main()
