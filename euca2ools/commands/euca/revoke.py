@@ -112,7 +112,7 @@ class Revoke(euca2ools.commands.eucacommand.EucaCommand):
                 permission_string += '\t%s' % self.to_port
             if self.source_group_user:
                 permission_string += '\tUSER\t%s' \
-                    % source_group_user
+                    % self.source_group_user
             if self.source_group:
                 permission_string += '\tGRPNAME\t%s' % self.source_group
             if self.source_subnet:
