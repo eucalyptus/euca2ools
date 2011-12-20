@@ -80,8 +80,7 @@ class Unbundle(euca2ools.commands.eucacommand.EucaCommand):
         os.remove(image)
         print 'Uncompressing image'
         try:
-            decrypted_image = bundler.untarzip_image(self.destination_dir,
-                                                       decrypted_image)
+            bundler.untarzip_image(self.destination_dir, decrypted_image)
         except NotFoundError:
             sys.exit(1)
         except CommandFailed:
