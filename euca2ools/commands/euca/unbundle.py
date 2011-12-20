@@ -55,7 +55,7 @@ class Unbundle(euca2ools.commands.eucacommand.EucaCommand):
                      doc="""Directory to store the image to.
                      Defaults to the current directory."""),
                Param(name='source_dir',
-                     short_name='s', long_name='destination',
+                     short_name='s', long_name='source',
                      optional=True, ptype='dir',
                      doc="""Source directory for the bundled image parts.
                      Defaults to manifest directory.""")]
