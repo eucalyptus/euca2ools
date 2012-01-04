@@ -70,7 +70,6 @@ rm -rf %{buildroot}
 %defattr(-,root,root,-)
 %{_bindir}/euare-*
 %{_bindir}/euca-*
-%{_bindir}/eustore-*
 %{_mandir}/man1/euca*
 %{_mandir}/man1/euare*
 %{python_sitelib}/%{name}-*.egg-info
