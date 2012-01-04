@@ -141,9 +141,9 @@ class EucaCommand(object):
         self.debugger = False
         self.set_debug(debug)
         self.cmd_name = os.path.basename(sys.argv[0])
-        self.setup_environ()
         self.check_for_conflict()
         self.process_cli_args()
+        self.setup_environ()
         # h = NullHandler()
         # logging.getLogger('boto').addHandler(h)
 
@@ -401,7 +401,7 @@ class EucaCommand(object):
 
     def error_exit(self):
         sys.exit(1)
-        
+
     def setup_environ(self):
         envlist = ('EC2_ACCESS_KEY', 'EC2_SECRET_KEY',
                    'S3_URL', 'EC2_URL', 'EC2_CERT', 'EC2_PRIVATE_KEY',
