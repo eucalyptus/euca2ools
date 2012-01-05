@@ -41,6 +41,7 @@ from boto.roboto.awsqueryrequest import AWSQueryRequest
 from boto.s3.connection import Location
 import euca2ools.bundler
 import euca2ools.commands.eustore
+import euca2ools.utils
 from euca2ools.commands.euca.bundleimage import BundleImage
 from euca2ools.commands.euca.uploadbundle import UploadBundle
 from euca2ools.commands.euca.register import Register
@@ -247,6 +248,7 @@ class InstallImage(AWSQueryRequest):
                 print "Image name not found, please run eustore-describe-images"
 
     def main_cli(self):
+        euca2ools.utils.print_version_if_necessary()
         self.debug=False
         self.do_cli()
 

@@ -43,12 +43,6 @@ class Euare(AWSQueryService):
     Provider = 'aws'
     EnvURL = 'EUARE_URL'
 
-    Regions = [{"endpoint": "iam.amazonaws.com", 
-                "name": "us-east-1", 
+    Regions = [{"endpoint": "iam.amazonaws.com",
+                "name": "us-east-1",
                 "description": "US-East (Northern Virginia)"}]
-
-
-                   
-
-    
-    

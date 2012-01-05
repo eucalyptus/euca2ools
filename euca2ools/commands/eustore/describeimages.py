@@ -38,6 +38,7 @@ import urllib2
 from boto.roboto.param import Param
 from boto.roboto.awsqueryrequest import AWSQueryRequest
 import euca2ools.commands.eustore
+import euca2ools.utils
 
 try:
     import simplejson as json
@@ -87,5 +88,6 @@ class DescribeImages(AWSQueryRequest):
                           image['contact']
 
     def main_cli(self):
+        euca2ools.utils.print_version_if_necessary()
         self.do_cli()
 

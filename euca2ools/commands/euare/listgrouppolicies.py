@@ -35,6 +35,7 @@ from boto.roboto.awsqueryrequest import AWSQueryRequest
 from boto.roboto.param import Param
 import euca2ools.commands.euare
 import euca2ools.commands.euare.getgrouppolicy
+import euca2ools.utils
 
 
 class ListGroupPolicies(AWSQueryRequest):
@@ -102,4 +103,5 @@ class ListGroupPolicies(AWSQueryRequest):
         return self.send(**args)
 
     def main_cli(self):
+        euca2ools.utils.print_version_if_necessary()
         self.do_cli()

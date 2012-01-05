@@ -32,7 +32,8 @@
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
 import subprocess
-from euca2ools import exceptions
+import sys
+from euca2ools import exceptions, __version__
 
 def check_prerequisite_command(command):
     cmd = [command]
@@ -89,4 +90,13 @@ def print_instances(instances, nil=""):
             items.append(val)
         print "INSTANCE\t%s" % '\t'.join(items)
 
+def print_version_if_necessary():
+    """
+    If '--version' appears in sys.argv then print the version and exit
+    successfully.
 
+    This is a hackish workaround for a roboto limitation in boto 2.1.1.
+    """
+    if '--version' in sys.argv:
+        print 'euca2ools', __version__
+        sys.exit()

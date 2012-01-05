@@ -34,6 +34,7 @@
 from boto.roboto.awsqueryrequest import AWSQueryRequest
 from boto.roboto.param import Param
 import euca2ools.commands.euare
+import euca2ools.utils
 from euca2ools.commands.euare.listgrouppolicies import ListGroupPolicies
 from euca2ools.commands.euare.deletegrouppolicy import DeleteGroupPolicy
 from euca2ools.commands.euare.getgroup import GetGroup
@@ -115,4 +116,5 @@ class DeleteGroup(AWSQueryRequest):
             return self.send(**args)
 
     def main_cli(self):
+        euca2ools.utils.print_version_if_necessary()
         self.do_cli()

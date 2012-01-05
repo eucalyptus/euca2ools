@@ -35,6 +35,7 @@ from boto.exception import BotoServerError
 from boto.roboto.awsqueryrequest import AWSQueryRequest
 from boto.roboto.param import Param
 import euca2ools.commands.euare
+import euca2ools.utils
 from euca2ools.commands.euare.listuserpolicies import ListUserPolicies
 from euca2ools.commands.euare.deleteuserpolicy import DeleteUserPolicy
 from euca2ools.commands.euare.listgroupsforuser import ListGroupsForUser
@@ -150,4 +151,5 @@ class DeleteUser(AWSQueryRequest):
             return self.send(**args)
 
     def main_cli(self):
+        euca2ools.utils.print_version_if_necessary()
         self.do_cli()
