@@ -244,7 +244,7 @@ class InstallImage(AWSQueryRequest):
                 print "Installed image: "+self.bundleAll(fp.name, image)
                 os.remove(fp.name)
             else:
-                print "Image name not found, please run euca-describe-imagestore"
+                print "Image name not found, please run eustore-describe-images"
 
     def main_cli(self):
         self.debug=False
