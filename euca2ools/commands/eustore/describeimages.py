@@ -49,6 +49,14 @@ class DescribeImages(AWSQueryRequest):
     ServiceClass = euca2ools.commands.eustore.Eustore
 
     Description = """lists images from Eucalyptus.com"""
+    Params = [
+        Param(name='verbose',
+              short_name='v',
+              long_name='verbose',
+              optional=True,
+              ptype='boolean',
+              doc="""display more information about images""")
+		  ]
 
     def fmtCol(self, value, width):
         valLen = len(value)
@@ -67,10 +75,16 @@ class DescribeImages(AWSQueryRequest):
         if len(parsed_cat) > 0:
             image_list = parsed_cat['images']
             for image in image_list:
-                print self.fmtCol(image['name'],25)+image['description']
-                print "    OS:"+self.fmtCol(image['os'],12)+ \
-                      " Arch:"+self.fmtCol(image['architecture'],8)+ \
-                      " Vers:"+self.fmtCol(image['version'],15)
+                print self.fmtCol(image['name'],25)+ \
+                      self.fmtCol(image['os'],12)+ \
+                      self.fmtCol(image['architecture'],8)+ \
+                      self.fmtCol(image['version'],15)+ \
+                      image['description']
+                if self.cli_options.verbose:
+                    print "     "+self.fmtCol(image['date'],20)+ \
+                          self.fmtCol(image['stamp'],12)+ \
+                          self.fmtCol(image['recipe'],23)+ \
+                          image['contact']
 
     def main_cli(self):
         self.do_cli()

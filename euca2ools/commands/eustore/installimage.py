@@ -80,7 +80,7 @@ class InstallImage(AWSQueryRequest):
         Param(name='kernel_type',
               short_name='k',
               long_name='kernel_type',
-              optional=False,
+              optional=True,
               ptype='string',
               doc="""specify the type you're using [xen|kvm]"""),
         Param(name='dir',
@@ -164,13 +164,15 @@ class InstallImage(AWSQueryRequest):
         print "Unwrapping tarball"
         bundler = euca2ools.bundler.Bundler(self)
         names = bundler.untarzip_image(self.destination, file)
-        kernel_dir = self.cli_options.kernel_type+'-kernel'
+        kernel_dir=None
+        if not(self.cli_options.kernel_type==None):
+            kernel_dir = self.cli_options.kernel_type+'-kernel'
         #iterate, and install kernel/ramdisk first, store the ids
         kernel_id=self.cli_options.kernel
         ramdisk_id=self.cli_options.ramdisk
         if kernel_id==None:
             for path in names:
-                if path.find(kernel_dir) > -1:
+                if (kernel_dir==None or path.find(kernel_dir) > -1):
                     name = os.path.basename(path)
                     if not name.startswith('.'):
                         if name.startswith('vmlin'):
