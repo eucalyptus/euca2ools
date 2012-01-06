@@ -605,6 +605,7 @@ class EucaCommand(object):
             if len(parts) > 1:
                 device_name = parts[0]
                 block_dev_type = BlockDeviceType()
+                block_dev_type.delete_on_termination = True
                 value_parts = parts[1].split(':')
                 if value_parts[0].startswith('snap'):
                     block_dev_type.snapshot_id = value_parts[0]
@@ -617,8 +618,8 @@ class EucaCommand(object):
                     except ValueError:
                         pass
                 if len(value_parts) > 2:
-                    if value_parts[2] == 'true':
-                        block_dev_type.delete_on_termination = True
+                    if value_parts[2] == 'false':
+                        block_dev_type.delete_on_termination = False
                 block_device_map[device_name] = block_dev_type
         return block_device_map
 
