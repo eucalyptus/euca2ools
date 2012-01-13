@@ -56,6 +56,8 @@ class CreateVolume(euca2ools.commands.eucacommand.EucaCommand):
             volume_string += '\t%d' % volume.size
         if volume.snapshot_id:
             volume_string += '\t%s' % volume.snapshot_id
+        if volume.zone:
+            volume_string += '\t%s' % volume.zone
         volume_string += '\t%s\t%s' % (volume.status, volume.create_time)
         print 'VOLUME\t%s' % volume_string
 
