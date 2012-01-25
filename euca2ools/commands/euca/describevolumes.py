@@ -94,9 +94,10 @@ class DescribeVolumes(euca2ools.commands.eucacommand.EucaCommand):
                     volume.create_time)
             print 'VOLUME\t%s' % volume_string
             if volume.status == 'in-use':
-                attachment_string = '%s\t%s\t%s\t%s' % (volume.id,
+                attachment_string = '%s\t%s\t%s\t%s\t%s' % (volume.id,
                         volume.attach_data.instance_id,
                         volume.attach_data.device,
+                        volume.attach_data.status,
                         volume.attach_data.attach_time)
                 print 'ATTACHMENT\t%s' % attachment_string
 
