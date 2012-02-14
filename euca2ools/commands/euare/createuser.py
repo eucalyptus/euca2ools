@@ -103,10 +103,12 @@ class CreateUser(AWSQueryRequest):
             obj = euca2ools.commands.euare.addusertogroup.AddUserToGroup()
             for group_name in self.cli_options.group_name:
                 data['group_name'] = obj.main(group_name=group_name,
-                                              user_name=self.request_params['UserName'])
+                                              user_name=self.request_params['UserName'],
+                                              delegate=self.request_params.get('DelegateAccount'))
         if self.cli_options.create_accesskey:
             obj = euca2ools.commands.euare.createaccesskey.CreateAccessKey()
-            data['access_key'] = obj.main(user_name=self.request_params['UserName'])
+            data['access_key'] = obj.main(user_name=self.request_params['UserName'],
+                                          delegate=self.request_params.get('DelegateAccount'))
         return data
 
     def main_cli(self):

@@ -81,7 +81,10 @@ rm -rf %{buildroot}
 
 
 %changelog
-* Wed Jun 15 2011 Eucalyptus Release Engineering <support@eucalyptus.com> - 2.0-0
+* Tue Feb 14 2012 Eucalyptus Release Engineering <support@eucalyptus.com> - 2.0-0.2
+- Fix euare-usercreate convenience options with --delegate
+
+* Thu Feb  2 2012 Eucalyptus Release Engineering <support@eucalyptus.com> - 2.0-0.1
 - Update to 2.0
 
 * Thu Apr 21 2011 Eucalyptus Release Engineering <support@eucalyptus.com> - 1.4-0.1.alpha1
