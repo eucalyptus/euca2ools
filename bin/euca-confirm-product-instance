@@ -109,13 +109,12 @@ def main():
         except Exception, ex:
             euca.display_error_and_exit('%s' % ex)
 
-        if rs:
-            product_string = '%s\t%s\t' % (product_code, instance_id)
-            if rs.status:
-                product_string += 'true'
-            else:
-                product_string += 'false'
-            print product_string
+        product_string = '%s\t%s\t' % (product_code, instance_id)
+        if rs and rs[0] is True:
+            product_string += 'true'
+        else:
+            product_string += 'false'
+        print product_string
     else:
 
         if not instance_id:
