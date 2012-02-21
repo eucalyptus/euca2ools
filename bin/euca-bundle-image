@@ -217,12 +217,11 @@ def main():
             print 'Invalid ec2cert'
             sys.exit(1)
 
-        (image_size, sha_image_digest) = euca.check_image(image_path,
-                destination_path)
+        image_size = euca.check_image(image_path, destination_path)
         if not prefix:
             prefix = euca.get_relative_filename(image_path)
         try:
-            tgz_file = euca.tarzip_image(prefix, image_path,
+            (tgz_file, sha_tar_digest) = euca.tarzip_image(prefix, image_path,
                     destination_path)
         except NotFoundError:
             sys.exit(1)
@@ -252,7 +251,7 @@ def main():
             target_arch,
             image_size,
             bundled_size,
-            sha_image_digest,
+            sha_tar_digest,
             user,
             kernel,
             ramdisk,
