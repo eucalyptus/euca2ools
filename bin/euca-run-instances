@@ -42,7 +42,7 @@ usage_string = \
     """
 Starts instances.
 
-euca-run-instances [-n, --instance-count count] [-g, --group group_name] [-k, --keypair keyname] 
+euca-run-instances [-n, --instance-count count] [-g, --group group_name] [-k, --key keyname] 
 [-d user_data] [-f user_data_file] [--addressing addressing] [-t, --instance-type instance_type] 
 [-z, --availability-zone zone] [--kernel kernel_id] [--ramdisk ramdisk_id] [-b block_device_mapping]
 [--monitor] [-s, --subnet subnet_id] 
@@ -58,7 +58,7 @@ OPTIONAL PARAMETERS
 	
 -g, --group				Security group to run the instance under.
 
--k, --keypair				Name of a (previously created) keypair to associate with this reservation.		
+-k, --key				Name of a (previously created) keypair to associate with this reservation.		
 -d, --user-data				User data for instances read from the command line.
 
 -f, --user-data-file			User data for instances as a filename.
