@@ -47,6 +47,7 @@ euca-register [-h, --help] [--version] [--debug] image_location
 REQUIRED PARAMETERS
 	
 image_location - path to the uploaded image (bucket/manifest).
+                 (Required if registering an S3-based image)
 
 OPTIONAL PARAMETERS
 
@@ -133,39 +134,35 @@ def main():
         image_location = arg
         break
 
-    if image_location:
-        try:
-            euca_conn = euca.make_connection()
-        except ConnectionFailed, e:
-            print e.message
-            sys.exit(1)
-        if snapshot:
-            if not root_device_name:
-                root_device_name = '/dev/sda1'
-            block_device_map_args.append('%s=%s' % (root_device_name,
-                    snapshot))
-        if block_device_map_args:
-            block_device_map = \
-                euca.parse_block_device_args(block_device_map_args)
-        try:
-            image_id = euca_conn.register_image(
-                name=image_name,
-                description=description,
-                image_location=image_location,
-                architecture=architecture,
-                kernel_id=kernel,
-                ramdisk_id=ramdisk,
-                root_device_name=root_device_name,
-                block_device_map=block_device_map,
-                )
-        except Exception, ex:
-            euca.display_error_and_exit('%s' % ex)
+    try:
+        euca_conn = euca.make_connection()
+    except ConnectionFailed, e:
+        print e.message
+        sys.exit(1)
+    if snapshot:
+        if not root_device_name:
+            root_device_name = '/dev/sda1'
+        block_device_map_args.append('%s=%s' % (root_device_name,
+                snapshot))
+    if block_device_map_args:
+        block_device_map = \
+            euca.parse_block_device_args(block_device_map_args)
+    try:
+        image_id = euca_conn.register_image(
+            name=image_name,
+            description=description,
+            image_location=image_location,
+            architecture=architecture,
+            kernel_id=kernel,
+            ramdisk_id=ramdisk,
+            root_device_name=root_device_name,
+            block_device_map=block_device_map,
+            )
+    except Exception, ex:
+        euca.display_error_and_exit('%s' % ex)
 
-        if image_id:
-            print 'IMAGE\t%s' % image_id
-    else:
-        print 'image location must be specified'
-        usage()
+    if image_id:
+        print 'IMAGE\t%s' % image_id
 
 
 if __name__ == '__main__':
