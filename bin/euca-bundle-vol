@@ -41,6 +41,8 @@ from euca2ools import Euca2ool, FileValidationError, \
     NotFoundError, CommandFailed, UnsupportedException
 from subprocess import *
 import platform
+import tempfile
+import stat
 
 usage_string = \
     """
@@ -193,6 +195,37 @@ def cleanup(path):
     if os.path.exists(path):
         os.remove(path)
 
+def get_fs_info(path):
+    fs_type = None
+    uuid = None
+    label = None
+    devpth = None
+    tmpd = None
+    try:
+        st_dev=os.stat(path).st_dev
+        dev=os.makedev(os.major(st_dev),os.minor(st_dev))
+        tmpd=tempfile.mkdtemp()
+        devpth=("%s/dev" % tmpd)
+        os.mknod(devpth,0400 | stat.S_IFBLK ,dev)
+    except:
+        raise
+
+    ret = { }
+    pairs = { 'LABEL' : 'label', 'UUID' : 'uuid' , 'FS_TYPE' : 'fs_type' }
+    for (blkid_n, my_n) in pairs.iteritems():
+        cmd = [ 'blkid', '-s%s' % blkid_n, '-ovalue', devpth ]
+        print cmd
+        try:
+            output = Popen(cmd, stdout=PIPE).communicate()[0]
+            ret[my_n]=output.rstrip()
+        except Exception, e:
+            os.unlink(devpth)
+            os.rmdir(tmpd)
+            raise UnsupportedException("Unable to determine %s for %s" % (blkid_n, path))
+
+    os.unlink(devpth)
+    os.rmdir(tmpd)
+    return(ret)
 
 def main():
     euca = None
@@ -355,9 +388,17 @@ def main():
         if product_code_string:
             product_codes = add_product_codes(product_code_string,
                     product_codes)
+
+        try:
+            fsinfo = get_fs_info(volume_path)
+        except UnsupportedException, e:
+            print e
+            sys.exit(1)
         try:
             image_path = euca.make_image(size_in_MB, excludes, prefix,
-                    destination_path)
+                    destination_path,
+                    fs_type=fsinfo['fs_type'], uuid=fsinfo['uuid'],
+                    label=fsinfo['label'])
         except NotFoundError:
             sys.exit(1)
         except UnsupportedException:

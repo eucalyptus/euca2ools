@@ -213,13 +213,40 @@ devpts          /dev/pts      devpts   gid=5,mode=620             0 0"""
             print 'Creating disk image...', image_path
         Popen(dd_cmd, PIPE).communicate()[0]
 
-    def make_fs(self, image_path):
-        Util().check_prerequisite_command(self.MAKEFS_CMD)
+    def make_fs(self, image_path, fs_type = None, uuid = None, label = None):
+        mkfs_prog = self.MAKEFS_CMD
+        if fs_type:
+            mkfs_prog = "mkfs.%s" % fs_type
+        else:
+            fs_type = "ext3"
+
+        tunecmd = [ ]
+        if fs_type.startswith("ext"):
+            mkfs = [ mkfs_prog , '-F', image_path ]
+            if uuid: mkfs.extend([ '-U', uuid ])
+            if label: mkfs.extend([ '-L', label ])
+        elif fs_type == "xfs":
+            mkfs = [ mkfs_prog , image_path ]
+            if label: mkfs.extend([ '-L', label ])
+            tunecmd = [ 'xfs_admin', '-U', uuid ]
+
+        elif fs_type == "btrfs":
+            if uuid: raise(UnsupportedException("btrfs with uuid not supported"))
+            if label: mkfs.extend([ '-L', label ])
+        else:
+            raise(UnsupportedException("unsupported fs %s" % fs_type))
+
+
+        Util().check_prerequisite_command(mkfs_prog)
 
         if self.debug:
-            print 'Creating filesystem...'
-        makefs_cmd = Popen([self.MAKEFS_CMD, '-F', image_path],
-                           PIPE).communicate()[0]
+            print 'Creating filesystem with %s' % mkfs
+
+        makefs_cmd = Popen(mkfs,PIPE).communicate()[0]
+
+        if len(tunecmd):
+            Util().check_prerequisite_command(tunecmd[0])
+            tune_cmd = Popen(tunecmd,PIPE).communicate()[0]
 
     def add_fstab(
         self,
@@ -292,7 +319,7 @@ class SolarisImage:
         print 'Sorry. Solaris not supported yet'
         raise UnsupportedException
 
-    def make_fs(self, image_path):
+    def make_fs(self, image_path, fs_type = None, uuid = None, label = None):
         print 'Sorry. Solaris not supported yet'
         raise UnsupportedException
 
@@ -427,8 +454,11 @@ class NotFoundError:
 
 class UnsupportedException:
 
-    def __init__(self):
-        self.message = 'Not supported'
+    def __init__(self, msg=None):
+        if msg:
+            self.message = 'Not supported: %s' % msg
+        else:
+            self.message = 'Not supported'
 
 
 class CommandFailed:
@@ -1215,6 +1245,7 @@ class Euca2ool:
         excludes,
         prefix,
         destination_path,
+        fs_type = None, uuid = None, label = None
         ):
         image_file = '%s.img' % prefix
         image_path = '%s/%s' % (destination_path, image_file)
@@ -1224,7 +1255,7 @@ class Euca2ool:
             print 'Platform not fully supported.'
             raise UnsupportedException
         self.img.create_image(size_in_MB, image_path)
-        self.img.make_fs(image_path)
+        self.img.make_fs(image_path, fs_type=fs_type, uuid=uuid, label=label)
         return image_path
 
     def create_loopback(self, image_path):
