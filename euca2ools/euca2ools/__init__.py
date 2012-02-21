@@ -223,12 +223,13 @@ devpts          /dev/pts      devpts   gid=5,mode=620             0 0"""
         tunecmd = [ ]
         if fs_type.startswith("ext"):
             mkfs = [ mkfs_prog , '-F', image_path ]
-            if uuid: mkfs.extend([ '-U', uuid ])
+            if uuid:
+                tunecmd = [ 'tune2fs', '-U', uuid, image_path ]
             if label: mkfs.extend([ '-L', label ])
         elif fs_type == "xfs":
             mkfs = [ mkfs_prog , image_path ]
             if label: mkfs.extend([ '-L', label ])
-            tunecmd = [ 'xfs_admin', '-U', uuid ]
+            tunecmd = [ 'xfs_admin', '-U', uuid, image_path ]
 
         elif fs_type == "btrfs":
             if uuid: raise(UnsupportedException("btrfs with uuid not supported"))
@@ -244,7 +245,7 @@ devpts          /dev/pts      devpts   gid=5,mode=620             0 0"""
 
         makefs_cmd = Popen(mkfs,PIPE).communicate()[0]
 
-        if len(tunecmd):
+        if len(tunecmd) > 0:
             Util().check_prerequisite_command(tunecmd[0])
             tune_cmd = Popen(tunecmd,PIPE).communicate()[0]
 
