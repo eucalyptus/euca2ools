@@ -98,7 +98,8 @@ def display_image_attribute(image_id, image_attribute):
         for dev_name in block_device_mapping:
             print 'blockDeviceMapping\t%s\tblockDeviceMap\t%s: %s' \
                 % (image_id, dev_name,
-                   block_device_mapping[dev_name])
+                   (block_device_mapping[dev_name].ephemeral_name or
+                    block_device_mapping[dev_name].snapshot_id))
 
 def main():
     euca = None
