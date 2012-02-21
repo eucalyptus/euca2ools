@@ -348,9 +348,18 @@ def main():
         check_root()
         check_image_size(size_in_MB)
         volume_path = os.path.normpath(volume_path)
+
+        noex='EUCA_BUNDLE_VOL_EMPTY_EXCLUDES'
+        if noex in os.environ and os.environ[noex] != "0":
+            excludes = [ ]
+        else:
+            excludes = [ '/etc/udev/rules.d/70-persistent-net.rules',
+                '/etc/udev/rules.d/z25_persistent-net.rules' ]
+
         if not all:
-            excludes = parse_excludes(excludes_string)
+            excludes.extend(parse_excludes(excludes_string))
             euca.add_excludes(volume_path, excludes)
+
         if inherit:
             (ramdisk, kernel, mapping, product_codes,
              ancestor_ami_ids) = get_instance_metadata(euca, ramdisk,
