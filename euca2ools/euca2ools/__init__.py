@@ -1466,7 +1466,10 @@ class Euca2ool:
                     if value_parts[0].startswith('ephemeral'):
                         block_dev_type.ephemeral_name = value_parts[0]
                 if len(value_parts) > 1:
-                    block_dev_type.size = int(value_parts[1])
+                    try:
+                        block_dev_type.size = int(value_parts[1])
+                    except ValueError:
+                        pass
                 if len(value_parts) > 2:
                     if value_parts[2] == 'true':
                         block_dev_type.delete_on_termination = True
