@@ -230,7 +230,7 @@ def main():
         cert_path = euca.get_environ('EC2_CERT')
         private_key_path = euca.get_environ('EC2_PRIVATE_KEY')
         ec2cert_path = euca.get_environ('EUCALYPTUS_CERT')
-        user_string = euca.get_environ('EC2_USER_ID')
+        user = euca.get_environ('EC2_USER_ID')
     except NotFoundError:
         sys.exit(1)
 
@@ -249,13 +249,6 @@ def main():
     fstab_path = None
     generate_fstab = False
     product_code_string = None
-    if user_string:
-        try:
-            user = int(user_string)
-        except ValueError:
-            print 'Invalid user', user_string
-            sys.exit()
-    user = user_string
 
     for (name, value) in euca.opts:
         if name in ('-h', '--help'):
@@ -266,8 +259,7 @@ def main():
             private_key_path = value
         elif name in ('-u', '--user'):
             try:
-                value = value.replace('-', '')
-                user = int(value)
+                user = value.replace('-', '')
             except ValueError:
                 print 'Invalid user', value
                 sys.exit()

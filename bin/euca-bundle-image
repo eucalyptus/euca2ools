@@ -192,11 +192,6 @@ def main():
     if image_path and cert_path and private_key_path and user \
         and ec2cert_path:
         try:
-            int(user)
-        except ValueError:
-            print 'Invalid user', user
-            sys.exit(1)
-        try:
             euca.validate_file(image_path)
         except FileValidationError:
             print 'Invalid image'
