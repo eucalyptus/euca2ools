@@ -452,7 +452,11 @@ def main():
         if not user:
             print 'user must be specified.'
         if not ec2cert_path:
-            print 'ec2cert must be specified.'
+            defcert = "/usr/share/euca2ools/cert-ec2.pem"
+            if os.path.exists(defcert):
+                ec2cert_path = defcert
+            else:
+                print 'ec2cert must be specified or exist in %s.' % defcert
         usage()
 
 
