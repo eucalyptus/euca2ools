@@ -36,7 +36,8 @@
 import getopt
 import sys
 import os
-from euca2ools import Euca2ool, Util, ConnectionFailed, print_instances
+from euca2ools import Euca2ool, Util, print_instances
+from euca2ools import FileValidationError, ConnectionFailed
 
 usage_string = \
     """
