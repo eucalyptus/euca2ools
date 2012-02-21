@@ -164,11 +164,15 @@ def main():
             ramdisk_id = value
         elif name in ('-n', '--instance-count'):
             counts = value.split('-')
-            if len(counts) > 1:
-                min_count = int(counts[0])
-                max_count = int(counts[1])
-            else:
-                min_count = max_count = int(counts[0])
+            try:
+                if len(counts) > 1:
+                    min_count = int(counts[0])
+                    max_count = int(counts[1])
+                else:
+                    min_count = max_count = int(counts[0])
+            except ValueError:
+                print "Invalid value for --instance-count: ", value
+                sys.exit(1)
         elif name in ('-t', '--instance-type'):
             instance_type = value
         elif name in ('-g', '--group'):
