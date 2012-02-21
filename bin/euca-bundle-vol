@@ -258,11 +258,6 @@ def main():
         elif name in ('-k', '--privatekey'):
             private_key_path = value
         elif name in ('-u', '--user'):
-            try:
-                user = value.replace('-', '')
-            except ValueError:
-                print 'Invalid user', value
-                sys.exit()
             user = value
         elif name == '--kernel':
             kernel = value
@@ -302,6 +297,7 @@ def main():
 
     if size_in_MB and cert_path and private_key_path and user \
         and ec2cert_path:
+        user = user.replace('-', '')
         try:
             euca.validate_file(cert_path)
         except FileValidationError:

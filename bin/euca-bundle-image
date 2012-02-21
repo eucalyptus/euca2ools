@@ -142,7 +142,7 @@ def main():
         cert_path = euca.get_environ('EC2_CERT')
         private_key_path = euca.get_environ('EC2_PRIVATE_KEY')
         ec2cert_path = euca.get_environ('EUCALYPTUS_CERT')
-        user_string = euca.get_environ('EC2_USER_ID')
+        user = euca.get_environ('EC2_USER_ID')
     except NotFoundError:
         sys.exit(1)
 
@@ -152,8 +152,6 @@ def main():
     mapping = None
     product_codes = None
     product_code_string = None
-    if user_string:
-        user = user_string.replace('-', '')
 
     for (name, value) in euca.opts:
         if name in ('-h', '--help'):
@@ -165,7 +163,7 @@ def main():
         elif name in ('-k', '--privatekey'):
             private_key_path = value
         elif name in ('-u', '--user'):
-            user = value.replace('-', '')
+            user = value
         elif name == '--kernel':
             kernel = value
         elif name == '--ramdisk':
@@ -191,6 +189,7 @@ def main():
 
     if image_path and cert_path and private_key_path and user \
         and ec2cert_path:
+        user = user.replace('-', '')
         try:
             euca.validate_file(image_path)
         except FileValidationError:
