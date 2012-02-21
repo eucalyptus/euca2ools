@@ -88,10 +88,10 @@ def display_image_attribute(image_id, image_attribute):
                 % (image_attribute.image_id, product_code)
     if image_attribute.kernel is not None:
         print 'kernel\t%s\t\t%s' % (image_attribute.image_id,
-                                    image_attribute.value)
+                                    getattr(image_attribute, 'value', ""))
     if image_attribute.ramdisk is not None:
         print 'ramdisk\t%s\t\t%s' % (image_attribute.image_id,
-                image_attribute.value)
+                                     getattr(image_attribute, 'value', ""))
     if image_attribute.attrs.has_key('block_device_mapping'):
         block_device_mapping = \
             image_attribute.attrs['block_device_mapping']
