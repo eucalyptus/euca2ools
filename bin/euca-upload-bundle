@@ -69,6 +69,9 @@ OPTIONAL PARAMETERS
 
 --skipmanifest			Do not upload the manifest file.
 
+--location                      The location of the destination S3 bucket
+                                Valid values: US|EU|us-west-1|ap-southeast-1|ap-northeast-1
+
 """
 
 
@@ -88,17 +91,26 @@ def create_bucket(connection, bucket, canned_acl=None):
     return connection.create_bucket(bucket, policy=canned_acl)
 
 
-def ensure_bucket(connection, bucket, canned_acl=None):
+def ensure_bucket(connection, bucket, canned_acl=None, location=None):
     bucket_instance = None
     try:
         print 'Checking bucket:', bucket
         bucket_instance = connection.get_bucket(bucket)
+        if location:
+            if location != bucket_instance.get_location():
+                print 'Supplied location does not match bucket location'
+                sys.exit(1)
     except S3ResponseError, s3error:
         s3error_string = '%s' % s3error
         if s3error_string.find('404') >= 0:
             try:
-                bucket_instance = create_bucket(connection, bucket,
-                        canned_acl)
+                if location:
+                    bucket_instance = create_bucket(connection, bucket,
+                                                    canned_acl,
+                                                    location=location)
+                else:
+                    bucket_instance = create_bucket(connection, bucket,
+                                                    canned_acl)
             except S3CreateError:
                 print 'Unable to create bucket %s' % bucket
                 sys.exit()
@@ -201,6 +213,7 @@ def main():
     canned_acl = 'aws-exec-read'
     skipmanifest = False
     debug = False
+    location = None
 
     for (name, value) in euca.opts:
         if name in ('-h', '--help'):
@@ -223,6 +236,8 @@ def main():
             skipmanifest = True
         elif name == '--version':
             version()
+        elif name == '--location':
+            location = value
 
     if bucket and manifest_path:
         try:
@@ -237,7 +252,7 @@ def main():
             print e.message
             sys.exit(1)
 
-        bucket_instance = ensure_bucket(conn, bucket, canned_acl)
+        bucket_instance = ensure_bucket(conn, bucket, canned_acl, location)
         parts = get_parts(manifest_path)
         if not directory:
             manifest_path_parts = manifest_path.split('/')
