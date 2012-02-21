@@ -40,7 +40,7 @@ except ImportError:
 
 setup(
     name='euca2ools',
-    version='1.2',
+    version='1.3.2',
     description='API tools compatible with Amazon AWS',
     long_description="API tools compliant with Amazon's AWS API. Work with Amazon AWS and Eucalyptus."
         ,

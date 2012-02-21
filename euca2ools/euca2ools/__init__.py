@@ -58,9 +58,9 @@ import logging
 import base64
 
 BUNDLER_NAME = 'euca-tools'
-BUNDLER_VERSION = '1.3'
+BUNDLER_VERSION = '1.3.2'
 VERSION = '2007-10-10'
-RELEASE = '31337'
+RELEASE = '1.3.2'
 AES = 'AES-128-CBC'
 
 IP_PROTOCOLS = ['tcp', 'udp', 'icmp']
@@ -351,7 +351,7 @@ class Util:
 Euca2ools will use the environment variables EC2_URL, EC2_ACCESS_KEY, EC2_SECRET_KEY, EC2_CERT, EC2_PRIVATE_KEY, S3_URL, EUCALYPTUS_CERT by default.
     """
 
-    version_string = """    Version: 1.2 (BSD)"""
+    version_string = """euca2ools 1.3.2"""
 
     def version(self):
         return self.version_string
