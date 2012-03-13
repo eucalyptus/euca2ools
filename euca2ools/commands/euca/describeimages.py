@@ -133,13 +133,10 @@ class DescribeImages(euca2ools.commands.eucacommand.EucaCommand):
             image_string += '\t%s' % ','.join(image.product_codes)
 
             for i in [image.architecture, image.type, image.kernel_id,
-                      image.ramdisk_id]:
-                image_string += '\t%s' % ((' ' if i == None else i))
+                      image.ramdisk_id, image.platform,
+                      image.root_device_type]:
+                image_string += '\t%s' % (('' if i == None else i))
 
-            if image.platform:
-                image_string += '\t%s' % image.platform
-            if image.root_device_type:
-                image_string += '\t%s' % image.root_device_type
             print 'IMAGE\t%s' % image_string
             if image.block_device_mapping:
                 block_dev_mapping = image.block_device_mapping
