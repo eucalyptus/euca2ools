@@ -8,7 +8,7 @@
 %{!?python_sitelib: %global python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")}
 
 Name:          euca2ools
-Version:       2.0
+Version:       2.0.1
 Release:       0%{?dist}
 Summary:       Elastic Utility Computing Architecture Command Line Tools
 
@@ -81,6 +81,9 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Thu Mar 15 2012 Eucalyptus Release Engineering <support@eucalyptus.com> - 2.0.1-0.1
+- Update to 2.0.1
+
 * Tue Feb 14 2012 Eucalyptus Release Engineering <support@eucalyptus.com> - 2.0-0.2
 - Fix euare-usercreate convenience options with --delegate
 
