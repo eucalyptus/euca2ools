@@ -216,8 +216,9 @@ class InstallImage(AWSQueryRequest):
         if not(self.destination.endswith('/')):
             self.destination += '/'
 
-        catURL = self.eustore_url + "catalog.json"
-        response = urllib2.urlopen(catURL).read()
+        catURL = self.eustore_url + "catalog"
+        req = urllib2.Request(catURL, headers=self.ServiceClass.RequestHeaders)
+        response = urllib2.urlopen(req).read()
         parsed_cat = json.loads(response)
         if len(parsed_cat) > 0:
             image_list = parsed_cat['images']

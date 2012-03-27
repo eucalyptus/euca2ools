@@ -46,7 +46,10 @@ class Eustore(AWSQueryService):
     Provider = 'aws'
     EnvURL = 'EC2_URL'
 
-    StoreBaseURL = "http://emis.eucalyptus.com/"
+    StoreBaseURL = 'http://emis.eucalyptus.com/'
+    EuStoreVersion = 'eustore-catalog-2011-12-29'
+    RequestHeaders = {'User-Agent': 'euca2ools/eustore',
+                      'eustore-version': EuStoreVersion}
 
 class progressBar:
     def __init__(self, maxVal):
