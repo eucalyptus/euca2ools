@@ -35,6 +35,7 @@
 
 import os
 import sys
+import tempfile
 import urllib2
 from boto.roboto.param import Param
 from boto.roboto.awsqueryrequest import AWSQueryRequest
@@ -215,6 +216,8 @@ class InstallImage(AWSQueryRequest):
             self.destination = self.cli_options.dir
         if not(self.destination.endswith('/')):
             self.destination += '/'
+        # for security, add random directory within to work in
+        self.destination = tempfile.mkdtemp(prefix=self.destination)+'/'
 
         catURL = self.eustore_url + "catalog"
         req = urllib2.Request(catURL, headers=self.ServiceClass.RequestHeaders)
@@ -230,7 +233,8 @@ class InstallImage(AWSQueryRequest):
             if image_found:
                 print "Downloading Image : ",image['description']
                 imageURL = self.eustore_url+image['url']
-                req = urllib2.urlopen(imageURL)
+                req = urllib2.Request(imageURL, headers=self.ServiceClass.RequestHeaders)
+                req = urllib2.urlopen(req)
                 file_size = int(req.info()['Content-Length'])/1000
                 size_count = 0;
                 prog_bar = euca2ools.commands.eustore.progressBar(file_size)
