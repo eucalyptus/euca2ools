@@ -40,8 +40,10 @@ import hashlib
 import zlib
 import tempfile
 import urllib2
+import boto
 from boto.roboto.param import Param
 from boto.roboto.awsqueryrequest import AWSQueryRequest
+from boto.roboto.awsqueryservice import AWSQueryService
 from boto.s3.connection import Location
 import euca2ools.bundler
 import euca2ools.commands.eustore
@@ -63,6 +65,16 @@ class LocalUploadBundle(UploadBundle):
 class LocalRegister(Register):
     def process_cli_args(self):
         pass
+
+class EuareService(AWSQueryService):
+    Name = 'euare'
+    Description = 'Eucalyptus IAM Service'
+    APIVersion = '2010-05-08'
+    Authentication = 'sign-v2'
+    Path = '/'
+    Port = 443
+    Provider = 'aws'
+    EnvURL = 'EUARE_URL'
 
 class InstallImage(AWSQueryRequest):
 
@@ -289,9 +301,16 @@ class InstallImage(AWSQueryRequest):
             print "Warning: you may be overriding the default architecture of this image!"
 
 
-#        euare_host = os.environ['EUARE_URL']
-#        boto.connect_iam(host='10.20.30.204', aws_access_key_id=self.args['aws_access_key_id'], aws_secret_access_key=self.args['aws_secret_key_id'], port=8773, path='/services/Euare', is_secure=False)
-#        userinfo  = boto.getEucaIAM().get_user()
+        euare_svc = EuareService()
+        conn = boto.connect_iam(host=euare_svc.args['host'], \
+                    aws_access_key_id=euare_svc.args['aws_access_key_id'],\
+                    aws_secret_access_key=euare_svc.args['aws_secret_access_key'],\
+                    port=euare_svc.args['port'], path=euare_svc.args['path'],\
+                    is_secure=euare_svc.args['is_secure'])
+        userinfo  = conn.get_user().arn.split(':')
+        if not(userinfo[4]=='eucalyptus') and not(self.cli_options.kernel):
+            print "Error: must be cloud admin to upload kernel/ramdisk. try specifying existing ones with --kernel and --ramdisk"
+            sys.exit(-1)
         self.eustore_url = self.ServiceClass.StoreBaseURL
         if os.environ.has_key('EUSTORE_URL'):
             self.eustore_url = os.environ['EUSTORE_URL']
