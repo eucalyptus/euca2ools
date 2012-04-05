@@ -33,29 +33,42 @@
 
 import euca2ools.commands.eucacommand
 from boto.roboto.param import Param
-import sys
 import os
+import sys
+import textwrap
 from xml.dom import minidom
 from boto.exception import S3ResponseError, S3CreateError
 from boto.s3.key import Key
 
 class DeleteBundle(euca2ools.commands.eucacommand.EucaCommand):
 
-    Description = 'Delete a previously uploaded bundle.'
+    Description = textwrap.dedent('''\
+            Delete a previously-uploaded bundle.
+
+            Use --manifest to delete a specific bundle based on the contents of
+            a locally-available manifest file.
+
+            Use --prefix to delete a specific bundle based on the contents of a
+            manifest file in the bucket.
+
+            (Deprecated)  When neither --manifest nor --prefix is supplied, all
+            bundles in the given bucket are deleted.''')
+
     Options = [Param(name='bucket', short_name='b', long_name='bucket',
                      optional=False, ptype='string',
-                     doc='Name of the bucket to upload to.'),
+                     doc='Name of the bucket to delete from.'),
                Param(name='manifest_path',
                      short_name='m', long_name='manifest',
                      optional=True, ptype='file',
-                     doc='Path to the manifest file.'),
+                     doc='Delete a bundle based on a local manifest file'),
                Param(name='prefix', short_name='p', long_name='prefix',
                      optional=True, ptype='string',
-                     doc="""The filename prefix for bundled files.
-                     Defaults to image name."""),
+                     doc=('Delete a bundle with a manifest in the bucket that '
+                          'begins with a specific name  (e.g. "fred" for '
+                          '"fred.manifest.xml")')),
                Param(name='clear', long_name='clear',
                      optional=True, ptype='boolean', default=False,
-                     doc='Delete the bucket containing the image.')]
+                     doc='Delete the bucket if possible.')]
 
     def ensure_bucket(self, bucket):
         bucket_instance = None
