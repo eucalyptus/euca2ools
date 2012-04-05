@@ -64,8 +64,8 @@ class DeleteBundle(euca2ools.commands.eucacommand.EucaCommand):
                Param(name='prefix', short_name='p', long_name='prefix',
                      optional=True, ptype='string',
                      doc=('Delete a bundle with a manifest in the bucket that '
-                          'begins with a specific name  (e.g. "fred" for '
-                          '"fred.manifest.xml")')),
+                          'begins with a specific name  (e.g. "fry" for '
+                          '"fry.manifest.xml")')),
                Param(name='clear', long_name='clear',
                      optional=True, ptype='boolean', default=False,
                      doc='Delete the bucket if possible.')]
