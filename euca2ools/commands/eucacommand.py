@@ -242,7 +242,7 @@ class EucaCommand(object):
                 opt = self.find_option('--access-key')
                 opt.short_name = 'A'
                 opt = self.find_option('--secret-key')
-                opt.short_name = 'A'
+                opt.short_name = 'S'
 
     def find_option(self, op_name):
         for option in self.StandardOptions+self.Options:
