@@ -75,6 +75,7 @@ class EucaConnection(AWSAuthConnection):
             params = {}
         if not effective_user_id:
             effective_user_id = self.aws_access_key_id
+	headers['EucaEffectiveUserId'] = effective_user_id
         if action:
             headers['EucaOperation'] = action
         headers['AWSAccessKeyId'] = effective_user_id
