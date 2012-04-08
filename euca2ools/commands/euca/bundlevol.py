@@ -68,7 +68,7 @@ class BundleVol(euca2ools.commands.eucacommand.EucaCommand):
                      doc="""The prefix for the bundle image files.
                      (default: image name)."""),
                Param(name='no_inherit',  long_name='no-inherit',
-                     optional=True, ptype='boolean', default=True,
+                     optional=True, ptype='boolean', default=False,
                      doc='Do not add instance metadata to the bundled image.'),
                Param(name='exclude',  short_name='e', long_name='exclude',
                      optional=True, ptype='string', default='',
