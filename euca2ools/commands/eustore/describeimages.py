@@ -57,7 +57,7 @@ class DescribeImages(AWSQueryRequest):
               optional=True,
               ptype='boolean',
               doc="""display more information about images""")
-		  ]
+    ]
 
     def fmtCol(self, value, width):
         valLen = len(value)
