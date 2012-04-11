@@ -70,10 +70,21 @@ def parse_config(config, dict, keylist):
             dict[keylist[i]] = values[i]
 
 def print_instances(instances, nil=""):
+
+    # I was not able to correctly identify fields with an 'xx' below the
+    # descriptions at
+    # http://docs.amazonwebservices.com/AWSEC2/latest/CommandLineReference/ApiReference-cmd-DescribeInstances.html
+    # were not sufficiently detailed, even when coupled with some limited
+    # experimentation
+    #
+    # Additionally, in order to get 'hypervisor', the api request version
+    # in the make_ec2_connection method would need to be increased.
     members=( "id", "image_id", "public_dns_name", "private_dns_name",
         "state", "key_name", "ami_launch_index", "product_codes",
         "instance_type", "launch_time", "placement", "kernel",
-        "ramdisk" )
+        "ramdisk", "xx", "_monitoring", 'ip_address', 'private_ip_address',
+        "vpc_id", "subnet_id", "root_device_type", "xx", "xx", "xx", "xx",
+        "virtualizationType", "hypervisor", "xx", "_groupnames", "_groupids" )
 
     for instance in instances:
         # in old describe-instances, there was a check for 'if instance:'
@@ -82,7 +93,19 @@ def print_instances(instances, nil=""):
         if not instance: continue
         items=[ ]
         for member in members:
-            val = getattr(instance,member,nil)
+            # boto's "monitoring" item is blank string
+            if member == "_monitoring":
+                if instance.monitored:
+                    val = "monitoring-enabled"
+                else:
+                    val = "monitoring-disabled"
+            elif member == "_groupids":
+                val = [x.name for x in instance.groups]
+            elif member == "_groupnames":
+                val = [x.id for x in instance.groups]
+            else:
+                val = getattr(instance,member,nil)
+
             # product_codes is a list
             if val is None: val = nil
             if hasattr(val,'__iter__'):
