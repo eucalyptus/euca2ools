@@ -34,7 +34,7 @@
 import euca2ools.commands.eucacommand
 from boto.roboto.param import Param
 
-class AddKeyPair(euca2ools.commands.eucacommand.EucaCommand):
+class CreateKeyPair(euca2ools.commands.eucacommand.EucaCommand):
 
     Description = 'Creates a new key pair for use with instances'
     Args = [Param(name='keypair_name', ptype='string',

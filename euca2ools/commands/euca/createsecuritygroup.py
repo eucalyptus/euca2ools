@@ -34,7 +34,7 @@
 import euca2ools.commands.eucacommand
 from boto.roboto.param import Param
 
-class AddGroup(euca2ools.commands.eucacommand.EucaCommand):
+class CreateSecurityGroup(euca2ools.commands.eucacommand.EucaCommand):
 
     Description = 'Creates a new security group.'
     Options = [Param(name='group_description', short_name='d',
