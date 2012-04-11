@@ -44,10 +44,10 @@ class DescribeAddresses(euca2ools.commands.eucacommand.EucaCommand):
                      doc='Instance the address is associated with (if any).'),
                Param(name='public-ip', ptype='string',
                      doc='The elastic IP address.')]
-    
+
     def display_addresses(self, addresses):
         for address in addresses:
-            domain = address.domain or 'standard'
+            domain = getattr(address, 'domain', 'standard') or 'standard'
             address_string = '%s\t%s\t%s' % (address.public_ip,
                                              address.instance_id,
                                              domain)
@@ -61,5 +61,3 @@ class DescribeAddresses(euca2ools.commands.eucacommand.EucaCommand):
     def main_cli(self):
         addresses = self.main()
         self.display_addresses(addresses)
-
-
