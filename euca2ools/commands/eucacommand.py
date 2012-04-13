@@ -300,7 +300,7 @@ class EucaCommand(object):
             self.display_error_and_exit(msg)
 
     def version(self):
-        print 'euca2ools', euca2ools.__version__
+        print 'euca2ools %s (%s)' % (euca2ools.__version__, euca2ools.__codename__)
         sys.exit(0)
 
     def param_usage(self, plist, label, n=30):

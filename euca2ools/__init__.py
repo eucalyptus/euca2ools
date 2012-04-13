@@ -33,5 +33,5 @@
 # Author: Neil Soman neil@eucalyptus.com
 #       : Mitch Garnaat mgarnaat@eucalyptus.com
 
-__version__ = 'next'
-
+__version__  = 'devel'
+__codename__ = 'Stencil'
