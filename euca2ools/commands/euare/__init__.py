@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2012, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -27,22 +27,36 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#
-# Author: Mitch Garnaat mgarnaat@eucalyptus.com
 
-from boto.roboto.awsqueryservice import AWSQueryService
+from requestbuilder import Arg, STD_AUTH_ARGS, CONNECTION
+import requestbuilder.service
+from .. import Euca2oolsRequest
 
-class Euare(AWSQueryService):
-
-    Name = 'euare'
+class Euare(requestbuilder.service.BaseService):
     Description = 'Eucalyptus User, Authorization and Reporting Environment'
     APIVersion = '2010-05-08'
-    Authentication = 'sign-v2'
-    Path = '/'
-    Port = 443
-    Provider = 'aws'
     EnvURL = 'EUARE_URL'
 
-    Regions = [{"endpoint": "iam.amazonaws.com",
-                "name": "us-east-1",
-                "description": "US-East (Northern Virginia)"}]
+    Endpoints = {None: 'iam.amazonaws.com'}
+
+class EuareRequest(Euca2oolsRequest):
+    ServiceClass = Euare
+    Args = [Arg('-U', '--url', route_to=CONNECTION,
+            help='EUARE service URL')] + STD_AUTH_ARGS
+
+    def parse_http_response(self, response_body):
+        response = Euca2oolsRequest.parse_http_response(self, response_body)
+        # EUARE responses enclose their useful data inside FooResponse
+        # elements.  If that's all we have after stripping out ResponseMetadata
+        # then just return its contents.
+        useful_keys = filter(lambda x: x != 'ResponseMetadata',
+                             response.keys())
+        if len(useful_keys) == 1:
+            return response[useful_keys[0]]
+        else:
+            return response
+
+DELEGATE = Arg('--delegate', dest='DelegateAccount', metavar='ACCOUNT',
+               help='''[Eucalyptus only] interpret this command as if the
+                       administrator of a different account had run it (only
+                       usable by cloud administrators)''')

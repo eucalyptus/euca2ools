@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2012, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -27,53 +27,14 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#
-# Author: Neil Soman neil@eucalyptus.com
-#         Mitch Garnaat mgarnaat@eucalyptus.com
 
-from boto.roboto.awsqueryrequest import AWSQueryRequest
-from boto.roboto.param import Param
-import euca2ools.commands.euare
-import euca2ools.utils
+from requestbuilder import Arg
+from . import EuareRequest, DELEGATE
 
-class AddUserToGroup(AWSQueryRequest):
-
-    ServiceClass = euca2ools.commands.euare.Euare
-
-    Description = """AddUserToGroup"""
-    Params = [
-        Param(name='GroupName',
-              short_name='g',
-              long_name='group-name',
-              ptype='string',
-              optional=False,
-              doc=""" Name of the group to update. """),
-        Param(name='UserName',
-              short_name='u',
-              long_name='user-name',
-              ptype='string',
-              cardinality='+',
-              optional=False,
-              doc=""" Name of the User to add. """),
-        Param(name='DelegateAccount',
-              short_name=None,
-              long_name='delegate',
-              ptype='string',
-              optional=True,
-              doc=""" [Eucalyptus extension] Process this command as if the administrator of the specified account had run it. This option is only usable by cloud administrators. """)]
-
-    def cli_formatter(self, data):
-        pass
-    
-    def main(self, **args):
-        data = []
-        if self.cli_options and self.cli_options.user_name:
-            for user_name in self.cli_options.user_name:
-                data.append(self.send(user_name=user_name, **args))
-        else:
-            data = self.send(**args)
-        return data
-
-    def main_cli(self):
-        euca2ools.utils.print_version_if_necessary()
-        self.do_cli()
+class AddUserToGroup(EuareRequest):
+    Description = 'Add a user to a group'
+    Args = [Arg('-g', '--group-name', dest='GroupName', required=True,
+                help='group to add the user to'),
+            Arg('-u', '--user-name', dest='UserName', required=True,
+                help='user to add'),
+            DELEGATE]
