@@ -1,7 +1,6 @@
-# -*- coding: utf-8 -*-
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2012, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -33,4 +32,4 @@
 #       : Mitch Garnaat mgarnaat@eucalyptus.com
 
 __version__  = 'devel'
-__codename__ = 'Stencil'
+__codename__ = 'Sparta'

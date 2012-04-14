@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2012, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -27,7 +27,13 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#
-# Author: Neil Soman neil@eucalyptus.com
-#         Mitch Garnaat mgarnaat@eucalyptus.com
 
+import requestbuilder.command
+import requestbuilder.request
+from .. import __version__, __codename__
+
+class Euca2oolsCommand(requestbuilder.command.BaseCommand):
+    Version = 'euca2ools {0} ({1})'.format(__version__, __codename__)
+
+class Euca2oolsRequest(Euca2oolsCommand, requestbuilder.request.BaseRequest):
+    pass
