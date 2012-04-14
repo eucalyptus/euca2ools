@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2012, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -27,38 +27,19 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#
-# Author: Neil Soman neil@eucalyptus.com
-#         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.commands.eucacommand
-from boto.roboto.param import Param
+from requestbuilder import Arg
+from . import EucalyptusRequest
 
-class AttachVolume(euca2ools.commands.eucacommand.EucaCommand):
+class AttachVolume(EucalyptusRequest):
+    Description = 'Attach an EBS volume to an instance'
+    Args = [Arg('-i', '--instance', dest='InstanceId', metavar='INSTANCE',
+                required=True, help='instance to attach the folume to'),
+            Arg('-d', '--device', dest='Device', required=True,
+                help='device name exposed to the instance'),
+            Arg('VolumeId', metavar='VOLUME', help='volume to attach')]
 
-    Description = 'Attaches an EBS volume to an instance.'
-    Options = [Param(name='instance_id', short_name='i', long_name='instance',
-                     optional=False, ptype='string',
-                     doc="""unique id of a running instance to attach
-                     the volume to."""),
-               Param(name='device', short_name='d', long_name='device',
-                     optional=False, ptype='string',
-                     doc='local device name (inside the guest VM) to use.')]
-    Args = [Param(name='volume_id', ptype='string',
-                  doc='unique id for the volume to be attached',
-                  cardinality=1, optional=False)]
-
-    def main(self):
-        conn = self.make_connection_cli()
-        return self.make_request_cli(conn, 'attach_volume',
-                                     volume_id=self.volume_id,
-                                     instance_id=self.instance_id,
-                                     device=self.device)
-
-    def main_cli(self):
-        status = self.main()
-        if status:
-            print 'VOLUME\t%s' % self.volume_id
-        else:
-            self.error_exit()
-
+    def print_result(self, result):
+        print self.tabify(('ATTACHMENT', result.get('volumeId'),
+                           result.get('instanceId'), result.get('device'),
+                           result.get('status'), result.get('attachTime')))
