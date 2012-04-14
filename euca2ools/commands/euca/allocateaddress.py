@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2012, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -27,24 +27,12 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#
-# Author: Neil Soman neil@eucalyptus.com
-#         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.commands.eucacommand
-from boto.roboto.param import Param
+import euca2ools.commands.euca
 
-class AllocateAddress(euca2ools.commands.eucacommand.EucaCommand):
-
+class AllocateAddress(euca2ools.commands.euca.EucalyptusRequest):
     Description = 'Allocate a public IP address'
 
-    def main(self):
-        conn = self.make_connection_cli()
-        return self.make_request_cli(conn, 'allocate_address')
-
-    def main_cli(self):
-        address = self.main()
-        if address:
-            print 'ADDRESS\t%s' % address.public_ip
-
-
+    def print_result(self, result):
+        print self.tabify(('ADDRESS', result.get('publicIp'),
+                           result.get('domain'), result.get('allocationId')))
