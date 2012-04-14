@@ -1,0 +1,10 @@
+.project
+.nfs*
+*~
+.sw*
+.*.sw*
+.DS_Store
+core
+core.*
+*.pyc
+*.pyo
