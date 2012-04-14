@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2012, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -27,86 +27,42 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#
-# Author: Neil Soman neil@eucalyptus.com
-#         Mitch Garnaat mgarnaat@eucalyptus.com
-import euca2ools.commands.eucacommand
-from boto.roboto.param import Param
 
-class DescribeVolumes(euca2ools.commands.eucacommand.EucaCommand):
+from requestbuilder import Arg, Filter, PrefixComparableString
+from . import EucalyptusRequest
 
+class DescribeVolumes(EucalyptusRequest):
+    Description = 'Display information about volumes'
     APIVersion = '2010-08-31'
-    Description = 'Shows information about volumes.'
-    Args = [Param(name='volume_id', ptype='string',
-                  doc='volumes to describe',
-                  cardinality='+', optional=True)]
-    Filters = [Param(name='attachment.attach-time', ptype='string',
-                     doc='Time stamp when the attachment initiated.'),
-               Param(name='attachment.delete-on-termination', ptype='string',
-                     doc="""Whether the volume will be deleted on
-                     instance termination."""),
-               Param(name='attachment.device', ptype='string',
-                     doc="""How the volume is exposed to the
-                     instance (e.g., /dev/sda1)."""),
-               Param(name='attachment.instance-id', ptype='string',
-                     doc='ID of the instance the volume is attached to.'),
-               Param(name='attachment.status', ptype='datetime',
-                     doc="""Attachment state.
-                     Valid Values: attaching | attached | detaching | detached"""),
-               Param(name='availability-zone', ptype='string',
-                     doc='Availability Zone in which the volume was created.'),
-               Param(name='create-time', ptype='datetime',
-                     doc='Time stamp when the volume was created.'),
-               Param(name='size', ptype='integer',
-                     doc='Size of the volume, in GiB (e.g., 20).'),
-               Param(name='snapshot-id', ptype='string',
-                     doc='Snapshot from which the volume was created.'),
-               Param(name='status', ptype='string',
-                     doc="""Status of the volume.
-                     Valid values: pending | completed | error."""),
-               Param(name='tag-key', ptype='string',
-                     doc='Key of a tag assigned to the resource.'),
-               Param(name='tag-value', ptype='string',
-                     doc='Value of a tag assigned to the resource.'),
-               Param(name='tag:key', ptype='string',
-                     doc="""Filters the results based on a specific
-                     tag/value combination."""),
-               Param(name='volume-id', ptype='string',
-                     doc='ID of the volume the snapshot is for')]
-    
-    def display_volumes(self, volumes):
-        for volume in volumes:
-            volume_string = '%s\t ' % volume.id
-            if volume.size:
-                volume_string += '%d' % volume.size
-            if volume.snapshot_id:
-                volume_string += '\t%s' % volume.snapshot_id
-            else:
-                volume_string += '\t'
+    Args = [Arg('VolumeId', metavar='VOLUME', nargs='*',
+                help='volume(s) to describe (default: all volumes)')]
+    Filters = [Filter('attachment.attach-time', help='attachment start time'),
+               Filter('attachment.delete-on-termination', help='''whether the
+                      volume will be deleted upon instance termination'''),
+               Filter('attachment.device',
+                      help='device node exposed to the instance'),
+               Filter('attachment.instance-id',
+                      help='ID of the instance the volume is attached to'),
+               Filter('attachment.status', help='attachment state',
+                      choices=['attaching', 'attached', 'detaching',
+                               'detached']),
+               Filter('availability-zone'),
+               Filter('create-time', help='creation time'),
+               Filter('size', type=int, help='size in GiB'),
+               Filter('snapshot-id',
+                      help='snapshot from which the volume was created'),
+               Filter('status', choices=['creating', 'available', 'in-use',
+                                         'deleting', 'deleted', 'error']),
+               Filter('tag-key', help='key of a tag assigned to the volume'),
+               Filter('tag-value',
+                      help='value of a tag assigned to the volume'),
+               ## TODO:  test the filter below
+               Filter(PrefixComparableString('tag:key', prefix='tag:'),
+                      help='specific tag/value combination'),
+               Filter(name='volume-id')]
+    ListMarkers = ['volumeSet', 'attachmentSet']
+    ItemMarkers = ['item']
 
-            az = getattr(volume, 'availabilityZone', object)
-            if az is object:
-                az = volume.zone
-            if az:
-                volume_string += '\t%s' % az
-
-            volume_string += '\t%s\t%s' % (volume.status,
-                    volume.create_time)
-            print 'VOLUME\t%s' % volume_string
-            if volume.status == 'in-use':
-                attachment_string = '%s\t%s\t%s\t%s\t%s' % (volume.id,
-                        volume.attach_data.instance_id,
-                        volume.attach_data.device,
-                        volume.attach_data.status,
-                        volume.attach_data.attach_time)
-                print 'ATTACHMENT\t%s' % attachment_string
-
-    def main(self):
-        conn = self.make_connection_cli()
-        return self.make_request_cli(conn, 'get_all_volumes',
-                                     volume_ids=self.volume_id)
-
-    def main_cli(self):
-        volumes = self.main()
-        self.display_volumes(volumes)
-
+    def print_result(self, result):
+        for volume in result.get('volumeSet'):
+            self.print_volume(volume)
