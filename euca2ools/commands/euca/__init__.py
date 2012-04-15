@@ -124,18 +124,21 @@ class EucalyptusRequest(Euca2oolsRequest, TabifyingCommand):
                  route_to=CONNECTION)]
 
     def __init__(self, **kwargs):
-        Euca2oolsRequest.__init__(self, **kwargs)
-        # Resolve short arg conflicts
-        a_args = [arg for arg in self.Args if '-a' in arg.pargs]
-        if len(a_args) > 1:
+        # If an inheriting class defines '-a' or '-s' args, resolve conflicts
+        # with this class's old-style auth args by capitalizing this class's
+        # auth args.
+        a_args = _find_args_by_parg(self.Args, '-a')
+        s_args = _find_args_by_parg(self.Args, '-s')
+        if len(a_args) > 1 or len(s_args) > 1:
             for arg in a_args:
                 if '--access-key' in arg.pargs:
-                    arg[arg.index('-a')] = '-A'
-        s_args = [arg for arg in self.Args if '-s' in arg.pargs]
-        if len(s_args) > 1:
+                    arg.pargs = tuple('-A' if parg == '-a' else parg
+                                      for parg in arg.pargs)
             for arg in s_args:
                 if '--secret-key' in arg.pargs:
-                    arg.pargs.remove('-s')
+                    arg.pargs = tuple(parg for parg in arg.pargs
+                                      if parg != '-s')
+        Euca2oolsRequest.__init__(self, **kwargs)
 
     def parse_http_response(self, response_body):
         response = Euca2oolsRequest.parse_http_response(self, response_body)
@@ -244,3 +247,17 @@ class BlockDeviceMapping(dict):
                 self['Ebs'] = {'SnapshotId':          map_bits[0],
                                'VolumeSize':          map_bits[1],
                                'DeleteOnTermination': map_bits[2]}
+
+def _find_args_by_parg(arglike, parg):
+    if isinstance(arglike, Arg):
+        if parg in arglike.pargs:
+            return [arglike]
+        else:
+            return []
+    elif isinstance(arglike, list):
+        matches = []
+        for arg in arglike:
+            matches.extend(_find_args_by_parg(arg, parg))
+        return matches
+    else:
+        raise TypeError('Unsearchable type ' + arglike.__class__.__name__)
