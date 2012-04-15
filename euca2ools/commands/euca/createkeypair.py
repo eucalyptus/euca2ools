@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2012, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -27,31 +27,15 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#
-# Author: Neil Soman neil@eucalyptus.com
-#         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.commands.eucacommand
-from boto.roboto.param import Param
+from requestbuilder import Arg
+from . import EucalyptusRequest
 
-class CreateKeyPair(euca2ools.commands.eucacommand.EucaCommand):
+class CreateKeyPair(EucalyptusRequest):
+    Description = 'Create a new SSH key pair for use with instances'
+    Args = [Arg('KeyName', metavar='KEYPAIR', help='name of the new key')]
 
-    Description = 'Creates a new key pair for use with instances'
-    Args = [Param(name='keypair_name', ptype='string',
-                  doc='unique name for a keypair to be created',
-                  cardinality=1, optional=False)]
-
-    def display_keypair(self, keypair):
-        print 'KEYPAIR\t%s\t%s' % (keypair.name, keypair.fingerprint)
-        print keypair.material
-
-    def main(self):
-        conn = self.make_connection_cli()
-        return self.make_request_cli(conn, 'create_key_pair',
-                                      key_name=self.keypair_name)
-
-    def main_cli(self):
-        keypair = self.main()
-        self.display_keypair(keypair)
-
-
+    def print_result(self, result):
+        print self.tabify(('KEYPAIR', result['keyName'],
+                           result['keyFingerprint']))
+        print result['keyMaterial']
