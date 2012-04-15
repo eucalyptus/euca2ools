@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2012, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -27,28 +27,13 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#
-# Author: Neil Soman neil@eucalyptus.com
-#         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.commands.eucacommand
-from boto.roboto.param import Param
+from requestbuilder import Arg
+from . import EucalyptusRequest
 
-class DeleteGroup(euca2ools.commands.eucacommand.EucaCommand):
+class DeleteSecurityGroup(EucalyptusRequest):
+    Description = 'Delete a security group'
+    Args = [Arg('GroupName', metavar='GROUP')]
 
-    Description = 'Deletes a security group.'
-    Args = [Param(name='group_name', ptype='string',
-                  cardinality=1, optional=False)]
-    
-    def main(self):
-        euca_conn = self.make_connection_cli()
-        return self.make_request_cli(euca_conn,
-                                     'delete_security_group',
-                                     name=self.group_name)
-
-    def main_cli(self):
-        status = self.main()
-        if status:
-            print 'GROUP\t%s' % self.group_name
-        else:
-            self.error_exit()
+    def print_result(self, result):
+        print self.tabify(('RETURN', result.get('return')))
