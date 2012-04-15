@@ -28,7 +28,7 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-from requestbuilder import Arg, Filter, PrefixComparableString
+from requestbuilder import Arg, Filter, GenericTagFilter
 from . import EucalyptusRequest
 
 class DescribeVolumes(EucalyptusRequest):
@@ -56,9 +56,8 @@ class DescribeVolumes(EucalyptusRequest):
                Filter('tag-key', help='key of a tag assigned to the volume'),
                Filter('tag-value',
                       help='value of a tag assigned to the volume'),
-               ## TODO:  test the filter below
-               Filter(PrefixComparableString('tag:key', prefix='tag:'),
-                      help='specific tag/value combination'),
+               GenericTagFilter('tag:KEY',
+                                help='specific tag/value combination'),
                Filter(name='volume-id')]
     ListMarkers = ['volumeSet', 'attachmentSet']
     ItemMarkers = ['item']
