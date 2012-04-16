@@ -46,6 +46,7 @@ from euca2ools.commands.euare.listaccesskeys import ListAccessKeys
 from euca2ools.commands.euare.deleteaccesskey import DeleteAccessKey
 from euca2ools.commands.euare.getloginprofile import GetLoginProfile
 from euca2ools.commands.euare.deleteloginprofile import DeleteLoginProfile
+import sys
 
 class DeleteUser(AWSQueryRequest):
 
@@ -83,7 +84,7 @@ class DeleteUser(AWSQueryRequest):
               long_name='pretend',
               ptype='boolean',
               optional=True,
-              doc=""" Returns a list of credentials and policies that would be deleted, as well as the groups the user would be removed from, if the -r or -R option were actually performed.""")
+              doc=""" List what would be deleted without actually recursively deleting the user. Use only with -r.""")
         ]
 
     def cli_formatter(self, data):
@@ -108,6 +109,9 @@ class DeleteUser(AWSQueryRequest):
             args.get('recursive_euca', False)
         self.pretend = self.cli_options.pretend or args.get('pretend', False)
         user_name = self.cli_options.user_name or args.get('user_name', None)
+        if self.pretend and not (recursive_server or recursive_local):
+            sys.exit('error: argument -p/--pretend must only be used with '
+                     '-r/--recursive')
         if recursive_local or (recursive_server and self.pretend):
             obj = ListUserPolicies()
             d = obj.main(user_name=user_name)
