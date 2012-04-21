@@ -225,6 +225,14 @@ class EucalyptusRequest(Euca2oolsRequest, TabifyingCommand):
                     [attachment.get(attr) for attr in
                      ('instanceId', 'device', 'status', 'attachTime')])
 
+    def print_bundle_task(self, task):
+        print self.tabify(['BUNDLE', task.get('bundleId'),
+                           task.get('instanceId'),
+                           task.get('storage', {}).get('S3', {}).get('bucket'),
+                           task.get('storage', {}).get('S3', {}).get('prefix'),
+                           task.get('startTime'), task.get('updateTime'),
+                           task.get('state')])
+
 ## TODO:  test this
 class BlockDeviceMapping(dict):
     '''
