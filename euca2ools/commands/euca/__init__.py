@@ -29,6 +29,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 import argparse
+from operator import itemgetter
 import os.path
 from requestbuilder import Arg, CONNECTION
 from requestbuilder.mixins import TabifyingCommand
@@ -151,7 +152,19 @@ class EucalyptusRequest(Euca2oolsRequest, TabifyingCommand):
         else:
             return response
 
+    def print_reservation(self, reservation):
+        res_line = ['RESERVATION', reservation['reservationId'],
+                    reservation.get('ownerId')]
+        group_ids = [group['groupId'] for group in reservation['groupSet']]
+        res_line.append(', '.join(group_ids))
+        print self.tabify(res_line)
+        for instance in sorted(reservation.get('instancesSet', []),
+                               itemgetter('amiLaunchIndex')):
+            self.print_instance(instance)
+
     def print_instance(self, instance):
+        ## FIXME: Amazon's documentation doesn't say what order the fields in
+        ##        ec2-describe-instances output appear.
         instance_line = ['INSTANCE']
         for key in ['instanceId', 'imageId', 'dnsName', 'privateDnsName']:
             instance_line.append(instance.get(key))
@@ -166,6 +179,7 @@ class EucalyptusRequest(Euca2oolsRequest, TabifyingCommand):
         instance_line.append(instance.get('placement', {}).get('availabilityZone'))
         instance_line.append(instance.get('kernelId'))
         instance_line.append(instance.get('ramdiskId'))
+        instance_line.append(None) # What is this?
         if instance.get('monitoring'):
             instance_line.append('monitoring-' +
                                  instance['monitoring'].get('state'))
@@ -173,11 +187,16 @@ class EucalyptusRequest(Euca2oolsRequest, TabifyingCommand):
             instance_line.append(None)
         instance_line.append(instance.get('ipAddress'))
         instance_line.append(instance.get('privateIpAddress'))
+        instance_line.append(instance.get('vpcId'))
+        instance_line.append(instance.get('subnetId'))
         instance_line.append(instance.get('rootDeviceType'))
+        instance_line.append(None) # What is this?
+        instance_line.append(None) # What is this?
+        instance_line.append(None) # What is this?
+        instance_line.append(None) # What is this?
         instance_line.append(instance.get('virtualizationType'))
         instance_line.append(instance.get('hypervisor'))
-        instance_line.append(instance.get('subnetId'))
-        instance_line.append(instance.get('vpcId'))
+        instance_line.append(None) # What is this?
         instance_line.append(instance.get('placement', {}).get('groupName'))
         instance_line.append(','.join([group['groupId'] for group in
                                        instance.get('groupSet', [])]))
