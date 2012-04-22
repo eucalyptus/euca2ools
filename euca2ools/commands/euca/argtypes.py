@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009-2012, Eucalyptus Systems, Inc.
+# Copyright (c) 2012, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -28,24 +28,19 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-from requestbuilder import Arg
-from . import EucalyptusRequest
-from .argtypes import binary_tag_def
+from requestbuilder import EMPTY
 
-class CreateTags(EucalyptusRequest):
-    APIVersion = '2010-08-31'
-    Description = 'Add or overwrite tags for one or more resources'
-    Args = [Arg('ResourceId', metavar='RESOURCE', nargs='+',
-                help='IDs of the resource(s) to tag'),
-            Arg('--tag', dest='Tag', metavar='KEY[=VALUE]',
-                type=binary_tag_def, action='append', required=True,
-                help='''key and optional value of the tag to create, separated
-                        by an "=" character.  If no value is given the tag's
-                        value is set to an empty string.''')]
+def binary_tag_def(tag_str):
+    '''
+    Parse a tag definition from the command line.  Return a dict that depends
+    on the format of the string given:
 
-    def print_result(self, result):
-        for resource in self.args['ResourceId']:
-            for tag in self.args['Tag']:
-                ## FIXME:  The second field should name a resource type
-                print self.tabify(['TAG', None, resource, tag['Key'],
-                                   tag['Value']])
+     - 'key=value': {'Key': key, 'Value': value}
+     - 'key=':      {'Key': key, 'Value': EMPTY}
+     - 'key':       {'Key': key, 'Value': EMPTY}
+    '''
+    if '=' in tag_str:
+        (key, val) = tag_str.split('=', 1)
+        return {'Key': key,     'Value': val or EMPTY}
+    else:
+        return {'Key': tag_str, 'Value': EMPTY}
