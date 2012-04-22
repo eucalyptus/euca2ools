@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2012, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -27,39 +27,19 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#
-# Author: Neil Soman neil@eucalyptus.com
-#         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.commands.eucacommand
-from boto.roboto.param import Param
+from requestbuilder import Arg
+from . import EucalyptusRequest
 
-class CreateSnapshot(euca2ools.commands.eucacommand.EucaCommand):
+class CreateSnapshot(EucalyptusRequest):
+    Description = 'Create a snapshot of a volume'
+    Args = [Arg('VolumeId', metavar='VOLUME', help='volume to snapshot'),
+            Arg('-d', '--description', metavar='DESC', dest='Description',
+                help='snapshot description')]
 
-    Description = 'Creates a snapshot from an existing volume.'
-    Options = [Param(name='description',
-                     short_name='d', long_name='description',
-                     optional=True, ptype='string',
-                     doc='A description of the new snapshot')]
-    Args = [Param(name='volume_id', ptype='string',
-                  doc='unique name for a volume to snapshot.',
-                  cardinality=1, optional=False)]
-
-    def display_snapshot(self, snapshot):
-        if not snapshot.id:
-            return
-        snapshot_string = '%s\t%s\t%s\t%s\t%s\t%s' % (snapshot.id,
-                snapshot.volume_id, snapshot.status, snapshot.start_time,
-                snapshot.progress, snapshot.description)
-        print 'SNAPSHOT\t%s' % snapshot_string
-
-    def main(self):
-        conn = self.make_connection_cli()
-        return self.make_request_cli(conn, 'create_snapshot',
-                                     volume_id=self.volume_id,
-                                     description=self.description)
-
-    def main_cli(self):
-        snapshot = self.main()
-        self.display_snapshot(snapshot)
-
+    def print_result(self, result):
+        print self.tabify(['SNAPSHOT',              result.get('snapshotId'),
+                           result.get('volumeId'),  result.get('status'),
+                           result.get('startTime'), result.get('ownerId'),
+                           result.get('volumeSize'),
+                           result.get('description')])
