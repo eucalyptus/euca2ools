@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2012, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -27,28 +27,14 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#
-# Author: Neil Soman neil@eucalyptus.com
-#         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.commands.eucacommand
-from boto.roboto.param import Param
+from requestbuilder import Arg
+from . import EucalyptusRequest
 
-class DeleteKeyPair(euca2ools.commands.eucacommand.EucaCommand):
-
+class DeleteKeyPair(EucalyptusRequest):
     Description = 'Delete an existing keypair'
-    Args = [Param(name='keypair_name', ptype='string',
-                  doc='unique name of the keypair to delete',
-                  cardinality=1, optional=False)]
+    Args = [Arg('KeyName', metavar='KEYPAIR',
+                help='name of the keypair to delete')]
 
-    def main(self):
-        conn = self.make_connection_cli()
-        return self.make_request_cli(conn, 'delete_key_pair',
-                                     key_name=self.keypair_name)
-
-    def main_cli(self):
-        status = self.main()
-        if status:
-            print 'KEYPAIR\t%s' % self.keypair_name
-        else:
-            self.error_exit()
+    def print_result(self, result):
+        print self.tabify(['KEYPAIR', self.args['KeyName']])
