@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2012, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -27,34 +27,16 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#
-# Author: Neil Soman neil@eucalyptus.com
-#         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.commands.eucacommand
-from boto.roboto.param import Param
+from requestbuilder import Arg
+from . import EucalyptusRequest
 
-class ConfirmProductInstance(euca2ools.commands.eucacommand.EucaCommand):
+class ConfirmProductInstance(EucalyptusRequest):
+    Description = 'Verify if a product code is associated with an instance'
+    Args = [Arg('ProductCode', metavar='CODE', help='product code to confirm'),
+            Arg('-i', '--instance', dest='InstanceId', metavar='INSTANCE',
+                required=True, help='instance to confirm')]
 
-    Description = 'Confirm if instance is running with product code attached.'
-    Options = [Param(name='instance_id', short_name='i', long_name='instance',
-                     optional=False, ptype='string',
-                     doc='Unique identifier for a running instance')]
-    Args = [Param(name='product_code', ptype='string',
-                  doc='The product code to verify',
-                  cardinality=1, optional=False)]
-
-    def main(self):
-        conn = self.make_connection_cli()
-        return self.make_request_cli(conn, 'confirm_product_instance',
-                                   product_code=self.product_code,
-                                   instance_id=self.instance_id)
-
-    def main_cli(self):
-        rs = self.main()
-        product_string = '%s\t%s\t' % (self.product_code, self.instance_id)
-        if rs and rs[0] is True:
-            product_string += 'true'
-        else:
-            product_string += 'false'
-        print product_string
+    def print_result(self, result):
+        print self.tabify(self.args['ProductCode'], self.args['InstanceId'],
+                          result.get('return'), result.get('ownerId'))
