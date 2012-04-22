@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2012, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -27,35 +27,14 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#
-# Author: Neil Soman neil@eucalyptus.com
-#         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.commands.eucacommand
-from boto.roboto.param import Param
+from requestbuilder import Arg
+from . import EucalyptusRequest
 
-class CancelBundleTask(euca2ools.commands.eucacommand.EucaCommand):
+class CancelBundleTask(EucalyptusRequest):
+    Description = 'Cancel an instance bundling operation'
+    Args = [Arg('BundleId', metavar='TASK-ID',
+                help='ID of the bundle task to cancel')]
 
-    Description = 'Cancels a previously submitted bundle task.'
-    Args = [Param(name='bundle_id', ptype='string', optional=False,
-                  doc='Identifier of the bundle task to be cancelled.')]
-
-    def display_bundle(self, bundle):
-        bundle_string = '%s\t%s\t%s\t%s\t%s\t%s\t%s' % (
-            bundle.id,
-            bundle.instance_id,
-            bundle.bucket,
-            bundle.prefix,
-            bundle.state,
-            bundle.start_time,
-            bundle.update_time)
-        print 'BUNDLE\t%s' % bundle_string
-
-    def main(self):
-        conn = self.make_connection_cli()
-        return self.make_request_cli(conn, 'cancel_bundle_task',
-                                     bundle_id=self.bundle_id)
-
-    def main_cli(self):
-        bundle_task = self.main()
-        self.display_bundle(bundle_task)
+    def print_result(self, result):
+        self.print_bundle_task(result.get('bundleInstanceTask'))
