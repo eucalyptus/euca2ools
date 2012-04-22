@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2012, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -27,28 +27,13 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#
-# Author: Neil Soman neil@eucalyptus.com
-#         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.commands.eucacommand
-from boto.roboto.param import Param
+from requestbuilder import Arg
+from . import EucalyptusRequest
 
-class DeleteVolume(euca2ools.commands.eucacommand.EucaCommand):
+class DeleteVolume(EucalyptusRequest):
+    Description = 'Delete a volume'
+    Args = [Arg('VolumeId', metavar='VOLUME', help='volume to delete')]
 
-    Description = 'Creates a volume in a specified availability zone.'
-    Args = [Param(name='volume_id', ptype='string', optional=False,
-                  doc='unique identifier for volume to be deleted.')]
-
-    def main(self):
-        conn = self.make_connection_cli()
-        return self.make_request_cli(conn, 'delete_volume',
-                                     volume_id=self.volume_id)
-
-    def main_cli(self):
-        status = self.main()
-        if status:
-                print 'VOLUME\t%s' % self.volume_id
-        else:
-            self.error_exit()
-
+    def print_result(self, result):
+        print self.tabify(['VOLUME', self.args['VolumeId']])
