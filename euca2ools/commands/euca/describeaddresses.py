@@ -37,13 +37,13 @@ class DescribeAddresses(EucalyptusRequest):
     Args = [Arg('address', nargs='*', route_to=None,
                 help='''limit results to one or more elastic IP addresses or
                         allocation IDs''')]
-    Filters = [Filter('domain', choices=['standard', 'vpc'],
+    Filters = [Filter('allocation-id', help='allocation ID (VPC only)'),
+               Filter('association-id', help='association ID (VPC only)'),
+               Filter('domain', choices=['standard', 'vpc'],
                       help='whether the address is a standard or VPC address'),
                Filter('instance-id',
                       help='instance the address is associated with'),
-               Filter('public-ip', help='the elastic IP address'),
-               Filter('allocation-id', help='allocation ID (VPC only)'),
-               Filter('association-id', help='association ID (VPC only)')]
+               Filter('public-ip', help='the elastic IP address')]
     ListMarkers = ['addressesSet']
     ItemMarkers = ['item']
 
@@ -59,7 +59,6 @@ class DescribeAddresses(EucalyptusRequest):
         return self.send()
 
     def print_result(self, result):
-        print result
         for addr in result.get('addressesSet', []):
             print self.tabify(['ADDRESS', addr.get('publicIp'),
                                addr.get('instanceId'),
