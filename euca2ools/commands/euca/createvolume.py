@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2012, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -27,52 +27,29 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#
-# Author: Neil Soman neil@eucalyptus.com
-#         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.commands.eucacommand
-from boto.roboto.param import Param
+from requestbuilder import Arg
+from . import EucalyptusRequest
 
-class CreateVolume(euca2ools.commands.eucacommand.EucaCommand):
-
-    Description = 'Creates a volume in a specified availability zone.'
-    Options = [Param(name='size', short_name='s', long_name='size',
-                     optional=True, ptype='integer',
-                     doc='size of the volume (in GiB).'),
-               Param(name='snapshot', long_name='snapshot',
-                     optional=True, ptype='string',
-                     doc="""snapshot id to create the volume from.
-                     Either size or snapshot can be specified (not both)."""),
-               Param(name='zone', short_name='z', long_name='zone',
-                     optional=False, ptype='string',
-                     doc='availability zone to create the volume in')]
-
-    def display_volume(self, volume):
-        if not volume.id:
-            return
-        volume_string = '%s' % volume.id
-        if volume.size:
-            volume_string += '\t%d' % volume.size
-        if volume.snapshot_id:
-            volume_string += '\t%s' % volume.snapshot_id
-        if volume.zone:
-            volume_string += '\t%s' % volume.zone
-        volume_string += '\t%s\t%s' % (volume.status, volume.create_time)
-        print 'VOLUME\t%s' % volume_string
+class CreateVolume(EucalyptusRequest):
+    Description = 'Create a new volume'
+    Args = [Arg('-s', '--size', dest='Size', type=int,
+                help='''size of the new volume in GiB.  Required unless
+                        --snapshot is used'''),
+            Arg('--snapshot', dest='SnapshotId', metavar='SNAPSHOT',
+                help='snapshot from which to create the new volume'),
+            Arg('-z', '--zone', dest='AvailabilityZone', metavar='ZONE',
+                required=True,
+                help='availability zone in which to create the new volume')]
 
     def main(self):
-        if (self.size or self.snapshot) and self.zone:
-            conn = self.make_connection_cli()
-            return self.make_request_cli(conn, 'create_volume',
-                                         size=self.size, zone=self.zone,
-                                         snapshot=self.snapshot)
-        else:
-            msg = 'Either size or snapshot_id must be specified'
-            self.display_error_and_exit(msg)
+        if not self.args.get('Size') and not self.args.get('SnapshotId'):
+            self._cli_parser.error('at least one of -s/--size and --snapshot '
+                                   'must be specified')
+        return self.send()
 
-    def main_cli(self):
-        volume = self.main()
-        if volume:
-            self.display_volume(volume)
-
+    def print_result(self, result):
+        print self.tabify(['VOLUME', result.get('volumeId'),
+                           result.get('size'), result.get('snapshotId'),
+                           result.get('availabilityZone'),
+                           result.get('status'), result.get('createTime')])
