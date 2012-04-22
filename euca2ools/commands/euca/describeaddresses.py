@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2012, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -27,37 +27,42 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#
-# Author: Neil Soman neil@eucalyptus.com
-#         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.commands.eucacommand
-from boto.roboto.param import Param
+from requestbuilder import Arg, Filter
+from . import EucalyptusRequest
 
-class DescribeAddresses(euca2ools.commands.eucacommand.EucaCommand):
-
+class DescribeAddresses(EucalyptusRequest):
     APIVersion = '2011-01-01'
-    Description = 'Shows information about addresses.'
-    Args = [Param(name='ip', ptype='string',
-                  cardinality='+', optional=True)]
-    Filters = [Param(name='instance-id', ptype='string',
-                     doc='Instance the address is associated with (if any).'),
-               Param(name='public-ip', ptype='string',
-                     doc='The elastic IP address.')]
-
-    def display_addresses(self, addresses):
-        for address in addresses:
-            domain = getattr(address, 'domain', 'standard') or 'standard'
-            address_string = '%s\t%s\t%s' % (address.public_ip,
-                                             address.instance_id,
-                                             domain)
-            print 'ADDRESS\t%s' % address_string
+    Description = 'Show information about elastic IP addresses'
+    Args = [Arg('address', nargs='*', route_to=None,
+                help='''limit results to one or more elastic IP addresses or
+                        allocation IDs''')]
+    Filters = [Filter('domain', choices=['standard', 'vpc'],
+                      help='whether the address is a standard or VPC address'),
+               Filter('instance-id',
+                      help='instance the address is associated with'),
+               Filter('public-ip', help='the elastic IP address'),
+               Filter('allocation-id', help='allocation ID (VPC only)'),
+               Filter('association-id', help='association ID (VPC only)')]
+    ListMarkers = ['addressesSet']
+    ItemMarkers = ['item']
 
     def main(self):
-        conn = self.make_connection_cli()
-        return self.make_request_cli(conn, 'get_all_addresses',
-                                     addresses=self.ip)
+        alloc_ids = set(addr for addr in self.args.get('address', [])
+                        if addr.startswith('eipalloc-'))
+        public_ips = set(self.args.get('address', [])) - alloc_ids
+        self.params = {}
+        if alloc_ids:
+            self.params['AllocationId'] = list(alloc_ids)
+        if public_ips:
+            self.params['PublicIp'] = list(public_ips)
+        return self.send()
 
-    def main_cli(self):
-        addresses = self.main()
-        self.display_addresses(addresses)
+    def print_result(self, result):
+        print result
+        for addr in result.get('addressesSet', []):
+            print self.tabify(['ADDRESS', addr.get('publicIp'),
+                               addr.get('instanceId'),
+                               addr.get('domain', 'standard'),
+                               addr.get('allocationId'),
+                               addr.get('associationId')])
