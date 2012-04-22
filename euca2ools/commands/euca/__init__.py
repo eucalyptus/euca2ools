@@ -233,47 +233,6 @@ class EucalyptusRequest(Euca2oolsRequest, TabifyingCommand):
                            task.get('startTime'), task.get('updateTime'),
                            task.get('state')])
 
-## TODO:  test this
-class BlockDeviceMapping(dict):
-    '''
-    A block device mapping as given on the image registration command line
-    '''
-    def __init__(self, map_as_str):
-        dict.__init__(self)
-        try:
-            (device, mapping) = map_as_str.split('=')
-        except ValueError:
-            raise argparse.ArgumentTypeError('block device mapping {0} must '
-                    'have form KEY=VALUE'.format(map_as_str))
-            if mapping.lower() == 'none':
-                ## FIXME:  NoDevice should be an empty element
-                self['Ebs'] = {'NoDevice': 'true'}
-            elif mapping.startswith('ephemeral'):
-                self['VirtualName'] = mapping
-            elif (mapping.startswith('snap-') or mapping.startswith('vol-') or
-                  mapping.startswith(':')):
-                map_bits = mapping.split(':')
-                if len(map_bits) == 1:
-                    map_bits.append(None)
-                if len(map_bits) == 2:
-                    map_bits.append('true')
-                if len(map_bits) != 3:
-                    raise argparse.ArgumentTypeError(
-                            'EBS block device mapping {0} must have form '
-                            '[snap-id]:[size]:[true|false]'.format(map_as_str))
-                try:
-                    int(map_bits[1])
-                except TypeError:
-                    raise argparse.ArgumentTypeError(
-                            'second element of EBS block device mapping {0} '
-                            'must be an integer')
-                if map_bits[2] not in ('true', 'false'):
-                    raise argparse.ArgumentTypeError(
-                            'third element of EBS block device mapping {0} '
-                            "must be 'true' or 'false'".format(map_as_str))
-                self['Ebs'] = {'SnapshotId':          map_bits[0],
-                               'VolumeSize':          map_bits[1],
-                               'DeleteOnTermination': map_bits[2]}
 
 def _find_args_by_parg(arglike, parg):
     if isinstance(arglike, Arg):

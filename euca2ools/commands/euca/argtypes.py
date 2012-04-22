@@ -28,7 +28,56 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+import argparse
 from requestbuilder import EMPTY
+
+def block_device_mapping(map_as_str):
+    '''
+    Parse a block device mapping from an image registration command line.
+    '''
+    try:
+        (device, mapping) = map_as_str.split('=')
+    except ValueError:
+        raise argparse.ArgumentTypeError(
+                'block device mapping "{0}" must have form '
+                'DEVICE=[SNAP-ID]:[SIZE]:[true|false]'.format(map_as_str))
+    map_dict = {}
+    if mapping.lower() == 'none':
+        map_dict['Ebs'] = {'NoDevice': EMPTY}
+    elif mapping.startswith('ephemeral'):
+        map_dict['VirtualName'] = mapping
+    elif (mapping.startswith('snap-') or mapping.startswith('vol-') or
+          mapping.startswith(':')):
+        map_bits = mapping.split(':')
+        if len(map_bits) == 1:
+            map_bits.append(None)
+        if len(map_bits) == 2:
+            map_bits.append(None)
+        if len(map_bits) != 3:
+            raise argparse.ArgumentTypeError(
+                    'EBS block device mapping "{0}" must have form '
+                    'DEVICE=[SNAP-ID]:[SIZE]:[true|false]'.format(map_as_str))
+
+        map_dict['Ebs'] = {}
+        if map_bits[0]:
+            map_dict['Ebs']['SnapshotId'] = map_bits[0]
+        if map_bits[1]:
+            try:
+                map_dict['Ebs']['VolumeSize'] = int(map_bits[1])
+            except ValueError:
+                raise argparse.ArgumentTypeError(
+                        'second element of EBS block device mapping "{0}" '
+                        'must be an integer'.format(map_as_str))
+        if map_bits[2]:
+            if map_bits[2].lower() not in ('true', 'false'):
+                raise argparse.ArgumentTypeError(
+                        'third element of EBS block device mapping "{0}" must '
+                        'be "true" or "false"'.format(map_as_str))
+            map_dict['Ebs']['DeleteOnTermination'] = map_bits[2].lower()
+    else:
+        raise argparse.ArgumentTypeError(
+                'unrecognized block device mapping "{0}"'.format(map_as_str))
+    return map_dict
 
 def binary_tag_def(tag_str):
     '''
