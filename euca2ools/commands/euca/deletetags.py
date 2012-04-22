@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2012, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -27,40 +27,24 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#
-# Author: Neil Soman neil@eucalyptus.com
-#         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.commands.eucacommand
-from boto.roboto.param import Param
+from requestbuilder import Arg
+from . import EucalyptusRequest
+from .argtypes import ternary_tag_def
 
-class DeleteTags(euca2ools.commands.eucacommand.EucaCommand):
-
+class DeleteTags(EucalyptusRequest):
     APIVersion = '2010-08-31'
-    Description = """Deletes the specified tags from the
-    specified resource or resources"""
-    Options = [Param(name='tag', long_name='tag',
-                     optional=False, ptype='string', cardinality='+',
-                     doc='The key and optional value, separated by = sign.')]
-    Args = [Param(name='resource_id', ptype='string',
-                  doc='The resource you want to tag.',
-                  cardinality='+', optional=False)]
+    Description = 'Delete tags from one or more resources'
+    Args = [Arg('ResourceId', metavar='RESOURCE', nargs='+',
+                help='IDs of the resource(s) to un-tag'),
+            Arg('--tag', dest='Tag', metavar='KEY[=[VALUE]]',
+                type=ternary_tag_def, action='append', required=True,
+                help='''key and optional value of the tag to delete, separated
+                        by an "=" character.  If no value is given, but a "="
+                        character is, then the tag is deleted if its value is
+                        not an empty string.  If neither a value nor a "="
+                        character is given then the tag with that key is
+                        deleted regardless of its value.''')]
 
-    def main(self):
-        tags = {}
-        for tagpair in self.tag:
-            t = tagpair.split('=')
-            name = t[0]
-            if len(t) == 1:
-                value = ''
-            else:
-                value = t[1]
-            tags[name] = value
-        conn = self.make_connection_cli()
-        return self.make_request_cli(conn, 'delete_tags',
-                                     resource_ids=self.resource_id,
-                                     tags=tags)
-
-    def main_cli(self):
-        self.main()
-
+    def print_result(self, result):
+        pass

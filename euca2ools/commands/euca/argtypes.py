@@ -93,3 +93,18 @@ def binary_tag_def(tag_str):
         return {'Key': key,     'Value': val or EMPTY}
     else:
         return {'Key': tag_str, 'Value': EMPTY}
+
+def ternary_tag_def(tag_str):
+    '''
+    Parse a tag definition from the command line.  Return a dict that depends
+    on the format of the string given:
+
+     - 'key=value': {'Key': key, 'Value': value}
+     - 'key=':      {'Key': key, 'Value': EMPTY}
+     - 'key':       {'Key': key}
+    '''
+    if '=' in tag_str:
+        (key, val) = tag_str.split('=', 1)
+        return {'Key': key, 'Value': val or EMPTY}
+    else:
+        return {'Key': tag_str}
