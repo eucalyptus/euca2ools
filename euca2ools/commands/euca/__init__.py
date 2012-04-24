@@ -152,6 +152,11 @@ class EucalyptusRequest(Euca2oolsRequest, TabifyingCommand):
         else:
             return response
 
+    def print_resource_tag(self, resource_tag, resource_id):
+        resource_type = RESOURCE_TYPE_MAP.lookup(resource_id)
+        print self.tabify(['TAG', resource_type, resource_id,
+                           resource_tag.get('key'), resource_tag.get('value')])
+
     def print_reservation(self, reservation):
         res_line = ['RESERVATION', reservation['reservationId'],
                     reservation.get('ownerId')]
@@ -207,8 +212,7 @@ class EucalyptusRequest(Euca2oolsRequest, TabifyingCommand):
             self.print_blockdevice(blockdev)
 
         for tag in instance.get('tagSet', []):
-            print self.tabify(['TAG', 'instance', instance.get('instanceId'),
-                               tag.get('key'), tag.get('value')])
+            self.print_resource_tag(tag, instance.get('instanceId'))
 
     def print_blockdevice(self, blockdev):
         print self.tabify(['BLOCKDEVICE', blockdev.get('deviceName'),
@@ -224,6 +228,8 @@ class EucalyptusRequest(Euca2oolsRequest, TabifyingCommand):
             print self.tabify(['ATTACHMENT', volume.get('volumeId')] +
                     [attachment.get(attr) for attr in
                      ('instanceId', 'device', 'status', 'attachTime')])
+        for tag in volume.get('tagSet', []):
+            self.print_resource_tag(tag, volume.get('volumeId'))
 
     def print_snapshot(self, snap):
         print self.tabify(['SNAPSHOT', snap.get('snapshotId'),
@@ -232,8 +238,7 @@ class EucalyptusRequest(Euca2oolsRequest, TabifyingCommand):
                            snap.get('ownerId'),   snap.get('volumeSize'),
                            snap.get('description')])
         for tag in snap.get('tagSet', []):
-            print self.tabify(['TAG', 'snapshot', snap.get('snapshotId'),
-                               tag.get('key'), tag.get('value')])
+            self.print_resource_tag(tag, snap.get('snapshotId'))
 
     def print_bundle_task(self, task):
         print self.tabify(['BUNDLE', task.get('bundleId'),
@@ -269,7 +274,7 @@ class _ResourceTypeMap(object):
             'vgw':    'vpn-gateway'}
 
     def lookup(self, item):
-        if not isinstance(item, str):
+        if not isinstance(item, basestring):
             raise TypeError('argument type must be str')
         for prefix in self._prefix_type_map:
             if item.startswith(prefix + '-'):

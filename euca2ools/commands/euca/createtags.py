@@ -29,7 +29,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 from requestbuilder import Arg
-from . import EucalyptusRequest, RESOURCE_TYPE_MAP
+from . import EucalyptusRequest
 from .argtypes import binary_tag_def
 
 class CreateTags(EucalyptusRequest):
@@ -44,7 +44,7 @@ class CreateTags(EucalyptusRequest):
                         value is set to an empty string.''')]
 
     def print_result(self, result):
-        for resource in self.args['ResourceId']:
+        for resource_id in self.args['ResourceId']:
             for tag in self.args['Tag']:
-                print self.tabify(['TAG', RESOURCE_TYPE_MAP.lookup(resource),
-                                   resource, tag['Key'], tag['Value']])
+                lc_resource_tag = {'key': tag['Key'], 'value': tag['Value']}
+                self.print_resource_tag(lc_resource_tag, resource_id)
