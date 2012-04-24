@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2012, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -27,71 +27,41 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#
-# Author: Neil Soman neil@eucalyptus.com
-#         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.commands.eucacommand
-from boto.roboto.param import Param
+from argparse import SUPPRESS
+from requestbuilder import Arg, Filter, GenericTagFilter
+from . import EucalyptusRequest
 
-class DescribeSnapshots(euca2ools.commands.eucacommand.EucaCommand):
-
+class DescribeSnapshots(EucalyptusRequest):
     APIVersion = '2010-08-31'
-    Description = 'Shows information about snapshots.'
-    Options = [Param(name='owner', short_name='o', long_name='owner',
-                     optional=True, ptype='string',
-                     doc='ID of the user who owns the snapshot.'),
-               Param(name='restorable_by',
-                     short_name='r', long_name='restorable-by',
-                     optional=True, ptype='string',
-                     doc="""restorable by (user id of the user that can
-                     create volumes from the snapshot).""")]
-    Args = [Param(name='snapshot', ptype='string',
-                  doc='snapshots to describe',
-                  cardinality='+', optional=True)]
-    Filters = [Param(name='description', ptype='string',
-                     doc='Description of the snapshot'),
-               Param(name='owner-alias', ptype='string',
-                     doc="""AWS account alias (e.g., amazon or self) or
-                     AWS account ID that owns the snapshot."""),
-               Param(name='owner-id', ptype='string',
-                     doc='AWS account ID of the snapshot owner.'),
-               Param(name='progress', ptype='string',
-                     doc='The progress of the snapshot, in percentage.'),
-               Param(name='snapshot-id', ptype='string',
-                     doc='The ID of the snapshot.'),
-               Param(name='start-time', ptype='datetime',
-                     doc='Time stamp when the snapshot was initiated.'),
-               Param(name='status', ptype='string',
-                     doc="""Status of the snapshost.
-                     Valid values: pending | completed | error."""),
-               Param(name='tag-key', ptype='string',
-                     doc='Key of a tag assigned to the resource.'),
-               Param(name='tag-value', ptype='string',
-                     doc='Value of a tag assigned to the resource.'),
-               Param(name='tag:key', ptype='string',
-                     doc="""Filters the results based on a specific
-                     tag/value combination."""),
-               Param(name='volume-id', ptype='string',
-                     doc='ID of the volume the snapshot is for'),
-               Param(name='volume-size', ptype='integer',
-                     doc='The size of the volume, in GiB.')]
-    
-    def display_snapshots(self, snapshots):
-        for snapshot in snapshots:
-            snapshot_string = '%s\t%s\t%s\t%s\t%s' % (snapshot.id,
-                    snapshot.volume_id, snapshot.status,
-                    snapshot.start_time, snapshot.progress)
-            print 'SNAPSHOT\t%s' % snapshot_string
+    Description = 'Display information about snapshots'
+    Args = [Arg('SnapshotId', nargs='*', metavar='SNAPSHOT',
+                help='limit results to specific snapshots'),
+            # noop for a little ec2dsnap compatibility
+            Arg('--all', action='store_true', route_to=None, help=SUPPRESS),
+            Arg('-o', '--owner', dest='Owner', metavar='ACCOUNT',
+                action='append', default=[],
+                help='limit results to snapshots owned by specific accounts'),
+            Arg('-r', '--restorable-by', dest='RestorableBy', action='append',
+                metavar='ACCOUNT', default=[], help='''limit results to
+                snapahots restorable by specific accounts''')]
+    Filters = [Filter('description', help='snapshot description'),
+               Filter('owner-alias', help="snapshot owner's account alias"),
+               Filter('owner-id', help="snapshot owner's account ID"),
+               Filter('progress', help='snapshot progress, in percentage'),
+               Filter('snapshot-id'),
+               Filter('start-time', help='snapshot initiation time'),
+               Filter('status', choices=('pending', 'completed', 'error')),
+               Filter('tag-key', help='key of a tag assigned to the snapshot'),
+               Filter('tag-value',
+                      help='value of a tag assigned to the snapshot'),
+               GenericTagFilter('tag:KEY',
+                                help='specific tag/value combination'),
+               Filter('volume-id', help='source volume ID'),
+               Filter('volume-size', type=int)]
+    ListMarkers = ['snapshotSet', 'tagSet']
+    ItemMarkers = ['item']
 
-    def main(self):
-        conn = self.make_connection_cli()
-        return self.make_request_cli(conn, 'get_all_snapshots',
-                                     snapshot_ids=self.snapshot,
-                                     owner=self.owner,
-                                     restorable_by=self.restorable_by)
-
-    def main_cli(self):
-        snapshots = self.main()
-        self.display_snapshots(snapshots)
-
+    def print_result(self, result):
+        for snapshot in result.get('snapshotSet', []):
+            self.print_snapshot(snapshot)
