@@ -217,11 +217,11 @@ class EucalyptusRequest(Euca2oolsRequest, TabifyingCommand):
                            blockdev.get('ebs', {}).get('deleteOnTermination')])
 
     def print_volume(self, volume):
-        print 'VOLUME', self.tabify([volume.get(attr) for attr in
+        print self.tabify(['VOLUME'] + [volume.get(attr) for attr in
                 ('volumeId', 'size', 'snapshotId', 'availabilityZone',
                  'status', 'createTime')])
         for attachment in volume.get('attachmentSet', []):
-            print 'ATTACHMENT', self.tabify([volume.get('volumeId')] +
+            print self.tabify(['ATTACHMENT', volume.get('volumeId')] +
                     [attachment.get(attr) for attr in
                      ('instanceId', 'device', 'status', 'attachTime')])
 
