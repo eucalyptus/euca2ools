@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2012, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -27,36 +27,21 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#
-# Author: Neil Soman neil@eucalyptus.com
-#         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.commands.eucacommand
-from boto.roboto.param import Param
+from requestbuilder import Arg, Filter
+from . import EucalyptusRequest
 
-class DescribeRegions(euca2ools.commands.eucacommand.EucaCommand):
-
+class DescribeRegions(EucalyptusRequest):
     APIVersion = '2010-08-31'
-    Description = 'Shows information about regions.'
-    Args = [Param(name='described_region_name', ptype='string',
-                  doc='name of the region to describe',
-                  cardinality='+', optional=True)]
-    Filters = [Param(name='endpoint', ptype='string',
-                     doc='Endpoint of the region.'),
-               Param(name='region-name', ptype='string',
-                     doc='Name of the region.')]
-    
-    def display_regions(self, regions):
-        for region in regions:
-            region_string = '%s\t%s' % (region.name, region.endpoint)
-            print 'REGION\t%s' % region_string
+    Description = 'Display information about regions'
+    Args = [Arg('RegionName', nargs='*', metavar='REGION',
+                help='limit results to specific regions')]
+    Filters = [Filter('endpoint'),
+               Filter('region-name')]
+    ListMarkers = ['regionInfo']
+    ItemMarkers = ['item']
 
-    def main(self):
-        conn = self.make_connection_cli()
-        return self.make_request_cli(conn, 'get_all_regions',
-                                     region_names=self.described_region_name)
-
-    def main_cli(self):
-        regions = self.main()
-        self.display_regions(regions)
-
+    def print_result(self, result):
+        for region in result.get('regionInfo', []):
+            print self.tabify(('REGION', region.get('regionName'),
+                               region.get('regionEndpoint')))
