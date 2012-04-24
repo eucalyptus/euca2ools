@@ -244,6 +244,42 @@ class EucalyptusRequest(Euca2oolsRequest, TabifyingCommand):
                            task.get('state')])
 
 
+class _ResourceTypeMap(object):
+    _prefix_type_map = {
+            'cgw':    'customer-gateway',
+            'dopt':   'dhcp-options',
+            'aki':    'image',
+            'ami':    'image',
+            'ari':    'image',
+            'eki':    'image',
+            'emi':    'image',
+            'eri':    'image',
+            'i':      'instance',
+            'igw':    'internet-gateway',
+            'acl':    'network-acl',
+            'XXX':    'reserved-instances',  # reserved instance IDs are UUIDs
+            'rtb':    'route-table',
+            'sg':     'security-group',
+            'snap':   'snapshot',
+            'sir':    'spot-instances-request',
+            'subnet': 'subnet',
+            'vol':    'volume',
+            'vpc':    'vpc',
+            'vpn':    'vpn-connection',
+            'vgw':    'vpn-gateway'}
+
+    def lookup(self, item):
+        if not isinstance(item, str):
+            raise TypeError('argument type must be str')
+        for prefix in self._prefix_type_map:
+            if item.startswith(prefix + '-'):
+                return self._prefix_type_map[prefix]
+
+    def __iter__(self):
+        return iter(set(self._prefix_type_map.values()))
+
+RESOURCE_TYPE_MAP = _ResourceTypeMap()
+
 def _find_args_by_parg(arglike, parg):
     if isinstance(arglike, Arg):
         if parg in arglike.pargs:

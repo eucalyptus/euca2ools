@@ -29,7 +29,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 from requestbuilder import Arg
-from . import EucalyptusRequest
+from . import EucalyptusRequest, RESOURCE_TYPE_MAP
 from .argtypes import binary_tag_def
 
 class CreateTags(EucalyptusRequest):
@@ -46,6 +46,5 @@ class CreateTags(EucalyptusRequest):
     def print_result(self, result):
         for resource in self.args['ResourceId']:
             for tag in self.args['Tag']:
-                ## FIXME:  The second field should name a resource type
-                print self.tabify(['TAG', None, resource, tag['Key'],
-                                   tag['Value']])
+                print self.tabify(['TAG', RESOURCE_TYPE_MAP.lookup(resource),
+                                   resource, tag['Key'], tag['Value']])
