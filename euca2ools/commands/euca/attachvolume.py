@@ -40,6 +40,4 @@ class AttachVolume(EucalyptusRequest):
             Arg('VolumeId', metavar='VOLUME', help='volume to attach')]
 
     def print_result(self, result):
-        print self.tabify(('ATTACHMENT', result.get('volumeId'),
-                           result.get('instanceId'), result.get('device'),
-                           result.get('status'), result.get('attachTime')))
+        self.print_attachment(result)

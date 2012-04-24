@@ -225,11 +225,16 @@ class EucalyptusRequest(Euca2oolsRequest, TabifyingCommand):
                 ('volumeId', 'size', 'snapshotId', 'availabilityZone',
                  'status', 'createTime')])
         for attachment in volume.get('attachmentSet', []):
-            print self.tabify(['ATTACHMENT', volume.get('volumeId')] +
-                    [attachment.get(attr) for attr in
-                     ('instanceId', 'device', 'status', 'attachTime')])
+            self.print_attachment(attachment)
         for tag in volume.get('tagSet', []):
             self.print_resource_tag(tag, volume.get('volumeId'))
+
+    def print_attachment(self, attachment):
+        print self.tabify(['ATTACHMENT', attachment.get('volumeId'),
+                           attachment.get('instanceId'),
+                           attachment.get('device'),
+                           attachment.get('status'),
+                           attachment.get('attachTime')])
 
     def print_snapshot(self, snap):
         print self.tabify(['SNAPSHOT', snap.get('snapshotId'),
