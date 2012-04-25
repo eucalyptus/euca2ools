@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 20092011, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2012, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -27,25 +27,16 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#
-# Author: Neil Soman neil@eucalyptus.com
-#         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.commands.eucacommand
-from boto.roboto.param import Param
+from requestbuilder import Arg
+from . import EucalyptusRequest
 
-class GetPasswordData(euca2ools.commands.eucacommand.EucaCommand):
+class GetPasswordData(EucalyptusRequest):
+    Description = '''Retrieve the encrypted administrator password for an
+                     instance running Windows'''
+    Args = [Arg('InstanceId', metavar='INSTANCE',
+                help='instance to obtain the initial password for')]
 
-    Description = """Retrieves the encrypted administrator password
-    for a Windows instance."""
-    Args = [Param(name='instance_id', ptype='string', optional=False,
-                     doc='unique identifier for the Windows instance')]
-
-    def main(self):
-        conn = self.make_connection_cli()
-        return self.make_request_cli(conn, 'get_password_data',
-                                   instance_id=self.instance_id)
-
-    def main_cli(self):
-        print self.main()
-
+    def print_result(self, result):
+        if result.get('passwordData'):
+            print result['passwordData']

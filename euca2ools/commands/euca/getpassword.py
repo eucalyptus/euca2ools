@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 20092011, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2012, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -27,36 +27,25 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#
-# Author: Neil Soman neil@eucalyptus.com
-#         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.commands.eucacommand
-import euca2ools.bundler
-from boto.roboto.param import Param
+import base64
+from M2Crypto import RSA
+from requestbuilder import Arg
+from .argtypes import file_contents
+from .getpassworddata import GetPasswordData
 
-class GetPassword(euca2ools.commands.eucacommand.EucaCommand):
+class GetPassword(GetPasswordData):
+    Action = 'GetPasswordData'
+    Description = '''Retrieve the administrator password for an instance
+                     running Windows'''
+    Args = [Arg('-k', '--priv-launch-key', metavar='PRIVKEY',
+                type=file_contents, required=True, route_to=None,
+                help='''file containing the private key corresponding to the
+                        key pair supplied at instance launch time''')]
 
-    Description = """Retrieves decrypts the administrator password
-    for a Windows instance."""
-    Options = [Param(name='privatekey',
-                     short_name='k', long_name='priv-launch-key',
-                     ptype='file', optional=False,
-                     doc="""The file that contains the private key
-                     used to launch the instance.""")]
-    Args = [Param(name='instance_id', ptype='string', optional=False,
-                     doc='unique identifier for the Windows instance')]
-
-    def main(self):
-        conn = self.make_connection_cli()
-        pd = self.make_request_cli(conn, 'get_password_data',
-                                   instance_id=self.instance_id)
-        if pd:
-            # TODO - this is actually in the bundler
-            # TODO validate file?
-            return euca2ools.bundler.Bundler(self).decrypt_string(pd, self.privatekey, encoded=True)
-
-    def main_cli(self):
-        pw = self.main()
-        print pw
-
+    def print_result(self, result):
+        pwdata   = result['passwordData']
+        privkey  = RSA.load_key_string(self.args['priv_launch_key'])
+        password = privkey.private_decrypt(base64.b64decode(pwdata),
+                                           RSA.pkcs1_padding)
+        print password

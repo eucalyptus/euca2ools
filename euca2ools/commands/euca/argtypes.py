@@ -30,6 +30,7 @@
 
 import argparse
 from requestbuilder import EMPTY
+import sys
 
 def block_device_mapping(map_as_str):
     '''
@@ -78,6 +79,13 @@ def block_device_mapping(map_as_str):
         raise argparse.ArgumentTypeError(
                 'unrecognized block device mapping "{0}"'.format(map_as_str))
     return map_dict
+
+def file_contents(filename):
+    if filename == '-':
+        return sys.stdin.read()
+    else:
+        with open(filename) as arg_file:
+            return arg_file.read()
 
 def binary_tag_def(tag_str):
     '''
