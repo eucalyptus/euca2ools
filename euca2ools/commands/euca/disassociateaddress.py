@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2012, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -27,29 +27,21 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#
-# Author: Neil Soman neil@eucalyptus.com
-#         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.commands.eucacommand
-from boto.roboto.param import Param
+from requestbuilder import Arg
+from . import EucalyptusRequest
 
-class DisassociateAddress(euca2ools.commands.eucacommand.EucaCommand):
-
-    Description = 'Disassociate a public IP address from an instance.'
-    Args = [Param(name='ip', ptype='string',
-                  doc='IP address to disassociate',
-                  cardinality=1, optional=False)]
+class DisassociateAddress(EucalyptusRequest):
+    Description = 'Disassociate an elastic IP address from an instance'
+    Args = [Arg('address', route_to=None,
+                help='elastic IP address or association ID to disassociate')]
 
     def main(self):
-        conn = self.make_connection_cli()
-        return self.make_request_cli(conn, 'disassociate_address',
-                                     public_ip=self.ip)
-
-    def main_cli(self):
-        status = self.main()
-        if status:
-            print 'ADDRESS\t%s' % self.ip
+        if self.args['address'].startswith('eipassoc'):
+            self.params = {'AssociationId': self.args['address']}
         else:
-            self.error_exit()
+            self.params = {'PublicIp':      self.args['address']}
+        return self.send()
 
+    def print_result(self, result):
+        print self.tabify(['ADDRESS', self.args['address']])
