@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2012, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -27,36 +27,26 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#
-# Author: Neil Soman neil@eucalyptus.com
-#         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.commands.eucacommand
-from boto.roboto.param import Param
+import base64
+from requestbuilder import Arg
+from . import EucalyptusRequest
+from .argtypes import file_contents
 
-class ImportKeyPair(euca2ools.commands.eucacommand.EucaCommand):
-
+class ImportKeyPair(EucalyptusRequest):
     APIVersion = '2010-08-31'
-    Description = 'Import a public key created with 3rd party tool'
-    Options = [Param(name='file_name',
-                     short_name='f', long_name='public-key-file',
-                     optional=False, ptype='file',
-                     doc='Path to file containing the public key.')]
-    Args = [Param(name='key_name', ptype='string',
-                  doc='A unique name for the key pair.',
-                  optional=False)]
-    
+    Description = 'Import a public RSA key'
+    Args = [Arg('KeyName', metavar='KEYPAIR',
+                help='name for the new key pair'),
+            Arg('-f', '--public-key-file', dest='pubkey', metavar='PUBKEY',
+                type=file_contents, required=True, route_to=None,
+                help='file name of the public key to import')]
+
     def main(self):
-        fp = open(self.file_name)
-        key_material = fp.read()
-        fp.close()
-        conn = self.make_connection_cli()
-        return self.make_request_cli(conn, 'import_key_pair',
-                                     key_name=self.key_name,
-                                     public_key_material=key_material)
+        self.params = {'PublicKeyMaterial':
+                        base64.b64encode(self.args['pubkey'])}
+        return self.send()
 
-    def main_cli(self):
-        keypair = self.main()
-        if keypair:
-            print 'KEYPAIR\t%s\t%s' % (keypair.name, keypair.fingerprint)
-
+    def print_result(self, result):
+        print self.tabify(['KEYPAIR', result.get('keyName'),
+                           result.get('keyFingerprint')])
