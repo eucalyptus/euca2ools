@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 20092011, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2012, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -27,97 +27,73 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#
-# Author: Neil Soman neil@eucalyptus.com
-#         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.commands.eucacommand
-from boto.roboto.param import Param
+from requestbuilder import Arg, MutuallyExclusiveArgList
+from . import EucalyptusRequest
 
-class ModifyImageAttribute(euca2ools.commands.eucacommand.EucaCommand):
-
-    Description = 'Show image attributes.'
-    Options = [Param(name='launchPermission', metavar='launch_permission',
-                     short_name='l', long_name='launch-permission',
-                     optional=True, ptype='boolean',
-                     doc='show launch permissions.'),
-               Param(name='productCode', metavar='product_code',
-                     short_name='p', long_name='product-code',
-                     optional=True, ptype='string', cardinality='*',
-                     doc='show the product codes associated with the image.'),
-               Param(name='add', short_name='a', long_name='add',
-                     optional=True, ptype='string', cardinality='*',
-                     doc='Entity (typically, user id) to add.'),
-               Param(name='remove', short_name='r', long_name='remove',
-                     optional=True, ptype='string', cardinality='*',
-                     doc='Entity (typically, user id) to remove.')]
-    Args = [Param(name='image_id', ptype='string',
-                  doc="""unique identifier for the image that you want
-                  to modify the attributes of.""",
-                  cardinality=1, optional=False)]
-    
-    def display_image_attribute(self, image_id, image_attribute):
-        if image_attribute.name == 'launch_permission':
-            if image_attribute.attrs.has_key('groups'):
-                for group in image_attribute.attrs['groups']:
-                    print 'launchPermission\t%s\tgroup\t%s' \
-                        % (image_attribute.image_id, group)
-            if image_attribute.attrs.has_key('user_ids'):
-                for userid in image_attribute.attrs['user_ids']:
-                    print 'launchPermission\t%s\tuserId\t%s' \
-                        % (image_attribute.image_id, userid)
-        if image_attribute.attrs.has_key('product_codes'):
-            for product_code in image_attribute.attrs['product_codes']:
-                print 'productCodes\t%s\tproductCode\t%s' \
-                    % (image_attribute.image_id, product_code)
-        if image_attribute.kernel is not None:
-            print 'kernel\t%s\t\t%s' % (image_attribute.image_id,
-                                        getattr(image_attribute, 'value', ""))
-        if image_attribute.ramdisk is not None:
-            print 'ramdisk\t%s\t\t%s' % (image_attribute.image_id,
-                                         getattr(image_attribute, 'value', ""))
-        if image_attribute.attrs.has_key('block_device_mapping'):
-            block_device_mapping = \
-                image_attribute.attrs['block_device_mapping']
-            for dev_name in block_device_mapping:
-                print 'blockDeviceMapping\t%s\tblockDeviceMap\t%s: %s' \
-                    % (image_id, dev_name,
-                       block_device_mapping[dev_name])
+class ModifyImageAttribute(EucalyptusRequest):
+    Description = 'Modify an attribute of an image'
+    Args = [Arg('ImageId', metavar='IMAGE', help='image to modify'),
+            MutuallyExclusiveArgList(True,
+                Arg('--description', dest='Description.Value', metavar='DESC',
+                    help="change the image's description"),
+                Arg('-p', '--product-code', dest='ProductCode', metavar='CODE',
+                    action='append', help='''product code to add to the given
+                    instance-store image'''),
+                Arg('-l', '--launch-permission', action='store_true',
+                    route_to=None,
+                    help='grant/revoke launch permissions with -a/-r')),
+            Arg('-a', '--add', metavar='ENTITY', action='append', default=[],
+                route_to=None, help='''account to grant launch permission, or
+                "all" for all accounts'''),
+            Arg('-r', '--remove', metavar='ENTITY', action='append',
+                default=[], route_to=None, help='''account to remove launch
+                permission from , or "all" for all accounts''')]
 
     def main(self):
-        users = []
-        groups = []
-        image_attribute = None
-        operation_type = 'add'
-        if self.productCode:
-            image_attribute = 'productCodes'
-        if not image_attribute and self.launchPermission:
-            image_attribute = 'launchPermission'
-        if self.add and self.remove:
-            msg = 'You cannot add and remove in the same call'
-            self.display_error_and_exit(msg)
-        if self.add:
-            operation_type = 'add'
-        if self.remove:
-            operation_type = 'remove'
-        users = self.add + self.remove
-        if 'all' in users:
-            users.remove('all')
-            groups.append('all')
-        if image_attribute:
-            conn = self.make_connection_cli()
-            return self.make_request_cli(conn, 'modify_image_attribute',
-                                         image_id=self.image_id,
-                                         attribute=image_attribute,
-                                         operation=operation_type,
-                                         user_ids=users,
-                                         groups=groups,
-                                         product_codes=self.productCode)
+        if self.args.get('launch_permission'):
+            lp = {}
+            for entity in self.args.get('add', []):
+                lp.setdefault('Add', [])
+                if entity == 'all':
+                    lp['Add'].append({'Group':  entity})
+                else:
+                    lp['Add'].append({'UserId': entity})
+            for entity in self.args.get('remove', []):
+                lp.setdefault('Remove', [])
+                if entity == 'all':
+                    lp['Remove'].append({'Group':  entity})
+                else:
+                    lp['Remove'].append({'UserId': entity})
+            if not lp:
+                self._cli_parser.error('at least one entity must be specified '
+                                       'with -a/--add or -r/--remove')
+            self.params = {'LaunchPermission': lp}
         else:
-            msg = 'No attributes were specified'
-            self.display_error_and_exit(msg)
+            if self.args.get('add'):
+                self._cli_parser.error('argument -a/--add may only be used '
+                                       'with -l/--launch-permission')
+            if self.args.get('remove'):
+                self._cli_parser.error('argument -r/--remove may only be used '
+                                       'with -l/--launch-permission')
+        return self.send()
 
-    def main_cli(self):
-        self.main()
-        print 'IMAGE\t%s' % self.image_id
-
+    def print_result(self, result):
+        if self.args.get('Description.Value'):
+            print self.tabify(('description', self.args['ImageId'],
+                               None, self.args['Description.Value']))
+        if self.args.get('ProductCode'):
+            for code in self.args['ProductCode']:
+                print self.tabify(('productcodes', self.args['ImageId'],
+                                   'productCode',  code))
+        if self.args.get('launch_permission'):
+            for add in self.params['LaunchPermission'].get('Add', []):
+                for (entity_type, entity_name) in add.items():
+                    print self.tabify(('launchPermission',
+                                       self.args['ImageId'], 'ADD',
+                                       entity_type, entity_name))
+            for add in self.params['LaunchPermission'].get('Remove', []):
+                for (entity_type, entity_name) in add.items():
+                    print self.tabify(('launchPermission',
+                                       self.args['ImageId'], 'REMOVE',
+                                       entity_type, entity_name))
