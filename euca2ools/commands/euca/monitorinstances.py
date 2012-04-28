@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 20092011, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2012, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -27,30 +27,18 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#
-# Author: Neil Soman neil@eucalyptus.com
-#         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.commands.eucacommand
-from boto.roboto.param import Param
+from requestbuilder import Arg
+from . import EucalyptusRequest
 
-class MonitorInstances(euca2ools.commands.eucacommand.EucaCommand):
+class MonitorInstances(EucalyptusRequest):
+    Description = 'Enable monitoring for one or more instances'
+    Args = [Arg('InstanceId', metavar='INSTANCE', nargs='+',
+                help='instance(s) to monitor')]
+    ListMarkers = ['instancesSet']
+    ItemMarkers = ['item']
 
-    Description = 'Enables monitoring for running instances.'
-    Args = [Param(name='instance_id', ptype='string',
-                  optional=False, cardinality='+',
-                  doc='unique identifier for instance to monitor')]
-
-    def display_monitor_info(self, info):
-        for item in info:
-            print '%s\t%s' % (item.id, item.state)
-            
-    def main(self):
-        conn = self.make_connection_cli()
-        return self.make_request_cli(conn, 'monitor_instances',
-                                     instance_ids=self.instance_id)
-
-    def main_cli(self):
-        info = self.main()
-        self.display_monitor_info(info)
-
+    def print_result(self, result):
+        for instance in result.get('instancesSet', []):
+            print self.tabify((instance.get('instanceId'), 'monitoring-' +
+                    instance.get('monitoring', {}).get('state')))
