@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 20092011, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2012, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -27,43 +27,17 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#
-# Author: Neil Soman neil@eucalyptus.com
-#         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.commands.eucacommand
-from boto.roboto.param import Param
+from requestbuilder import Arg
+from . import EucalyptusRequest
 
-class ResetImageAttribute(euca2ools.commands.eucacommand.EucaCommand):
+class ResetImageAttribute(EucalyptusRequest):
+    Description = 'Reset an attribute of an image to its default value'
+    Args = [Arg('ImageId', metavar='IMAGE',
+            help='image whose attribute should be reset'),
+            Arg('-l', '--launch-permission', dest='Attribute',
+                action='store_const', const='launchPermission', required=True,
+                help='reset launch permissions')]
 
-    Description = 'Reset attributes of an image.'
-    Options = [Param(name='launchPermission', metavar='launch_permission',
-                     short_name='l', long_name='launch-permission',
-                     optional=True, ptype='boolean',
-                     doc='show launch permissions.')]
-    Args = [Param(name='image_id', ptype='string',
-                  doc="""unique identifier for the image that you want
-                  to reset the attributes for.""",
-                  cardinality=1, optional=False)]
-    
-    def main(self):
-        attribute = None
-        attr_names = [ opt.name for opt in self.Options ]
-        for name in attr_names:
-            if not attribute:
-                if getattr(self, name):
-                    attribute = name
-        if attribute:
-            conn = self.make_connection_cli()
-            return self.make_request_cli(conn, 'reset_image_attribute',
-                                         image_id=self.image_id,
-                                         attribute=attribute)
-        else:
-            msg = 'image attribute must be specified'
-            self.display_error_and_exit(msg)
-
-    def main_cli(self):
-        status = self.main()
-        if status:
-            print 'IMAGE\t%s' % self.image_id
-        
+    def print_result(self, result):
+        print self.tabify(('launchPermission', self.args['ImageId'], 'RESET'))
