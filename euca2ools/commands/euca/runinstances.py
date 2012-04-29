@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 20092011, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2012, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -27,127 +27,101 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#
-# Author: Neil Soman neil@eucalyptus.com
-#         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.commands.eucacommand
-from boto.roboto.param import Param
-import euca2ools.utils
+import argparse
+import base64
 import os.path
+from requestbuilder import Arg, MutuallyExclusiveArgList
+import sys
+from . import EucalyptusRequest
+from .argtypes import b64encoded_file_contents, block_device_mapping
 
-class RunInstances(euca2ools.commands.eucacommand.EucaCommand):
-
-    Description = 'Starts instances.'
-    Options = [Param(name='count', short_name='n', long_name='instance-count',
-                     optional=True, ptype='string', default='1',
-                     doc='Number of instances to run.'),
-               Param(name='group_name', short_name='g', long_name='group',
-                     optional=True, ptype='string', cardinality='*',
-                     doc='Security group to run the instance in.'),
-               Param(name='keyname', short_name='k', long_name='key',
-                     optional=True, ptype='string',
-                     doc='Name of a keypair.'),
-               Param(name='user_data', short_name='d', long_name='user-data',
-                     optional=True, doc='User data to pass to the instance.'),
-               Param(name='user_data_force', long_name='user-data-force',
-                     optional=True,
-                     doc='Just like --user-data, but ignore any checks.'),
-               Param(name='user_data_file',
-                     short_name='f', long_name='user-data-file',
-                     optional=True, ptype='file',
-                     doc='File containing user data to pass to the instance.'),
-               Param(name='addressing', long_name='addressing',
-                     optional=True, ptype='string',
-                     doc='Deprecated.'),
-               Param(name='instance_type',
-                     short_name='t', long_name='instance-type',
-                     optional=True, ptype='string', default='m1.small',
-                     doc='VM Image type to run the instance as.'),
-               Param(name='kernel', long_name='kernel',
-                     optional=True, ptype='string',
-                     doc='ID of the kernel to be used.'),
-               Param(name='ramdisk', long_name='ramdisk',
-                     optional=True, ptype='string',
-                     doc='ID of the ramdisk to be used.'),
-               Param(name='block_device_mapping',
-                     short_name='b', long_name='block-device-mapping',
-                     optional=True, ptype='string', cardinality='*',
-                     doc="""Block device mapping for the instance(s).
-                     Option may be used multiple times"""),
-               Param(name='monitor', long_name='monitor',
-                     optional=True, ptype='boolean', default=False,
-                     doc='Enable monitoring for the instance.'),
-               Param(name='subnet', short_name='s', long_name='subnet',
-                     optional=True, ptype='string',
-                     doc='Amazon VPC subnet ID for the instance.'),
-               Param(name='zone', short_name='z', long_name='availability-zone',
-                     optional=True, ptype='string',
-                     doc='availability zone to run the instance in')]
-    Args = [Param(name='image_id', ptype='string',
-                  optional=False,
-                  doc='ID of the image to run.')]
-
-    def display_reservations(self, reservation):
-        reservation_string = '%s\t%s' % (reservation.id,
-                reservation.owner_id)
-        group_delim = '\t'
-        for group in reservation.groups:
-            reservation_string += '%s%s' % (group_delim, group.id)
-            group_delim = ', '
-        print 'RESERVATION\t%s' % reservation_string
-        euca2ools.utils.print_instances(reservation.instances)
-
-    def read_user_data(self, user_data_filename):
-        fp = open(user_data_filename)
-        user_data = fp.read()
-        fp.close()
-        return user_data
+class RunInstances(EucalyptusRequest):
+    Description = 'Launch instances of a machine image'
+    Args = [Arg('ImageId', metavar='IMAGE', help='image to instantiate'),
+            Arg('-n', '--instance-count', dest='count', metavar='MIN[-MAX]',
+                default='1', route_to=None,
+                help='''number of instances to launch. If this number of
+                        instances cannot be launched, no instances will launch.
+                        If specified as a range (min-max), the server will
+                        attempt to launch the maximum number, but no fewer
+                        than the minimum number.'''),
+            Arg('-g', '--group', dest='group', action='append', default=[],
+                route_to=None,
+                help='security group(s) in which to launch the instances'),
+            Arg('-k', '--key', dest='KeyName', metavar='KEYPAIR',
+                help='name of the key pair to use'),
+            MutuallyExclusiveArgList(
+                Arg('-d', '--user-data', dest='UserData', metavar='DATA',
+                    type=base64.b64encode,
+                    help='''user data to make available to instances in this
+                            reservation'''),
+                Arg('--user-data-force', dest='UserData',
+                    type=base64.b64encode, help=argparse.SUPPRESS),
+                    # ^ deprecated
+                Arg('-f', '--user-data-file', dest='UserData',
+                    metavar='DATA-FILE', type=b64encoded_file_contents,
+                    help='''file containing user data to make available to the
+                            instances in this reservation''')),
+            Arg('--addressing', dest='AddressingType',
+                choices=('public', 'private'),
+                help='addressing scheme to launch the instance with'),
+            Arg('-t', '--instance-type',
+                help='type of instance to launch'),
+            Arg('--kernel', dest='KernelId', metavar='KERNEL',
+                help='kernel to launch the instance(s) with'),
+            Arg('--ramdisk', dest='RamdiskId', metavar='RAMDISK',
+                help='ramdisk to launch the instance(s) with'),
+            Arg('-b', '--block-device-mapping', metavar='DEVICE=MAPPED',
+                dest='BlockDeviceMapping', action='append',
+                type=block_device_mapping, default=[],
+                help='''define a block device mapping for the instances, in the
+                        form DEVICE=MAPPED, where "MAPPED" is "none",
+                        "ephemeral(0-3)", or
+                        "[SNAP-ID]:[SIZE]:[true|false]"'''),
+            Arg('-m', '--monitor', dest='Monitoring.Enabled',
+                action='store_const', const='true',
+                help='enable monitoring for the instance(s)'),
+            Arg('--subnet', dest='SubnetId', metavar='SUBNET',
+                help='VPC subnet in which to launch the instance(s)'),
+            Arg('-z', '--availability-zone', metavar='ZONE',
+                dest='Placement.AvailabilityZone')]
 
     def main(self):
-        t = self.count.split('-')
-        try:
-            if len(t) > 1:
-                min_count = int(t[0])
-                max_count = int(t[1])
-            else:
-                min_count = max_count = int(t[0])
-        except ValueError:
-            msg = 'Invalid value for --instance-count: %s' % count
-            self.display_error_and_exit(msg)
-                
-        if self.user_data and os.path.isfile(self.user_data):
-            msg = ('string provided as user-data [%s] is a file.\nTry %s or %s'
-                    % (self.user_data, '--user-data-file', '--user-data-force'))
-            self.display_error_and_exit(msg)
+        self.params = {}
+        counts = self.args['count'].split('-')
+        if len(counts) == 1:
+            try:
+                self.params['MinCount'] = int(counts[0])
+                self.params['MaxCount'] = int(counts[0])
+            except ValueError:
+                self._cli_parser.error('argument -n/--instance-count: '
+                                       'instance count must be in integer')
+        elif len(counts) == 2:
+            try:
+                self.params['MinCount'] = int(counts[0])
+                self.params['MaxCount'] = int(counts[1])
+            except ValueError:
+                self._cli_parser.error('argument -n/--instance-count: '
+                        'instance count range must be must be comprised of '
+                        'integers')
+        else:
+            self._cli_parser.error('argument -n/--instance-count: value must '
+                                   'have format "1" or "1-2"')
+        if self.params['MinCount'] < 1 or self.params['MaxCount'] < 1:
+            self._cli_parser.error('argument -n/--instance-count: instance '
+                                   'count must be positive')
 
-        if self.user_data_force:
-            self.user_data = self.user_data_force
+        for group in self.args['group']:
+            # Uncomment this during the next API version bump
+            #if group.startswith('sg-'):
+            #    self.params.setdefault('SecurityGroupId', [])
+            #    self.params['SecurityGroupId'].append(group)
+            #else:
+                self.params.setdefault('SecurityGroup', [])
+                self.params['SecurityGroup'].append(group)
 
-        if not self.user_data:
-            if self.user_data_file:
-                self.user_data = self.read_user_data(self.user_data_file)
+        return self.send()
 
-        if self.block_device_mapping:
-            self.block_device_mapping = self.parse_block_device_args(self.block_device_mapping)
-        conn = self.make_connection_cli()
-        return self.make_request_cli(conn, 'run_instances',
-                                     image_id=self.image_id,
-                                     min_count=min_count,
-                                     max_count=max_count,
-                                     key_name=self.keyname,
-                                     security_groups=self.group_name,
-                                     user_data=self.user_data,
-                                     addressing_type=self.addressing,
-                                     instance_type=self.instance_type,
-                                     placement=self.zone,
-                                     kernel_id=self.kernel,
-                                     ramdisk_id=self.ramdisk,
-                                     block_device_map=self.block_device_mapping,
-                                     monitoring_enabled=self.monitor,
-                                     subnet_id=self.subnet)
-
-    def main_cli(self):
-        reservation = self.main()
-        self.display_reservations(reservation)
-
+    def print_result(self, result):
+        self.print_reservation(result)

@@ -29,6 +29,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 import argparse
+import base64
 from requestbuilder import EMPTY
 import sys
 
@@ -45,7 +46,7 @@ def block_device_mapping(map_as_str):
     map_dict = {'DeviceName': device}
     if mapping.lower() == 'none':
         ## FIXME:  EC2 does not accept this, despite its documentation
-        map_dict['Ebs'] = {'NoDevice': 'true'}
+        map_dict['Ebs'] = {'NoDevice': EMPTY}
     elif mapping.startswith('ephemeral'):
         map_dict['VirtualName'] = mapping
     elif (mapping.startswith('snap-') or mapping.startswith('vol-') or
@@ -97,6 +98,13 @@ def file_contents(filename):
     else:
         with open(filename) as arg_file:
             return arg_file.read()
+
+def b64encoded_file_contents(filename):
+    if filename == '-':
+        return base64.b64encode(sys.stdin.read())
+    else:
+        with open(filename) as arg_file:
+            return base64.b64encode(arg_file.read())
 
 def binary_tag_def(tag_str):
     '''
