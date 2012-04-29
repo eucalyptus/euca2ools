@@ -41,10 +41,11 @@ def block_device_mapping(map_as_str):
     except ValueError:
         raise argparse.ArgumentTypeError(
                 'block device mapping "{0}" must have form '
-                'DEVICE=[SNAP-ID]:[SIZE]:[true|false]'.format(map_as_str))
-    map_dict = {}
+                'DEVICE=MAPPED'.format(map_as_str))
+    map_dict = {'DeviceName': device}
     if mapping.lower() == 'none':
-        map_dict['Ebs'] = {'NoDevice': EMPTY}
+        ## FIXME:  EC2 does not accept this, despite its documentation
+        map_dict['Ebs'] = {'NoDevice': 'true'}
     elif mapping.startswith('ephemeral'):
         map_dict['VirtualName'] = mapping
     elif (mapping.startswith('snap-') or mapping.startswith('vol-') or
@@ -75,9 +76,19 @@ def block_device_mapping(map_as_str):
                         'third element of EBS block device mapping "{0}" must '
                         'be "true" or "false"'.format(map_as_str))
             map_dict['Ebs']['DeleteOnTermination'] = map_bits[2].lower()
+        if not map_dict['Ebs']:
+            raise argparse.ArgumentTypeError(
+                    'EBS block device mapping "{0}" must specify at least one '
+                    'element.  Use "{1}=none" to specify that no device '
+                    'should be mapped.'.format(map_as_str, device))
+    elif not mapping:
+        raise argparse.ArgumentTypeError(
+                'invalid block device mapping "{0}".  Use "{1}=none" to '
+                'specify that no device should be mapped.'.format(map_as_str,
+                                                                  device))
     else:
         raise argparse.ArgumentTypeError(
-                'unrecognized block device mapping "{0}"'.format(map_as_str))
+                'invalid block device mapping "{0}"'.format(map_as_str))
     return map_dict
 
 def file_contents(filename):
