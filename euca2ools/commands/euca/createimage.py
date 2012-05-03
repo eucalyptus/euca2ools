@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2012, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -27,43 +27,22 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#
-# Author: Neil Soman neil@eucalyptus.com
-#         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.commands.eucacommand
-from boto.roboto.param import Param
+from requestbuilder import Arg
+from . import EucalyptusRequest
 
-class CreateImage(euca2ools.commands.eucacommand.EucaCommand):
+class CreateImage(EucalyptusRequest):
+    Description = 'Create an EBS image from a running or stopped EBS instance'
+    Args = [Arg('InstanceId', metavar='INSTANCE',
+                help='instance from which to create the image'),
+            Arg('-n', '--name', dest='Name', required=True,
+                help='name for the new image (required)'),
+            Arg('-d', '--description', dest='Description', metavar='DESC',
+                help='description for the new image'),
+            Arg('--no-reboot', dest='NoReboot', action='store_const',
+                const='true',
+                help='''do not shut down the instance before creating the
+                        image. Image integrity may be affected.''')]
 
-    Description = 'Creates an AMI from an EBS-based instance'
-    Options = [Param(name='name', short_name='n', long_name='name',
-                     optional=False, ptype='string',
-                     doc='Name for the new image you are creating'),
-               Param(name='description',
-                     short_name='d', long_name='description',
-                     optional=True, ptype='string',
-                     doc='A description of the new image'),
-               Param(name='no_reboot', long_name='no-reboot',
-                     optional=True, ptype='boolean', default=False,
-                     doc="""When set to true, the instance is not shut
-                         down before creating the image. When this
-                         option is used, file system integrity on
-                         the created image cannot be guaranteed""")]
-    Args = [Param(name='instance_id', ptype='string',
-                  optional=False,
-                  doc='ID of the instance')]
-
-    def main(self):
-        conn = self.make_connection_cli()
-        return self.make_request_cli(conn, 'create_image',
-                                     instance_id=self.instance_id,
-                                     name=self.name,
-                                     description=self.description,
-                                     no_reboot=self.no_reboot)
-
-    def main_cli(self):
-        image_id = self.main()
-        if image_id:
-            print 'IMAGE\t%s' % image_id
-
+    def print_result(self, result):
+        print self.tabify(('IMAGE', result.get('imageId')))
