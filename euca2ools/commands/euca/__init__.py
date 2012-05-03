@@ -251,7 +251,7 @@ class EucalyptusRequest(Euca2oolsRequest, TabifyingCommand):
                            task.get('storage', {}).get('S3', {}).get('bucket'),
                            task.get('storage', {}).get('S3', {}).get('prefix'),
                            task.get('startTime'), task.get('updateTime'),
-                           task.get('state')])
+                           task.get('state'),     task.get('progress')])
 
 
 class _ResourceTypeMap(object):
