@@ -4,4 +4,3 @@ import euca2ools.commands.euca.attachvolume
 
 if __name__ == '__main__':
     euca2ools.commands.euca.attachvolume.AttachVolume().do_cli()
-

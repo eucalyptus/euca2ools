@@ -184,7 +184,7 @@ class EucalyptusRequest(Euca2oolsRequest, TabifyingCommand):
         instance_line.append(instance.get('placement', {}).get('availabilityZone'))
         instance_line.append(instance.get('kernelId'))
         instance_line.append(instance.get('ramdiskId'))
-        instance_line.append(None) # What is this?
+        instance_line.append(None)  # What is this?
         if instance.get('monitoring'):
             instance_line.append('monitoring-' +
                                  instance['monitoring'].get('state'))
@@ -195,13 +195,13 @@ class EucalyptusRequest(Euca2oolsRequest, TabifyingCommand):
         instance_line.append(instance.get('vpcId'))
         instance_line.append(instance.get('subnetId'))
         instance_line.append(instance.get('rootDeviceType'))
-        instance_line.append(None) # What is this?
-        instance_line.append(None) # What is this?
-        instance_line.append(None) # What is this?
-        instance_line.append(None) # What is this?
+        instance_line.append(None)  # What is this?
+        instance_line.append(None)  # What is this?
+        instance_line.append(None)  # What is this?
+        instance_line.append(None)  # What is this?
         instance_line.append(instance.get('virtualizationType'))
         instance_line.append(instance.get('hypervisor'))
-        instance_line.append(None) # What is this?
+        instance_line.append(None)  # What is this?
         instance_line.append(instance.get('placement', {}).get('groupName'))
         instance_line.append(','.join([group['groupId'] for group in
                                        instance.get('groupSet', [])]))
