@@ -28,8 +28,7 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 #
-# Author: Neil Soman neil@eucalyptus.com
-#       : Mitch Garnaat mgarnaat@eucalyptus.com
+# Author: David Kavanagh david.kavanagh@eucalyptus.com
 
 
 import sys
