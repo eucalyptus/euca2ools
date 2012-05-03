@@ -34,9 +34,9 @@
 # Author: Neil Soman neil@eucalyptus.com
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.commands.euca.deletebundle
+import euca2ools.commands.bundle.deletebundle
 
 if __name__ == '__main__':
-    cmd = euca2ools.commands.euca.deletebundle.DeleteBundle()
+    cmd = euca2ools.commands.bundle.deletebundle.DeleteBundle()
     cmd.main_cli()
 

@@ -47,8 +47,8 @@ from boto.s3.connection import Location
 import euca2ools.bundler
 import euca2ools.commands.eustore
 import euca2ools.utils
-from euca2ools.commands.euca.bundleimage import BundleImage
-from euca2ools.commands.euca.uploadbundle import UploadBundle
+from euca2ools.commands.bundle.bundleimage import BundleImage
+from euca2ools.commands.bundle.uploadbundle import UploadBundle
 from euca2ools.commands.euca.register import Register
 from euca2ools.exceptions import NotFoundError, CommandFailed
 

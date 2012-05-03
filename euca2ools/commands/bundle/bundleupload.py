@@ -36,8 +36,8 @@ import os
 import euca2ools.commands.eucacommand
 from boto.roboto.param import Param
 from boto.exception import S3ResponseError, S3CreateError
-from euca2ools.commands.euca.uploadbundle import UploadBundle
-from euca2ools.commands.euca.bundleimage import BundleImage
+from euca2ools.commands.bundle.uploadbundle import UploadBundle
+from euca2ools.commands.bundle.bundleimage import BundleImage
 import euca2ools.bundler
 from euca2ools.exceptions import NotFoundError, CommandFailed
 
