@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2012, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -27,40 +27,26 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#
-# Author: Neil Soman neil@eucalyptus.com
-#         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.commands.eucacommand
-from boto.roboto.param import Param
+from requestbuilder import Arg, Filter
+from . import EucalyptusRequest
 
-class DescribeAvailabilityZones(euca2ools.commands.eucacommand.EucaCommand):
-
+class DescribeAvailabilityZones(EucalyptusRequest):
+    Description = 'Display availability zones within the active region'
     APIVersion = '2010-08-31'
-    Description = 'Shows information about availability zones.'
-    Args = [Param(name='zone', ptype='string',
-                  cardinality='+', optional=True)]
-    Filters = [Param(name='message', ptype='string',
-                     doc='Message giving information about the Availability Zone.'),
-               Param(name='region-name', ptype='string',
-                     doc='Region the Availability Zone is in (e.g., us-east-1).'),
-               Param(name='state', ptype='string',
-                     doc='State of the Availability Zone'),
-               Param(name='zone-name', ptype='string',
-                     doc='Name of the zone.')]
-    
-    def display_zones(self, zones):
-        for zone in zones:
-            zone_string = '%s\t%s' % (zone.name, zone.state)
-            print 'AVAILABILITYZONE\t%s' % zone_string
+    Args = [Arg('ZoneName', metavar='ZONE', nargs='*',
+                help='limit results to one or more availability zones')]
+    Filters = [Filter('message', help=('message giving information about the'
+                      'availability zone')),
+               Filter('region-name',
+                      help='region the availability zone is in'),
+               Filter('state', help='state of the availability zone'),
+               Filter('zone-name', help='name of the availability zone')]
+    ListMarkers = ['availabilityZoneInfo', 'messageSet']
+    ItemMarkers = ['item']
 
-    def main(self):
-        conn = self.make_connection_cli()
-        return self.make_request_cli(conn, 'get_all_zones',
-                                      zones=self.zone)
-
-    def main_cli(self):
-        zones = self.main()
-        self.display_zones(zones)
-
-
+    def print_result(self, result):
+        for zone in result.get('availabilityZoneInfo', []):
+            msgs = ', '.join(msg for msg in zone.get('messageSet', []))
+            print self.tabify(('AVAILABILITYZONE', zone.get('zoneName'),
+                               zone.get('zoneState'), msgs))
