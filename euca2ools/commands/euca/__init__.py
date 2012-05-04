@@ -58,8 +58,7 @@ class Eucalyptus(requestbuilder.service.BaseService):
         config = self._get_env_config_from_env()
         self._populate_init_args_from_env_config(config)
         # User, systemwide env-style config files
-        for configfile_name in (self.configfile_name or '',
-                                '~/.eucarc', '~/.eucarc/eucarc'):
+        for configfile_name in ('~/.eucarc', '~/.eucarc/eucarc'):
             configfile_name = os.path.expandvars(configfile_name)
             configfile_name = os.path.expanduser(configfile_name)
             if os.path.isfile(configfile_name):
