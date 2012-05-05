@@ -56,7 +56,7 @@ class DescribeSnapshots(EucalyptusRequest):
                Filter('tag-value',
                       help='value of a tag assigned to the snapshot'),
                GenericTagFilter('tag:KEY',
-                                help='specific tag/value combination'),
+                                help='specific tag key/value combination'),
                Filter('volume-id', help='source volume ID'),
                Filter('volume-size', type=int)]
     ListMarkers = ['snapshotSet', 'tagSet']

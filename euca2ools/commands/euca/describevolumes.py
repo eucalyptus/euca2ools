@@ -57,7 +57,7 @@ class DescribeVolumes(EucalyptusRequest):
                Filter('tag-value',
                       help='value of a tag assigned to the volume'),
                GenericTagFilter('tag:KEY',
-                                help='specific tag/value combination'),
+                                help='specific tag key/value combination'),
                Filter(name='volume-id')]
     ListMarkers = ['volumeSet', 'attachmentSet', 'tagSet']
     ItemMarkers = ['item']

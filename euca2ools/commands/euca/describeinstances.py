@@ -94,7 +94,8 @@ class DescribeInstances(EucalyptusRequest):
                       help='name of any tag assigned to the instance'),
                Filter('tag-value',
                       help='value of any tag assigned to the instance'),
-               Filter('tag:key', help='specific tag/value combination'),
+               GenericTagFilter('tag:KEY',
+                                help='specific tag key/value combination'),
                Filter('virtualization-type', choices=['paravirtual', 'hvm']),
                Filter('vpc-id', help='ID of the VPC the instance is in')]
     ListMarkers = ['reservationSet', 'instancesSet', 'groupSet', 'tagSet',
