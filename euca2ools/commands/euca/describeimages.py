@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2012, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -27,143 +27,106 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#
-# Author: Neil Soman neil@eucalyptus.com
-#         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.commands.eucacommand
-from boto.roboto.param import Param
+from requestbuilder import Arg, Filter, GenericTagFilter
+from . import EucalyptusRequest
 
-class DescribeImages(euca2ools.commands.eucacommand.EucaCommand):
-
-    APIVersion = '2010-08-31'
-    Description = 'Shows information about machine images.'
-    Options = [Param(name='all', short_name='a', long_name='all',
-                     optional=True, ptype='boolean', default=False,
-                     doc='Show all images that the user has access to.'),
-               Param(name='owner', short_name='o', long_name='owner',
-                     optional=True, ptype='string', cardinality='*',
-                     doc="""Show only images owned by the user.
-                            Valid values: account ID|self|amazon"""),
-               Param(name='executable_by',
-                     short_name='x', long_name='executable-by',
-                     optional=True, ptype='string', cardinality='*',
-                     doc="""Show only images for which user has
-                     explicit launch permissions.
-                     Valid values: account ID|self|all""")]
-    Args = [Param(name='image', ptype='string',
-                  cardinality='+', optional=True)]
-    Filters = [Param(name='architecture', ptype='string',
-                     doc='Image architecture.  Valid values are i386 | x86_64'),
-               Param(name='block-device-mapping.delete-on-termination',
-                     ptype='boolean',
-                     doc="""Whether the Amazon EBS volume is deleted on
-                     instance termination."""),
-               Param(name='block-device-mapping.device-name', ptype='string',
-                     doc="""Device name (e.g., /dev/sdh) for an Amazon EBS volume
-                     mapped to the image."""),
-               Param(name='block-device-mapping.snapshot-id', ptype='string',
-                     doc="""Snapshot ID for an Amazon EBS volume mapped
-                     to the image."""),
-               Param(name='block-device-mapping.volume-size', ptype='integer',
-                     doc="""Volume size for an Amazon EBS volume mapped
-                     to the image."""),
-               Param(name='description', ptype='string',
-                     doc='Description of the AMI'),
-               Param(name='hypervisor', ptype='string',
-                     doc="""Hypervisor type of the image.
-                     Valid values are ovm | xen."""),
-               Param(name='image-id', ptype='string',
-                     doc='ID of the imageID'),
-               Param(name='image-type', ptype='string',
-                     doc="""Type of the image.
-                     Valid values are machine | kernel | ramdisk"""),
-               Param(name='is-public', ptype='boolean',
-                     doc='Whether the image is public.'),
-               Param(name='kernel-id', ptype='string',
-                     doc='Kernel ID.'),
-               Param(name='manifest-location', ptype='string',
-                     doc='Location of the image manifest.'),
-               Param(name='name', ptype='string',
-                     doc='Name of the AMI.'),
-               Param(name='owner-alias', ptype='string',
-                     doc="""AWS account alias (e.g., amazon or self) or
-                     AWS account ID that owns the AMI."""),
-               Param(name='owner-id', ptype='string',
-                     doc='AWS account ID of the image owner.'),
-               Param(name='platform', ptype='string',
-                     doc="""Use windows if you have Windows based AMIs;
-                     otherwise leave blank."""),
-               Param(name='product-code', ptype='string',
-                     doc='Product code associated with the AMI.'),
-               Param(name='ramdisk-id', ptype='string',
-                     doc='The ramdisk ID.'),
-               Param(name='root-device-name', ptype='string',
-                     doc='Root device name of the AMI (e.g., /dev/sda1).'),
-               Param(name='root-device-type', ptype='string',
-                     doc="""Root device type the AMI uses.
-                     Valid Values: ebs | instance-store."""),
-               Param(name='state', ptype='string',
-                     doc="""State of the image.
-                     Valid values: available | pending | failed."""),
-               Param(name='state-reason-code', ptype='string',
-                     doc='Reason code for the state change.'),
-               Param(name='state-reason-message', ptype='string',
-                     doc='Message for the state change.'),
-               Param(name='tag-key', ptype='string',
-                     doc='Key of a tag assigned to the resource.'),
-               Param(name='tag-value', ptype='string',
-                     doc='Value of a tag assigned to the resource.'),
-               Param(name='tag:key', ptype='string',
-                     doc="""Filters the results based on a specific
-                     tag/value combination."""),
-               Param(name='virtualization-type', ptype='string',
-                     doc="""Virtualization type of the image.
-                     Valid values: paravirtual | hvm""")]
-    
-    def display_images(self, images):
-        for image in images:
-            image_string = '%s\t%s\t%s\t%s' % (image.id, image.location,
-                    image.ownerId, image.state)
-            if image.is_public:
-                image_string += '\tpublic'
-            else:
-                image_string += '\tprivate'
-
-            image_string += '\t%s' % ','.join(image.product_codes)
-
-            for i in [image.architecture, image.type, image.kernel_id,
-                      image.ramdisk_id, image.platform,
-                      image.root_device_type]:
-                image_string += '\t%s' % (('' if i == None else i))
-
-            print 'IMAGE\t%s' % image_string
-            if image.block_device_mapping:
-                block_dev_mapping = image.block_device_mapping
-                if image.root_device_type == 'ebs':
-                    block_dev_string = '%s\t%s\t%s' \
-                        % (block_dev_mapping.current_name,
-                           block_dev_mapping.current_value.snapshot_id,
-                           block_dev_mapping.current_value.size)
-                    print 'BLOCKDEVICEMAPPING\t%s' % block_dev_string
+class DescribeImages(EucalyptusRequest):
+    Description = 'Show information about images'
+    #APIVersion = '2010-08-31'
+    APIVersion = '2012-04-01'
+    Args = [Arg('ImageId', metavar='IMAGE', nargs='*',
+                help='limit results to one or more images'),
+            Arg('-a', '--all', action='store_true', route_to=None,
+                help='describe all images (default)'),
+            Arg('-o', '--owner', dest='Owner', action='append',
+                help='describe images owned by the specified owner'),
+            Arg('-x', '--executable-by', dest='ExecutableBy', action='append',
+                help='''describe images for which the specified entity has
+                        explicit launch permissions''')]
+    Filters = [Filter('architecture', choices=('i386', 'x86_64'),
+                      help='image architecture'),
+               Filter('block-device-mapping.delete-on-termination',
+                      help='''whether a volume is deleted upon instance
+                              termination'''),
+               Filter('block-device-mapping.device-name',
+                      help='device name for a volume mapped to the image'),
+               Filter('block-device-mapping.snapshot-id',
+                      help='snapshot ID for a volume mapped to the image'),
+               Filter('block-device-mapping.volume-size',
+                      help='volume size for a volume mapped to the image'),
+               Filter('description', help='image description'),
+               Filter('image-id'),
+               Filter('image-type', choices=('machine', 'kernel', 'ramdisk'),
+                      help='image type ("machine", "kernel", or "ramdisk")'),
+               Filter('is-public', help='whether the image is public'),
+               Filter('kernel-id'),
+               Filter('manifest-location'),
+               Filter('name'),
+               Filter('owner-alias', help="image owner's account alias"),
+               Filter('owner-id', help="image owner's account ID"),
+               Filter('platform', help='"windows" for Windows images'),
+               Filter('product-code',
+                      help='product code associated with the image'),
+               Filter('product-code.type', choices=('devpay', 'marketplace'),
+                      help='type of product code associated with the image'),
+               Filter('ramdisk-id'),
+               Filter('root-device-name'),
+               Filter('root-device-type', choices=('ebs', 'instance-store'),
+                      help='root device type ("ebs" or "instance-store")'),
+               Filter('state', choices=('available', 'pending', 'failed'),
+                      help='''image state ("available", "pending", or
+                              "failed")'''),
+               Filter('state-reason-code',
+                      help='reason code for the most recent state change'),
+               Filter('state-reason-message',
+                      help='message for the most recent state change'),
+               Filter('tag-key', help='key of a tag assigned to the image'),
+               Filter('tag-value',
+                      help='value of a tag assigned to the image'),
+               GenericTagFilter('tag:KEY',
+                                help='specific tag key/value combination'),
+               Filter('virtualization-type', choices=('paravirtual', 'hvm'),
+                      help='virtualization type ("paravirtual" or "hvm")'),
+               Filter('hypervisor', choices=('ovm', 'xen'),
+                      help='image\'s hypervisor type ("ovm" or "xen")')]
+    ListMarkers = ['imagesSet', 'blockDeviceMapping', 'tagSet']
+    ItemMarkers = ['item']
 
     def main(self):
-        if self.all and (self.owner or self.executable_by or self.image):
-            msg = '-a cannot be combined with owner, launch, or image list'
-            self.display_error_and_exit(msg)
+        if self.args['all']:
+            if self.args.get('ImageId'):
+                self._cli_parser.error('argument -a/--all cannot be used with '
+                                       'a list of images')
+            if self.args.get('ExecutableBy'):
+                self._cli_parser.error('argument -a/--all cannot be used with '
+                                       '-x/--executable-by')
+            if self.args.get('Owner'):
+                self._cli_parser.error('argument -a/--all cannot be used with '
+                                       '-o/--owner')
+        return self.send()
 
-        # if you specify "-a" then it means return ALL images
-        if self.all:
-            self.executable_by = []
-            self.owner = []
-            
-        conn = self.make_connection_cli()
-        images = self.make_request_cli(conn, 'get_all_images',
-                                       image_ids=self.image,
-                                       owners=self.owner,
-                                       executable_by=self.executable_by)
-        return images
+    def print_result(self, result):
+        for image in result.get('imagesSet', []):
+            self.print_image(image)
 
-    def main_cli(self):
-        images = self.main()
-        self.display_images(images)
+    def print_image(self, image):
+        print self.tabify(('IMAGE', image.get('imageId'),
+                image.get('imageLocation'),
+                image.get('imageOwnerAlias') or image.get('imageOwnerId'),
+                image.get('imageState'),
+                ('public' if image.get('isPublic') == 'true' else 'private'),
+                image.get('architecture'), image.get('imageType'),
+                image.get('kernelId'), image.get('ramdiskId'),
+                image.get('platform'), image.get('rootDeviceType'),
+                image.get('virtualizationType'), image.get('hypervisor')))
+        for mapping in image.get('blockDeviceMapping', []):
+            self.print_blockdevice_mapping(mapping)
+        for tag in image.get('tagSet', []):
+            self.print_resource_tag(tag, image.get('imageId'))
+
+    def print_blockdevice_mapping(self, mapping):
+        print self.tabify(('BLOCKDEVICEMAPPING', mapping.get('deviceName'),
+                           mapping.get('ebs', {}).get('snapshotId'),
+                           mapping.get('ebs', {}).get('volumeSize'),
+                           mapping.get('ebs', {}).get('deleteOnTermination')))
