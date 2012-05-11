@@ -41,6 +41,9 @@ class DescribeSnapshots(euca2ools.commands.eucacommand.EucaCommand):
     Options = [Param(name='owner', short_name='o', long_name='owner',
                      optional=True, ptype='string',
                      doc='ID of the user who owns the snapshot.'),
+               Param(name='all', short_name='a', long_name='all',
+                     optional=True, ptype='boolean', default=False,
+                     doc='Describe all snapshots, public, private or shared'),
                Param(name='restorable_by',
                      short_name='r', long_name='restorable-by',
                      optional=True, ptype='string',
@@ -78,14 +81,27 @@ class DescribeSnapshots(euca2ools.commands.eucacommand.EucaCommand):
                      doc='The size of the volume, in GiB.')]
     
     def display_snapshots(self, snapshots):
+        members=( "id", "volume_id", "status", "start_time", "progress",
+                  "owner_id", "volume_size", "description" )
+
         for snapshot in snapshots:
-            snapshot_string = '%s\t%s\t%s\t%s\t%s' % (snapshot.id,
-                    snapshot.volume_id, snapshot.status,
-                    snapshot.start_time, snapshot.progress)
-            print 'SNAPSHOT\t%s' % snapshot_string
+            items=[ ]
+            for member in members:
+                val = getattr(snapshot, member, "")
+                items.append(str(val))
+            print "SNAPSHOT\t%s" % '\t'.join(items)
+
 
     def main(self):
         conn = self.make_connection_cli()
+
+        if self.all and (self.owner or self.snapshot):
+            msg = "--all is incompatible with --owner or --restorable-by"
+            self.display_error_and_exit(msg)
+
+        if not (self.all or self.owner or self.restorable_by or self.snapshot):
+            self.restorable_by = "self"
+
         return self.make_request_cli(conn, 'get_all_snapshots',
                                      snapshot_ids=self.snapshot,
                                      owner=self.owner,
