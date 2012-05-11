@@ -156,12 +156,28 @@ class DescribeImages(euca2ools.commands.eucacommand.EucaCommand):
         if self.all:
             self.executable_by = []
             self.owner = []
-            
+
         conn = self.make_connection_cli()
-        images = self.make_request_cli(conn, 'get_all_images',
-                                       image_ids=self.image,
-                                       owners=self.owner,
-                                       executable_by=self.executable_by)
+        if (self.executable_by or self.owner or self.image or self.all):
+            images = self.make_request_cli(conn, 'get_all_images',
+                                           image_ids=self.image,
+                                           owners=self.owner,
+                                           executable_by=self.executable_by)
+        else:
+            owned = self.make_request_cli(conn, 'get_all_images',
+                image_ids = None, owners = ("self",), executable_by = None)
+            launchable = self.make_request_cli(conn, 'get_all_images',
+                image_ids = None, owners = None, executable_by = ("self"))
+
+            seen = { }
+            images = [ ]
+            for image in owned:
+                seen[image.id] = True
+                images.append(image)
+            for image in launchable:
+                if image.id not in seen:
+                    images.append(image)
+
         return images
 
     def main_cli(self):
