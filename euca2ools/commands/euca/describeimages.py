@@ -32,12 +32,17 @@ from requestbuilder import Arg, Filter, GenericTagFilter
 from . import EucalyptusRequest
 
 class DescribeImages(EucalyptusRequest):
-    Description = 'Show information about images'
+    Description = '''\
+        Show information about images
+
+        By default, only images the caller owns and images for which the caller
+        has explicit launch permissions are shown.'''
+
     APIVersion = '2010-08-31'
     Args = [Arg('ImageId', metavar='IMAGE', nargs='*',
                 help='limit results to one or more images'),
             Arg('-a', '--all', action='store_true', route_to=None,
-                help='describe all images (default)'),
+                help='describe all images'),
             Arg('-o', '--owner', dest='Owner', action='append',
                 help='describe images owned by the specified owner'),
             Arg('-x', '--executable-by', dest='ExecutableBy', action='append',
@@ -93,16 +98,27 @@ class DescribeImages(EucalyptusRequest):
     ItemMarkers = ['item']
 
     def main(self):
+        if not any(self.args.get(item) for item in ('all', 'ImageId',
+                                                    'ExecutableBy', 'Owner')):
+            # Default to owned images and images with explicit launch perms
+            self.params = {'Owner': 'self'}
+            owned = self.send()
+            self.params = {'ExecutableBy': 'self'}
+            executable = self.send()
+            self.params = None
+            owned['imagesSet'] = (owned.get(     'imagesSet', []) +
+                                  executable.get('imagesSet', []))
+            return owned
         if self.args['all']:
             if self.args.get('ImageId'):
-                self._cli_parser.error('argument -a/--all cannot be used with '
+                self._cli_parser.error('argument -a/--all: not allowed with '
                                        'a list of images')
             if self.args.get('ExecutableBy'):
-                self._cli_parser.error('argument -a/--all cannot be used with '
-                                       '-x/--executable-by')
+                self._cli_parser.error('argument -a/--all: not allowed with '
+                                       'argument -x/--executable-by')
             if self.args.get('Owner'):
-                self._cli_parser.error('argument -a/--all cannot be used with '
-                                       '-o/--owner')
+                self._cli_parser.error('argument -a/--all: not allowed with '
+                                       'argument -o/--owner')
         return self.send()
 
     def print_result(self, result):
