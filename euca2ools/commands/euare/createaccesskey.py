@@ -33,8 +33,8 @@ from . import EuareRequest, DELEGATE
 
 class CreateAccessKey(EuareRequest):
     Description = 'Create a new access key for a user'
-    Args = [Arg('-u', '--user-name', dest='UserName',
-                help='user the new key will belong to (default: calling user'),
+    Args = [Arg('-u', '--user-name', dest='UserName', help='''user the new key
+                will belong to (default: calling user)'''),
             DELEGATE]
 
     def print_result(self, result):
