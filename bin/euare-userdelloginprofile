@@ -1,7 +1,6 @@
-#!/usr/bin/python
+#!/usr/bin/python -tt
 
 import euca2ools.commands.euare.deleteloginprofile
 
 if __name__ == '__main__':
-    r = euca2ools.commands.euare.deleteloginprofile.DeleteLoginProfile()
-    r.main_cli()
+    euca2ools.commands.euare.deleteloginprofile.DeleteLoginProfile().do_cli()

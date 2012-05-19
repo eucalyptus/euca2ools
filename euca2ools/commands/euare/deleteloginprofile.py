@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2012, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -31,39 +31,15 @@
 # Author: Neil Soman neil@eucalyptus.com
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
-from boto.roboto.awsqueryrequest import AWSQueryRequest
-from boto.roboto.param import Param
-import euca2ools.commands.euare
-import euca2ools.utils
+from requestbuilder import Arg
+from . import EuareRequest, DELEGATE
 
+class DeleteLoginProfile(EuareRequest):
+    Description = "Delete a user's login profile"
+    Args = [Arg('-u', '--user-name', dest='UserName', metavar='USER',
+                required=True, help='''name of the user whose login profile
+                should be deleted (required)'''),
+            DELEGATE]
 
-class DeleteLoginProfile(AWSQueryRequest):
-
-    ServiceClass = euca2ools.commands.euare.Euare
-
-    Description = """DeleteLoginProfile"""
-    Params = [Param(
-        name='UserName',
-        short_name='u',
-        long_name='user-name',
-        ptype='string',
-        optional=False,
-        doc=""" Name of the User whose login profile you want to delete. """,
-        ), Param(
-        name='DelegateAccount',
-        short_name=None,
-        long_name='delegate',
-        ptype='string',
-        optional=True,
-        doc=""" [Eucalyptus extension] Process this command as if the administrator of the specified account had run it. This option is only usable by cloud administrators. """,
-        )]
-
-    def cli_formatter(self, data):
+    def print_result(self, result):
         pass
-    
-    def main(self, **args):
-        return self.send(**args)
-
-    def main_cli(self):
-        euca2ools.utils.print_version_if_necessary()
-        self.do_cli()
