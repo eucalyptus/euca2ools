@@ -139,9 +139,15 @@ class InstallImage(AWSQueryRequest):
               long_name='ramdisk',
               optional=True,
               ptype='string',
-              doc="""Override bundled ramdisk with one already installed""")
+              doc="""Override bundled ramdisk with one already installed"""),
+        Param(name='yes',
+              short_name='y',
+              long_name='yes',
+              optional=True,
+              ptype='boolean',
+              doc="""Answer \"yes\" to questions during install""")
         ]
-
+    ImageList = None
 
     def get_relative_filename(self, filename):
         return os.path.split(filename)[-1]
@@ -153,9 +159,43 @@ class InstallImage(AWSQueryRequest):
             file_path = '.'
         return file_path
 
+    def promptReplace(self, type, name):
+        if self.cli_options.yes:
+            print type+": "+name+" is already installed on the cloud, skipping installation of another one."
+            return True
+        else:
+            answer = raw_input(type+": "+name+" is already installed on ths cloud. Would you like to use it intead?(y/N)")
+            if (answer=='y' or answer=='Y'):
+                return True
+            return False
+
     def bundleFile(self, path, name, description, arch, kernel_id=None, ramdisk_id=None):
         bundler = euca2ools.bundler.Bundler(self)
         path = self.destination + path
+
+        # before we do anything substantial, check to see if this "image" was already installed
+        ret_id=None
+        for img in self.ImageList:
+            name_match=False
+            if img.location.endswith(name+'.manifest.xml'):
+                name_match=True
+            # always replace skip if found
+            if name_match:
+                if kernel_id=='true' and img.type=='kernel':
+                    if self.promptReplace("Kernel", img.name):
+                        ret_id=img.name
+                    break
+                elif ramdisk_id=='true' and img.type=='ramdisk':
+                    if self.promptReplace("Ramdisk", img.name):
+                        ret_id=img.name
+                    break
+                elif kernel_id!='true' and ramdisk_id!='true' and img.type=='machine':
+                    if self.promptReplace("Image", img.name):
+                        ret_id=img.name
+                    break
+
+        if ret_id:
+            return ret_id
 
         image_size = bundler.check_image(path, self.destination)
         try:
@@ -206,10 +246,10 @@ class InstallImage(AWSQueryRequest):
         try:
             names = bundler.untarzip_image(self.destination, file)
         except OSError:
-            print "Error: cannot unbundle image, possibly corrupted file 1"
+            print "Error: cannot unbundle image, possibly corrupted file"
             sys.exit(-1)
         except IOError:
-            print "Error: cannot unbundle image, possibly corrupted file 2"
+            print "Error: cannot unbundle image, possibly corrupted file"
             sys.exit(-1)
         kernel_dir=None
         if not(self.cli_options.kernel_type==None):
@@ -222,9 +262,7 @@ class InstallImage(AWSQueryRequest):
         if kernel_id==None:
             for i in [0, 1]:
                 tar_root = os.path.commonprefix(names)
-                print "tar root = "+tar_root
                 for path in names:
-                    print "path = "+path
                     if (kernel_dir==None or path.find(kernel_dir) > -1):
                         name = os.path.basename(path)
                         if not(kernel_dir) and (os.path.dirname(path) != tar_root):
@@ -311,6 +349,13 @@ class InstallImage(AWSQueryRequest):
             print "Error: must be cloud admin to upload kernel/ramdisk. try specifying existing ones with --kernel and --ramdisk"
             sys.exit(-1)
         self.eustore_url = self.ServiceClass.StoreBaseURL
+
+        # would be good of this were async, i.e. when the tarball is downloading
+        ec2_conn = boto.connect_euca(host=euare_svc.args['host'], \
+                        aws_access_key_id=euare_svc.args['aws_access_key_id'],\
+                        aws_secret_access_key=euare_svc.args['aws_secret_access_key'])
+        self.ImageList = ec2_conn.get_all_images()
+
         if os.environ.has_key('EUSTORE_URL'):
             self.eustore_url = os.environ['EUSTORE_URL']
 
@@ -338,6 +383,14 @@ class InstallImage(AWSQueryRequest):
                         image_found = True
                         break
                 if image_found:
+                    # more param checking now
+                    if image['single-kernel']=='True':
+                        if self.cli_options.kernel_type:
+                            print "The -k option will be ignored because the image is single-kernel"
+                    else:
+                        if not(self.cli_options.kernel_type):
+                            print "Error: The -k option must be specified because this image has separate kernels"
+                            sys.exit(-1)
                     print "Downloading Image : ",image['description']
                     imageURL = self.eustore_url+image['url']
                     req = urllib2.Request(imageURL, headers=self.ServiceClass.RequestHeaders)
@@ -364,7 +417,7 @@ class InstallImage(AWSQueryRequest):
                     if image['name'] == crc.rjust(10,"0"):
                         print "Installed image: "+self.bundleAll(fp.name, None, image['description'], image['architecture'])
                     else:
-                        print "Downloaded image was incomplete or corrupt, please try again"
+                        print "Error: Downloaded image was incomplete or corrupt, please try again"
                     os.remove(fp.name)
                 else:
                     print "Image name not found, please run eustore-describe-images"
