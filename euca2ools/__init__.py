@@ -33,4 +33,4 @@
 #       : Mitch Garnaat mgarnaat@eucalyptus.com
 
 __version__  = 'devel'
-__codename__ = 'Stencil'
+__codename__ = 'Limbo'
