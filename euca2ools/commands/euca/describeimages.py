@@ -33,8 +33,7 @@ from . import EucalyptusRequest
 
 class DescribeImages(EucalyptusRequest):
     Description = 'Show information about images'
-    #APIVersion = '2010-08-31'
-    APIVersion = '2012-04-01'
+    APIVersion = '2010-08-31'
     Args = [Arg('ImageId', metavar='IMAGE', nargs='*',
                 help='limit results to one or more images'),
             Arg('-a', '--all', action='store_true', route_to=None,
