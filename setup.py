@@ -31,12 +31,38 @@
 # Author: Neil Soman neil@eucalyptus.com
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
-try:
-    from setuptools import setup
-except ImportError:
-    from distutils.core import setup
+from distutils.core import setup
+from distutils.command.build_scripts import build_scripts
+from distutils.command.install_scripts import install_scripts
+import os.path
 
 from euca2ools import __version__
+
+# Cheap hack:  install symlinks separately from regular files.
+# cmd.copy_tree accepts a preserve_symlinks option, but when we call
+# ``setup.py install'' more than once the method fails when it encounters
+# symlinks that are already there.
+
+class build_scripts_except_symlinks(build_scripts):
+    '''Like build_scripts, but ignoring symlinks'''
+    def copy_scripts(self):
+        orig_scripts = self.scripts
+        self.scripts = [script for script in self.scripts
+                        if not os.path.islink(script)]
+        build_scripts.copy_scripts(self)
+        self.scripts = orig_scripts
+
+class install_scripts_and_symlinks(install_scripts):
+    '''Like install_scripts, but also replicating nonexistent symlinks'''
+    def run(self):
+        install_scripts.run(self)
+        # Replicate symlinks if they don't exist
+        for script in self.distribution.scripts:
+            if os.path.islink(script):
+                target  = os.readlink(script)
+                newlink = os.path.join(self.install_dir, os.path.basename(script))
+                if not os.path.exists(newlink):
+                    os.symlink(target, newlink)
 
 setup(name = "euca2ools",
       version = __version__,
@@ -182,4 +208,5 @@ setup(name = "euca2ools",
                      'Programming Language :: Python :: 2.6',
                      'Programming Language :: Python :: 2.7',
                      'Topic :: Internet'],
-      )
+      cmdclass = {'build_scripts':   build_scripts_except_symlinks,
+                  'install_scripts': install_scripts_and_symlinks})
