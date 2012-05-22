@@ -34,11 +34,15 @@ from . import EucalyptusRequest
 
 class DescribeSnapshots(EucalyptusRequest):
     APIVersion = '2010-08-31'
-    Description = 'Display information about snapshots'
+    Description = '''\
+        Show information about snapshots
+
+        By default, only snapshots explicitly restorable by the caller are
+        shown.'''
     Args = [Arg('SnapshotId', nargs='*', metavar='SNAPSHOT',
                 help='limit results to specific snapshots'),
-            # noop for a little ec2dsnap compatibility
-            Arg('--all', action='store_true', route_to=None, help=SUPPRESS),
+            Arg('-a', '--all', action='store_true', route_to=None,
+                help='describe all snapshots'),
             Arg('-o', '--owner', dest='Owner', metavar='ACCOUNT',
                 action='append', default=[],
                 help='limit results to snapshots owned by specific accounts'),
@@ -61,6 +65,20 @@ class DescribeSnapshots(EucalyptusRequest):
                Filter('volume-size', type=int)]
     ListMarkers = ['snapshotSet', 'tagSet']
     ItemMarkers = ['item']
+
+    def main(self):
+        if not any(self.args.get(item) for item in ('all', 'Owner',
+                                                    'RestorableBy')):
+            # Default to restorable snapshots
+            self.args['RestorableBy'] = ['self']
+        elif self.args.get('all'):
+            if self.args.get('Owner'):
+                self._cli_parser.error('argument -a/--all: not allowed with '
+                                       'argument -o/--owner')
+            if self.args.get('RestorableBy'):
+                self._cli_parser.error('argument -a/--all: not allowed with '
+                                       'argument -r/--restorable-by')
+        return self.send()
 
     def print_result(self, result):
         for snapshot in result.get('snapshotSet', []):
