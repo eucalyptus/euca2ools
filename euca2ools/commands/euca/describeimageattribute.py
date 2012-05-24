@@ -45,7 +45,7 @@ class DescribeImageAttribute(euca2ools.commands.eucacommand.EucaCommand):
                      short_name='l', long_name='launch-permission',
                      optional=True, ptype='boolean',
                      doc='show launch permissions.'),
-               Param(name='productCode', metavar='product_code',
+               Param(name='productCodes', metavar='product_code',
                      short_name='p', long_name='product-code',
                      optional=True, ptype='boolean',
                      doc='show the product codes associated with the image.'),
