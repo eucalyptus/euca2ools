@@ -33,6 +33,7 @@
 
 import euca2ools.commands.eucacommand
 import euca2ools.bundler
+import sys
 from boto.roboto.param import Param
 
 class GetPassword(euca2ools.commands.eucacommand.EucaCommand):
@@ -49,14 +50,24 @@ class GetPassword(euca2ools.commands.eucacommand.EucaCommand):
 
     def main(self):
         conn = self.make_connection_cli()
-        pd = self.make_request_cli(conn, 'get_password_data',
-                                   instance_id=self.instance_id)
+        try:
+            pd = self.make_request_cli(conn, 'get_password_data',
+                                       instance_id=self.instance_id)
+        except AttributeError:
+            # The reply didn't contain a passwordData element.  Boto doesn't
+            # handle this since EC2 always includes one, even if it is empty.
+            return None
         if pd:
             # TODO - this is actually in the bundler
             # TODO validate file?
-            return euca2ools.bundler.Bundler(self).decrypt_string(pd, self.privatekey, encoded=True)
+            return euca2ools.bundler.Bundler(self).decrypt_string(
+                    pd, self.privatekey, encoded=True)
+        else:
+            return None
 
     def main_cli(self):
         pw = self.main()
-        print pw
-
+        if pw:
+            print pw
+        else:
+            sys.exit('no password found for this instance')
