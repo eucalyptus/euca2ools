@@ -49,7 +49,7 @@ class DescribeAddresses(euca2ools.commands.eucacommand.EucaCommand):
         for address in addresses:
             domain = getattr(address, 'domain', 'standard') or 'standard'
             address_string = '%s\t%s\t%s' % (address.public_ip,
-                                             address.instance_id,
+                                             address.instance_id or '',
                                              domain)
             print 'ADDRESS\t%s' % address_string
 
