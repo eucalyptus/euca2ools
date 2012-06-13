@@ -146,6 +146,7 @@ class Bundler(object):
    
     def tarzip_image(self, prefix, file, path):
         utils.check_prerequisite_command('tar')
+        print 'Compressing image'
 
         targz = '%s.tar.gz' % os.path.join(path, prefix)
         targzfile = open(targz, 'w')
