@@ -42,8 +42,7 @@ class DescribeAvailabilityZones(EucalyptusRequest):
                       help='region the availability zone is in'),
                Filter('state', help='state of the availability zone'),
                Filter('zone-name', help='name of the availability zone')]
-    ListMarkers = ['availabilityZoneInfo', 'messageSet']
-    ItemMarkers = ['item']
+    ListDelims = ['availabilityZoneInfo', 'messageSet']
 
     def print_result(self, result):
         for zone in result.get('availabilityZoneInfo', []):

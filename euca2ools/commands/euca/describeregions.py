@@ -38,8 +38,7 @@ class DescribeRegions(EucalyptusRequest):
                 help='limit results to specific regions')]
     Filters = [Filter('endpoint'),
                Filter('region-name')]
-    ListMarkers = ['regionInfo']
-    ItemMarkers = ['item']
+    ListDelims = ['regionInfo']
 
     def print_result(self, result):
         for region in result.get('regionInfo', []):

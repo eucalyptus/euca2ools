@@ -44,8 +44,7 @@ class DescribeAddresses(EucalyptusRequest):
                Filter('instance-id',
                       help='instance the address is associated with'),
                Filter('public-ip', help='the elastic IP address')]
-    ListMarkers = ['addressesSet']
-    ItemMarkers = ['item']
+    ListDelims = ['addressesSet']
 
     def main(self):
         alloc_ids = set(addr for addr in self.args.get('address', [])

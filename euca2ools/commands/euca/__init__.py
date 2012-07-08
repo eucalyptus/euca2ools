@@ -31,59 +31,76 @@
 import argparse
 from operator import itemgetter
 import os.path
-from requestbuilder import Arg, CONNECTION
+from requestbuilder import Arg, AUTH, SERVICE, STD_AUTH_ARGS
 from requestbuilder.mixins import TabifyingCommand
 import requestbuilder.service
 import shlex
 from string import Template
+import sys
 from .. import Euca2oolsRequest
 
 class Eucalyptus(requestbuilder.service.BaseService):
-    Description = 'Eucalyptus compute cloud controller'
+    Description = 'Eucalyptus compute cloud service'
     APIVersion = '2009-11-30'
     EnvURL = 'EC2_URL'
 
-    def __init__(self, configfile=None, **kwargs):
+    def __init__(self, log, configfile=None, deprecated_key_id=None,
+                 deprecated_key=None, auth_args=None, **kwargs):
         self.configfile_name = configfile
-        requestbuilder.service.BaseService.__init__(self, **kwargs)
+        if deprecated_key_id and not auth_args.get('key_id'):
+            auth_args['key_id'] = deprecated_key_id
+            msg = 'given access key ID argument is deprecated; use -I instead'
+            log.warn(msg)
+            print >> sys.stderr, 'warning:', msg
+        if deprecated_key and not auth_args.get('key'):
+            auth_args['key'] = deprecated_key
+            msg = 'argument -s is deprecated; use -S instead'
+            log.warn(msg)
+            print >> sys.stderr, 'warning:', msg
+        requestbuilder.service.BaseService.__init__(self, log,
+                                                    auth_args=auth_args,
+                                                    **kwargs)
 
     def find_credentials(self):
         # CLI-given env-style config file
         if os.path.isfile(self.configfile_name or ''):
             config = _parse_configfile(self.configfile_name)
-            self._populate_init_args_from_env_config(config)
+            self._populate_self_from_env_config(config)
         # AWS credential file (path is in the environment)
         requestbuilder.service.BaseService.find_credentials(self)
         # Environment
         config = self._get_env_config_from_env()
-        self._populate_init_args_from_env_config(config)
+        self._populate_self_from_env_config(config)
         # User, systemwide env-style config files
         for configfile_name in ('~/.eucarc', '~/.eucarc/eucarc'):
             configfile_name = os.path.expandvars(configfile_name)
             configfile_name = os.path.expanduser(configfile_name)
             if os.path.isfile(configfile_name):
                 config = _parse_configfile(configfile_name)
-                self._populate_init_args_from_env_config(config)
-
-    _init_args_key_map = {'EC2_ACCESS_KEY':   'aws_access_key_id',
-                          'EC2_SECRET_KEY':   'aws_secret_access_key',
-                          'EC2_URL':          'url'}
+                self._populate_self_from_env_config(config)
 
     def _get_env_config_from_env(self):
         envconfig = {}
-        for key in self._init_args_key_map:
+        for key in ('EC2_ACCESS_KEY', 'EC2_SECRET_KEY', 'EC2_URL'):
             if key in os.environ:
                 envconfig[key] = os.getenv(key)
         return envconfig
 
-    def _populate_init_args_from_env_config(self, envconfig):
+    def _populate_self_from_env_config(self, envconfig):
         '''
-        Populate self._init_args from the contents of an environment
+        Populate this service from the contents of an environment
         variable-like dict.
         '''
-        for (env_key, initargs_key) in self._init_args_key_map.iteritems():
-            if env_key in envconfig and not self._init_args.get(initargs_key):
-                self._init_args[initargs_key] = envconfig[env_key]
+        for (env_key, val) in envconfig.iteritems():
+            if (env_key == 'EC2_ACCESS_KEY' and
+                not self._auth_args.get('key_id')):
+                self._auth_args['key_id'] = val
+            elif (env_key == 'EC2_SECRET_KEY' and
+                  not self._auth_args.get('key')):
+                self._auth_args['key'] = val
+            elif env_key == 'EC2_URL' and not self.endpoint:
+                self.endpoint = val
+                self.region_name = '__config__' ## FIXME
 
 def _parse_configfile(configfile_name):
     def sourcehook(filename):
@@ -113,15 +130,20 @@ def _parse_configfile(configfile_name):
 class EucalyptusRequest(Euca2oolsRequest, TabifyingCommand):
     ServiceClass = Eucalyptus
 
-    Args = [Arg('-I', '-a', '--access-key-id', '--access-key',
-                metavar='KEY_ID', dest='aws_access_key_id',
-                route_to=CONNECTION),
-            Arg('-S', '-s', '--secret-key', metavar='KEY',
-                dest='aws_secret_access_key', route_to=CONNECTION),
-            Arg('-U', '--url', route_to=CONNECTION,
-                help='cloud controller URL'),
+    # For compatibility with euca2ools versions earlier than 3, we include the
+    # old -a/--access-key/-s args.  As before, if either -a or -s conflicts
+    # with another arg, both are capitalized.  All are deprecated.  They are no
+    # longer documented and using them will result in warnings.
+    Args = [Arg('-a', '--access-key', metavar='KEY_ID',
+                dest='deprecated_key_id', route_to=SERVICE,
+                help=argparse.SUPPRESS),
+            Arg('-s', metavar='KEY', dest='deprecated_key', route_to=SERVICE,
+                help=argparse.SUPPRESS),
             Arg('--config', dest='configfile', metavar='CFGFILE',
-                 route_to=CONNECTION)]
+                 route_to=SERVICE),
+            Arg('-U', '--url', dest='endpoint', metavar='URL',
+                route_to=SERVICE,
+                help='compute service endpoint URL')] + STD_AUTH_ARGS
 
     def __init__(self, **kwargs):
         # If an inheriting class defines '-a' or '-s' args, resolve conflicts
@@ -131,13 +153,12 @@ class EucalyptusRequest(Euca2oolsRequest, TabifyingCommand):
         s_args = _find_args_by_parg(self.Args, '-s')
         if len(a_args) > 1 or len(s_args) > 1:
             for arg in a_args:
-                if '--access-key' in arg.pargs:
+                if arg.kwargs.get('dest') == 'deprecated_key_id':
                     arg.pargs = tuple('-A' if parg == '-a' else parg
                                       for parg in arg.pargs)
             for arg in s_args:
-                if '--secret-key' in arg.pargs:
-                    arg.pargs = tuple(parg for parg in arg.pargs
-                                      if parg != '-s')
+                if arg.kwargs.get('dest') == 'deprecated_key':
+                    arg.kwargs['dest'] = argparse.SUPPRESS
         Euca2oolsRequest.__init__(self, **kwargs)
 
     def parse_http_response(self, response_body):

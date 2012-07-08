@@ -50,8 +50,7 @@ class DescribeImageAttribute(EucalyptusRequest):
                     const='ramdisk', help='show associated ramdisk image ID'),
                 Arg('--description', dest='Attribute', action='store_const',
                     const='description', help="show the image's description"))]
-    ListMarkers = ['blockDeviceMapping', 'launchPermission', 'productCodes']
-    ItemMarkers = ['item']
+    ListDelims = ['blockDeviceMapping', 'launchPermission', 'productCodes']
 
     def print_result(self, result):
         image_id = result.get('imageId')

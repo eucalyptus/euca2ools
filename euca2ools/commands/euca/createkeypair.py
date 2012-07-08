@@ -33,7 +33,7 @@ from . import EucalyptusRequest
 
 class CreateKeyPair(EucalyptusRequest):
     Description = 'Create a new SSH key pair for use with instances'
-    Args = [Arg('KeyName', metavar='KEYPAIR', help='name of the new key')]
+    Args = [Arg('KeyName', metavar='KEYPAIR', help='name of the new key pair')]
 
     def print_result(self, result):
         print self.tabify(('KEYPAIR', result['keyName'],

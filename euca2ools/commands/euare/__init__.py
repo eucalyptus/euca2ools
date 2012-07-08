@@ -28,7 +28,7 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-from requestbuilder import Arg, STD_AUTH_ARGS, CONNECTION
+from requestbuilder import Arg, SERVICE, STD_AUTH_ARGS
 import requestbuilder.service
 from .. import Euca2oolsRequest
 
@@ -37,24 +37,23 @@ class Euare(requestbuilder.service.BaseService):
     APIVersion = '2010-05-08'
     EnvURL = 'EUARE_URL'
 
-    Endpoints = {None: 'iam.amazonaws.com'}
-
 class EuareRequest(Euca2oolsRequest):
     ServiceClass = Euare
-    Args = [Arg('-U', '--url', route_to=CONNECTION,
-            help='EUARE service URL')] + STD_AUTH_ARGS
+    Args = [Arg('-U', '--url', dest='endpoint', metavar='URL',
+                route_to=SERVICE,
+                help='identity service endpoint URL')] + STD_AUTH_ARGS
 
-    def parse_http_response(self, response_body):
-        response = Euca2oolsRequest.parse_http_response(self, response_body)
+    def parse_response(self, response):
+        response_dict = Euca2oolsRequest.parse_response(self, response)
         # EUARE responses enclose their useful data inside FooResponse
         # elements.  If that's all we have after stripping out ResponseMetadata
         # then just return its contents.
         useful_keys = filter(lambda x: x != 'ResponseMetadata',
-                             response.keys())
+                             response_dict.keys())
         if len(useful_keys) == 1:
-            return response[useful_keys[0]]
+            return response_dict[useful_keys[0]]
         else:
-            return response
+            return response_dict
 
 DELEGATE = Arg('--delegate', dest='DelegateAccount', metavar='ACCOUNT',
                help='''[Eucalyptus only] interpret this command as if the

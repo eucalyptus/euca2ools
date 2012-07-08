@@ -43,9 +43,11 @@ class DescribeImages(EucalyptusRequest):
                 help='limit results to one or more images'),
             Arg('-a', '--all', action='store_true', route_to=None,
                 help='describe all images'),
-            Arg('-o', '--owner', dest='Owner', action='append',
+            Arg('-o', '--owner', dest='Owner', metavar='ACCOUNT',
+                action='append',
                 help='describe images owned by the specified owner'),
-            Arg('-x', '--executable-by', dest='ExecutableBy', action='append',
+            Arg('-x', '--executable-by', dest='ExecutableBy',
+                metavar='ACCOUNT', action='append',
                 help='''describe images for which the specified entity has
                         explicit launch permissions''')]
     Filters = [Filter('architecture', choices=('i386', 'x86_64'),
@@ -94,8 +96,7 @@ class DescribeImages(EucalyptusRequest):
                       help='virtualization type ("paravirtual" or "hvm")'),
                Filter('hypervisor', choices=('ovm', 'xen'),
                       help='image\'s hypervisor type ("ovm" or "xen")')]
-    ListMarkers = ['imagesSet', 'blockDeviceMapping', 'tagSet']
-    ItemMarkers = ['item']
+    ListDelims = ['imagesSet', 'blockDeviceMapping', 'tagSet']
 
     def main(self):
         if not any(self.args.get(item) for item in ('all', 'ImageId',

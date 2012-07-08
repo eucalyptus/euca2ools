@@ -28,6 +28,7 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+import platform
 import requestbuilder.command
 import requestbuilder.request
 from .. import __version__, __codename__
@@ -36,4 +37,14 @@ class Euca2oolsCommand(requestbuilder.command.BaseCommand):
     Version = 'euca2ools {0} ({1})'.format(__version__, __codename__)
 
 class Euca2oolsRequest(Euca2oolsCommand, requestbuilder.request.BaseRequest):
-    pass
+    @property
+    def user_agent(self):
+        if not self.__user_agent:
+            template = ('euca2ools/{ver} ({os} {osver}; {python} {pyver}) '
+                        'requestbuilder/{rqver}')
+            self.__user_agent = template.format(ver=__version__,
+                    os=platform.uname()[0], osver=platform.uname()[2],
+                    python=platform.python_implementation(),
+                    pyver=platform.python_version(),
+                    rqver=requestbuilder.__version__)
+        return self.__user_agent
