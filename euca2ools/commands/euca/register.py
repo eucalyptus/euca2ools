@@ -53,7 +53,7 @@ class Register(euca2ools.commands.eucacommand.EucaCommand):
                Param(name='architecture',
                      short_name='a', long_name='architecture',
                      optional=True, ptype='string', default='i386',
-                     choices=['i386', 'x86_64'],
+                     choices=['i386', 'x86_64', 'armhf'],
                      doc='The architecture of the image.'),
                Param(name='kernel', long_name='kernel',
                      optional=True, ptype='string',
