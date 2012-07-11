@@ -98,7 +98,7 @@ class BundleVol(euca2ools.commands.eucacommand.EucaCommand):
                Param(name='target_architecture',
                      short_name='r', long_name='arch',
                      optional=True, ptype='string', default='x86_64',
-                     choices=['i386', 'x86_64'],
+                     choices=['i386', 'x86_64', 'armhf'],
                      doc='Target architecture for the image'),
                Param(name='volume_path', long_name='volume',
                      optional=True, ptype='dir', default='/',
