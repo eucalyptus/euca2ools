@@ -89,13 +89,12 @@ class BundleImage(euca2ools.commands.eucacommand.EucaCommand):
 
     def get_block_devs(self):
         mapping_str = self.block_device_mapping
-        mapping = []
+        mapping = {}
         mapping_pairs = mapping_str.split(',')
         for m in mapping_pairs:
             m_parts = m.split('=')
             if len(m_parts) > 1:
-                mapping.append(m_parts[0])
-                mapping.append(m_parts[1])
+                mapping[m_parts[0]] = m_parts[1]
         return mapping
 
     def add_product_codes(self):
