@@ -49,8 +49,10 @@ class CreateKeyPair(euca2ools.commands.eucacommand.EucaCommand):
                   doc='unique name for a keypair to be created',
                   cardinality=1, optional=False)]
 
-    def display_keypair(self, keypair):
+    def display_fingerprint(self, keypair):
         print 'KEYPAIR\t%s\t%s' % (keypair.name, keypair.fingerprint)
+
+    def display_keypair(self, keypair):
         print keypair.material
 
     def save_keypair_to_file(self, keypair):
@@ -67,7 +69,9 @@ class CreateKeyPair(euca2ools.commands.eucacommand.EucaCommand):
 
     def main_cli(self):
         keypair = self.main()
-        self.display_keypair(keypair)
+        self.display_fingerprint(keypair)
         if self.filename != None:
             self.save_keypair_to_file(keypair)
+        else:
+            self.display_keypair(keypair)
 
