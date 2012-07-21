@@ -43,7 +43,7 @@ class DescribeInstances(euca2ools.commands.eucacommand.EucaCommand):
                   cardinality='+', optional=True)]
     Filters = [Param(name='architecture', ptype='string',
                      doc="""Instance architecture.
-                     Valid values are i386 | x86_64"""),
+                     Valid values are i386 | x86_64 | armhf"""),
                Param(name='availability-zone', ptype='string',
                      doc="Instance's Availability Zone"),
                Param(name='block-device-mapping.attach-time',

@@ -54,7 +54,7 @@ class DescribeImages(euca2ools.commands.eucacommand.EucaCommand):
     Args = [Param(name='image', ptype='string',
                   cardinality='+', optional=True)]
     Filters = [Param(name='architecture', ptype='string',
-                     doc='Image architecture.  Valid values are i386 | x86_64'),
+                     doc='Image architecture.  Valid values are i386 | x86_64 | armhf'),
                Param(name='block-device-mapping.delete-on-termination',
                      ptype='boolean',
                      doc="""Whether the Amazon EBS volume is deleted on
