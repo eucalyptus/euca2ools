@@ -245,7 +245,7 @@ class BundleVol(euca2ools.commands.eucacommand.EucaCommand):
              ancestor_ami_ids) = self.get_instance_metadata(self.ramdisk_id,
                                                             self.kernel_id,
                                                             self.block_device_mapping)
-        if self.product_codes and isinstance(self.product_codes,basestring):
+        if self.product_codes and isinstance(self.product_codes, basestring):
             self.product_codes = self.add_product_codes(self.product_codes)
 
         try:

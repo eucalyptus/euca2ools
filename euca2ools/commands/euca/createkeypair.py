@@ -39,10 +39,10 @@ from stat import *
 class CreateKeyPair(euca2ools.commands.eucacommand.EucaCommand):
 
     Description = 'Creates a new key pair for use with instances'
-    Options = [Param(name='filename', short_name='f', 
+    Options = [Param(name='filename', short_name='f',
                   long_name='filename', ptype='string',
-                  doc='Filename to save the private key. Default ' +
-                  'action is to overwire the file.',
+                  doc='Filename to save the private key to. Default ' +
+                  'action is to overwite the file.',
                   optional=True)]
 
     Args = [Param(name='keypair_name', ptype='string',
@@ -65,7 +65,7 @@ class CreateKeyPair(euca2ools.commands.eucacommand.EucaCommand):
     def main(self):
         conn = self.make_connection_cli()
         return self.make_request_cli(conn, 'create_key_pair',
-                                      key_name=self.keypair_name)
+                                     key_name=self.keypair_name)
 
     def main_cli(self):
         keypair = self.main()
@@ -74,4 +74,3 @@ class CreateKeyPair(euca2ools.commands.eucacommand.EucaCommand):
             self.save_keypair_to_file(keypair)
         else:
             self.display_keypair(keypair)
-
