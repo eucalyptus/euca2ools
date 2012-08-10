@@ -31,7 +31,8 @@
 import argparse
 from operator import itemgetter
 import os.path
-from requestbuilder import Arg, AUTH, SERVICE, STD_AUTH_ARGS
+from requestbuilder import Arg, MutuallyExclusiveArgList, AUTH, SERVICE, \
+        STD_AUTH_ARGS
 from requestbuilder.mixins import TabifyingCommand
 import requestbuilder.service
 import shlex
@@ -40,13 +41,15 @@ import sys
 from .. import Euca2oolsRequest
 
 class Eucalyptus(requestbuilder.service.BaseService):
+    Name = 'ec2'
     Description = 'Eucalyptus compute cloud service'
     APIVersion = '2009-11-30'
     EnvURL = 'EC2_URL'
 
-    def __init__(self, log, configfile=None, deprecated_key_id=None,
-                 deprecated_key=None, auth_args=None, **kwargs):
-        self.configfile_name = configfile
+    def __init__(self, config, log, shell_configfile=None,
+                 deprecated_key_id=None, deprecated_key=None, auth_args=None,
+                 **kwargs):
+        self.shell_configfile_name = shell_configfile
         if deprecated_key_id and not auth_args.get('key_id'):
             auth_args['key_id'] = deprecated_key_id
             msg = 'given access key ID argument is deprecated; use -I instead'
@@ -57,26 +60,28 @@ class Eucalyptus(requestbuilder.service.BaseService):
             msg = 'argument -s is deprecated; use -S instead'
             log.warn(msg)
             print >> sys.stderr, 'warning:', msg
-        requestbuilder.service.BaseService.__init__(self, log,
+        requestbuilder.service.BaseService.__init__(self, config, log,
                                                     auth_args=auth_args,
                                                     **kwargs)
 
-    def find_credentials(self):
-        # CLI-given env-style config file
-        if os.path.isfile(self.configfile_name or ''):
-            config = _parse_configfile(self.configfile_name)
+    def read_config(self):
+        # CLI-given shell-style config file
+        if os.path.isfile(self.shell_configfile_name or ''):
+            config = _parse_shell_configfile(self.shell_configfile_name)
             self._populate_self_from_env_config(config)
         # AWS credential file (path is in the environment)
-        requestbuilder.service.BaseService.find_credentials(self)
+        self.read_aws_credential_file()
         # Environment
         config = self._get_env_config_from_env()
         self._populate_self_from_env_config(config)
-        # User, systemwide env-style config files
+        # Requestbuilder config files
+        self.read_requestbuilder_config()
+        # User, systemwide shell-style config files
         for configfile_name in ('~/.eucarc', '~/.eucarc/eucarc'):
             configfile_name = os.path.expandvars(configfile_name)
             configfile_name = os.path.expanduser(configfile_name)
             if os.path.isfile(configfile_name):
-                config = _parse_configfile(configfile_name)
+                config = _parse_shell_configfile(configfile_name)
                 self._populate_self_from_env_config(config)
 
     def _get_env_config_from_env(self):
@@ -98,11 +103,10 @@ class Eucalyptus(requestbuilder.service.BaseService):
             elif (env_key == 'EC2_SECRET_KEY' and
                   not self._auth_args.get('key')):
                 self._auth_args['key'] = val
-            elif env_key == 'EC2_URL' and not self.endpoint:
-                self.endpoint = val
-                self.region_name = '__config__' ## FIXME
+            elif env_key == 'EC2_URL' and not self.endpoint_url:
+                self._set_url_vars(val)
 
-def _parse_configfile(configfile_name):
+def _parse_shell_configfile(configfile_name):
     def sourcehook(filename):
         filename = filename.strip('"\'')
         filename = Template(filename).safe_substitute(config)
@@ -114,6 +118,7 @@ def _parse_configfile(configfile_name):
     configfile_name = os.path.expandvars(configfile_name)
     configfile_name = os.path.expanduser(configfile_name)
     with open(configfile_name) as configfile:
+        ## TODO:  deal with $BASH_SOURCE
         lexer = shlex.shlex(configfile)
         lexer.whitespace_split = True
         lexer.source = 'source'
@@ -126,7 +131,6 @@ def _parse_configfile(configfile_name):
                     config[key] = Template(val).safe_substitute(config)
     return config
 
-## TODO:  regions
 class EucalyptusRequest(Euca2oolsRequest, TabifyingCommand):
     ServiceClass = Eucalyptus
 
@@ -139,11 +143,14 @@ class EucalyptusRequest(Euca2oolsRequest, TabifyingCommand):
                 help=argparse.SUPPRESS),
             Arg('-s', metavar='KEY', dest='deprecated_key', route_to=SERVICE,
                 help=argparse.SUPPRESS),
-            Arg('--config', dest='configfile', metavar='CFGFILE',
-                 route_to=SERVICE),
-            Arg('-U', '--url', dest='endpoint', metavar='URL',
-                route_to=SERVICE,
-                help='compute service endpoint URL')] + STD_AUTH_ARGS
+            Arg('--config', dest='shell_configfile', metavar='CFGFILE',
+                 route_to=SERVICE, help=argparse.SUPPRESS),
+            MutuallyExclusiveArgList(
+                Arg('--region', dest='regionspec', metavar='REGION',
+                    route_to=SERVICE,
+                    help='region name to connect to, with optional identity'),
+                Arg('-U', '--url', metavar='URL', route_to=SERVICE,
+                    help='compute service endpoint URL'))] + STD_AUTH_ARGS
 
     def __init__(self, **kwargs):
         # If an inheriting class defines '-a' or '-s' args, resolve conflicts
@@ -160,6 +167,7 @@ class EucalyptusRequest(Euca2oolsRequest, TabifyingCommand):
                 if arg.kwargs.get('dest') == 'deprecated_key':
                     arg.kwargs['dest'] = argparse.SUPPRESS
         Euca2oolsRequest.__init__(self, **kwargs)
+        self.method = 'POST'  ## FIXME
 
     def parse_http_response(self, response_body):
         response = Euca2oolsRequest.parse_http_response(self, response_body)

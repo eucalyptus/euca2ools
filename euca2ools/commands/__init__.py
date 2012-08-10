@@ -37,6 +37,10 @@ class Euca2oolsCommand(requestbuilder.command.BaseCommand):
     Version = 'euca2ools {0} ({1})'.format(__version__, __codename__)
 
 class Euca2oolsRequest(Euca2oolsCommand, requestbuilder.request.BaseRequest):
+    def __init__(self, **kwargs):
+        requestbuilder.request.BaseRequest.__init__(self, **kwargs)
+        self.__user_agent = None
+
     @property
     def user_agent(self):
         if not self.__user_agent:

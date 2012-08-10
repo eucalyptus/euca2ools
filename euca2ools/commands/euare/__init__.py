@@ -33,14 +33,14 @@ import requestbuilder.service
 from .. import Euca2oolsRequest
 
 class Euare(requestbuilder.service.BaseService):
+    Name = 'iam'
     Description = 'Eucalyptus User, Authorization and Reporting Environment'
     APIVersion = '2010-05-08'
     EnvURL = 'EUARE_URL'
 
 class EuareRequest(Euca2oolsRequest):
     ServiceClass = Euare
-    Args = [Arg('-U', '--url', dest='endpoint', metavar='URL',
-                route_to=SERVICE,
+    Args = [Arg('-U', '--url', dest='url', metavar='URL', route_to=SERVICE,
                 help='identity service endpoint URL')] + STD_AUTH_ARGS
 
     def parse_response(self, response):
