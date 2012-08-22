@@ -32,5 +32,4 @@
 # Author: Neil Soman neil@eucalyptus.com
 #       : Mitch Garnaat mgarnaat@eucalyptus.com
 
-__version__ = '2.0.2'
-
+__version__ = '2.0.3'
