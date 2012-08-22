@@ -38,13 +38,14 @@ class MetaData(object):
 
     def __init__(self):
         self.md = get_instance_metadata()
-        
+
     def get_instance_metadata(self, key):
+        if self.md is None:
+            raise IOError('failed to contact metadata service')
         try:
-            value = self.md[key]
+            return self.md[key]
         except KeyError:
             raise MetadataReadError
-        return value
 
     def get_instance_ramdisk(self):
         return self.get_instance_metadata('ramdisk-id')

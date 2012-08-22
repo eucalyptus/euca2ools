@@ -225,8 +225,8 @@ class Bundler(object):
             print
             print 'WARNING: retrying encryption to work around a rare RNG bug'
             print 'Please report the following values to Eucalyptus Systems at'
-            print 'https://bugs.launchpad.net/bugs/904062 to help diagnose'
-            print 'this issue.'
+            print 'https://eucalyptus.atlassian.net/browse/TOOLS-103 to help'
+            print 'diagnose this issue.'
             print 'k: ', key
             print 'iv:', iv
             print
@@ -338,21 +338,6 @@ class Bundler(object):
         tar_file.close()
         return untarred_names
 
-    def get_block_devs(self, mapping):
-        virtual = []
-        devices = []
-
-        vname = None
-        for m in mapping:
-            if not vname:
-                vname = m
-                virtual.append(vname)
-            else:
-                devices.append(m)
-                vname = None
-
-        return (virtual, devices)
-
     def generate_manifest(self, path, prefix, parts, parts_digest,
                           file, key, iv, cert_path, ec2cert_path,
                           private_key_path, target_arch,
@@ -432,10 +417,7 @@ class Bundler(object):
         if mapping:
             block_dev_mapping_elem = \
                 doc.createElement('block_device_mapping')
-            (virtual_names, device_names) = self.get_block_devs(mapping)
-            vname_index = 0
-            for vname in virtual_names:
-                dname = device_names[vname_index]
+            for vname,dname in mapping.items():
                 mapping_elem = doc.createElement('mapping')
                 virtual_elem = doc.createElement('virtual')
                 virtual_value = doc.createTextNode(vname)
@@ -446,7 +428,6 @@ class Bundler(object):
                 device_elem.appendChild(device_value)
                 mapping_elem.appendChild(device_elem)
                 block_dev_mapping_elem.appendChild(mapping_elem)
-                vname_index = vname_index + 1
             machine_config_elem.appendChild(block_dev_mapping_elem)
 
         if product_codes:
