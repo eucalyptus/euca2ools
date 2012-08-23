@@ -225,8 +225,8 @@ class Bundler(object):
             print
             print 'WARNING: retrying encryption to work around a rare RNG bug'
             print 'Please report the following values to Eucalyptus Systems at'
-            print 'https://bugs.launchpad.net/bugs/904062 to help diagnose'
-            print 'this issue.'
+            print 'https://eucalyptus.atlassian.net/browse/TOOLS-103 to help'
+            print 'diagnose this issue.'
             print 'k: ', key
             print 'iv:', iv
             print
