@@ -164,7 +164,7 @@ class InstallImage(AWSQueryRequest):
             print type+": "+name+" is already installed on the cloud, skipping installation of another one."
             return True
         else:
-            answer = raw_input(type+": "+name+" is already installed on ths cloud. Would you like to use it intead?(y/N)")
+            answer = raw_input(type + ": " + name + " is already installed on this cloud. Would you like to use it instead? (y/N)")
             if (answer=='y' or answer=='Y'):
                 return True
             return False
