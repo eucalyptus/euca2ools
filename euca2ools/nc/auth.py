@@ -161,7 +161,7 @@ class EucaRsaAuthV2Handler(boto.auth_handler.AuthHandler):
         params = []
         for key, val in http_request.params.iteritems():
             params.append(urllib.quote(param,    safe='/~') + '=' +
-                          urllib.quote(str(val), safe='/~'))
+                          urllib.quote(str(val), safe='~'))
         return '&'.join(sorted(params))
 
     def _get_headers_to_sign(self, http_request):
