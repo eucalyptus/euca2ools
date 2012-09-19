@@ -36,6 +36,7 @@ import os
 import sys
 import tarfile
 import hashlib
+import re
 import zlib
 import tempfile
 import urllib2
@@ -268,14 +269,15 @@ class InstallImage(AWSQueryRequest):
                         if not(kernel_dir) and (os.path.dirname(path) != tar_root):
                             continue;
                         if not name.startswith('.'):
-                            if name.startswith('vmlin'):
+                            # Note that vmlinuz is not always at the beginning of the filename
+                            if name.find('vmlinu') != -1:
                                 print "Bundling/uploading kernel"
                                 if prefix:
                                     name = prefix+name
                                 kernel_id = self.bundleFile(path, name, description, arch, 'true', None)
                                 kernel_found = True
                                 print kernel_id
-                            elif name.startswith('initrd'):
+                            elif re.match(".*(initr(d|amfs)|loader).*", name):
                                 print "Bundling/uploading ramdisk"
                                 if prefix:
                                     name = prefix+name
