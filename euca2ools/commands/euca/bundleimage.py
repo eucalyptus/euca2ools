@@ -34,6 +34,7 @@ import euca2ools.commands.eucacommand
 from boto.roboto.param import Param
 import euca2ools.bundler
 from euca2ools.exceptions import NotFoundError, CommandFailed
+import sys
 
 class BundleImage(euca2ools.commands.eucacommand.EucaCommand):
 
