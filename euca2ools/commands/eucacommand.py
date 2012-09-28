@@ -301,6 +301,9 @@ class EucaCommand(object):
 
     def version(self):
         print 'euca2ools %s (%s)' % (euca2ools.__version__, euca2ools.__codename__)
+        if os.path.isfile('/etc/eucalyptus/eucalyptus-version'):
+            with open('/etc/eucalyptus/eucalyptus-version') as version_file:
+                print 'eucalyptus %s' % version_file.readline().strip()
         sys.exit(0)
 
     def param_usage(self, plist, label, n=30):

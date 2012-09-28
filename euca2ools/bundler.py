@@ -417,7 +417,7 @@ class Bundler(object):
         if mapping:
             block_dev_mapping_elem = \
                 doc.createElement('block_device_mapping')
-            for vname,dname in mapping.items():
+            for vname, dname in mapping.items():
                 mapping_elem = doc.createElement('mapping')
                 virtual_elem = doc.createElement('virtual')
                 virtual_value = doc.createTextNode(vname)

@@ -33,25 +33,44 @@
 
 import euca2ools.commands.eucacommand
 from boto.roboto.param import Param
+from os import chmod
+from stat import *
 
 class CreateKeyPair(euca2ools.commands.eucacommand.EucaCommand):
 
     Description = 'Creates a new key pair for use with instances'
+    Options = [Param(name='filename', short_name='f',
+                  long_name='filename', ptype='string',
+                  doc='Filename to save the private key to. Default ' +
+                  'action is to overwite the file.',
+                  optional=True)]
+
     Args = [Param(name='keypair_name', ptype='string',
                   doc='unique name for a keypair to be created',
                   cardinality=1, optional=False)]
 
-    def display_keypair(self, keypair):
+    def display_fingerprint(self, keypair):
         print 'KEYPAIR\t%s\t%s' % (keypair.name, keypair.fingerprint)
+
+    def display_keypair(self, keypair):
         print keypair.material
+
+    def save_keypair_to_file(self, keypair):
+        keyfile = open(self.filename, 'w')
+        keyfile.write(keypair.material)
+        keyfile.close()
+
+        chmod(self.filename, S_IRUSR|S_IWUSR)
 
     def main(self):
         conn = self.make_connection_cli()
         return self.make_request_cli(conn, 'create_key_pair',
-                                      key_name=self.keypair_name)
+                                     key_name=self.keypair_name)
 
     def main_cli(self):
         keypair = self.main()
-        self.display_keypair(keypair)
-
-
+        self.display_fingerprint(keypair)
+        if self.filename != None:
+            self.save_keypair_to_file(keypair)
+        else:
+            self.display_keypair(keypair)

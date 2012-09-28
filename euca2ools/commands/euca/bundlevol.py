@@ -98,7 +98,7 @@ class BundleVol(euca2ools.commands.eucacommand.EucaCommand):
                Param(name='target_architecture',
                      short_name='r', long_name='arch',
                      optional=True, ptype='string', default='x86_64',
-                     choices=['i386', 'x86_64'],
+                     choices=['i386', 'x86_64', 'armhf'],
                      doc='Target architecture for the image'),
                Param(name='volume_path', long_name='volume',
                      optional=True, ptype='dir', default='/',
@@ -245,7 +245,7 @@ class BundleVol(euca2ools.commands.eucacommand.EucaCommand):
              ancestor_ami_ids) = self.get_instance_metadata(self.ramdisk_id,
                                                             self.kernel_id,
                                                             self.block_device_mapping)
-        if self.product_codes and isinstance(self.product_codes,basestring):
+        if self.product_codes and isinstance(self.product_codes, basestring):
             self.product_codes = self.add_product_codes(self.product_codes)
 
         try:

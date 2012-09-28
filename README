@@ -1,28 +1,32 @@
-Euca2ools: Command-line tools for interacting with Amazon EC2 and S3
-           API-compatible Web services using the REST/Query API.
+Euca2ools: Command-line tools for interacting with Amazon EC2, IAM, and
+           S3 API-compatible Web services using the REST/Query API.
 
-Euca2ools are command-line tools for interacting with Web services that
-export a REST/Query-based API compatible with Amazon EC2 and S3 services.
-The tools can be used with both Amazon's services and with installations
-of the Eucalyptus open-source cloud-computing infrastructure.  The tools
-were inspired by command-line tools distributed by Amazon (api-tools and
-ami-tools) and largely accept the same options and environment variables.
-However, these tools were implemented from scratch in Python, relying on
-the Boto AWS library and M2Crypto toolkit.
+Euca2ools are command-line tools for interacting with Web services
+that export a REST/Query-based API compatible with Amazon EC2, IAM,
+and S3 services.  The tools can be used with both Amazon's services
+and with installations of the Eucalyptus open-source cloud-computing
+infrastructure.  The tools were inspired by command-line tools distributed
+by Amazon (api-tools and ami-tools) and largely accept the same options
+and environment variables.  However, these tools were implemented from
+scratch in Python, relying on the Boto AWS library and M2Crypto toolkit.
 
-Here is the summary of the tasks that can be accomplished with these tools:
+Here is the summary of the tasks that can be accomplished with these
+tools:
 
 - Query of availability zones (i.e. clusters in Eucalyptus)
 - SSH key management (add, list, delete)
 - VM control (start, list, stop, reboot)
 - Security group management (firewall configuration)
-- Volume and snapshot management (attach, list, detach, create, bundle, delete)
+- Volume and snapshot management (attach, list, detach, create, bundle,
+  delete)
 - Image management (bundle, upload, register, list, deregister)
 - IP address management (allocate, associate, list, release)
 - Console output retrieval
 
-Please, consult the INSTALL file for instructions on installation
-and running the tools.  COPYING file covers the legal matters, such
-as the license.  For more information, please see:
+Please, consult the INSTALL file for instructions on installation and
+running the tools.  COPYING file covers the legal matters, such as
+the license.  For more information, please see:
 
-Euca2ools: http://open.eucalyptus.com/wiki/Documentation
+Documentation: http://www.eucalyptus.com/eucalyptus-cloud/documentation
+Source code: http://downloads.eucalyptus.com/software/euca2ools/
+             https://github.com/eucalyptus/euca2ools

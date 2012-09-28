@@ -32,5 +32,5 @@
 # Author: Neil Soman neil@eucalyptus.com
 #       : Mitch Garnaat mgarnaat@eucalyptus.com
 
-__version__  = '2.1.1'
-__codename__ = 'Stencil'
+__version__  = 'devel'
+__codename__ = 'Limbo'
