@@ -47,16 +47,16 @@ class Eucalyptus(requestbuilder.service.BaseService):
     EnvURL = 'EC2_URL'
 
     def __init__(self, config, log, shell_configfile=None,
-                 deprecated_key_id=None, deprecated_key=None, auth_args=None,
-                 **kwargs):
+                 deprecated_key_id=None, deprecated_sec_key=None,
+                 auth_args=None, **kwargs):
         self.shell_configfile_name = shell_configfile
         if deprecated_key_id and not auth_args.get('key_id'):
             auth_args['key_id'] = deprecated_key_id
             msg = 'given access key ID argument is deprecated; use -I instead'
             log.warn(msg)
             print >> sys.stderr, 'warning:', msg
-        if deprecated_key and not auth_args.get('key'):
-            auth_args['key'] = deprecated_key
+        if deprecated_sec_key and not auth_args.get('secret_key'):
+            auth_args['secret_key'] = deprecated_sec_key
             msg = 'argument -s is deprecated; use -S instead'
             log.warn(msg)
             print >> sys.stderr, 'warning:', msg
@@ -101,8 +101,8 @@ class Eucalyptus(requestbuilder.service.BaseService):
                 not self._auth_args.get('key_id')):
                 self._auth_args['key_id'] = val
             elif (env_key == 'EC2_SECRET_KEY' and
-                  not self._auth_args.get('key')):
-                self._auth_args['key'] = val
+                  not self._auth_args.get('secret_key')):
+                self._auth_args['secret_key'] = val
             elif env_key == 'EC2_URL' and not self.endpoint_url:
                 self._set_url_vars(val)
 
@@ -141,8 +141,8 @@ class EucalyptusRequest(Euca2oolsRequest, TabifyingCommand):
     Args = [Arg('-a', '--access-key', metavar='KEY_ID',
                 dest='deprecated_key_id', route_to=SERVICE,
                 help=argparse.SUPPRESS),
-            Arg('-s', metavar='KEY', dest='deprecated_key', route_to=SERVICE,
-                help=argparse.SUPPRESS),
+            Arg('-s', metavar='KEY', dest='deprecated_sec_key',
+                route_to=SERVICE, help=argparse.SUPPRESS),
             Arg('--config', dest='shell_configfile', metavar='CFGFILE',
                  route_to=SERVICE, help=argparse.SUPPRESS),
             MutuallyExclusiveArgList(
@@ -164,7 +164,7 @@ class EucalyptusRequest(Euca2oolsRequest, TabifyingCommand):
                     arg.pargs = tuple('-A' if parg == '-a' else parg
                                       for parg in arg.pargs)
             for arg in s_args:
-                if arg.kwargs.get('dest') == 'deprecated_key':
+                if arg.kwargs.get('dest') == 'deprecated_sec_key':
                     arg.kwargs['dest'] = argparse.SUPPRESS
         Euca2oolsRequest.__init__(self, **kwargs)
         self.method = 'POST'  ## FIXME
