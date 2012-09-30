@@ -192,7 +192,7 @@ class EucalyptusRequest(Euca2oolsRequest, TabifyingCommand):
         res_line.append(', '.join(group_ids))
         print self.tabify(res_line)
         for instance in sorted(reservation.get('instancesSet', []),
-                               itemgetter('amiLaunchIndex')):
+                               itemgetter('launchTime')):
             self.print_instance(instance)
 
     def print_instance(self, instance):
