@@ -28,6 +28,8 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+import glob
+import os.path
 import platform
 import requestbuilder.command
 import requestbuilder.request
@@ -36,8 +38,16 @@ from .. import __version__, __codename__
 class Euca2oolsCommand(requestbuilder.command.BaseCommand):
     Version = 'euca2ools {0} ({1})'.format(__version__, __codename__)
 
+    def __init__(self, **kwargs):
+        self.ConfigFiles.append('/etc/euca2ools.ini')
+        user_config_glob = os.path.join(os.path.expanduser('~/.euca'), '*.ini')
+        for configfile in sorted(glob.glob(user_config_glob)):
+            self.ConfigFiles.append(configfile)
+        requestbuilder.request.BaseCommand.__init__(self, **kwargs)
+
 class Euca2oolsRequest(Euca2oolsCommand, requestbuilder.request.BaseRequest):
     def __init__(self, **kwargs):
+        Euca2oolsCommand.__init__(self, **kwargs)
         requestbuilder.request.BaseRequest.__init__(self, **kwargs)
         self.__user_agent = None
 
