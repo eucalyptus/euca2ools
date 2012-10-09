@@ -66,7 +66,7 @@ class RunInstances(EucalyptusRequest):
             Arg('--addressing', dest='AddressingType',
                 choices=('public', 'private'),
                 help='addressing scheme to launch the instance with'),
-            Arg('-t', '--instance-type',
+            Arg('-t', '--instance-type', dest='InstanceType',
                 help='type of instance to launch'),
             Arg('--kernel', dest='KernelId', metavar='KERNEL',
                 help='kernel to launch the instance(s) with'),
