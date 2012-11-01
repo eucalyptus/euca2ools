@@ -40,14 +40,15 @@ import euca2ools.bundler
 import euca2ools.metadata
 from euca2ools.exceptions import *
 
-MAX_IMAGE_SIZE = 1024 * 10
+IMAGE_MAX_SIZE_IN_MB = euca2ools.bundler.IMAGE_MAX_SIZE / 1024 // 1024
 
 class BundleVol(euca2ools.commands.eucacommand.EucaCommand):
-
     Description = 'Bundles an image for use with Eucalyptus or Amazon EC2.'
     Options = [Param(name='size', short_name='s', long_name='size',
-                     optional=True, ptype='integer', default=MAX_IMAGE_SIZE,
-                     doc='Size of the image in MB(max=%d).' % MAX_IMAGE_SIZE),
+                     optional=True, ptype='integer',
+                     default=IMAGE_MAX_SIZE_IN_MB,
+                     doc=('Size of the image in MB (default: {0}; recommended '
+                          'maximum: {0})').format(IMAGE_MAX_SIZE_IN_MB)),
                Param(name='user', short_name='u', long_name='user',
                      optional=True, ptype='string',
                      doc="""User ID (12-digit) of the user who is
@@ -119,11 +120,6 @@ class BundleVol(euca2ools.commands.eucacommand.EucaCommand):
         else:
             print 'Must be superuser to execute this command.'
             sys.exit()
-
-    def check_image_size(self, size):
-        if size > MAX_IMAGE_SIZE:
-            msg = 'Image Size is too large (Max = %d MB)' % MAX_IMAGE_SIZE
-            self.display_error_and_exit(msg)
 
     def parse_excludes(self, excludes_string):
         excludes = []
@@ -225,9 +221,6 @@ class BundleVol(euca2ools.commands.eucacommand.EucaCommand):
             else:
                 self.fstab_path = 'new'
         self.check_root()
-        if self.size > MAX_IMAGE_SIZE:
-            msg = 'Image Size is too large (Max = %d MB)' % MAX_IMAGE_SIZE
-            self.display_error_and_exit(msg)
         self.volume_path = os.path.normpath(self.volume_path)
 
         noex='EUCA_BUNDLE_VOL_EMPTY_EXCLUDES'

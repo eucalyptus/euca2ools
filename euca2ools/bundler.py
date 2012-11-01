@@ -57,8 +57,16 @@ VERSION = '2007-10-10'
 RELEASE = '31337'
 AES = 'AES-128-CBC'
 
+# Number of bytes to read per I/O operation while bundling
 IMAGE_IO_CHUNK = 10 * 1024
+# Number of bytes per part of a bundle
 IMAGE_SPLIT_CHUNK = IMAGE_IO_CHUNK * 1024
+# Recommended maximum number of bytes in an instance-store image (10G)
+# Don't make this an error, though -- 10G might be the limit in EC2, but in
+# Eucalyptus the sky's the limit; people can make images as large as their
+# patience allows.
+IMAGE_MAX_SIZE = 10 * 1024 * 1024 * 1024
+
 MAX_LOOP_DEVS = 256
 
 class Bundler(object):
@@ -110,6 +118,9 @@ class Bundler(object):
         image_size = os.path.getsize(image_file)
         if self.euca.debug:
             print 'Image Size:', image_size, 'bytes'
+        if image_size > IMAGE_MAX_SIZE:
+            print >> sys.stderr, ('warning: this image is larger than 10 GB.  '
+                                  'It will not work in EC2.')
         return image_size
 
     def get_fs_info(self, path):
