@@ -36,6 +36,7 @@ import os
 import sys
 import tarfile
 import hashlib
+import re
 import zlib
 import tempfile
 import urllib2
@@ -164,7 +165,7 @@ class InstallImage(AWSQueryRequest):
             print type+": "+name+" is already installed on the cloud, skipping installation of another one."
             return True
         else:
-            answer = raw_input(type+": "+name+" is already installed on ths cloud. Would you like to use it intead?(y/N)")
+            answer = raw_input(type + ": " + name + " is already installed on this cloud. Would you like to use it instead? (y/N)")
             if (answer=='y' or answer=='Y'):
                 return True
             return False
@@ -268,14 +269,15 @@ class InstallImage(AWSQueryRequest):
                         if not(kernel_dir) and (os.path.dirname(path) != tar_root):
                             continue;
                         if not name.startswith('.'):
-                            if name.startswith('vmlin'):
+                            # Note that vmlinuz is not always at the beginning of the filename
+                            if name.find('vmlinu') != -1:
                                 print "Bundling/uploading kernel"
                                 if prefix:
                                     name = prefix+name
                                 kernel_id = self.bundleFile(path, name, description, arch, 'true', None)
                                 kernel_found = True
                                 print kernel_id
-                            elif name.startswith('initrd'):
+                            elif re.match(".*(initr(d|amfs)|loader).*", name):
                                 print "Bundling/uploading ramdisk"
                                 if prefix:
                                     name = prefix+name

@@ -85,7 +85,13 @@ class AddGroupPolicy(AWSQueryRequest):
               long_name='output',
               ptype='boolean',
               optional=True,
-              doc='Causes the output to include the JSON policy document created for you')]
+              doc='Causes the output to include the JSON policy document created for you'),
+        Param(name='DelegateAccount',
+              short_name=None,
+              long_name='delegate',
+              ptype='string',
+              optional=True,
+              doc="""[Eucalyptus extension] Process this command as if the administrator of the specified account had run it. This option is only usable by cloud administrators.""")]
 
     def build_policy(self):
         s = '{"Effect":"%s", "Action":["%s"], "Resource":["%s"]}' % (self.effect,

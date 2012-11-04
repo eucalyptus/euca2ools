@@ -44,7 +44,11 @@ class GetPassword(GetPasswordData):
                         key pair supplied at instance launch time''')]
 
     def print_result(self, result):
-        pwdata   = result['passwordData']
+        try:
+            pwdata = result['passwordData']
+        except AttributeError:
+            # The reply didn't contain a passwordData element.
+            raise AttributeError('no password data found for this instance')
         privkey  = RSA.load_key_string(self.args['priv_launch_key'])
         password = privkey.private_decrypt(base64.b64decode(pwdata),
                                            RSA.pkcs1_padding)

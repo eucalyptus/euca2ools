@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
-import euca2ools.commands.euare.resyncmfadevice
+import euca2ools.commands.euare.enablemfadevice
 
 if __name__ == '__main__':
-    r = euca2ools.commands.euare.resyncmfadevice.ResyncMFADevice()
+    r = euca2ools.commands.euare.enablemfadevice.EnableMFADevice()
     r.main_cli()

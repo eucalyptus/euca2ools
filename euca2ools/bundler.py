@@ -57,8 +57,16 @@ VERSION = '2007-10-10'
 RELEASE = '31337'
 AES = 'AES-128-CBC'
 
+# Number of bytes to read per I/O operation while bundling
 IMAGE_IO_CHUNK = 10 * 1024
+# Number of bytes per part of a bundle
 IMAGE_SPLIT_CHUNK = IMAGE_IO_CHUNK * 1024
+# Recommended maximum number of bytes in an instance-store image (10G)
+# Don't make this an error, though -- 10G might be the limit in EC2, but in
+# Eucalyptus the sky's the limit; people can make images as large as their
+# patience allows.
+IMAGE_MAX_SIZE = 10 * 1024 * 1024 * 1024
+
 MAX_LOOP_DEVS = 256
 
 class Bundler(object):
@@ -110,6 +118,9 @@ class Bundler(object):
         image_size = os.path.getsize(image_file)
         if self.euca.debug:
             print 'Image Size:', image_size, 'bytes'
+        if image_size > IMAGE_MAX_SIZE:
+            print >> sys.stderr, ('warning: this image is larger than 10 GB.  '
+                                  'It will not work in EC2.')
         return image_size
 
     def get_fs_info(self, path):
@@ -146,6 +157,7 @@ class Bundler(object):
    
     def tarzip_image(self, prefix, file, path):
         utils.check_prerequisite_command('tar')
+        print 'Compressing image'
 
         targz = '%s.tar.gz' % os.path.join(path, prefix)
         targzfile = open(targz, 'w')
@@ -224,8 +236,8 @@ class Bundler(object):
             print
             print 'WARNING: retrying encryption to work around a rare RNG bug'
             print 'Please report the following values to Eucalyptus Systems at'
-            print 'https://bugs.launchpad.net/bugs/904062 to help diagnose'
-            print 'this issue.'
+            print 'https://eucalyptus.atlassian.net/browse/TOOLS-103 to help'
+            print 'diagnose this issue.'
             print 'k: ', key
             print 'iv:', iv
             print
@@ -337,21 +349,6 @@ class Bundler(object):
         tar_file.close()
         return untarred_names
 
-    def get_block_devs(self, mapping):
-        virtual = []
-        devices = []
-
-        vname = None
-        for m in mapping:
-            if not vname:
-                vname = m
-                virtual.append(vname)
-            else:
-                devices.append(m)
-                vname = None
-
-        return (virtual, devices)
-
     def generate_manifest(self, path, prefix, parts, parts_digest,
                           file, key, iv, cert_path, ec2cert_path,
                           private_key_path, target_arch,
@@ -431,10 +428,7 @@ class Bundler(object):
         if mapping:
             block_dev_mapping_elem = \
                 doc.createElement('block_device_mapping')
-            (virtual_names, device_names) = self.get_block_devs(mapping)
-            vname_index = 0
-            for vname in virtual_names:
-                dname = device_names[vname_index]
+            for vname, dname in mapping.items():
                 mapping_elem = doc.createElement('mapping')
                 virtual_elem = doc.createElement('virtual')
                 virtual_value = doc.createTextNode(vname)
@@ -445,7 +439,6 @@ class Bundler(object):
                 device_elem.appendChild(device_value)
                 mapping_elem.appendChild(device_elem)
                 block_dev_mapping_elem.appendChild(mapping_elem)
-                vname_index = vname_index + 1
             machine_config_elem.appendChild(block_dev_mapping_elem)
 
         if product_codes:

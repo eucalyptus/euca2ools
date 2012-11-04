@@ -28,14 +28,23 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+import os
 from requestbuilder import Arg
 from . import EucalyptusRequest
 
 class CreateKeyPair(EucalyptusRequest):
     Description = 'Create a new SSH key pair for use with instances'
-    Args = [Arg('KeyName', metavar='KEYPAIR', help='name of the new key pair')]
+    Args = [Arg('KeyName', metavar='KEYPAIR', help='name of the new key pair'),
+            Arg('-f', '--filename', metavar='FILE', route_to=None,
+                help='file name to save the private key to')]
 
     def print_result(self, result):
         print self.tabify(('KEYPAIR', result['keyName'],
                            result['keyFingerprint']))
-        print result['keyMaterial']
+        if self.args.get('filename'):
+            prev_umask = os.umask(0o077)
+            with open(self.args['filename'], 'w') as privkeyfile:
+                privkeyfile.write(result['keyMaterial'])
+            os.umask(prev_umask)
+        else:
+            print result['keyMaterial']

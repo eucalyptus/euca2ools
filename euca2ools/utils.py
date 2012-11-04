@@ -31,6 +31,7 @@
 # Author: Neil Soman neil@eucalyptus.com
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
+import os.path
 import subprocess
 import sys
 from euca2ools import exceptions, __version__, __codename__
@@ -122,4 +123,7 @@ def print_version_if_necessary():
     """
     if '--version' in sys.argv:
         print 'euca2ools %s (%s)' % (__version__, __codename__)
+        if os.path.isfile('/etc/eucalyptus/eucalyptus-version'):
+            with open('/etc/eucalyptus/eucalyptus-version') as version_file:
+                print 'eucalyptus %s' % version_file.readline().strip()
         sys.exit()

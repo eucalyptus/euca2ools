@@ -36,6 +36,7 @@ from boto.roboto.param import Param
 import os
 import sys
 import textwrap
+import time
 from xml.dom import minidom
 from boto.exception import S3ResponseError, S3CreateError
 from boto.s3.key import Key
@@ -178,8 +179,15 @@ class DeleteBundle(euca2ools.commands.eucacommand.EucaCommand):
         directory = os.path.abspath('/tmp')
 
         if not self.manifest_path and not self.prefix:
-            print 'Neither manifestpath nor prefix was specified.'
-            print 'All manifest data in bucket will be deleted.'
+            print 'Neither a manifestpath nor a prefix was specified.'
+            print 'All bundles in bucket', self.bucket, 'will be deleted.'
+            print ('If this is not what you want, press Ctrl+C in the next '
+                   '10 seconds'),
+            for __ in range(10):
+                sys.stdout.write('.')
+                sys.stdout.flush()
+                time.sleep(1)
+            print
 
         bucket_instance = self.ensure_bucket(self.bucket)
         manifests = None

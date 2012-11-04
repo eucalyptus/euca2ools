@@ -34,6 +34,7 @@ import euca2ools.commands.eucacommand
 from boto.roboto.param import Param
 import euca2ools.bundler
 from euca2ools.exceptions import NotFoundError, CommandFailed
+import sys
 
 class BundleImage(euca2ools.commands.eucacommand.EucaCommand):
 
@@ -81,7 +82,7 @@ class BundleImage(euca2ools.commands.eucacommand.EucaCommand):
                Param(name='target_arch',
                      short_name='r', long_name='arch',
                      optional=True, ptype='string', default='x86_64',
-                     choices=['i386', 'x86_64'],
+                     choices=['i386', 'x86_64', 'armhf'],
                      doc='Target architecture for the image.'),
                Param(name='batch', long_name='batch',
                      optional=True, ptype='boolean',
@@ -89,13 +90,12 @@ class BundleImage(euca2ools.commands.eucacommand.EucaCommand):
 
     def get_block_devs(self):
         mapping_str = self.block_device_mapping
-        mapping = []
+        mapping = {}
         mapping_pairs = mapping_str.split(',')
         for m in mapping_pairs:
             m_parts = m.split('=')
             if len(m_parts) > 1:
-                mapping.append(m_parts[0])
-                mapping.append(m_parts[1])
+                mapping[m_parts[0]] = m_parts[1]
         return mapping
 
     def add_product_codes(self):
