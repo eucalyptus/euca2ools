@@ -44,7 +44,7 @@ def check_prerequisite_command(command):
     except OSError, e:
         error_string = '%s' % e
         if 'No such' in error_string:
-            print 'Command %s not found. Is it installed?' % command
+            print >> sys.stderr, 'Command %s not found. Is it installed?' % command
             raise exceptions.NotFoundError
         else:
             raise OSError(e)
