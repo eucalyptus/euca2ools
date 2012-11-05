@@ -83,7 +83,11 @@ class RunInstances(euca2ools.commands.eucacommand.EucaCommand):
                      doc='Amazon VPC subnet ID for the instance.'),
                Param(name='zone', short_name='z', long_name='availability-zone',
                      optional=True, ptype='string',
-                     doc='availability zone to run the instance in')]
+                     doc='availability zone to run the instance in'),
+               Param(name='instance_initiated_shutdown_behavior',
+                     long_name='instance-initiated-shutdown-behavior',
+                     optional=True, ptype='string',
+                     doc='Whether to "stop" (default) or "terminate" instance when it is shut down')]
     Args = [Param(name='image_id', ptype='string',
                   optional=False,
                   doc='ID of the image to run.')]
@@ -145,7 +149,8 @@ class RunInstances(euca2ools.commands.eucacommand.EucaCommand):
                                      ramdisk_id=self.ramdisk,
                                      block_device_map=self.block_device_mapping,
                                      monitoring_enabled=self.monitor,
-                                     subnet_id=self.subnet)
+                                     subnet_id=self.subnet,
+                                     instance_initiated_shutdown_behavior=self.instance_initiated_shutdown_behavior)
 
     def main_cli(self):
         reservation = self.main()
