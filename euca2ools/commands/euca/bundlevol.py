@@ -118,7 +118,7 @@ class BundleVol(euca2ools.commands.eucacommand.EucaCommand):
         if os.geteuid() == 0:
             return
         else:
-            print 'Must be superuser to execute this command.'
+            print >> sys.stderr, 'Must be superuser to execute this command.'
             sys.exit()
 
     def parse_excludes(self, excludes_string):
@@ -137,34 +137,34 @@ class BundleVol(euca2ools.commands.eucacommand.EucaCommand):
                 try:
                     ramdisk_id = md.get_instance_ramdisk()
                 except MetadataReadError:
-                    print 'Unable to read ramdisk id'
+                    print >> sys.stderr, 'Unable to read ramdisk id'
 
             if not kernel_id:
                 try:
                     kernel_id = md.get_instance_kernel()
                 except MetadataReadError:
-                    print 'Unable to read kernel id'
+                    print >> sys.stderr, 'Unable to read kernel id'
 
             if not block_dev_mapping:
                 try:
                     block_dev_mapping = \
                         md.get_instance_block_device_mappings()
                 except MetadataReadError:
-                    print 'Unable to read block device mapping'
+                    print >> sys.stderr, 'Unable to read block device mapping'
 
             try:
                 product_codes = md.get_instance_product_codes().split('\n'
                         )
             except MetadataReadError:
-                print 'Unable to read product codes'
+                print >> sys.stderr, 'Unable to read product codes'
 
             try:
                 ancestor_ami_ids = md.get_ancestor_ami_ids().split('\n')
             except MetadataReadError:
-                print 'Unable to read ancestor ids'
+                print >> sys.stderr, 'Unable to read ancestor ids'
         except IOError:
 
-            print 'Unable to read instance metadata. Pass the --no-inherit option if you wish to exclude instance metadata.'
+            print >> sys.stderr, 'Unable to read instance metadata. Pass the --no-inherit option if you wish to exclude instance metadata.'
             sys.exit()
 
         return (ramdisk_id, kernel_id, block_dev_mapping, product_codes,
@@ -244,7 +244,7 @@ class BundleVol(euca2ools.commands.eucacommand.EucaCommand):
         try:
             fsinfo = bundler.get_fs_info(self.volume_path)
         except UnsupportedException, e:
-            print e
+            print >> sys.stderr, e
             sys.exit(1)
         try:
             image_path = bundler.make_image(self.size, excludes, self.prefix,
@@ -270,7 +270,7 @@ class BundleVol(euca2ools.commands.eucacommand.EucaCommand):
             bundler.copy_volume(image_path, self.volume_path, excludes,
                                 self.generate_fstab, self.fstab_path)
         except CopyError:
-            print 'Unable to copy files'
+            print >> sys.stderr, 'Unable to copy files'
             self.cleanup(image_path)
             sys.exit(1)
         except (NotFoundError, CommandFailed, UnsupportedException):

@@ -233,14 +233,14 @@ class Bundler(object):
             k = EVP.Cipher(alg='aes_128_cbc', key=unhexlify(key),
                            iv=unhexlify(iv), op=1)
         except TypeError:
-            print
-            print 'WARNING: retrying encryption to work around a rare RNG bug'
-            print 'Please report the following values to Eucalyptus Systems at'
-            print 'https://eucalyptus.atlassian.net/browse/TOOLS-103 to help'
-            print 'diagnose this issue.'
-            print 'k: ', key
-            print 'iv:', iv
-            print
+            print >> sys.stderr
+            print >> sys.stderr, 'WARNING: retrying encryption to work around a rare RNG bug'
+            print >> sys.stderr, 'Please report the following values to Eucalyptus Systems at'
+            print >> sys.stderr, 'https://eucalyptus.atlassian.net/browse/TOOLS-103 to help'
+            print >> sys.stderr, 'diagnose this issue.'
+            print >> sys.stderr, 'k: ', key
+            print >> sys.stderr, 'iv:', iv
+            print >> sys.stderr
             return self.encrypt_image(file)
 
         in_file = open(file, 'rb')
@@ -623,7 +623,7 @@ class Bundler(object):
         if not os.path.exists(destination_path):
             os.makedirs(destination_path)
         if self.img == 'Unsupported':
-            print 'Platform not fully supported.'
+            print >> sys.stderr, 'Platform not fully supported.'
             raise UnsupportedException
         self.img.create_image(size_in_MB, image_path)
         self.img.make_fs(image_path, fs_type=fs_type, uuid=uuid, label=label)
@@ -642,7 +642,7 @@ class Bundler(object):
                 if not output[1]:
                     return loop_dev
             else:
-                print 'Could not create loopback device. Aborting'
+                print >> sys.stderr, 'Could not create loopback device. Aborting'
                 raise CommandFailed
             tries += 1
 
@@ -709,10 +709,10 @@ class Bundler(object):
             # rsync return code 24: Partial transfer due to vanished source files
 
             if pipe.returncode in (23, 24):
-                print 'Warning: rsync reports files partially copied:'
-                print output
+                print >> sys.stderr, 'Warning: rsync reports files partially copied:'
+                print >> sys.stderr, output
             else:
-                print 'Error: rsync failed with return code %d' \
+                print >> sys.stderr, 'Error: rsync failed with return code %d' \
                     % pipe.returncode
                 raise CopyError
 
@@ -731,7 +731,7 @@ class Bundler(object):
             output = self.copy_to_image(mount_point, volume_path,
                     excludes)
             if self.img == 'Unsupported':
-                print 'Platform not fully supported.'
+                print >> sys.stderr, 'Platform not fully supported.'
                 raise UnsupportedException
             self.img.add_fstab(mount_point, generate_fstab, fstab_path)
         except CopyError:
@@ -744,7 +744,7 @@ class Bundler(object):
         message = None
         index = msg.find('<')
         if index < 0:
-            print msg
+            print >> sys.stderr, msg
             sys.exit(1)
         msg = msg[index - 1:]
         msg = msg.replace('\n', '')
@@ -763,8 +763,8 @@ class Bundler(object):
                 if node.nodeType == node.TEXT_NODE:
                     message = node.data
 
-            print '%s:' % code, message
+            print >> sys.stderr, '%s:' % code, message
         except Exception:
-            print msg
+            print >> sys.stderr, msg
         sys.exit(1)
 

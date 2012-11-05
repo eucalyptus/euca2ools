@@ -77,7 +77,7 @@ class DeleteBundle(euca2ools.commands.eucacommand.EucaCommand):
         try:
             bucket_instance = s3conn.get_bucket(bucket)
         except S3ResponseError, s3error:
-            print 'Unable to get bucket %s' % bucket
+            print >> sys.stderr, 'Unable to get bucket %s' % bucket
             sys.exit()
         return bucket_instance
 
@@ -93,7 +93,7 @@ class DeleteBundle(euca2ools.commands.eucacommand.EucaCommand):
                     if node.nodeType == node.TEXT_NODE:
                         parts.append(node.data)
         except:
-            print 'problem parsing: %s' % manifest_filename
+            print >> sys.stderr, 'problem parsing: %s' % manifest_filename
         return parts
 
     def get_manifests(self, bucket):
@@ -119,8 +119,8 @@ class DeleteBundle(euca2ools.commands.eucacommand.EucaCommand):
             except S3ResponseError, s3error:
                 s3error_string = '%s' % s3error
                 if s3error_string.find('200') < 0:
-                    print s3error_string
-                    print 'unable to download manifest %s' % manifest
+                    print >> sys.stderr, s3error_string
+                    print >> sys.stderr, 'unable to download manifest %s' % manifest
                     if os.path.exists(manifest_filename):
                         os.remove(manifest_filename)
                     return False
@@ -139,8 +139,8 @@ class DeleteBundle(euca2ools.commands.eucacommand.EucaCommand):
                 except S3ResponseError, s3error:
                     s3error_string = '%s' % s3error
                     if s3error_string.find('200') < 0:
-                        print s3error_string
-                        print 'unable to delete part %s' % part
+                        print >> sys.stderr, s3error_string
+                        print >> sys.stderr, 'unable to delete part %s' % part
                         sys.exit()
 
 
@@ -153,12 +153,12 @@ class DeleteBundle(euca2ools.commands.eucacommand.EucaCommand):
             except Exception, s3error:
                 s3error_string = '%s' % s3error
                 if s3error_string.find('200') < 0:
-                    print s3error_string
-                    print 'unable to delete manifest %s' % manifest
+                    print >> sys.stderr, s3error_string
+                    print >> sys.stderr, 'unable to delete manifest %s' % manifest
                     try:
                         bucket = self.ensure_bucket(bucket_name)
                     except ConnectionFailed, e:
-                        print e.message
+                        print >> sys.stderr, e.message
                         sys.exit(1)
         if clear:
             try:
@@ -166,8 +166,8 @@ class DeleteBundle(euca2ools.commands.eucacommand.EucaCommand):
             except Exception, s3error:
                 s3error_string = '%s' % s3error
                 if s3error_string.find('200') < 0:
-                    print s3error_string
-                    print 'unable to delete bucket %s' % bucket.name
+                    print >> sys.stderr, s3error_string
+                    print >> sys.stderr, 'unable to delete bucket %s' % bucket.name
 
     def remove_manifests(self, manifests, directory):
         for manifest in manifests:
@@ -179,9 +179,9 @@ class DeleteBundle(euca2ools.commands.eucacommand.EucaCommand):
         directory = os.path.abspath('/tmp')
 
         if not self.manifest_path and not self.prefix:
-            print 'Neither a manifestpath nor a prefix was specified.'
-            print 'All bundles in bucket', self.bucket, 'will be deleted.'
-            print ('If this is not what you want, press Ctrl+C in the next '
+            print >> sys.stderr, 'Neither a manifestpath nor a prefix was specified.'
+            print >> sys.stderr, 'All bundles in bucket', self.bucket, 'will be deleted.'
+            print >> sys.stderr, ('If this is not what you want, press Ctrl+C in the next '
                    '10 seconds'),
             for __ in range(10):
                 sys.stdout.write('.')

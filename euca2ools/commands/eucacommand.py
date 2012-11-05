@@ -69,10 +69,10 @@ def euca_except_hook(debugger_flag, debug_flag):
             else:
                 debugger.post_mortem(tb)
         elif debug_flag:
-            print traceback.print_tb(tb)
+            print >> sys.stderr, traceback.print_tb(tb)
             sys.exit(1)
         else:
-            print value
+            print >> sys.stderr, value
             sys.exit(1)
 
     return excepthook
@@ -158,7 +158,7 @@ class EucaCommand(object):
                                              self.short_options(),
                                              self.long_options())
         except getopt.GetoptError, e:
-            print e
+            print >> sys.stderr, e
             sys.exit(1)
         for (name, value) in opts:
             if name in ('-h', '--help'):
@@ -396,9 +396,9 @@ class EucaCommand(object):
 
     def display_error_and_exit(self, exc):
         try:
-            print '%s: %s' % (exc.error_code, exc.error_message)
+            print >> sys.stderr, '%s: %s' % (exc.error_code, exc.error_message)
         except:
-            print '%s' % exc
+            print >> sys.stderr, '%s' % exc
         finally:
             sys.exit(1)
 
@@ -446,23 +446,23 @@ class EucaCommand(object):
             if not self.euca_cert_path:
                 self.euca_cert_path = self.environ['EUCA_CERT']
                 if not self.euca_cert_path:
-                    print 'EUCA_CERT variable must be set.'
+                    print >> sys.stderr, 'EUCA_CERT variable must be set.'
                     raise euca2ools.exceptions.ConnectionFailed
             if not self.euca_private_key_path:
                 self.euca_private_key_path = self.environ['EUCA_PRIVATE_KEY']
                 if not self.euca_private_key_path:
-                    print 'EUCA_PRIVATE_KEY variable must be set.'
+                    print >> sys.stderr, 'EUCA_PRIVATE_KEY variable must be set.'
                     raise euca2ools.exceptions.ConnectionFailed
         if not self.ec2_user_access_key:
             self.ec2_user_access_key = self.environ['EC2_ACCESS_KEY']
             if not self.ec2_user_access_key:
-                print 'EC2_ACCESS_KEY environment variable must be set.'
+                print >> sys.stderr, 'EC2_ACCESS_KEY environment variable must be set.'
                 raise euca2ools.exceptions.ConnectionFailed
 
         if not self.ec2_user_secret_key:
             self.ec2_user_secret_key = self.environ['EC2_SECRET_KEY']
             if not self.ec2_user_secret_key:
-                print 'EC2_SECRET_KEY environment variable must be set.'
+                print >> sys.stderr, 'EC2_SECRET_KEY environment variable must be set.'
                 raise euca2ools.exceptions.ConnectionFailed
 
     def get_connection_details(self):
@@ -490,7 +490,7 @@ class EucaCommand(object):
             if not self.url:
                 self.url = \
                     'http://localhost:8773/services/Walrus'
-                print 'S3_URL not specified. Trying %s' \
+                print >> sys.stderr, 'S3_URL not specified. Trying %s' \
                     % self.url
 
         self.get_connection_details()
@@ -527,7 +527,7 @@ class EucaCommand(object):
             if not self.url:
                 self.url = \
                     'http://localhost:8773/services/Eucalyptus'
-                print 'EC2_URL not specified. Trying %s' \
+                print >> sys.stderr, 'EC2_URL not specified. Trying %s' \
                     % self.url
 
         if not self.region.endpoint:
@@ -584,7 +584,7 @@ class EucaCommand(object):
                 params['filters'] = self.filters
             method = getattr(connection, request_name)
         except AttributeError:
-            print 'Unknown request: %s' % request_name
+            print >> sys.stderr, 'Unknown request: %s' % request_name
             sys.exit(1)
         try:
             return method(**params)

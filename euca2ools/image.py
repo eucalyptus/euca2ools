@@ -30,6 +30,7 @@
 #
 # Author: Neil Soman neil@eucalyptus.com
 
+import sys
 import os
 import shutil
 import subprocess
@@ -173,15 +174,15 @@ class SolarisImage:
         self.debug = debug
 
     def create_image(self, size_in_MB, image_path):
-        print 'Sorry. Solaris not supported yet'
+        print >> sys.stderr, 'Sorry. Solaris not supported yet'
         raise UnsupportedException
 
     def make_fs(self, image_path, fstype = None, uuid = None, label = None):
-        print 'Sorry. Solaris not supported yet'
+        print >> sys.stderr, 'Sorry. Solaris not supported yet'
         raise UnsupportedException
 
     def make_essential_devs(self, image_path):
-        print 'Sorry. Solaris not supported yet'
+        print >> sys.stderr, 'Sorry. Solaris not supported yet'
         raise UnsupportedException
 
 

@@ -247,10 +247,10 @@ class InstallImage(AWSQueryRequest):
         try:
             names = bundler.untarzip_image(self.destination, file)
         except OSError:
-            print "Error: cannot unbundle image, possibly corrupted file"
+            print >> sys.stderr, "Error: cannot unbundle image, possibly corrupted file"
             sys.exit(-1)
         except IOError:
-            print "Error: cannot unbundle image, possibly corrupted file"
+            print >> sys.stderr, "Error: cannot unbundle image, possibly corrupted file"
             sys.exit(-1)
         kernel_dir=None
         if not(self.cli_options.kernel_type==None):
@@ -285,10 +285,10 @@ class InstallImage(AWSQueryRequest):
                                 print ramdisk_id
                 if not(kernel_found):
                     if not(kernel_dir):
-                        print "Error: couldn't find kernel. Check your parameters or specify an existing kernel/ramdisk"
+                        print >> sys.stderr, "Error: couldn't find kernel. Check your parameters or specify an existing kernel/ramdisk"
                         sys.exit(-1);
                     elif i==0:
-                        print "Error: couldn't find kernel. Check your parameters or specify an existing kernel/ramdisk"
+                        print >> sys.stderr, "Error: couldn't find kernel. Check your parameters or specify an existing kernel/ramdisk"
                         sys.exit(-1);
                 else:
                     break
@@ -314,30 +314,30 @@ class InstallImage(AWSQueryRequest):
 
         # tarball and image option are mutually exclusive
         if (not(self.cli_options.image_name) and not(self.cli_options.tarball)):
-            print "Error: one of -i or -t must be specified"
+            print >> sys.stderr, "Error: one of -i or -t must be specified"
             sys.exit(-1)
 
         if (self.cli_options.image_name and self.cli_options.tarball):
-            print "Error: -i and -t cannot be specified together"
+            print >> sys.stderr, "Error: -i and -t cannot be specified together"
             sys.exit(-1)
 
         if (self.cli_options.tarball and \
             (not(self.cli_options.description) or not(self.cli_options.architecture))):
-            print "Error: when -t is specified, -s and -a are required"
+            print >> sys.stderr, "Error: when -t is specified, -s and -a are required"
             sys.exit(-1)
 
         if (self.cli_options.architecture and \
             not(self.cli_options.architecture == 'i386' or self.cli_options.architecture == 'x86_64')):
-            print "Error: architecture must be either 'i386' or 'x86_64'"
+            print >> sys.stderr, "Error: architecture must be either 'i386' or 'x86_64'"
             sys.exit(-1)
 
         if (self.cli_options.kernel and not(self.cli_options.ramdisk)) or \
            (not(self.cli_options.kernel) and self.cli_options.ramdisk):
-            print "Error: kernel and ramdisk must both be overridden"
+            print >> sys.stderr, "Error: kernel and ramdisk must both be overridden"
             sys.exit(-1)
 
         if (self.cli_options.architecture and self.cli_options.image_name):
-            print "Warning: you may be overriding the default architecture of this image!"
+            print >> sys.stderr, "Warning: you may be overriding the default architecture of this image!"
 
 
         euare_svc = EuareService()
@@ -348,7 +348,7 @@ class InstallImage(AWSQueryRequest):
                     is_secure=euare_svc.args['is_secure'])
         userinfo  = conn.get_user().arn.split(':')
         if not(userinfo[4]=='eucalyptus') and not(self.cli_options.kernel):
-            print "Error: must be cloud admin to upload kernel/ramdisk. try specifying existing ones with --kernel and --ramdisk"
+            print >> sys.stderr, "Error: must be cloud admin to upload kernel/ramdisk. try specifying existing ones with --kernel and --ramdisk"
             sys.exit(-1)
         self.eustore_url = self.ServiceClass.StoreBaseURL
 
@@ -388,10 +388,10 @@ class InstallImage(AWSQueryRequest):
                     # more param checking now
                     if image['single-kernel']=='True':
                         if self.cli_options.kernel_type:
-                            print "The -k option will be ignored because the image is single-kernel"
+                            print >> sys.stderr, "The -k option will be ignored because the image is single-kernel"
                     else:
                         if not(self.cli_options.kernel_type):
-                            print "Error: The -k option must be specified because this image has separate kernels"
+                            print >> sys.stderr, "Error: The -k option must be specified because this image has separate kernels"
                             sys.exit(-1)
                     print "Downloading Image : ",image['description']
                     imageURL = self.eustore_url+image['url']
@@ -419,10 +419,10 @@ class InstallImage(AWSQueryRequest):
                     if image['name'] == crc.rjust(10,"0"):
                         print "Installed image: "+self.bundleAll(fp.name, None, image['description'], image['architecture'])
                     else:
-                        print "Error: Downloaded image was incomplete or corrupt, please try again"
+                        print >> sys.stderr, "Error: Downloaded image was incomplete or corrupt, please try again"
                     os.remove(fp.name)
                 else:
-                    print "Image name not found, please run eustore-describe-images"
+                    print >> sys.stderr, "Image name not found, please run eustore-describe-images"
 
     def main_cli(self):
         euca2ools.utils.print_version_if_necessary()
