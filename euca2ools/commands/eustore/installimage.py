@@ -184,15 +184,15 @@ class InstallImage(AWSQueryRequest):
             if name_match:
                 if kernel_id=='true' and img.type=='kernel':
                     if self.promptReplace("Kernel", img.name):
-                        ret_id=img.name
+                        ret_id=img.id
                     break
                 elif ramdisk_id=='true' and img.type=='ramdisk':
                     if self.promptReplace("Ramdisk", img.name):
-                        ret_id=img.name
+                        ret_id=img.id
                     break
                 elif kernel_id!='true' and ramdisk_id!='true' and img.type=='machine':
                     if self.promptReplace("Image", img.name):
-                        ret_id=img.name
+                        ret_id=img.id
                     break
 
         if ret_id:
@@ -356,6 +356,8 @@ class InstallImage(AWSQueryRequest):
         ec2_conn = boto.connect_euca(host=euare_svc.args['host'], \
                         aws_access_key_id=euare_svc.args['aws_access_key_id'],\
                         aws_secret_access_key=euare_svc.args['aws_secret_access_key'])
+        ec2_conn.APIVersion = '2012-03-01'
+                        
         self.ImageList = ec2_conn.get_all_images()
 
         if os.environ.has_key('EUSTORE_URL'):
