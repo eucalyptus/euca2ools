@@ -80,6 +80,7 @@ class DescribeImages(AWSQueryRequest):
                       self.fmtCol(image['os'],12)+ \
                       self.fmtCol(image['architecture'],8)+ \
                       self.fmtCol(image['version'],15)+ \
+                      self.fmtCol(', '.join(image['hypervisors-supported']),18)+ \
                       image['description']
                 if self.cli_options.verbose:
                     print "     "+self.fmtCol(image['date'],20)+ \
