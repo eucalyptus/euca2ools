@@ -65,9 +65,9 @@ class BundleInstance(euca2ools.commands.eucacommand.EucaCommand):
                Param(name='expires', short_name='x', long_name='expires',
                      optional=False, ptype='integer', default=24,
                      doc='Expiration for the generated policy (hours).')]
-    Args = [Param(name='instance_id', ptype='string',
+    Args = [Param(name='instance_id', ptype='string', optional=False,
                   doc='ID of the instance to be bundled.')]
-    
+
     def display_bundle(self, bundle):
         bundle_string = '%s\t%s\t%s\t%s\t%s\t%s\t%s' % (bundle.id, 
                                                         bundle.instance_id,
