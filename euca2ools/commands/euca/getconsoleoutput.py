@@ -40,12 +40,25 @@ class GetConsoleOutput(euca2ools.commands.eucacommand.EucaCommand):
     Args = [Param(name='instance_id', ptype='string', optional=False,
                   doc="""unique identifier for instance
                   to show the console output for.""")]
+    Options = [Param(name='raw', long_name='raw', ptype='boolean',
+                     default=False, optional=True,
+                     doc='''Display raw output without escaping control
+                     characters''')]
 
     def display_console_output(self, console_output):
         print console_output.instance_id
         print console_output.timestamp
-        print console_output.output
-        
+        output = console_output.output
+        if not self.raw:
+            # Escape control characters
+            esc_ords = (list(range(0x00, 0x09)) + list(range(0x0e, 0x1f)) +
+                        [0x0b, 0x0c, 0x7f])
+            for esc_ord in esc_ords:
+                # Small assumption:  we aren't translating ' or "
+                output = output.replace(chr(esc_ord),
+                                        repr(chr(esc_ord)).strip('\'"'))
+        print output
+
     def main(self):
         conn = self.make_connection_cli()
         return self.make_request_cli(conn, 'get_console_output',
@@ -54,4 +67,3 @@ class GetConsoleOutput(euca2ools.commands.eucacommand.EucaCommand):
     def main_cli(self):
         co = self.main()
         self.display_console_output(co)
-
