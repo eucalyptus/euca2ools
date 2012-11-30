@@ -392,7 +392,9 @@ class InstallImage(AWSQueryRequest):
                         if self.cli_options.kernel_type:
                             print >> sys.stderr, "The -k option will be ignored because the image is single-kernel"
                     else:
-                        if not(self.cli_options.kernel_type):
+                        # Warn about kernel type for multi-kernel images, but not if already installed
+                        # kernel/ramdisk have been specified.
+                        if not(self.cli_options.kernel_type) and not(self.cli_options.kernel):
                             print >> sys.stderr, "Error: The -k option must be specified because this image has separate kernels"
                             sys.exit(-1)
                     print "Downloading Image : ",image['description']
