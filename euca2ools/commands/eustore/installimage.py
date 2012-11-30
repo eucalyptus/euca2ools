@@ -38,6 +38,7 @@ import tarfile
 import hashlib
 import re
 import zlib
+import shutil
 import tempfile
 import urllib2
 import boto
@@ -293,6 +294,7 @@ class InstallImage(AWSQueryRequest):
                 else:
                     break
         #now, install the image, referencing the kernel/ramdisk
+        image_id = None
         for path in names:
             name = os.path.basename(path)
             if not name.startswith('.'):
@@ -303,7 +305,10 @@ class InstallImage(AWSQueryRequest):
                     else:
                         name = name[:-len('.img')]
                     id = self.bundleFile(path, name, description, arch, kernel_id, ramdisk_id)
-                    return id
+                    image_id = id
+        # make good faith attempt to remove working directory and all files within
+        shutil.rmtree(self.destination, True)
+        return image_id
 
     def main(self, **args):
         self.process_args()
