@@ -429,7 +429,6 @@ class InstallImage(AWSQueryRequest):
                         print "Installed image: "+self.bundleAll(fp.name, None, image['description'], image['architecture'])
                     else:
                         print >> sys.stderr, "Error: Downloaded image was incomplete or corrupt, please try again"
-                    os.remove(fp.name)
                 else:
                     print >> sys.stderr, "Image name not found, please run eustore-describe-images"
 
