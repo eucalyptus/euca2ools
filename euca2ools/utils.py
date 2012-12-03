@@ -114,6 +114,24 @@ def print_instances(instances, nil=""):
             items.append(val)
         print "INSTANCE\t%s" % '\t'.join(items)
 
+def print_subnets(subnets, nil=""):
+    members = ('id', 'cidr_block', 'available_ip_address_count', 'state',
+               'availability_zone', 'tags')
+    for subnet in subnets:
+        if not subnet:
+            continue
+        items=[ ]
+        for member in members:
+            val = getattr(subnet,member,nil)
+            # product_codes is a list
+            if val is None: 
+                val = nil
+            if hasattr(val,'__iter__'):                
+                val = ','.join(val)
+            items.append(str(val))
+        print "SUBNET\t%s" % '\t'.join(items)
+
+
 def print_version_if_necessary():
     """
     If '--version' appears in sys.argv then print the version and exit

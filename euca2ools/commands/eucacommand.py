@@ -545,12 +545,45 @@ class EucaCommand(object):
                                 path=self.service_path,
                                 api_version=self.APIVersion)
     
+    def make_vpc_connection(self):
+        if self.region_name:
+            self.region.name = self.region_name
+            try:
+                self.url = self.get_endpoint_url(self.region.name)
+            except KeyError, err:
+                self.display_error_and_exit(err.message)
+        elif not self.url:
+            self.url = self.environ['EC2_URL']
+            if not self.url:
+                self.url = \
+                    'http://localhost:8773/services/Eucalyptus'
+                print >> sys.stderr, 'EC2_URL not specified. Trying %s' \
+                    % self.url
+
+        if not self.region.endpoint:
+            self.get_connection_details()
+            self.region.endpoint = self.host
+        if not self.region.name:
+            self.region.name = 'eucalyptus'
+
+        return boto.connect_vpc(aws_access_key_id=self.ec2_user_access_key,
+                                aws_secret_access_key=self.ec2_user_secret_key,
+                                is_secure=self.is_secure,
+                                debug=self.debug,
+                                region=self.region,
+                                port=self.port,
+                                path=self.service_path,
+                                api_version=self.APIVersion)
+
+
     def make_connection(self, conn_type='ec2'):
         self.get_credentials()
         if conn_type == 's3':
             conn = self.make_s3_connection()
         elif conn_type == 'ec2':
             conn = self.make_ec2_connection()
+        elif conn_type == 'vpc':
+            conn = self.make_vpc_connection()
         else:
             conn = None
         return conn
