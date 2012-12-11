@@ -100,6 +100,10 @@ class DescribeVolumes(euca2ools.commands.eucacommand.EucaCommand):
                         volume.attach_data.status,
                         volume.attach_data.attach_time)
                 print 'ATTACHMENT\t%s' % attachment_string
+            if hasattr(volume, 'tags') and isinstance(volume.tags, dict):
+                for tag in volume.tags:
+                    print '\t'.join(('TAG', 'volume', volume.id, tag,
+                                     volume.tags[tag]))
 
     def main(self):
         conn = self.make_connection_cli()
