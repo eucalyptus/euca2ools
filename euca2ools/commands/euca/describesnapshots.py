@@ -90,6 +90,10 @@ class DescribeSnapshots(euca2ools.commands.eucacommand.EucaCommand):
                 val = getattr(snapshot, member, "")
                 items.append(str(val))
             print "SNAPSHOT\t%s" % '\t'.join(items)
+            if hasattr(snapshot, 'tags') and isinstance(snapshot.tags, dict):
+                for tag in snapshot.tags:
+                    print '\t'.join(('TAG', 'snapshot', snapshot.id, tag,
+                                     snapshot.tags[tag]))
 
 
     def main(self):
