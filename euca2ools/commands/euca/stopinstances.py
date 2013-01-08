@@ -31,6 +31,7 @@
 # Author: Neil Soman neil@eucalyptus.com
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
+import boto.ec2.instance
 import euca2ools.commands.eucacommand
 from boto.roboto.param import Param
 
@@ -46,8 +47,14 @@ class StopInstances(euca2ools.commands.eucacommand.EucaCommand):
 
     def display_instances(self, instances):
         for instance in instances:
-            print 'INSTANCE\t%s' % instance.id
-            
+            if 'InstanceState' in dir(boto.ec2.instance):
+                # See https://eucalyptus.atlassian.net/browse/TOOLS-109
+                print 'INSTANCE\t%s\t%s\t%s' % (instance.id,
+                                                instance.previous_state,
+                                                instance.state)
+            else:
+                print 'INSTANCE\t%s' % instance.id
+
     def main(self):
         conn = self.make_connection_cli()
         return self.make_request_cli(conn, 'stop_instances',
