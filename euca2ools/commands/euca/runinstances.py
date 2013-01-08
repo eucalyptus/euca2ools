@@ -59,7 +59,9 @@ class RunInstances(euca2ools.commands.eucacommand.EucaCommand):
                      doc='File containing user data to pass to the instance.'),
                Param(name='addressing', long_name='addressing',
                      optional=True, ptype='string',
-                     doc='Deprecated.'),
+                     doc=('[Eucalyptus extension] Address assignment method.  '
+                          'Use "private" to run an instance with no public '
+                          'address.')),
                Param(name='instance_type',
                      short_name='t', long_name='instance-type',
                      optional=True, ptype='string', default='m1.small',
