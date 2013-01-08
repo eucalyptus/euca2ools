@@ -48,10 +48,5 @@ class RebootInstances(euca2ools.commands.eucacommand.EucaCommand):
 
     def main_cli(self):
         status = self.main()
-        if status:
-            for instance_id in self.instance_id:
-                print 'INSTANCE\t%s' % instance_id
-        else:
+        if not status:
             self.error_exit()
-                
-
