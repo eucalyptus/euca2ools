@@ -37,7 +37,7 @@ class ModifySecurityGroupRequest(EucalyptusRequest):
     The basis for security group-editing commands
     '''
 
-    Args = [Arg('GroupName', metavar='GROUP',
+    ARGS = [Arg('GroupName', metavar='GROUP',
                 help='name of the security group to modify'),
             Arg('-P', '--protocol', dest='IpPermissions.1.IpProtocol',
                 choices=['tcp', 'udp', 'icmp', '6', '17', '1'], default='tcp',

@@ -39,7 +39,7 @@ class DescribeImages(EucalyptusRequest):
         has explicit launch permissions are shown.'''
 
     APIVersion = '2010-08-31'
-    Args = [Arg('ImageId', metavar='IMAGE', nargs='*',
+    ARGS = [Arg('ImageId', metavar='IMAGE', nargs='*',
                 help='limit results to one or more images'),
             Arg('-a', '--all', action='store_true', route_to=None,
                 help='describe all images'),

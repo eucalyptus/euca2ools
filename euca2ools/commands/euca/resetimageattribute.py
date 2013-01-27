@@ -33,7 +33,7 @@ from . import EucalyptusRequest
 
 class ResetImageAttribute(EucalyptusRequest):
     Description = 'Reset an attribute of an image to its default value'
-    Args = [Arg('ImageId', metavar='IMAGE',
+    ARGS = [Arg('ImageId', metavar='IMAGE',
             help='image whose attribute should be reset'),
             Arg('-l', '--launch-permission', dest='Attribute',
                 action='store_const', const='launchPermission', required=True,

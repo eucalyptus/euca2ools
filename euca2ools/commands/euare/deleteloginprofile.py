@@ -36,7 +36,7 @@ from . import EuareRequest, DELEGATE
 
 class DeleteLoginProfile(EuareRequest):
     Description = "Delete a user's login profile"
-    Args = [Arg('-u', '--user-name', dest='UserName', metavar='USER',
+    ARGS = [Arg('-u', '--user-name', dest='UserName', metavar='USER',
                 required=True, help='''name of the user whose login profile
                 should be deleted (required)'''),
             DELEGATE]

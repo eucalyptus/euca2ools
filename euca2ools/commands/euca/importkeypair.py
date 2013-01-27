@@ -36,7 +36,7 @@ from .argtypes import file_contents
 class ImportKeyPair(EucalyptusRequest):
     APIVersion = '2010-08-31'
     Description = 'Import a public RSA key'
-    Args = [Arg('KeyName', metavar='KEYPAIR',
+    ARGS = [Arg('KeyName', metavar='KEYPAIR',
                 help='name for the new key pair'),
             Arg('-f', '--public-key-file', dest='pubkey', metavar='PUBKEY',
                 type=file_contents, required=True, route_to=None,

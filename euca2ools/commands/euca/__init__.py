@@ -138,7 +138,7 @@ class EucalyptusRequest(Euca2oolsRequest, TabifyingCommand):
     # old -a/--access-key/-s args.  As before, if either -a or -s conflicts
     # with another arg, both are capitalized.  All are deprecated.  They are no
     # longer documented and using them will result in warnings.
-    Args = [Arg('-a', '--access-key', metavar='KEY_ID',
+    ARGS = [Arg('-a', '--access-key', metavar='KEY_ID',
                 dest='deprecated_key_id', route_to=SERVICE,
                 help=argparse.SUPPRESS),
             Arg('-s', metavar='KEY', dest='deprecated_sec_key',
@@ -156,8 +156,9 @@ class EucalyptusRequest(Euca2oolsRequest, TabifyingCommand):
         # If an inheriting class defines '-a' or '-s' args, resolve conflicts
         # with this class's old-style auth args by capitalizing this class's
         # auth args.
-        a_args = _find_args_by_parg(self.Args, '-a')
-        s_args = _find_args_by_parg(self.Args, '-s')
+        args = self.aggregate_subclass_fields('ARGS')
+        a_args = _find_args_by_parg(args, '-a')
+        s_args = _find_args_by_parg(args, '-s')
         if len(a_args) > 1 or len(s_args) > 1:
             for arg in a_args:
                 if arg.kwargs.get('dest') == 'deprecated_key_id':

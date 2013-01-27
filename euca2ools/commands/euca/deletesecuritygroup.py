@@ -33,7 +33,7 @@ from . import EucalyptusRequest
 
 class DeleteSecurityGroup(EucalyptusRequest):
     Description = 'Delete a security group'
-    Args = [Arg('GroupName', metavar='GROUP')]
+    ARGS = [Arg('GroupName', metavar='GROUP')]
 
     def print_result(self, result):
         print self.tabify(('RETURN', result.get('return')))

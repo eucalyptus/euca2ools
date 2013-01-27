@@ -38,7 +38,7 @@ class GetPassword(GetPasswordData):
     Action = 'GetPasswordData'
     Description = '''Retrieve the administrator password for an instance
                      running Windows'''
-    Args = [Arg('-k', '--priv-launch-key', metavar='PRIVKEY',
+    ARGS = [Arg('-k', '--priv-launch-key', metavar='PRIVKEY',
                 type=file_contents, required=True, route_to=None,
                 help='''file containing the private key corresponding to the
                         key pair supplied at instance launch time''')]

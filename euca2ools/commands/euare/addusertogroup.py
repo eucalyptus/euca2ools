@@ -33,7 +33,7 @@ from . import EuareRequest, DELEGATE
 
 class AddUserToGroup(EuareRequest):
     Description = 'Add a user to a group'
-    Args = [Arg('-g', '--group-name', dest='GroupName', required=True,
+    ARGS = [Arg('-g', '--group-name', dest='GroupName', required=True,
                 help='group to add the user to'),
             Arg('-u', '--user-name', dest='UserName', required=True,
                 help='user to add'),

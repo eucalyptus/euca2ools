@@ -33,7 +33,7 @@ from . import EucalyptusRequest
 
 class CancelBundleTask(EucalyptusRequest):
     Description = 'Cancel an instance bundling operation'
-    Args = [Arg('BundleId', metavar='TASK-ID',
+    ARGS = [Arg('BundleId', metavar='TASK-ID',
                 help='ID of the bundle task to cancel')]
 
     def print_result(self, result):

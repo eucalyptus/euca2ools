@@ -33,7 +33,7 @@ from . import EucalyptusRequest
 
 class DeleteSnapshot(EucalyptusRequest):
     Description = 'Delete a snapshot'
-    Args = [Arg('SnapshotId', metavar='SNAPSHOT', help='snapshot to delete')]
+    ARGS = [Arg('SnapshotId', metavar='SNAPSHOT', help='snapshot to delete')]
 
     def print_result(self, result):
         print self.tabify(['SNAPSHOT', self.args['SnapshotId']])

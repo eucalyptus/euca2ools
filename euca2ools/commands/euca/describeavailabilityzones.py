@@ -34,7 +34,7 @@ from . import EucalyptusRequest
 class DescribeAvailabilityZones(EucalyptusRequest):
     Description = 'Display availability zones within the active region'
     APIVersion = '2010-08-31'
-    Args = [Arg('ZoneName', metavar='ZONE', nargs='*',
+    ARGS = [Arg('ZoneName', metavar='ZONE', nargs='*',
                 help='limit results to one or more availability zones')]
     Filters = [Filter('message', help=('message giving information about the'
                       'availability zone')),

@@ -33,7 +33,7 @@ from . import EucalyptusRequest
 
 class DisassociateAddress(EucalyptusRequest):
     Description = 'Disassociate an elastic IP address from an instance'
-    Args = [Arg('address', route_to=None,
+    ARGS = [Arg('address', route_to=None,
                 help='elastic IP address or association ID to disassociate')]
 
     def main(self):

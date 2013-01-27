@@ -34,7 +34,7 @@ from . import EucalyptusRequest
 class DescribeInstances(EucalyptusRequest):
     APIVersion = '2010-08-31'
     Description = 'Show information about instances'
-    Args = [Arg('InstanceId', metavar='INSTANCE', nargs='*',
+    ARGS = [Arg('InstanceId', metavar='INSTANCE', nargs='*',
                 help='Limit results to one or more instances')]
     Filters = [Filter('architecture', help='CPU architecture'),
                Filter('availability-zone'),

@@ -33,7 +33,7 @@ from . import EucalyptusRequest
 
 class AssociateAddress(EucalyptusRequest):
     Description = 'Associate an elastic IP address with a running instance'
-    Args = [Arg('-i', '--instance', dest='InstanceId', metavar='INSTANCE',
+    ARGS = [Arg('-i', '--instance', dest='InstanceId', metavar='INSTANCE',
                 required=True, help='instance to associate the address with'),
             Arg('PublicIp', metavar='ADDRESS', help='IP address to associate')]
 

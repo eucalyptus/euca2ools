@@ -34,7 +34,7 @@ from . import EucalyptusRequest
 class DescribeAddresses(EucalyptusRequest):
     APIVersion = '2011-01-01'
     Description = 'Show information about elastic IP addresses'
-    Args = [Arg('address', nargs='*', route_to=None,
+    ARGS = [Arg('address', nargs='*', route_to=None,
                 help='''limit results to one or more elastic IP addresses or
                         allocation IDs''')]
     Filters = [Filter('allocation-id', help='allocation ID (VPC only)'),

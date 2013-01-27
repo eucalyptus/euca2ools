@@ -34,7 +34,7 @@ from . import EucalyptusRequest
 class DescribeVolumes(EucalyptusRequest):
     Description = 'Display information about volumes'
     APIVersion = '2010-08-31'
-    Args = [Arg('VolumeId', metavar='VOLUME', nargs='*',
+    ARGS = [Arg('VolumeId', metavar='VOLUME', nargs='*',
                 help='volume(s) to describe (default: all volumes)')]
     Filters = [Filter('attachment.attach-time', help='attachment start time'),
                Filter('attachment.delete-on-termination', help='''whether the

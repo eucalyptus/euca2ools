@@ -34,7 +34,7 @@ from . import EucalyptusRequest
 
 class GetConsoleOutput(EucalyptusRequest):
     Description = 'Retrieve console output for the specified instance'
-    Args = [Arg('InstanceId', metavar='INSTANCE',
+    ARGS = [Arg('InstanceId', metavar='INSTANCE',
                 help='instance to obtain console output from')]
 
     def print_result(self, result):

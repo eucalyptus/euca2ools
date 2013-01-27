@@ -33,7 +33,7 @@ from . import EucalyptusRequest
 
 class CreateSecurityGroup(EucalyptusRequest):
     Description = 'Create a new security group'
-    Args = [Arg('-d', '--description', dest='GroupDescription', metavar='DESC',
+    ARGS = [Arg('-d', '--description', dest='GroupDescription', metavar='DESC',
                 required=True),
             Arg('GroupName', metavar='GROUP', help='name of the new group')]
 

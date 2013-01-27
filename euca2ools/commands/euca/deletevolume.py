@@ -33,7 +33,7 @@ from . import EucalyptusRequest
 
 class DeleteVolume(EucalyptusRequest):
     Description = 'Delete a volume'
-    Args = [Arg('VolumeId', metavar='VOLUME', help='volume to delete')]
+    ARGS = [Arg('VolumeId', metavar='VOLUME', help='volume to delete')]
 
     def print_result(self, result):
         print self.tabify(['VOLUME', self.args['VolumeId']])

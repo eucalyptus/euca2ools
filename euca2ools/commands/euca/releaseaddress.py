@@ -33,7 +33,7 @@ from . import EucalyptusRequest
 
 class ReleaseAddress(EucalyptusRequest):
     Description = 'Release an elastic IP address'
-    Args = [Arg('PublicIp', metavar='IP', help='elastic IP to release')]
+    ARGS = [Arg('PublicIp', metavar='IP', help='elastic IP to release')]
 
     def print_result(self, result):
         print self.tabify(('ADDRESS', self.args.get('PublicIp'),

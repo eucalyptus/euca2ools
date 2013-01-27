@@ -34,7 +34,7 @@ from . import EucalyptusRequest
 class DescribeKeyPairs(EucalyptusRequest):
     APIVersion = '2010-08-31'
     Description = 'Display information about available key pairs'
-    Args = [Arg('KeyName', nargs='*', metavar='KEYPAIR',
+    ARGS = [Arg('KeyName', nargs='*', metavar='KEYPAIR',
                 help='limit results to specific key pairs')]
     Filters = [Filter('fingerprint', help='fingerprint of the key pair'),
                Filter('key-name', help='name of the key pair')]

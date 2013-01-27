@@ -36,7 +36,7 @@ from .createaccesskey import CreateAccessKey
 class CreateUser(EuareRequest):
     Description = '''Create a new user and optionally add the user to a group
                      or generate an access key for the user'''
-    Args = [Arg('-u', '--user-name', dest='UserName', required=True,
+    ARGS = [Arg('-u', '--user-name', dest='UserName', required=True,
                 help='name of the new user'),
             Arg('-p', '--path', dest='Path',
                 help='path for the new user (default: "/")'),

@@ -40,7 +40,7 @@ class DescribeSecurityGroups(EucalyptusRequest):
         port range of 20 to 30.'''
 
     APIVersion = '2011-01-01'
-    Args = [Arg('group', metavar='GROUP', nargs='*', route_to=None, default=[],
+    ARGS = [Arg('group', metavar='GROUP', nargs='*', route_to=None, default=[],
                 help='limit results to one or more security groups')]
     Filters = [Filter('description', help='group description'),
                Filter('group-id'),

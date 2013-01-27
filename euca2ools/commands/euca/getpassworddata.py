@@ -34,7 +34,7 @@ from . import EucalyptusRequest
 class GetPasswordData(EucalyptusRequest):
     Description = '''Retrieve the encrypted administrator password for an
                      instance running Windows'''
-    Args = [Arg('InstanceId', metavar='INSTANCE',
+    ARGS = [Arg('InstanceId', metavar='INSTANCE',
                 help='instance to obtain the initial password for')]
 
     def print_result(self, result):

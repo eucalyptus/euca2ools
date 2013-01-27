@@ -33,7 +33,7 @@ from . import EucalyptusRequest
 
 class CreateVolume(EucalyptusRequest):
     Description = 'Create a new volume'
-    Args = [Arg('-s', '--size', dest='Size', type=int,
+    ARGS = [Arg('-s', '--size', dest='Size', type=int,
                 help='''size of the new volume in GiB.  Required unless
                         --snapshot is used'''),
             Arg('--snapshot', dest='SnapshotId', metavar='SNAPSHOT',

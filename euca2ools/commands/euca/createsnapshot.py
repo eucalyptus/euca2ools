@@ -33,7 +33,7 @@ from . import EucalyptusRequest
 
 class CreateSnapshot(EucalyptusRequest):
     Description = 'Create a snapshot of a volume'
-    Args = [Arg('VolumeId', metavar='VOLUME', help='volume to snapshot'),
+    ARGS = [Arg('VolumeId', metavar='VOLUME', help='volume to snapshot'),
             Arg('-d', '--description', metavar='DESC', dest='Description',
                 help='snapshot description')]
 

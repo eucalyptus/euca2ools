@@ -33,7 +33,7 @@ from . import EucalyptusRequest
 
 class AttachVolume(EucalyptusRequest):
     Description = 'Attach an EBS volume to an instance'
-    Args = [Arg('-i', '--instance', dest='InstanceId', metavar='INSTANCE',
+    ARGS = [Arg('-i', '--instance', dest='InstanceId', metavar='INSTANCE',
                 required=True, help='instance to attach the folume to'),
             Arg('-d', '--device', dest='Device', required=True,
                 help='device name exposed to the instance'),

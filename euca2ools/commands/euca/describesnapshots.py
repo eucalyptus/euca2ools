@@ -39,7 +39,7 @@ class DescribeSnapshots(EucalyptusRequest):
 
         By default, only snapshots explicitly restorable by the caller are
         shown.'''
-    Args = [Arg('SnapshotId', nargs='*', metavar='SNAPSHOT',
+    ARGS = [Arg('SnapshotId', nargs='*', metavar='SNAPSHOT',
                 help='limit results to specific snapshots'),
             Arg('-a', '--all', action='store_true', route_to=None,
                 help='describe all snapshots'),

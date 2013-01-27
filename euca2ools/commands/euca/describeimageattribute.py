@@ -33,7 +33,7 @@ from . import EucalyptusRequest
 
 class DescribeImageAttribute(EucalyptusRequest):
     Description = 'Show information about an attribute of an image'
-    Args = [Arg('ImageId', metavar='IMAGE', help='image to describe'),
+    ARGS = [Arg('ImageId', metavar='IMAGE', help='image to describe'),
             MutuallyExclusiveArgList(True,
                 Arg('-l', '--launch-permission', dest='Attribute',
                     action='store_const', const='launchPermission',

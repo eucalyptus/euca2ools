@@ -33,7 +33,7 @@ from . import EucalyptusRequest
 
 class ModifyImageAttribute(EucalyptusRequest):
     Description = 'Modify an attribute of an image'
-    Args = [Arg('ImageId', metavar='IMAGE', help='image to modify'),
+    ARGS = [Arg('ImageId', metavar='IMAGE', help='image to modify'),
             MutuallyExclusiveArgList(True,
                 Arg('--description', dest='Description.Value', metavar='DESC',
                     help="change the image's description"),

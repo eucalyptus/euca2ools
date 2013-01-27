@@ -33,7 +33,7 @@ from . import EucalyptusRequest
 
 class ConfirmProductInstance(EucalyptusRequest):
     Description = 'Verify if a product code is associated with an instance'
-    Args = [Arg('ProductCode', metavar='CODE', help='product code to confirm'),
+    ARGS = [Arg('ProductCode', metavar='CODE', help='product code to confirm'),
             Arg('-i', '--instance', dest='InstanceId', metavar='INSTANCE',
                 required=True, help='instance to confirm')]
 

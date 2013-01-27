@@ -33,7 +33,7 @@ from . import EucalyptusRequest
 
 class DeregisterImage(EucalyptusRequest):
     Description = 'De-register an image'
-    Args = [Arg('ImageId', metavar='IMAGE', help='image to de-register')]
+    ARGS = [Arg('ImageId', metavar='IMAGE', help='image to de-register')]
 
     def print_result(self, result):
         print self.tabify(['IMAGE', self.args['ImageId']])

@@ -33,7 +33,7 @@ from . import EucalyptusRequest
 
 class RebootInstances(EucalyptusRequest):
     Description = 'Reboot one or more instances'
-    Args = [Arg('InstanceId', metavar='INSTANCE', nargs='+',
+    ARGS = [Arg('InstanceId', metavar='INSTANCE', nargs='+',
                 help='instance(s) to reboot')]
 
     def print_result(self, result):
