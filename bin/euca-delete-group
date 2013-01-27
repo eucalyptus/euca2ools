@@ -3,4 +3,4 @@
 import euca2ools.commands.euca.deletesecuritygroup
 
 if __name__ == '__main__':
-    euca2ools.commands.euca.deletesecuritygroup.DeleteSecurityGroup().do_cli()
+    euca2ools.commands.euca.deletesecuritygroup.DeleteSecurityGroup.run()

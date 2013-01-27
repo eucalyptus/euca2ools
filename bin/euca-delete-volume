@@ -3,4 +3,4 @@
 import euca2ools.commands.euca.deletevolume
 
 if __name__ == '__main__':
-    euca2ools.commands.euca.deletevolume.DeleteVolume().do_cli()
+    euca2ools.commands.euca.deletevolume.DeleteVolume.run()

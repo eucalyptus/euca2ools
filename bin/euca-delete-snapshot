@@ -3,4 +3,4 @@
 import euca2ools.commands.euca.deletesnapshot
 
 if __name__ == '__main__':
-    euca2ools.commands.euca.deletesnapshot.DeleteSnapshot().do_cli()
+    euca2ools.commands.euca.deletesnapshot.DeleteSnapshot.run()

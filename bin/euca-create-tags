@@ -3,4 +3,4 @@
 import euca2ools.commands.euca.createtags
 
 if __name__ == '__main__':
-    cmd = euca2ools.commands.euca.createtags.CreateTags().do_cli()
+    cmd = euca2ools.commands.euca.createtags.CreateTags.run()

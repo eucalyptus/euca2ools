@@ -3,4 +3,4 @@
 import euca2ools.commands.euare.deleteloginprofile
 
 if __name__ == '__main__':
-    euca2ools.commands.euare.deleteloginprofile.DeleteLoginProfile().do_cli()
+    euca2ools.commands.euare.deleteloginprofile.DeleteLoginProfile.run()

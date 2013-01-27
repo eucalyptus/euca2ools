@@ -3,4 +3,4 @@
 import euca2ools.commands.euca.cancelbundletask
 
 if __name__ == '__main__':
-    euca2ools.commands.euca.cancelbundletask.CancelBundleTask().do_cli()
+    euca2ools.commands.euca.cancelbundletask.CancelBundleTask.run()

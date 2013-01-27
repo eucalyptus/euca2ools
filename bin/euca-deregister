@@ -3,4 +3,4 @@
 import euca2ools.commands.euca.deregisterimage
 
 if __name__ == '__main__':
-    euca2ools.commands.euca.deregisterimage.DeregisterImage().do_cli()
+    euca2ools.commands.euca.deregisterimage.DeregisterImage.run()

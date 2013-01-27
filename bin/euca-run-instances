@@ -3,4 +3,4 @@
 import euca2ools.commands.euca.runinstances
 
 if __name__ == '__main__':
-    euca2ools.commands.euca.runinstances.RunInstances().do_cli()
+    euca2ools.commands.euca.runinstances.RunInstances.run()

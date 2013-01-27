@@ -3,4 +3,4 @@
 import euca2ools.commands.euca.describesecuritygroups
 
 if __name__ == '__main__':
-    euca2ools.commands.euca.describesecuritygroups.DescribeSecurityGroups().do_cli()
+    euca2ools.commands.euca.describesecuritygroups.DescribeSecurityGroups.run()

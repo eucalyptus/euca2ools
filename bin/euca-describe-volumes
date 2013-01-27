@@ -3,5 +3,5 @@
 import euca2ools.commands.euca.describevolumes
 
 if __name__ == '__main__':
-    euca2ools.commands.euca.describevolumes.DescribeVolumes().do_cli()
+    euca2ools.commands.euca.describevolumes.DescribeVolumes.run()
 

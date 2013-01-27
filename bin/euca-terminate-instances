@@ -3,4 +3,4 @@
 import euca2ools.commands.euca.terminateinstances
 
 if __name__ == '__main__':
-    euca2ools.commands.euca.terminateinstances.TerminateInstances().do_cli()
+    euca2ools.commands.euca.terminateinstances.TerminateInstances.run()
