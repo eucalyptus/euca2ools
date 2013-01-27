@@ -63,7 +63,7 @@ class DescribeSnapshots(EucalyptusRequest):
                                 help='specific tag key/value combination'),
                Filter('volume-id', help='source volume ID'),
                Filter('volume-size', type=int)]
-    ListDelims = ['snapshotSet', 'tagSet']
+    LIST_MARKERS = ['snapshotSet', 'tagSet']
 
     def main(self):
         if not any(self.args.get(item) for item in ('all', 'Owner',

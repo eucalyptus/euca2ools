@@ -38,7 +38,7 @@ class StopInstances(EucalyptusRequest):
             Arg('-f', '--force', dest='Force', action='store_const',
                 const='true',
                 help='immediately stop the instance. Data may be lost')]
-    ListDelims = ['instancesSet']
+    LIST_MARKERS = ['instancesSet']
 
     def print_result(self, result):
         for instance in result.get('instancesSet', []):

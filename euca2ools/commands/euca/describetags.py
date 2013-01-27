@@ -39,7 +39,7 @@ class DescribeTags(EucalyptusRequest):
                Filter('resource-type',
                       choices=sorted(tuple(RESOURCE_TYPE_MAP))),
                Filter('value')]
-    ListDelims = ['tagSet']
+    LIST_MARKERS = ['tagSet']
 
     def print_result(self, result):
         for tag in result.get('tagSet', []):

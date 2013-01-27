@@ -96,7 +96,7 @@ class DescribeImages(EucalyptusRequest):
                       help='virtualization type ("paravirtual" or "hvm")'),
                Filter('hypervisor', choices=('ovm', 'xen'),
                       help='image\'s hypervisor type ("ovm" or "xen")')]
-    ListDelims = ['imagesSet', 'blockDeviceMapping', 'tagSet']
+    LIST_MARKERS = ['imagesSet', 'blockDeviceMapping', 'tagSet']
 
     def main(self):
         if not any(self.args.get(item) for item in ('all', 'ImageId',

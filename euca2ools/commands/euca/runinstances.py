@@ -86,8 +86,8 @@ class RunInstances(EucalyptusRequest):
                 help='VPC subnet in which to launch the instance(s)'),
             Arg('-z', '--availability-zone', metavar='ZONE',
                 dest='Placement.AvailabilityZone')]
-    ListDelims = ['reservationSet', 'instancesSet', 'groupSet', 'tagSet',
-                  'blockDeviceMapping', 'productCodes']
+    LIST_MARKERS = ['reservationSet', 'instancesSet', 'groupSet', 'tagSet',
+                    'blockDeviceMapping', 'productCodes']
 
     def main(self):
         self.params = {}

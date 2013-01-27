@@ -51,7 +51,7 @@ class DescribeBundleTasks(EucalyptusRequest):
                       choices=('pending', 'waiting-for-shutdown', 'bundling',
                                'storing', 'cancelling', 'complete', 'failed')),
                Filter('update-time', help='most recent task update time')]
-    ListDelims = ['bundleInstanceTasksSet']
+    LIST_MARKERS = ['bundleInstanceTasksSet']
 
     def print_result(self, result):
         for task in result.get('bundleInstanceTasksSet', []):

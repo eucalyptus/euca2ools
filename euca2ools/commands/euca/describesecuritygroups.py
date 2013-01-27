@@ -62,8 +62,8 @@ class DescribeSecurityGroups(EucalyptusRequest):
                Filter('tag-key', help='key of a tag assigned to the group'),
                Filter('tag-value',
                       help='value of a tag assigned to the group')]
-    ListDelims = ['securityGroupInfo', 'ipPermissions', 'ipPermissionsEgress',
-                  'groups', 'ipRanges']
+    LIST_MARKERS = ['securityGroupInfo', 'ipPermissions',
+                    'ipPermissionsEgress', 'groups', 'ipRanges']
 
     def main(self):
         self.params = {}

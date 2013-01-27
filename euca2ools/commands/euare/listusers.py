@@ -37,7 +37,7 @@ class ListUsers(EuareRequest):
                 help='''limit results to users who begin with a given path
                         (default: list all users)'''),
             DELEGATE]
-    ListDelims = ['Users']
+    LIST_MARKERS = ['Users']
 
     def print_result(self, result):
         for user in result.get('Users', []):
