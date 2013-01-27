@@ -44,7 +44,7 @@ class Eucalyptus(requestbuilder.service.BaseService):
     NAME = 'ec2'
     DESCRIPTION = 'Eucalyptus compute cloud service'
     API_VERSION = '2009-11-30'
-    EnvURL = 'EC2_URL'
+    ENV_URL = 'EC2_URL'
 
     def __init__(self, config, log, shell_configfile=None,
                  deprecated_key_id=None, deprecated_sec_key=None,
