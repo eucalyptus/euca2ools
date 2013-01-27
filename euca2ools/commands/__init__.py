@@ -39,10 +39,10 @@ class Euca2oolsCommand(requestbuilder.command.BaseCommand):
     Version = 'euca2ools {0} ({1})'.format(__version__, __codename__)
 
     def __init__(self, **kwargs):
-        self.ConfigFiles.append('/etc/euca2ools.ini')
+        self.CONFIG_FILES.append('/etc/euca2ools.ini')
         user_config_glob = os.path.join(os.path.expanduser('~/.euca'), '*.ini')
         for configfile in sorted(glob.glob(user_config_glob)):
-            self.ConfigFiles.append(configfile)
+            self.CONFIG_FILES.append(configfile)
         requestbuilder.request.BaseCommand.__init__(self, **kwargs)
 
 class Euca2oolsRequest(Euca2oolsCommand, requestbuilder.request.BaseRequest):
