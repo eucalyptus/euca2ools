@@ -39,7 +39,7 @@ class Euare(requestbuilder.service.BaseService):
     EnvURL = 'EUARE_URL'
 
 class EuareRequest(Euca2oolsRequest):
-    ServiceClass = Euare
+    SERVICE_CLASS = Euare
     ARGS = [Arg('-U', '--url', dest='url', metavar='URL', route_to=SERVICE,
                 help='identity service endpoint URL')] + STD_AUTH_ARGS
 

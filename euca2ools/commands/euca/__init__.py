@@ -132,7 +132,7 @@ def _parse_shell_configfile(configfile_name):
     return config
 
 class EucalyptusRequest(Euca2oolsRequest, TabifyingCommand):
-    ServiceClass = Eucalyptus
+    SERVICE_CLASS = Eucalyptus
 
     # For compatibility with euca2ools versions earlier than 3, we include the
     # old -a/--access-key/-s args.  As before, if either -a or -s conflicts
