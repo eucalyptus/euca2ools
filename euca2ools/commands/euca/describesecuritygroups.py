@@ -39,7 +39,7 @@ class DescribeSecurityGroups(EucalyptusRequest):
         "--filter ip-permission.from-port=22" will *not* match a group with a
         port range of 20 to 30.'''
 
-    APIVersion = '2011-01-01'
+    API_VERSION = '2011-01-01'
     ARGS = [Arg('group', metavar='GROUP', nargs='*', route_to=None, default=[],
                 help='limit results to one or more security groups')]
     FILTERS = [Filter('description', help='group description'),

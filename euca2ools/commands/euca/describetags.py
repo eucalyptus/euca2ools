@@ -32,7 +32,7 @@ from requestbuilder import Filter
 from . import EucalyptusRequest, RESOURCE_TYPE_MAP
 
 class DescribeTags(EucalyptusRequest):
-    APIVersion = '2010-08-31'
+    API_VERSION = '2010-08-31'
     Description = 'List tags associated with your account'
     FILTERS = [Filter('key'),
                Filter('resource-id'),

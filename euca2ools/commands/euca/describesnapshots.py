@@ -33,7 +33,7 @@ from requestbuilder import Arg, Filter, GenericTagFilter
 from . import EucalyptusRequest
 
 class DescribeSnapshots(EucalyptusRequest):
-    APIVersion = '2010-08-31'
+    API_VERSION = '2010-08-31'
     Description = '''\
         Show information about snapshots
 

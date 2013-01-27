@@ -38,7 +38,7 @@ class DescribeImages(EucalyptusRequest):
         By default, only images the caller owns and images for which the caller
         has explicit launch permissions are shown.'''
 
-    APIVersion = '2010-08-31'
+    API_VERSION = '2010-08-31'
     ARGS = [Arg('ImageId', metavar='IMAGE', nargs='*',
                 help='limit results to one or more images'),
             Arg('-a', '--all', action='store_true', route_to=None,

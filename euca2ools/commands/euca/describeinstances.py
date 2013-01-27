@@ -32,7 +32,7 @@ from requestbuilder import Arg, Filter, GenericTagFilter
 from . import EucalyptusRequest
 
 class DescribeInstances(EucalyptusRequest):
-    APIVersion = '2010-08-31'
+    API_VERSION = '2010-08-31'
     Description = 'Show information about instances'
     ARGS = [Arg('InstanceId', metavar='INSTANCE', nargs='*',
                 help='Limit results to one or more instances')]

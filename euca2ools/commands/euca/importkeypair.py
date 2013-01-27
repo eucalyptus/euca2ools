@@ -34,7 +34,7 @@ from . import EucalyptusRequest
 from .argtypes import file_contents
 
 class ImportKeyPair(EucalyptusRequest):
-    APIVersion = '2010-08-31'
+    API_VERSION = '2010-08-31'
     Description = 'Import a public RSA key'
     ARGS = [Arg('KeyName', metavar='KEYPAIR',
                 help='name for the new key pair'),

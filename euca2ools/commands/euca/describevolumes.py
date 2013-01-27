@@ -33,7 +33,7 @@ from . import EucalyptusRequest
 
 class DescribeVolumes(EucalyptusRequest):
     Description = 'Display information about volumes'
-    APIVersion = '2010-08-31'
+    API_VERSION = '2010-08-31'
     ARGS = [Arg('VolumeId', metavar='VOLUME', nargs='*',
                 help='volume(s) to describe (default: all volumes)')]
     FILTERS = [Filter('attachment.attach-time', help='attachment start time'),

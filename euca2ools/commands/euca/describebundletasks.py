@@ -33,7 +33,7 @@ from . import EucalyptusRequest
 
 class DescribeBundleTasks(EucalyptusRequest):
     Description = 'Describe current instance-bundling tasks'
-    APIVersion = '2010-08-31'
+    API_VERSION = '2010-08-31'
     ARGS = [Arg('BundleId', metavar='BUNDLE', nargs='*',
                 help='limit results to one or more bundle tasks')]
     FILTERS = [Filter('bundle-id', help='bundle task ID'),

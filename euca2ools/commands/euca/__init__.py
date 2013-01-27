@@ -43,7 +43,7 @@ from .. import Euca2oolsRequest
 class Eucalyptus(requestbuilder.service.BaseService):
     Name = 'ec2'
     Description = 'Eucalyptus compute cloud service'
-    APIVersion = '2009-11-30'
+    API_VERSION = '2009-11-30'
     EnvURL = 'EC2_URL'
 
     def __init__(self, config, log, shell_configfile=None,
