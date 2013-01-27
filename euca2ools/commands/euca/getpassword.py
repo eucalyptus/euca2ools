@@ -35,7 +35,7 @@ from .argtypes import file_contents
 from .getpassworddata import GetPasswordData
 
 class GetPassword(GetPasswordData):
-    Action = 'GetPasswordData'
+    ACTION = 'GetPasswordData'
     DESCRIPTION = '''Retrieve the administrator password for an instance
                      running Windows'''
     ARGS = [Arg('-k', '--priv-launch-key', metavar='PRIVKEY',
