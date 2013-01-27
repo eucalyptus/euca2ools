@@ -49,7 +49,7 @@ class DescribeSnapshots(EucalyptusRequest):
             Arg('-r', '--restorable-by', dest='RestorableBy', action='append',
                 metavar='ACCOUNT', default=[], help='''limit results to
                 snapahots restorable by specific accounts''')]
-    Filters = [Filter('description', help='snapshot description'),
+    FILTERS = [Filter('description', help='snapshot description'),
                Filter('owner-alias', help="snapshot owner's account alias"),
                Filter('owner-id', help="snapshot owner's account ID"),
                Filter('progress', help='snapshot progress, in percentage'),

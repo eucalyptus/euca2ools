@@ -36,7 +36,7 @@ class DescribeKeyPairs(EucalyptusRequest):
     Description = 'Display information about available key pairs'
     ARGS = [Arg('KeyName', nargs='*', metavar='KEYPAIR',
                 help='limit results to specific key pairs')]
-    Filters = [Filter('fingerprint', help='fingerprint of the key pair'),
+    FILTERS = [Filter('fingerprint', help='fingerprint of the key pair'),
                Filter('key-name', help='name of the key pair')]
     ListDelims = ['keySet']
 

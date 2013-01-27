@@ -50,7 +50,7 @@ class DescribeImages(EucalyptusRequest):
                 metavar='ACCOUNT', action='append',
                 help='''describe images for which the specified entity has
                         explicit launch permissions''')]
-    Filters = [Filter('architecture', choices=('i386', 'x86_64', 'armhf'),
+    FILTERS = [Filter('architecture', choices=('i386', 'x86_64', 'armhf'),
                       help='image architecture'),
                Filter('block-device-mapping.delete-on-termination',
                       help='''whether a volume is deleted upon instance

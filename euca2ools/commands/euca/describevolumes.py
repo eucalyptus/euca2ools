@@ -36,7 +36,7 @@ class DescribeVolumes(EucalyptusRequest):
     APIVersion = '2010-08-31'
     ARGS = [Arg('VolumeId', metavar='VOLUME', nargs='*',
                 help='volume(s) to describe (default: all volumes)')]
-    Filters = [Filter('attachment.attach-time', help='attachment start time'),
+    FILTERS = [Filter('attachment.attach-time', help='attachment start time'),
                Filter('attachment.delete-on-termination', help='''whether the
                       volume will be deleted upon instance termination'''),
                Filter('attachment.device',

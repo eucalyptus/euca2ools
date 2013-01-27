@@ -36,7 +36,7 @@ class DescribeBundleTasks(EucalyptusRequest):
     APIVersion = '2010-08-31'
     ARGS = [Arg('BundleId', metavar='BUNDLE', nargs='*',
                 help='limit results to one or more bundle tasks')]
-    Filters = [Filter('bundle-id', help='bundle task ID'),
+    FILTERS = [Filter('bundle-id', help='bundle task ID'),
                Filter('error-code',
                       help='if the task failed, the error code returned'),
                Filter('error-message',

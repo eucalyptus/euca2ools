@@ -36,7 +36,7 @@ class DescribeRegions(EucalyptusRequest):
     Description = 'Display information about regions'
     ARGS = [Arg('RegionName', nargs='*', metavar='REGION',
                 help='limit results to specific regions')]
-    Filters = [Filter('endpoint'),
+    FILTERS = [Filter('endpoint'),
                Filter('region-name')]
     ListDelims = ['regionInfo']
 

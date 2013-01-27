@@ -34,7 +34,7 @@ from . import EucalyptusRequest, RESOURCE_TYPE_MAP
 class DescribeTags(EucalyptusRequest):
     APIVersion = '2010-08-31'
     Description = 'List tags associated with your account'
-    Filters = [Filter('key'),
+    FILTERS = [Filter('key'),
                Filter('resource-id'),
                Filter('resource-type',
                       choices=sorted(tuple(RESOURCE_TYPE_MAP))),

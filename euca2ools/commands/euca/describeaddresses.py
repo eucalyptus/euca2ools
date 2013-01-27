@@ -37,7 +37,7 @@ class DescribeAddresses(EucalyptusRequest):
     ARGS = [Arg('address', nargs='*', route_to=None,
                 help='''limit results to one or more elastic IP addresses or
                         allocation IDs''')]
-    Filters = [Filter('allocation-id', help='allocation ID (VPC only)'),
+    FILTERS = [Filter('allocation-id', help='allocation ID (VPC only)'),
                Filter('association-id', help='association ID (VPC only)'),
                Filter('domain', choices=['standard', 'vpc'],
                       help='whether the address is a standard or VPC address'),
