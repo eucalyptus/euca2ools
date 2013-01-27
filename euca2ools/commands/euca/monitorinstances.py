@@ -32,7 +32,7 @@ from requestbuilder import Arg
 from . import EucalyptusRequest
 
 class MonitorInstances(EucalyptusRequest):
-    Description = 'Enable monitoring for one or more instances'
+    DESCRIPTION = 'Enable monitoring for one or more instances'
     ARGS = [Arg('InstanceId', metavar='INSTANCE', nargs='+',
                 help='instance(s) to monitor')]
     ListDelims = ['instancesSet']

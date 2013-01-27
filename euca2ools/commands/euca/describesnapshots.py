@@ -34,7 +34,7 @@ from . import EucalyptusRequest
 
 class DescribeSnapshots(EucalyptusRequest):
     API_VERSION = '2010-08-31'
-    Description = '''\
+    DESCRIPTION = '''\
         Show information about snapshots
 
         By default, only snapshots explicitly restorable by the caller are

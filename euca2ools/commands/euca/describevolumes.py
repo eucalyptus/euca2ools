@@ -32,7 +32,7 @@ from requestbuilder import Arg, Filter, GenericTagFilter
 from . import EucalyptusRequest
 
 class DescribeVolumes(EucalyptusRequest):
-    Description = 'Display information about volumes'
+    DESCRIPTION = 'Display information about volumes'
     API_VERSION = '2010-08-31'
     ARGS = [Arg('VolumeId', metavar='VOLUME', nargs='*',
                 help='volume(s) to describe (default: all volumes)')]

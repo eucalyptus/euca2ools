@@ -32,7 +32,7 @@ from requestbuilder import Arg
 from . import EuareRequest, DELEGATE
 
 class AddUserToGroup(EuareRequest):
-    Description = 'Add a user to a group'
+    DESCRIPTION = 'Add a user to a group'
     ARGS = [Arg('-g', '--group-name', dest='GroupName', required=True,
                 help='group to add the user to'),
             Arg('-u', '--user-name', dest='UserName', required=True,

@@ -33,7 +33,7 @@ from requestbuilder import Arg
 from . import EucalyptusRequest
 
 class CreateKeyPair(EucalyptusRequest):
-    Description = 'Create a new SSH key pair for use with instances'
+    DESCRIPTION = 'Create a new SSH key pair for use with instances'
     ARGS = [Arg('KeyName', metavar='KEYPAIR', help='name of the new key pair'),
             Arg('-f', '--filename', metavar='FILE', route_to=None,
                 help='file name to save the private key to')]

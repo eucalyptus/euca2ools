@@ -33,7 +33,7 @@ from . import EucalyptusRequest
 
 class DescribeAddresses(EucalyptusRequest):
     API_VERSION = '2011-01-01'
-    Description = 'Show information about elastic IP addresses'
+    DESCRIPTION = 'Show information about elastic IP addresses'
     ARGS = [Arg('address', nargs='*', route_to=None,
                 help='''limit results to one or more elastic IP addresses or
                         allocation IDs''')]

@@ -32,7 +32,7 @@ from requestbuilder import Arg
 from . import EucalyptusRequest
 
 class DeregisterImage(EucalyptusRequest):
-    Description = 'De-register an image'
+    DESCRIPTION = 'De-register an image'
     ARGS = [Arg('ImageId', metavar='IMAGE', help='image to de-register')]
 
     def print_result(self, result):

@@ -32,7 +32,7 @@ from requestbuilder import Arg, MutuallyExclusiveArgList
 from . import EucalyptusRequest
 
 class ModifyImageAttribute(EucalyptusRequest):
-    Description = 'Modify an attribute of an image'
+    DESCRIPTION = 'Modify an attribute of an image'
     ARGS = [Arg('ImageId', metavar='IMAGE', help='image to modify'),
             MutuallyExclusiveArgList(True,
                 Arg('--description', dest='Description.Value', metavar='DESC',

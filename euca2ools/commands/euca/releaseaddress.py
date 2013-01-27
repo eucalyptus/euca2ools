@@ -32,7 +32,7 @@ from requestbuilder import Arg
 from . import EucalyptusRequest
 
 class ReleaseAddress(EucalyptusRequest):
-    Description = 'Release an elastic IP address'
+    DESCRIPTION = 'Release an elastic IP address'
     ARGS = [Arg('PublicIp', metavar='IP', help='elastic IP to release')]
 
     def print_result(self, result):

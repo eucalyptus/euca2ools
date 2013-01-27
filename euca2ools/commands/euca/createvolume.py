@@ -32,7 +32,7 @@ from requestbuilder import Arg
 from . import EucalyptusRequest
 
 class CreateVolume(EucalyptusRequest):
-    Description = 'Create a new volume'
+    DESCRIPTION = 'Create a new volume'
     ARGS = [Arg('-s', '--size', dest='Size', type=int,
                 help='''size of the new volume in GiB.  Required unless
                         --snapshot is used'''),

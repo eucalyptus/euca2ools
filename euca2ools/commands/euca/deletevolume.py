@@ -32,7 +32,7 @@ from requestbuilder import Arg
 from . import EucalyptusRequest
 
 class DeleteVolume(EucalyptusRequest):
-    Description = 'Delete a volume'
+    DESCRIPTION = 'Delete a volume'
     ARGS = [Arg('VolumeId', metavar='VOLUME', help='volume to delete')]
 
     def print_result(self, result):

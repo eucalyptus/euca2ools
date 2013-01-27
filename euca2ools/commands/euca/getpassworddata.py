@@ -32,7 +32,7 @@ from requestbuilder import Arg
 from . import EucalyptusRequest
 
 class GetPasswordData(EucalyptusRequest):
-    Description = '''Retrieve the encrypted administrator password for an
+    DESCRIPTION = '''Retrieve the encrypted administrator password for an
                      instance running Windows'''
     ARGS = [Arg('InstanceId', metavar='INSTANCE',
                 help='instance to obtain the initial password for')]

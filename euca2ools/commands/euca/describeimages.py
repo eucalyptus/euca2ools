@@ -32,7 +32,7 @@ from requestbuilder import Arg, Filter, GenericTagFilter
 from . import EucalyptusRequest
 
 class DescribeImages(EucalyptusRequest):
-    Description = '''\
+    DESCRIPTION = '''\
         Show information about images
 
         By default, only images the caller owns and images for which the caller

@@ -36,7 +36,7 @@ from .getpassworddata import GetPasswordData
 
 class GetPassword(GetPasswordData):
     Action = 'GetPasswordData'
-    Description = '''Retrieve the administrator password for an instance
+    DESCRIPTION = '''Retrieve the administrator password for an instance
                      running Windows'''
     ARGS = [Arg('-k', '--priv-launch-key', metavar='PRIVKEY',
                 type=file_contents, required=True, route_to=None,

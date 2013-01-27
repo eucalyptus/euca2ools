@@ -32,7 +32,7 @@ from requestbuilder import Arg
 from . import EucalyptusRequest
 
 class DetachVolume(EucalyptusRequest):
-    Description = 'Detach a volume from an instance'
+    DESCRIPTION = 'Detach a volume from an instance'
     ARGS = [Arg('VolumeId', metavar='VOLUME', help='volume to detach'),
             Arg('-i', '--instance', dest='InstanceID', metavar='INSTANCE',
                 help='instance to detach from'),

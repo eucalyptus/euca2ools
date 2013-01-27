@@ -32,7 +32,7 @@ from requestbuilder import Arg
 from . import EucalyptusRequest
 
 class CreateImage(EucalyptusRequest):
-    Description = 'Create an EBS image from a running or stopped EBS instance'
+    DESCRIPTION = 'Create an EBS image from a running or stopped EBS instance'
     ARGS = [Arg('InstanceId', metavar='INSTANCE',
                 help='instance from which to create the image'),
             Arg('-n', '--name', dest='Name', required=True,

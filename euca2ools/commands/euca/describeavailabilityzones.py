@@ -32,7 +32,7 @@ from requestbuilder import Arg, Filter
 from . import EucalyptusRequest
 
 class DescribeAvailabilityZones(EucalyptusRequest):
-    Description = 'Display availability zones within the active region'
+    DESCRIPTION = 'Display availability zones within the active region'
     API_VERSION = '2010-08-31'
     ARGS = [Arg('ZoneName', metavar='ZONE', nargs='*',
                 help='limit results to one or more availability zones')]

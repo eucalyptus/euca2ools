@@ -37,7 +37,7 @@ from . import EucalyptusRequest
 from .argtypes import b64encoded_file_contents, block_device_mapping
 
 class RunInstances(EucalyptusRequest):
-    Description = 'Launch instances of a machine image'
+    DESCRIPTION = 'Launch instances of a machine image'
     ARGS = [Arg('ImageId', metavar='IMAGE', help='image to instantiate'),
             Arg('-n', '--instance-count', dest='count', metavar='MIN[-MAX]',
                 default='1', route_to=None,

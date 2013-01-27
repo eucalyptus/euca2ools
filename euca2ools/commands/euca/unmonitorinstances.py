@@ -32,7 +32,7 @@ from requestbuilder import Arg
 from . import EucalyptusRequest
 
 class UnmonitorInstances(EucalyptusRequest):
-    Description = 'Disable monitoring for one or more instances'
+    DESCRIPTION = 'Disable monitoring for one or more instances'
     ARGS = [Arg('InstanceId', metavar='INSTANCE', nargs='+',
                 help='instance(s) to un-monitor')]
     ListDelims = ['instancesSet']

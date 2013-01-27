@@ -34,7 +34,7 @@ from .. import Euca2oolsRequest
 
 class Euare(requestbuilder.service.BaseService):
     Name = 'iam'
-    Description = 'Eucalyptus User, Authorization and Reporting Environment'
+    DESCRIPTION = 'Eucalyptus User, Authorization and Reporting Environment'
     API_VERSION = '2010-05-08'
     EnvURL = 'EUARE_URL'
 

@@ -32,7 +32,7 @@ from requestbuilder import Arg
 from . import EucalyptusRequest
 
 class RebootInstances(EucalyptusRequest):
-    Description = 'Reboot one or more instances'
+    DESCRIPTION = 'Reboot one or more instances'
     ARGS = [Arg('InstanceId', metavar='INSTANCE', nargs='+',
                 help='instance(s) to reboot')]
 

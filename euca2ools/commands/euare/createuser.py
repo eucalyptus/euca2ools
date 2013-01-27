@@ -34,7 +34,7 @@ from .addusertogroup import AddUserToGroup
 from .createaccesskey import CreateAccessKey
 
 class CreateUser(EuareRequest):
-    Description = '''Create a new user and optionally add the user to a group
+    DESCRIPTION = '''Create a new user and optionally add the user to a group
                      or generate an access key for the user'''
     ARGS = [Arg('-u', '--user-name', dest='UserName', required=True,
                 help='name of the new user'),

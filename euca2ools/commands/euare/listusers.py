@@ -32,7 +32,7 @@ from requestbuilder import Arg
 from . import EuareRequest, DELEGATE
 
 class ListUsers(EuareRequest):
-    Description = 'List users under a specific path prefix'
+    DESCRIPTION = 'List users under a specific path prefix'
     ARGS = [Arg('-p', '--path-prefix', dest='PathPrefix', metavar='PREFIX',
                 help='''limit results to users who begin with a given path
                         (default: list all users)'''),

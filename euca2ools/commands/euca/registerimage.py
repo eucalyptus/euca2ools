@@ -33,7 +33,7 @@ from . import EucalyptusRequest
 from .argtypes import block_device_mapping
 
 class RegisterImage(EucalyptusRequest):
-    Description = 'Register a new image'
+    DESCRIPTION = 'Register a new image'
     ARGS = [Arg('ImageLocation', metavar='MANIFEST', nargs='?',
                 help='''location of the image manifest in S3 storage
                 (required for instance-store images)'''),

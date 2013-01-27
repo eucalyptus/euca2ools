@@ -33,7 +33,7 @@ from . import EucalyptusRequest
 
 class DescribeInstances(EucalyptusRequest):
     API_VERSION = '2010-08-31'
-    Description = 'Show information about instances'
+    DESCRIPTION = 'Show information about instances'
     ARGS = [Arg('InstanceId', metavar='INSTANCE', nargs='*',
                 help='Limit results to one or more instances')]
     FILTERS = [Filter('architecture', help='CPU architecture'),

@@ -34,7 +34,7 @@ from .argtypes import ternary_tag_def
 
 class DeleteTags(EucalyptusRequest):
     API_VERSION = '2010-08-31'
-    Description = 'Delete tags from one or more resources'
+    DESCRIPTION = 'Delete tags from one or more resources'
     ARGS = [Arg('ResourceId', metavar='RESOURCE', nargs='+',
                 help='IDs of the resource(s) to un-tag'),
             Arg('--tag', dest='Tag', metavar='KEY[=[VALUE]]',

@@ -32,7 +32,7 @@ from requestbuilder import Arg, MutuallyExclusiveArgList
 from . import EucalyptusRequest
 
 class DescribeImageAttribute(EucalyptusRequest):
-    Description = 'Show information about an attribute of an image'
+    DESCRIPTION = 'Show information about an attribute of an image'
     ARGS = [Arg('ImageId', metavar='IMAGE', help='image to describe'),
             MutuallyExclusiveArgList(True,
                 Arg('-l', '--launch-permission', dest='Attribute',

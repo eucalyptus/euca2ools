@@ -33,7 +33,7 @@ from . import EucalyptusRequest, RESOURCE_TYPE_MAP
 
 class DescribeTags(EucalyptusRequest):
     API_VERSION = '2010-08-31'
-    Description = 'List tags associated with your account'
+    DESCRIPTION = 'List tags associated with your account'
     FILTERS = [Filter('key'),
                Filter('resource-id'),
                Filter('resource-type',

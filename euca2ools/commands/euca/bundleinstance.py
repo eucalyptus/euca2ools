@@ -38,7 +38,7 @@ import textwrap
 from . import EucalyptusRequest
 
 class BundleInstance(EucalyptusRequest):
-    Description = 'Bundle an S3-backed Windows instance'
+    DESCRIPTION = 'Bundle an S3-backed Windows instance'
     ARGS = [Arg('InstanceId', metavar='INSTANCE', help='instance to bundle'),
             Arg('-b', '--bucket', dest='Storage.S3.Bucket', metavar='BUCKET',
                 required=True,

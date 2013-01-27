@@ -32,7 +32,7 @@ from requestbuilder import Arg
 from . import EucalyptusRequest
 
 class CancelBundleTask(EucalyptusRequest):
-    Description = 'Cancel an instance bundling operation'
+    DESCRIPTION = 'Cancel an instance bundling operation'
     ARGS = [Arg('BundleId', metavar='TASK-ID',
                 help='ID of the bundle task to cancel')]
 

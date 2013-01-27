@@ -32,7 +32,7 @@ from requestbuilder import Arg
 from . import EucalyptusRequest
 
 class DeleteKeyPair(EucalyptusRequest):
-    Description = 'Delete an existing keypair'
+    DESCRIPTION = 'Delete an existing keypair'
     ARGS = [Arg('KeyName', metavar='KEYPAIR',
                 help='name of the keypair to delete')]
 

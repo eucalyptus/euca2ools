@@ -32,7 +32,7 @@ from requestbuilder import Arg
 from . import EucalyptusRequest
 
 class StartInstances(EucalyptusRequest):
-    Description = 'Start one or more stopped instances'
+    DESCRIPTION = 'Start one or more stopped instances'
     ARGS = [Arg('InstanceId', metavar='INSTANCE', nargs='+',
                 help='instance(s) to start')]
     ListDelims = ['instancesSet']

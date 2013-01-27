@@ -32,7 +32,7 @@ from requestbuilder import Arg
 from . import EucalyptusRequest
 
 class DeleteSnapshot(EucalyptusRequest):
-    Description = 'Delete a snapshot'
+    DESCRIPTION = 'Delete a snapshot'
     ARGS = [Arg('SnapshotId', metavar='SNAPSHOT', help='snapshot to delete')]
 
     def print_result(self, result):

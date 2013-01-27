@@ -33,7 +33,7 @@ from . import EucalyptusRequest
 
 class DescribeRegions(EucalyptusRequest):
     API_VERSION = '2010-08-31'
-    Description = 'Display information about regions'
+    DESCRIPTION = 'Display information about regions'
     ARGS = [Arg('RegionName', nargs='*', metavar='REGION',
                 help='limit results to specific regions')]
     FILTERS = [Filter('endpoint'),

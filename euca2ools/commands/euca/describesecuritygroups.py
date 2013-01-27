@@ -32,7 +32,7 @@ from requestbuilder import Arg, Filter
 from . import EucalyptusRequest
 
 class DescribeSecurityGroups(EucalyptusRequest):
-    Description = '''\
+    DESCRIPTION = '''\
         Show information about security groups
 
         Note that filters are matched on literal strings only, so

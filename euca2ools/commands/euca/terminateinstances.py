@@ -32,7 +32,7 @@ from requestbuilder import Arg
 from . import EucalyptusRequest
 
 class TerminateInstances(EucalyptusRequest):
-    Description = 'Terminate one or more instances'
+    DESCRIPTION = 'Terminate one or more instances'
     ARGS = [Arg('InstanceId', metavar='INSTANCE', nargs='+',
                 help='instance(s) to terminate')]
     ListDelims = ['instancesSet']

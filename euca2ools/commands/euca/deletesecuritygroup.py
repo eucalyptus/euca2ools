@@ -32,7 +32,7 @@ from requestbuilder import Arg
 from . import EucalyptusRequest
 
 class DeleteSecurityGroup(EucalyptusRequest):
-    Description = 'Delete a security group'
+    DESCRIPTION = 'Delete a security group'
     ARGS = [Arg('GroupName', metavar='GROUP')]
 
     def print_result(self, result):

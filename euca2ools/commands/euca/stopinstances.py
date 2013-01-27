@@ -32,7 +32,7 @@ from requestbuilder import Arg
 from . import EucalyptusRequest
 
 class StopInstances(EucalyptusRequest):
-    Description = 'Stop one or more running instances'
+    DESCRIPTION = 'Stop one or more running instances'
     ARGS = [Arg('InstanceId', metavar='INSTANCE', nargs='+',
                 help='instance(s) to stop'),
             Arg('-f', '--force', dest='Force', action='store_const',

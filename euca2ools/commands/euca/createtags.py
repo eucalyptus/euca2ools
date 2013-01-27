@@ -34,7 +34,7 @@ from .argtypes import binary_tag_def
 
 class CreateTags(EucalyptusRequest):
     API_VERSION = '2010-08-31'
-    Description = 'Add or overwrite tags for one or more resources'
+    DESCRIPTION = 'Add or overwrite tags for one or more resources'
     ARGS = [Arg('ResourceId', metavar='RESOURCE', nargs='+',
                 help='IDs of the resource(s) to tag'),
             Arg('--tag', dest='Tag', metavar='KEY[=VALUE]',

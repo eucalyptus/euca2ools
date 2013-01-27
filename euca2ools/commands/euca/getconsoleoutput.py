@@ -33,7 +33,7 @@ from requestbuilder import Arg
 from . import EucalyptusRequest
 
 class GetConsoleOutput(EucalyptusRequest):
-    Description = 'Retrieve console output for the specified instance'
+    DESCRIPTION = 'Retrieve console output for the specified instance'
     ARGS = [Arg('InstanceId', metavar='INSTANCE',
                 help='instance to obtain console output from')]
 
