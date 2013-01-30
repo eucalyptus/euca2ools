@@ -33,6 +33,7 @@
 
 
 import euca2ools.commands.eucacommand
+import sys
 from boto.roboto.param import Param
 
 class Register(euca2ools.commands.eucacommand.EucaCommand):
@@ -71,15 +72,29 @@ class Register(euca2ools.commands.eucacommand.EucaCommand):
                   optional=True, ptype='string',
                   doc="""Path to the uploaded image (bucket/manifest).
                          Required if registering an S3-based image""")]
-               
+
     def main(self):
+        # Make a mapping out of --block-device-mapping args
+        mappings = self.parse_block_device_args(self.block_device_mapping or '')
         if self.snapshot:
+            # Make a mapping out of --snapshot and --root-device-name
             if not self.root_device_name:
                 self.root_device_name = '/dev/sda1'
-            self.block_device_mapping.append('%s=%s' % (self.root_device_name,
-                                                    self.snapshot))
-        if self.block_device_mapping:
-            self.block_device_mapping = self.parse_block_device_args(self.block_device_mapping)
+            shortcut_map_strs = ['%s=%s' % (self.root_device_name,
+                                           self.snapshot)]
+            shortcut_map = self.parse_block_device_args(shortcut_map_strs)
+            if self.root_device_name in mappings:
+                if (mappings[self.root_device_name].snapshot_id !=
+                    self.snapshot):
+                    sys.exit(('Snapshot supplied with --snapshot differs '
+                              'from the block device mapping with device %s') %
+                             self.root_device_name)
+                # If they match then the one supplied with -b will be correct
+            else:
+                # Add the shortcut one
+                mappings.update(shortcut_map)
+        self.block_device_mapping = mappings
+
         conn = self.make_connection_cli()
         return self.make_request_cli(conn, 'register_image',
                                      name=self.name,
