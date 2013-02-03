@@ -32,4 +32,3 @@
 #       : Mitch Garnaat mgarnaat@eucalyptus.com
 
 __version__  = 'devel'
-__codename__ = 'Sparta'
