@@ -54,6 +54,8 @@ class Euca2oolsCommand(requestbuilder.command.BaseCommand):
     def print_version_and_exit():
         _print_version_and_exit()
 
+# FIXME:  the base class should change
+class Euca2oolsRequest(requestbuilder.request.AWSQueryRequest):
     def __init__(self, **kwargs):
         self._config_files = None
         self.__user_agent = None
