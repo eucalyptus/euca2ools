@@ -35,6 +35,3 @@ class RebootInstances(EucalyptusRequest):
     DESCRIPTION = 'Reboot one or more instances'
     ARGS = [Arg('InstanceId', metavar='INSTANCE', nargs='+',
                 help='instance(s) to reboot')]
-
-    def print_result(self, result):
-        pass

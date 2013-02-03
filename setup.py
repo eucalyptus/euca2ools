@@ -34,9 +34,20 @@
 from distutils.core import setup
 from distutils.command.build_scripts import build_scripts
 from distutils.command.install_scripts import install_scripts
+from distutils.command.sdist import sdist
 import os.path
+import re
+import subprocess
 
 from euca2ools import __version__
+
+def get_version():
+    try:
+        popen = subprocess.Popen(['git', 'describe'], stdout=subprocess.PIPE)
+        popen.wait()
+        return popen.stdout.read().strip()
+    except:
+        return __version__
 
 # Cheap hack:  install symlinks separately from regular files.
 # cmd.copy_tree accepts a preserve_symlinks option, but when we call
@@ -64,8 +75,35 @@ class install_scripts_and_symlinks(install_scripts):
                 if not os.path.exists(newlink):
                     os.symlink(target, newlink)
 
+class sdist_with_git_version(sdist):
+    '''Like sdist, but using the output of ``git describe'' to fill in
+       __init__.__version__'''
+    def make_release_tree(self, base_dir, files):
+        sdist.make_release_tree(self, base_dir, files)
+
+        try:
+            popen = subprocess.Popen(['git', 'describe'],
+                                     stdout=subprocess.PIPE)
+            popen.wait()
+            version = popen.stdout.read().strip()
+            version_line = '__version__ = \'{0}\'\n'.format(version)
+            old_init_file_name = os.path.join(base_dir, 'euca2ools/__init__.py')
+            new_init_file_name = old_init_file_name + '.new'
+            with open(new_init_file_name, 'w') as new_init_file:
+                with open(old_init_file_name) as old_init_file:
+                    for line in old_init_file:
+                        if re.match("__version__ *= *'.*'", line):
+                            new_init_file.write(version_line)
+                        else:
+                            new_init_file.write(line)
+                new_init_file.flush()
+            os.rename(new_init_file_name, old_init_file_name)
+        except:
+            # Not really a problem; we'll just leave it as-is
+            pass
+
 setup(name = "euca2ools",
-      version = __version__,
+      version = get_version(),
       description = "Elastic Utility Computing Architecture Command Line Tools",
       long_description="Elastic Utility Computing Architecture Command Line Tools",
       author = "Mitch Garnaat",
@@ -210,4 +248,5 @@ setup(name = "euca2ools",
                      'Programming Language :: Python :: 2.7',
                      'Topic :: Internet'],
       cmdclass = {'build_scripts':   build_scripts_except_symlinks,
-                  'install_scripts': install_scripts_and_symlinks})
+                  'install_scripts': install_scripts_and_symlinks,
+                  'sdist':           sdist_with_git_version})

@@ -32,12 +32,33 @@ import base64
 from requestbuilder import Arg
 from . import EucalyptusRequest
 
+CHAR_ESCAPES = {
+        u'\x00': u'^@',    u'\x0c': u'^L',    u'\x17': u'^W',
+        u'\x01': u'^A',    u'\x0e': u'^N',    u'\x18': u'^X',
+        u'\x02': u'^B',    u'\x0f': u'^O',    u'\x19': u'^Y',
+        u'\x03': u'^C',    u'\x10': u'^P',    u'\x1a': u'^Z',
+        u'\x04': u'^D',    u'\x11': u'^Q',    u'\x1b': u'^[',
+        u'\x05': u'^E',    u'\x12': u'^R',    u'\x1c': u'^\\',
+        u'\x06': u'^F',    u'\x13': u'^S',    u'\x1d': u'^]',
+        u'\x07': u'^G',    u'\x14': u'^T',    u'\x1e': u'^^',
+        u'\x08': u'^H',    u'\x15': u'^U',    u'\x1f': u'^_',
+        u'\x0b': u'^K',    u'\x16': u'^V',    u'\x7f': u'^?',
+}
+
 class GetConsoleOutput(EucalyptusRequest):
     DESCRIPTION = 'Retrieve console output for the specified instance'
     ARGS = [Arg('InstanceId', metavar='INSTANCE',
-                help='instance to obtain console output from')]
+                help='instance to obtain console output from'),
+            Arg('--raw', action='store_true', route_to=None,
+                help='Display raw output without escaping control characters')]
 
     def print_result(self, result):
         print result.get('instanceId', '')
         print result.get('timestamp', '')
-        print base64.b64decode(result.get('output', ''))
+        output = base64.b64decode(result.get('output', ''))
+        output = output.decode()
+        if not self.args['raw']:
+            # Escape control characters
+            for char, escape in CHAR_ESCAPES.iteritems():
+                output = output.replace(char, escape)
+        print output

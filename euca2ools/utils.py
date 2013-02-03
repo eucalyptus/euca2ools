@@ -44,7 +44,7 @@ def check_prerequisite_command(command):
     except OSError, e:
         error_string = '%s' % e
         if 'No such' in error_string:
-            print 'Command %s not found. Is it installed?' % command
+            print >> sys.stderr, 'Command %s not found. Is it installed?' % command
             raise exceptions.NotFoundError
         else:
             raise OSError(e)
@@ -113,6 +113,10 @@ def print_instances(instances, nil=""):
                 val = ','.join(val)
             items.append(val)
         print "INSTANCE\t%s" % '\t'.join(items)
+        if hasattr(instance, 'tags') and isinstance(instance.tags, dict):
+            for tag in instance.tags:
+                print '\t'.join(('TAG', 'instance', instance.id, tag,
+                                 instance.tags[tag]))
 
 def print_version_if_necessary():
     """

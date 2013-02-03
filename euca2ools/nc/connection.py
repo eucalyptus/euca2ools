@@ -30,14 +30,15 @@
 #
 # Author: Mitch Garnaat mgarnaat@eucalyptus.com
 
-import urllib, base64
+import base64
+import binascii
+import boto
+import hashlib
 import time
+import urllib
 from boto.connection import AWSAuthConnection
-from boto import handler
+from boto.exception import BotoClientError, S3ResponseError, S3CreateError
 from boto.resultset import ResultSet
-from boto.exception import BotoClientError
-from boto.exception import S3ResponseError
-from boto.exception import S3CreateError
 from boto.s3.bucket import Bucket
 
 class EucaConnection(AWSAuthConnection):
@@ -60,10 +61,11 @@ class EucaConnection(AWSAuthConnection):
                                    debug=debug,
                                    https_connection_factory=https_connection_factory,
                                    path=path)
+        self._auth_handler.cert_path        = self.cert_path
         self._auth_handler.private_key_path = self.private_key_path
 
     def _required_auth_capability(self):
-        return ['euca-nc']
+        return ['euca-rsa-v2']
 
     def make_request(self, method='GET', bucket='', key='', headers=None,
                      data='', query_args=None, sender=None,
@@ -75,19 +77,17 @@ class EucaConnection(AWSAuthConnection):
             params = {}
         if not effective_user_id:
             effective_user_id = self.aws_access_key_id
-        headers['EucaEffectiveUserId'] = effective_user_id
         if action:
             headers['EucaOperation'] = action
         headers['AWSAccessKeyId'] = effective_user_id
         cert_file = open(self.cert_path, 'r')
         cert_str = cert_file.read()
         cert_file.close()
-        headers['EucaCert'] = base64.b64encode(cert_str)
-        if not headers.has_key('Content-Length'):
+        if not 'Content-Length' in headers:
             headers['Content-Length'] = str(len(data))
-        if not headers.has_key('Date'):
-            headers['Date'] = time.strftime("%a, %d %b %Y %H:%M:%S GMT",
-                                            time.gmtime())
+        if not 'Content-MD5' in headers:
+            md5sum = hashlib.md5(data).digest()
+            headers['Content-MD5'] = binascii.hexlify(md5sum)
         utf8_params = {}
         for key in params:
             utf8_params[key] = self.get_utf8_value(params[key])
@@ -98,7 +98,25 @@ class EucaConnection(AWSAuthConnection):
                                                     utf8_params,
                                                     headers, data,
                                                     self.server_name())
-        return self._mexe(http_request, sender)
+        # Use EUCA2 signing
+        response = self._mexe(http_request, sender)
+        if response.status == 403:
+            # Use EUCA signing in case we're talking to older Eucalyptus
+            headers['EucaEffectiveUserId'] = effective_user_id
+            headers['EucaCert'] = base64.b64encode(cert_str)
+            headers['Date'] = time.strftime("%a, %d %b %Y %H:%M:%S GMT",
+                                            time.gmtime())
+            http_request = self.build_base_http_request(method, path, None,
+                                                        utf8_params,
+                                                        headers, data,
+                                                        self.server_name())
+            self._auth_handler = boto.auth.get_auth_handler(self.host,
+                                                            boto.config,
+                                                            self.provider,
+                                                            ['euca-rsa-v1'])
+            self._auth_handler.private_key_path = self.private_key_path
+            response = self._mexe(http_request, sender)
+        return response
 
     def get_bucket(self, bucket_name, validate=True, headers=None):
         bucket = Bucket(self, bucket_name)

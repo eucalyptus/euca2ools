@@ -64,7 +64,8 @@ class RunInstances(EucalyptusRequest):
                             instances in this reservation''')),
             Arg('--addressing', dest='AddressingType',
                 choices=('public', 'private'),
-                help='addressing scheme to launch the instance with'),
+                help=('addressing scheme to launch the instance with.  Use '
+                      '"private" to run an instance with no public address.')),
             Arg('-t', '--instance-type', dest='InstanceType',
                 help='type of instance to launch'),
             Arg('--kernel', dest='KernelId', metavar='KERNEL',
@@ -84,7 +85,12 @@ class RunInstances(EucalyptusRequest):
             Arg('--subnet', dest='SubnetId', metavar='SUBNET',
                 help='VPC subnet in which to launch the instance(s)'),
             Arg('-z', '--availability-zone', metavar='ZONE',
-                dest='Placement.AvailabilityZone')]
+                dest='Placement.AvailabilityZone'),
+            Arg('--instance-initiated-shutdown-behavior',
+                dest='InstanceInitiatedShutdownBehavior',
+                choices=('stop', 'terminate'),
+                help=('whether to "stop" (default) or terminate EBS instances '
+                      'when they shut down'))]
     LIST_MARKERS = ['reservationSet', 'instancesSet', 'groupSet', 'tagSet',
                     'blockDeviceMapping', 'productCodes']
 

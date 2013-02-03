@@ -36,7 +36,8 @@ class DescribeInstances(EucalyptusRequest):
     DESCRIPTION = 'Show information about instances'
     ARGS = [Arg('InstanceId', metavar='INSTANCE', nargs='*',
                 help='Limit results to one or more instances')]
-    FILTERS = [Filter('architecture', help='CPU architecture'),
+    FILTERS = [Filter('architecture', choices=('i386', 'x86_64', 'armhf'),
+                      help='CPU architecture'),
                Filter('availability-zone'),
                Filter('block-device-mapping.attach-time',
                       help='volume attachment time'),

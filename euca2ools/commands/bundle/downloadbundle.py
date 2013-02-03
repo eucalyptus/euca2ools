@@ -63,7 +63,7 @@ class DownloadBundle(euca2ools.commands.eucacommand.EucaCommand):
         try:
             bucket_instance = s3conn.get_bucket(bucket)
         except S3ResponseError, s3error:
-            print 'Unable to get bucket %s' % bucket
+            print >> sys.stderr, 'Unable to get bucket %s' % bucket
             sys.exit()
         return bucket_instance
 

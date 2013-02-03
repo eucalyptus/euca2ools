@@ -42,7 +42,7 @@ class RegisterImage(EucalyptusRequest):
             Arg('-d', '--description', dest='Description',
                 help='description of the new image'),
             Arg('-a', '--architecture', dest='Architecture',
-                choices=('i386', 'x86_64'),
+                choices=('i386', 'x86_64', 'armhf'),
                 help='CPU architecture of the new image'),
             Arg('--kernel', dest='KernelId', metavar='KERNEL',
                 help='kernel to associate with the new image'),
