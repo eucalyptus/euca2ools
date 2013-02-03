@@ -110,7 +110,7 @@ class Eucalyptus(requestbuilder.service.BaseService):
     DESCRIPTION = 'Eucalyptus compute cloud service'
     API_VERSION = '2009-11-30'
     AUTH_CLASS  = EC2CompatibleQuerySigV2Auth
-    ENV_URL = 'EC2_URL'
+    URL_ENVVAR = 'EC2_URL'
 
     ARGS = [Arg('--config', dest='shell_configfile', metavar='CFGFILE',
                  default='', route_to=SERVICE, help=argparse.SUPPRESS),
@@ -130,11 +130,11 @@ class Eucalyptus(requestbuilder.service.BaseService):
         # Deprecated; should be removed in 3.2
         if os.path.isfile(self.args['shell_configfile']):
             config = _parse_shell_configfile(self.args['shell_configfile'])
-            self.process_url(config.get(self.ENV_URL))
-            if self.ENV_URL in config:
-                self.process_url(config[self.ENV_URL])
+            self.process_url(config.get(self.URL_ENVVAR))
+            if self.URL_ENVVAR in config:
+                self.process_url(config[self.URL_ENVVAR])
         # Environment
-        self.process_url(os.getenv(self.ENV_URL))
+        self.process_url(os.getenv(self.URL_ENVVAR))
         # Regular config file
         self.process_url(self.config.get_region_option(self.NAME + '-url'))
         # User, systemwide shell-style config files
@@ -144,8 +144,8 @@ class Eucalyptus(requestbuilder.service.BaseService):
             configfile_name = os.path.expanduser(configfile_name)
             if os.path.isfile(configfile_name):
                 config = _parse_shell_configfile(configfile_name)
-                if self.ENV_URL in config:
-                    self.process_url(config[self.ENV_URL])
+                if self.URL_ENVVAR in config:
+                    self.process_url(config[self.URL_ENVVAR])
 
         # Ensure everything is okay and finish up
         self.validate_config()

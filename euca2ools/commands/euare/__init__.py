@@ -38,7 +38,7 @@ class Euare(requestbuilder.service.BaseService):
     DESCRIPTION = 'Eucalyptus User, Authorization and Reporting Environment'
     API_VERSION = '2010-05-08'
     AUTH_CLASS = requestbuilder.auth.QuerySigV2Auth
-    ENV_URL = 'EUARE_URL'
+    URL_ENVVAR = 'EUARE_URL'
 
 class EuareRequest(Euca2oolsRequest):
     SERVICE_CLASS = Euare
