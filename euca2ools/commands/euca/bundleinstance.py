@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009-2012, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2013, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -76,8 +76,9 @@ class BundleInstance(EucalyptusRequest):
                                  ['starts-with', '$key',
                                   self.args.get('Storage.S3.Prefix')]],
                   'expiration': expire_time.isoformat()}
-        self.args['Storage.S3.UploadPolicy'] = \
-                base64.b64encode(json.dumps(policy))
+        policy_json = json.dumps(policy)
+        self.log.info('generated default policy: %s', policy_json)
+        self.args['Storage.S3.UploadPolicy'] = base64.b64encode(policy_json)
 
     def sign_policy(self):
         my_hmac = hmac.new(self.args['owner_sak'], digestmod=hashlib.sha1)
@@ -85,19 +86,22 @@ class BundleInstance(EucalyptusRequest):
         self.args['Storage.S3.UploadPolicySignature'] = \
                 base64.b64encode(my_hmac.digest())
 
-    def main(self):
+    def configure(self):
+        EucalyptusRequest.configure(self)
         if not self.args.get('Storage.S3.UploadPolicy'):
             if not self.args.get('owner_sak'):
                 self._cli_parser.error('argument -w/--owner-sak is required '
                                        'when -c/--policy is not used')
-            self.generate_default_policy()
-            self.sign_policy()
         elif not self.args.get('Storage.S3.UploadPolicySignature'):
             if not self.args.get('owner_sak'):
                 self._cli_parser.error('argument -w/--owner-sak is required '
                                        'when -c/--policy is not used')
+
+    def preprocess(self):
+        if not self.args.get('Storage.S3.UploadPolicy'):
+            self.generate_default_policy()
+        if not self.args.get('Storage.S3.UploadPplicySignature'):
             self.sign_policy()
-        return self.send()
 
     def print_result(self, result):
         self.print_bundle_task(result['bundleInstanceTask'])

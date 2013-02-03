@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009-2012, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2013, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -36,12 +36,11 @@ class DisassociateAddress(EucalyptusRequest):
     ARGS = [Arg('address', route_to=None,
                 help='elastic IP address or association ID to disassociate')]
 
-    def main(self):
+    def preprocess(self):
         if self.args['address'].startswith('eipassoc'):
             self.params = {'AssociationId': self.args['address']}
         else:
             self.params = {'PublicIp':      self.args['address']}
-        return self.send()
 
     def print_result(self, result):
         print self.tabify(['ADDRESS', self.args['address']])

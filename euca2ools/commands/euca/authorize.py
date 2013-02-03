@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009-2012, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2013, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -31,5 +31,5 @@
 from .modgroup import ModifySecurityGroupRequest
 
 class Authorize(ModifySecurityGroupRequest):
-    Description = 'Authorize a rule for a security group'
-    Action = 'AuthorizeSecurityGroupIngress'
+    NAME = 'AuthorizeSecurityGroupIngress'
+    DESCRIPTION = 'Authorize a rule for a security group'

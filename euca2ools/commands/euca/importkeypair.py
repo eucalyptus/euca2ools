@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009-2012, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2013, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -42,10 +42,9 @@ class ImportKeyPair(EucalyptusRequest):
                 type=file_contents, required=True, route_to=None,
                 help='file name of the public key to import')]
 
-    def main(self):
+    def preprocess(self):
         self.params = {'PublicKeyMaterial':
                         base64.b64encode(self.args['pubkey'])}
-        return self.send()
 
     def print_result(self, result):
         print self.tabify(['KEYPAIR', result.get('keyName'),

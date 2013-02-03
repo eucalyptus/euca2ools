@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009-2012, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2013, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -46,7 +46,7 @@ class DescribeAddresses(EucalyptusRequest):
                Filter('public-ip', help='the elastic IP address')]
     LIST_MARKERS = ['addressesSet']
 
-    def main(self):
+    def preprocess(self):
         alloc_ids = set(addr for addr in self.args.get('address', [])
                         if addr.startswith('eipalloc-'))
         public_ips = set(self.args.get('address', [])) - alloc_ids
@@ -55,7 +55,6 @@ class DescribeAddresses(EucalyptusRequest):
             self.params['AllocationId'] = list(alloc_ids)
         if public_ips:
             self.params['PublicIp'] = list(public_ips)
-        return self.send()
 
     def print_result(self, result):
         for addr in result.get('addressesSet', []):

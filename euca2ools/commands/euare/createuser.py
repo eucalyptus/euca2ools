@@ -49,23 +49,24 @@ class CreateUser(EuareRequest):
                 help="print the new user's ARN and GUID"),
             DELEGATE]
 
-    def main(self):
-        user_data = self.send()
+    def postprocess(self, result):
         if self.args.get('group_name'):
-            obj = AddUserToGroup(UserName=self.args['UserName'],
+            obj = AddUserToGroup(service=self.service,
+                    UserName=self.args['UserName'],
                     GroupName=self.args['group_name'],
-                    DelegateAccount=self.args.get('DelegateAccount'))
+                    DelegateAccount=self.args['DelegateAccount'])
             obj.main()
         if self.args.get('create_accesskey'):
-            obj = CreateAccessKey(UserName=self.args['UserName'],
-                    DelegateAccount=self.args.get('DelegateAccount'))
-            self.keyresponse = obj.main()
-        return user_data
+            obj = CreateAccessKey(service=self.service,
+                    UserName=self.args['UserName'],
+                    DelegateAccount=self.args['DelegateAccount'])
+            key_result = obj.main()
+            result.update(key_result)
 
     def print_result(self, result):
         if self.args['verbose']:
             print result['User']['Arn']
             print result['User']['UserId']
-        if 'keyresponse' in dir(self):
-            print self.keyresponse['AccessKey']['AccessKeyId']
-            print self.keyresponse['AccessKey']['SecretAccessKey']
+        if 'AccessKey' in result:
+            print result['AccessKey']['AccessKeyId']
+            print result['AccessKey']['SecretAccessKey']

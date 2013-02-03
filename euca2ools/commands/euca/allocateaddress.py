@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009-2012, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2013, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -31,7 +31,7 @@
 import euca2ools.commands.euca
 
 class AllocateAddress(euca2ools.commands.euca.EucalyptusRequest):
-    Description = 'Allocate a public IP address'
+    DESCRIPTION = 'Allocate a public IP address'
 
     def print_result(self, result):
         print self.tabify(('ADDRESS', result.get('publicIp'),

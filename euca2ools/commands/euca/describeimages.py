@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009-2012, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2013, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -98,6 +98,19 @@ class DescribeImages(EucalyptusRequest):
                       help='image\'s hypervisor type ("ovm" or "xen")')]
     LIST_MARKERS = ['imagesSet', 'blockDeviceMapping', 'tagSet']
 
+    def configure(self):
+        EucalyptusRequest.configure(self)
+        if self.args['all']:
+            if self.args.get('ImageId'):
+                self._cli_parser.error('argument -a/--all: not allowed with '
+                                       'a list of images')
+            if self.args.get('ExecutableBy'):
+                self._cli_parser.error('argument -a/--all: not allowed with '
+                                       'argument -x/--executable-by')
+            if self.args.get('Owner'):
+                self._cli_parser.error('argument -a/--all: not allowed with '
+                                       'argument -o/--owner')
+
     def main(self):
         if not any(self.args.get(item) for item in ('all', 'ImageId',
                                                     'ExecutableBy', 'Owner')):
@@ -110,17 +123,8 @@ class DescribeImages(EucalyptusRequest):
             owned['imagesSet'] = (owned.get(     'imagesSet', []) +
                                   executable.get('imagesSet', []))
             return owned
-        if self.args['all']:
-            if self.args.get('ImageId'):
-                self._cli_parser.error('argument -a/--all: not allowed with '
-                                       'a list of images')
-            if self.args.get('ExecutableBy'):
-                self._cli_parser.error('argument -a/--all: not allowed with '
-                                       'argument -x/--executable-by')
-            if self.args.get('Owner'):
-                self._cli_parser.error('argument -a/--all: not allowed with '
-                                       'argument -o/--owner')
-        return self.send()
+        else:
+            return self.send()
 
     def print_result(self, result):
         for image in result.get('imagesSet', []):

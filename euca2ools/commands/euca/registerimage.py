@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009-2012, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2013, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -60,7 +60,7 @@ class RegisterImage(EucalyptusRequest):
                 form DEVICE=MAPPED, where "MAPPED" is "none", "ephemeral(0-3)",
                 or "[SNAP-ID]:[SIZE]:[true|false]"''')]
 
-    def main(self):
+    def preprocess(self):
         if self.args.get('ImageLocation'):
             # instance-store image
             if self.args.get('RootDeviceName'):
@@ -80,7 +80,7 @@ class RegisterImage(EucalyptusRequest):
                     if (snapshot and
                         snapshot != mapping.get('Ebs', {}).get('SnapshotId')):
                         # The mapping's snapshot differs or doesn't exist
-                        self._cli_parser.error('value supplied with '
+                        self._cli_parser.error('snapshot ID supplied with '
                                 '--snapshot conflicts with block device '
                                 'mapping for root device ' +
                                 mapping['DeviceName'])
@@ -96,7 +96,6 @@ class RegisterImage(EucalyptusRequest):
                 else:
                     self._cli_parser.error('either a manifest location or a '
                             'root device snapshot mapping must be specified')
-        return self.send()
 
     def print_result(self, result):
         print self.tabify(('IMAGE', result.get('imageId')))

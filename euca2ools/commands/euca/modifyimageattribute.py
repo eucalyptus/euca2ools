@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009-2012, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2013, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -50,7 +50,7 @@ class ModifyImageAttribute(EucalyptusRequest):
                 default=[], route_to=None, help='''account to remove launch
                 permission from , or "all" for all accounts''')]
 
-    def main(self):
+    def preprocess(self):
         if self.args.get('launch_permission'):
             lp = {}
             for entity in self.args.get('add', []):
@@ -68,7 +68,7 @@ class ModifyImageAttribute(EucalyptusRequest):
             if not lp:
                 self._cli_parser.error('at least one entity must be specified '
                                        'with -a/--add or -r/--remove')
-            self.params = {'LaunchPermission': lp}
+            self.params['LaunchPermission'] = lp
         else:
             if self.args.get('add'):
                 self._cli_parser.error('argument -a/--add may only be used '
@@ -76,7 +76,6 @@ class ModifyImageAttribute(EucalyptusRequest):
             if self.args.get('remove'):
                 self._cli_parser.error('argument -r/--remove may only be used '
                                        'with -l/--launch-permission')
-        return self.send()
 
     def print_result(self, result):
         if self.args.get('Description.Value'):

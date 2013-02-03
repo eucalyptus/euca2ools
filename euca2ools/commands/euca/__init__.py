@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009-2012, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2013, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -31,149 +31,143 @@
 import argparse
 from operator import itemgetter
 import os.path
-from requestbuilder import Arg, MutuallyExclusiveArgList, AUTH, SERVICE, \
-        STD_AUTH_ARGS
+from requestbuilder import Arg, MutuallyExclusiveArgList, AUTH, SERVICE
+from requestbuilder.auth import QuerySigV2Auth
+from requestbuilder.exceptions import AuthError
 from requestbuilder.mixins import TabifyingCommand
 import requestbuilder.service
+import requests
 import shlex
 from string import Template
 import sys
 from .. import Euca2oolsRequest
 
-class Eucalyptus(requestbuilder.service.BaseService):
-    NAME = 'ec2'
-    DESCRIPTION = 'Eucalyptus compute cloud service'
-    API_VERSION = '2009-11-30'
-    ENV_URL = 'EC2_URL'
+class EC2CompatibleQuerySigV2Auth(QuerySigV2Auth):
+    # -a and -s are deprecated; remove them in 3.2
+    ARGS = [Arg('-a', '--access-key', metavar='KEY_ID',
+                dest='deprecated_key_id', route_to=AUTH,
+                help=argparse.SUPPRESS),
+            Arg('-s', metavar='KEY', dest='deprecated_sec_key', route_to=AUTH,
+                help=argparse.SUPPRESS)]
 
-    def __init__(self, config, log, shell_configfile=None,
-                 deprecated_key_id=None, deprecated_sec_key=None,
-                 auth_args=None, **kwargs):
-        self.shell_configfile_name = shell_configfile
-        if deprecated_key_id and not auth_args.get('key_id'):
-            auth_args['key_id'] = deprecated_key_id
-            msg = 'given access key ID argument is deprecated; use -I instead'
-            log.warn(msg)
-            print >> sys.stderr, 'warning:', msg
-        if deprecated_sec_key and not auth_args.get('secret_key'):
-            auth_args['secret_key'] = deprecated_sec_key
-            msg = 'argument -s is deprecated; use -S instead'
-            log.warn(msg)
-            print >> sys.stderr, 'warning:', msg
-        requestbuilder.service.BaseService.__init__(self, config, log,
-                                                    auth_args=auth_args,
-                                                    **kwargs)
+    def preprocess_arg_objs(self, arg_objs):
+        # If something else defines '-a' or '-s' args, resolve conflicts with
+        # this class's old-style auth args by capitalizing this class's args.
+        #
+        # This behavior is deprecated and will be removed in version 3.2 along
+        # with the -a and -s arguments themselves.
+        a_arg_objs = _find_args_by_parg(arg_objs, '-a')
+        s_arg_objs = _find_args_by_parg(arg_objs, '-s')
+        if len(a_arg_objs) > 1 or len(s_arg_objs) > 1:
+            for arg_obj in a_arg_objs:
+                if arg_obj.kwargs.get('dest') == 'deprecated_key_id':
+                    # Capitalize the "-a"
+                    arg_obj.pargs = tuple('-A' if parg == '-a' else parg
+                                          for parg in arg_obj.pargs)
+            for arg_obj in s_arg_objs:
+                if arg_obj.kwargs.get('dest') == 'deprecated_sec_key':
+                    # Remove it since regular -S already covers this case
+                    arg_objs.remove(arg_obj)
 
-    def read_config(self):
-        # CLI-given shell-style config file
-        if os.path.isfile(self.shell_configfile_name or ''):
-            config = _parse_shell_configfile(self.shell_configfile_name)
-            self._populate_self_from_env_config(config)
-        # AWS credential file (path is in the environment)
-        self.read_aws_credential_file()
-        # Environment
-        config = self._get_env_config_from_env()
-        self._populate_self_from_env_config(config)
-        # Requestbuilder config files
-        self.read_requestbuilder_config()
+    def configure(self):
+        # Shell-style config file given at the CLI
+        # Deprecated; should be removed in 3.2
+        if os.path.isfile(self.args['shell_configfile']):
+            config = _parse_shell_configfile(self.args['shell_configfile'])
+            if 'EC2_ACCESS_KEY' in config:
+                self.args.setdefault('key_id', config['EC2_ACCESS_KEY'])
+            if 'EC2_SECRET_KEY' in config:
+                self.args.setdefault('secret_key', config['EC2_SECRET_KEY'])
+        # Environment (for compatibility with EC2 tools)
+        if 'EC2_ACCESS_KEY' in os.environ:
+            self.args.setdefault('key_id', os.getenv('EC2_ACCESS_KEY'))
+        if 'EC2_SECRET_KEY' in os.environ:
+            self.args.setdefault('secret_key', os.getenv('EC2_SECRET_KEY'))
+        # AWS credential file (location given in the environment)
+        self.configure_from_aws_credential_file()
+        # Regular config file
+        self.configure_from_configfile()
         # User, systemwide shell-style config files
+        # Deprecated; should be removed in 3.2
         for configfile_name in ('~/.eucarc', '~/.eucarc/eucarc'):
             configfile_name = os.path.expandvars(configfile_name)
             configfile_name = os.path.expanduser(configfile_name)
             if os.path.isfile(configfile_name):
                 config = _parse_shell_configfile(configfile_name)
-                self._populate_self_from_env_config(config)
+                if 'EC2_ACCESS_KEY' in os.environ:
+                    sefl.args.setdefault('key_id', config['EC2_ACCESS_KEY'])
+                if 'EC2_SECRET_KEY' in config:
+                    self.args.setdefault('secret_key', config['EC2_SECRET_KEY'])
 
-    def _get_env_config_from_env(self):
-        envconfig = {}
-        for key in ('EC2_ACCESS_KEY', 'EC2_SECRET_KEY', 'EC2_URL'):
-            if key in os.environ:
-                envconfig[key] = os.getenv(key)
-        return envconfig
+        # That's it; make sure we have everything we need
+        if not self.args.get('key_id'):
+            raise AuthError('missing access key ID')
+        if not self.args.get('secret_key'):
+            raise AuthError('missing secret key')
 
-    def _populate_self_from_env_config(self, envconfig):
-        '''
-        Populate this service from the contents of an environment
-        variable-like dict.
-        '''
-        for (env_key, val) in envconfig.iteritems():
-            if (env_key == 'EC2_ACCESS_KEY' and
-                not self._auth_args.get('key_id')):
-                self._auth_args['key_id'] = val
-            elif (env_key == 'EC2_SECRET_KEY' and
-                  not self._auth_args.get('secret_key')):
-                self._auth_args['secret_key'] = val
-            elif env_key == 'EC2_URL' and not self.endpoint_url:
-                self._set_url_vars(val)
+class Eucalyptus(requestbuilder.service.BaseService):
+    NAME = 'ec2'
+    DESCRIPTION = 'Eucalyptus compute cloud service'
+    API_VERSION = '2009-11-30'
+    AUTH_CLASS  = EC2CompatibleQuerySigV2Auth
+    ENV_URL = 'EC2_URL'
 
-def _parse_shell_configfile(configfile_name):
-    def sourcehook(filename):
-        filename = filename.strip('"\'')
-        filename = Template(filename).safe_substitute(config)
-        filename = os.path.expandvars(filename)
-        filename = os.path.expanduser(filename)
-        return (filename, open(filename))
+    ARGS = [Arg('--config', dest='shell_configfile', metavar='CFGFILE',
+                 default='', route_to=SERVICE, help=argparse.SUPPRESS),
+            MutuallyExclusiveArgList(
+                Arg('--region', dest='userregion', metavar='REGION',
+                    route_to=SERVICE,
+                    help='region name to connect to, with optional identity'),
+                Arg('-U', '--url', metavar='URL', route_to=SERVICE,
+                    help='compute service endpoint URL'))]
 
-    config = {}
-    configfile_name = os.path.expandvars(configfile_name)
-    configfile_name = os.path.expanduser(configfile_name)
-    with open(configfile_name) as configfile:
-        ## TODO:  deal with $BASH_SOURCE
-        lexer = shlex.shlex(configfile)
-        lexer.whitespace_split = True
-        lexer.source = 'source'
-        lexer.sourcehook = sourcehook
-        for token in lexer:
-            if '=' in token:
-                (key, val) = token.split('=', 1)
-                val = val.strip('"\'')
-                if not config.get(key):
-                    config[key] = Template(val).safe_substitute(config)
-    return config
+    def configure(self):
+        # self.args gets highest precedence for self.endpoint and user/region
+        self.process_url(self.args.get('url'))
+        if self.args.get('userregion'):
+            self.process_userregion(self.args['userregion'])
+        # Shell-style config file given at the CLI
+        # Deprecated; should be removed in 3.2
+        if os.path.isfile(self.args['shell_configfile']):
+            config = _parse_shell_configfile(self.args['shell_configfile'])
+            self.process_url(config.get(self.ENV_URL))
+            if self.ENV_URL in config:
+                self.process_url(config[self.ENV_URL])
+        # Environment
+        self.process_url(os.getenv(self.ENV_URL))
+        # Regular config file
+        self.process_url(self.config.get_region_option(self.NAME + '-url'))
+        # User, systemwide shell-style config files
+        # Deprecated; should be removed in 3.2
+        for configfile_name in ('~/.eucarc', '~/.eucarc/eucarc'):
+            configfile_name = os.path.expandvars(configfile_name)
+            configfile_name = os.path.expanduser(configfile_name)
+            if os.path.isfile(configfile_name):
+                config = _parse_shell_configfile(configfile_name)
+                if self.ENV_URL in config:
+                    self.process_url(config[self.ENV_URL])
+
+        # Ensure everything is okay and finish up
+        self.validate_config()
+        if self.auth is not None:
+            # HACK:  this was an easy way to make a CLI-supplied shell-style
+            # config file name available to the auth handler.
+            # Remove this line in 3.2.
+            self.auth.args['shell_configfile'] = self.args['shell_configfile']
+            self.auth.configure()
+
 
 class EucalyptusRequest(Euca2oolsRequest, TabifyingCommand):
     SERVICE_CLASS = Eucalyptus
 
-    # For compatibility with euca2ools versions earlier than 3, we include the
-    # old -a/--access-key/-s args.  As before, if either -a or -s conflicts
-    # with another arg, both are capitalized.  All are deprecated.  They are no
-    # longer documented and using them will result in warnings.
-    ARGS = [Arg('-a', '--access-key', metavar='KEY_ID',
-                dest='deprecated_key_id', route_to=SERVICE,
-                help=argparse.SUPPRESS),
-            Arg('-s', metavar='KEY', dest='deprecated_sec_key',
-                route_to=SERVICE, help=argparse.SUPPRESS),
-            Arg('--config', dest='shell_configfile', metavar='CFGFILE',
-                 route_to=SERVICE, help=argparse.SUPPRESS),
-            MutuallyExclusiveArgList(
-                Arg('--region', dest='regionspec', metavar='REGION',
-                    route_to=SERVICE,
-                    help='region name to connect to, with optional identity'),
-                Arg('-U', '--url', metavar='URL', route_to=SERVICE,
-                    help='compute service endpoint URL'))] + STD_AUTH_ARGS
-
     def __init__(self, **kwargs):
-        # If an inheriting class defines '-a' or '-s' args, resolve conflicts
-        # with this class's old-style auth args by capitalizing this class's
-        # auth args.
-        args = self.aggregate_subclass_fields('ARGS')
-        a_args = _find_args_by_parg(args, '-a')
-        s_args = _find_args_by_parg(args, '-s')
-        if len(a_args) > 1 or len(s_args) > 1:
-            for arg in a_args:
-                if arg.kwargs.get('dest') == 'deprecated_key_id':
-                    arg.pargs = tuple('-A' if parg == '-a' else parg
-                                      for parg in arg.pargs)
-            for arg in s_args:
-                if arg.kwargs.get('dest') == 'deprecated_sec_key':
-                    arg.kwargs['dest'] = argparse.SUPPRESS
         Euca2oolsRequest.__init__(self, **kwargs)
         self.method = 'POST'  ## FIXME
 
     def parse_http_response(self, response_body):
         response = Euca2oolsRequest.parse_http_response(self, response_body)
         # Compute cloud controller responses enclose their useful data inside
-        # FooResponse # elements.  If that's all we have after stripping out
+        # FooResponse elements.  If that's all we have after stripping out
         # RequestId then just return its contents.
         useful_keys = filter(lambda x: x != 'RequestId', response.keys())
         if len(useful_keys) == 1:
@@ -197,8 +191,8 @@ class EucalyptusRequest(Euca2oolsRequest, TabifyingCommand):
             self.print_instance(instance)
 
     def print_instance(self, instance):
-        ## FIXME: Amazon's documentation doesn't say what order the fields in
-        ##        ec2-describe-instances output appear.
+        # FIXME: Amazon's documentation doesn't say what order the fields in
+        #        ec2-describe-instances output appear.
         instance_line = ['INSTANCE']
         for key in ['instanceId', 'imageId', 'dnsName', 'privateDnsName']:
             instance_line.append(instance.get(key))
@@ -332,3 +326,29 @@ def _find_args_by_parg(arglike, parg):
         return matches
     else:
         raise TypeError('Unsearchable type ' + arglike.__class__.__name__)
+
+def _parse_shell_configfile(configfile_name):
+    # Should be able to drop this in 3.2
+    def sourcehook(filename):
+        filename = filename.strip('"\'')
+        filename = Template(filename).safe_substitute(config)
+        filename = os.path.expandvars(filename)
+        filename = os.path.expanduser(filename)
+        return (filename, open(filename))
+
+    config = {}
+    configfile_name = os.path.expandvars(configfile_name)
+    configfile_name = os.path.expanduser(configfile_name)
+    with open(configfile_name) as configfile:
+        ## TODO:  deal with $BASH_SOURCE
+        lexer = shlex.shlex(configfile)
+        lexer.whitespace_split = True
+        lexer.source = 'source'
+        lexer.sourcehook = sourcehook
+        for token in lexer:
+            if '=' in token:
+                (key, val) = token.split('=', 1)
+                val = val.strip('"\'')
+                if not config.get(key):
+                    config[key] = Template(val).safe_substitute(config)
+    return config

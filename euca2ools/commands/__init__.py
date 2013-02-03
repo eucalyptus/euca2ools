@@ -36,20 +36,35 @@ import requestbuilder.request
 from .. import __version__, __codename__
 
 class Euca2oolsCommand(requestbuilder.command.BaseCommand):
-    Version = 'euca2ools {0} ({1})'.format(__version__, __codename__)
+    VERSION = 'euca2ools {0} ({1})'.format(__version__, __codename__)
 
     def __init__(self, **kwargs):
-        self.CONFIG_FILES.append('/etc/euca2ools.ini')
-        user_config_glob = os.path.join(os.path.expanduser('~/.euca'), '*.ini')
-        for configfile in sorted(glob.glob(user_config_glob)):
-            self.CONFIG_FILES.append(configfile)
+        self._config_files = None
         requestbuilder.request.BaseCommand.__init__(self, **kwargs)
 
-class Euca2oolsRequest(Euca2oolsCommand, requestbuilder.request.BaseRequest):
+    @property
+    def config_files(self):
+        if self._config_files is None:
+            self._config_files = ['/etc/euca2ools.ini']
+            user_glob = os.path.join(os.path.expanduser('~/.euca'), '*.ini')
+            self._config_files.extend(sorted(glob.glob(user_glob)))
+        return self._config_files
+
+class Euca2oolsRequest(requestbuilder.request.BaseRequest):
+    VERSION = 'euca2ools {0} ({1})'.format(__version__, __codename__)
+
     def __init__(self, **kwargs):
-        Euca2oolsCommand.__init__(self, **kwargs)
-        requestbuilder.request.BaseRequest.__init__(self, **kwargs)
+        self._config_files = None
         self.__user_agent = None
+        requestbuilder.request.BaseRequest.__init__(self, **kwargs)
+
+    @property
+    def config_files(self):
+        if self._config_files is None:
+            self._config_files = ['/etc/euca2ools.ini']
+            user_glob = os.path.join(os.path.expanduser('~/.euca'), '*.ini')
+            self._config_files.extend(sorted(glob.glob(user_glob)))
+        return self._config_files
 
     @property
     def user_agent(self):

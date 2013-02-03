@@ -65,12 +65,9 @@ class ModifySecurityGroupRequest(EucalyptusRequest):
                         specified with -o''')]
                 # ^ required if -o is used
 
-    def __init__(self, **kwargs):
-        EucalyptusRequest.__init__(self, **kwargs)
-        self.icmp_opt = None
-        self.port_opt = None
+    def configure(self):
+        EucalyptusRequest.configure(self)
 
-    def parse_ports(self):
         from_port = None
         to_port   = None
         protocol = self.args.get('IpPermissions.1.IpProtocol')
@@ -126,15 +123,9 @@ class ModifySecurityGroupRequest(EucalyptusRequest):
                 self._cli_parser.error('argument -p/--port-range: port '
                                        'number(s) must be at least -1')
 
-        self.params = {'IpPermissions.1.FromPort': from_port,
-                       'IpPermissions.1.ToPort':   to_port}
+        self.params['IpPermissions.1.FromPort'] = from_port
+        self.params['IpPermissions.1.ToPort']   = to_port
 
-    def main(self):
-        if self.icmp_opt:
-            self.args['icmp_type_code'] = self.icmp_opt
-        if self.port_opt:
-            self.args['port_range'] = self.port_opt
-        self.parse_ports()
         if not self.args.get('IpPermissions.1.IpRanges.1.GroupName'):
             self.args.setdefault('IpPermissions.1.IpRanges.1.CidrIp',
                                  '0.0.0.0/0')
@@ -142,7 +133,6 @@ class ModifySecurityGroupRequest(EucalyptusRequest):
             not self.args.get('IpPermissions.1.Groups.1.UserId')):
             self._cli_parser.error('argument -u is required when -o is '
                                    'specified')
-        return self.send()
 
     def print_result(self, result):
         print self.tabify(['GROUP', self.args.get('GroupName')])
@@ -162,7 +152,7 @@ class ModifySecurityGroupRequest(EucalyptusRequest):
             perm_str.append(self.args.get('IpPermissions.1.IpRanges.1.CidrIp'))
         print self.tabify(perm_str)
 
-    def do_cli(self):
+    def process_cli_args(self):
         # We need to parse out -t and -p *before* argparse can see it because
         # of Python bug 9334, which prevents argparse from recognizing '-1:-1'
         # as an option value and not a (nonexistent) option name.
@@ -174,8 +164,12 @@ class ModifySecurityGroupRequest(EucalyptusRequest):
                     opt_val = sys.argv[index + 1]
                     del sys.argv[index:index + 2]
                     return opt_val
-        self.icmp_opt = parse_neg_one_value('-t') or self.icmp_opt
-        self.icmp_opt = parse_neg_one_value('--icmp-type-code') or self.icmp_opt
-        self.port_opt = parse_neg_one_value('-p') or self.port_opt
-        self.port_opt = parse_neg_one_value('--port-range') or self.port_opt
-        EucalyptusRequest.do_cli(self)
+        icmp_type_code = (parse_neg_one_value('-t') or
+                          parse_neg_one_value('--icmp-type-code'))
+        port_range = (parse_neg_one_value('-p') or
+                      parse_neg_one_value('--port-range'))
+        EucalyptusRequest._process_cli_args(self)
+        if icmp_type_code:
+            self.args['icmp_type_code'] = icmp_type_code
+        if port_range:
+            self.args['port_range'] = port_range

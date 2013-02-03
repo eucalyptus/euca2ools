@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009-2012, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2013, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -31,5 +31,5 @@
 from .modgroup import ModifySecurityGroupRequest
 
 class Revoke(ModifySecurityGroupRequest):
-    Description = 'Revoke an existing rule from a security group'
-    Action = 'RevokeSecurityGroupIngress'
+    NAME = 'RevokeSecurityGroupIngress'
+    DESCRIPTION = 'Revoke an existing rule from a security group'

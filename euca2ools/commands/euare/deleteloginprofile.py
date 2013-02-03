@@ -40,6 +40,3 @@ class DeleteLoginProfile(EuareRequest):
                 required=True, help='''name of the user whose login profile
                 should be deleted (required)'''),
             DELEGATE]
-
-    def print_result(self, result):
-        pass

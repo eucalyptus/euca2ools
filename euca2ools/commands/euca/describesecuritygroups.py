@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009-2012, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2013, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -39,7 +39,7 @@ class DescribeSecurityGroups(EucalyptusRequest):
         "--filter ip-permission.from-port=22" will *not* match a group with a
         port range of 20 to 30.'''
 
-    API_VERSION = '2011-01-01'
+    API_VERSION = '2012-12-01'
     ARGS = [Arg('group', metavar='GROUP', nargs='*', route_to=None, default=[],
                 help='limit results to one or more security groups')]
     FILTERS = [Filter('description', help='group description'),
@@ -65,17 +65,14 @@ class DescribeSecurityGroups(EucalyptusRequest):
     LIST_MARKERS = ['securityGroupInfo', 'ipPermissions',
                     'ipPermissionsEgress', 'groups', 'ipRanges']
 
-    def main(self):
-        self.params = {}
+    def preprocess(self):
         for group in self.args['group']:
-            # Uncomment this during the next API version bump
-            #if group.startswith('sg-'):
-            #    self.params.setdefault('GroupId', [])
-            #    self.params['GroupId'].append(group)
-            #else:
+            if group.startswith('sg-'):
+                self.params.setdefault('GroupId', [])
+                self.params['GroupId'].append(group)
+            else:
                 self.params.setdefault('GroupName', [])
                 self.params['GroupName'].append(group)
-        return self.send()
 
     def print_result(self, result):
         for group in result.get('securityGroupInfo', []):

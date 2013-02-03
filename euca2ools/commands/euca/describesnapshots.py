@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009-2012, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2013, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -65,7 +65,8 @@ class DescribeSnapshots(EucalyptusRequest):
                Filter('volume-size', type=int)]
     LIST_MARKERS = ['snapshotSet', 'tagSet']
 
-    def main(self):
+    def configure(self):
+        EucalyptusRequest.configure(self)
         if not any(self.args.get(item) for item in ('all', 'Owner',
                                                     'RestorableBy')):
             # Default to restorable snapshots
@@ -77,7 +78,6 @@ class DescribeSnapshots(EucalyptusRequest):
             if self.args.get('RestorableBy'):
                 self._cli_parser.error('argument -a/--all: not allowed with '
                                        'argument -r/--restorable-by')
-        return self.send()
 
     def print_result(self, result):
         for snapshot in result.get('snapshotSet', []):

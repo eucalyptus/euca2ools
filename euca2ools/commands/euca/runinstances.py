@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009-2012, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2013, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -46,8 +46,7 @@ class RunInstances(EucalyptusRequest):
                         If specified as a range (min-max), the server will
                         attempt to launch the maximum number, but no fewer
                         than the minimum number.'''),
-            Arg('-g', '--group', dest='group', action='append', default=[],
-                route_to=None,
+            Arg('-g', '--group', action='append', default=[], route_to=None,
                 help='security group(s) in which to launch the instances'),
             Arg('-k', '--key', dest='KeyName', metavar='KEYPAIR',
                 help='name of the key pair to use'),
@@ -58,7 +57,7 @@ class RunInstances(EucalyptusRequest):
                             reservation'''),
                 Arg('--user-data-force', dest='UserData',
                     type=base64.b64encode, help=argparse.SUPPRESS),
-                    # ^ deprecated
+                    # ^ deprecated  ## TODO:  decide if that should remain the case
                 Arg('-f', '--user-data-file', dest='UserData',
                     metavar='DATA-FILE', type=b64encoded_file_contents,
                     help='''file containing user data to make available to the
@@ -81,7 +80,7 @@ class RunInstances(EucalyptusRequest):
                         "[SNAP-ID]:[SIZE]:[true|false]"'''),
             Arg('-m', '--monitor', dest='Monitoring.Enabled',
                 action='store_const', const='true',
-                help='enable monitoring for the instance(s)'),
+                help='enable detailed monitoring for the instance(s)'),
             Arg('--subnet', dest='SubnetId', metavar='SUBNET',
                 help='VPC subnet in which to launch the instance(s)'),
             Arg('-z', '--availability-zone', metavar='ZONE',
@@ -89,8 +88,7 @@ class RunInstances(EucalyptusRequest):
     LIST_MARKERS = ['reservationSet', 'instancesSet', 'groupSet', 'tagSet',
                     'blockDeviceMapping', 'productCodes']
 
-    def main(self):
-        self.params = {}
+    def preprocess(self):
         counts = self.args['count'].split('-')
         if len(counts) == 1:
             try:
@@ -98,7 +96,7 @@ class RunInstances(EucalyptusRequest):
                 self.params['MaxCount'] = int(counts[0])
             except ValueError:
                 self._cli_parser.error('argument -n/--instance-count: '
-                                       'instance count must be in integer')
+                                       'instance count must be an integer')
         elif len(counts) == 2:
             try:
                 self.params['MinCount'] = int(counts[0])
@@ -113,17 +111,18 @@ class RunInstances(EucalyptusRequest):
         if self.params['MinCount'] < 1 or self.params['MaxCount'] < 1:
             self._cli_parser.error('argument -n/--instance-count: instance '
                                    'count must be positive')
+        if self.params['MinCount'] > self.params['MaxCount']:
+            self.log.debug('MinCount > MaxCount; swapping')
+            self.params.update({'MinCount': self.params['MaxCount'],
+                                'MaxCount': self.params['MinCount']})
 
         for group in self.args['group']:
-            # Uncomment this during the next API version bump
-            #if group.startswith('sg-'):
-            #    self.params.setdefault('SecurityGroupId', [])
-            #    self.params['SecurityGroupId'].append(group)
-            #else:
+            if group.startswith('sg-'):
+                self.params.setdefault('SecurityGroupId', [])
+                self.params['SecurityGroupId'].append(group)
+            else:
                 self.params.setdefault('SecurityGroup', [])
                 self.params['SecurityGroup'].append(group)
-
-        return self.send()
 
     def print_result(self, result):
         self.print_reservation(result)
