@@ -45,8 +45,7 @@ def block_device_mapping(map_as_str):
                 'DEVICE=MAPPED'.format(map_as_str))
     map_dict = {'DeviceName': device}
     if mapping.lower() == 'none':
-        ## FIXME:  EC2 does not accept this, despite its documentation
-        map_dict['Ebs'] = {'NoDevice': EMPTY}
+        map_dict['NoDevice'] = 'none'
     elif mapping.startswith('ephemeral'):
         map_dict['VirtualName'] = mapping
     elif (mapping.startswith('snap-') or mapping.startswith('vol-') or
