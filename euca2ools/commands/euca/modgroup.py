@@ -122,6 +122,10 @@ class ModifySecurityGroupRequest(EucalyptusRequest):
             if from_port < -1 or to_port < -1:
                 self._cli_parser.error('argument -p/--port-range: port '
                                        'number(s) must be at least -1')
+        else:
+            # Shouldn't get here since argparse should only allow the values we
+            # handle
+            raise ValueError('unrecognized protocol: "{0}"'.format(protocol))
 
         self.params['IpPermissions.1.FromPort'] = from_port
         self.params['IpPermissions.1.ToPort']   = to_port
@@ -157,6 +161,7 @@ class ModifySecurityGroupRequest(EucalyptusRequest):
         # of Python bug 9334, which prevents argparse from recognizing '-1:-1'
         # as an option value and not a (nonexistent) option name.
         def parse_neg_one_value(opt_name):
+            saved_sys_argv = list(sys.argv)
             if opt_name in sys.argv:
                 index = sys.argv.index(opt_name)
                 if (index < len(sys.argv) - 1 and
@@ -173,3 +178,4 @@ class ModifySecurityGroupRequest(EucalyptusRequest):
             self.args['icmp_type_code'] = icmp_type_code
         if port_range:
             self.args['port_range'] = port_range
+        sys.argv = saved_sys_argv
