@@ -40,7 +40,7 @@ import requests
 import shlex
 from string import Template
 import sys
-from .. import Euca2oolsRequest
+from .. import Euca2oolsQueryRequest
 
 class EC2CompatibleQuerySigV2Auth(QuerySigV2Auth):
     # -a and -s are deprecated; remove them in 3.2
@@ -157,15 +157,16 @@ class Eucalyptus(requestbuilder.service.BaseService):
             self.auth.configure()
 
 
-class EucalyptusRequest(Euca2oolsRequest, TabifyingCommand):
+class EucalyptusRequest(Euca2oolsQueryRequest, TabifyingCommand):
     SERVICE_CLASS = Eucalyptus
 
     def __init__(self, **kwargs):
-        Euca2oolsRequest.__init__(self, **kwargs)
+        Euca2oolsQueryRequest.__init__(self, **kwargs)
         self.method = 'POST'  ## FIXME
 
     def parse_http_response(self, response_body):
-        response = Euca2oolsRequest.parse_http_response(self, response_body)
+        response = Euca2oolsQueryRequest.parse_http_response(self,
+                                                             response_body)
         # Compute cloud controller responses enclose their useful data inside
         # FooResponse elements.  If that's all we have after stripping out
         # RequestId then just return its contents.

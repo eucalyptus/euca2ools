@@ -31,7 +31,7 @@
 from requestbuilder import Arg, SERVICE
 import requestbuilder.auth
 import requestbuilder.service
-from .. import Euca2oolsRequest
+from .. import Euca2oolsQueryRequest
 
 class Euare(requestbuilder.service.BaseService):
     NAME = 'iam'
@@ -40,13 +40,13 @@ class Euare(requestbuilder.service.BaseService):
     AUTH_CLASS = requestbuilder.auth.QuerySigV2Auth
     URL_ENVVAR = 'EUARE_URL'
 
-class EuareRequest(Euca2oolsRequest):
+class EuareRequest(Euca2oolsQueryRequest):
     SERVICE_CLASS = Euare
     ARGS = [Arg('-U', '--url', dest='url', metavar='URL', route_to=SERVICE,
                 help='identity service endpoint URL')]
 
     def parse_response(self, response):
-        response_dict = Euca2oolsRequest.parse_response(self, response)
+        response_dict = Euca2oolsQueryRequest.parse_response(self, response)
         # EUARE responses enclose their useful data inside FooResponse
         # elements.  If that's all we have after stripping out ResponseMetadata
         # then just return its contents.
