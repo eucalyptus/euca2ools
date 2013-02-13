@@ -28,6 +28,7 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+from euca2ools.exceptions import AWSError
 from requestbuilder import Arg, SERVICE
 import requestbuilder.auth
 import requestbuilder.service
@@ -39,6 +40,10 @@ class Euare(requestbuilder.service.BaseService):
     API_VERSION = '2010-05-08'
     AUTH_CLASS = requestbuilder.auth.QuerySigV2Auth
     URL_ENVVAR = 'EUARE_URL'
+
+    def handle_http_error(self, response):
+        raise AWSError(response)
+
 
 class EuareRequest(Euca2oolsQueryRequest):
     SERVICE_CLASS = Euare

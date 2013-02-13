@@ -28,6 +28,7 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+from euca2ools.exceptions import AWSError
 from requestbuilder import Arg, SERVICE
 import requestbuilder.auth
 import requestbuilder.request
@@ -40,6 +41,9 @@ class Walrus(requestbuilder.service.BaseService):
     DESCRIPTION = 'Object storage service'
     AUTH_CLASS = requestbuilder.auth.S3RestAuth
     URL_ENVVAR = 'S3_URL'
+
+    def handle_http_error(self, response):
+        raise AWSError(response)
 
 
 class WalrusRequest(Euca2oolsRequest):

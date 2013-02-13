@@ -29,6 +29,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 import argparse
+from euca2ools.exceptions import AWSError
 from operator import itemgetter
 import os.path
 from requestbuilder import Arg, MutuallyExclusiveArgList, AUTH, SERVICE
@@ -105,6 +106,7 @@ class EC2CompatibleQuerySigV2Auth(QuerySigV2Auth):
         if not self.args.get('secret_key'):
             raise AuthError('missing secret key')
 
+
 class Eucalyptus(requestbuilder.service.BaseService):
     NAME = 'ec2'
     DESCRIPTION = 'Eucalyptus compute cloud service'
@@ -155,6 +157,9 @@ class Eucalyptus(requestbuilder.service.BaseService):
             # Remove this line in 3.2.
             self.auth.args['shell_configfile'] = self.args['shell_configfile']
             self.auth.configure()
+
+    def handle_http_error(self, response):
+        raise AWSError(response)
 
 
 class EucalyptusRequest(Euca2oolsQueryRequest, TabifyingCommand):
