@@ -43,3 +43,4 @@ class ListAccessKeys(EuareRequest):
         for accesskey in result.get('AccessKeyMetadata', []):
             print accesskey['AccessKeyId']
             print accesskey['Status']
+            print "IsTruncated: " + result['IsTruncated']
