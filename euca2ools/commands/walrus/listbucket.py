@@ -53,14 +53,16 @@ class ListBucket(WalrusRequest, TabifyingCommand):
 
     def main(self):
         self.method = 'GET'
-        return PaginatedResponse(self, self.args['paths'], ('Contents',))
+        pages = [(path, {}) for path in self.args['paths']]
+        return PaginatedResponse(self, pages, ('Contents',))
 
-    def get_page_markers(self, response):
+    def get_next_page(self, response):
         if response.get('IsTruncated') == 'true':
-            return {'marker': response['Contents'][-1]['Key']}
+            return (self.path, {'marker': response['Contents'][-1]['Key']})
 
-    def prepare_for_page(self, next_path, markers):
-        bucket, __, prefix = next_path.partition('/')
+    def prepare_for_page(self, page):
+        bucket, __, prefix = page[0].partition('/')
+        markers = page[1]
         self.path = bucket
         if prefix:
             self.params['prefix'] = prefix
