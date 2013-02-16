@@ -1,6 +1,0 @@
-#!/usr/bin/python -tt
-
-import euca2ools.commands.walrus.listallmybuckets
-
-if __name__ == '__main__':
-    euca2ools.commands.walrus.listallmybuckets.ListAllMyBuckets.run()
