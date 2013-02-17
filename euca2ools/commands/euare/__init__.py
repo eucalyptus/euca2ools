@@ -29,7 +29,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 from euca2ools.exceptions import AWSError
-from requestbuilder import Arg, SERVICE
+from requestbuilder import Arg, MutuallyExclusiveArgList, SERVICE
 import requestbuilder.auth
 import requestbuilder.service
 from .. import Euca2oolsQueryRequest
@@ -41,15 +41,19 @@ class Euare(requestbuilder.service.BaseService):
     AUTH_CLASS = requestbuilder.auth.QuerySigV2Auth
     URL_ENVVAR = 'EUARE_URL'
 
+    ARGS = [MutuallyExclusiveArgList(
+                Arg('--region', dest='userregion', metavar='REGION',
+                    route_to=SERVICE,
+                    help='region name to connect to, with optional identity'),
+                Arg('-U', '--url', metavar='URL', route_to=SERVICE,
+                    help='storage service endpoint URL'))]
+
     def handle_http_error(self, response):
         raise AWSError(response)
 
 
 class EuareRequest(Euca2oolsQueryRequest):
     SERVICE_CLASS = Euare
-    ARGS = [Arg('-U', '--url', dest='url', metavar='URL', route_to=SERVICE,
-                help='identity service endpoint URL')]
-
     def parse_response(self, response):
         response_dict = Euca2oolsQueryRequest.parse_response(self, response)
         # EUARE responses enclose their useful data inside FooResponse

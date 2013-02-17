@@ -29,7 +29,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 from euca2ools.exceptions import AWSError
-from requestbuilder import Arg, SERVICE
+from requestbuilder import Arg, MutuallyExclusiveArgList, SERVICE
 import requestbuilder.auth
 import requestbuilder.request
 import requestbuilder.service
@@ -44,14 +44,19 @@ class Walrus(requestbuilder.service.BaseService):
     AUTH_CLASS = requestbuilder.auth.S3RestAuth
     URL_ENVVAR = 'S3_URL'
 
+    ARGS = [MutuallyExclusiveArgList(
+                Arg('--region', dest='userregion', metavar='REGION',
+                    route_to=SERVICE,
+                    help='region name to connect to, with optional identity'),
+                Arg('-U', '--url', metavar='URL', route_to=SERVICE,
+                    help='storage service endpoint URL'))]
+
     def handle_http_error(self, response):
         raise AWSError(response)
 
 
 class WalrusRequest(Euca2oolsRequest):
     SERVICE_CLASS = Walrus
-    ARGS = [Arg('-U', '--url', dest='url', metavar='URL', route_to=SERVICE,
-                help='storage service endpoint URL')]
 
     def __init__(self, **kwargs):
         Euca2oolsRequest.__init__(self, **kwargs)
