@@ -75,15 +75,15 @@ class EC2CompatibleQuerySigV2Auth(QuerySigV2Auth):
         # Deprecated; should be removed in 3.2
         if os.path.isfile(self.args['shell_configfile']):
             config = _parse_shell_configfile(self.args['shell_configfile'])
-            if 'EC2_ACCESS_KEY' in config:
-                self.args.setdefault('key_id', config['EC2_ACCESS_KEY'])
-            if 'EC2_SECRET_KEY' in config:
-                self.args.setdefault('secret_key', config['EC2_SECRET_KEY'])
+            if 'EC2_ACCESS_KEY' in config and not self.args.get('key_id'):
+                self.args['key_id'] = config['EC2_ACCESS_KEY']
+            if 'EC2_SECRET_KEY' in config and not self.args.get('secret_key'):
+                self.args['secret_key'] = config['EC2_SECRET_KEY']
         # Environment (for compatibility with EC2 tools)
-        if 'EC2_ACCESS_KEY' in os.environ:
-            self.args.setdefault('key_id', os.getenv('EC2_ACCESS_KEY'))
-        if 'EC2_SECRET_KEY' in os.environ:
-            self.args.setdefault('secret_key', os.getenv('EC2_SECRET_KEY'))
+        if 'EC2_ACCESS_KEY' in os.environ and not self.args.get('key_id'):
+            self.args['key_id'] = os.getenv('EC2_ACCESS_KEY')
+        if 'EC2_SECRET_KEY' in os.environ and not self.args.get('secret_key'):
+            self.args['secret_key'] = os.getenv('EC2_SECRET_KEY')
         # AWS credential file (location given in the environment)
         self.configure_from_aws_credential_file()
         # Regular config file
@@ -95,10 +95,12 @@ class EC2CompatibleQuerySigV2Auth(QuerySigV2Auth):
             configfile_name = os.path.expanduser(configfile_name)
             if os.path.isfile(configfile_name):
                 config = _parse_shell_configfile(configfile_name)
-                if 'EC2_ACCESS_KEY' in os.environ:
-                    sefl.args.setdefault('key_id', config['EC2_ACCESS_KEY'])
-                if 'EC2_SECRET_KEY' in config:
-                    self.args.setdefault('secret_key', config['EC2_SECRET_KEY'])
+                if 'EC2_ACCESS_KEY' in config and not self.args.get('key_id'):
+                    self.args['key_id'] = config['EC2_ACCESS_KEY']
+                if ('EC2_SECRET_KEY' in config and
+                    not self.args.get('secret_key')):
+                    #
+                    self.args['secret_key'] = config['EC2_SECRET_KEY']
 
         # That's it; make sure we have everything we need
         if not self.args.get('key_id'):
