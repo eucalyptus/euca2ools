@@ -28,6 +28,7 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+import argparse
 from requestbuilder import Arg
 from requestbuilder.mixins import TabifyingCommand
 from requestbuilder.response import PaginatedResponse
@@ -36,7 +37,9 @@ from . import WalrusRequest, validate_generic_bucket_name
 
 class ListBucket(WalrusRequest, TabifyingCommand):
     DESCRIPTION = 'List keys in one or more buckets'
-    ARGS = [Arg('paths', metavar='BUCKET[/KEY]', nargs='+', route_to=None)]
+    ARGS = [Arg('paths', metavar='BUCKET[/KEY]', nargs='+', route_to=None),
+            Arg('--max-keys-per-request', dest='max-keys', type=int,
+                help=argparse.SUPPRESS)]
 
     def configure(self):
         WalrusRequest.configure(self)

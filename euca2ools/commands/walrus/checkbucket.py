@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
+# Copyright (c) 2013, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -27,31 +27,17 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#
-# Author: Neil Soman neil@eucalyptus.com
-#         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import sys
-import euca2ools.commands.eucacommand
-from boto.roboto.param import Param
-from boto.exception import S3ResponseError
+from requestbuilder import Arg
+from requestbuilder.exceptions import ServerError
+from . import WalrusRequest
+from .listbucket import ListBucket
 
-class CheckBucket(euca2ools.commands.eucacommand.EucaCommand):
 
-    Description = 'Checks to see if a bucket exists'
-    Options = [Param(name='bucket', short_name='b', long_name='bucket',
-                     optional=False, ptype='string',
-                     doc='The name of the bucket to check')]
+class CheckBucket(WalrusRequest):
+    DESCRIPTION = 'Return successfully if a bucket exists'
+    ARGS = [Arg('bucket', route_to=None, help='name of the bucket to check')]
 
     def main(self):
-        conn = self.make_connection_cli(conn_type='s3')
-        print 'Checking bucket: %s' % self.bucket
-        try:
-            return conn.get_bucket(self.bucket)
-        except S3ResponseError:
-            sys.exit(1)
-
-    def main_cli(self):
-        self.main()
-
-
+        req = ListBucket(paths=[self.args['bucket']], **{'max-keys': 0})
+        req.main()
