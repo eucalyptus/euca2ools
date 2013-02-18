@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2013, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -27,37 +27,18 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#
-# Author: Neil Soman neil@eucalyptus.com
-#         Mitch Garnaat mgarnaat@eucalyptus.com
 
-from boto.roboto.awsqueryrequest import AWSQueryRequest
-from boto.roboto.param import Param
-import euca2ools.commands.euare
-import euca2ools.utils
+from requestbuilder import Arg
+from requestbuilder.mixins import TabifyingCommand
+from . import EuareRequest
 
 
-class CreateAccount(AWSQueryRequest):
+class CreateAccount(EuareRequest, TabifyingCommand):
+    DESCRIPTION = ('[Eucalyptus only] Create a new account. This command is '
+                   'only usable by cloud administrators.')
+    ARGS = [Arg('-a', '--account-name', dest='AccountName', metavar='ACCOUNT',
+                required=True, help='name of the account to create (required)')]
 
-    ServiceClass = euca2ools.commands.euare.Euare
-
-    Name = 'CreateAccount'
-    Description = 'Create a new account'
-    Params = [
-        Param(name='AccountName',
-              short_name='a',
-              long_name='account-name',
-              ptype='string',
-              optional=False,
-              doc="""The name of the new account.""")
-        ]
-
-    def cli_formatter(self, data):
-        print data.Account['AccountName'], '\t', data.Account['AccountId']
-
-    def main(self, **args):
-        return self.send(**args)
-
-    def main_cli(self):
-        euca2ools.utils.print_version_if_necessary()
-        self.do_cli()
+    def print_result(self, result):
+        print self.tabify((result.get('Account', {}).get('AccountName'),
+                           result.get('Account', {}).get('AccountId')))
