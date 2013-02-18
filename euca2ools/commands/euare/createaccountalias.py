@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2013, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -27,43 +27,13 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#
-# Author: Mitch Garnaat mgarnaat@eucalyptus.com
 
-from boto.roboto.awsqueryrequest import AWSQueryRequest
-from boto.roboto.param import Param
-import euca2ools.commands.euare
-import euca2ools.utils
+from requestbuilder import Arg
+from . import EuareRequest, DELEGATE
 
 
-class CreateAccountAlias(AWSQueryRequest):
-
-    ServiceClass = euca2ools.commands.euare.Euare
-
-    Name = 'CreateAccountAlias'
-    Description = 'Create an alias for your account'
-    Params = [
-        Param(name='AccountAlias',
-              short_name='a',
-              long_name='account-alias',
-              ptype='string',
-              optional=False,
-              doc="""The new alias for the account."""),
-        Param(name='DelegateAccount',
-              short_name=None,
-              long_name='delegate',
-              ptype='string',
-              optional=True,
-              doc=""" [Eucalyptus extension] Process this command as if the administrator of the specified account had run it. This option is only usable by cloud administrators. """)
-        ]
-
-
-    def cli_formatter(self, data):
-        pass
-
-    def main(self, **args):
-        return self.send(**args)
-
-    def main_cli(self):
-        euca2ools.utils.print_version_if_necessary()
-        self.do_cli()
+class CreateAccountAlias(EuareRequest):
+    DESCRIPTION = 'Create an alias for an account, a.k.a. an account name'
+    ARGS = [Arg('-a', '--account-alias', dest='AccountAlias', metavar='ALIAS',
+                required=True, help='name of the alias to create (required)'),
+            DELEGATE]
