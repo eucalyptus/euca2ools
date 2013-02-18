@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2013, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -27,60 +27,22 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#
-# Author: Neil Soman neil@eucalyptus.com
-#         Mitch Garnaat mgarnaat@eucalyptus.com
 
-from boto.roboto.awsqueryrequest import AWSQueryRequest
-from boto.roboto.param import Param
-import euca2ools.commands.euare
-import euca2ools.utils
+from requestbuilder import Arg
+from . import EuareRequest, DELEGATE
 
 
-class CreateGroup(AWSQueryRequest):
+class CreateGroup(EuareRequest):
+    DESCRIPTION = 'Create a new group'
+    ARGS = [Arg('-g', '--group-name', dest='GroupName', metavar='GROUP',
+                required=True, help='name of the new group (required)'),
+            Arg('-p', '--path', dest='Path',
+                help='path for the new group (default: "/")'),
+            Arg('-v', '--verbose', action='store_true', route_to=None,
+                help="print the new group's ARN and GUID"),
+            DELEGATE]
 
-    ServiceClass = euca2ools.commands.euare.Euare
-
-    Description = """CreateGroup"""
-    Params = [
-        Param(name='Path',
-              short_name='p',
-              long_name='path',
-              ptype='string',
-              optional=True,
-              doc=""" The path to the group. For more information about paths, \
-              see Identifiers for IAM Entities in Using AWS Identity and \
-              Access Management.  This parameter is optional. If it is not \
-              included, it defaults to a slash (/). """),
-        Param(name='GroupName',
-              short_name='g',
-              long_name='group-name',
-              ptype='string',
-              optional=False,
-              doc=""" Name of the group to create. Do not include the path in this value. """),
-        Param(name='verbose',
-              short_name='v',
-              long_name='verbose',
-              optional=True,
-              ptype='boolean',
-              default=False,
-              request_param=False,
-              doc="Causes the response to include the newly created group's ARN and GUID."),
-        Param(name='DelegateAccount',
-              short_name=None,
-              long_name='delegate',
-              ptype='string',
-              optional=True,
-              doc=""" [Eucalyptus extension] Process this command as if the administrator of the specified account had run it. This option is only usable by cloud administrators. """)]
-
-    def cli_formatter(self, data):
-        if self.cli_options.verbose:
-            print data.Arn
-            print data.GroupId
-
-    def main(self, **args):
-        return self.send(**args)
-
-    def main_cli(self):
-        euca2ools.utils.print_version_if_necessary()
-        self.do_cli()
+    def print_result(self, result):
+        if self.args['verbose']:
+            print result['Group']['Arn']
+            print result['Group']['GroupId']
