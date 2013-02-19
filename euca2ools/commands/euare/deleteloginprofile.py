@@ -35,8 +35,8 @@ from requestbuilder import Arg
 from . import EuareRequest, DELEGATE
 
 class DeleteLoginProfile(EuareRequest):
-    DESCRIPTION = "Delete a user's login profile"
+    DESCRIPTION = "Delete a user's password"
     ARGS = [Arg('-u', '--user-name', dest='UserName', metavar='USER',
-                required=True, help='''name of the user whose login profile
-                should be deleted (required)'''),
+                required=True, help='''name of the user whose password should
+                be deleted (required)'''),
             DELEGATE]
