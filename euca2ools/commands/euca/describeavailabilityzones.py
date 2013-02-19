@@ -28,6 +28,7 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+import euca2ools.utils
 from requestbuilder import Arg, Filter
 from . import EucalyptusRequest
 
@@ -43,6 +44,17 @@ class DescribeAvailabilityZones(EucalyptusRequest):
                Filter('state', help='state of the availability zone'),
                Filter('zone-name', help='name of the availability zone')]
     LIST_MARKERS = ['availabilityZoneInfo', 'messageSet']
+
+    def send(self):
+        try:
+            response = EucalyptusRequest.send(self)
+            return response
+        except:
+            response = None
+            raise
+        finally:
+            euca2ools.utils.handle_availability_zones(self.args['ZoneName'],
+                                                      response)
 
     def print_result(self, result):
         for zone in result.get('availabilityZoneInfo', []):

@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2013, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -31,10 +31,11 @@
 # Author: Neil Soman neil@eucalyptus.com
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
+import base64
 import os.path
 import subprocess
 import sys
-from euca2ools import exceptions, __version__, __codename__
+from euca2ools import exceptions, __version__
 
 def check_prerequisite_command(command):
     cmd = [command]
@@ -126,8 +127,24 @@ def print_version_if_necessary():
     This is a hackish workaround for a roboto limitation in boto 2.1.1.
     """
     if '--version' in sys.argv:
-        print 'euca2ools %s (%s)' % (__version__, __codename__)
+        print 'euca2ools %s (Sparta)' % __version__
         if os.path.isfile('/etc/eucalyptus/eucalyptus-version'):
             with open('/etc/eucalyptus/eucalyptus-version') as version_file:
                 print 'eucalyptus %s' % version_file.readline().strip()
         sys.exit()
+
+
+def handle_availability_zones(requested_zones, response=None):
+    msg = base64.b64decode(
+        'ICAgICAgICAgICAgICAgICAgX19fXyAgICAKICAgICAgLi0tLS0tLS0tLS0nI'
+        'CAgICctLgogICAgIC8gIC4gICAgICAnICAgICAuICAgXCAgCiAgICAvICAgIC'
+        'AgICAnICAgIC4gICAgICAvfAogICAvICAgICAgLiAgICAgICAgICAgICBcIC8'
+        'gICAgIAogIC8gICcgLiAgICAgICAuICAgICAuICB8fCB8IAogLy5fX19fX19f'
+        'X19fXyAgICAnICAgIC8gLy8KIHwuXyAgICAgICAgICAnLS0tLS0tJ3wgL3wKI'
+        'CcuLi4uLi4uLi4uLi4uX19fX19fLi0nIC8KIHwtLiAgICAgICAgICAgICAgIC'
+        'AgIHwgLyAgICAgCiBgIiIiIiIiIiIiIiIiIi0uLi4uLi0n')
+    if ((response is None or
+         len(response.get('availabilityZoneInfo', [])) == 0) and
+        'sandwich' in requested_zones):
+        # humor dfed
+        print >> sys.stderr, msg
