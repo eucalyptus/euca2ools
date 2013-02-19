@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2013, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -27,57 +27,17 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#
-# Author: Neil Soman neil@eucalyptus.com
-#         Mitch Garnaat mgarnaat@eucalyptus.com
 
-from boto.roboto.awsqueryrequest import AWSQueryRequest
-from boto.roboto.param import Param
-import euca2ools.commands.euare
-import euca2ools.utils
+from requestbuilder import Arg
+from . import EuareRequest, DELEGATE
 
 
-class UpdateGroup(AWSQueryRequest):
-
-    ServiceClass = euca2ools.commands.euare.Euare
-
-    Description = """UpdateGroup"""
-    Params = [Param(
-        name='GroupName',
-        short_name='g',
-        long_name='group-name',
-        ptype='string',
-        optional=False,
-        doc=""" Name of the group to update. If you're changing the name of the group, this is the original name. """ ,
-        ), Param(
-        name='NewPath',
-        short_name='p',
-        long_name='new-path',
-        ptype='string',
-        optional=True,
-        doc=""" New path for the group. Only include this if changing the group's path. """ ,
-        ), Param(
-        name='NewGroupName',
-        short_name='n',
-        long_name='new-group-name',
-        ptype='string',
-        optional=True,
-        doc=""" New name for the group. Only include this if changing the group's name. """ ,
-        ), Param(
-        name='DelegateAccount',
-        short_name=None,
-        long_name='delegate',
-        ptype='string',
-        optional=True,
-        doc=""" [Eucalyptus extension] Process this command as if the administrator of the specified account had run it. This option is only usable by cloud administrators. """,
-        )]
-
-    def cli_formatter(self, data):
-        pass
-    
-    def main(self, **args):
-        return self.send(**args)
-
-    def main_cli(self):
-        euca2ools.utils.print_version_if_necessary()
-        self.do_cli()
+class UpdateGroup(EuareRequest):
+    DESCRIPTION = 'Change the name and/or path of a group'
+    ARGS = [Arg('-g', '--group-name', dest='GroupName', metavar='GROUP',
+                required=True, help='name of the group to update'),
+            Arg('-n', '--new-group-name', dest='NewGroupName', metavar='GROUP',
+                help='new name for the group'),
+            Arg('-p', '--new-path', dest='NewPath', metavar='PATH',
+                help='new path for the group'),
+            DELEGATE]
