@@ -27,69 +27,37 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#
-# Author: Neil Soman neil@eucalyptus.com
-#         Mitch Garnaat mgarnaat@eucalyptus.com
 
-from boto.roboto.awsqueryrequest import AWSQueryRequest
-from boto.roboto.param import Param
-import euca2ools.commands.euare
-import euca2ools.utils
+from requestbuilder import Arg, MutuallyExclusiveArgList
+from . import EuareRequest, DELEGATE
 
 
-class UploadServerCertificate(AWSQueryRequest):
-
-    ServiceClass = euca2ools.commands.euare.Euare
-
-    Description = """UploadServerCertificate"""
-    Params = [Param(
-        name='Path',
-        short_name='p',
-        long_name='path',
-        ptype='string',
-        optional=True,
-        doc=""" The path for the server certificate. For more information about paths, see Identifiers for IAM Entities in Using AWS Identity and Access Management.  This parameter is optional. If it is not included, it defaults to a slash (/). """
-            ,
-        ), Param(
-        name='ServerCertificateName',
-        short_name='s',
-        long_name='server-certificate-name',
-        ptype='string',
-        optional=False,
-        doc=""" The name for the server certificate. Do not include the path in this value. """
-            ,
-        ), Param(
-        name='CertificateBody',
-        short_name='c',
-        long_name='certificate-body',
-        ptype='string',
-        optional=False,
-        doc=""" The contents of the public key certificate in PEM-encoded format. """
-            ,
-        ), Param(
-        name='PrivateKey',
-        short_name=None,
-        long_name='private-key',
-        ptype='string',
-        optional=False,
-        doc=""" The contents of the private key in PEM-encoded format. """
-            ,
-        ), Param(
-        name='CertificateChain',
-        short_name=None,
-        long_name='certificate-chain',
-        ptype='string',
-        optional=True,
-        doc=""" The contents of the certificate chain. This is typically a concatenation of the PEM-encoded public key certificates of the chain. """
-            ,
-        )]
-
-    def cli_formatter(self, data):
-        pass
-    
-    def main(self, **args):
-        return self.send(**args)
-
-    def main_cli(self):
-        euca2ools.utils.print_version_if_necessary()
-        self.do_cli()
+class UploadServerCertificate(EuareRequest):
+    DESCRIPTION = 'Upload a server certificate'
+    ARGS = [Arg('-s', '--server-certificate-name', dest='ServerCertificateName',
+                metavar='CERTNAME', required=True,
+                help='name to give the new server certificate (required)'),
+            MutuallyExclusiveArgList(True,
+                Arg('-c', '--certificate-body', dest='CertificateBody',
+                    metavar='CERT', help='PEM-encoded certificate'),
+                Arg('--certificate-file', dest='CertificateBody',
+                    metavar='FILE', type=open,
+                    help='file containing the PEM-encoded certificate')),
+            MutuallyExclusiveArgList(True,
+                Arg('--private-key', dest='PrivateKey', metavar='KEY',
+                    help='PEM-encoded private key'),
+                Arg('--private-key-file', dest='PrivateKey', metavar='FILE',
+                    type=open,
+                    help='file containing the PEM-encoded private key')),
+            MutuallyExclusiveArgList(True,
+                Arg('--certificate-chain', dest='CertificateChain',
+                    metavar='CHAIN', help='''PEM-encoded certificate chain. This
+                    is typically the PEM-encoded certificates of the chain,
+                    concatenated together.'''),
+                Arg('--certificate-chain-file', dest='CertificateChain',
+                    metavar='FILE', help='''file containing the PEM-encoded
+                    certificate chain. This is typically the PEM-encoded
+                    certificates of the chain, concatenated together.''')),
+            Arg('-p', '--path', dest='Path',
+                help='path for the new server certificate (default: "/")'),
+            DELEGATE]
