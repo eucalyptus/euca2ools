@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2013, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -27,53 +27,19 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#
-# Author: Neil Soman neil@eucalyptus.com
-#         Mitch Garnaat mgarnaat@eucalyptus.com
 
-from boto.roboto.awsqueryrequest import AWSQueryRequest
-from boto.roboto.param import Param
-import euca2ools.commands.euare
-import euca2ools.utils
+from requestbuilder import Arg
+from . import EuareRequest, DELEGATE
 
 
-class UpdateServerCertificate(AWSQueryRequest):
-
-    ServiceClass = euca2ools.commands.euare.Euare
-
-    Description = """UpdateServerCertificate"""
-    Params = [Param(
-        name='ServerCertificateName',
-        short_name='s',
-        long_name='server-certificate-name',
-        ptype='string',
-        optional=False,
-        doc=""" The name of the server certificate that you want to update. """
-            ,
-        ), Param(
-        name='NewPath',
-        short_name='n',
-        long_name='new-path',
-        ptype='string',
-        optional=True,
-        doc=""" The new path for the server certificate. Include this only if you are updating the server certificate's path. """
-            ,
-        ), Param(
-        name='NewServerCertificateName',
-        short_name=None,
-        long_name='new-server-certificate-name',
-        ptype='string',
-        optional=True,
-        doc=""" The new name for the server certificate. Include this only if you are updating the server certificate's name. """
-            ,
-        )]
-
-    def cli_formatter(self, data):
-        pass
-    
-    def main(self, **args):
-        return self.send(**args)
-
-    def main_cli(self):
-        euca2ools.utils.print_version_if_necessary()
-        self.do_cli()
+class UpdateServerCertificate(EuareRequest):
+    DESCRIPTION = 'Change the name and/or path of a server certificate'
+    ARGS = [Arg('-s', '--server-certificate-name', dest='ServerCertificateName',
+                metavar='CERT', required=True,
+                help='name of the server certificate to update'),
+            Arg('-n', '--new-server-certificate-name',
+                dest='NewServerCertificateName', metavar='CERT',
+                help='new name for the server certificate'),
+            Arg('-p', '--new-path', dest='NewPath', metavar='PATH',
+                help='new path for the server certificate'),
+            DELEGATE]
