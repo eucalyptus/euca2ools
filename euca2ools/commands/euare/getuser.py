@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2013, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -27,55 +27,24 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#
-# Author: Neil Soman neil@eucalyptus.com
-#         Mitch Garnaat mgarnaat@eucalyptus.com
 
-from boto.roboto.awsqueryrequest import AWSQueryRequest
-from boto.roboto.param import Param
-import euca2ools.commands.euare
-import euca2ools.utils
+from requestbuilder import Arg
+from . import EuareRequest, DELEGATE
 
 
-class GetUser(AWSQueryRequest):
+class GetUser(EuareRequest):
+    DESCRIPTION = "Display a user's ARN and GUID"
+    ARGS = [Arg('-u', '--user-name', dest='UserName', metavar='USER',
+                help='''name of the user to show info about (default: current
+                        user)'''),
+            Arg('--show-extra', dest='ShowExtra', action='store_const',
+                const='true', help='also display additional user info'),
+            DELEGATE]
 
-    ServiceClass = euca2ools.commands.euare.Euare
-
-    Description = """GetUser"""
-    Params = [Param(
-        name='UserName',
-        short_name='u',
-        long_name='user-name',
-        ptype='string',
-        optional=True,
-        doc=""" Name of the User to get information about.  This parameter is optional. If it is not included, it defaults to the User making the request. """ ,
-        ), Param(
-        name='ShowExtra',
-        short_name=None,
-        long_name='show-extra',
-        ptype='boolean',
-        optional=True,
-        doc=""" [Eucalyptus extension] Display the extra user attributes. """,
-        ), Param(
-        name='DelegateAccount',
-        short_name=None,
-        long_name='delegate',
-        ptype='string',
-        optional=True,
-        doc=""" [Eucalyptus extension] Process this command as if the administrator of the specified account had run it. This option is only usable by cloud administrators. """,
-        )]
-
-    def cli_formatter(self, data):
-        print data.User['Arn']
-        print data.User['UserId']
-        if 'Enabled' in data.User:
-            print data.User['Enabled']
-            print data.User['RegStatus']
-            print data.User['PasswordExpiration']
-
-    def main(self, **args):
-        return self.send(**args)
-
-    def main_cli(self):
-        euca2ools.utils.print_version_if_necessary()
-        self.do_cli()
+    def print_result(self, result):
+        print result['User']['Arn']
+        print result['User']['UserId']
+        if self.args['ShowExtra'] == 'true':
+            for attr in ('CreateDate', 'Enabled', 'RegStatus',
+                         'PasswordExpiration'):
+                print result['User'].get(attr, '')
