@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2013, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -27,43 +27,16 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#
-# Author: Neil Soman neil@eucalyptus.com
-#         Mitch Garnaat mgarnaat@eucalyptus.com
 
-from boto.roboto.awsqueryrequest import AWSQueryRequest
-from boto.roboto.param import Param
-import euca2ools.commands.euare
-import euca2ools.utils
+from requestbuilder import Arg
+from . import EuareRequest
 
 
-class DeleteAccount(AWSQueryRequest):
-
-    ServiceClass = euca2ools.commands.euare.Euare
-
-    Name = 'DeleteAccount'
-    Description = 'Delete an account'
-    Params = [
-        Param(name='AccountName',
-              short_name='a',
-              long_name='account-name',
-              ptype='string',
-              optional=False,
-              doc="""The name of the account to delete."""),
-        Param(name='Recursive',
-              short_name='r',
-              long_name='recursive',
-              ptype='boolean',
-              optional=True,
-              doc="""True if to delete the account recursively."""),
-        ]
-
-    def cli_formatter(self, data):
-        pass
-    
-    def main(self, **args):
-        return self.send(**args)
-
-    def main_cli(self):
-        euca2ools.utils.print_version_if_necessary()
-        self.do_cli()
+class DeleteAccount(EuareRequest):
+    DESCRIPTION = ('[Eucalyptus only] Delete an account. This command is only '
+                   'usable by cloud administrators.')
+    ARGS = [Arg('-a', '--account-name', dest='AccountName', metavar='ACCOUNT',
+                required=True, help='name of the account to delete (required)'),
+            Arg('-r', '--recursive', dest='Recursive', action='store_const',
+                const='true', help='''delete all users, groups, and policies
+                                      associated with the account as well''')]
