@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2013, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -27,37 +27,20 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#
-# Author: Neil Soman neil@eucalyptus.com
-#         Mitch Garnaat mgarnaat@eucalyptus.com
 
-from boto.roboto.awsqueryrequest import AWSQueryRequest
-from boto.roboto.param import Param
-import euca2ools.commands.euare
-import euca2ools.utils
+from requestbuilder import Arg
+from . import EuareRequest, DELEGATE
 
 
-class GetServerCertificate(AWSQueryRequest):
+class GetServerCertificate(EuareRequest):
+    DESCRIPTION = 'Show the ARN and GUID of a server certificate'
+    ARGS = [Arg('-s', '--server-certificate-name', dest='ServerCertificateName',
+                metavar='CERT', required=True, help='''name of the server
+                certificate to retrieve info about (required)'''),
+            DELEGATE]
 
-    ServiceClass = euca2ools.commands.euare.Euare
-
-    Description = """GetServerCertificate"""
-    Params = [Param(
-        name='ServerCertificateName',
-        short_name='s',
-        long_name='server-certificate-name',
-        ptype='string',
-        optional=False,
-        doc=""" The name of the server certificate you want to retrieve information about. """
-            ,
-        )]
-
-    def cli_formatter(self, data):
-        pass
-
-    def main(self, **args):
-        return self.send(**args)
-
-    def main_cli(self):
-        euca2ools.utils.print_version_if_necessary()
-        self.do_cli()
+    def print_result(self, result):
+        metadata = result.get('ServerCertificate', {}) \
+                         .get('ServerCertificateMetadata', {})
+        print metadata.get('Arn')
+        print metadata.get('ServerCertificateId')
