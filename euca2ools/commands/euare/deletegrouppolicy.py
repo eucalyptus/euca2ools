@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2013, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -27,50 +27,16 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#
-# Author: Neil Soman neil@eucalyptus.com
-#         Mitch Garnaat mgarnaat@eucalyptus.com
 
-from boto.roboto.awsqueryrequest import AWSQueryRequest
-from boto.roboto.param import Param
-import euca2ools.commands.euare
-import euca2ools.utils
+from requestbuilder import Arg
+from . import EuareRequest, DELEGATE
 
 
-class DeleteGroupPolicy(AWSQueryRequest):
-
-    ServiceClass = euca2ools.commands.euare.Euare
-
-    Description = """DeleteGroupPolicy"""
-    Params = [Param(
-        name='GroupName',
-        short_name='g',
-        long_name='group-name',
-        ptype='string',
-        optional=False,
-        doc=""" Name of the group the policy is associated with. """,
-        ), Param(
-        name='PolicyName',
-        short_name='p',
-        long_name='policy-name',
-        ptype='string',
-        optional=False,
-        doc=""" Name of the policy document to delete. """,
-        ), Param(
-        name='DelegateAccount',
-        short_name=None,
-        long_name='delegate',
-        ptype='string',
-        optional=True,
-        doc=""" [Eucalyptus extension] Process this command as if the administrator of the specified account had run it. This option is only usable by cloud administrators. """,
-        )]
-
-    def cli_formatter(self, data):
-        pass
-    
-    def main(self, **args):
-        return self.send(**args)
-
-    def main_cli(self):
-        euca2ools.utils.print_version_if_necessary()
-        self.do_cli()
+class DeleteGroupPolicy(EuareRequest):
+    DESCRIPTION = 'Remove a policy from a group'
+    ARGS = [Arg('-g', '--group-name', dest='GroupName', metavar='GROUP',
+                required=True,
+                help='group the policy is attached to (required)'),
+            Arg('-p', '--policy-name', dest='PolicyName', metavar='POLICY',
+                required=True, help='name of the policy to delete (required)'),
+            DELEGATE]
