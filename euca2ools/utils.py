@@ -40,7 +40,7 @@ def check_prerequisite_command(command):
     cmd = [command]
     try:
         output = subprocess.Popen(cmd, stdout=subprocess.PIPE,
-                                  stderr=subprocess.PIPE).communicate()
+                         stderr=subprocess.PIPE).communicate()
     except OSError, e:
         error_string = '%s' % e
         if 'No such' in error_string:
@@ -117,6 +117,27 @@ def print_instances(instances, nil=""):
             for tag in instance.tags:
                 print '\t'.join(('TAG', 'instance', instance.id, tag,
                                  instance.tags[tag]))
+
+def print_subnets(subnets, nil=""):
+    members = ('id', 'cidr_block', 'available_ip_address_count', 'state',
+               'availability_zone', 'tags')
+    for subnet in subnets:
+        if not subnet:
+            continue
+        items=[]
+        for member in members:
+            if member == 'tags':
+                val = '"' + str(u''.join(subnet.tags['orquestra_project']).encode('utf-8').strip()) + '"'
+            else:
+                val = getattr(subnet, member, nil)
+
+            # product_codes is a list
+            if val is None:
+                val = nil
+            if hasattr(val,'__iter__'):
+                val = ','.join(val)
+            items.append(str(val))
+        print "SUBNET\t%s" % '\t'.join(items)
 
 def print_version_if_necessary():
     """
