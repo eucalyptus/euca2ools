@@ -54,6 +54,8 @@ class Euare(requestbuilder.service.BaseService):
 
 class EuareRequest(Euca2oolsQueryRequest):
     SERVICE_CLASS = Euare
+    METHOD = 'POST'
+
     def parse_response(self, response):
         response_dict = Euca2oolsQueryRequest.parse_response(self, response)
         # EUARE responses enclose their useful data inside FooResponse
