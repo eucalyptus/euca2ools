@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2013, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -27,58 +27,59 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#
-# Author: Neil Soman neil@eucalyptus.com
-#         Mitch Garnaat mgarnaat@eucalyptus.com
 
-from boto.roboto.awsqueryrequest import AWSQueryRequest
-from boto.roboto.param import Param
-import euca2ools.commands.euare
-import euca2ools.utils
+import euca2ools.commands.euare.getaccountpolicy
+from requestbuilder import Arg
+from requestbuilder.response import PaginatedResponse
+from . import EuareRequest
 
 
-class ListAccountPolicies(AWSQueryRequest):
+class ListAccountPolicies(EuareRequest):
+    DESCRIPTION = ('[Eucalyptus only] List one specific policy or all '
+                   'policies attached to an account. If no policies are '
+                   'attached to the account, the action still succeeds.')
+    ARGS = [Arg('-a', '--account-name', dest='AccountName', metavar='ACCOUNT',
+                required=True, help='account owning the policies to list'),
+            Arg('-p', '--policy-name', metavar='POLICY', route_to=None,
+                help='display a specific policy'),
+            Arg('-v', '--verbose', action='store_true', route_to=None,
+                help='''display the contents of the resulting policies (in
+                        addition to their names)'''),
+            Arg('--pretty-print', action='store_true', route_to=None,
+                help='''when printing the contents of policies, reformat them
+                        for easier reading''')]
+    LIST_MARKERS = ['PolicyNames']
 
-    ServiceClass = euca2ools.commands.euare.Euare
+    def main(self):
+        return PaginatedResponse(self, (None,), ('PolicyNames',))
 
-    Description = """ListAccountPolicies"""
-    Params = [Param(
-        name='AccountName',
-        short_name='a',
-        long_name='account-name',
-        ptype='string',
-        optional=False,
-        doc=""" The name of the account to list policies for. """,
-        ), Param(
-        name='Marker',
-        short_name='m',
-        long_name='marker',
-        ptype='string',
-        optional=True,
-        doc=""" Use this only when paginating results, and only in a subsequent request after you've received a response where the results are truncated. Set it to the value of the Marker element in the response you just received. """
-            ,
-        ), Param(
-        name='MaxItems',
-        short_name=None,
-        long_name='max-items',
-        ptype='integer',
-        optional=True,
-        doc=""" Use this only when paginating results to indicate the maximum number of policy names you want in the response. If there are additional policy names beyond the maximum you specify, the IsTruncated response element is true. """
-            ,
-        )]
+    def prepare_for_page(self, page):
+        # Pages are defined by markers
+        self.params['Marker'] = page
 
-    def cli_formatter(self, data):
-        #TODO: Add -v option to print actual policy.
-        #      This will require another round trip
-        #      for each policy name.
-        for policy in data.PolicyNames:
-            print policy
+    def get_next_page(self, response):
+        if response.get('IsTruncated') == 'true':
+            return response['Marker']
 
-    def main(self, **args):
-        self.list_markers.append('PolicyNames')
-        self.item_markers.append('member')
-        return self.send(**args)
+    def print_result(self, result):
+        if self.args.get('policy_name'):
+            # Look for the specific policy the user asked for
+            for policy_name in result.get('PolicyNames', []):
+                if policy_name == self.args['policy_name']:
+                    if self.args['verbose']:
+                        self.print_policy(policy_name)
+                    else:
+                        print policy_name
+                    break
+        else:
+            for policy_name in result.get('PolicyNames', []):
+                print policy_name
+                if self.args['verbose']:
+                    self.print_policy(policy_name)
 
-    def main_cli(self):
-        euca2ools.utils.print_version_if_necessary()
-        self.do_cli()
+    def print_policy(self, policy_name):
+        req = euca2ools.commands.euare.getaccountpolicy.GetAccountPolicy(
+            service=self.service, AccountName=self.args['AccountName'],
+            PolicyName=policy_name, pretty_print=self.args['pretty_print'])
+        response = req.main()
+        req.print_result(response)
