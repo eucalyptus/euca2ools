@@ -1,3 +1,4 @@
+# -*- coding:utf-8 -*-
 # Software License Agreement (BSD License)
 #
 # Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
@@ -145,7 +146,7 @@ class DescribeSubnets(euca2ools.commands.eucacommand.EucaCommand):
                      Valid values: paravirtual | hvm"""),
                Param(name='vpc-id', ptype='string',
                      doc='ID of the VPC the instance is in.')]
-    
+
     def display_subnets(self, subnets):
         euca2ools.utils.print_subnets(subnets)
 
