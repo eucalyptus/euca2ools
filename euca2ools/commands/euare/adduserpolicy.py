@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2013, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -27,101 +27,50 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#
-# Author: Neil Soman neil@eucalyptus.com
-#         Mitch Garnaat mgarnaat@eucalyptus.com
 
-from boto.roboto.awsqueryrequest import AWSQueryRequest
-from boto.roboto.param import Param
-import euca2ools.commands.euare
+import datetime
 import euca2ools.commands.euare.putuserpolicy
-import euca2ools.utils
+import json
+from requestbuilder import Arg
+from . import EuareRequest, DELEGATE
 
 
-class AddUserPolicy(AWSQueryRequest):
-
-    ServiceClass = euca2ools.commands.euare.Euare
-
-    Description = 'Add a new policy to a user'
-    Params = [
-        Param(name='UserName',
-              short_name='u',
-              long_name='user-name',
-              ptype='string',
-              optional=False,
-              request_param=False,
-              doc=""" Name of the user to associate the policy with. """),
-        Param(name='PolicyName',
-              short_name='p',
-              long_name='policy-name',
-              ptype='string',
-              optional=False,
-              request_param=False,
-              doc=""" Name of the policy document. """),
-        Param(name='Effect',
-              short_name='e',
-              long_name='effect',
-              ptype='enum',
-              choices=['Allow', 'Deny'],
-              optional=False,
-              request_param=False,
-              doc="The value for the policy's Effect element."),
-        Param(name='Action',
-              short_name='a',
-              long_name='action',
-              ptype='string',
-              optional=True,
-              request_param=False,
-              doc="The value for the policy's Action element"),
-        Param(name='Resource',
-              short_name='r',
-              long_name='resource',
-              ptype='string',
-              optional=True,
-              request_param=False,
-              doc="The value for the policy's Resource element."),
-        Param(name='output',
-              short_name='o',
-              long_name='output',
-              ptype='boolean',
-              optional=True,
-              doc='Causes the output to include the JSON policy document created for you'),
-        Param(name='DelegateAccount',
-              short_name=None,
-              long_name='delegate',
-              ptype='string',
-              optional=True,
-              doc="""[Eucalyptus extension] Process this command as if the administrator of the specified account had run it. This option is only usable by cloud administrators.""")]
+class AddUserPolicy(EuareRequest):
+    DESCRIPTION = ('Add a new policy to a user. To add more complex policies '
+                   'than this tool supports, see euare-useruploadpolicy.')
+    ARGS = [Arg('-u', '--user-name', metavar='USER', required=True,
+                help='user to attach the policy to (required)'),
+            Arg('-p', '--policy-name', metavar='POLICY', required=True,
+                help='name of the new policy (required)'),
+            Arg('-e', '--effect', choices=('Allow', 'Deny'), required=True,
+                help='whether the new policy should Allow or Deny (required)'),
+            Arg('-a', '--action', required=True,
+                help='action the policy should apply to (required)'),
+            Arg('-r', '--resource', required=True,
+                help='resource the policy should apply to (required)'),
+            Arg('-o', '--output', action='store_true',
+                help='display the newly-created policy'),
+            DELEGATE]
 
     def build_policy(self):
-        s = '{"Effect":"%s", "Action":["%s"], "Resource":["%s"]}' % (self.effect,
-                                                                     self.action,
-                                                                     self.resource)
-        p = '{"Version":"2008-10-17","Statement":[%s]}' % s
-        return p
+        stmt = {'Sid': datetime.datetime.utcnow().strftime('%Y%m%d%H%M%S%f'),
+                'Effect':   self.args['effect'],
+                'Action':   self.args['action'],
+                'Resource': self.args['resource']}
+        return {'Statement': [stmt]}
 
-    def cli_formatter(self, data):
-        if self.cli_options.output:
-            print self.policy
 
-    def main(self, **args):
-        self.process_args()
-        self.user_name = self.cli_options.user_name
-        self.policy_name = self.cli_options.policy_name
-        self.effect = self.cli_options.effect
-        if self.cli_options.action:
-            self.action = self.cli_options.action
-        else:
-            self.action = '*'
-        if self.cli_options.resource:
-            self.resource = self.cli_options.resource
-        else:
-            self.resource = '*'
-        self.policy = self.build_policy()
-        obj = euca2ools.commands.euare.putuserpolicy.PutUserPolicy()
-        return obj.main(user_name=self.user_name, policy_name=self.policy_name,
-                        policy_document=self.policy)
+    def main(self):
+        policy_doc = json.dumps(self.build_policy())
+        req = euca2ools.commands.euare.putuserpolicy.PutUserPolicy(
+                service=self.service, UserName=self.args['user_name'],
+                PolicyName=self.args['policy_name'],
+                PolicyDocument=policy_doc,
+                DelegateAccount=self.args['DelegateAccount'])
+        response = req.main()
+        response['PolicyDocument'] = policy_doc
+        return response
 
-    def main_cli(self):
-        euca2ools.utils.print_version_if_necessary()
-        self.do_cli()
+    def print_result(self, result):
+        if self.args['output']:
+            print result['PolicyDocument']
