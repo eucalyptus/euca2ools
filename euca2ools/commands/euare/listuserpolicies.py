@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2013, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -27,81 +27,61 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#
-# Author: Neil Soman neil@eucalyptus.com
-#         Mitch Garnaat mgarnaat@eucalyptus.com
 
-from boto.roboto.awsqueryrequest import AWSQueryRequest
-from boto.roboto.param import Param
-import euca2ools.commands.euare
 import euca2ools.commands.euare.getuserpolicy
-import euca2ools.utils
+from requestbuilder import Arg
+from requestbuilder.response import PaginatedResponse
+from . import EuareRequest, DELEGATE
 
 
-class ListUserPolicies(AWSQueryRequest):
+class ListUserPolicies(EuareRequest):
+    DESCRIPTION = ('List one specific policy or all policies attached to a '
+                   'user.  If no policies are attached to the user, the '
+                   'action still succeeds.')
+    ARGS = [Arg('-u', '--user-name', dest='UserName', metavar='USER',
+                required=True, help='user owning the policies to list'),
+            Arg('-p', '--policy-name', metavar='POLICY', route_to=None,
+                help='display a specific policy'),
+            Arg('-v', '--verbose', action='store_true', route_to=None,
+                help='''display the contents of the resulting policies (in
+                        addition to their names)'''),
+            Arg('--pretty-print', action='store_true', route_to=None,
+                help='''when printing the contents of policies, reformat them
+                        for easier reading'''),
+            DELEGATE]
+    LIST_MARKERS = ['PolicyNames']
 
-    ServiceClass = euca2ools.commands.euare.Euare
+    def main(self):
+        return PaginatedResponse(self, (None,), ('PolicyNames',))
 
-    Description = """ListUserPolicies"""
-    Params = [
-        Param(name='UserName',
-              short_name='u',
-              long_name='user-name',
-              ptype='string',
-              optional=False,
-              doc=""" The name of the User to list policies for. """),
-        Param(name='policy_name',
-              short_name='p',
-              long_name='policy-name',
-              ptype='string',
-              optional=True,
-              request_param=False,
-              doc="""Name of the policy document to display."""),
-        Param(name='verbose',
-              short_name='v',
-              long_name='verbose',
-              ptype='boolean',
-              optional=True,
-              default=False,
-              request_param=False,
-              doc="""Displays the contents of the resulting policies (in addition to the policy names)."""),
-        Param(name='Marker',
-              short_name='m',
-              long_name='marker',
-              ptype='string',
-              optional=True,
-              doc=""" Use this only when paginating results, and only in a subsequent request after you've received a response where the results are truncated. Set it to the value of the Marker element in the response you just received. """),
-        Param(name='MaxItems',
-              short_name=None,
-              long_name='max-items',
-              ptype='integer',
-              optional=True,
-              doc=""" Use this only when paginating results to indicate the maximum number of policy names you want in the response. If there are additional policy names beyond the maximum you specify, the IsTruncated response element is true. """),
-        Param(name='DelegateAccount',
-              short_name=None,
-              long_name='delegate',
-              ptype='string',
-              optional=True,
-              doc=""" [Eucalyptus extension] Process this command as if the administrator of the specified account had run it. This option is only usable by cloud administrators. """)]
+    def prepare_for_page(self, page):
+        # Pages are defined by markers
+        self.params['Marker'] = page
 
-    def cli_formatter(self, data):
-        user_name = self.request_params['UserName']
-        if data:
-            for policy in data.PolicyNames:
-                if self.cli_options.policy_name and policy != self.cli_options.policy_name:
-                    continue
-                if self.cli_options.verbose:
-                    obj = euca2ools.commands.euare.getuserpolicy.GetUserPolicy()
-                    data = obj.main(user_name=user_name, policy_name=policy)
-                    obj.cli_formatter(data)
-                else:
-                    print policy
+    def get_next_page(self, response):
+        if response.get('IsTruncated') == 'true':
+            return response['Marker']
 
-    def main(self, **args):
-        self.list_markers.append('PolicyNames')
-        self.item_markers.append('member')
-        return self.send(**args)
+    def print_result(self, result):
+        if self.args.get('policy_name'):
+            # Look for the specific policy the user asked for
+            for policy_name in result.get('PolicyNames', []):
+                if policy_name == self.args['policy_name']:
+                    if self.args['verbose']:
+                        self.print_policy(policy_name)
+                    else:
+                        print policy_name
+                    break
+        else:
+            for policy_name in result.get('PolicyNames', []):
+                print policy_name
+                if self.args['verbose']:
+                    self.print_policy(policy_name)
 
-    def main_cli(self):
-        euca2ools.utils.print_version_if_necessary()
-        self.do_cli()
+    def print_policy(self, policy_name):
+        req = euca2ools.commands.euare.getuserpolicy.GetUserPolicy(
+            service=self.service, UserName=self.args['UserName'],
+            PolicyName=policy_name, pretty_print=self.args['pretty_print'],
+            DelegateAccount=self.args.get('DelegateAccount'))
+        response = req.main()
+        req.print_result(response)
