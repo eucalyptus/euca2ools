@@ -1,7 +1,6 @@
-#!/usr/bin/python
+#!/usr/bin/python -tt
 
 import euca2ools.commands.euare.deleteaccesskey
 
 if __name__ == '__main__':
-    r = euca2ools.commands.euare.deleteaccesskey.DeleteAccessKey()
-    r.main_cli()
+    euca2ools.commands.euare.deleteaccesskey.DeleteAccessKey.run()

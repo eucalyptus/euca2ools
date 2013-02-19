@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2013, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -27,50 +27,16 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#
-# Author: Neil Soman neil@eucalyptus.com
-#         Mitch Garnaat mgarnaat@eucalyptus.com
 
-from boto.roboto.awsqueryrequest import AWSQueryRequest
-from boto.roboto.param import Param
-import euca2ools.commands.euare
-import euca2ools.utils
+from requestbuilder import Arg
+from . import EuareRequest, DELEGATE
 
 
-class DeleteAccessKey(AWSQueryRequest):
-
-    ServiceClass = euca2ools.commands.euare.Euare
-
-    Description = """DeleteAccessKey"""
-    Params = [Param(
-        name='UserName',
-        short_name='u',
-        long_name='user-name',
-        ptype='string',
-        optional=True,
-        doc=""" Name of the User whose key you want to delete. """,
-        ), Param(
-        name='AccessKeyId',
-        short_name='k',
-        long_name='user-key-id',
-        ptype='string',
-        optional=False,
-        doc=""" The Access Key ID for the Access Key ID and Secret Access Key you want to delete. """,
-        ), Param(
-        name='DelegateAccount',
-        short_name=None,
-        long_name='delegate',
-        ptype='string',
-        optional=True,
-        doc=""" [Eucalyptus extension] Process this command as if the administrator of the specified account had run it. This option is only usable by cloud administrators. """,
-        )]
-
-    def cli_formatter(self, data):
-        pass
-    
-    def main(self, **args):
-        return self.send(**args)
-
-    def main_cli(self):
-        euca2ools.utils.print_version_if_necessary()
-        self.do_cli()
+class DeleteAccessKey(EuareRequest):
+    DESCRIPTION = 'Delete an access key'
+    ARGS = [Arg('-u', '--user-name', dest='UserName', metavar='USER',
+                required=True, help='user whose key to delete (required)'),
+            Arg('-k', '--user-key-id', dest='AccessKeyId', metavar='KEY_ID',
+                required=True,
+                help='ID of the access key to delete (required)'),
+            DELEGATE]
