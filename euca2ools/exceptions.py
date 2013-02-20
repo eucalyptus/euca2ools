@@ -148,6 +148,10 @@ class AWSError(requestbuilder.exceptions.ServerError):
             try:
                 parsed = parse_aws_xml(io.StringIO(six.text_type(self.body)))
                 parsed = parsed[parsed.keys()[0]]  # Strip off the root element
+                if 'Errors' in parsed:
+                    # This could probably be improved, but meh.  Patches are
+                    # welcome.  :)
+                    parsed = parsed['Errors']
                 if 'Error' in parsed:
                     parsed = parsed['Error']
                 self.code     = parsed.get('Code')
