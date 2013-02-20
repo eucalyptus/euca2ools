@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2013, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -27,94 +27,64 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#
-# Author: Neil Soman neil@eucalyptus.com
-#         Mitch Garnaat mgarnaat@eucalyptus.com
 
-from boto.roboto.awsqueryrequest import AWSQueryRequest
-from boto.roboto.param import Param
-import euca2ools.commands.euare
-import euca2ools.utils
-from euca2ools.commands.euare.listgrouppolicies import ListGroupPolicies
+import argparse
 from euca2ools.commands.euare.deletegrouppolicy import DeleteGroupPolicy
 from euca2ools.commands.euare.getgroup import GetGroup
+from euca2ools.commands.euare.listgrouppolicies import ListGroupPolicies
 from euca2ools.commands.euare.removeuserfromgroup import RemoveUserFromGroup
+from requestbuilder import Arg
+from . import EuareRequest, DELEGATE
 
-class DeleteGroup(AWSQueryRequest):
+class DeleteGroup(EuareRequest):
+    DESCRIPTION = 'Delete a group'
+    ARGS = [Arg('-g', '--group-name', dest='GroupName', metavar='GROUP',
+                required=True, help='name of the group to delete (required)'),
+            Arg('-r', '--recursive', action='store_true', route_to=None,
+                help='''remove all user memberships and policies associated
+                        with the group first'''),
+            Arg('-R', '--recursive-euca', dest='IsRecursive',
+                action='store_const', const='true', help=argparse.SUPPRESS),
+            Arg('-p', '--pretend', action='store_true', route_to=None,
+                help='''list the user memberships and policies that would be
+                        deleted instead of actually deleting them. Implies
+                        -r.'''),
+            DELEGATE]
 
-    ServiceClass = euca2ools.commands.euare.Euare
+    def main(self):
+        if self.args['recursive'] or self.args['pretend']:
+            # Figure out what we'd have to delete
+            req = GetGroup(service=self.service,
+                           GroupName=self.args['GroupName'],
+                           DelegateAccount=self.args['DelegateAccount'])
+            members = req.main().get('Users', [])
+            req = ListGroupPolicies(service=self.service,
+                GroupName=self.args['GroupName'],
+                DelegateAccount=self.args['DelegateAccount'])
+            policies = req.main().get('PolicyNames', [])
+        if self.args['pretend']:
+            return {'members':  [member['Arn'] for member in members],
+                    'policies': policies}
+        else:
+            if self.args['recursive']:
+                member_names = [member['UserName'] for member in members]
+                req = RemoveUserFromGroup(service=self.service,
+                    GroupName=self.args['GroupName'],
+                    user_names=member_names,
+                    DelegateAccount=self.args['DelegateAccount'])
+                req.main()
+                for policy in policies:
+                    req = DeleteGroupPolicy(service=self.service,
+                        GroupName=self.args['GroupName'], PolicyName=policy,
+                        DelegateAccount=self.args['DelegateAccount'])
+                    req.main()
+            return self.send()
 
-    Description = """DeleteGroup"""
-    Params = [
-        Param(name='GroupName',
-              short_name='g',
-              long_name='group-name',
-              ptype='string',
-              optional=False,
-              doc=""" Name of the group to delete. """),
-        Param(name='DelegateAccount',
-              short_name=None,
-              long_name='delegate',
-              ptype='string',
-              optional=True,
-              doc=""" [Eucalyptus extension] Process this command as if the administrator of the specified account had run it. This option is only usable by cloud administrators. """),
-        Param(name='recursive',
-              short_name='r',
-              long_name='recursive',
-              ptype='boolean',
-              optional=True,
-              request_param=False,
-              doc=""" Removes all Users from the Group, deletes all Policies associated with the Group, then deletes the Group."""),
-        Param(name='IsRecursive',
-              short_name='R',
-              long_name='recursive-euca',
-              ptype='boolean',
-              optional=True,
-              doc=""" [Eucalyptus extension] Same as -r, but all operations are performed by the server instead of the client."""),
-        Param(name='pretend',
-              short_name='p',
-              long_name='pretend',
-              ptype='boolean',
-              optional=True,
-              doc=""" Returns a list of Users and Policies that would be deleted if the -r or -R option were actually performed.""")
-        ]
-
-    def cli_formatter(self, data):
-        if data and self.pretend:
+    def print_result(self, result):
+        if self.args['pretend']:
             print 'users'
-            for user in data['users']:
-                print '\t%s' % user['Arn']
+            for arn in result['members']:
+                print '\t' + arn
             print 'policies'
-            for policy in data['policies']:
-                print '\t%s' % policy
-
-    def main(self, **args):
-        data = {}
-        recursive_local = self.cli_options.recursive or \
-            args.get('recursive', False)
-        recursive_server = self.cli_options.recursive_euca or \
-            args.get('recursive_euca', False)
-        self.pretend = self.cli_options.pretend or args.get('pretend', False)
-        group_name = self.cli_options.group_name or args.get('group_name', None)
-        if recursive_local or (recursive_server and self.pretend):
-            obj = ListGroupPolicies()
-            d = obj.main(group_name=group_name)
-            data['policies'] = d.PolicyNames
-            obj = GetGroup()
-            d = obj.main(group_name=group_name)
-            data['users'] = d.Users
-            if self.pretend:
-                return data
-            else:
-                obj = RemoveUserFromGroup()
-                for user in data['users']:
-                    obj.main(group_name=group_name, user_name=user['UserName'])
-                obj = DeleteGroupPolicy()
-                for policy in data['policies']:
-                    obj.main(group_name=group_name, policy_name=policy)
-        if not self.pretend:
-            return self.send(**args)
-
-    def main_cli(self):
-        euca2ools.utils.print_version_if_necessary()
-        self.do_cli()
+            for policy in result['policies']:
+                print '\t' + policy

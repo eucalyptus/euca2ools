@@ -34,15 +34,15 @@ from . import EuareRequest, DELEGATE
 
 class RemoveUserFromGroup(EuareRequest):
     DESCRIPTION = 'Remove a user from a group'
-    ARGS = [Arg('-u', '--user-name', metavar='USER', action='append',
-                route_to=None, required=True,
+    ARGS = [Arg('-u', '--user-name', dest='user_names', metavar='USER',
+                action='append', route_to=None, required=True,
                 help='user to remove from the group (required)'),
             Arg('-g', '--group-name', dest='GroupName', metavar='GROUP',
                 required=True, help='group to remove the user from (required)'),
             DELEGATE]
 
     def main(self):
-        for user in self.args['user_name']:
+        for user in self.args['user_names']:
             self.params['UserName'] = user
             response = self.send()
         # The response doesn't actually contain anything of interest, so just
