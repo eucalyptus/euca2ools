@@ -29,6 +29,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 from requestbuilder import Arg
+from requestbuilder.response import PaginatedResponse
 from . import EuareRequest, DELEGATE
 
 class ListUsers(EuareRequest):
@@ -38,6 +39,17 @@ class ListUsers(EuareRequest):
                         (default: list all users)'''),
             DELEGATE]
     LIST_MARKERS = ['Users']
+
+    def main(self):
+        return PaginatedResponse(self, (None,), ('Groups',))
+
+    def prepare_for_page(self, page):
+        # Pages are defined by markers
+        self.params['Marker'] = page
+
+    def get_next_page(self, response):
+        if response.get('IsTruncated') == 'true':
+            return response['Marker']
 
     def print_result(self, result):
         for user in result.get('Users', []):
