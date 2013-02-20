@@ -162,5 +162,7 @@ class AWSError(requestbuilder.exceptions.ServerError):
                 self.body    = None
 
     def __str__(self):
-        return '({code}) {msg}'.format(code=(self.code or self.status_code),
-                                       msg=(self.message or ''))
+        s_bits = [self.__class__.__name__ + ':', self.code or self.status_code]
+        if self.message:
+            s_bits.append(self.message)
+        return ' '.join(s_bits)
