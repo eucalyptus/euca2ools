@@ -36,7 +36,7 @@ import requestbuilder.service
 from requestbuilder.xmlparse import parse_aws_xml
 import string
 import urlparse
-from .. import Euca2oolsRequest
+from .. import Euca2ools
 
 class Walrus(requestbuilder.service.BaseService):
     NAME = 's3'
@@ -55,11 +55,12 @@ class Walrus(requestbuilder.service.BaseService):
         raise AWSError(response)
 
 
-class WalrusRequest(Euca2oolsRequest):
+class WalrusRequest(requestbuilder.request.BaseRequest):
+    SUITE = Euca2ools
     SERVICE_CLASS = Walrus
 
     def __init__(self, **kwargs):
-        Euca2oolsRequest.__init__(self, **kwargs)
+        requestbuilder.request.BaseRequest.__init__(self, **kwargs)
         self.redirects_left = 3
 
     def handle_server_error(self, err):

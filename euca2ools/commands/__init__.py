@@ -31,43 +31,40 @@
 import glob
 import os.path
 import platform
-import requestbuilder.command
-import requestbuilder.request
+import requestbuilder
 import requests
 import sys
 from .. import __version__
 
-class Euca2oolsCommand(requestbuilder.command.BaseCommand):
-    def __init__(self, **kwargs):
-        self._config_files = None
-        requestbuilder.request.BaseCommand.__init__(self, **kwargs)
+class Euca2ools(object):
+    '''
+    A class with attributes and methods that define the entire euca2ools suite
+    '''
 
-    @property
-    def config_files(self):
-        if self._config_files is None:
-            self._config_files = _list_config_files()
-        return self._config_files
+    def __init__(self):
+        self.__user_agent = None
 
     @staticmethod
     def print_version_and_exit():
-        _print_version_and_exit()
+        print >> sys.stderr, 'euca2ools', __version__, '(Sparta)'
+        try:
+            if os.path.isfile('/etc/eucalyptus/eucalyptus-version'):
+                with open('/etc/eucalyptus/eucalyptus-version') as ver_file:
+                    euca_version = ver_file.readline().strip()
+                print >> sys.stderr, 'eucalyptus', euca_version
+        except:
+            # Those were just more crunchy bits.  If they don't work, oh well!
+            pass
+        sys.exit()
 
+    @staticmethod
+    def list_config_files():
+        sys_config_files = ['/etc/euca2ools.ini']
+        user_glob = os.path.join(os.path.expanduser('~/.euca'), '*.ini')
+        user_config_files = sorted(glob.glob(user_glob))
+        return sys_config_files + user_config_files
 
-# FIXME:  Duplicating requestbuilder's hierarchy is dumb
-class Euca2oolsRequest(requestbuilder.request.BaseRequest):
-    def __init__(self, **kwargs):
-        self._config_files = None
-        self.__user_agent = None
-        requestbuilder.request.BaseRequest.__init__(self, **kwargs)
-
-    @property
-    def config_files(self):
-        if self._config_files is None:
-            self._config_files = _list_config_files()
-        return self._config_files
-
-    @property
-    def user_agent(self):
+    def get_user_agent(self):
         if self.__user_agent is None:
             user_agent_bits = ['euca2ools/{0}'.format(__version__)]
 
@@ -102,76 +99,3 @@ class Euca2oolsRequest(requestbuilder.request.BaseRequest):
             user_agent_bits.append('requests/{0}'.format(requests.__version__))
             self.__user_agent = ' '.join(user_agent_bits)
         return self.__user_agent
-
-    @staticmethod
-    def print_version_and_exit():
-        _print_version_and_exit()
-
-
-class Euca2oolsQueryRequest(requestbuilder.request.AWSQueryRequest):
-    def __init__(self, **kwargs):
-        self._config_files = None
-        self.__user_agent = None
-        requestbuilder.request.AWSQueryRequest.__init__(self, **kwargs)
-
-    @property
-    def config_files(self):
-        if self._config_files is None:
-            self._config_files = _list_config_files()
-        return self._config_files
-
-    @property
-    def user_agent(self):
-        if self.__user_agent is None:
-            user_agent_bits = ['euca2ools/{0}'.format(__version__)]
-
-            tokens = []
-            impl = platform.python_implementation()
-            if impl == 'PyPy':
-                impl_version = '{0}.{1}.{2}'.format(
-                        sys.pypy_version_info.major,
-                        sys.pypy_version_info.minor,
-                        sys.pypy_version_info.micro)
-                if sys.pypy_version_info.releaselevel != 'final':
-                    impl_version += sys.pypy_version_info.releaselevel
-            else:
-                # I'm guessing for non-CPython implementations; feel free to
-                # submit patches or the needed implementation-specific API
-                # references.
-                impl_version = platform.python_version()
-            tokens.append('{0} {1}'.format(impl, impl_version))
-            plat = []
-            try:
-                plat.append(platform.system())
-                plat.append(platform.release())
-            except IOError:
-                pass
-            if plat:
-                tokens.append(' '.join(plat))
-            tokens.append(platform.machine())
-            user_agent_bits.append('({0})'.format('; '.join(tokens)))
-
-            user_agent_bits.append('requestbuilder/{0}'.format(
-                    requestbuilder.__version__))
-            user_agent_bits.append('requests/{0}'.format(requests.__version__))
-            self.__user_agent = ' '.join(user_agent_bits)
-        return self.__user_agent
-
-    @staticmethod
-    def print_version_and_exit():
-        _print_version_and_exit()
-
-
-def _list_config_files():
-    sys_config_files = ['/etc/euca2ools.ini']
-    user_glob = os.path.join(os.path.expanduser('~/.euca'), '*.ini')
-    user_config_files = sorted(glob.glob(user_glob))
-    return sys_config_files + user_config_files
-
-
-def _print_version_and_exit():
-    print >> sys.stderr, 'euca2ools {0} (Sparta)'.format(__version__)
-    if os.path.isfile('/etc/eucalyptus/eucalyptus-version'):
-        with open('/etc/eucalyptus/eucalyptus-version') as version_file:
-            print 'eucalyptus {0}'.format(version_file.readline().strip())
-    sys.exit()

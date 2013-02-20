@@ -36,12 +36,13 @@ from requestbuilder import Arg, MutuallyExclusiveArgList, AUTH, SERVICE
 from requestbuilder.auth import QuerySigV2Auth
 from requestbuilder.exceptions import AuthError
 from requestbuilder.mixins import TabifyingCommand
+import requestbuilder.request
 import requestbuilder.service
 import requests
 import shlex
 from string import Template
 import sys
-from .. import Euca2oolsQueryRequest
+from .. import Euca2ools
 
 class EC2CompatibleQuerySigV2Auth(QuerySigV2Auth):
     # -a and -s are deprecated; remove them in 3.2
@@ -164,16 +165,18 @@ class Eucalyptus(requestbuilder.service.BaseService):
         raise AWSError(response)
 
 
-class EucalyptusRequest(Euca2oolsQueryRequest, TabifyingCommand):
+class EucalyptusRequest(requestbuilder.request.AWSQueryRequest,
+                        TabifyingCommand):
+    SUITE = Euca2ools
     SERVICE_CLASS = Eucalyptus
+    METHOD = 'POST'
 
     def __init__(self, **kwargs):
-        Euca2oolsQueryRequest.__init__(self, **kwargs)
-        self.method = 'POST'  ## FIXME
+        requestbuilder.request.AWSQueryRequest.__init__(self, **kwargs)
 
     def parse_http_response(self, response_body):
-        response = Euca2oolsQueryRequest.parse_http_response(self,
-                                                             response_body)
+        response = requestbuilder.request.AWSQueryRequest.parse_http_response(
+            self, response_body)
         # Compute cloud controller responses enclose their useful data inside
         # FooResponse elements.  If that's all we have after stripping out
         # RequestId then just return its contents.

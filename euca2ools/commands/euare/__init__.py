@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009-2012, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2013, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -31,8 +31,9 @@
 from euca2ools.exceptions import AWSError
 from requestbuilder import Arg, MutuallyExclusiveArgList, SERVICE
 import requestbuilder.auth
+import requestbuilder.request
 import requestbuilder.service
-from .. import Euca2oolsQueryRequest
+from .. import Euca2ools
 
 class Euare(requestbuilder.service.BaseService):
     NAME = 'iam'
@@ -52,12 +53,14 @@ class Euare(requestbuilder.service.BaseService):
         raise AWSError(response)
 
 
-class EuareRequest(Euca2oolsQueryRequest):
+class EuareRequest(requestbuilder.request.AWSQueryRequest):
+    SUITE = Euca2ools
     SERVICE_CLASS = Euare
     METHOD = 'POST'
 
     def parse_response(self, response):
-        response_dict = Euca2oolsQueryRequest.parse_response(self, response)
+        response_dict = requestbuilder.request.AWSQueryRequest.parse_response(
+            self, response)
         # EUARE responses enclose their useful data inside FooResponse
         # elements.  If that's all we have after stripping out ResponseMetadata
         # then just return its contents.
