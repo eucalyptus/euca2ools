@@ -72,9 +72,29 @@ class EC2CompatibleQuerySigV2Auth(QuerySigV2Auth):
                     arg_objs.remove(arg_obj)
 
     def configure(self):
+        # Old-style CLI args
+        # Deprecated; should be removed in 3.2
+        if self.args.get('deprecated_key_id'):
+            # Use it and complain
+            self.args['key_id'] = self.args['deprecated_key_id']
+            if _find_args_by_parg(self.ARGS, '-a'):
+                msg = ('argument -a/--access-key is deprecated; use '
+                       '-I/--access-key-id instead')
+            else:
+                msg = ('argument -A/--access-key is deprecated; use '
+                       '-I/--access-key-id instead')
+            self.log.warn(msg)
+            print >> sys.stderr, 'warning:', msg
+        if self.args.get('deprecated_sec_key'):
+            # Use it and complain
+            self.args['secret_key'] = self.args['deprecated_sec_key']
+            msg = 'argument -s is deprecated; use -S/--secret-key instead'
+            self.log.warn(msg)
+            print >> sys.stderr, 'warning:', msg
         # Shell-style config file given at the CLI
         # Deprecated; should be removed in 3.2
         if os.path.isfile(self.args['shell_configfile']):
+            # We already complained about this in the service
             config = _parse_shell_configfile(self.args['shell_configfile'])
             if 'EC2_ACCESS_KEY' in config and not self.args.get('key_id'):
                 self.args['key_id'] = config['EC2_ACCESS_KEY']
@@ -105,9 +125,9 @@ class EC2CompatibleQuerySigV2Auth(QuerySigV2Auth):
 
         # That's it; make sure we have everything we need
         if not self.args.get('key_id'):
-            raise AuthError('missing access key ID')
+            raise AuthError('missing access key ID; please supply one with -I')
         if not self.args.get('secret_key'):
-            raise AuthError('missing secret key')
+            raise AuthError('missing secret key; please supply one with -S')
 
 
 class Eucalyptus(requestbuilder.service.BaseService):
@@ -134,6 +154,9 @@ class Eucalyptus(requestbuilder.service.BaseService):
         # Shell-style config file given at the CLI
         # Deprecated; should be removed in 3.2
         if os.path.isfile(self.args['shell_configfile']):
+            msg = 'argument --config is deprecated'
+            self.log.warn(msg)
+            print >> sys.stderr, 'warning:', msg
             config = _parse_shell_configfile(self.args['shell_configfile'])
             self.process_url(config.get(self.URL_ENVVAR))
             if self.URL_ENVVAR in config:
