@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2013, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -27,43 +27,26 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#
-# Author: Neil Soman neil@eucalyptus.com
-#         Mitch Garnaat mgarnaat@eucalyptus.com
 
-from boto.roboto.awsqueryrequest import AWSQueryRequest
-from boto.roboto.param import Param
-import euca2ools.commands.euare
-import euca2ools.utils
+import json
+from requestbuilder import Arg
+import urllib
+from . import EuareRequest
 
 
-class GetAccountPolicy(AWSQueryRequest):
+class GetAccountPolicy(EuareRequest):
+    DESCRIPTION = "Display an account's policy"
+    ARGS = [Arg('-a', '--account-name', dest='AccountName', metavar='ACCOUNT',
+                required=True,
+                help='account the policy is attached to (required)'),
+            Arg('-p', '--policy-name', dest='PolicyName', metavar='POLICY',
+                required=True, help='name of the policy to show (required)'),
+            Arg('--pretty-print', action='store_true', route_to=None,
+                help='reformat the policy for easier reading')]
 
-    ServiceClass = euca2ools.commands.euare.Euare
-
-    Description = """GetAccountPolicy"""
-    Params = [Param(
-        name='AccountName',
-        short_name='a',
-        long_name='account-name',
-        ptype='string',
-        optional=False,
-        doc=""" Name of the account the policy is associated with. """,
-        ), Param(
-        name='PolicyName',
-        short_name='p',
-        long_name='policy-name',
-        ptype='string',
-        optional=False,
-        doc=""" Name of the policy document to get. """,
-        )]
-
-    def cli_formatter(self, data):
-        print data.PolicyDocument
-
-    def main(self, **args):
-        return self.send(**args)
-
-    def main_cli(self):
-        euca2ools.utils.print_version_if_necessary()
-        self.do_cli()
+    def print_result(self, result):
+        policy_content = urllib.unquote(result['PolicyDocument'])
+        if self.args['pretty_print']:
+            policy_json = json.loads(policy_content)
+            policy_content = json.dumps(policy_json, indent=4)
+        print policy_content
