@@ -35,8 +35,7 @@ from . import EuareRequest, DELEGATE
 class ListUsers(EuareRequest):
     DESCRIPTION = "List your account's users"
     ARGS = [Arg('-p', '--path-prefix', dest='PathPrefix', metavar='PREFIX',
-                help='''limit results to users who begin with a given path
-                        (default: list all users)'''),
+                help='limit results to users who begin with a given path'),
             DELEGATE]
     LIST_MARKERS = ['Users']
 
