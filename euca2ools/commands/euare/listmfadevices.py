@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2013, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -27,56 +27,30 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#
-# Author: Neil Soman neil@eucalyptus.com
-#         Mitch Garnaat mgarnaat@eucalyptus.com
 
-from boto.roboto.awsqueryrequest import AWSQueryRequest
-from boto.roboto.param import Param
-import euca2ools.commands.euare
-import euca2ools.utils
+from requestbuilder import Arg
+from requestbuilder.response import PaginatedResponse
+from . import EuareRequest, DELEGATE
 
 
-class ListMFADevices(AWSQueryRequest):
+class ListMFADevices(EuareRequest):
+    DESCRIPTION = "List a user's MFA devices"
+    ARGS = [Arg('-u', '--user-name', dest='UserName', metavar='USER',
+                help='user to list MFA devices for (default: current user)'),
+            DELEGATE]
+    LIST_MARKERS = ['MFADevices']
 
-    ServiceClass = euca2ools.commands.euare.Euare
+    def main(self):
+        return PaginatedResponse(self, (None,), ('MFADevices',))
 
-    Description = """ListMFADevices"""
-    Params = [Param(
-        name='UserName',
-        short_name='u',
-        long_name='user-name',
-        ptype='string',
-        optional=False,
-        doc=""" Name of the User whose MFA devices you want to list. """
-            ,
-        ), Param(
-        name='Marker',
-        short_name='m',
-        long_name='marker',
-        ptype='string',
-        optional=True,
-        doc=""" Use this only when paginating results, and only in a subsequent request after you've received a response where the results are truncated. Set it to the value of the Marker element in the response you just received. """
-            ,
-        ), Param(
-        name='MaxItems',
-        short_name=None,
-        long_name='max-items',
-        ptype='integer',
-        optional=True,
-        doc=""" Use this only when paginating results to indicate the maximum number of keys you want in the response. If there are additional keys beyond the maximum you specify, the IsTruncated response element is true. """
-            ,
-        )]
+    def prepare_for_page(self, page):
+        # Pages are defined by markers
+        self.params['Marker'] = page
 
-    def cli_formatter(self, data):
-        for mfa in data.MFADevices:
-            print mfa['SerialNumber']
+    def get_next_page(self, response):
+        if response.get('IsTruncated') == 'true':
+            return response['Marker']
 
-    def main(self, **args):
-        self.list_markers.append('MFADevices')
-        self.item_markers.append('member')
-        return self.send(**args)
-
-    def main_cli(self):
-        euca2ools.utils.print_version_if_necessary()
-        self.do_cli()
+    def print_result(self, result):
+        for device in result.get('MFADevices', []):
+            print device['SerialNumber']
