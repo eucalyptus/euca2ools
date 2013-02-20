@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009-2012, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2013, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -32,7 +32,7 @@ from requestbuilder import Arg
 from . import EuareRequest, DELEGATE
 
 class ListUsers(EuareRequest):
-    DESCRIPTION = 'List users under a specific path prefix'
+    DESCRIPTION = "List your account's users"
     ARGS = [Arg('-p', '--path-prefix', dest='PathPrefix', metavar='PREFIX',
                 help='''limit results to users who begin with a given path
                         (default: list all users)'''),
