@@ -29,7 +29,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 from requestbuilder import Arg
-from . import EuareRequest, DELEGATE
+from . import EuareRequest, AS_ACCOUNT
 
 
 class UpdateGroup(EuareRequest):
@@ -40,4 +40,4 @@ class UpdateGroup(EuareRequest):
                 help='new name for the group'),
             Arg('-p', '--new-path', dest='NewPath', metavar='PATH',
                 help='new path for the group'),
-            DELEGATE]
+            AS_ACCOUNT]

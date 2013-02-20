@@ -29,7 +29,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 from requestbuilder import Arg
-from . import EuareRequest, DELEGATE
+from . import EuareRequest, AS_ACCOUNT
 
 
 class UpdateUserInfo(EuareRequest):
@@ -40,4 +40,4 @@ class UpdateUserInfo(EuareRequest):
                 required=True, help='name of the info field to set (required)'),
             Arg('-i', '--info-value', dest='InfoValue', metavar='VALUE',
                 help='value to set the info field to (omit to delete it)'),
-            DELEGATE]
+            AS_ACCOUNT]

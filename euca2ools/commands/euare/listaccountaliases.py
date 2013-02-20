@@ -29,12 +29,12 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 from requestbuilder import Arg
-from . import EuareRequest, DELEGATE
+from . import EuareRequest, AS_ACCOUNT
 
 
 class ListAccountAliases(EuareRequest):
     DESCRIPTION = "List your account's aliases"
-    ARGS = [DELEGATE]
+    ARGS = [AS_ACCOUNT]
     LIST_MARKERS = ['AccountAliases']
 
     def print_result(self, result):

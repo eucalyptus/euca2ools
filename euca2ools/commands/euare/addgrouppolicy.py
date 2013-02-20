@@ -32,7 +32,7 @@ import datetime
 import euca2ools.commands.euare.putgrouppolicy
 import json
 from requestbuilder import Arg
-from . import EuareRequest, DELEGATE
+from . import EuareRequest, AS_ACCOUNT
 
 
 class AddGroupPolicy(EuareRequest):
@@ -50,7 +50,7 @@ class AddGroupPolicy(EuareRequest):
                 help='resource the policy should apply to (required)'),
             Arg('-o', '--output', action='store_true',
                 help='display the newly-created policy'),
-            DELEGATE]
+            AS_ACCOUNT]
 
     def build_policy(self):
         stmt = {'Sid': datetime.datetime.utcnow().strftime('%Y%m%d%H%M%S%f'),

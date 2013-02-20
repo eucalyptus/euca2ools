@@ -29,11 +29,11 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 from requestbuilder import Arg
-from . import EuareRequest, DELEGATE
+from . import EuareRequest, AS_ACCOUNT
 
 
 class CreateAccountAlias(EuareRequest):
     DESCRIPTION = 'Create an alias for an account, a.k.a. an account name'
     ARGS = [Arg('-a', '--account-alias', dest='AccountAlias', metavar='ALIAS',
                 required=True, help='name of the alias to create (required)'),
-            DELEGATE]
+            AS_ACCOUNT]

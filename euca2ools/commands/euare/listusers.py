@@ -30,13 +30,13 @@
 
 from requestbuilder import Arg
 from requestbuilder.response import PaginatedResponse
-from . import EuareRequest, DELEGATE
+from . import EuareRequest, AS_ACCOUNT
 
 class ListUsers(EuareRequest):
     DESCRIPTION = "List your account's users"
     ARGS = [Arg('-p', '--path-prefix', dest='PathPrefix', metavar='PREFIX',
                 help='limit results to users who begin with a given path'),
-            DELEGATE]
+            AS_ACCOUNT]
     LIST_MARKERS = ['Users']
 
     def main(self):

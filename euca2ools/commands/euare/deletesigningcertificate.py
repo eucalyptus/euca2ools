@@ -29,7 +29,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 from requestbuilder import Arg
-from . import EuareRequest, DELEGATE
+from . import EuareRequest, AS_ACCOUNT
 
 
 class DeleteSigningCertificate(EuareRequest):
@@ -40,4 +40,4 @@ class DeleteSigningCertificate(EuareRequest):
             Arg('-c', '--certificate-id', dest='CertificateId', metavar='CERT',
                 required=True,
                 help='ID of the signing certificate to delete (required)'),
-            DELEGATE]
+            AS_ACCOUNT]

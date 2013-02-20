@@ -29,7 +29,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 from requestbuilder import Arg, MutuallyExclusiveArgList
-from . import EuareRequest, DELEGATE
+from . import EuareRequest, AS_ACCOUNT
 
 
 class UploadSigningCertificate(EuareRequest):
@@ -43,4 +43,4 @@ class UploadSigningCertificate(EuareRequest):
             Arg('-u', '--user-name', dest='UserName', metavar='USER',
                 help='''user the signing certificate is for (default: current
                         user)'''),
-            DELEGATE]
+            AS_ACCOUNT]

@@ -29,7 +29,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 from requestbuilder import Arg
-from . import EuareRequest, DELEGATE
+from . import EuareRequest, AS_ACCOUNT
 from .addusertogroup import AddUserToGroup
 from .createaccesskey import CreateAccessKey
 
@@ -47,7 +47,7 @@ class CreateUser(EuareRequest):
                         standard out'''),
             Arg('-v', '--verbose', action='store_true', route_to=None,
                 help="print the new user's ARN and GUID"),
-            DELEGATE]
+            AS_ACCOUNT]
 
     def postprocess(self, result):
         if self.args.get('group_name'):

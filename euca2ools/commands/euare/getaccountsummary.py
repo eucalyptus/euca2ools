@@ -29,13 +29,13 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 from requestbuilder import Arg
-from . import EuareRequest, DELEGATE
+from . import EuareRequest, AS_ACCOUNT
 
 
 class GetAccountSummary(EuareRequest):
     DESCRIPTION = '''Display account-level information about account entity
                      usage and IAM quotas'''
-    PARAMS = [DELEGATE]
+    PARAMS = [AS_ACCOUNT]
     LIST_MARKERS = ['SummaryMap']
 
     def print_result(self, result):

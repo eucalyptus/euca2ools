@@ -29,7 +29,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 from requestbuilder import Arg
-from . import EuareRequest, DELEGATE
+from . import EuareRequest, AS_ACCOUNT
 
 
 class DeleteServerCertificate(EuareRequest):
@@ -37,4 +37,4 @@ class DeleteServerCertificate(EuareRequest):
     ARGS = [Arg('-s', '--server-certificate-name', dest='ServerCertificateName',
                 metavar='CERT', required=True,
                 help='name of the server certificate to delete (required)'),
-            DELEGATE]
+            AS_ACCOUNT]

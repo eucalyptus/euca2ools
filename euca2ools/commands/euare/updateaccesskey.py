@@ -29,7 +29,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 from requestbuilder import Arg
-from . import EuareRequest, DELEGATE
+from . import EuareRequest, AS_ACCOUNT
 
 
 class UpdateAccessKey(EuareRequest):
@@ -44,4 +44,4 @@ class UpdateAccessKey(EuareRequest):
             Arg('-s', '--status', dest='Status', required=True,
                 choices=('Active', 'Inactive'),
                 help='status to assign to the access key'),
-            DELEGATE]
+            AS_ACCOUNT]

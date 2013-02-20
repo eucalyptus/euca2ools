@@ -30,7 +30,7 @@
 
 from requestbuilder import Arg
 from requestbuilder.mixins import TabifyingCommand
-from . import EuareRequest, DELEGATE
+from . import EuareRequest, AS_ACCOUNT
 
 
 class GetUserInfo(EuareRequest, TabifyingCommand):
@@ -40,7 +40,7 @@ class GetUserInfo(EuareRequest, TabifyingCommand):
                         user)'''),
             Arg('-k', '--info-key', dest='InfoKey',
                 help='name of the piece of user info to show'),
-            DELEGATE]
+            AS_ACCOUNT]
     LIST_MARKERS = ['Infos']
 
     def print_result(self, result):

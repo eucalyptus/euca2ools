@@ -29,7 +29,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 from requestbuilder import Arg
-from . import EuareRequest, DELEGATE
+from . import EuareRequest, AS_ACCOUNT
 
 
 class CreateSigningCertificate(EuareRequest):
@@ -41,7 +41,7 @@ class CreateSigningCertificate(EuareRequest):
                 help='file to write the certificate to (default: stdout)'),
             Arg('--keyout', metavar='FILE', route_to=None,
                 help='file to write the private key to (default: stdout)'),
-            DELEGATE]
+            AS_ACCOUNT]
 
     def postprocess(self, result):
         if self.args['out']:

@@ -42,7 +42,7 @@ from euca2ools.commands.euare.removeuserfromgroup import RemoveUserFromGroup
 from euca2ools.exceptions import AWSError
 from requestbuilder import Arg
 import sys
-from . import EuareRequest, DELEGATE
+from . import EuareRequest, AS_ACCOUNT
 
 
 class DeleteUser(EuareRequest):
@@ -56,7 +56,7 @@ class DeleteUser(EuareRequest):
             Arg('-p', '--pretend', action='store_true', route_to=None,
                 help='''list the resources that would be deleted instead of
                         actually deleting them. Implies -r.'''),
-            DELEGATE]
+            AS_ACCOUNT]
 
     def main(self):
         if self.args['recursive'] or self.args['pretend']:

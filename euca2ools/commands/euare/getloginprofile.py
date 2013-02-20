@@ -29,7 +29,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 from requestbuilder import Arg
-from . import EuareRequest, DELEGATE
+from . import EuareRequest, AS_ACCOUNT
 
 
 class GetLoginProfile(EuareRequest):
@@ -38,7 +38,7 @@ class GetLoginProfile(EuareRequest):
                 required=True, help='user whose password to verify (required)'),
             Arg('--verbose', action='store_true', route_to=None,
                 help="print extra info about the user's password"),
-            DELEGATE]
+            AS_ACCOUNT]
 
     def print_result(self, result):
         # If we've managed to get to this point, we already know the user has

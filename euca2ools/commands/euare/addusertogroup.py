@@ -29,7 +29,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 from requestbuilder import Arg
-from . import EuareRequest, DELEGATE
+from . import EuareRequest, AS_ACCOUNT
 
 class AddUserToGroup(EuareRequest):
     DESCRIPTION = 'Add a user to a group'
@@ -37,4 +37,4 @@ class AddUserToGroup(EuareRequest):
                 help='group to add the user to'),
             Arg('-u', '--user-name', dest='UserName', required=True,
                 help='user to add'),
-            DELEGATE]
+            AS_ACCOUNT]

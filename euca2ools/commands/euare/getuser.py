@@ -29,7 +29,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 from requestbuilder import Arg
-from . import EuareRequest, DELEGATE
+from . import EuareRequest, AS_ACCOUNT
 
 
 class GetUser(EuareRequest):
@@ -39,7 +39,7 @@ class GetUser(EuareRequest):
                         user)'''),
             Arg('--show-extra', dest='ShowExtra', action='store_const',
                 const='true', help='also display additional user info'),
-            DELEGATE]
+            AS_ACCOUNT]
 
     def print_result(self, result):
         print result['User']['Arn']

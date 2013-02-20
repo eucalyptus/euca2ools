@@ -29,7 +29,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 from requestbuilder import Arg
-from . import EuareRequest, DELEGATE
+from . import EuareRequest, AS_ACCOUNT
 
 
 class DeleteUserPolicy(EuareRequest):
@@ -39,4 +39,4 @@ class DeleteUserPolicy(EuareRequest):
                 help='user the policy is attached to (required)'),
             Arg('-p', '--policy-name', dest='PolicyName', metavar='POLICY',
                 required=True, help='name of the policy to delete (required)'),
-            DELEGATE]
+            AS_ACCOUNT]

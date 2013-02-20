@@ -30,7 +30,7 @@
 
 import getpass
 from requestbuilder import Arg
-from . import EuareRequest, DELEGATE
+from . import EuareRequest, AS_ACCOUNT
 
 
 class CreateLoginProfile(EuareRequest):
@@ -41,7 +41,7 @@ class CreateLoginProfile(EuareRequest):
             Arg('-p', '--password', dest='Password',
                 help='''the new password.  If unspecified, the new password
                         will be read from the console.'''),
-            DELEGATE]
+            AS_ACCOUNT]
 
     def configure(self):
         EuareRequest.configure(self)

@@ -30,14 +30,14 @@
 
 from requestbuilder import Arg
 from requestbuilder.response import PaginatedResponse
-from . import EuareRequest, DELEGATE
+from . import EuareRequest, AS_ACCOUNT
 
 
 class GetGroup(EuareRequest):
     DESCRIPTION = 'List all the users in a group'
     ARGS = [Arg('-g', '--group-name', dest='GroupName', metavar='GROUP',
                 required=True, help='name of the group to show info about'),
-            DELEGATE]
+            AS_ACCOUNT]
     LIST_MARKERS = ['Users']
 
     def main(self):

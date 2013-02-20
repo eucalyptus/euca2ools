@@ -31,7 +31,7 @@
 from requestbuilder import Arg
 import json
 import urllib
-from . import EuareRequest, DELEGATE
+from . import EuareRequest, AS_ACCOUNT
 
 
 class GetGroupPolicy(EuareRequest):
@@ -43,7 +43,7 @@ class GetGroupPolicy(EuareRequest):
                 required=True, help='name of the policy to show (required)'),
             Arg('--pretty-print', action='store_true', route_to=None,
                 help='reformat the policy for easier reading'),
-            DELEGATE]
+            AS_ACCOUNT]
 
     def print_result(self, result):
         policy_content = urllib.unquote(result['PolicyDocument'])

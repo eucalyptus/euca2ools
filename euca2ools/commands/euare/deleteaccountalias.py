@@ -29,11 +29,11 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 from requestbuilder import Arg
-from . import EuareRequest, DELEGATE
+from . import EuareRequest, AS_ACCOUNT
 
 
 class DeleteAccountAlias(EuareRequest):
     DESCRIPTION = "Delete an account's alias, a.k.a. its account name"
     ARGS = [Arg('-a', '--account-alias', dest='AccountAlias', metavar='ALIAS',
                 required=True, help='name of the alias to delete (required)'),
-            DELEGATE]
+            AS_ACCOUNT]

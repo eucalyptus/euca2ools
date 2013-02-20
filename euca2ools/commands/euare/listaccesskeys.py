@@ -30,14 +30,14 @@
 
 from requestbuilder import Arg
 from requestbuilder.response import PaginatedResponse
-from . import EuareRequest, DELEGATE
+from . import EuareRequest, AS_ACCOUNT
 
 
 class ListAccessKeys(EuareRequest):
     DESCRIPTION = "List a user's access keys"
     ARGS = [Arg('-u', '--user-name', dest='UserName', metavar='USER',
                 help='user to list keys for (default: current user)'),
-            DELEGATE]
+            AS_ACCOUNT]
     LIST_MARKERS = ['AccessKeyMetadata']
 
     def main(self):

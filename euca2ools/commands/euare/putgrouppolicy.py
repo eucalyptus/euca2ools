@@ -29,7 +29,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 from requestbuilder import Arg, MutuallyExclusiveArgList
-from . import EuareRequest, DELEGATE
+from . import EuareRequest, AS_ACCOUNT
 
 
 class PutGroupPolicy(EuareRequest):
@@ -44,4 +44,4 @@ class PutGroupPolicy(EuareRequest):
                 Arg('-f', '--policy-document', dest='PolicyDocument',
                     metavar='FILE', type=open,
                     help='file containing the policy to attach')),
-            DELEGATE]
+            AS_ACCOUNT]

@@ -29,7 +29,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 from requestbuilder import Arg
-from . import EuareRequest, DELEGATE
+from . import EuareRequest, AS_ACCOUNT
 
 
 class GetServerCertificate(EuareRequest):
@@ -37,7 +37,7 @@ class GetServerCertificate(EuareRequest):
     ARGS = [Arg('-s', '--server-certificate-name', dest='ServerCertificateName',
                 metavar='CERT', required=True, help='''name of the server
                 certificate to retrieve info about (required)'''),
-            DELEGATE]
+            AS_ACCOUNT]
 
     def print_result(self, result):
         metadata = result.get('ServerCertificate', {}) \

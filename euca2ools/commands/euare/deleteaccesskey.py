@@ -29,7 +29,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 from requestbuilder import Arg
-from . import EuareRequest, DELEGATE
+from . import EuareRequest, AS_ACCOUNT
 
 
 class DeleteAccessKey(EuareRequest):
@@ -39,4 +39,4 @@ class DeleteAccessKey(EuareRequest):
             Arg('-k', '--user-key-id', dest='AccessKeyId', metavar='KEY_ID',
                 required=True,
                 help='ID of the access key to delete (required)'),
-            DELEGATE]
+            AS_ACCOUNT]

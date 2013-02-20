@@ -29,7 +29,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 from requestbuilder import Arg
-from . import EuareRequest, DELEGATE
+from . import EuareRequest, AS_ACCOUNT
 
 
 class DeactivateMFADevice(EuareRequest):
@@ -40,4 +40,4 @@ class DeactivateMFADevice(EuareRequest):
             Arg('-s', '--serial-number', dest='SerialNumber', metavar='SERIAL',
                 required=True, help='''serial number of the MFA device to
                                        deactivate (required)'''),
-            DELEGATE]
+            AS_ACCOUNT]

@@ -32,11 +32,11 @@
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
 from requestbuilder import Arg
-from . import EuareRequest, DELEGATE
+from . import EuareRequest, AS_ACCOUNT
 
 class DeleteLoginProfile(EuareRequest):
     DESCRIPTION = "Delete a user's password"
     ARGS = [Arg('-u', '--user-name', dest='UserName', metavar='USER',
                 required=True, help='''name of the user whose password should
                 be deleted (required)'''),
-            DELEGATE]
+            AS_ACCOUNT]

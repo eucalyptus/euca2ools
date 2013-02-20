@@ -30,14 +30,14 @@
 
 from requestbuilder import Arg
 from requestbuilder.response import PaginatedResponse
-from . import EuareRequest, DELEGATE
+from . import EuareRequest, AS_ACCOUNT
 
 
 class ListMFADevices(EuareRequest):
     DESCRIPTION = "List a user's MFA devices"
     ARGS = [Arg('-u', '--user-name', dest='UserName', metavar='USER',
                 help='user to list MFA devices for (default: current user)'),
-            DELEGATE]
+            AS_ACCOUNT]
     LIST_MARKERS = ['MFADevices']
 
     def main(self):

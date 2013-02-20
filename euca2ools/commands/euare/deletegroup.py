@@ -34,7 +34,7 @@ from euca2ools.commands.euare.getgroup import GetGroup
 from euca2ools.commands.euare.listgrouppolicies import ListGroupPolicies
 from euca2ools.commands.euare.removeuserfromgroup import RemoveUserFromGroup
 from requestbuilder import Arg
-from . import EuareRequest, DELEGATE
+from . import EuareRequest, AS_ACCOUNT
 
 class DeleteGroup(EuareRequest):
     DESCRIPTION = 'Delete a group'
@@ -49,7 +49,7 @@ class DeleteGroup(EuareRequest):
                 help='''list the user memberships and policies that would be
                         deleted instead of actually deleting them. Implies
                         -r.'''),
-            DELEGATE]
+            AS_ACCOUNT]
 
     def main(self):
         if self.args['recursive'] or self.args['pretend']:

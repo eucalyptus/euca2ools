@@ -31,7 +31,7 @@
 import euca2ools.commands.euare.getuserpolicy
 from requestbuilder import Arg
 from requestbuilder.response import PaginatedResponse
-from . import EuareRequest, DELEGATE
+from . import EuareRequest, AS_ACCOUNT
 
 
 class ListUserPolicies(EuareRequest):
@@ -48,7 +48,7 @@ class ListUserPolicies(EuareRequest):
             Arg('--pretty-print', action='store_true', route_to=None,
                 help='''when printing the contents of policies, reformat them
                         for easier reading'''),
-            DELEGATE]
+            AS_ACCOUNT]
     LIST_MARKERS = ['PolicyNames']
 
     def main(self):

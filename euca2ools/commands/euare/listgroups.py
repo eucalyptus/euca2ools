@@ -30,7 +30,7 @@
 
 from requestbuilder import Arg
 from requestbuilder.response import PaginatedResponse
-from . import EuareRequest, DELEGATE
+from . import EuareRequest, AS_ACCOUNT
 
 
 class ListGroups(EuareRequest):
@@ -38,7 +38,7 @@ class ListGroups(EuareRequest):
     ARGS = [Arg('-p', '--path-prefix', dest='PathPrefix', metavar='PATH',
                 help='''restrict results to groups whose paths begin with a
                         specific prefix'''),
-            DELEGATE]
+            AS_ACCOUNT]
     LIST_MARKERS = ['Groups']
 
     def main(self):

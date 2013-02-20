@@ -29,7 +29,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 from requestbuilder import Arg
-from . import EuareRequest, DELEGATE
+from . import EuareRequest, AS_ACCOUNT
 
 
 class ResyncMFADevice(EuareRequest):
@@ -46,4 +46,4 @@ class ResyncMFADevice(EuareRequest):
             Arg('-c2', dest='AuthenticationCode2', metavar='CODE',
                 required=True, help='''a subsequent authentication code emitted
                                        by the MFA device (required)'''),
-            DELEGATE]
+            AS_ACCOUNT]

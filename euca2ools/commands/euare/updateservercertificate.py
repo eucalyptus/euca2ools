@@ -29,7 +29,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 from requestbuilder import Arg
-from . import EuareRequest, DELEGATE
+from . import EuareRequest, AS_ACCOUNT
 
 
 class UpdateServerCertificate(EuareRequest):
@@ -42,4 +42,4 @@ class UpdateServerCertificate(EuareRequest):
                 help='new name for the server certificate'),
             Arg('-p', '--new-path', dest='NewPath', metavar='PATH',
                 help='new path for the server certificate'),
-            DELEGATE]
+            AS_ACCOUNT]

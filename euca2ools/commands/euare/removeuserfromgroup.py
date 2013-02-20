@@ -29,7 +29,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 from requestbuilder import Arg
-from . import EuareRequest, DELEGATE
+from . import EuareRequest, AS_ACCOUNT
 
 
 class RemoveUserFromGroup(EuareRequest):
@@ -39,7 +39,7 @@ class RemoveUserFromGroup(EuareRequest):
                 help='user to remove from the group (required)'),
             Arg('-g', '--group-name', dest='GroupName', metavar='GROUP',
                 required=True, help='group to remove the user from (required)'),
-            DELEGATE]
+            AS_ACCOUNT]
 
     def main(self):
         for user in self.args['user_names']:

@@ -29,7 +29,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 from requestbuilder import Arg
-from . import EuareRequest, DELEGATE
+from . import EuareRequest, AS_ACCOUNT
 
 
 class CreateGroup(EuareRequest):
@@ -40,7 +40,7 @@ class CreateGroup(EuareRequest):
                 help='path for the new group (default: "/")'),
             Arg('-v', '--verbose', action='store_true', route_to=None,
                 help="print the new group's ARN and GUID"),
-            DELEGATE]
+            AS_ACCOUNT]
 
     def print_result(self, result):
         if self.args['verbose']:

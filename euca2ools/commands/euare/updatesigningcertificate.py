@@ -29,7 +29,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 from requestbuilder import Arg
-from . import EuareRequest, DELEGATE
+from . import EuareRequest, AS_ACCOUNT
 
 
 class UpdateSigningCertificate(EuareRequest):
@@ -42,4 +42,4 @@ class UpdateSigningCertificate(EuareRequest):
                 required=True, help='ID of the signing certificate to update'),
             Arg('-s', '--status', dest='Status', choices=('Active', 'Inactive'),
                 required=True, help='status to assign to the certificate'),
-            DELEGATE]
+            AS_ACCOUNT]

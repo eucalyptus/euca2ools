@@ -29,7 +29,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 from requestbuilder import Arg
-from . import EuareRequest, DELEGATE
+from . import EuareRequest, AS_ACCOUNT
 
 
 class UpdateUser(EuareRequest):
@@ -50,4 +50,4 @@ class UpdateUser(EuareRequest):
             Arg('--pwd-expires', dest='PasswordExpiration', metavar='DATETIME',
                 help='''[Eucalyptus only] New password expiration date, in
                         ISO8601 format'''),
-            DELEGATE]
+            AS_ACCOUNT]

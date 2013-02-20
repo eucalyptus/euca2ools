@@ -30,14 +30,14 @@
 
 from requestbuilder import Arg
 from requestbuilder.response import PaginatedResponse
-from . import EuareRequest, DELEGATE
+from . import EuareRequest, AS_ACCOUNT
 
 
 class ListGroupsForUser(EuareRequest):
     DESCRIPTION = 'List all groups a user is a member of'
     ARGS = [Arg('-u', '--user-name', dest='UserName', metavar='USER',
                 required=True, help='user to list membership for (required)'),
-            DELEGATE]
+            AS_ACCOUNT]
     LIST_MARKERS = ['Groups']
 
     def main(self):

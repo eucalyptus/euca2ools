@@ -29,7 +29,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 from requestbuilder import Arg, MutuallyExclusiveArgList
-from . import EuareRequest, DELEGATE
+from . import EuareRequest, AS_ACCOUNT
 
 
 class UploadServerCertificate(EuareRequest):
@@ -60,4 +60,4 @@ class UploadServerCertificate(EuareRequest):
                     certificates of the chain, concatenated together.''')),
             Arg('-p', '--path', dest='Path',
                 help='path for the new server certificate (default: "/")'),
-            DELEGATE]
+            AS_ACCOUNT]

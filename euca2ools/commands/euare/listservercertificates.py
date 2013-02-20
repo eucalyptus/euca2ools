@@ -30,14 +30,14 @@
 
 from requestbuilder import Arg
 from requestbuilder.response import PaginatedResponse
-from . import EuareRequest, DELEGATE
+from . import EuareRequest, AS_ACCOUNT
 
 class ListServerCertificates(EuareRequest):
     DESCRIPTION = "List your account's server certificates"
     ARGS = [Arg('-p', '--path-prefix', dest='PathPrefix', metavar='PREFIX',
                 help='''limit results to server certificates that begin with a
                         given path'''),
-            DELEGATE]
+            AS_ACCOUNT]
     LIST_MARKERS = ['ServerCertificateMetadataList']
 
     def main(self):

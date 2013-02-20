@@ -29,13 +29,13 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 from requestbuilder import Arg
-from . import EuareRequest, DELEGATE
+from . import EuareRequest, AS_ACCOUNT
 
 class CreateAccessKey(EuareRequest):
     DESCRIPTION = 'Create a new access key for a user'
     ARGS = [Arg('-u', '--user-name', dest='UserName', help='''user the new key
                 will belong to (default: calling user)'''),
-            DELEGATE]
+            AS_ACCOUNT]
 
     def print_result(self, result):
         print result['AccessKey']['AccessKeyId']
