@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2013, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -27,52 +27,31 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#
-# Author: Neil Soman neil@eucalyptus.com
-#         Mitch Garnaat mgarnaat@eucalyptus.com
 
-from boto.roboto.awsqueryrequest import AWSQueryRequest
-from boto.roboto.param import Param
-import euca2ools.commands.euare
-import euca2ools.utils
+from requestbuilder import Arg
+from requestbuilder.response import PaginatedResponse
+from . import EuareRequest, DELEGATE
 
+class ListServerCertificates(EuareRequest):
+    DESCRIPTION = "List your account's server certificates"
+    ARGS = [Arg('-p', '--path-prefix', dest='PathPrefix', metavar='PREFIX',
+                help='''limit results to server certificates that begin with a
+                        given path'''),
+            DELEGATE]
+    LIST_MARKERS = ['ServerCertificateMetadataList']
 
-class ListServerCertificates(AWSQueryRequest):
+    def main(self):
+        return PaginatedResponse(self, (None,),
+                                 ('ServerCertificateMetadataList',))
 
-    ServiceClass = euca2ools.commands.euare.Euare
+    def prepare_for_page(self, page):
+        # Pages are defined by markers
+        self.params['Marker'] = page
 
-    Description = """ListServerCertificates"""
-    Params = [Param(
-        name='PathPrefix',
-        short_name='p',
-        long_name='path-prefix',
-        ptype='string',
-        optional=True,
-        doc=""" The path prefix for filtering the results. For example: /company/servercerts would get all server certificates for which the path starts with /company/servercerts.  This parameter is optional. If it is not included, it defaults to a slash (/), listing all server certificates. """
-            ,
-        ), Param(
-        name='Marker',
-        short_name='m',
-        long_name='marker',
-        ptype='string',
-        optional=True,
-        doc=""" Use this only when paginating results, and only in a subsequent request after you've received a response where the results are truncated. Set it to the value of the Marker element in the response you just received. """
-            ,
-        ), Param(
-        name='MaxItems',
-        short_name=None,
-        long_name='max-items',
-        ptype='integer',
-        optional=True,
-        doc=""" Use this only when paginating results to indicate the maximum number of server certificates you want in the response. If there are additional server certificates beyond the maximum you specify, the IsTruncated response element will be set to true. """
-            ,
-        )]
+    def get_next_page(self, response):
+        if response.get('IsTruncated') == 'true':
+            return response['Marker']
 
-    def main(self, **args):
-        self.list_markers.append('ServerCertificateMetadataList')
-        self.item_markers.append('member')
-        return self.send(**args)
-
-    def main_cli(self):
-        euca2ools.utils.print_version_if_necessary()
-        self.do_cli()
+    def print_result(self, result):
+        for cert in result.get('ServerCertificateMetadataList', []):
+            print cert['ServerCertificateMetadata']['Arn']
