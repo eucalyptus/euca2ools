@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2013, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -27,133 +27,118 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#
-# Author: Neil Soman neil@eucalyptus.com
-#         Mitch Garnaat mgarnaat@eucalyptus.com
 
-from boto.exception import BotoServerError
-from boto.roboto.awsqueryrequest import AWSQueryRequest
-from boto.roboto.param import Param
-import euca2ools.commands.euare
-import euca2ools.utils
-from euca2ools.commands.euare.listuserpolicies import ListUserPolicies
-from euca2ools.commands.euare.deleteuserpolicy import DeleteUserPolicy
-from euca2ools.commands.euare.listgroupsforuser import ListGroupsForUser
-from euca2ools.commands.euare.removeuserfromgroup import RemoveUserFromGroup
-from euca2ools.commands.euare.listsigningcertificates import ListSigningCertificates
-from euca2ools.commands.euare.deletesigningcertificate import DeleteSigningCertificate
-from euca2ools.commands.euare.listaccesskeys import ListAccessKeys
+import argparse
 from euca2ools.commands.euare.deleteaccesskey import DeleteAccessKey
-from euca2ools.commands.euare.getloginprofile import GetLoginProfile
 from euca2ools.commands.euare.deleteloginprofile import DeleteLoginProfile
+from euca2ools.commands.euare.deletesigningcertificate import DeleteSigningCertificate
+from euca2ools.commands.euare.deleteuserpolicy import DeleteUserPolicy
+from euca2ools.commands.euare.getloginprofile import GetLoginProfile
+from euca2ools.commands.euare.listaccesskeys import ListAccessKeys
+from euca2ools.commands.euare.listgroupsforuser import ListGroupsForUser
+from euca2ools.commands.euare.listsigningcertificates import ListSigningCertificates
+from euca2ools.commands.euare.listuserpolicies import ListUserPolicies
+from euca2ools.commands.euare.removeuserfromgroup import RemoveUserFromGroup
+from euca2ools.exceptions import AWSError
+from requestbuilder import Arg
 import sys
+from . import EuareRequest, DELEGATE
 
-class DeleteUser(AWSQueryRequest):
 
-    ServiceClass = euca2ools.commands.euare.Euare
+class DeleteUser(EuareRequest):
+    DESCRIPTION = 'Delete a user'
+    ARGS = [Arg('-u', '--user-name', dest='UserName', metavar='USER',
+                required=True, help='name of the user to delete (required)'),
+            Arg('-r', '--recursive', action='store_true', route_to=None,
+                help='remove all IAM resources associated with the user first'),
+            Arg('-R', '--recursive-euca', dest='IsRecursive',
+                action='store_const', const='true', help=argparse.SUPPRESS),
+            Arg('-p', '--pretend', action='store_true', route_to=None,
+                help='''list the resources that would be deleted instead of
+                        actually deleting them. Implies -r.'''),
+            DELEGATE]
 
-    Description = """DeleteUser"""
-    Params = [
-        Param(name='UserName',
-              short_name='u',
-              long_name='user-name',
-              ptype='string',
-              optional=False,
-              doc=""" Name of the User to delete. """),
-        Param(name='DelegateAccount',
-              short_name=None,
-              long_name='delegate',
-              ptype='string',
-              optional=True,
-              doc=""" [Eucalyptus extension] Process this command as if the administrator of the specified account had run it. This option is only usable by cloud administrators. """),
-        Param(name='recursive',
-              short_name='r',
-              long_name='recursive',
-              ptype='boolean',
-              optional=True,
-              request_param=False,
-              doc=""" Deletes the user from associated groups; deletes the user's credentials, policies, and login profiles; and finally deletes the user."""),
-        Param(name='IsRecursive',
-              short_name='R',
-              long_name='recursive-euca',
-              ptype='boolean',
-              optional=True,
-              doc=""" [Eucalyptus extension] Same as -r, but all operations are performed by the server instead of the client."""),
-        Param(name='pretend',
-              short_name='p',
-              long_name='pretend',
-              ptype='boolean',
-              optional=True,
-              doc=""" List what would be deleted without actually recursively deleting the user. Use only with -r.""")
-        ]
-
-    def cli_formatter(self, data):
-        if self.pretend:
-            print 'accesskeys'
-            for ak in data['access_keys']:
-                print '\t%s' % ak['AccessKeyId']
-            print 'policies'
-            for policy in data['policies']:
-                print '\t%s' % policy
-            print 'certificates'
-            for cert in data['certificates']:
-                print '\t%s' % cert['CertificateId']
-            print 'groups'
-            for group in data['groups']:
-                print '\t%s' % group['Arn']
-
-    def main(self, **args):
-        recursive_local = self.cli_options.recursive or \
-            args.get('recursive', False)
-        recursive_server = self.cli_options.recursive_euca or \
-            args.get('recursive_euca', False)
-        self.pretend = self.cli_options.pretend or args.get('pretend', False)
-        user_name = self.cli_options.user_name or args.get('user_name', None)
-        if self.pretend and not (recursive_server or recursive_local):
-            sys.exit('error: argument -p/--pretend must only be used with '
-                     '-r/--recursive')
-        if recursive_local or (recursive_server and self.pretend):
-            obj = ListUserPolicies()
-            d = obj.main(user_name=user_name)
-            data = {'policies' : d.PolicyNames}
-            obj = ListGroupsForUser()
-            d = obj.main(user_name=user_name)
-            data['groups'] = d.Groups
-            obj = ListSigningCertificates()
-            d = obj.main(user_name=user_name)
-            data['certificates'] = d.Certificates
-            obj = ListAccessKeys()
-            d = obj.main(user_name=user_name)
-            data['access_keys'] = d.AccessKeyMetadata
-            obj = GetLoginProfile()
+    def main(self):
+        if self.args['recursive'] or self.args['pretend']:
+            # Figure out what we'd have to delete
+            req = ListAccessKeys(service=self.service,
+                UserName=self.args['UserName'],
+                DelegateAccount=self.args['DelegateAccount'])
+            keys = req.main().get('AccessKeyMetadata', [])
+            req = ListUserPolicies(service=self.service,
+                UserName=self.args['UserName'],
+                DelegateAccount=self.args['DelegateAccount'])
+            policies = req.main().get('PolicyNames', [])
+            req = ListSigningCertificates(service=self.service,
+                UserName=self.args['UserName'],
+                DelegateAccount=self.args['DelegateAccount'])
+            certs = req.main().get('Certificates', [])
+            req = ListGroupsForUser(service=self.service,
+                UserName=self.args['UserName'],
+                DelegateAccount=self.args['DelegateAccount'])
+            groups = req.main().get('Groups', [])
+            req = GetLoginProfile(service=self.service,
+                UserName=self.args['UserName'],
+                DelegateAccount=self.args['DelegateAccount'])
             try:
-                d = obj.main(user_name=user_name)
-                data['login_profile'] = d.LoginProfile
-            except BotoServerError, err:
-                if err.error_code == 'NoSuchEntity':
-                    data['login_profile'] = None
+                # This will raise an exception if no login profile is found.
+                req.main()
+                has_login_profile = True
+            except AWSError as err:
+                if err.code == 'NoSuchEntity':
+                    # It doesn't exist
+                    has_login_profile = False
                 else:
+                    # Something else went wrong; not our problem
                     raise
-            if self.pretend:
-                return data
-            else:
-                obj = DeleteAccessKey()
-                for ak in data['access_keys']:
-                    obj.main(user_name=user_name, user_key_id=ak['AccessKeyId'])
-                obj = DeleteUserPolicy()
-                for policy in data['policies']:
-                    obj.main(user_name=user_name, policy_name=policy)
-                obj = DeleteSigningCertificate()
-                for cert in data['certificates']:
-                    obj.main(user_name=user_name, certificate_id=cert['CertificateId'])
-                obj = RemoveUserFromGroup()
-                for group in data['groups']:
-                    obj.main(group_name=group['GroupName'], user_name=user_name)
-                if data['login_profile']:
-                    DeleteLoginProfile().main(user_name=user_name)
-        if not self.pretend:
-            return self.send(**args)
+        if self.args['pretend']:
+            return {'keys': keys,          'policies': policies,
+                    'certificates': certs, 'groups': groups,
+                    'has_login_profile': has_login_profile}
+        else:
+            if self.args['recursive']:
+                for key in keys:
+                    req = DeleteAccessKey(service=self.service,
+                        UserName=self.args['UserName'],
+                        AccessKeyId=key['AccessKeyId'],
+                        DelegateAccount=self.args['DelegateAccount'])
+                    req.send()
+                for policy in policies:
+                    req = DeleteUserPolicy(service=self.service,
+                        UserName=self.args['UserName'],
+                        PolicyName=policy,
+                        DelegateAccount=self.args['DelegateAccount'])
+                    req.send()
+                for cert in certs:
+                    req = DeleteSigningCertificate(service=self.service,
+                        UserName=self.args['UserName'],
+                        CertificateId=cert['CertificateId'],
+                        DelegateAccount=self.args['DelegateAccount'])
+                    req.send()
+                for group in groups:
+                    req = RemoveUserFromGroup(service=self.service,
+                        user_names=[self.args['UserName']],
+                        GroupName=group['GroupName'],
+                        DelegateAccount=self.args['DelegateAccount'])
+                    req.send()
+                if has_login_profile:
+                    req = DeleteLoginProfile(service=self.service,
+                        UserName=self.args['UserName'],
+                        DelegateAccount=self.args['DelegateAccount'])
+                    req.send()
+            return self.send()
 
-    def main_cli(self):
-        euca2ools.utils.print_version_if_necessary()
-        self.do_cli()
+    def print_result(self, result):
+        if self.args['pretend']:
+            print 'accesskeys'
+            for key in result['keys']:
+                print '\t' + key['AccessKeyId']
+            print 'policies'
+            for policy in result['policies']:
+                print '\t' + policy
+            print 'certificates'
+            for cert in result['certificates']:
+                print '\t' + cert['CertificateId']
+            print 'groups'
+            for group in result['groups']:
+                print '\t' + group['Arn']
