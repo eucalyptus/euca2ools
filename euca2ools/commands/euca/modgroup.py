@@ -160,8 +160,8 @@ class ModifySecurityGroupRequest(EucalyptusRequest):
         # We need to parse out -t and -p *before* argparse can see it because
         # of Python bug 9334, which prevents argparse from recognizing '-1:-1'
         # as an option value and not a (nonexistent) option name.
+        saved_sys_argv = list(sys.argv)
         def parse_neg_one_value(opt_name):
-            saved_sys_argv = list(sys.argv)
             if opt_name in sys.argv:
                 index = sys.argv.index(opt_name)
                 if (index < len(sys.argv) - 1 and
@@ -173,7 +173,7 @@ class ModifySecurityGroupRequest(EucalyptusRequest):
                           parse_neg_one_value('--icmp-type-code'))
         port_range = (parse_neg_one_value('-p') or
                       parse_neg_one_value('--port-range'))
-        EucalyptusRequest._process_cli_args(self)
+        EucalyptusRequest.process_cli_args(self)
         if icmp_type_code:
             self.args['icmp_type_code'] = icmp_type_code
         if port_range:

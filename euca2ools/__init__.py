@@ -42,7 +42,7 @@ if '__file__' in globals():
                                env={'GIT_DIR': os.path.join(repo_path, '.git')})
         git.wait()
         git.stderr.read()
-        if git.exitcode == 0:
+        if git.returncode == 0:
             __version__ = git.stdout.read().strip()
             if type(__version__).__name__ == 'bytes':
                 __version__ = __version__.decode()
