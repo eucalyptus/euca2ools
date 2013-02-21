@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009-2012, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2013, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -27,8 +27,25 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#
-# Author: Neil Soman neil@eucalyptus.com
-#       : Mitch Garnaat mgarnaat@eucalyptus.com
+
+import os.path
+import subprocess
 
 __version__  = 'devel'
+
+if '__file__' in globals():
+    # Check if this is a git repo; maybe we can get more precise version info
+    try:
+        repo_path = os.path.join(os.path.dirname(__file__), '..')
+        git = subprocess.Popen(['git', 'describe'], stdout=subprocess.PIPE,
+                               stderr=subprocess.PIPE,
+                               env={'GIT_DIR': os.path.join(repo_path, '.git')})
+        git.wait()
+        git.stderr.read()
+        if git.exitcode == 0:
+            __version__ = git.stdout.read().strip()
+            if type(__version__).__name__ == 'bytes':
+                __version__ = __version__.decode()
+    except:
+        # Not really a bad thing; we'll just use what we had
+        pass

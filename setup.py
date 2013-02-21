@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2013, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -27,27 +27,22 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#
-# Author: Neil Soman neil@eucalyptus.com
-#         Mitch Garnaat mgarnaat@eucalyptus.com
 
-from distutils.core import setup
 from distutils.command.build_scripts import build_scripts
 from distutils.command.install_scripts import install_scripts
 from distutils.command.sdist import sdist
 import os.path
 import re
-import subprocess
+
+try:
+    from setuptools import setup
+    extra = {'install_requires': ['boto', 'M2Crypto', 'requestbuilder']}
+except ImportError:
+    from distutils.core import setup
+    extra = {}
 
 from euca2ools import __version__
 
-def get_version():
-    try:
-        popen = subprocess.Popen(['git', 'describe'], stdout=subprocess.PIPE)
-        popen.wait()
-        return popen.stdout.read().strip()
-    except:
-        return __version__
 
 # Cheap hack:  install symlinks separately from regular files.
 # cmd.copy_tree accepts a preserve_symlinks option, but when we call
@@ -63,6 +58,7 @@ class build_scripts_except_symlinks(build_scripts):
         build_scripts.copy_scripts(self)
         self.scripts = orig_scripts
 
+
 class install_scripts_and_symlinks(install_scripts):
     '''Like install_scripts, but also replicating nonexistent symlinks'''
     def run(self):
@@ -75,39 +71,33 @@ class install_scripts_and_symlinks(install_scripts):
                 if not os.path.exists(newlink):
                     os.symlink(target, newlink)
 
+
 class sdist_with_git_version(sdist):
-    '''Like sdist, but using the output of ``git describe'' to fill in
-       __init__.__version__'''
+    '''Like sdist, but also hardcoding the version in __init__.__version__ so
+       it's consistent even outside of the source tree'''
+
     def make_release_tree(self, base_dir, files):
         sdist.make_release_tree(self, base_dir, files)
+        version_line = "__version__ = '{0}'\n".format(__version__)
+        old_init_name = os.path.join(base_dir, 'euca2ools/__init__.py')
+        new_init_name = old_init_name + '.new'
+        with open(new_init_name, 'w') as new_init:
+            with open(old_init_name) as old_init:
+                for line in old_init:
+                    if line.startswith('__version__ ='):
+                        new_init.write(version_line)
+                    else:
+                        new_init.write(line)
+            new_init.flush()
+        os.rename(new_init_name, old_init_name)
 
-        try:
-            popen = subprocess.Popen(['git', 'describe'],
-                                     stdout=subprocess.PIPE)
-            popen.wait()
-            version = popen.stdout.read().strip()
-            version_line = '__version__ = \'{0}\'\n'.format(version)
-            old_init_file_name = os.path.join(base_dir, 'euca2ools/__init__.py')
-            new_init_file_name = old_init_file_name + '.new'
-            with open(new_init_file_name, 'w') as new_init_file:
-                with open(old_init_file_name) as old_init_file:
-                    for line in old_init_file:
-                        if re.match("__version__ *= *'.*'", line):
-                            new_init_file.write(version_line)
-                        else:
-                            new_init_file.write(line)
-                new_init_file.flush()
-            os.rename(new_init_file_name, old_init_file_name)
-        except:
-            # Not really a problem; we'll just leave it as-is
-            pass
 
 setup(name = "euca2ools",
-      version = get_version(),
+      version = __version__,
       description = "Elastic Utility Computing Architecture Command Line Tools",
       long_description="Elastic Utility Computing Architecture Command Line Tools",
-      author = "Mitch Garnaat",
-      author_email = "mgarnaat@eucalyptus.com",
+      author = "Eucalyptus Systems, Inc.",
+      author_email = "support@eucalyptus.com",
 
       scripts = ["bin/euare-accountaliascreate",
                  "bin/euare-accountaliasdelete",
@@ -237,8 +227,8 @@ setup(name = "euca2ools",
                   "euca2ools.commands.euare", "euca2ools.commands.eustore",
                   "euca2ools.commands.walrus"],
       license = 'BSD (Simplified)',
-      platforms = 'Posix; MacOS X; Windows',
-      classifiers = ['Development Status :: 2 - Pre-Alpha',
+      platforms = 'Posix; MacOS X',
+      classifiers = ['Development Status :: 3 - Alpha',
                      'Intended Audience :: Users',
                      'License :: OSI Approved :: Simplified BSD License',
                      'Operating System :: OS Independent',
@@ -247,6 +237,8 @@ setup(name = "euca2ools",
                      'Programming Language :: Python :: 2.6',
                      'Programming Language :: Python :: 2.7',
                      'Topic :: Internet'],
+      requires = ['boto', 'M2Crypto', 'requestbuilder'],
       cmdclass = {'build_scripts':   build_scripts_except_symlinks,
                   'install_scripts': install_scripts_and_symlinks,
-                  'sdist':           sdist_with_git_version})
+                  'sdist':           sdist_with_git_version},
+      **extra)
