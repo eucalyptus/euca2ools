@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2012, Eucalyptus Systems, Inc.
+# Copyright (c) 2012-2013, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -33,7 +33,7 @@ import base64
 from requestbuilder import EMPTY
 import sys
 
-def block_device_mapping(map_as_str):
+def ec2_block_device_mapping(map_as_str):
     '''
     Parse a block device mapping from an image registration command line.
     '''

@@ -31,7 +31,7 @@
 import base64
 from M2Crypto import RSA
 from requestbuilder import Arg
-from .argtypes import file_contents
+from ..argtypes import file_contents
 from .getpassworddata import GetPasswordData
 
 class GetPassword(GetPasswordData):

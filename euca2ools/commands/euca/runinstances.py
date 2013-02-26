@@ -34,7 +34,7 @@ import os.path
 from requestbuilder import Arg, MutuallyExclusiveArgList
 import sys
 from . import EucalyptusRequest
-from .argtypes import b64encoded_file_contents, block_device_mapping
+from ..argtypes import b64encoded_file_contents, ec2_block_device_mapping
 
 class RunInstances(EucalyptusRequest):
     DESCRIPTION = 'Launch instances of a machine image'

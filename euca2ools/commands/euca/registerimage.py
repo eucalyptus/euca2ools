@@ -30,7 +30,7 @@
 
 from requestbuilder import Arg
 from . import EucalyptusRequest
-from .argtypes import block_device_mapping
+from ..argtypes import ec2_block_device_mapping
 
 class RegisterImage(EucalyptusRequest):
     DESCRIPTION = 'Register a new image'

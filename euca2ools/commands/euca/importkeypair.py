@@ -31,7 +31,7 @@
 import base64
 from requestbuilder import Arg
 from . import EucalyptusRequest
-from .argtypes import file_contents
+from ..argtypes import file_contents
 
 class ImportKeyPair(EucalyptusRequest):
     API_VERSION = '2010-08-31'

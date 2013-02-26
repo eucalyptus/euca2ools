@@ -30,7 +30,7 @@
 
 from requestbuilder import Arg
 from . import EucalyptusRequest
-from .argtypes import ternary_tag_def
+from ..argtypes import ternary_tag_def
 
 class DeleteTags(EucalyptusRequest):
     API_VERSION = '2010-08-31'
