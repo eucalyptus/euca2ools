@@ -28,6 +28,7 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+from euca2ools.exceptions import AWSError
 from requestbuilder import Arg, SERVICE
 import requestbuilder.auth
 import requestbuilder.service
@@ -40,6 +41,9 @@ class AutoScaling(requestbuilder.service.BaseService):
     API_VERSION = '2011-01-01'
     AUTH_CLASS = requestbuilder.auth.QuerySigV2Auth
     URL_ENVVAR = 'AWS_AUTO_SCALING_URL'
+
+    def handle_http_error(self, response):
+        raise AWSError(response)
 
 class AutoScalingRequest(requestbuilder.request.AWSQueryRequest):
     SUITE = Euca2ools
