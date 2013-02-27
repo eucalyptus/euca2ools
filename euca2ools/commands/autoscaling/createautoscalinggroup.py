@@ -45,10 +45,6 @@ class CreateAutoScalingGroup(AutoScalingRequest):
                 required=True, help='maximum group size (required)'),
             Arg('-m', '--min-size', dest='MinSize', metavar='COUNT', type=int,
                 required=True, help='minimum group size (required)'),
-            Arg('--availability-zones', dest='AvailabilityZones.member',
-                metavar='ZONE,ZONE,...', type=delimited_list(','),
-                help='''comma-separated list of availability zones for the new
-                group (required unless subnets are supplied)'''),
             Arg('--default-cooldown', dest='DefaultCooldown',
                 metavar='SECONDS', type=int,
                 help='''amount of time, in seconds, after a scaling activity
@@ -86,4 +82,8 @@ class CreateAutoScalingGroup(AutoScalingRequest):
                 metavar='ZONE,ZONE,...',
                 help='''comma-separated list of subnet identifiers.  If you
                 specify availability zones as well, ensure the subnets'
-                availability zones match the ones you specified''')]
+                availability zones match the ones you specified'''),
+            Arg('-z', '--availability-zones', dest='AvailabilityZones.member',
+                metavar='ZONE,ZONE,...', type=delimited_list(','),
+                help='''comma-separated list of availability zones for the new
+                group (required unless subnets are supplied)''')]
