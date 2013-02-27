@@ -36,7 +36,7 @@ from euca2ools.commands.autoscaling import AutoScalingRequest
 class UpdateAutoScalingGroup(AutoScalingRequest):
     DESCRIPTION = "Update an auto-scaling group's parameters"
     ARGS = [Arg('AutoScalingGroupName', metavar='NAME',
-                help='name of the new auto-scaling group (required)'),
+                help='name of the auto-scaling group to update (required)'),
             Arg('--default-cooldown', dest='DefaultCooldown',
                 metavar='SECONDS', type=int,
                 help='''amount of time, in seconds, after a scaling activity
