@@ -134,3 +134,11 @@ def ternary_tag_def(tag_str):
         return {'Key': key, 'Value': val or EMPTY}
     else:
         return {'Key': tag_str}
+
+def delimited_list(delimiter):
+    def _concrete_delimited_list(list_as_str):
+        if isinstance(list_as_str, str) and len(list_as_str) > 0:
+            return list(filter(None, list_as_str.split(',')))
+        else:
+            return []
+    return _concrete_delimited_list
