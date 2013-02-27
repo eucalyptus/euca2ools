@@ -40,7 +40,7 @@ class ListUsers(EuareRequest):
     LIST_MARKERS = ['Users']
 
     def main(self):
-        return PaginatedResponse(self, (None,), ('Groups',))
+        return PaginatedResponse(self, (None,), ('Users',))
 
     def prepare_for_page(self, page):
         # Pages are defined by markers
