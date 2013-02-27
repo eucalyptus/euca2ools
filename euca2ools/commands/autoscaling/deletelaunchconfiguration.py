@@ -34,7 +34,7 @@ from euca2ools.commands.autoscaling import AutoScalingRequest
 
 class DeleteLaunchConfiguration(AutoScalingRequest):
     DESCRIPTION = 'Delete an auto-scaling instance launch configuration'
-    ARGS = [Arg('LaunchConfigurationName', metavar='LAUNCH_CONFIG',
+    ARGS = [Arg('LaunchConfigurationName', metavar='LAUNCHCONFIG',
                 help='name of the launch configuration to delete (required)'),
             Arg('-f', '--force', action='store_true', route_to=None,
                 help=argparse.SUPPRESS)]  # For compatibility

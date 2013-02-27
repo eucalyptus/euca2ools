@@ -34,7 +34,7 @@ from euca2ools.commands.autoscaling import AutoScalingRequest
 
 class CreateLaunchConfiguration(AutoScalingRequest):
     DESCRIPTION = 'Create a new auto-scaling instance launch configuration'
-    ARGS = [Arg('LaunchConfigurationName', metavar='LAUNCH_CONFIG',
+    ARGS = [Arg('LaunchConfigurationName', metavar='LAUNCHCONFIG',
                 help='name of the new launch configuration (required)'),
             Arg('-i', '--image-id', dest='ImageId', metavar='IMAGE',
                 required=True,
