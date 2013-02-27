@@ -42,15 +42,16 @@ class CreateLaunchConfiguration(AutoScalingRequest):
             Arg('-t', '--instance-type', dest='InstanceType', metavar='TYPE',
                 required=True,
                 help='instance type for use for instances (required)'),
-            Arg('--block-device-mapping', metavar='DEVICE=MAPPED',
-                help='''define a block device mapping for the image, in the
-                form DEVICE=MAPPED, where "MAPPED" is "none", "ephemeral(0-3)",
-                or "[SNAP-ID]:[SIZE]:[true|false]'''),
+            Arg('--block-device-mapping',
+                metavar='DEVICE=MAPPED,DEVICE=MAPPED,...', route_to=None,
+                help='''a comma-separated list of block device mappings for the
+                image, in the form form DEVICE=MAPPED, where "MAPPED" is "none",
+                "ephemeral(0-3)", or "[SNAP-ID]:[SIZE]:[true|false]'''),
             Arg('--ebs-optimized', dest='EbsOptimized', action='store_const',
                 const='true',
                 help='whether the instance is optimized for EBS I/O'),
-            Arg('--group', dest='SecurityGroups.member', type=','.split,
-                metavar='GROUP[,GROUP...]', help='''a comma-separated list of
+            Arg('--group', route_to=None,
+                metavar='GROUP,GROUP,...', help='''a comma-separated list of
                 security groups with which to associate instances.  Either all
                 group names or all group IDs are allowed, but not both.'''),
             Arg('--iam-instance-profile', dest='IamInstanceProfile',
@@ -76,3 +77,9 @@ class CreateLaunchConfiguration(AutoScalingRequest):
                 Arg('--user-data-file', dest='UserData', metavar='FILE',
                     type=open, help='''file containing data to make available to
                     instances'''))]
+
+    def preprocess(self):
+        mappings = map(ec2_block_device_mapping,
+                       self.args['block_device_mapping'].split(','))
+        self.params['BlockDeviceMappings.member'] = mappings
+        self.params['SecurityGroups.member'] = self.args['group'].split(',')
