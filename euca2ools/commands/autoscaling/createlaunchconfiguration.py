@@ -29,7 +29,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 from requestbuilder import Arg, MutuallyExclusiveArgList
-from euca2ools.commands.argtypes import ec2_block_device_mapping
+from euca2ools.commands.argtypes import delimited_list, ec2_block_device_mapping
 from euca2ools.commands.autoscaling import AutoScalingRequest
 
 class CreateLaunchConfiguration(AutoScalingRequest):
@@ -42,18 +42,19 @@ class CreateLaunchConfiguration(AutoScalingRequest):
             Arg('-t', '--instance-type', dest='InstanceType', metavar='TYPE',
                 required=True,
                 help='instance type for use for instances (required)'),
-            Arg('--block-device-mapping',
-                metavar='DEVICE=MAPPED,DEVICE=MAPPED,...', route_to=None,
+            Arg('--block-device-mapping', dest='BlockDeviceMappings.member',
+                metavar='DEVICE=MAPPED,DEVICE=MAPPED,...',
+                type=delimited_list(','),
                 help='''a comma-separated list of block device mappings for the
                 image, in the form form DEVICE=MAPPED, where "MAPPED" is "none",
                 "ephemeral(0-3)", or "[SNAP-ID]:[SIZE]:[true|false]'''),
             Arg('--ebs-optimized', dest='EbsOptimized', action='store_const',
                 const='true',
                 help='whether the instance is optimized for EBS I/O'),
-            Arg('--group', route_to=None,
-                metavar='GROUP,GROUP,...', help='''a comma-separated list of
-                security groups with which to associate instances.  Either all
-                group names or all group IDs are allowed, but not both.'''),
+            Arg('--group', metavar='GROUP,GROUP,...', type=delimited_list(','),
+                route_to=None, help='''a comma-separated list of security
+                groups with which to associate instances.  Either all group
+                names or all group IDs are allowed, but not both.'''),
             Arg('--iam-instance-profile', dest='IamInstanceProfile',
                 metavar='PROFILE', help='''ARN of the instance profile
                 associated with instances' IAM roles'''),
@@ -79,7 +80,7 @@ class CreateLaunchConfiguration(AutoScalingRequest):
                     instances'''))]
 
     def preprocess(self):
-        mappings = map(ec2_block_device_mapping,
-                       self.args['block_device_mapping'].split(','))
-        self.params['BlockDeviceMappings.member'] = mappings
-        self.params['SecurityGroups.member'] = self.args['group'].split(',')
+        if self.args.get('block_device_mapping'):
+            mappings = map(ec2_block_device_mapping,
+                           self.args['block_device_mapping'])
+            self.params['BlockDeviceMappings.member'] = mappings
