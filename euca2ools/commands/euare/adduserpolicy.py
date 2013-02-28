@@ -120,7 +120,8 @@ class AddUserPolicy(AWSQueryRequest):
         self.policy = self.build_policy()
         obj = euca2ools.commands.euare.putuserpolicy.PutUserPolicy()
         return obj.main(user_name=self.user_name, policy_name=self.policy_name,
-                        policy_document=self.policy)
+                        policy_document=self.policy,
+                        delegate=self.args.get('delegate'))
 
     def main_cli(self):
         euca2ools.utils.print_version_if_necessary()
