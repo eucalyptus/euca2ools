@@ -35,7 +35,7 @@ from . import EuareRequest, AS_ACCOUNT
 class ListAccountAliases(EuareRequest):
     DESCRIPTION = "List your account's aliases"
     ARGS = [AS_ACCOUNT]
-    LIST_MARKERS = ['AccountAliases']
+    LIST_TAGS = ['AccountAliases']
 
     def print_result(self, result):
         # These are technically allowed to paginate, but I haven't seen

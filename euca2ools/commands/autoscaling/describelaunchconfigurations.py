@@ -41,8 +41,8 @@ class DescribeLaunchConfigurations(AutoScalingRequest, TabifyingCommand):
                 help='limit results to specific launch configurations'),
             Arg('--show-long', action='store_true', route_to=None,
                 help="show all of the launch configurations' info")]
-    LIST_MARKERS = ['LaunchConfigurations', 'SecurityGroups',
-                    'BlockDeviceMappings']
+    LIST_TAGS = ['LaunchConfigurations', 'SecurityGroups',
+                 'BlockDeviceMappings']
 
     def main(self):
         return PaginatedResponse(self, (None,), ('LaunchConfigurations',))

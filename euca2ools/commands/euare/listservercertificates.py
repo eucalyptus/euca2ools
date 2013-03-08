@@ -38,7 +38,7 @@ class ListServerCertificates(EuareRequest):
                 help='''limit results to server certificates that begin with a
                         given path'''),
             AS_ACCOUNT]
-    LIST_MARKERS = ['ServerCertificateMetadataList']
+    LIST_TAGS = ['ServerCertificateMetadataList']
 
     def main(self):
         return PaginatedResponse(self, (None,),

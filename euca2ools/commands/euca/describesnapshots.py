@@ -63,7 +63,7 @@ class DescribeSnapshots(EucalyptusRequest):
                                 help='specific tag key/value combination'),
                Filter('volume-id', help='source volume ID'),
                Filter('volume-size', type=int)]
-    LIST_MARKERS = ['snapshotSet', 'tagSet']
+    LIST_TAGS = ['snapshotSet', 'tagSet']
 
     def configure(self):
         EucalyptusRequest.configure(self)

@@ -43,7 +43,7 @@ class DescribeAvailabilityZones(EucalyptusRequest):
                       help='region the availability zone is in'),
                Filter('state', help='state of the availability zone'),
                Filter('zone-name', help='name of the availability zone')]
-    LIST_MARKERS = ['availabilityZoneInfo', 'messageSet']
+    LIST_TAGS = ['availabilityZoneInfo', 'messageSet']
 
     def send(self):
         try:

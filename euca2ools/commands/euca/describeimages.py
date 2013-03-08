@@ -96,7 +96,7 @@ class DescribeImages(EucalyptusRequest):
                       help='virtualization type ("paravirtual" or "hvm")'),
                Filter('hypervisor', choices=('ovm', 'xen'),
                       help='image\'s hypervisor type ("ovm" or "xen")')]
-    LIST_MARKERS = ['imagesSet', 'blockDeviceMapping', 'tagSet']
+    LIST_TAGS = ['imagesSet', 'blockDeviceMapping', 'tagSet']
 
     def configure(self):
         EucalyptusRequest.configure(self)

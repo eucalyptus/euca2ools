@@ -36,7 +36,7 @@ from . import EuareRequest
 class ListAccounts(EuareRequest, TabifyingCommand):
     DESCRIPTION = ("[Eucalyptus only] List all of the cloud's accounts. This "
                    "command is only usable by cloud administrators.")
-    LIST_MARKERS = ['Accounts']
+    LIST_TAGS = ['Accounts']
 
     def print_result(self, result):
         for account in result.get('Accounts', []):

@@ -52,7 +52,7 @@ class ListAllMyBuckets(WalrusRequest, TabifyingCommand):
 
     def parse_response(self, response):
         response_dict = self.log_and_parse_response(response,
-                parse_listdelimited_aws_xml, list_markers=('Buckets',))
+                parse_listdelimited_aws_xml, list_tags=('Buckets',))
         return response_dict['ListAllMyBucketsResult']
 
     def print_result(self, result):

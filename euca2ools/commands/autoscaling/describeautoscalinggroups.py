@@ -41,9 +41,9 @@ class DescribeAutoScalingGroups(AutoScalingRequest, TabifyingCommand):
                 help='limit results to specific auto-scaling groups'),
             Arg('--show-long', action='store_true', route_to=None,
                 help="show all of the groups' info")]
-    LIST_MARKERS = ['AutoScalingGroups', 'AvailabilityZones',
-                    'EnabledMetrics', 'Instances', 'LoadBalancerNames',
-                    'SuspendedProcesses', 'Tags', 'TerminationPolicies']
+    LIST_TAGS = ['AutoScalingGroups', 'AvailabilityZones', 'EnabledMetrics',
+                 'Instances', 'LoadBalancerNames', 'SuspendedProcesses',
+                 'Tags', 'TerminationPolicies']
 
     def main(self):
         return PaginatedResponse(self, (None,), ('AutoScalingGroups',))

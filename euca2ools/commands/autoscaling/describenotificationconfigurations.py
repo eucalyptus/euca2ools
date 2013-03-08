@@ -40,7 +40,7 @@ class DescribeNotificationConfigurations(AutoScalingRequest, TabifyingCommand):
     ARGS = [Arg('AutoScalingGroupNames.member', metavar='ASGROUP',
                 nargs='*',
                 help='limit results to specific auto-scaling groups')]
-    LIST_MARKERS = ['NotificationConfigurations']
+    LIST_TAGS = ['NotificationConfigurations']
 
     def main(self):
         return PaginatedResponse(self, (None,),

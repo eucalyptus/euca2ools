@@ -36,7 +36,7 @@ class GetAccountSummary(EuareRequest):
     DESCRIPTION = '''Display account-level information about account entity
                      usage and IAM quotas'''
     PARAMS = [AS_ACCOUNT]
-    LIST_MARKERS = ['SummaryMap']
+    LIST_TAGS = ['SummaryMap']
 
     def print_result(self, result):
         for entry in sorted(result.get('SummaryMap', [])):

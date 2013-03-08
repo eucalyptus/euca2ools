@@ -40,7 +40,7 @@ class ListSigningCertificates(EuareRequest):
             Arg('-v', '--verbose', action='store_true', route_to=None,
                 help="also show certificates' contents"),
             AS_ACCOUNT]
-    LIST_MARKERS = ['Certificates']
+    LIST_TAGS = ['Certificates']
 
     def main(self):
         return PaginatedResponse(self, (None,), ('Certificates',))

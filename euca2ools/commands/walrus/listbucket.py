@@ -78,7 +78,7 @@ class ListBucket(WalrusRequest, TabifyingCommand):
 
     def parse_response(self, response):
         response_dict = self.log_and_parse_response(response,
-                parse_aws_xml, list_item_markers=('Contents', 'CommonPrefixes'))
+                parse_aws_xml, list_item_tags=('Contents', 'CommonPrefixes'))
         return response_dict['ListBucketResult']
 
     def print_result(self, result):

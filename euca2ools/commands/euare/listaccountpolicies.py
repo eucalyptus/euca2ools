@@ -48,7 +48,7 @@ class ListAccountPolicies(EuareRequest):
             Arg('--pretty-print', action='store_true', route_to=None,
                 help='''when printing the contents of policies, reformat them
                         for easier reading''')]
-    LIST_MARKERS = ['PolicyNames']
+    LIST_TAGS = ['PolicyNames']
 
     def main(self):
         return PaginatedResponse(self, (None,), ('PolicyNames',))

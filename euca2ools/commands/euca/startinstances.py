@@ -35,7 +35,7 @@ class StartInstances(EucalyptusRequest):
     DESCRIPTION = 'Start one or more stopped instances'
     ARGS = [Arg('InstanceId', metavar='INSTANCE', nargs='+',
                 help='instance(s) to start')]
-    LIST_MARKERS = ['instancesSet']
+    LIST_TAGS = ['instancesSet']
 
     def print_result(self, result):
         for instance in result.get('instancesSet', []):

@@ -35,7 +35,7 @@ from requestbuilder.mixins import TabifyingCommand
 class DescribeAdjustmentTypes(AutoScalingRequest, TabifyingCommand):
     DESCRIPTION = ('Describe policy adjustment types usable with scaling '
                    'policies')
-    LIST_MARKERS = ['AdjustmentTypes']
+    LIST_TAGS = ['AdjustmentTypes']
 
     def print_result(self, result):
         for adj_type in result.get('AdjustmentTypes', []):

@@ -42,7 +42,7 @@ class DescribeAutoScalingInstances(AutoScalingRequest, TabifyingCommand):
             Arg('--show-long', action='store_true', route_to=None,
                 help=argparse.SUPPRESS)]  # doesn't actually do anything, but
                                           # people will use it out of habit
-    LIST_MARKERS = ['AutoScalingInstances']
+    LIST_TAGS = ['AutoScalingInstances']
 
     def main(self):
         return PaginatedResponse(self, (None,), ('AutoScalingInstances',))

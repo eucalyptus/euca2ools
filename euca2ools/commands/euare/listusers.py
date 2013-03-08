@@ -37,7 +37,7 @@ class ListUsers(EuareRequest):
     ARGS = [Arg('-p', '--path-prefix', dest='PathPrefix', metavar='PREFIX',
                 help='limit results to users who begin with a given path'),
             AS_ACCOUNT]
-    LIST_MARKERS = ['Users']
+    LIST_TAGS = ['Users']
 
     def main(self):
         return PaginatedResponse(self, (None,), ('Users',))

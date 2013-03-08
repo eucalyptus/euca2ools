@@ -50,7 +50,7 @@ class DescribeScheduledActions(AutoScalingRequest, TabifyingCommand):
                 action names are provided.'''),
             Arg('--show-long', action='store_true', route_to=None,
                 help="show all of the scheduled actions' info")]
-    LIST_MARKERS = ['ScheduledUpdateGroupActions']
+    LIST_TAGS = ['ScheduledUpdateGroupActions']
 
     def main(self):
         return PaginatedResponse(self, (None,),

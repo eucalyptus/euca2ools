@@ -38,7 +38,7 @@ class ListMFADevices(EuareRequest):
     ARGS = [Arg('-u', '--user-name', dest='UserName', metavar='USER',
                 help='user to list MFA devices for (default: current user)'),
             AS_ACCOUNT]
-    LIST_MARKERS = ['MFADevices']
+    LIST_TAGS = ['MFADevices']
 
     def main(self):
         return PaginatedResponse(self, (None,), ('MFADevices',))

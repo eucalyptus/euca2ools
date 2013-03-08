@@ -41,7 +41,7 @@ class GetUserInfo(EuareRequest, TabifyingCommand):
             Arg('-k', '--info-key', dest='InfoKey',
                 help='name of the piece of user info to show'),
             AS_ACCOUNT]
-    LIST_MARKERS = ['Infos']
+    LIST_TAGS = ['Infos']
 
     def print_result(self, result):
         for info in data.get('Infos', []):

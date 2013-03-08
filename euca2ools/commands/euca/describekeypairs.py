@@ -38,7 +38,7 @@ class DescribeKeyPairs(EucalyptusRequest):
                 help='limit results to specific key pairs')]
     FILTERS = [Filter('fingerprint', help='fingerprint of the key pair'),
                Filter('key-name', help='name of the key pair')]
-    LIST_MARKERS = ['keySet']
+    LIST_TAGS = ['keySet']
 
     def print_result(self, result):
         for key in result.get('keySet', []):

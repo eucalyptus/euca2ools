@@ -39,7 +39,7 @@ class ListGroups(EuareRequest):
                 help='''restrict results to groups whose paths begin with a
                         specific prefix'''),
             AS_ACCOUNT]
-    LIST_MARKERS = ['Groups']
+    LIST_TAGS = ['Groups']
 
     def main(self):
         return PaginatedResponse(self, (None,), ('Groups',))

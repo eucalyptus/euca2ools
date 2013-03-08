@@ -38,7 +38,7 @@ class ListGroupsForUser(EuareRequest):
     ARGS = [Arg('-u', '--user-name', dest='UserName', metavar='USER',
                 required=True, help='user to list membership for (required)'),
             AS_ACCOUNT]
-    LIST_MARKERS = ['Groups']
+    LIST_TAGS = ['Groups']
 
     def main(self):
         return PaginatedResponse(self, (None,), ('Groups',))

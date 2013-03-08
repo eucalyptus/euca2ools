@@ -34,7 +34,7 @@ from requestbuilder.mixins import TabifyingCommand
 
 class DescribeTerminationPolicyTypes(AutoScalingRequest, TabifyingCommand):
     DESCRIPTION = 'List all termination policies supported by the service'
-    LIST_MARKERS = ['TerminationPolicyTypes']
+    LIST_TAGS = ['TerminationPolicyTypes']
 
     def print_result(self, result):
         for tp_type in result.get('TerminationPolicyTypes', []):

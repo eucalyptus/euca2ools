@@ -99,8 +99,8 @@ class DescribeInstances(EucalyptusRequest):
                                 help='specific tag key/value combination'),
                Filter('virtualization-type', choices=['paravirtual', 'hvm']),
                Filter('vpc-id', help='ID of the VPC the instance is in')]
-    LIST_MARKERS = ['reservationSet', 'instancesSet', 'groupSet', 'tagSet',
-                    'blockDeviceMapping', 'productCodes']
+    LIST_TAGS = ['reservationSet', 'instancesSet', 'groupSet', 'tagSet',
+                 'blockDeviceMapping', 'productCodes']
 
     def print_result(self, result):
         for reservation in result.get('reservationSet'):

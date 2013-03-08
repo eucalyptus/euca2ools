@@ -91,8 +91,8 @@ class RunInstances(EucalyptusRequest):
                 choices=('stop', 'terminate'),
                 help=('whether to "stop" (default) or terminate EBS instances '
                       'when they shut down'))]
-    LIST_MARKERS = ['reservationSet', 'instancesSet', 'groupSet', 'tagSet',
-                    'blockDeviceMapping', 'productCodes']
+    LIST_TAGS = ['reservationSet', 'instancesSet', 'groupSet', 'tagSet',
+                 'blockDeviceMapping', 'productCodes']
 
     def preprocess(self):
         counts = self.args['count'].split('-')

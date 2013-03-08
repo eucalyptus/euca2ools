@@ -42,7 +42,7 @@ class DescribePolicies(AutoScalingRequest, TabifyingCommand):
                 metavar='ASGROUP'),
             Arg('--show-long', action='store_true', route_to=None,
                 help="show all of the policies' info")]
-    LIST_MARKERS = ['ScalingPolicies', 'Alarms']
+    LIST_TAGS = ['ScalingPolicies', 'Alarms']
 
     def main(self):
         return PaginatedResponse(self, (None,), ('ScalingPolicies',))

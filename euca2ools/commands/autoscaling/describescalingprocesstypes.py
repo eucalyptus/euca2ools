@@ -34,7 +34,7 @@ from requestbuilder.mixins import TabifyingCommand
 
 class DescribeScalingProcessTypes(AutoScalingRequest, TabifyingCommand):
     DESCRIPTION = 'List all types of scaling processes'
-    LIST_MARKERS = ['Processes']
+    LIST_TAGS = ['Processes']
 
     def print_result(self, result):
         for process in result.get('Processes', []):

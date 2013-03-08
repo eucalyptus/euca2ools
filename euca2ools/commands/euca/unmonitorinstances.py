@@ -35,7 +35,7 @@ class UnmonitorInstances(EucalyptusRequest):
     DESCRIPTION = 'Disable monitoring for one or more instances'
     ARGS = [Arg('InstanceId', metavar='INSTANCE', nargs='+',
                 help='instance(s) to un-monitor')]
-    LIST_MARKERS = ['instancesSet']
+    LIST_TAGS = ['instancesSet']
 
     def print_result(self, result):
         for instance in result.get('instancesSet', []):

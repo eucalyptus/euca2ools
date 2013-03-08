@@ -38,7 +38,7 @@ class ListAccessKeys(EuareRequest):
     ARGS = [Arg('-u', '--user-name', dest='UserName', metavar='USER',
                 help='user to list keys for (default: current user)'),
             AS_ACCOUNT]
-    LIST_MARKERS = ['AccessKeyMetadata']
+    LIST_TAGS = ['AccessKeyMetadata']
 
     def main(self):
         return PaginatedResponse(self, (None,), ('AccessKeyMetadata',))

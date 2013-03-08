@@ -35,7 +35,7 @@ from requestbuilder.mixins import TabifyingCommand
 class DescribeAutoScalingNotificationTypes(AutoScalingRequest,
                                            TabifyingCommand):
     DESCRIPTION = 'List all notification types supported by the service'
-    LIST_MARKERS = ['AutoScalingNotificationTypes']
+    LIST_TAGS = ['AutoScalingNotificationTypes']
 
     def print_result(self, result):
         for notif_type in result.get('AutoScalingNotificationTypes', []):

@@ -43,7 +43,7 @@ class DescribeScalingActivities(AutoScalingRequest, TabifyingCommand):
                 which to filter the request'''),
             Arg('--show-long', action='store_true', route_to=None,
                 help="show all of the groups' info")]
-    LIST_MARKERS = ['Activities']
+    LIST_TAGS = ['Activities']
 
     def main(self):
         return PaginatedResponse(self, (None,), ('Activities',))

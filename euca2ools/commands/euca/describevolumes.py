@@ -59,7 +59,7 @@ class DescribeVolumes(EucalyptusRequest):
                GenericTagFilter('tag:KEY',
                                 help='specific tag key/value combination'),
                Filter(name='volume-id')]
-    LIST_MARKERS = ['volumeSet', 'attachmentSet', 'tagSet']
+    LIST_TAGS = ['volumeSet', 'attachmentSet', 'tagSet']
 
     def print_result(self, result):
         for volume in result.get('volumeSet'):
