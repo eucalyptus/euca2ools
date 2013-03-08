@@ -28,8 +28,8 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-from requestbuilder import Arg
 from euca2ools.commands.autoscaling import AutoScalingRequest
+from requestbuilder import Arg
 
 
 class SetInstanceHealth(AutoScalingRequest):
@@ -37,11 +37,12 @@ class SetInstanceHealth(AutoScalingRequest):
     ARGS = [Arg('InstanceId', metavar='INSTANCE',
                 help='ID of the instance to update (required)'),
             Arg('-s', '--status', dest='HealthStatus', required=True,
-                choices=('Healthy', 'Unhealthy'), help='new status (required)'),
+                choices=('Healthy', 'Unhealthy'),
+                help='new status (required)'),
             Arg('--respect-grace-period', dest='ShouldRespectGracePeriod',
                 action='store_const', const='true',
-                help="""respect the associated auto-scaling group's grace period
-                (this is the default)"""),
+                help="""respect the associated auto-scaling group's grace
+                period (this is the default)"""),
             Arg('--no-respect-grace-period', dest='ShouldRespectGracePeriod',
                 action='store_const', const='false',
                 help="""ignore the associated auto-scaling group's grace period

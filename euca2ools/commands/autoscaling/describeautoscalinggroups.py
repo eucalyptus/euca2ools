@@ -33,6 +33,7 @@ from requestbuilder import Arg
 from requestbuilder.mixins import TabifyingCommand
 from requestbuilder.response import PaginatedResponse
 
+
 class DescribeAutoScalingGroups(AutoScalingRequest, TabifyingCommand):
     DESCRIPTION = 'Describe auto-scaling groups'
     ARGS = [Arg('AutoScalingGroupNames.member', metavar='ASGROUP',

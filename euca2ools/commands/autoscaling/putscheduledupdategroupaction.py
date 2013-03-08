@@ -34,11 +34,11 @@ from requestbuilder import Arg
 
 class PutScheduledUpdateGroupAction(AutoScalingRequest):
     DESCRIPTION = 'Schedule a scaling action for an auto-scaling group'
-    ARGS = [Arg('ScheduledActionName', metavar='NAME',
+    ARGS = [Arg('ScheduledActionName', metavar='ACTION',
                 help='name of the new scheduled action'),
             Arg('-g', '--auto-scaling-group', dest='AutoScalingGroupName',
-                metavar='ASGROUP', required=True, help='''auto-scaling group the
-                new action should affect (required)'''),
+                metavar='ASGROUP', required=True, help='''auto-scaling group
+                the new action should affect (required)'''),
             Arg('-b', '--start-time', dest='StartTime',
                 metavar='YYYY-MM-DDThh:mm:ssZ',
                 help='time for this action to start'),
@@ -46,8 +46,8 @@ class PutScheduledUpdateGroupAction(AutoScalingRequest):
                 metavar='YYYY-MM-DDThh:mm:ssZ',
                 help='time for this action to end'),
             Arg('-r', '--recurrence', dest='Recurrence',
-                metavar='"MIN HOUR DATE MONTH DAY"', help='''time when recurring
-                future actions will start, in crontab format'''),
+                metavar='"MIN HOUR DATE MONTH DAY"', help='''time when
+                recurring future actions will start, in crontab format'''),
             Arg('--desired-capacity', dest='DesiredCapacity', metavar='COUNT',
                 type=int, help='new capacity setting for the group'),
             Arg('--max-size', dest='MaxSize', metavar='COUNT', type=int,

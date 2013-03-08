@@ -34,6 +34,7 @@ from requestbuilder import Arg
 from requestbuilder.mixins import TabifyingCommand
 from requestbuilder.response import PaginatedResponse
 
+
 class DescribeAutoScalingInstances(AutoScalingRequest, TabifyingCommand):
     DESCRIPTION = 'Describe instances in auto-scaling groups'
     ARGS = [Arg('InstanceIds.member', metavar='INSTANCE', nargs='*',

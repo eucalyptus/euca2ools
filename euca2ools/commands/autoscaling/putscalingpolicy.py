@@ -28,9 +28,9 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-from requestbuilder import Arg
 from euca2ools.commands.argtypes import delimited_list
 from euca2ools.commands.autoscaling import AutoScalingRequest
+from requestbuilder import Arg
 
 
 class PutScalingPolicy(AutoScalingRequest):
@@ -38,12 +38,14 @@ class PutScalingPolicy(AutoScalingRequest):
     ARGS = [Arg('PolicyName', metavar='POLICY',
                 help='name of the policy to create or update (required)'),
             Arg('-g', '--auto-scaling-group', dest='AutoScalingGroupName',
-                metavar='ASGROUP', required=True, help='''name of the
-                auto-scaling group the policy is associated with (required)'''),
-            Arg('-a', '--adjustment', dest='ScalingAdjustment', metavar='SCALE',
-                type=int, required=True, help='''amount to scale the group's
-                capacity of the group.  Use a negative value, as in
-                "--adjustment=-1", to decrease capacity. (required)'''),
+                metavar='ASGROUP', required=True,
+                help='''name of the auto-scaling group the policy is associated
+                with (required)'''),
+            Arg('-a', '--adjustment', dest='ScalingAdjustment',
+                metavar='SCALE', type=int, required=True,
+                help='''amount to scale the group's capacity of the group.  Use
+                a negative value, as in "--adjustment=-1", to decrease
+                capacity. (required)'''),
             Arg('-t', '--type', dest='AdjustmentType', required=True,
                 choices=('ChangeInCapacity', 'ExactCapacity',
                          'PercentChangeInCapacity'), help='''whether the
@@ -52,7 +54,8 @@ class PutScalingPolicy(AutoScalingRequest):
                 number or a percentage of current capacity.  (required)'''),
             Arg('--cooldown', dest='Cooldown', metavar='SECONDS', type=int,
                 help='''waiting period after successful auto-scaling activities
-                during which later auto-scaling activities will not execute'''),
+                during which later auto-scaling activities will not
+                execute'''),
             Arg('-s', '--min-adjustment-step', dest='MinAdjustmentStep',
                 type=int, metavar='PERCENT',
                 help='''for a PercentChangeInCapacity type policy, guarantee

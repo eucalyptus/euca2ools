@@ -31,6 +31,7 @@
 from euca2ools.commands.autoscaling import AutoScalingRequest
 from requestbuilder.mixins import TabifyingCommand
 
+
 class DescribeScalingProcessTypes(AutoScalingRequest, TabifyingCommand):
     DESCRIPTION = 'List all types of scaling processes'
     LIST_MARKERS = ['Processes']

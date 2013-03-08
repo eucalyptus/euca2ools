@@ -28,13 +28,13 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-from requestbuilder import Arg
 from euca2ools.commands.autoscaling import AutoScalingRequest
+from requestbuilder import Arg
 
 
 class SetDesiredCapacity(AutoScalingRequest):
     DESCRIPTION = "Set an auto-scaling group's desired capacity"
-    ARGS = [Arg('AutoScalingGroupName', metavar='NAME',
+    ARGS = [Arg('AutoScalingGroupName', metavar='ASGROUP',
                 help='name of the auto-scaling group to update (required)'),
             Arg('-c', '--desired-capacity', dest='DesiredCapacity', type=int,
                 required=True,

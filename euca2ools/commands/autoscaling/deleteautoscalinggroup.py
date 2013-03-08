@@ -29,13 +29,13 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 import argparse
-from requestbuilder import Arg
 from euca2ools.commands.autoscaling import AutoScalingRequest
+from requestbuilder import Arg
 
 
 class DeleteAutoScalingGroup(AutoScalingRequest):
     DESCRIPTION = 'Delete an auto-scaling group'
-    ARGS = [Arg('AutoScalingGroupName', metavar='NAME',
+    ARGS = [Arg('AutoScalingGroupName', metavar='ASGROUP',
                 help='name of the auto-scaling group to delete (required)'),
             Arg('-d', '--force-delete', dest='ForceDelete',
                 action='store_const', const='true',

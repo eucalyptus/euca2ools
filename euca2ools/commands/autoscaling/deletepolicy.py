@@ -38,7 +38,8 @@ class DeletePolicy(AutoScalingRequest):
     ARGS = [Arg('PolicyName', metavar='POLICY',
                 help='name of the policy to delete (required)'),
             Arg('-g', '--auto-scaling-group', dest='AutoScalingGroupName',
-                metavar='ASGROUP', required=True, help='''name of the
-                auto-scaling group the policy is associated with (required)'''),
+                metavar='ASGROUP', required=True,
+                help='''name of the auto-scaling group the policy is associated
+                with (required)'''),
             Arg('-f', '--force', route_to=None, action='store_true',
                 help=argparse.SUPPRESS)]  # for compatibility

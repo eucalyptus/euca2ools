@@ -31,6 +31,7 @@
 from euca2ools.commands.autoscaling import AutoScalingRequest
 from requestbuilder.mixins import TabifyingCommand
 
+
 class DescribeTerminationPolicyTypes(AutoScalingRequest, TabifyingCommand):
     DESCRIPTION = 'List all termination policies supported by the service'
     LIST_MARKERS = ['TerminationPolicyTypes']

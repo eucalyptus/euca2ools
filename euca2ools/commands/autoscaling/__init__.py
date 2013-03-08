@@ -28,12 +28,13 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+from euca2ools.commands import Euca2ools
 from euca2ools.exceptions import AWSError
 from requestbuilder import Arg, SERVICE
 import requestbuilder.auth
 import requestbuilder.service
 import requestbuilder.request
-from .. import Euca2ools
+
 
 class AutoScaling(requestbuilder.service.BaseService):
     NAME = 'autoscaling'
@@ -44,6 +45,7 @@ class AutoScaling(requestbuilder.service.BaseService):
 
     def handle_http_error(self, response):
         raise AWSError(response)
+
 
 class AutoScalingRequest(requestbuilder.request.AWSQueryRequest):
     SUITE = Euca2ools

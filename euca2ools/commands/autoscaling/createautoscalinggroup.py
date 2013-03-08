@@ -28,15 +28,15 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-from requestbuilder import Arg
 from euca2ools.commands.argtypes import delimited_list
 from euca2ools.commands.autoscaling import AutoScalingRequest
 from euca2ools.commands.autoscaling.argtypes import autoscaling_tag_def
+from requestbuilder import Arg
 
 
 class CreateAutoScalingGroup(AutoScalingRequest):
     DESCRIPTION = 'Create a new auto-scaling group'
-    ARGS = [Arg('AutoScalingGroupName', metavar='NAME',
+    ARGS = [Arg('AutoScalingGroupName', metavar='ASGROUP',
                 help='name of the new auto-scaling group (required)'),
             Arg('-l', '--launch-configuration', dest='LaunchConfigurationName',
                 metavar='LAUNCHCONFIG', required=True, help='''name of the
@@ -60,7 +60,7 @@ class CreateAutoScalingGroup(AutoScalingRequest):
                 choices=('EC2', 'ELB'),
                 help='service to obtain health check status from'),
             Arg('--load-balancers', dest='LoadBalancerNames.member',
-                metavar='ELB,ELB,...', type=delimited_list(','),
+                metavar='ELB1,ELB2,...', type=delimited_list(','),
                 help='comma-separated list of load balancers to use'),
             Arg('--placement-group', dest='PlacementGroup',
                 help='placement group in which to launch new instances'),
@@ -75,15 +75,15 @@ class CreateAutoScalingGroup(AutoScalingRequest):
                 group.  A value for 'k=' is required for each tag.  The
                 remainders are optional.''')),
             Arg('--termination-policies', dest='TerminationPolicies.member',
-                metavar='POLICY,POLICY,...', type=delimited_list(','),
+                metavar='POLICY1,POLICY2,...', type=delimited_list(','),
                 help='''ordered list of termination policies.  The first has
                 the highest precedence.'''),
             Arg('--vpc-zone-identifier', dest='VPCZoneIdentifier',
-                metavar='ZONE,ZONE,...',
+                metavar='ZONE1,ZONE2,...',
                 help='''comma-separated list of subnet identifiers.  If you
                 specify availability zones as well, ensure the subnets'
                 availability zones match the ones you specified'''),
             Arg('-z', '--availability-zones', dest='AvailabilityZones.member',
-                metavar='ZONE,ZONE,...', type=delimited_list(','),
+                metavar='ZONE1,ZONE2,...', type=delimited_list(','),
                 help='''comma-separated list of availability zones for the new
                 group (required unless subnets are supplied)''')]

@@ -33,6 +33,7 @@ from requestbuilder import Arg
 from requestbuilder.mixins import TabifyingCommand
 from requestbuilder.response import PaginatedResponse
 
+
 class DescribeLaunchConfigurations(AutoScalingRequest, TabifyingCommand):
     DESCRIPTION = 'Describe auto-scaling instance launch configurations'
     ARGS = [Arg('LaunchConfigurationNames.member', metavar='LAUNCHCONFIG',
@@ -71,7 +72,8 @@ class DescribeLaunchConfigurations(AutoScalingRequest, TabifyingCommand):
                     bits.append(None)
                 bits.append(','.join(config.get('SecurityGroups', [])) or None)
                 bits.append(config.get('CreatedTime'))
-                bits.append(config.get('InstanceMonitoring', {}).get('Enabled'))
+                bits.append(config.get('InstanceMonitoring', {}).get(
+                    'Enabled'))
                 bits.append(config.get('LaunchConfigurationARN'))
             bits.append(config.get('SpotPrice'))
             bits.append(config.get('IamInstanceProfile'))
@@ -87,5 +89,6 @@ def convert_block_mapping_to_str(mapping):
     elif mapping.get('VirtualName'):
         mapped = mapping['VirtualName']
     else:
-        raise ValueError('unexpected block device mapping: {0}'.format(mapping))
+        raise ValueError('unexpected block device mapping: {0}'.format(
+            mapping))
     return mapping['DeviceName'] + '=' + mapped

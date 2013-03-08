@@ -28,9 +28,9 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-from requestbuilder import Arg
 from euca2ools.commands.argtypes import delimited_list
 from euca2ools.commands.autoscaling import AutoScalingRequest
+from requestbuilder import Arg
 
 
 class DisableMetricsCollection(AutoScalingRequest):
@@ -38,5 +38,5 @@ class DisableMetricsCollection(AutoScalingRequest):
     ARGS = [Arg('AutoScalingGroupName', metavar='ASGROUP',
                 help='name of the auto-scaling group to update (required)'),
             Arg('-m', '--metrics', dest='Metrics.member',
-                metavar='METRIC,METRIC,...', type=delimited_list(','),
+                metavar='METRIC1,METRIC2,...', type=delimited_list(','),
                 help='list of metrics to disable (default: all metrics)')]

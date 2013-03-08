@@ -29,8 +29,9 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 import argparse
-from requestbuilder import Arg
 from euca2ools.commands.autoscaling import AutoScalingRequest
+from requestbuilder import Arg
+
 
 class DeleteLaunchConfiguration(AutoScalingRequest):
     DESCRIPTION = 'Delete an auto-scaling instance launch configuration'

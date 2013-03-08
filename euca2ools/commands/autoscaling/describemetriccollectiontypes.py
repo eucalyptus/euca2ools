@@ -31,6 +31,7 @@
 from euca2ools.commands.autoscaling import AutoScalingRequest
 from requestbuilder.mixins import TabifyingCommand
 
+
 class DescribeMetricCollectionTypes(AutoScalingRequest, TabifyingCommand):
     DESCRIPTION = 'Describe auto-scaling metrics and granularities'
     LIST_MARKERS = ['Metrics', 'Granularities']

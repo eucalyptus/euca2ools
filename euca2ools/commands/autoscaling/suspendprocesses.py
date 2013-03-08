@@ -28,16 +28,16 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-from requestbuilder import Arg
 from euca2ools.commands.argtypes import delimited_list
 from euca2ools.commands.autoscaling import AutoScalingRequest
+from requestbuilder import Arg
 
 
 class SuspendProcesses(AutoScalingRequest):
     DESCRIPTION = "Suspend an auto-scaling group's auto-scaling processes"
-    ARGS = [Arg('AutoScalingGroupName', metavar='NAME',
+    ARGS = [Arg('AutoScalingGroupName', metavar='ASGROUP',
                 help='name of the auto-scaling group to update (required)'),
             Arg('--processes', dest='ScalingProcesses.member',
-                metavar='PROCESS,PROCESS,...', type=delimited_list(','),
+                metavar='PROCESS1,PROCESS2,...', type=delimited_list(','),
                 help='''comma-separated list of auto-scaling processes to
                 suspend (default: all processes)''')]

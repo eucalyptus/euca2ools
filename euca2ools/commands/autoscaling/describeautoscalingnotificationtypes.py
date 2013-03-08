@@ -31,6 +31,7 @@
 from euca2ools.commands.autoscaling import AutoScalingRequest
 from requestbuilder.mixins import TabifyingCommand
 
+
 class DescribeAutoScalingNotificationTypes(AutoScalingRequest,
                                            TabifyingCommand):
     DESCRIPTION = 'List all notification types supported by the service'

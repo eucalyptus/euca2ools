@@ -28,6 +28,7 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+
 def autoscaling_tag_def(tag_str):
     tag_dict = {}
     pieces = ','.split(tag_str)
@@ -54,5 +55,5 @@ def autoscaling_tag_def(tag_str):
             raise ValueError("unrecognized tag segment '{0}'".format(piece))
     if not tag_dict.get('Key'):
         raise ValueError(
-                "tag '{0}' must contain a 'k=' segment with a non-empty value")
+            "tag '{0}' must contain a 'k=' segment with a non-empty value")
     return tag_dict

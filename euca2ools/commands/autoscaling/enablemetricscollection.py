@@ -28,9 +28,9 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-from requestbuilder import Arg
 from euca2ools.commands.argtypes import delimited_list
 from euca2ools.commands.autoscaling import AutoScalingRequest
+from requestbuilder import Arg
 
 
 class EnableMetricsCollection(AutoScalingRequest):
@@ -40,5 +40,5 @@ class EnableMetricsCollection(AutoScalingRequest):
             Arg('-g', '--granularity', dest='Granularity', required=True,
                 help='granularity at which to collect metrics (required)'),
             Arg('-m', '--metrics', dest='Metrics.member',
-                metavar='METRIC,METRIC,...', type=delimited_list(','),
+                metavar='METRIC1,METRIC2,...', type=delimited_list(','),
                 help='list of metrics to collect (default: all metrics)')]

@@ -33,6 +33,7 @@ from requestbuilder import Arg
 from requestbuilder.mixins import TabifyingCommand
 from requestbuilder.response import PaginatedResponse
 
+
 class DescribeNotificationConfigurations(AutoScalingRequest, TabifyingCommand):
     DESCRIPTION = ('Describe notification actions associated with '
                    'auto-scaling groups')
@@ -42,7 +43,8 @@ class DescribeNotificationConfigurations(AutoScalingRequest, TabifyingCommand):
     LIST_MARKERS = ['NotificationConfigurations']
 
     def main(self):
-        return PaginatedResponse(self, (None,), ('NotificationConfigurations',))
+        return PaginatedResponse(self, (None,),
+                                 ('NotificationConfigurations',))
 
     def prepare_for_page(self, page):
         # Pages are defined by NextToken

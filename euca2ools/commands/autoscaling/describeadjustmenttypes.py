@@ -31,6 +31,7 @@
 from euca2ools.commands.autoscaling import AutoScalingRequest
 from requestbuilder.mixins import TabifyingCommand
 
+
 class DescribeAdjustmentTypes(AutoScalingRequest, TabifyingCommand):
     DESCRIPTION = ('Describe policy adjustment types usable with scaling '
                    'policies')

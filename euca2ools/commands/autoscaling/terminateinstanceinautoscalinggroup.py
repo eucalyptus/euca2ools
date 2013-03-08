@@ -34,7 +34,8 @@ from requestbuilder import Arg, MutuallyExclusiveArgList
 from requestbuilder.mixins import TabifyingCommand
 
 
-class TerminateInstanceInAutoScalingGroup(AutoScalingRequest, TabifyingCommand):
+class TerminateInstanceInAutoScalingGroup(AutoScalingRequest,
+                                          TabifyingCommand):
     DESCRIPTION = "Manually terminate an auto-scaling instance"
     ARGS = [Arg('InstanceId', metavar='INSTANCE',
                 help='ID of the instance to terminate (required)'),
@@ -43,11 +44,12 @@ class TerminateInstanceInAutoScalingGroup(AutoScalingRequest, TabifyingCommand):
                     dest='ShouldDecrementDesiredCapacity', const='true',
                     help='''also reduce the desired capacity of the
                     auto-scaling group by 1'''),
-                Arg('-D', '--no-decrement-desired-capacity', const='false',
-                    dest='ShouldDecrementDesiredCapacity', action='store_const',
+                Arg('-D', '--no-decrement-desired-capacity',
+                    dest='ShouldDecrementDesiredCapacity',
+                    action='store_const', const='false',
                     help='''leave the auto-scaling group's desired capacity
-                            as-is.  A new instance will be launched to
-                            compensate for this one.''')),
+                    as-is.  A new instance may be launched to compensate for
+                    the one being terminated.''')),
             Arg('--show-long', action='store_true', route_to=None,
                 help='show extra info about the instance being terminated'),
             Arg('-f', '--force', action='store_true', route_to=None,
