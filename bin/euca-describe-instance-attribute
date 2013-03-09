@@ -1,0 +1,7 @@
+#!/usr/bin/python
+
+import euca2ools.commands.euca.describeinstanceattribute
+
+if __name__ == '__main__':
+    cmd = euca2ools.commands.euca.describeinstanceattribute.DescribeInstanceAttribute()
+    cmd.main_cli()
