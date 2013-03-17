@@ -29,8 +29,9 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 import base64
+from euca2ools.commands.euca import EucalyptusRequest
 from requestbuilder import Arg
-from . import EucalyptusRequest
+
 
 CHAR_ESCAPES = {
         u'\x00': u'^@',    u'\x0c': u'^L',    u'\x17': u'^W',
@@ -45,11 +46,13 @@ CHAR_ESCAPES = {
         u'\x0b': u'^K',    u'\x16': u'^V',    u'\x7f': u'^?',
 }
 
+
 class GetConsoleOutput(EucalyptusRequest):
     DESCRIPTION = 'Retrieve console output for the specified instance'
-    ARGS = [Arg('InstanceId', metavar='INSTANCE',
-                help='instance to obtain console output from'),
-            Arg('--raw', action='store_true', route_to=None,
+    ARGS = [Arg('InstanceId', metavar='INSTANCE', help='''ID of the instance to
+                obtain console output from (required)'''),
+            Arg('-r', '--raw-console-output', action='store_true',
+                route_to=None,
                 help='Display raw output without escaping control characters')]
 
     def print_result(self, result):
@@ -57,7 +60,7 @@ class GetConsoleOutput(EucalyptusRequest):
         print result.get('timestamp', '')
         output = base64.b64decode(result.get('output', ''))
         output = output.decode()
-        if not self.args['raw']:
+        if not self.args['raw_console_output']:
             # Escape control characters
             for char, escape in CHAR_ESCAPES.iteritems():
                 output = output.replace(char, escape)

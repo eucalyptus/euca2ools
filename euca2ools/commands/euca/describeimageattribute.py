@@ -28,8 +28,9 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+from euca2ools.commands.euca import EucalyptusRequest
 from requestbuilder import Arg, MutuallyExclusiveArgList
-from . import EucalyptusRequest
+
 
 class DescribeImageAttribute(EucalyptusRequest):
     DESCRIPTION = 'Show information about an attribute of an image'

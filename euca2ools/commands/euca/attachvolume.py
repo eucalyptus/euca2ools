@@ -28,16 +28,19 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+from euca2ools.commands.euca import EucalyptusRequest
 from requestbuilder import Arg
-from . import EucalyptusRequest
+
 
 class AttachVolume(EucalyptusRequest):
     DESCRIPTION = 'Attach an EBS volume to an instance'
     ARGS = [Arg('-i', '--instance', dest='InstanceId', metavar='INSTANCE',
-                required=True, help='instance to attach the folume to'),
+                required=True,
+                help='instance to attach the volume to (required)'),
             Arg('-d', '--device', dest='Device', required=True,
-                help='device name exposed to the instance'),
-            Arg('VolumeId', metavar='VOLUME', help='volume to attach')]
+                help='device name exposed to the instance (required)'),
+            Arg('VolumeId', metavar='VOLUME',
+                help='ID of the volume to attach (required)')]
 
     def print_result(self, result):
         self.print_attachment(result)

@@ -28,12 +28,12 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+from euca2ools.commands.euca import EucalyptusRequest, RESOURCE_TYPE_MAP
 from requestbuilder import Filter
-from . import EucalyptusRequest, RESOURCE_TYPE_MAP
+
 
 class DescribeTags(EucalyptusRequest):
-    API_VERSION = '2010-08-31'
-    DESCRIPTION = 'List tags associated with your account'
+    DESCRIPTION = "List tags associated with your account's resources"
     FILTERS = [Filter('key'),
                Filter('resource-id'),
                Filter('resource-type',

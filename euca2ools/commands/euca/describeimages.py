@@ -28,19 +28,17 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+from euca2ools.commands.euca import EucalyptusRequest
 from requestbuilder import Arg, Filter, GenericTagFilter
-from . import EucalyptusRequest
+from requestbuilder.exceptions import ArgumentError
+
 
 class DescribeImages(EucalyptusRequest):
-    DESCRIPTION = '''\
-        Show information about images
-
-        By default, only images the caller owns and images for which the caller
-        has explicit launch permissions are shown.'''
-
-    API_VERSION = '2010-08-31'
+    DESCRIPTION = ('Show information about images\n\nBy default, only images '
+                   'your account owns and images for which your account has '
+                   'explicit launch permissions are shown.')
     ARGS = [Arg('ImageId', metavar='IMAGE', nargs='*',
-                help='limit results to one or more images'),
+                help='limit results to specific images'),
             Arg('-a', '--all', action='store_true', route_to=None,
                 help='describe all images'),
             Arg('-o', '--owner', dest='Owner', metavar='ACCOUNT',
@@ -48,20 +46,23 @@ class DescribeImages(EucalyptusRequest):
                 help='describe images owned by the specified owner'),
             Arg('-x', '--executable-by', dest='ExecutableBy',
                 metavar='ACCOUNT', action='append',
-                help='''describe images for which the specified entity has
-                        explicit launch permissions''')]
+                help='''describe images for which the specified account has
+                explicit launch permissions''')]
     FILTERS = [Filter('architecture', choices=('i386', 'x86_64', 'armhf'),
-                      help='image architecture'),
+                      help='CPU architecture'),
                Filter('block-device-mapping.delete-on-termination',
                       help='''whether a volume is deleted upon instance
-                              termination'''),
+                      termination'''),
                Filter('block-device-mapping.device-name',
                       help='device name for a volume mapped to the image'),
                Filter('block-device-mapping.snapshot-id',
                       help='snapshot ID for a volume mapped to the image'),
                Filter('block-device-mapping.volume-size',
                       help='volume size for a volume mapped to the image'),
+               Filter('block-device-mapping.volume-type',
+                      help='volume type for a volume mapped to the image'),
                Filter('description', help='image description'),
+               Filter('hypervisor', help='image\'s hypervisor type'),
                Filter('image-id'),
                Filter('image-type', choices=('machine', 'kernel', 'ramdisk'),
                       help='image type ("machine", "kernel", or "ramdisk")'),
@@ -82,7 +83,7 @@ class DescribeImages(EucalyptusRequest):
                       help='root device type ("ebs" or "instance-store")'),
                Filter('state', choices=('available', 'pending', 'failed'),
                       help='''image state ("available", "pending", or
-                              "failed")'''),
+                      "failed")'''),
                Filter('state-reason-code',
                       help='reason code for the most recent state change'),
                Filter('state-reason-message',
@@ -93,34 +94,33 @@ class DescribeImages(EucalyptusRequest):
                GenericTagFilter('tag:KEY',
                                 help='specific tag key/value combination'),
                Filter('virtualization-type', choices=('paravirtual', 'hvm'),
-                      help='virtualization type ("paravirtual" or "hvm")'),
-               Filter('hypervisor', choices=('ovm', 'xen'),
-                      help='image\'s hypervisor type ("ovm" or "xen")')]
-    LIST_TAGS = ['imagesSet', 'blockDeviceMapping', 'tagSet']
+                      help='virtualization type ("paravirtual" or "hvm")')]
+    LIST_TAGS = ['imagesSet', 'productCodes', 'blockDeviceMapping', 'tagSet']
 
     def configure(self):
         EucalyptusRequest.configure(self)
         if self.args['all']:
             if self.args.get('ImageId'):
-                self._cli_parser.error('argument -a/--all: not allowed with '
-                                       'a list of images')
+                raise ArgumentError('argument -a/--all: not allowed with '
+                                    'a list of images')
             if self.args.get('ExecutableBy'):
-                self._cli_parser.error('argument -a/--all: not allowed with '
-                                       'argument -x/--executable-by')
+                raise ArgumentError('argument -a/--all: not allowed with '
+                                    'argument -x/--executable-by')
             if self.args.get('Owner'):
-                self._cli_parser.error('argument -a/--all: not allowed with '
-                                       'argument -o/--owner')
+                raise ArgumentError('argument -a/--all: not allowed with '
+                                    'argument -o/--owner')
 
     def main(self):
         if not any(self.args.get(item) for item in ('all', 'ImageId',
                                                     'ExecutableBy', 'Owner')):
             # Default to owned images and images with explicit launch perms
-            self.params = {'Owner': 'self'}
+            self.params['Owner'] = ['self']
             owned = self.send()
-            self.params = {'ExecutableBy': 'self'}
+            del self.params['Owner']
+            self.params['ExecutableBy'] = ['self']
             executable = self.send()
-            self.params = None
-            owned['imagesSet'] = (owned.get(     'imagesSet', []) +
+            del self.params['ExecutableBy']
+            owned['imagesSet'] = (owned.get('imagesSet', []) +
                                   executable.get('imagesSet', []))
             return owned
         else:

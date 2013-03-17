@@ -28,16 +28,54 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-from requestbuilder import Arg
-from . import EucalyptusRequest
+from euca2ools.commands.euca import EucalyptusRequest
+from requestbuilder import Arg, MutuallyExclusiveArgList
+from requestbuilder.exceptions import ArgumentError
+
 
 class AssociateAddress(EucalyptusRequest):
     DESCRIPTION = 'Associate an elastic IP address with a running instance'
-    ARGS = [Arg('-i', '--instance', dest='InstanceId', metavar='INSTANCE',
-                required=True, help='instance to associate the address with'),
-            Arg('PublicIp', metavar='ADDRESS', help='IP address to associate')]
+    ARGS = [MutuallyExclusiveArgList(True,
+                Arg('-i', '--instance-id', dest='InstanceId',
+                    metavar='INSTANCE', help='''ID of the instance to associate
+                    the address with'''),
+                Arg('-n', '--network-interface', dest='NetworkInterfaceId',
+                    metavar='INTERFACE', help='''[VPC only] network interface
+                    to associate the address with''')),
+            Arg('PublicIp', metavar='ADDRESS', nargs='?', help='''[Non-VPC
+                only] IP address to associate (required)'''),
+            Arg('-a', '--allocation-id', dest='AllocationId', metavar='ALLOC',
+                help='[VPC only] VPC allocation ID (required)'),
+            Arg('-p', '--private-ip-address', dest='PrivateIpAddress',
+                metavar='ADDRESS', help='''[VPC only] the private address to
+                associate with the address being associated in the VPC
+                (default: primary private IP)'''),
+            Arg('--allow-reassociation', dest='AllowReassociation',
+                action='store_const', const='true',
+                help='''[VPC only] allow the address to be associated even if
+                it is already associated with another interface''')]
+
+    def configure(self):
+        EucalyptusRequest.configure(self)
+        if (self.args.get('PublicIp') is not None and
+            self.args.get('AllocationId') is not None):
+            # Can't be both EC2 and VPC
+            raise ArgumentError(
+                'argument -a/--allocation-id: not allowed with an IP address')
+        if (self.args.get('PublicIp') is None and
+            self.args.get('AllocationId') is None):
+            # ...but we still have to be one of them
+            raise ArgumentError(
+                'argument -a/--allocation-id or an IP address is required')
 
     def print_result(self, result):
-        print self.tabify(('ADDRESS', self.args['PublicIp'],
-                           self.args['InstanceId'],
-                           result.get('associationId')))
+        if self.args.get('AllocationId'):
+            # VPC
+            print self.tabify(('ADDRESS', self.args.get('InstanceId'),
+                               self.args.get('AllocationId'),
+                               response.get('associationId'),
+                               self.args.get('PrivateIpAddress')))
+        else:
+            # EC2
+            print self.tabify(('ADDRESS', self.args.get('PublicIp'),
+                               self.args.get('InstanceId')))

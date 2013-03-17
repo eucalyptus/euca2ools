@@ -28,10 +28,11 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+from euca2ools.commands.euca import EucalyptusRequest
 from requestbuilder import Arg
-from . import EucalyptusRequest
+
 
 class RebootInstances(EucalyptusRequest):
     DESCRIPTION = 'Reboot one or more instances'
-    ARGS = [Arg('InstanceId', metavar='INSTANCE', nargs='+',
-                help='instance(s) to reboot')]
+    ARGS = [Arg('InstanceId', metavar='INSTANCE', nargs='+', help='''ID(s) of
+                the instance(s) to reboot (at least 1 required)''')]

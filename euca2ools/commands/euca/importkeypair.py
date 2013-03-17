@@ -28,23 +28,19 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-import base64
+from euca2ools.commands.argtypes import b64encoded_file_contents
+from euca2ools.commands.euca import EucalyptusRequest
 from requestbuilder import Arg
-from . import EucalyptusRequest
-from ..argtypes import file_contents
+
 
 class ImportKeyPair(EucalyptusRequest):
-    API_VERSION = '2010-08-31'
-    DESCRIPTION = 'Import a public RSA key'
+    DESCRIPTION = 'Import a public RSA key as a new key pair'
     ARGS = [Arg('KeyName', metavar='KEYPAIR',
-                help='name for the new key pair'),
-            Arg('-f', '--public-key-file', dest='pubkey', metavar='PUBKEY',
-                type=file_contents, required=True, route_to=None,
-                help='file name of the public key to import')]
-
-    def preprocess(self):
-        self.params = {'PublicKeyMaterial':
-                        base64.b64encode(self.args['pubkey'])}
+                help='name for the new key pair (required)'),
+            Arg('-f', '--public-key-file', dest='PublicKeyMaterial',
+                metavar='FILE', type=b64encoded_file_contents, required=True,
+                help='''name of a file containing the public key to import
+                (required)''')]
 
     def print_result(self, result):
         print self.tabify(['KEYPAIR', result.get('keyName'),

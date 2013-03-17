@@ -28,20 +28,17 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+from euca2ools.commands.euca import EucalyptusRequest
 from requestbuilder import Arg, Filter
-from . import EucalyptusRequest
+
 
 class DescribeSecurityGroups(EucalyptusRequest):
-    DESCRIPTION = '''\
-        Show information about security groups
-
-        Note that filters are matched on literal strings only, so
-        "--filter ip-permission.from-port=22" will *not* match a group with a
-        port range of 20 to 30.'''
-
-    API_VERSION = '2012-12-01'
-    ARGS = [Arg('group', metavar='GROUP', nargs='*', route_to=None, default=[],
-                help='limit results to one or more security groups')]
+    DESCRIPTION = ('Show information about security groups\n\nNote that '
+                   'filters are matched on literal strings only, so '
+                   '"--filter ip-permission.from-port=22" will *not* match a '
+                   'group with a port range of 20 to 30.')
+    ARGS = [Arg('group', metavar='GROUP', nargs='*', route_to=None,
+                default=[], help='limit results to specific security groups')]
     FILTERS = [Filter('description', help='group description'),
                Filter('group-id'),
                Filter('group-name'),
@@ -61,9 +58,11 @@ class DescribeSecurityGroups(EucalyptusRequest):
                Filter('owner-id', help=="account ID of the group's owner"),
                Filter('tag-key', help='key of a tag assigned to the group'),
                Filter('tag-value',
-                      help='value of a tag assigned to the group')]
+                      help='value of a tag assigned to the group'),
+               Filter('vpc-id',
+                      help='[VPC only] ID of a VPC the group belongs to')]
     LIST_TAGS = ['securityGroupInfo', 'ipPermissions', 'ipPermissionsEgress',
-                 'groups', 'ipRanges']
+                 'groups', 'ipRanges', 'tagSet']
 
     def preprocess(self):
         for group in self.args['group']:
@@ -81,12 +80,13 @@ class DescribeSecurityGroups(EucalyptusRequest):
     def print_group(self, group):
         print self.tabify(('GROUP', group.get('groupId'), group.get('ownerId'),
                            group.get('groupName'),
-                           group.get('groupDescription')))
+                           group.get('groupDescription'),
+                           group.get('vpcId')))
         for perm in group.get('ipPermissions', []):
             perm_base = ['PERMISSION', group.get('ownerId'),
-                         group.get('groupName'), 'ALLOWS']
-            perm_base.extend([perm.get('ipProtocol'), perm.get('fromPort'),
-                              perm.get('toPort')])
+                         group.get('groupName'), 'ALLOWS',
+                         perm.get('ipProtocol'), perm.get('fromPort'),
+                         perm.get('toPort')]
             for cidr_range in perm.get('ipRanges', []):
                 perm_item = ['FROM', 'CIDR', cidr_range.get('cidrIp'),
                              'ingress']
@@ -101,9 +101,9 @@ class DescribeSecurityGroups(EucalyptusRequest):
                 print self.tabify(perm_base + perm_item)
         for perm in group.get('ipPermissionsEgress', []):
             perm_base = ['PERMISSION', group.get('ownerId'),
-                         group.get('groupName'), 'ALLOWS']
-            perm_base.extend([perm.get('ipProtocol'), perm.get('fromPort'),
-                              perm.get('toPort')])
+                         group.get('groupName'), 'ALLOWS',
+                         perm.get('ipProtocol'), perm.get('fromPort'),
+                         perm.get('toPort')]
             for cidr_range in perm.get('ipRanges', []):
                 perm_item = ['TO', 'CIDR', cidr_range.get('cidrIp'), 'egress']
                 print self.tabify(perm_base + perm_item)
@@ -115,3 +115,6 @@ class DescribeSecurityGroups(EucalyptusRequest):
                     perm_item.extend(['GRPNAME', othergroup['groupName']])
                 perm_item.append('egress')
                 print self.tabify(perm_base + perm_item)
+        for tag in group.get('tagSet', []):
+            self.print_resource_tag(tag, (group.get('groupId') or
+                                          group.get('groupName')))

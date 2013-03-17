@@ -28,18 +28,20 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+from euca2ools.commands.euca import EucalyptusRequest
 from requestbuilder import Arg
-from . import EucalyptusRequest
+
 
 class DetachVolume(EucalyptusRequest):
     DESCRIPTION = 'Detach a volume from an instance'
-    ARGS = [Arg('VolumeId', metavar='VOLUME', help='volume to detach'),
+    ARGS = [Arg('VolumeId', metavar='VOLUME',
+                help='ID of the volume to detach (required)'),
             Arg('-i', '--instance', dest='InstanceID', metavar='INSTANCE',
                 help='instance to detach from'),
             Arg('-d', '--device', dest='Device', help='device name'),
             Arg('-f', '--force', action='store_const', const='true',
                 help='''detach without waiting for the instance.  Data may be
-                        lost''')]
+                lost.''')]
 
     def print_result(self, result):
         self.print_attachment(result)

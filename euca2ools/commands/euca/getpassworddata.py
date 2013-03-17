@@ -28,14 +28,17 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+from euca2ools.commands.euca import EucalyptusRequest
 from requestbuilder import Arg
-from . import EucalyptusRequest
+
 
 class GetPasswordData(EucalyptusRequest):
-    DESCRIPTION = '''Retrieve the encrypted administrator password for an
-                     instance running Windows'''
-    ARGS = [Arg('InstanceId', metavar='INSTANCE',
-                help='instance to obtain the initial password for')]
+    DESCRIPTION = ('Retrieve the encrypted administrator password for an '
+                   'instance running Windows.  The encrypted password may be '
+                   'decrypted using the private key of the key pair given '
+                   'when launching the instance.')
+    ARGS = [Arg('InstanceId', metavar='INSTANCE', help='''ID of the instance to
+                obtain the initial password for (required)''')]
 
     def print_result(self, result):
         if result.get('passwordData'):

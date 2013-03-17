@@ -28,28 +28,37 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+from euca2ools.commands.euca import EucalyptusRequest
 from requestbuilder import Arg
-from . import EucalyptusRequest
+from requestbuilder.exceptions import ArgumentError
+
 
 class CreateVolume(EucalyptusRequest):
     DESCRIPTION = 'Create a new volume'
-    ARGS = [Arg('-s', '--size', dest='Size', type=int,
-                help='''size of the new volume in GiB.  Required unless
-                        --snapshot is used'''),
+    ARGS = [Arg('-z', '--zone', dest='AvailabilityZone', metavar='ZONE',
+                required=True, help='''availability zone in which to create the
+                new volume (required)'''),
+            Arg('-s', '--size', dest='Size', type=int, help='''size of the new
+                volume in GiB (required unless --snapshot is used)'''),
             Arg('--snapshot', dest='SnapshotId', metavar='SNAPSHOT',
                 help='snapshot from which to create the new volume'),
-            Arg('-z', '--zone', dest='AvailabilityZone', metavar='ZONE',
-                required=True,
-                help='availability zone in which to create the new volume')]
+            Arg('-t', '--type', dest='VolumeType', metavar='VOLTYPE',
+                help='volume type'),
+            Arg('-i', '--iops', dest='Iops', type=int,
+                help='number of I/O operations per second')]
 
     def configure(self):
         EucalyptusRequest.configure(self)
         if not self.args.get('Size') and not self.args.get('SnapshotId'):
-            self._cli_parser.error('at least one of -s/--size and --snapshot '
-                                   'must be specified')
+            raise ArgumentError('-s/--size or --snapshot must be specified')
+        if self.args.get('Iops') and not self.args.get('VolumeType'):
+            raise ArgumentError('argument -i/--iops: -t/--type is required')
+        if self.args.get('Iops') and self.args.get('VolumeType') == 'standard':
+            raise ArgumentError(
+                'argument -i/--iops: not allowed with volume type "standard"')
 
     def print_result(self, result):
-        print self.tabify(['VOLUME', result.get('volumeId'),
+        print self.tabify(('VOLUME', result.get('volumeId'),
                            result.get('size'), result.get('snapshotId'),
                            result.get('availabilityZone'),
-                           result.get('status'), result.get('createTime')])
+                           result.get('status'), result.get('createTime')))

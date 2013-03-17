@@ -28,9 +28,11 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+from euca2ools.commands.argtypes import ec2_block_device_mapping
+from euca2ools.commands.euca import EucalyptusRequest
 from requestbuilder import Arg
-from . import EucalyptusRequest
-from ..argtypes import ec2_block_device_mapping
+from requestbuilder.exceptions import ArgumentError
+
 
 class RegisterImage(EucalyptusRequest):
     DESCRIPTION = 'Register a new image'
@@ -45,30 +47,31 @@ class RegisterImage(EucalyptusRequest):
                 choices=('i386', 'x86_64', 'armhf'),
                 help='CPU architecture of the new image'),
             Arg('--kernel', dest='KernelId', metavar='KERNEL',
-                help='kernel to associate with the new image'),
+                help='ID of the kernel to associate with the new image'),
             Arg('--ramdisk', dest='RamdiskId', metavar='RAMDISK',
-                help='ramdisk to associate with the new image'),
+                help='ID of the ramdisk to associate with the new image'),
             Arg('--root-device-name', dest='RootDeviceName', metavar='DEVICE',
                 help='root device name (default: /dev/sda1)'),
                 # ^ default is added by main()
-            Arg('--snapshot', route_to=None,
+            Arg('-s', '--snapshot', route_to=None,
                 help='snapshot to use for the root device'),
             Arg('-b', '--block-device-mapping', metavar='DEVICE=MAPPED',
                 dest='BlockDeviceMapping', action='append',
-                type=block_device_mapping, default=[],
+                type=ec2_block_device_mapping, default=[],
                 help='''define a block device mapping for the image, in the
                 form DEVICE=MAPPED, where "MAPPED" is "none", "ephemeral(0-3)",
-                or "[SNAP-ID]:[SIZE]:[true|false]"''')]
+                or
+                "[SNAP-ID]:[SIZE]:[true|false]:[standard|VOLTYPE[:IOPS]]"''')]
 
     def preprocess(self):
         if self.args.get('ImageLocation'):
             # instance-store image
             if self.args.get('RootDeviceName'):
-                self._cli_parser.error('argument --root-device-name: not '
-                        'allowed with argument MANIFEST')
+                raise ArgumentError('argument --root-device-name: not allowed '
+                    'with argument MANIFEST')
             if self.args.get('snapshot'):
-                self._cli_parser.error('argument --snapshot: not allowed '
-                        'with argument MANIFEST')
+                raise ArgumentError('argument --snapshot: not allowed with '
+                    'argument MANIFEST')
         else:
             # Try for an EBS image
             if not self.args.get('RootDeviceName'):
@@ -80,10 +83,9 @@ class RegisterImage(EucalyptusRequest):
                     if (snapshot and
                         snapshot != mapping.get('Ebs', {}).get('SnapshotId')):
                         # The mapping's snapshot differs or doesn't exist
-                        self._cli_parser.error('snapshot ID supplied with '
-                                '--snapshot conflicts with block device '
-                                'mapping for root device ' +
-                                mapping['DeviceName'])
+                        raise ArgumentError('snapshot ID supplied with '
+                            '--snapshot conflicts with block device mapping '
+                            'for root device ' + mapping['DeviceName'])
                     else:
                         # No need to apply --snapshot since the mapping is
                         # already there
@@ -92,10 +94,10 @@ class RegisterImage(EucalyptusRequest):
                 if snapshot:
                     self.args['BlockDeviceMapping'].append(
                             {'DeviceName': self.args['RootDeviceName'],
-                             'Ebs':        {'SnapshotId': snapshot}})
+                             'Ebs': {'SnapshotId': snapshot}})
                 else:
-                    self._cli_parser.error('either a manifest location or a '
-                            'root device snapshot mapping must be specified')
+                    raise ArgumentError('either a manifest location or a root '
+                        'device snapshot mapping must be specified')
 
     def print_result(self, result):
         print self.tabify(('IMAGE', result.get('imageId')))

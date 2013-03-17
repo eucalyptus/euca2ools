@@ -28,16 +28,17 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+from euca2ools.commands.euca import EucalyptusRequest
 from requestbuilder import Arg
-from . import EucalyptusRequest
+
 
 class MonitorInstances(EucalyptusRequest):
     DESCRIPTION = 'Enable monitoring for one or more instances'
-    ARGS = [Arg('InstanceId', metavar='INSTANCE', nargs='+',
-                help='instance(s) to monitor')]
+    ARGS = [Arg('InstanceId', metavar='INSTANCE', nargs='+', help='''ID(s) of
+                the instance(s) to begin monitoring (at least 1 required)''')]
     LIST_TAGS = ['instancesSet']
 
     def print_result(self, result):
         for instance in result.get('instancesSet', []):
             print self.tabify((instance.get('instanceId'), 'monitoring-' +
-                    instance.get('monitoring', {}).get('state')))
+                instance.get('monitoring', {}).get('state')))

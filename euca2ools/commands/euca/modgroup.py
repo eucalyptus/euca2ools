@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2012, Eucalyptus Systems, Inc.
+# Copyright (c) 2012-2013, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -28,76 +28,108 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+from euca2ools.commands.euca import EucalyptusRequest
 from requestbuilder import Arg, MutuallyExclusiveArgList
+from requestbuilder.exceptions import ArgumentError
 import sys
-from . import EucalyptusRequest
+
 
 class ModifySecurityGroupRequest(EucalyptusRequest):
     '''
     The basis for security group-editing commands
     '''
 
-    ARGS = [Arg('GroupName', metavar='GROUP',
-                help='name of the security group to modify'),
+    ARGS = [Arg('group', metavar='GROUP', route_to=None,
+                help='name or ID of the security group to modify (required)'),
+            Arg('--egress', action='store_true', route_to=None,
+                help='''[VPC only] manage an egress rule, which controls
+                traffic leaving the group'''),
             Arg('-P', '--protocol', dest='IpPermissions.1.IpProtocol',
                 choices=['tcp', 'udp', 'icmp', '6', '17', '1'], default='tcp',
                 help='protocol to affect (default: tcp)'),
-            Arg('-p', '--port-range', dest='port_range', route_to=None,
-                help='''range of ports (specified as "from-to") or a single
-                        port'''),
+            Arg('-p', '--port-range', dest='port_range', metavar='RANGE',
+                route_to=None, help='''range of ports (specified as "from-to")
+                or a single port number (required for tcp and udp)'''),
                 # ^ required for tcp and udp
             Arg('-t', '--icmp-type-code', dest='icmp_type_code',
                 metavar='TYPE:CODE', route_to=None,
-                help='ICMP type and code (specified as "type:code")'),
+                help='''ICMP type and code (specified as "type:code") (required
+                for icmp)'''),
                 # ^ required for icmp
             MutuallyExclusiveArgList(
                 Arg('-s', '--cidr', metavar='CIDR',
                     dest='IpPermissions.1.IpRanges.1.CidrIp',
                     help='''IP range (default: 0.0.0.0/0)'''),
                     # ^ default is added by main()
-                Arg('-o', metavar='GROUP',
-                    dest='IpPermissions.1.Groups.1.GroupName',
-                    help='''name of a security group with which to authorize
-                            network communication''')),
-            Arg('-u', metavar='GROUP_USER',
+                Arg('-o', dest='target_group', metavar='GROUP', route_to=None,
+                    help='''[Non-VPC only] name of a security group with which
+                    to affect network communication''')),
+            Arg('-u', metavar='ACCOUNT',
                 dest='IpPermissions.1.Groups.1.UserId',
                 help='''ID of the account that owns the security group
-                        specified with -o''')]
-                # ^ required if -o is used
+                specified with -o''')]
 
     def configure(self):
         EucalyptusRequest.configure(self)
+
+        if (self.args['group'].startswith('sg-') and
+            len(self.args['group']) == 11):
+            # The check could probably be a little better, but meh.  Fix if
+            # needed.
+            self.params['GroupId'] = self.args['group']
+        else:
+            if self.args['egress']:
+                raise ArgumentError('egress rules must use group IDs, not '
+                                    'names')
+            self.params['GroupName'] = self.args['group']
+
+        target_group = self.args.get('target_group')
+        if (target_group is not None and target_group.startswith('sg-') and
+            len(target_group) == 11):
+            # Same note as above
+            self.params['IpPermissions.1.Groups.1.GroupId'] = target_group
+        else:
+            if self.args['egress']:
+                raise ArgumentError('argument -o: egress rules must use group '
+                                    'IDs, not names')
+            self.params['IpPermissions.1.Groups.1.GroupName'] = target_group
 
         from_port = None
         to_port   = None
         protocol = self.args.get('IpPermissions.1.IpProtocol')
         if protocol in ['icmp', '1']:
+            if self.args.get('port_range'):
+                raise ArgumentError('argument -p/--port-range: not compatible '
+                                    'with protocol ' + protocol)
             if not self.args.get('icmp_type_code'):
-                self._cli_parser.error('argument -t/--icmp-type-code is '
-                                       'required for ICMP')
+                raise ArgumentError('argument -t/--icmp-type-code is required '
+                                    'for protocol ' + protocol)
             types = self.args['icmp_type_code'].split(':')
             if len(types) == 2:
                 try:
                     from_port = int(types[0])
                     to_port   = int(types[1])
                 except ValueError:
-                    self._cli_parser.error('argument -t/--icmp-type-code: '
-                                           'value must have format "1:2"')
+                    raise ArgumentError('argument -t/--icmp-type-code: value '
+                                        'must have format "1:2"')
             else:
-                self._cli_parser.error('argument -t/--icmp-type-code: value '
-                                       'must have format "1:2"')
+                raise ArgumentError('argument -t/--icmp-type-code: value must '
+                                    'have format "1:2"')
             if from_port < -1 or to_port < -1:
-                self._cli_parser.error('argument -t/--icmp-type-code: type, '
-                                       'code must be at least -1')
+                raise ArgumentError('argument -t/--icmp-type-code: type, code '
+                                    'must be at least -1')
 
         elif protocol in ['tcp', 'udp', '6', '17']:
+            if self.args.get('icmp_type_code'):
+                raise ArgumentError('argument -t/--icmp-type-code: not '
+                                    'compatible with protocol ' + protocol)
             if not self.args.get('port_range'):
-                self._cli_parser.error('argument -p/--port-range is required '
-                                       'for protocol ' + protocol)
+                raise ArgumentError('argument -p/--port-range is required for '
+                                    'protocol ' + protocol)
             if ':' in self.args['port_range']:
                 # Be extra helpful in the event of this common typo
-                self._cli_parser.error('argument -p/--port-range: multi-port '
-                        'range must be separated by "-", not ":"')
+                raise ArgumentError('argument -p/--port-range: multi-port '
+                                    'range must be separated by "-", not ":"')
             if self.args['port_range'].startswith('-'):
                 ports = self.args['port_range'][1:].split('-')
                 ports[0] = '-' + ports[0]
@@ -108,20 +140,20 @@ class ModifySecurityGroupRequest(EucalyptusRequest):
                     from_port = int(ports[0])
                     to_port   = int(ports[1])
                 except ValueError:
-                    self._cli_parser.error('argument -p/--port-range: '
-                            'multi-port value must be comprised of integers')
+                    raise ArgumentError('argument -p/--port-range: multi-port '
+                                        'value must be comprised of integers')
             elif len(ports) == 1:
                 try:
                     from_port = to_port = int(ports[0])
                 except ValueError:
-                    self._cli_parser.error('argument -p/--port-range: single '
-                                           'port value must be an integer')
+                    raise ArgumentError('argument -p/--port-range: single '
+                                        'port value must be an integer')
             else:
-                self._cli_parser.error('argument -p/--port-range: value must '
-                                       'have format "1" or "1-2"')
+                raise ArgumentError('argument -p/--port-range: value must '
+                                    'have format "1" or "1-2"')
             if from_port < -1 or to_port < -1:
-                self._cli_parser.error('argument -p/--port-range: port '
-                                       'number(s) must be at least -1')
+                raise ArgumentError('argument -p/--port-range: port number(s) '
+                                    'must be at least -1')
         else:
             # Shouldn't get here since argparse should only allow the values we
             # handle
@@ -133,27 +165,32 @@ class ModifySecurityGroupRequest(EucalyptusRequest):
         if not self.args.get('IpPermissions.1.IpRanges.1.GroupName'):
             self.args.setdefault('IpPermissions.1.IpRanges.1.CidrIp',
                                  '0.0.0.0/0')
-        if (self.args.get('IpPermissions.1.Groups.1.GroupName') and
+        if (self.params.get('IpPermissions.1.Groups.1.GroupName') and
             not self.args.get('IpPermissions.1.Groups.1.UserId')):
-            self._cli_parser.error('argument -u is required when -o is '
-                                   'specified')
+            raise ArgumentError('argument -u is required when -o names a '
+                                'security group by name')
 
     def print_result(self, result):
-        print self.tabify(['GROUP', self.args.get('GroupName')])
-        perm_str = ['PERMISSION', self.args.get('GroupName'), 'ALLOWS',
-                    self.args.get('IpPermissions.1.IpProtocol'),
-                    self.args.get('IpPermissions.1.FromPort'),
-                    self.args.get('IpPermissions.1.ToPort')]
-        if self.args.get('IpPermissions.1.Groups.1.UserId'):
+        print self.tabify(['GROUP', self.args.get('group')])
+        perm_str = ['PERMISSION', self.args.get('group'), 'ALLOWS',
+                    self.params.get('IpPermissions.1.IpProtocol'),
+                    self.params.get('IpPermissions.1.FromPort'),
+                    self.params.get('IpPermissions.1.ToPort')]
+        if self.params.get('IpPermissions.1.Groups.1.UserId'):
             perm_str.append('USER')
-            perm_str.append(self.args.get('IpPermissions.1.Groups.1.UserId'))
-        if self.args.get('IpPermissions.1.Groups.1.GroupName'):
+            perm_str.append(self.params.get('IpPermissions.1.Groups.1.UserId'))
+        if self.params.get('IpPermissions.1.Groups.1.GroupId'):
+            perm_str.append('GRPID')
+            perm_str.append(self.params.get(
+                'IpPermissions.1.Groups.1.GroupId'))
+        elif self.params.get('IpPermissions.1.Groups.1.GroupName'):
             perm_str.append('GRPNAME')
-            perm_str.append(self.args.get(
-                    'IpPermissions.1.Groups.1.GroupName'))
-        if self.args.get('IpPermissions.1.IpRanges.1.CidrIp'):
+            perm_str.append(self.params.get(
+                'IpPermissions.1.Groups.1.GroupName'))
+        if self.params.get('IpPermissions.1.IpRanges.1.CidrIp'):
             perm_str.extend(['FROM', 'CIDR'])
-            perm_str.append(self.args.get('IpPermissions.1.IpRanges.1.CidrIp'))
+            perm_str.append(self.params.get(
+                'IpPermissions.1.IpRanges.1.CidrIp'))
         print self.tabify(perm_str)
 
     def process_cli_args(self):

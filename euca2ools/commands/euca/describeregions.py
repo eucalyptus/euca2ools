@@ -28,11 +28,11 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+from euca2ools.commands.euca import EucalyptusRequest
 from requestbuilder import Arg, Filter
-from . import EucalyptusRequest
+
 
 class DescribeRegions(EucalyptusRequest):
-    API_VERSION = '2010-08-31'
     DESCRIPTION = 'Display information about regions'
     ARGS = [Arg('RegionName', nargs='*', metavar='REGION',
                 help='limit results to specific regions')]

@@ -28,13 +28,14 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+from euca2ools.commands.euca import EucalyptusRequest
 from requestbuilder import Arg
-from . import EucalyptusRequest
+
 
 class CancelBundleTask(EucalyptusRequest):
     DESCRIPTION = 'Cancel an instance bundling operation'
     ARGS = [Arg('BundleId', metavar='TASK-ID',
-                help='ID of the bundle task to cancel')]
+                help='ID of the bundle task to cancel (required)')]
 
     def print_result(self, result):
         self.print_bundle_task(result.get('bundleInstanceTask'))

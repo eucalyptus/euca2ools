@@ -29,16 +29,15 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 from argparse import SUPPRESS
+from euca2ools.commands.euca import EucalyptusRequest
 from requestbuilder import Arg, Filter, GenericTagFilter
-from . import EucalyptusRequest
+from requestbuilder.exceptions import ArgumentError
+
 
 class DescribeSnapshots(EucalyptusRequest):
-    API_VERSION = '2010-08-31'
-    DESCRIPTION = '''\
-        Show information about snapshots
-
-        By default, only snapshots explicitly restorable by the caller are
-        shown.'''
+    DESCRIPTION = ('Show information about snapshots\n\nBy default, only '
+                   'snapshots your account owns and snapshots for which your '
+                   'account has explicit restore permissions are shown.')
     ARGS = [Arg('SnapshotId', nargs='*', metavar='SNAPSHOT',
                 help='limit results to specific snapshots'),
             Arg('-a', '--all', action='store_true', route_to=None,
@@ -67,17 +66,29 @@ class DescribeSnapshots(EucalyptusRequest):
 
     def configure(self):
         EucalyptusRequest.configure(self)
+        if self.args.get('all'):
+            if self.args.get('Owner'):
+                raise ArgumentError('argument -a/--all: not allowed with '
+                                    'argument -o/--owner')
+            if self.args.get('RestorableBy'):
+                raise ArgumentError('argument -a/--all: not allowed with '
+                                    'argument -r/--restorable-by')
+
+    def main(self):
         if not any(self.args.get(item) for item in ('all', 'Owner',
                                                     'RestorableBy')):
-            # Default to restorable snapshots
-            self.args['RestorableBy'] = ['self']
-        elif self.args.get('all'):
-            if self.args.get('Owner'):
-                self._cli_parser.error('argument -a/--all: not allowed with '
-                                       'argument -o/--owner')
-            if self.args.get('RestorableBy'):
-                self._cli_parser.error('argument -a/--all: not allowed with '
-                                       'argument -r/--restorable-by')
+            # Default to owned snapshots and those with explicit restore perms
+            self.params['Owner'] = ['self']
+            owned = self.send()
+            del self.params['Owner']
+            self.params['RestorableBy'] = ['self']
+            restorable = self.send()
+            del self.params['RestorableBy']
+            owned['snapshotSet'] = (owned.get('snapshotSet', []) +
+                                    restorable.get('snapshotSet', []))
+            return owned
+        else:
+            return self.send()
 
     def print_result(self, result):
         for snapshot in result.get('snapshotSet', []):

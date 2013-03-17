@@ -28,14 +28,14 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+from euca2ools.commands.euca import EucalyptusRequest
 from requestbuilder import Arg, Filter
-from . import EucalyptusRequest
+
 
 class DescribeBundleTasks(EucalyptusRequest):
     DESCRIPTION = 'Describe current instance-bundling tasks'
-    API_VERSION = '2010-08-31'
     ARGS = [Arg('BundleId', metavar='BUNDLE', nargs='*',
-                help='limit results to one or more bundle tasks')]
+                help='limit results to specific bundle tasks')]
     FILTERS = [Filter('bundle-id', help='bundle task ID'),
                Filter('error-code',
                       help='if the task failed, the error code returned'),

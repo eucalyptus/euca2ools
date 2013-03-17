@@ -28,13 +28,15 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+from euca2ools.commands.euca import EucalyptusRequest
 import os
 from requestbuilder import Arg
-from . import EucalyptusRequest
+
 
 class CreateKeyPair(EucalyptusRequest):
     DESCRIPTION = 'Create a new SSH key pair for use with instances'
-    ARGS = [Arg('KeyName', metavar='KEYPAIR', help='name of the new key pair'),
+    ARGS = [Arg('KeyName', metavar='KEYPAIR',
+                help='name of the new key pair (required)'),
             Arg('-f', '--filename', metavar='FILE', route_to=None,
                 help='file name to save the private key to')]
 

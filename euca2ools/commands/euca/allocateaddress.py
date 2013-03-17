@@ -28,11 +28,17 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-import euca2ools.commands.euca
+from euca2ools.commands.euca import EucalyptusRequest
+from requestbuilder import Arg
 
-class AllocateAddress(euca2ools.commands.euca.EucalyptusRequest):
+
+class AllocateAddress(EucalyptusRequest):
     DESCRIPTION = 'Allocate a public IP address'
+    ARGS = [Arg('-d', '--domain', dest='Domain', metavar='vpc',
+                choices=('vpc',), help='''[VPC only] "vpc" to allocate the
+                address for use in a VPC''')]
 
     def print_result(self, result):
         print self.tabify(('ADDRESS', result.get('publicIp'),
-                           result.get('domain'), result.get('allocationId')))
+                           result.get('domain', 'standard'),
+                           result.get('allocationId')))

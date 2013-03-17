@@ -28,23 +28,22 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+from euca2ools.commands.argtypes import ternary_tag_def
+from euca2ools.commands.euca import EucalyptusRequest
 from requestbuilder import Arg
-from . import EucalyptusRequest
-from ..argtypes import ternary_tag_def
+
 
 class DeleteTags(EucalyptusRequest):
-    API_VERSION = '2010-08-31'
     DESCRIPTION = 'Delete tags from one or more resources'
-    ARGS = [Arg('ResourceId', metavar='RESOURCE', nargs='+',
-                help='IDs of the resource(s) to un-tag'),
+    ARGS = [Arg('ResourceId', metavar='RESOURCE', nargs='+', help='''ID(s) of
+                the resource(s) to un-tag (at least 1 required)'''),
             Arg('--tag', dest='Tag', metavar='KEY[=[VALUE]]',
                 type=ternary_tag_def, action='append', required=True,
                 help='''key and optional value of the tag to delete, separated
-                        by an "=" character.  If no value is given, but a "="
-                        character is, then the tag is deleted if its value is
-                        not an empty string.  If neither a value nor a "="
-                        character is given then the tag with that key is
-                        deleted regardless of its value.''')]
-
-    def print_result(self, result):
-        pass
+                by an "=" character.  If you specify a value then the tag is
+                deleted only if its value matches the one you specified.  If
+                you specify the empty string as the value (e.g. "--tag foo=")
+                then the tag is deleted only if its value is the empty
+                string.  If you do not specify a value (e.g. "--tag foo") then
+                the tag is deleted regardless of its value. (at least 1
+                required)''')]

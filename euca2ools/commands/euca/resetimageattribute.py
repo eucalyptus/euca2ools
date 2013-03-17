@@ -29,12 +29,13 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 from requestbuilder import Arg
-from . import EucalyptusRequest
+from euca2ools.commands.euca import EucalyptusRequest
+
 
 class ResetImageAttribute(EucalyptusRequest):
     DESCRIPTION = 'Reset an attribute of an image to its default value'
     ARGS = [Arg('ImageId', metavar='IMAGE',
-            help='image whose attribute should be reset'),
+            help='ID of the image whose attribute should be reset (required)'),
             Arg('-l', '--launch-permission', dest='Attribute',
                 action='store_const', const='launchPermission', required=True,
                 help='reset launch permissions')]

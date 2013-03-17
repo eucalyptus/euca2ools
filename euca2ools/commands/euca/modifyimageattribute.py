@@ -28,8 +28,10 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+from euca2ools.commands.euca import EucalyptusRequest
 from requestbuilder import Arg, MutuallyExclusiveArgList
-from . import EucalyptusRequest
+from requestbuilder.exceptions import ArgumentError
+
 
 class ModifyImageAttribute(EucalyptusRequest):
     DESCRIPTION = 'Modify an attribute of an image'
@@ -48,7 +50,7 @@ class ModifyImageAttribute(EucalyptusRequest):
                 "all" for all accounts'''),
             Arg('-r', '--remove', metavar='ENTITY', action='append',
                 default=[], route_to=None, help='''account to remove launch
-                permission from , or "all" for all accounts''')]
+                permission from, or "all" for all accounts''')]
 
     def preprocess(self):
         if self.args.get('launch_permission'):
@@ -66,16 +68,16 @@ class ModifyImageAttribute(EucalyptusRequest):
                 else:
                     lp['Remove'].append({'UserId': entity})
             if not lp:
-                self._cli_parser.error('at least one entity must be specified '
-                                       'with -a/--add or -r/--remove')
+                raise ArgumentError('at least one entity must be specified '
+                                    'with -a/--add or -r/--remove')
             self.params['LaunchPermission'] = lp
         else:
             if self.args.get('add'):
-                self._cli_parser.error('argument -a/--add may only be used '
-                                       'with -l/--launch-permission')
+                raise ArgumentError('argument -a/--add may only be used '
+                                    'with -l/--launch-permission')
             if self.args.get('remove'):
-                self._cli_parser.error('argument -r/--remove may only be used '
-                                       'with -l/--launch-permission')
+                raise ArgumentError('argument -r/--remove may only be used '
+                                    'with -l/--launch-permission')
 
     def print_result(self, result):
         if self.args.get('Description.Value'):

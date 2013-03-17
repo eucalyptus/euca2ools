@@ -29,19 +29,19 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 import base64
+from euca2ools.commands.argtypes import file_contents
+from euca2ools.commands.euca.getpassworddata import GetPasswordData
 from M2Crypto import RSA
 from requestbuilder import Arg
-from ..argtypes import file_contents
-from .getpassworddata import GetPasswordData
+
 
 class GetPassword(GetPasswordData):
-    ACTION = 'GetPasswordData'
-    DESCRIPTION = '''Retrieve the administrator password for an instance
-                     running Windows'''
-    ARGS = [Arg('-k', '--priv-launch-key', metavar='PRIVKEY',
+    DESCRIPTION = ('Retrieve the administrator password for an instance '
+                   'running Windows')
+    ARGS = [Arg('-k', '--priv-launch-key', metavar='FILE',
                 type=file_contents, required=True, route_to=None,
                 help='''file containing the private key corresponding to the
-                        key pair supplied at instance launch time''')]
+                key pair supplied at instance launch time (required)''')]
 
     def print_result(self, result):
         try:

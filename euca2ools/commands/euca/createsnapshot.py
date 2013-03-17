@@ -28,18 +28,20 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+from euca2ools.commands.euca import EucalyptusRequest
 from requestbuilder import Arg
-from . import EucalyptusRequest
+
 
 class CreateSnapshot(EucalyptusRequest):
     DESCRIPTION = 'Create a snapshot of a volume'
-    ARGS = [Arg('VolumeId', metavar='VOLUME', help='volume to snapshot'),
+    ARGS = [Arg('VolumeId', metavar='VOLUME',
+                help='volume to create a snapshot of (required)'),
             Arg('-d', '--description', metavar='DESC', dest='Description',
                 help='snapshot description')]
 
     def print_result(self, result):
-        print self.tabify(['SNAPSHOT',              result.get('snapshotId'),
-                           result.get('volumeId'),  result.get('status'),
+        print self.tabify(('SNAPSHOT', result.get('snapshotId'),
+                           result.get('volumeId'), result.get('status'),
                            result.get('startTime'), result.get('ownerId'),
                            result.get('volumeSize'),
-                           result.get('description')])
+                           result.get('description')))

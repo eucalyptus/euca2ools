@@ -28,15 +28,18 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+from euca2ools.commands.euca import EucalyptusRequest
 from requestbuilder import Arg
-from . import EucalyptusRequest
+
 
 class ConfirmProductInstance(EucalyptusRequest):
     DESCRIPTION = 'Verify if a product code is associated with an instance'
-    ARGS = [Arg('ProductCode', metavar='CODE', help='product code to confirm'),
+    ARGS = [Arg('ProductCode', metavar='CODE',
+                help='product code to confirm (required)'),
             Arg('-i', '--instance', dest='InstanceId', metavar='INSTANCE',
-                required=True, help='instance to confirm')]
+                required=True,
+                help='ID of the instance to confirm (required)')]
 
     def print_result(self, result):
-        print self.tabify(self.args['ProductCode'], self.args['InstanceId'],
-                          result.get('return'), result.get('ownerId'))
+        print self.tabify((self.args['ProductCode'], self.args['InstanceId'],
+                           result.get('return'), result.get('ownerId')))

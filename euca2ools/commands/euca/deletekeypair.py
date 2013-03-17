@@ -28,13 +28,14 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+from euca2ools.commands.euca import EucalyptusRequest
 from requestbuilder import Arg
-from . import EucalyptusRequest
+
 
 class DeleteKeyPair(EucalyptusRequest):
-    DESCRIPTION = 'Delete an existing keypair'
+    DESCRIPTION = 'Delete a key pair'
     ARGS = [Arg('KeyName', metavar='KEYPAIR',
-                help='name of the keypair to delete')]
+                help='name of the key pair to delete (required)')]
 
     def print_result(self, result):
-        print self.tabify(['KEYPAIR', self.args['KeyName']])
+        print self.tabify(('KEYPAIR', self.args['KeyName']))

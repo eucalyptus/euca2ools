@@ -28,19 +28,32 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+from euca2ools.commands.euca import EucalyptusRequest
 from requestbuilder import Arg
-from . import EucalyptusRequest
+from requestbuilder.exceptions import ArgumentError
+
 
 class DisassociateAddress(EucalyptusRequest):
     DESCRIPTION = 'Disassociate an elastic IP address from an instance'
-    ARGS = [Arg('address', route_to=None,
-                help='elastic IP address or association ID to disassociate')]
+    ARGS = [Arg('PublicIp', metavar='ADDRESS', nargs='?', help='''[Non-VPC
+                only] elastic IP address to disassociate (required)'''),
+            Arg('-a', '--association-id', dest='AssociationId',
+                metavar='ASSOC',
+                help="[VPC only] address's association ID (required)")]
 
-    def preprocess(self):
-        if self.args['address'].startswith('eipassoc'):
-            self.params = {'AssociationId': self.args['address']}
-        else:
-            self.params = {'PublicIp':      self.args['address']}
+    def configure(self):
+        EucalyptusRequest.configure(self)
+        if self.args.get('PublicIp'):
+            if self.args.get('AssociationId'):
+                raise ArgumentError('argument -a/--association-id: not '
+                                    'allowed with an IP address')
+            elif self.args['PublicIp'].startswith('eipassoc'):
+                raise ArgumentError('VPC elastic IP association IDs must be '
+                                    'be specified with -a/--association-id')
+        elif not self.args.get('AssociationId'):
+            raise ArgumentError(
+                'argument -a/--association-id or an IP address is required')
 
     def print_result(self, result):
-        print self.tabify(['ADDRESS', self.args['address']])
+        target = self.args.get('PublicIp') or self.args.get('AssociationId')
+        print self.tabify(('ADDRESS', target))

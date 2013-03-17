@@ -29,6 +29,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 import argparse
+from euca2ools.commands import Euca2ools
 from euca2ools.exceptions import AWSError
 from operator import itemgetter
 import os.path
@@ -42,7 +43,7 @@ import requests
 import shlex
 from string import Template
 import sys
-from .. import Euca2ools
+
 
 class EC2CompatibleQuerySigV2Auth(QuerySigV2Auth):
     # -a and -s are deprecated; remove them in 3.2
@@ -133,7 +134,7 @@ class EC2CompatibleQuerySigV2Auth(QuerySigV2Auth):
 class Eucalyptus(requestbuilder.service.BaseService):
     NAME = 'ec2'
     DESCRIPTION = 'Eucalyptus compute cloud service'
-    API_VERSION = '2009-11-30'
+    API_VERSION = '2013-02-01'
     AUTH_CLASS  = EC2CompatibleQuerySigV2Auth
     URL_ENVVAR = 'EC2_URL'
 
@@ -241,7 +242,7 @@ class EucalyptusRequest(requestbuilder.request.AWSQueryRequest,
         instance_line.append(instance.get('placement', {}).get('availabilityZone'))
         instance_line.append(instance.get('kernelId'))
         instance_line.append(instance.get('ramdiskId'))
-        instance_line.append(None)  # What is this?
+        instance_line.append(instance.get('platform'))
         if instance.get('monitoring'):
             instance_line.append('monitoring-' +
                                  instance['monitoring'].get('state'))
@@ -252,35 +253,76 @@ class EucalyptusRequest(requestbuilder.request.AWSQueryRequest,
         instance_line.append(instance.get('vpcId'))
         instance_line.append(instance.get('subnetId'))
         instance_line.append(instance.get('rootDeviceType'))
-        instance_line.append(None)  # What is this?
-        instance_line.append(None)  # What is this?
-        instance_line.append(None)  # What is this?
-        instance_line.append(None)  # What is this?
+        instance_line.append(instance.get('instanceLifecycle'))
+        instance_line.append(instance.get('showInstanceRequestId'))
+        instance_line.append(None)  # Should be the license, but where is it?
+        instance_line.append(instance.get('placement', {}).get('groupName'))
         instance_line.append(instance.get('virtualizationType'))
         instance_line.append(instance.get('hypervisor'))
-        instance_line.append(None)  # What is this?
-        instance_line.append(instance.get('placement', {}).get('groupName'))
+        instance_line.append(instance.get('clientToken'))
         instance_line.append(','.join([group['groupId'] for group in
                                        instance.get('groupSet', [])]))
         instance_line.append(instance.get('placement', {}).get('tenancy'))
+        instance_line.append(instance.get('ebsOptimized'))
+        instance_line.append(instance.get('iamInstanceProfile', {}).get('arn'))
         print self.tabify(instance_line)
 
         for blockdev in instance.get('blockDeviceMapping', []):
             self.print_blockdevice(blockdev)
 
+        for nic in instance.get('networkInterfaceSet', []):
+            self.print_interface(nic)
+
         for tag in instance.get('tagSet', []):
             self.print_resource_tag(tag, instance.get('instanceId'))
 
     def print_blockdevice(self, blockdev):
-        print self.tabify(['BLOCKDEVICE', blockdev.get('deviceName'),
+        print self.tabify(('BLOCKDEVICE', blockdev.get('deviceName'),
                            blockdev.get('ebs', {}).get('volumeId'),
                            blockdev.get('ebs', {}).get('attachTime'),
-                           blockdev.get('ebs', {}).get('deleteOnTermination')])
+                           blockdev.get('ebs', {}).get('deleteOnTermination'),
+                           blockdev.get('ebs', {}).get('volumeType'),
+                           blockdev.get('ebs', {}).get('iops')))
+
+    def print_interface(self, nic):
+        nic_info = [nic.get(attr) for attr in ('networkInterfaceId',
+            'subnetId', 'vpcId', 'ownerId', 'status', 'privateIpAddress',
+            'privateDnsName', 'sourceDestCheck')]
+        print self.tabify(['NIC'] + nic_info)
+        for attachment in nic.get('attachment', []):
+            attachment_info = [attachment.get(attr) for attr in (
+                'attachmentID', 'deviceIndex', 'status', 'attachTime',
+                'deleteOnTermination')]
+            print self.tabify(['NICATTACHMENT'] + attachment_info)
+        privaddresses = nic.get('privateIpAddressesSet', [])
+        for association in nic.get('association', []):
+            # The EC2 tools apparently print private IP info in the
+            # association even though that info doesn't appear there
+            # in the response, so we have to look it up elsewhere.
+            for privaddress in privaddresses:
+                if (privaddress.get('association', {}).get('publicIp') ==
+                    association.get('publicIp')):
+                    # Found a match
+                    break
+            else:
+                privaddress = None
+            print self.tabify(('NICASSOCIATION', association.get('publicIp'),
+                               association.get('ipOwnerId'), privaddress))
+        for group in nic.get('groupSet', []):
+            print self.tabify(('GROUP', group.get('groupId'),
+                               group.get('groupName')))
+        for privaddress in privaddresses:
+            print self.tabify(('PRIVATEIPADDRESS',
+                               privaddress.get('privateIpAddress')))
 
     def print_volume(self, volume):
-        print self.tabify(['VOLUME'] + [volume.get(attr) for attr in
-                ('volumeId', 'size', 'snapshotId', 'availabilityZone',
-                 'status', 'createTime')])
+        vol_bits = ['VOLUME']
+        for attr in ('volumeId', 'size', 'snapshotId', 'availabilityZone',
+                     'status', 'createTime'):
+            vol_bits.append(volume.get(attr))
+        vol_bits.append(volume.get('volumeType') or 'standard')
+        vol_bits.append(volume.get('iops'))
+        print self.tabify(vol_bits)
         for attachment in volume.get('attachmentSet', []):
             self.print_attachment(attachment)
         for tag in volume.get('tagSet', []):

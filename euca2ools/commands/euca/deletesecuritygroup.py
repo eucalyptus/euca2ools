@@ -28,12 +28,20 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+from euca2ools.commands.euca import EucalyptusRequest
 from requestbuilder import Arg
-from . import EucalyptusRequest
+
 
 class DeleteSecurityGroup(EucalyptusRequest):
     DESCRIPTION = 'Delete a security group'
-    ARGS = [Arg('GroupName', metavar='GROUP')]
+    ARGS = [Arg('group', metavar='GROUP', route_to=None,
+                help='name or ID of the security group to delete (required)')]
+
+    def preprocess(self):
+        if self.args['group'].startswith('sg-'):
+            self.params['GroupId'] = self.args['group']
+        else:
+            self.params['GroupName'] = self.args['group']
 
     def print_result(self, result):
         print self.tabify(('RETURN', result.get('return')))

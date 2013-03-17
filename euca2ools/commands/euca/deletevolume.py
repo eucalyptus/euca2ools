@@ -28,12 +28,14 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+from euca2ools.commands.euca import EucalyptusRequest
 from requestbuilder import Arg
-from . import EucalyptusRequest
+
 
 class DeleteVolume(EucalyptusRequest):
     DESCRIPTION = 'Delete a volume'
-    ARGS = [Arg('VolumeId', metavar='VOLUME', help='volume to delete')]
+    ARGS = [Arg('VolumeId', metavar='VOLUME',
+                help='ID of the volume to delete (required)')]
 
     def print_result(self, result):
-        print self.tabify(['VOLUME', self.args['VolumeId']])
+        print self.tabify(('VOLUME', self.args['VolumeId']))

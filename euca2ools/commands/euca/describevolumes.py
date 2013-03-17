@@ -28,14 +28,14 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+from euca2ools.commands.euca import EucalyptusRequest
 from requestbuilder import Arg, Filter, GenericTagFilter
-from . import EucalyptusRequest
+
 
 class DescribeVolumes(EucalyptusRequest):
     DESCRIPTION = 'Display information about volumes'
-    API_VERSION = '2010-08-31'
     ARGS = [Arg('VolumeId', metavar='VOLUME', nargs='*',
-                help='volume(s) to describe (default: all volumes)')]
+                help='limit results to specific volumes')]
     FILTERS = [Filter('attachment.attach-time', help='attachment start time'),
                Filter('attachment.delete-on-termination', help='''whether the
                       volume will be deleted upon instance termination'''),
@@ -44,21 +44,22 @@ class DescribeVolumes(EucalyptusRequest):
                Filter('attachment.instance-id',
                       help='ID of the instance the volume is attached to'),
                Filter('attachment.status', help='attachment state',
-                      choices=['attaching', 'attached', 'detaching',
-                               'detached']),
+                      choices=('attaching', 'attached', 'detaching',
+                               'detached')),
                Filter('availability-zone'),
                Filter('create-time', help='creation time'),
                Filter('size', type=int, help='size in GiB'),
                Filter('snapshot-id',
                       help='snapshot from which the volume was created'),
-               Filter('status', choices=['creating', 'available', 'in-use',
-                                         'deleting', 'deleted', 'error']),
+               Filter('status', choices=('creating', 'available', 'in-use',
+                                         'deleting', 'deleted', 'error')),
                Filter('tag-key', help='key of a tag assigned to the volume'),
                Filter('tag-value',
                       help='value of a tag assigned to the volume'),
                GenericTagFilter('tag:KEY',
                                 help='specific tag key/value combination'),
-               Filter(name='volume-id')]
+               Filter(name='volume-id'),
+               Filter(name='volume-type')]
     LIST_TAGS = ['volumeSet', 'attachmentSet', 'tagSet']
 
     def print_result(self, result):

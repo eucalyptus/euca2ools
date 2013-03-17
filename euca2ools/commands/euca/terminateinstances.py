@@ -28,13 +28,14 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+from euca2ools.commands.euca import EucalyptusRequest
 from requestbuilder import Arg
-from . import EucalyptusRequest
+
 
 class TerminateInstances(EucalyptusRequest):
     DESCRIPTION = 'Terminate one or more instances'
     ARGS = [Arg('InstanceId', metavar='INSTANCE', nargs='+',
-                help='instance(s) to terminate')]
+                help='ID(s) of the instance(s) to terminate')]
     LIST_TAGS = ['instancesSet']
 
     def print_result(self, result):

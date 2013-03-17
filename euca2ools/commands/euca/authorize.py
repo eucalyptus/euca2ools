@@ -28,8 +28,15 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-from .modgroup import ModifySecurityGroupRequest
+from euca2ools.commands.euca.modgroup import ModifySecurityGroupRequest
+
 
 class Authorize(ModifySecurityGroupRequest):
-    NAME = 'AuthorizeSecurityGroupIngress'
-    DESCRIPTION = 'Authorize a rule for a security group'
+    DESCRIPTION = 'Add a rule to a security group that allows traffic to pass'
+
+    @property
+    def action(self):
+        if self.args['egress']:
+            return 'AuthorizeSecurityGroupEgress'
+        else:
+            return 'AuthorizeSecurityGroupIngress'

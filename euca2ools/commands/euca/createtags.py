@@ -28,20 +28,20 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+from euca2ools.commands.argtypes import binary_tag_def
+from euca2ools.commands.euca import EucalyptusRequest
 from requestbuilder import Arg
-from . import EucalyptusRequest
-from ..argtypes import binary_tag_def
+
 
 class CreateTags(EucalyptusRequest):
-    API_VERSION = '2010-08-31'
     DESCRIPTION = 'Add or overwrite tags for one or more resources'
     ARGS = [Arg('ResourceId', metavar='RESOURCE', nargs='+',
-                help='IDs of the resource(s) to tag'),
+                help='ID(s) of the resource(s) to tag (at least 1 required)'),
             Arg('--tag', dest='Tag', metavar='KEY[=VALUE]',
                 type=binary_tag_def, action='append', required=True,
                 help='''key and optional value of the tag to create, separated
-                        by an "=" character.  If no value is given the tag's
-                        value is set to an empty string.''')]
+                by an "=" character.  If no value is given the tag's value is
+                set to an empty string.  (at least 1 required)''')]
 
     def print_result(self, result):
         for resource_id in self.args['ResourceId']:

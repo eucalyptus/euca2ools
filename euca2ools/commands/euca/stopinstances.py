@@ -28,16 +28,17 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+from euca2ools.commands.euca import EucalyptusRequest
 from requestbuilder import Arg
-from . import EucalyptusRequest
+
 
 class StopInstances(EucalyptusRequest):
     DESCRIPTION = 'Stop one or more running instances'
     ARGS = [Arg('InstanceId', metavar='INSTANCE', nargs='+',
-                help='instance(s) to stop'),
+                help='ID(s) of the instance(s) to stop'),
             Arg('-f', '--force', dest='Force', action='store_const',
                 const='true',
-                help='immediately stop the instance. Data may be lost')]
+                help='immediately stop the instance(s). Data may be lost')]
     LIST_TAGS = ['instancesSet']
 
     def print_result(self, result):

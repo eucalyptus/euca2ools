@@ -30,34 +30,37 @@
 
 import base64
 from datetime import datetime, timedelta
+from euca2ools.commands.euca import EucalyptusRequest
 import hashlib
 import hmac
 import json
 from requestbuilder import Arg
+from requestbuilder.exceptions import ArgumentError
 import textwrap
-from . import EucalyptusRequest
+
 
 class BundleInstance(EucalyptusRequest):
     DESCRIPTION = 'Bundle an S3-backed Windows instance'
-    ARGS = [Arg('InstanceId', metavar='INSTANCE', help='instance to bundle'),
+    ARGS = [Arg('InstanceId', metavar='INSTANCE',
+                help='ID of the instance to bundle (required)'),
             Arg('-b', '--bucket', dest='Storage.S3.Bucket', metavar='BUCKET',
-                required=True,
-                help='bucket in which to store the new machine image'),
+                required=True, help='''bucket in which to store the new machine
+                image (required)'''),
             Arg('-p', '--prefix', dest='Storage.S3.Prefix', metavar='PREFIX',
                 required=True,
-                help='beginning of the machine image bundle name'),
+                help='beginning of the machine image bundle name (required)'),
             Arg('-o', '--owner-akid', '--user-access-key', metavar='KEY-ID',
                 dest='Storage.S3.AWSAccessKeyId', required=True,
-                help="bucket owner's access key ID"),
+                help="bucket owner's access key ID (required)"),
             Arg('-c', '--policy', metavar='POLICY',
                 dest='Storage.S3.UploadPolicy',
                 help='''Base64-encoded upload policy that allows the server
                         to upload a bundle on your behalf.  If unused, -w is
-                        required'''),
+                        required.'''),
             Arg('-s', '--policy-signature', metavar='SIGNATURE',
                 dest='Storage.S3.UploadPolicySignature',
                 help='''signature of the Base64-encoded upload policy.  If
-                        unused, -w is required'''),
+                        unused, -w is required.'''),
             Arg('-w', '--owner-sak', '--user-secret-key', metavar='KEY',
                 route_to=None,
                 help="""bucket owner's secret access key, used to sign upload
@@ -90,12 +93,12 @@ class BundleInstance(EucalyptusRequest):
         EucalyptusRequest.configure(self)
         if not self.args.get('Storage.S3.UploadPolicy'):
             if not self.args.get('owner_sak'):
-                self._cli_parser.error('argument -w/--owner-sak is required '
-                                       'when -c/--policy is not used')
+                raise ArgumentError('argument -w/--owner-sak is required when '
+                                    '-c/--policy is not used')
         elif not self.args.get('Storage.S3.UploadPolicySignature'):
             if not self.args.get('owner_sak'):
-                self._cli_parser.error('argument -w/--owner-sak is required '
-                                       'when -c/--policy is not used')
+                raise ArgumentError('argument -w/--owner-sak is required when '
+                                    '-s/--policy-signature is not used')
 
     def preprocess(self):
         if not self.args.get('Storage.S3.UploadPolicy'):

@@ -28,8 +28,15 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-from .modgroup import ModifySecurityGroupRequest
+from euca2ools.commands.euca.modgroup import ModifySecurityGroupRequest
+
 
 class Revoke(ModifySecurityGroupRequest):
-    NAME = 'RevokeSecurityGroupIngress'
-    DESCRIPTION = 'Revoke an existing rule from a security group'
+    DESCRIPTION = 'Remove a rule from a security group'
+
+    @property
+    def action(self):
+        if self.args['egress']:
+            return 'RevokeSecurityGroupEgress'
+        else:
+            return 'RevokeSecurityGroupIngress'

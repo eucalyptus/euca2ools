@@ -30,15 +30,19 @@
 
 import argparse
 import base64
+from euca2ools.commands.argtypes import (b64encoded_file_contents,
+    ec2_block_device_mapping, vpc_interface)
+from euca2ools.commands.euca import EucalyptusRequest
 import os.path
 from requestbuilder import Arg, MutuallyExclusiveArgList
+from requestbuilder.exceptions import ArgumentError
 import sys
-from . import EucalyptusRequest
-from ..argtypes import b64encoded_file_contents, ec2_block_device_mapping
+
 
 class RunInstances(EucalyptusRequest):
     DESCRIPTION = 'Launch instances of a machine image'
-    ARGS = [Arg('ImageId', metavar='IMAGE', help='image to instantiate'),
+    ARGS = [Arg('ImageId', metavar='IMAGE',
+                help='ID of the image to instantiate (required)'),
             Arg('-n', '--instance-count', dest='count', metavar='MIN[-MAX]',
                 default='1', route_to=None,
                 help='''number of instances to launch. If this number of
@@ -63,36 +67,84 @@ class RunInstances(EucalyptusRequest):
                     help='''file containing user data to make available to the
                             instances in this reservation''')),
             Arg('--addressing', dest='AddressingType',
-                choices=('public', 'private'),
-                help=('addressing scheme to launch the instance with.  Use '
-                      '"private" to run an instance with no public address.')),
+                choices=('public', 'private'), help='''[Eucalyptus only]
+                addressing scheme to launch the instance with.  Use "private"
+                to run an instance with no public address.'''),
             Arg('-t', '--instance-type', dest='InstanceType',
                 help='type of instance to launch'),
+            Arg('-z', '--availability-zone', metavar='ZONE',
+                dest='Placement.AvailabilityZone'),
             Arg('--kernel', dest='KernelId', metavar='KERNEL',
-                help='kernel to launch the instance(s) with'),
+                help='ID of the kernel to launch the instance(s) with'),
             Arg('--ramdisk', dest='RamdiskId', metavar='RAMDISK',
-                help='ramdisk to launch the instance(s) with'),
+                help='ID of the ramdisk to launch the instance(s) with'),
             Arg('-b', '--block-device-mapping', metavar='DEVICE=MAPPED',
                 dest='BlockDeviceMapping', action='append',
-                type=block_device_mapping, default=[],
+                type=ec2_block_device_mapping, default=[],
                 help='''define a block device mapping for the instances, in the
-                        form DEVICE=MAPPED, where "MAPPED" is "none",
-                        "ephemeral(0-3)", or
-                        "[SNAP-ID]:[SIZE]:[true|false]"'''),
+                form DEVICE=MAPPED, where "MAPPED" is "none", "ephemeral(0-3)",
+                or
+                "[SNAP-ID]:[SIZE]:[true|false]:[standard|VOLTYPE[:IOPS]]"'''),
             Arg('-m', '--monitor', dest='Monitoring.Enabled',
                 action='store_const', const='true',
                 help='enable detailed monitoring for the instance(s)'),
-            Arg('--subnet', dest='SubnetId', metavar='SUBNET',
-                help='VPC subnet in which to launch the instance(s)'),
-            Arg('-z', '--availability-zone', metavar='ZONE',
-                dest='Placement.AvailabilityZone'),
+            Arg('--disable-api-termination', dest='DisableApiTermination',
+                action='store_const', const='true',
+                help='prevent API users from terminating the instance(s)'),
             Arg('--instance-initiated-shutdown-behavior',
                 dest='InstanceInitiatedShutdownBehavior',
                 choices=('stop', 'terminate'),
                 help=('whether to "stop" (default) or terminate EBS instances '
-                      'when they shut down'))]
+                      'when they shut down')),
+            Arg('--placement-group', dest='Placement.GroupName',
+                metavar='PLGROUP', help='''name of a placement group to launch
+                into'''),
+            Arg('--tenancy', dest='Placement.Tenancy',
+                choices=('default', 'dedicated'), help='''[VPC only]
+                "dedicated" to run on single-tenant hardware'''),
+            Arg('--client-token', dest='ClientToken', metavar='TOKEN',
+                help='unique identifier to ensure request idempotency'),
+            Arg('-s', '--subnet', metavar='SUBNET', route_to=None,
+                help='''[VPC only] subnet to create the instance's network
+                interface in'''),
+            Arg('--private-ip-address', metavar='ADDRESS', route_to=None,
+                help='''[VPC only] assign a specific primary private IP address
+                to an instance's interface'''),
+            MutuallyExclusiveArgList(
+                Arg('--secondary-private-ip-address', metavar='ADDRESS',
+                    action='append', route_to=None, help='''[VPC only]
+                    assign a specific secondary private IP address to an
+                    instance's network interface.  Use this option multiple
+                    times to add additional addresses.'''),
+                Arg('--secondary-private-ip-address-count', metavar='COUNT',
+                    type=int, route_to=None, help='''[VPC only]
+                    automatically assign a specific number of secondary private
+                    IP addresses to an instance's network interface''')),
+            Arg('-a', '--network-interface', dest='NetworkInterface',
+                metavar='INTERFACE', action='append', type=vpc_interface,
+                help='''[VPC only] add a network interface to the new
+                instance.  If the interface already exists, supply its ID and
+                a numeric index for it, separated by ":", in the form
+                "eni-XXXXXXXX:INDEX".  To create a new interface, supply a
+                numeric index and subnet ID for it, along with (in order) an
+                optional description, a primary private IP address, a list of
+                security group IDs to associate with the interface, whether to
+                delete the interface upon instance termination ("true" or
+                "false"), a number of secondary private IP addresses to create
+                automatically, and a list of secondary private IP addresses to
+                assign to the interface, separated by ":", in the form
+                ":INDEX:SUBNET:[DESCRIPTION]:[PRIV_IP]:[GROUP1,GROUP2,...]:[true|false]:[SEC_IP_COUNT|:SEC_IP1,SEC_IP2,...]".  You cannot specify both of the
+                latter two.  This option may be used multiple times.  Each adds
+                another network interface.'''),
+            Arg('-p', '--iam-profile', metavar='IPROFILE', route_to=None,
+                help='''name or ARN of the IAM instance profile to associate
+                with the new instance(s)'''),
+            Arg('--ebs-optimized', dest='EbsOptimized', action='store_const',
+                const='true', help='optimize the new instance(s) for EBS I/O')]
+
     LIST_TAGS = ['reservationSet', 'instancesSet', 'groupSet', 'tagSet',
-                 'blockDeviceMapping', 'productCodes']
+                 'blockDeviceMapping', 'productCodes', 'networkInterfaceSet',
+                 'attachment', 'association', 'privateIpAddressesSet']
 
     def preprocess(self):
         counts = self.args['count'].split('-')
@@ -101,22 +153,22 @@ class RunInstances(EucalyptusRequest):
                 self.params['MinCount'] = int(counts[0])
                 self.params['MaxCount'] = int(counts[0])
             except ValueError:
-                self._cli_parser.error('argument -n/--instance-count: '
-                                       'instance count must be an integer')
+                raise ArgumentError('argument -n/--instance-count: instance '
+                                    'count must be an integer')
         elif len(counts) == 2:
             try:
                 self.params['MinCount'] = int(counts[0])
                 self.params['MaxCount'] = int(counts[1])
             except ValueError:
-                self._cli_parser.error('argument -n/--instance-count: '
-                        'instance count range must be must be comprised of '
-                        'integers')
+                raise ArgumentError('argument -n/--instance-count: instance '
+                                    'count range must be must be comprised of '
+                                    'integers')
         else:
-            self._cli_parser.error('argument -n/--instance-count: value must '
-                                   'have format "1" or "1-2"')
+            raise ArgumentError('argument -n/--instance-count: value must '
+                                'have format "1" or "1-2"')
         if self.params['MinCount'] < 1 or self.params['MaxCount'] < 1:
-            self._cli_parser.error('argument -n/--instance-count: instance '
-                                   'count must be positive')
+            raise ArgumentError('argument -n/--instance-count: instance count '
+                                'must be positive')
         if self.params['MinCount'] > self.params['MaxCount']:
             self.log.debug('MinCount > MaxCount; swapping')
             self.params.update({'MinCount': self.params['MaxCount'],
@@ -129,6 +181,34 @@ class RunInstances(EucalyptusRequest):
             else:
                 self.params.setdefault('SecurityGroup', [])
                 self.params['SecurityGroup'].append(group)
+
+        iprofile = self.args.get('iam_profile')
+        if iprofile:
+            if iprofile.startswith('arn:'):
+                self.params['IamInstanceProfile.Arn'] = iprofile
+            else:
+                self.params['IamInstanceProfile.Name'] = iprofile
+
+        # Assemble an interface out of the "friendly" split interface options
+        cli_iface = {}
+        if self.args.get('private_ip_address'):
+            cli_iface['PrivateIpAddresses'] = [
+                {'PrivateIpAddress': self.args['private_ip_address'],
+                 'Primary': 'true'}]
+        if self.args.get('secondary_private_ip_address'):
+            sec_ips = [{'PrivateIpAddress': addr} for addr in
+                       self.args['secondary_private_ip_address']]
+            cli_iface.setdefault('PrivateIpAddresses', [])
+            cli_iface['PrivateIpAddresses'].extend(sec_ips)
+        if self.args.get('secondary_private_ip_address_count'):
+            sec_ip_count = self.args['secondary_private_ip_address_count']
+            cli_iface['SecondaryPrivateIpAddressCount'] = sec_ip_count
+        if self.args.get('subnet'):
+            cli_iface['SubnetId'] = self.args['subnet']
+        if cli_iface:
+            cli_iface['DeviceIndex'] = 0
+            self.params.setdefault('NetworkInterface', [])
+            self.params['NetworkInterface'].append(cli_iface)
 
     def print_result(self, result):
         self.print_reservation(result)

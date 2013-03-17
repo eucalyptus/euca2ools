@@ -28,14 +28,18 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+from euca2ools.commands.euca import EucalyptusRequest
 from requestbuilder import Arg
-from . import EucalyptusRequest
+
 
 class CreateSecurityGroup(EucalyptusRequest):
     DESCRIPTION = 'Create a new security group'
-    ARGS = [Arg('-d', '--description', dest='GroupDescription', metavar='DESC',
-                required=True),
-            Arg('GroupName', metavar='GROUP', help='name of the new group')]
+    ARGS = [Arg('GroupName', metavar='GROUP',
+                help='name of the new group (required)'),
+            Arg('-d', '--description', dest='GroupDescription', metavar='DESC',
+                required=True, help='description of the new group (required)'),
+            Arg('-c', '--vpc', dest='VpcId', metavar='VPC',
+                help='[VPC only] ID of the VPC to create the group in')]
 
     def print_result(self, result):
         print self.tabify(('GROUP', result.get('groupId'),

@@ -28,12 +28,17 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+from euca2ools.commands.euca import EucalyptusRequest
 from requestbuilder import Arg
-from . import EucalyptusRequest
+
 
 class DeregisterImage(EucalyptusRequest):
-    DESCRIPTION = 'De-register an image'
-    ARGS = [Arg('ImageId', metavar='IMAGE', help='image to de-register')]
+    DESCRIPTION = ('De-register an image.  After you de-register an image it '
+                   'cannot be used to launch new instances.\n\nNote that in '
+                   'Eucalyptus 3 you may need to run this twice to completely '
+                   "remove an image's registration from the system.")
+    ARGS = [Arg('ImageId', metavar='IMAGE',
+                help='ID of the image to de-register (required)')]
 
     def print_result(self, result):
-        print self.tabify(['IMAGE', self.args['ImageId']])
+        print self.tabify(('IMAGE', self.args['ImageId']))

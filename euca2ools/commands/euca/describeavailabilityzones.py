@@ -28,17 +28,17 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+from euca2ools.commands.euca import EucalyptusRequest
 import euca2ools.utils
 from requestbuilder import Arg, Filter
-from . import EucalyptusRequest
+
 
 class DescribeAvailabilityZones(EucalyptusRequest):
-    DESCRIPTION = 'Display availability zones within the active region'
-    API_VERSION = '2010-08-31'
+    DESCRIPTION = 'Display availability zones within the current region'
     ARGS = [Arg('ZoneName', metavar='ZONE', nargs='*',
-                help='limit results to one or more availability zones')]
-    FILTERS = [Filter('message', help=('message giving information about the'
-                      'availability zone')),
+                help='limit results to specific availability zones')]
+    FILTERS = [Filter('message', help='''message giving information about the
+                      'availability zone'''),
                Filter('region-name',
                       help='region the availability zone is in'),
                Filter('state', help='state of the availability zone'),

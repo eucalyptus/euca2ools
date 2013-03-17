@@ -28,12 +28,30 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+from euca2ools.commands.euca import EucalyptusRequest
 from requestbuilder import Arg
-from . import EucalyptusRequest
+from requestbuilder.exceptions import ArgumentError
+
 
 class ReleaseAddress(EucalyptusRequest):
     DESCRIPTION = 'Release an elastic IP address'
-    ARGS = [Arg('PublicIp', metavar='IP', help='elastic IP to release')]
+    ARGS = [Arg('PublicIp', metavar='ADDRESS', nargs='?',
+                help='[Non-VPC only] address to release (required)'),
+            Arg('-a', '--allocation-id', dest='AllocationId', metavar='ALLOC',
+                help='''[VPC only] allocation ID for the address to release
+                (required)''')]
+
+    def configure(self):
+        if (self.args.get('PublicIp') is not None and
+            self.args.get('AllocationId') is not None):
+            # Can't be both EC2 and VPC
+            raise ArgumentError(
+                'argument -a/--allocation-id: not allowed with an IP address')
+        if (self.args.get('PublicIp') is None and
+            self.args.get('AllocationId') is None):
+            # ...but we still have to be one of them
+            raise ArgumentError(
+                'argument -a/--allocation-id or an IP address is required')
 
     def print_result(self, result):
         print self.tabify(('ADDRESS', self.args.get('PublicIp'),
