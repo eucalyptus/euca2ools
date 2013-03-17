@@ -28,13 +28,13 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+from euca2ools.commands.euare import EuareRequest, AS_ACCOUNT
 from requestbuilder import Arg
-from . import EuareRequest, AS_ACCOUNT
 
 
 class DeleteServerCertificate(EuareRequest):
     DESCRIPTION = 'Delete a server certificate'
-    ARGS = [Arg('-s', '--server-certificate-name', dest='ServerCertificateName',
-                metavar='CERT', required=True,
+    ARGS = [Arg('-s', '--server-certificate-name',
+                dest='ServerCertificateName', metavar='CERT', required=True,
                 help='name of the server certificate to delete (required)'),
             AS_ACCOUNT]

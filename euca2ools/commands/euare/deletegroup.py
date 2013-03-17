@@ -29,12 +29,13 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 import argparse
+from euca2ools.commands.euare import EuareRequest, AS_ACCOUNT
 from euca2ools.commands.euare.deletegrouppolicy import DeleteGroupPolicy
 from euca2ools.commands.euare.getgroup import GetGroup
 from euca2ools.commands.euare.listgrouppolicies import ListGroupPolicies
 from euca2ools.commands.euare.removeuserfromgroup import RemoveUserFromGroup
 from requestbuilder import Arg
-from . import EuareRequest, AS_ACCOUNT
+
 
 class DeleteGroup(EuareRequest):
     DESCRIPTION = 'Delete a group'
@@ -47,8 +48,7 @@ class DeleteGroup(EuareRequest):
                 action='store_const', const='true', help=argparse.SUPPRESS),
             Arg('-p', '--pretend', action='store_true', route_to=None,
                 help='''list the user memberships and policies that would be
-                        deleted instead of actually deleting them. Implies
-                        -r.'''),
+                deleted instead of actually deleting them. Implies -r.'''),
             AS_ACCOUNT]
 
     def main(self):

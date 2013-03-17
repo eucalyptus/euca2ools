@@ -28,8 +28,9 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+from euca2ools.commands.euare import EuareRequest, AS_ACCOUNT
 from requestbuilder import Arg
-from . import EuareRequest, AS_ACCOUNT
+
 
 class AddUserToGroup(EuareRequest):
     DESCRIPTION = 'Add a user to a group'

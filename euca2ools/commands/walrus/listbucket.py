@@ -29,11 +29,14 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 import argparse
+from euca2ools.commands.walrus import (WalrusRequest,
+    validate_generic_bucket_name)
 from requestbuilder import Arg
+from requestbuilder.exceptions import ArgumentError
 from requestbuilder.mixins import TabifyingCommand
 from requestbuilder.response import PaginatedResponse
 from requestbuilder.xmlparse import parse_aws_xml
-from . import WalrusRequest, validate_generic_bucket_name
+
 
 class ListBucket(WalrusRequest, TabifyingCommand):
     DESCRIPTION = 'List keys in one or more buckets'
@@ -45,14 +48,14 @@ class ListBucket(WalrusRequest, TabifyingCommand):
         WalrusRequest.configure(self)
         for path in self.args['paths']:
             if path.startswith('/'):
-                self._cli_parser.error(('argument \'{0}\' must not start with '
-                        '\'/\'; format is BUCKET[/KEY]').format(path))
+                raise ArgumentError(('argument \'{0}\' must not start with '
+                    '"/"; format is BUCKET[/KEY]').format(path))
             bucket = path.split('/', 1)[0]
             try:
                 validate_generic_bucket_name(bucket)
             except ValueError as err:
-                self._cli_parser.error(
-                        'bucket \'{0}\': {1}'.format(bucket, err.message))
+                raise ArgumentError(
+                    'bucket "{0}": {1}'.format(bucket, err.message))
 
     def main(self):
         self.method = 'GET'
@@ -78,7 +81,7 @@ class ListBucket(WalrusRequest, TabifyingCommand):
 
     def parse_response(self, response):
         response_dict = self.log_and_parse_response(response,
-                parse_aws_xml, list_item_tags=('Contents', 'CommonPrefixes'))
+            parse_aws_xml, list_item_tags=('Contents', 'CommonPrefixes'))
         return response_dict['ListBucketResult']
 
     def print_result(self, result):

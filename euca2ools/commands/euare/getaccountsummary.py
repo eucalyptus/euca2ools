@@ -28,13 +28,13 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+from euca2ools.commands.euare import EuareRequest, AS_ACCOUNT
 from requestbuilder import Arg
-from . import EuareRequest, AS_ACCOUNT
 
 
 class GetAccountSummary(EuareRequest):
-    DESCRIPTION = '''Display account-level information about account entity
-                     usage and IAM quotas'''
+    DESCRIPTION = ('Display account-level information about account entity '
+                   'usage and IAM quotas')
     PARAMS = [AS_ACCOUNT]
     LIST_TAGS = ['SummaryMap']
 

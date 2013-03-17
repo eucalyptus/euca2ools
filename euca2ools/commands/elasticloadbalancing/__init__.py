@@ -28,11 +28,12 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+from euca2ools.commands import Euca2ools
 from requestbuilder import Arg, SERVICE
 import requestbuilder.auth
 import requestbuilder.service
 import requestbuilder.request
-from .. import Euca2ools
+
 
 class ELB(requestbuilder.service.BaseService):
     NAME = 'elasticloadbalancing'

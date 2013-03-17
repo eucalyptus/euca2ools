@@ -28,8 +28,10 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+from euca2ools.commands.walrus import (WalrusRequest,
+    validate_generic_bucket_name)
 from requestbuilder import Arg
-from . import WalrusRequest, validate_generic_bucket_name
+
 
 class DeleteBucket(WalrusRequest):
     DESCRIPTION = 'Delete a bucket'
@@ -39,7 +41,6 @@ class DeleteBucket(WalrusRequest):
         WalrusRequest.configure(self)
         validate_generic_bucket_name(self.args['bucket'])
 
-    def main(self):
+    def preprocess(self):
         self.method = 'DELETE'
         self.path = self.args['bucket']
-        self.send()

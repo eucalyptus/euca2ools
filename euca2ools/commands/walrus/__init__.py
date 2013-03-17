@@ -28,6 +28,7 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+from euca2ools.commands import Euca2ools
 from euca2ools.exceptions import AWSError
 from requestbuilder import Arg, MutuallyExclusiveArgList, SERVICE
 import requestbuilder.auth
@@ -36,7 +37,7 @@ import requestbuilder.service
 from requestbuilder.xmlparse import parse_aws_xml
 import string
 import urlparse
-from .. import Euca2ools
+
 
 class Walrus(requestbuilder.service.BaseService):
     NAME = 's3'

@@ -29,13 +29,14 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 import argparse
+from euca2ools.commands import Euca2ools
 from euca2ools.exceptions import AWSError
 from requestbuilder import Arg, MutuallyExclusiveArgList, SERVICE
 import requestbuilder.auth
 import requestbuilder.request
 import requestbuilder.service
 import sys
-from .. import Euca2ools
+
 
 class Euare(requestbuilder.service.BaseService):
     NAME = 'iam'

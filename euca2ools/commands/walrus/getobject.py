@@ -28,27 +28,27 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-from requestbuilder import Arg
+from euca2ools.commands.walrus import WalrusRequest
 import os.path
-from . import WalrusRequest
+from requestbuilder import Arg
+
 
 class GetObject(WalrusRequest):
     DESCRIPTION = 'Retrieve objects from the server'
     ARGS = [Arg('paths', metavar='BUCKET/KEY', nargs='+', route_to=None),
             Arg('-o', dest='opath', metavar='PATH', default='.', route_to=None,
                 help='''where to download to.  If this names an existing
-                        directory or ends in '/' all objects will be downloaded
-                        separately to files in that directory.  Otherwise, all
-                        downloads will be written to a file with this name.
-                        Note that outputting multiple objects to a file will
-                        result in their concatenation.  (default: current
-                        directory)''')]
+                directory or ends in '/' all objects will be downloaded
+                separately to files in that directory.  Otherwise, all
+                downloads will be written to a file with this name.  Note that
+                outputting multiple objects to a file will result in their
+                concatenation.  (default: current directory)''')]
 
     def main(self):
         opath = self.args['opath']
         if opath.endswith('/') and not os.path.isdir(opath):
             # Ends with '/' and does not exist -> create it
-            os.makedirs(opath)
+            os.mkdir(opath)
         if os.path.isdir(opath):
             # Download one per directory
             for path in self.args['paths']:

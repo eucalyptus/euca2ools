@@ -28,16 +28,16 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+from euca2ools.commands.euare import EuareRequest, AS_ACCOUNT
 from requestbuilder import Arg
 from requestbuilder.mixins import TabifyingCommand
-from . import EuareRequest, AS_ACCOUNT
 
 
 class GetUserInfo(EuareRequest, TabifyingCommand):
     DESCRIPTION = '[Eucalyptus only] Display information about a user'
     ARGS = [Arg('-u', '--user-name', dest='UserName', metavar='USER',
                 help='''name of the user to display info for (default: current
-                        user)'''),
+                user)'''),
             Arg('-k', '--info-key', dest='InfoKey',
                 help='name of the piece of user info to show'),
             AS_ACCOUNT]

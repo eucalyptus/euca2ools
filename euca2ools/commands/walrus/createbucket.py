@@ -28,9 +28,11 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+from euca2ools.commands.walrus import (WalrusRequest,
+    validate_generic_bucket_name)
 from requestbuilder import Arg
 import xml.etree.ElementTree as ET
-from . import WalrusRequest, validate_generic_bucket_name
+
 
 class CreateBucket(WalrusRequest):
     DESCRIPTION = 'Create a new bucket'
@@ -40,7 +42,7 @@ class CreateBucket(WalrusRequest):
         WalrusRequest.configure(self)
         validate_generic_bucket_name(self.args['bucket'])
 
-    def main(self):
+    def preprocess(self):
         self.method = 'PUT'
         self.path = self.args['bucket']
         cb_config = ET.Element('CreateBucketConfiguration')
@@ -53,4 +55,3 @@ class CreateBucket(WalrusRequest):
             cb_xml = ET.tostring(cb_config)
             self.log.debug('bucket configuration: %s', cb_xml)
             self.body = cb_xml
-        self.send()

@@ -29,10 +29,10 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 import datetime
-import euca2ools.commands.euare.putuserpolicy
+from euca2ools.commands.euare import EuareRequest, AS_ACCOUNT
+from euca2ools.commands.euare.putuserpolicy import PutUserPolicy
 import json
 from requestbuilder import Arg
-from . import EuareRequest, AS_ACCOUNT
 
 
 class AddUserPolicy(EuareRequest):
@@ -59,14 +59,12 @@ class AddUserPolicy(EuareRequest):
                 'Resource': self.args['resource']}
         return {'Statement': [stmt]}
 
-
     def main(self):
         policy_doc = json.dumps(self.build_policy())
-        req = euca2ools.commands.euare.putuserpolicy.PutUserPolicy(
-                service=self.service, UserName=self.args['user_name'],
-                PolicyName=self.args['policy_name'],
-                PolicyDocument=policy_doc,
-                DelegateAccount=self.args['DelegateAccount'])
+        req = PutUserPolicy(service=self.service,
+            UserName=self.args['user_name'],
+            PolicyName=self.args['policy_name'], PolicyDocument=policy_doc,
+            DelegateAccount=self.args['DelegateAccount'])
         response = req.main()
         response['PolicyDocument'] = policy_doc
         return response

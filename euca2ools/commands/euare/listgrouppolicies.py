@@ -28,16 +28,16 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-import euca2ools.commands.euare.getgrouppolicy
+from euca2ools.commands.euare import EuareRequest, AS_ACCOUNT
+from euca2ools.commands.euare.getgrouppolicy import GetGroupPolicy
 from requestbuilder import Arg
 from requestbuilder.response import PaginatedResponse
-from . import EuareRequest, AS_ACCOUNT
 
 
 class ListGroupPolicies(EuareRequest):
     DESCRIPTION = ('List one specific policy or all policies attached to a '
                    'group.  If no policies are attached to the group, the '
-                   'action still succeeds.')
+                   'command still succeeds.')
     ARGS = [Arg('-g', '--group-name', dest='GroupName', metavar='GROUP',
                 required=True, help='group owning the policies to list'),
             Arg('-p', '--policy-name', metavar='POLICY', route_to=None,
@@ -79,9 +79,9 @@ class ListGroupPolicies(EuareRequest):
                     self.print_policy(policy_name)
 
     def print_policy(self, policy_name):
-        req = euca2ools.commands.euare.getgrouppolicy.GetGroupPolicy(
-            service=self.service, GroupName=self.args['GroupName'],
-            PolicyName=policy_name, pretty_print=self.args['pretty_print'],
+        req = GetGroupPolicy(service=self.service,
+            GroupName=self.args['GroupName'], PolicyName=policy_name,
+            pretty_print=self.args['pretty_print'],
             DelegateAccount=self.args.get('DelegateAccount'))
         response = req.main()
         req.print_result(response)

@@ -28,14 +28,15 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+from euca2ools.commands.euare import EuareRequest, AS_ACCOUNT
+from euca2ools.commands.euare.addusertogroup import AddUserToGroup
+from euca2ools.commands.euare.createaccesskey import CreateAccessKey
 from requestbuilder import Arg
-from . import EuareRequest, AS_ACCOUNT
-from .addusertogroup import AddUserToGroup
-from .createaccesskey import CreateAccessKey
+
 
 class CreateUser(EuareRequest):
-    DESCRIPTION = '''Create a new user and optionally add the user to a group
-                     or generate an access key for the user'''
+    DESCRIPTION = ('Create a new user and optionally add the user to a group '
+                   'or generate an access key for the user')
     ARGS = [Arg('-u', '--user-name', dest='UserName', required=True,
                 help='name of the new user'),
             Arg('-p', '--path', dest='Path',
@@ -52,14 +53,14 @@ class CreateUser(EuareRequest):
     def postprocess(self, result):
         if self.args.get('group_name'):
             obj = AddUserToGroup(service=self.service,
-                    UserName=self.args['UserName'],
-                    GroupName=self.args['group_name'],
-                    DelegateAccount=self.args['DelegateAccount'])
+                UserName=self.args['UserName'],
+                GroupName=self.args['group_name'],
+                DelegateAccount=self.args['DelegateAccount'])
             obj.main()
         if self.args.get('create_accesskey'):
             obj = CreateAccessKey(service=self.service,
-                    UserName=self.args['UserName'],
-                    DelegateAccount=self.args['DelegateAccount'])
+                UserName=self.args['UserName'],
+                DelegateAccount=self.args['DelegateAccount'])
             key_result = obj.main()
             result.update(key_result)
 

@@ -29,6 +29,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 import argparse
+from euca2ools.commands.euare import EuareRequest, AS_ACCOUNT
 from euca2ools.commands.euare.deleteaccesskey import DeleteAccessKey
 from euca2ools.commands.euare.deleteloginprofile import DeleteLoginProfile
 from euca2ools.commands.euare.deletesigningcertificate import DeleteSigningCertificate
@@ -42,7 +43,6 @@ from euca2ools.commands.euare.removeuserfromgroup import RemoveUserFromGroup
 from euca2ools.exceptions import AWSError
 from requestbuilder import Arg
 import sys
-from . import EuareRequest, AS_ACCOUNT
 
 
 class DeleteUser(EuareRequest):

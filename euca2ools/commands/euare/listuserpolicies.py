@@ -28,10 +28,10 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-import euca2ools.commands.euare.getuserpolicy
+from euca2ools.commands.euare import EuareRequest, AS_ACCOUNT
+from euca2ools.commands.euare.getuserpolicy import GetUserPolicy
 from requestbuilder import Arg
 from requestbuilder.response import PaginatedResponse
-from . import EuareRequest, AS_ACCOUNT
 
 
 class ListUserPolicies(EuareRequest):
@@ -79,9 +79,9 @@ class ListUserPolicies(EuareRequest):
                     self.print_policy(policy_name)
 
     def print_policy(self, policy_name):
-        req = euca2ools.commands.euare.getuserpolicy.GetUserPolicy(
-            service=self.service, UserName=self.args['UserName'],
-            PolicyName=policy_name, pretty_print=self.args['pretty_print'],
+        req = GetUserPolicy(service=self.service,
+            UserName=self.args['UserName'], PolicyName=policy_name,
+            pretty_print=self.args['pretty_print'],
             DelegateAccount=self.args.get('DelegateAccount'))
         response = req.main()
         req.print_result(response)

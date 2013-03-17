@@ -27,12 +27,10 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#
-# Author: Neil Soman neil@eucalyptus.com
-#         Mitch Garnaat mgarnaat@eucalyptus.com
 
+from euca2ools.commands.euare import EuareRequest, AS_ACCOUNT
 from requestbuilder import Arg
-from . import EuareRequest, AS_ACCOUNT
+
 
 class DeleteLoginProfile(EuareRequest):
     DESCRIPTION = "Delete a user's password"

@@ -28,16 +28,16 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+from euca2ools.commands.walrus import WalrusRequest
+from euca2ools.exceptions import AWSError
 from requestbuilder import Arg
 from requestbuilder.exceptions import ServerError
-from . import WalrusRequest
-from .listbucket import ListBucket
 
 
 class CheckBucket(WalrusRequest):
     DESCRIPTION = 'Return successfully if a bucket exists'
     ARGS = [Arg('bucket', route_to=None, help='name of the bucket to check')]
 
-    def main(self):
-        req = ListBucket(paths=[self.args['bucket']], **{'max-keys': 0})
-        req.main()
+    def preprocess(self):
+        self.method = 'HEAD'
+        self.path = self.args['bucket']

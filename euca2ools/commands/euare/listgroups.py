@@ -28,16 +28,16 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+from euca2ools.commands.euare import EuareRequest, AS_ACCOUNT
 from requestbuilder import Arg
 from requestbuilder.response import PaginatedResponse
-from . import EuareRequest, AS_ACCOUNT
 
 
 class ListGroups(EuareRequest):
     DESCRIPTION = "List your account's groups"
     ARGS = [Arg('-p', '--path-prefix', dest='PathPrefix', metavar='PATH',
                 help='''restrict results to groups whose paths begin with a
-                        specific prefix'''),
+                specific prefix'''),
             AS_ACCOUNT]
     LIST_TAGS = ['Groups']
 

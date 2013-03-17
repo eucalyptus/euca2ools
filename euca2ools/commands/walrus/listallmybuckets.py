@@ -28,18 +28,20 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+from euca2ools.commands.walrus import WalrusRequest
 from requestbuilder import Arg
 from requestbuilder.mixins import TabifyingCommand
 from requestbuilder.xmlparse import parse_listdelimited_aws_xml
-from . import WalrusRequest
+
 
 class ListAllMyBuckets(WalrusRequest, TabifyingCommand):
     DESCRIPTION = 'List all buckets owned by your account'
     ARGS = [Arg('-l', dest='long_output', action='store_true', route_to=None,
-                help='list in long format, with creation dates and owner info'),
-            Arg('-n', dest='numeric_output', action='store_true', route_to=None,
-                help=('display account IDs numerically in long (-l) output.  '
-                      'This option turns on the -l option.'))]
+                help='''list in long format, with creation dates and owner
+                info'''),
+            Arg('-n', dest='numeric_output', action='store_true',
+                route_to=None, help='''display account IDs numerically in long
+                (-l) output.  This option turns on the -l option.''')]
 
     def configure(self):
         WalrusRequest.configure(self)

@@ -29,10 +29,10 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 import datetime
-import euca2ools.commands.euare.putgrouppolicy
+from euca2ools.commands.euare import EuareRequest, AS_ACCOUNT
+from euca2ools.commands.euare.putgrouppolicy import PutGroupPolicy
 import json
 from requestbuilder import Arg
-from . import EuareRequest, AS_ACCOUNT
 
 
 class AddGroupPolicy(EuareRequest):
@@ -59,14 +59,13 @@ class AddGroupPolicy(EuareRequest):
                 'Resource': self.args['resource']}
         return {'Statement': [stmt]}
 
-
     def main(self):
         policy_doc = json.dumps(self.build_policy())
-        req = euca2ools.commands.euare.putgrouppolicy.PutGroupPolicy(
-                service=self.service, GroupName=self.args['group_name'],
-                PolicyName=self.args['policy_name'],
-                PolicyDocument=policy_doc,
-                DelegateAccount=self.args['DelegateAccount'])
+        req = PutGroupPolicy(service=self.service,
+            GroupName=self.args['group_name'],
+            PolicyName=self.args['policy_name'],
+            PolicyDocument=policy_doc,
+            DelegateAccount=self.args['DelegateAccount'])
         response = req.main()
         response['PolicyDocument'] = policy_doc
         return response

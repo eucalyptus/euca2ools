@@ -28,13 +28,14 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+from euca2ools import __version__
 import glob
 import os.path
 import platform
 import requestbuilder
 import requests
 import sys
-from .. import __version__
+
 
 class Euca2ools(object):
     '''
