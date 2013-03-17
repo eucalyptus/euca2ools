@@ -154,8 +154,8 @@ class AWSError(requestbuilder.exceptions.ServerError):
                     parsed = parsed['Errors']
                 if 'Error' in parsed:
                     parsed = parsed['Error']
-                self.code     = parsed.get('Code')
-                self.message  = parsed.get('Message')
+                self.code     = parsed.get('Code') or response.status_code
+                self.message  = parsed.get('Message') or response.reason
                 self.elements = parsed
             except ValueError:
                 # Dump the unparseable message body so we don't include
@@ -164,6 +164,10 @@ class AWSError(requestbuilder.exceptions.ServerError):
                 # in case we need it later.
                 self.message = self.body
                 self.body    = None
+                self.code    = response.status_code
+        else:
+            self.code    = response.status_code
+            self.message = response.reason
 
     def __str__(self):
         s_bits = [self.__class__.__name__ + ':', self.code or self.status_code]
