@@ -1,0 +1,4 @@
+boto>=2.3
+M2Crypto
+requestbuilder>=0.1.0-alpha4
+requests

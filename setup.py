@@ -28,6 +28,7 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+from distutils.command.build_py import build_py
 from distutils.command.build_scripts import build_scripts
 from distutils.command.install_scripts import install_scripts
 from distutils.command.sdist import sdist
@@ -36,10 +37,8 @@ import re
 
 try:
     from setuptools import setup
-    extra = {'install_requires': ['boto', 'M2Crypto', 'requestbuilder']}
 except ImportError:
     from distutils.core import setup
-    extra = {}
 
 from euca2ools import __version__
 
@@ -70,6 +69,29 @@ class install_scripts_and_symlinks(install_scripts):
                 newlink = os.path.join(self.install_dir, os.path.basename(script))
                 if not os.path.exists(newlink):
                     os.symlink(target, newlink)
+
+
+class build_py_with_git_version(build_py):
+    '''Like build_py, but also hardcoding the version in __init__.__version__
+       so it's consistent even outside of the source tree'''
+
+    def build_module(self, module, module_file, package):
+        build_py.build_module(self, module, module_file, package)
+        print module, module_file, package
+        if module == '__init__' and '.' not in package:
+            version_line = "__version__ = '{0}'\n".format(__version__)
+            old_init_name = self.get_module_outfile(self.build_lib, (package,),
+                                                    module)
+            new_init_name = old_init_name + '.new'
+            with open(new_init_name, 'w') as new_init:
+                with open(old_init_name) as old_init:
+                    for line in old_init:
+                        if line.startswith('__version__ ='):
+                            new_init.write(version_line)
+                        else:
+                            new_init.write(line)
+                new_init.flush()
+            os.rename(new_init_name, old_init_name)
 
 
 class sdist_with_git_version(sdist):
@@ -273,8 +295,7 @@ setup(name = "euca2ools",
                      'Programming Language :: Python :: 2.6',
                      'Programming Language :: Python :: 2.7',
                      'Topic :: Internet'],
-      requires = ['boto', 'M2Crypto', 'requestbuilder'],
-      cmdclass = {'build_scripts':   build_scripts_except_symlinks,
+      cmdclass = {'build_py':        build_py_with_git_version,
+                  'build_scripts':   build_scripts_except_symlinks,
                   'install_scripts': install_scripts_and_symlinks,
-                  'sdist':           sdist_with_git_version},
-      **extra)
+                  'sdist':           sdist_with_git_version})
