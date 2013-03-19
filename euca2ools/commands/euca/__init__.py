@@ -218,7 +218,8 @@ class EucalyptusRequest(requestbuilder.request.AWSQueryRequest,
     def print_reservation(self, reservation):
         res_line = ['RESERVATION', reservation['reservationId'],
                     reservation.get('ownerId')]
-        group_ids = [group['groupId'] for group in reservation['groupSet']]
+        group_ids = [group.get('groupId') or group.get('groupName')
+                     for group in reservation['groupSet']]
         res_line.append(', '.join(group_ids))
         print self.tabify(res_line)
         for instance in sorted(reservation.get('instancesSet', []),
