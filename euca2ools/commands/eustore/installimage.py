@@ -351,8 +351,8 @@ class InstallImage(AWSQueryRequest):
                     aws_secret_access_key=euare_svc.args['aws_secret_access_key'],\
                     port=euare_svc.args['port'], path=euare_svc.args['path'],\
                     is_secure=euare_svc.args['is_secure'])
-        userinfo  = conn.get_user().arn.split(':')
-        if not(userinfo[4]=='eucalyptus') and not(self.cli_options.kernel):
+        aliases = conn.get_account_alias()
+        if not(aliases.list_account_aliases_result.account_aliases[0]=='eucalyptus') and not(self.cli_options.kernel):
             print >> sys.stderr, "Error: must be cloud admin to upload kernel/ramdisk. try specifying existing ones with --kernel and --ramdisk"
             sys.exit(-1)
         self.eustore_url = self.ServiceClass.StoreBaseURL
