@@ -29,6 +29,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 from euca2ools.commands import Euca2ools
+from euca2ools.exceptions import AWSError
 from requestbuilder import Arg, SERVICE
 import requestbuilder.auth
 import requestbuilder.service
@@ -41,6 +42,10 @@ class CloudWatch(requestbuilder.service.BaseService):
     API_VERSION = '2010-08-01'
     AUTH_CLASS = requestbuilder.auth.QuerySigV2Auth
     URL_ENVVAR = 'AWS_CLOUDWATCH_URL'
+
+    def handle_http_error(self, response):
+        raise AWSError(response)
+
 
 class CloudWatchRequest(requestbuilder.request.AWSQueryRequest):
     SUITE = Euca2ools
