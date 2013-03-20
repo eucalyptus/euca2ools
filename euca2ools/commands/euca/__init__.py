@@ -141,9 +141,9 @@ class Eucalyptus(requestbuilder.service.BaseService):
     ARGS = [Arg('--config', dest='shell_configfile', metavar='CFGFILE',
                  default='', route_to=SERVICE, help=argparse.SUPPRESS),
             MutuallyExclusiveArgList(
-                Arg('--region', dest='userregion', metavar='REGION',
-                    route_to=SERVICE,
-                    help='region name to connect to, with optional identity'),
+                Arg('--region', dest='userregion', metavar='USER@REGION',
+                    route_to=SERVICE, help='''name of the region and/or user
+                    in config files to use to connect to the service'''),
                 Arg('-U', '--url', metavar='URL', route_to=SERVICE,
                     help='compute service endpoint URL'))]
 

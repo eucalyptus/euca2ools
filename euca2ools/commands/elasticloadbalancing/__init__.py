@@ -30,7 +30,7 @@
 
 from euca2ools.commands import Euca2ools
 from euca2ools.exceptions import AWSError
-from requestbuilder import Arg, SERVICE
+from requestbuilder import Arg, MutuallyExclusiveArgList, SERVICE
 import requestbuilder.auth
 import requestbuilder.service
 import requestbuilder.request
@@ -43,6 +43,13 @@ class ELB(requestbuilder.service.BaseService):
     AUTH_CLASS = requestbuilder.auth.QuerySigV2Auth
     URL_ENVVAR = 'AWS_ELB_URL'
 
+    ARGS = [MutuallyExclusiveArgList(
+                Arg('--region', dest='userregion', metavar='USER@REGION',
+                    route_to=SERVICE, help='''name of the region and/or user
+                    in config files to use to connect to the service'''),
+                Arg('-U', '--url', metavar='URL', route_to=SERVICE,
+                    help='load balancing service endpoint URL'))]
+
     def handle_http_error(self, response):
         raise AWSError(response)
 
@@ -50,8 +57,6 @@ class ELB(requestbuilder.service.BaseService):
 class ELBRequest(requestbuilder.request.AWSQueryRequest):
     SUITE = Euca2ools
     SERVICE_CLASS = ELB
-    ARGS = [Arg('-U', '--url', dest='url', metavar='URL', route_to=SERVICE,
-                help='load balancing service endpoint URL')]
 
     def parse_response(self, response):
         response_dict = requestbuilder.request.AWSQueryRequest.parse_response(

@@ -46,9 +46,9 @@ class Walrus(requestbuilder.service.BaseService):
     URL_ENVVAR = 'S3_URL'
 
     ARGS = [MutuallyExclusiveArgList(
-                Arg('--region', dest='userregion', metavar='REGION',
-                    route_to=SERVICE,
-                    help='region name to connect to, with optional identity'),
+                Arg('--region', dest='userregion', metavar='USER@REGION',
+                    route_to=SERVICE, help='''name of the region and/or user
+                    in config files to use to connect to the service'''),
                 Arg('-U', '--url', metavar='URL', route_to=SERVICE,
                     help='storage service endpoint URL'))]
 
