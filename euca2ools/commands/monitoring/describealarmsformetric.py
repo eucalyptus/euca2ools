@@ -29,27 +29,37 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 import argparse
+from euca2ools.commands.argtypes import delimited_list
 from euca2ools.commands.monitoring import CloudWatchRequest
+from euca2ools.commands.monitoring.argtypes import cloudwatch_dimension
 from requestbuilder import Arg
 from requestbuilder.mixins import TabifyingCommand
 from requestbuilder.response import PaginatedResponse
 
 
-class DescribeAlarms(CloudWatchRequest, TabifyingCommand):
-    DESCRIPTION = 'Describe alarms'
-    ARGS = [Arg('AlarmNames.member', metavar='ALARM', nargs='*',
-                help='limit results to specific alarms'),
-            Arg('--action-prefix', dest='ActionPrefix', metavar='PREFIX',
-                help='''limit results to alarms whose actions' ARNs begin with
-                a specific string'''),
-            Arg('--alarm-name-prefix', dest='AlarmNamePrefix',
-                metavar='PREFIX', help='''limit results to alarms whose names
-                begin with a specific string'''),
+class DescribeAlarmsForMetric(CloudWatchRequest, TabifyingCommand):
+    DESCRIPTION = ('Describe alarms for a single metric.\n\nNote that all '
+                   "of an alarm's metrics must match exactly to obtain any "
+                   'results.')
+    ARGS = [Arg('--metric-name', dest='MetricName', metavar='METRIC',
+                required=True, help='name of the metric (required)'),
+            Arg('--namespace', dest='Namespace', metavar='NAMESPACE',
+                required=True, help='namespace of the metric (required)'),
+            # --alarm-description is supported by the tool, but not the service
+            Arg('--alarm-description', route_to=None, help=argparse.SUPPRESS),
+            Arg('--dimensions', dest='Dimensions.member',
+                metavar='KEY1=VALUE1,KEY2=VALUE2,...',
+                type=delimited_list(',', item_type=cloudwatch_dimension),
+                help='dimensions of the metric'),
+            Arg('--period', dest='Period', metavar='SECONDS',
+                help='period over which statistics are applied'),
             Arg('--show-long', action='store_true', route_to=None,
                 help="show all of the alarms' info"),
-            Arg('--state-value', dest='StateValue',
-                choices=('OK', 'ALARM', 'INSUFFICIENT_DATA'),
-                help='limit results to alarms in a specific state')]
+            Arg('--statistic', dest='Statistic', choices=('Average', 'Maximum',
+                'Minimum', 'SampleCount', 'Sum'),
+                help='statistic of the metric on which to trigger alarms'),
+            Arg('--unit', dest='Unit',
+                help='unit of measurement for statistics')]
     LIST_TAGS = ['MetricAlarms', 'AlarmActions', 'Dimensions',
                  'InsufficientDataActions', 'OKActions']
 

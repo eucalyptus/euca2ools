@@ -67,3 +67,36 @@ class CloudWatchRequest(requestbuilder.request.AWSQueryRequest):
             return response_dict[useful_keys[0]]
         else:
             return response_dict
+
+    def print_alarm(self, alarm):
+        bits = [alarm.get('AlarmName')]
+        if self.args['show_long']:
+            bits.append(alarm.get('AlarmDescription'))
+        bits.append(alarm.get('StateValue'))
+        if self.args['show_long']:
+            bits.append(alarm.get('StateReason'))
+            bits.append(alarm.get('StateReasonData'))
+            bits.append(alarm.get('ActionsEnabled'))
+            bits.append(','.join(alarm.get('OKActions', [])))
+        bits.append(','.join(alarm.get('AlarmActions', [])))
+        if self.args['show_long']:
+            bits.append(','.join(alarm.get('InsufficientDataActions', [])))
+        bits.append(alarm.get('Namespace'))
+        bits.append(alarm.get('MetricName'))
+        if self.args['show_long']:
+            dimensions = []
+            for dimension in alarm.get('Dimensions', []):
+                dimensions.append('{0}={1}'.format(dimension.get('Name'),
+                                                   dimension.get('Value')))
+            if len(dimensions) > 0:
+                bits.append('{{{0}}}'.format(','.join(dimensions)))
+            else:
+                bits.append(None)
+        bits.append(alarm.get('Period'))
+        bits.append(alarm.get('Statistic'))
+        if self.args['show_long']:
+            bits.append(alarm.get('Unit'))
+        bits.append(alarm.get('EvaluationPeriods'))
+        bits.append(alarm.get('ComparisonOperator'))
+        bits.append(alarm.get('Threshold'))
+        print self.tabify(bits)
