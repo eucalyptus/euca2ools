@@ -28,28 +28,19 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-import argparse
 from euca2ools.commands.argtypes import delimited_list
 from euca2ools.commands.monitoring import CloudWatchRequest
+from euca2ools.commands.monitoring.argtypes import cloudwatch_dimension
 from requestbuilder import Arg
 from requestbuilder.mixins import TabifyingCommand
 from requestbuilder.response import PaginatedResponse
-
-
-def dimension_filter(dim_as_str):
-    try:
-        name, val = dim_as_str.split('=', 1)
-        return {'Name': key, 'Value': val}
-    except ValueError:
-        raise argparse.ArgumentTypeError('dimension filter "{0}" must have '
-                                         'form KEY=VALUE'.format(dim_as_str))
 
 
 class ListMetrics(CloudWatchRequest, TabifyingCommand):
     DESCRIPTION = 'Show a list of monitoring metrics'
     ARGS = [Arg('-d', '--dimensions', dest='Dimensions.member',
                 metavar='KEY1=VALUE1,KEY2=VALUE2,...',
-                type=delimited_list(dimension_filter),
+                type=delimited_list(',', item_type=cloudwatch_dimension),
                 help='limit results to metrics with specific dimensions'),
             Arg('-m', '--metric-name', dest='MetricName', metavar='METRIC',
                 help='limit results to a specific metric'),
