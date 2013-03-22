@@ -51,7 +51,7 @@ import euca2ools.commands.eustore
 import euca2ools.utils
 from euca2ools.commands.bundle.bundleimage import BundleImage
 from euca2ools.commands.bundle.uploadbundle import UploadBundle
-from euca2ools.commands.euca.register import Register
+from euca2ools.commands.euca.registerimage import RegisterImage
 from euca2ools.exceptions import NotFoundError, CommandFailed
 
 try:
@@ -63,7 +63,7 @@ class LocalUploadBundle(UploadBundle):
     def process_cli_args(self):
         pass
 
-class LocalRegister(Register):
+class LocalRegister(RegisterImage):
     def process_cli_args(self):
         pass
 
