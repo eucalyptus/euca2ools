@@ -57,6 +57,7 @@ class ELB(requestbuilder.service.BaseService):
 class ELBRequest(requestbuilder.request.AWSQueryRequest):
     SUITE = Euca2ools
     SERVICE_CLASS = ELB
+    METHOD = 'POST'
 
     def parse_response(self, response):
         response_dict = requestbuilder.request.AWSQueryRequest.parse_response(

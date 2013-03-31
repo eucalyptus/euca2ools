@@ -57,6 +57,7 @@ class CloudWatch(requestbuilder.service.BaseService):
 class CloudWatchRequest(requestbuilder.request.AWSQueryRequest):
     SUITE = Euca2ools
     SERVICE_CLASS = CloudWatch
+    METHOD = 'POST'
 
     def parse_response(self, response):
         response_dict = requestbuilder.request.AWSQueryRequest.parse_response(
