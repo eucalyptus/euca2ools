@@ -28,27 +28,15 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.argtypes import delimited_list
 from euca2ools.commands.elasticloadbalancing import ELBRequest
 from euca2ools.commands.elasticloadbalancing.argtypes import listener
-from requestbuilder import Arg, MutuallyExclusiveArgList
-from requestbuilder.mixins import TabifyingCommand
+from requestbuilder import Arg
 
 
-class CreateLoadBalancer(ELBRequest, TabifyingCommand):
-    DESCRIPTION = ('Create a load balancer\n\nAfter the load balancer is '
-                   'created, instances must be registered with it separately.')
+class CreateLoadBalancerListeners(ELBRequest):
+    DESCRIPTION = 'Add one or more listeners to a load balancer'
     ARGS = [Arg('LoadBalancerName', metavar='ELB',
-                help='name of the new load balancer (required)'),
-            MutuallyExclusiveArgList(True,
-                Arg('-s', '--subnets', metavar='SUBNET1,SUBNET2,...',
-                    dest='Subnets.member', type=delimited_list(','),
-                    help='''[VPC only] subnets the load balancer should run in
-                    (required)'''),
-                Arg('-z', '--availability-zones', metavar='ZONE1,ZONE2,...',
-                    dest='AvailabilityZones.member', type=delimited_list(','),
-                    help='''[Non-VPC only] availability zones the load balancer
-                    should run in (required)''')),
+                help='name of the load balancer to modify (required)'),
             Arg('-l', '--listener', dest='Listeners.member', action='append',
                 metavar=('"lb-port=PORT, protocol={HTTP,HTTPS,SSL,TCP}, '
                          'instance-port=PORT, instance-protocol={HTTP,HTTPS,'
@@ -61,14 +49,4 @@ class CreateLoadBalancer(ELBRequest, TabifyingCommand):
                 back end instances, and cert-id is the ARN of the server
                 certificate to use for encrypted connections.  lb-port,
                 protocol, and instance-port are required.  This option may be
-                used multiple times.  (at least 1 required)'''),
-            Arg('-i', '--scheme', dest='Scheme', choices=('internal',),
-                metavar='internal', help='''[VPC only] "internal" to make the
-                new load balancer private to a VPC'''),
-            Arg('-g', '--security-groups', dest='SecurityGroups.member',
-                metavar='GROUP1,GROUP2,...', type=delimited_list(','),
-                help='''[VPC only] IDs of the security groups to assign to the
-                new load balancer''')]
-
-    def print_result(self, result):
-        print self.tabify(('DNS_NAME', result.get('DNSName')))
+                used multiple times.  (at least 1 required)''')]
