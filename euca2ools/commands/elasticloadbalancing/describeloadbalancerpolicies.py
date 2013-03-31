@@ -35,7 +35,7 @@ from requestbuilder.mixins import TabifyingCommand
 
 
 class DescribeLoadBalancerPolicies(ELBRequest, TabifyingCommand):
-    DESCRIPTION = 'Show information about load balancer policiess'
+    DESCRIPTION = 'Show information about load balancer policies'
     ARGS = [Arg('LoadBalancerName', metavar='ELB', nargs='?', help='''show
                 policies associated with a specific load balancer (default:
                 only describe sample policies provided by the service)'''),
