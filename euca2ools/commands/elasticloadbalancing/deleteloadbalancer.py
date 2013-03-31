@@ -28,6 +28,7 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+import argparse
 from euca2ools.commands.elasticloadbalancing import ELBRequest
 from requestbuilder import Arg
 
@@ -36,4 +37,6 @@ class DeleteLoadBalancer(ELBRequest):
     DESCRIPTION = ('Delete a load balancer\n\nIf the load balancer does not '
                    'exist, this command still succeeds.')
     ARGS = [Arg('LoadBalancerName', metavar='ELB',
-                help='name of the load balancer to delete (required)')]
+                help='name of the load balancer to delete (required)'),
+            Arg('--force', action='store_true', route_to=None,
+                help=argparse.SUPPRESS)]  # for compatibility
