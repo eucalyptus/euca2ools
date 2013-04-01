@@ -45,4 +45,4 @@ class AttachLoadBalancerToSubnets(ELBRequest, TabifyingCommand):
     LIST_TAGS = ['Subnets']
 
     def print_result(self, result):
-        print self.tabify(('SUBNETS', ','.join(result.get('Subnets', []))))
+        print self.tabify(('SUBNETS', ', '.join(result.get('Subnets', []))))
