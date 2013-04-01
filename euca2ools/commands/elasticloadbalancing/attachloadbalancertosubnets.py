@@ -34,9 +34,14 @@ from requestbuilder import Arg
 
 
 class AttachLoadBalancerToSubnets(ELBRequest):
-    DESCRIPTION = '[VPC only] Add one or more subnets to a load balancer'
+    DESCRIPTION = '[VPC only] Add a load balancer to one or more subnets'
     ARGS = [Arg('LoadBalancerName', metavar='ELB',
                 help='name of the load balancer to modify (required)'),
             Arg('-s', '--subnets', dest='Subnets.member', required=True,
                 metavar='SUBNET1,SUBNET2,...', type=delimited_list(','),
-                help='IDs of the subnets to add')]
+                help='''IDs of the subnets to add the load balancer to
+                (required)''')]
+    LIST_TAGS = ['Subnets']
+
+    def print_result(self, result):
+        print self.tabify(('SUBNETS', ','.join(result.get('Subnets', []))))
