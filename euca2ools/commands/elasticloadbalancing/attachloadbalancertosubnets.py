@@ -31,9 +31,10 @@
 from euca2ools.commands.argtypes import delimited_list
 from euca2ools.commands.elasticloadbalancing import ELBRequest
 from requestbuilder import Arg
+from requestbuilder.mixins import TabifyingCommand
 
 
-class AttachLoadBalancerToSubnets(ELBRequest):
+class AttachLoadBalancerToSubnets(ELBRequest, TabifyingCommand):
     DESCRIPTION = '[VPC only] Add a load balancer to one or more subnets'
     ARGS = [Arg('LoadBalancerName', metavar='ELB',
                 help='name of the load balancer to modify (required)'),
