@@ -36,9 +36,9 @@ class CreateAppCookieStickinessPolicy(ELBRequest):
     DESCRIPTION = ('Create a new stickiness policy for a load balancer, '
                    'whereby the server application generates a cookie and '
                    'adds it to its responses.  The load balancer will then '
-                   'use this cookie to route requests to the same back end '
-                   'instance cookie.  This type of policy can only be '
-                   'associated with HTTP or HTTPS listeners')
+                   'use this cookie to route requests from each user to the '
+                   'same back end instance.  This type of policy can only be '
+                   'associated with HTTP or HTTPS listeners,')
     ARGS = [Arg('LoadBalancerName', metavar='ELB',
                 help='name of the load balancer to modify (required)'),
             # -c is for cookie.  That's good enough for me.
