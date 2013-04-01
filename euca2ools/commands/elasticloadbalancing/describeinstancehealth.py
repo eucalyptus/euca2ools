@@ -41,7 +41,7 @@ def instance(inst_as_str):
 class DescribeInstanceHealth(ELBRequest, TabifyingCommand):
     DESCRIPTION = 'Show the state of instances registered with a load balancer'
     ARGS = [Arg('LoadBalancerName', metavar='ELB', help='''name of the load
-                balancer the to describe instances for (required)'''),
+                balancer to describe instances for (required)'''),
             Arg('--instances', dest='Instances.member',
                 metavar='INSTANCE1,INSTANCE2,...',
                 type=delimited_list(',', item_type=instance),
