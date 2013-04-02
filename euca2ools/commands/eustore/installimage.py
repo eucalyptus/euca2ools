@@ -261,6 +261,7 @@ class InstallImage(AWSQueryRequest):
         kernel_id=self.cli_options.kernel
         ramdisk_id=self.cli_options.ramdisk
         kernel_found = False
+        files_bundled = []
         if kernel_id==None:
             for i in [0, 1]:
                 tar_root = os.path.commonprefix(names)
@@ -276,6 +277,7 @@ class InstallImage(AWSQueryRequest):
                                 if prefix:
                                     name = prefix+name
                                 kernel_id = self.bundleFile(path, name, description, arch, 'true', None)
+                                files_bundled.append(path)
                                 kernel_found = True
                                 print kernel_id
                             elif re.match(".*(initr(d|amfs)|loader).*", name):
@@ -283,6 +285,7 @@ class InstallImage(AWSQueryRequest):
                                 if prefix:
                                     name = prefix+name
                                 ramdisk_id = self.bundleFile(path, name, description, arch, None, 'true')
+                                files_bundled.append(path)
                                 print ramdisk_id
                 if not(kernel_found):
                     if not(kernel_dir):
@@ -298,7 +301,7 @@ class InstallImage(AWSQueryRequest):
         for path in names:
             name = os.path.basename(path)
             if not name.startswith('.'):
-                if name.endswith('.img'):
+                if name.endswith('.img') and not(path in files_bundled):
                     print "Bundling/uploading image"
                     if prefix:
                         name = prefix
@@ -351,8 +354,9 @@ class InstallImage(AWSQueryRequest):
                     aws_secret_access_key=euare_svc.args['aws_secret_access_key'],\
                     port=euare_svc.args['port'], path=euare_svc.args['path'],\
                     is_secure=euare_svc.args['is_secure'])
-        userinfo  = conn.get_user().arn.split(':')
-        if not(userinfo[4]=='eucalyptus') and not(self.cli_options.kernel):
+        conn.https_validate_certificates = False
+        aliases = conn.get_account_alias()
+        if not(aliases.list_account_aliases_result.account_aliases[0]=='eucalyptus') and not(self.cli_options.kernel):
             print >> sys.stderr, "Error: must be cloud admin to upload kernel/ramdisk. try specifying existing ones with --kernel and --ramdisk"
             sys.exit(-1)
         self.eustore_url = self.ServiceClass.StoreBaseURL
