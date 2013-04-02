@@ -42,6 +42,10 @@ class Euca2ools(object):
     A class with attributes and methods that define the entire euca2ools suite
     '''
 
+    CONFIG_PATHS = ('/etc/euca2ools/euca2ools.ini',
+                    '/etc/euca2ools/conf.d/*.ini',
+                    '~/.euca/*.ini')
+
     def __init__(self):
         self.__user_agent = None
 
@@ -58,12 +62,16 @@ class Euca2ools(object):
             pass
         sys.exit()
 
-    @staticmethod
-    def list_config_files():
-        sys_config_files = ['/etc/euca2ools.ini']
-        user_glob = os.path.join(os.path.expanduser('~/.euca'), '*.ini')
-        user_config_files = sorted(glob.glob(user_glob))
-        return sys_config_files + user_config_files
+    def list_config_files(self):
+        config_files = []
+        if 'EUCA_CONFIG_PATH' in os.environ:
+            config_globs = os.getenv('EUCA_CONFIG_PATH').split(':')
+        else:
+            config_globs = self.CONFIG_PATHS
+        for config_glob in config_globs:
+            expanded = os.path.expanduser(os.path.expandvars(config_glob))
+            config_files.extend(sorted(glob.glob(expanded)))
+        return config_files
 
     def get_user_agent(self):
         if self.__user_agent is None:
