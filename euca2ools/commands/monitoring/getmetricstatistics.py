@@ -74,7 +74,7 @@ class GetMetricStatistics(CloudWatchRequest, TabifyingCommand):
                     'argument --period: value must be a multiple of 60')
 
     def main(self):
-        now = datetime.datetime.now()
+        now = datetime.datetime.utcnow()
         then = now - datetime.timedelta(hours=1)
         if not self.args.get('StartTime'):
             self.params['StartTime'] = then.strftime('%Y-%m-%dT%H:%M:%SZ')
