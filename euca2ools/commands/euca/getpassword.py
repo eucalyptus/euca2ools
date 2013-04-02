@@ -36,6 +36,7 @@ from requestbuilder import Arg
 
 
 class GetPassword(GetPasswordData):
+    NAME = 'GetPasswordData'
     DESCRIPTION = ('Retrieve the administrator password for an instance '
                    'running Windows')
     ARGS = [Arg('-k', '--priv-launch-key', metavar='FILE',
