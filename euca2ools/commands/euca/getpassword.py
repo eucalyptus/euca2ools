@@ -29,18 +29,17 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 import base64
-from euca2ools.commands.argtypes import file_contents
 from euca2ools.commands.euca.getpassworddata import GetPasswordData
-from M2Crypto import RSA
 from requestbuilder import Arg
+import subprocess
 
 
 class GetPassword(GetPasswordData):
     NAME = 'GetPasswordData'
     DESCRIPTION = ('Retrieve the administrator password for an instance '
                    'running Windows')
-    ARGS = [Arg('-k', '--priv-launch-key', metavar='FILE',
-                type=file_contents, required=True, route_to=None,
+    ARGS = [Arg('-k', '--priv-launch-key', metavar='FILE', required=True,
+                route_to=None,
                 help='''file containing the private key corresponding to the
                 key pair supplied at instance launch time (required)''')]
 
@@ -50,7 +49,8 @@ class GetPassword(GetPasswordData):
         except AttributeError:
             # The reply didn't contain a passwordData element.
             raise AttributeError('no password data found for this instance')
-        privkey  = RSA.load_key_string(self.args['priv_launch_key'])
-        password = privkey.private_decrypt(base64.b64decode(pwdata),
-                                           RSA.pkcs1_padding)
-        print password
+        cmd = subprocess.Popen(['openssl', 'rsautl', '-decrypt', '-inkey',
+                                self.args['priv_launch_key']],
+                                stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+        stdout, __ = cmd.communicate(base64.b64decode(pwdata))
+        print stdout
