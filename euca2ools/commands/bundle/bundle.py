@@ -1,12 +1,37 @@
-#!/usr/bin/python -tt
+# Software License Agreement (BSD License)
+#
+# Copyright (c) 2013, Eucalyptus Systems, Inc.
+# All rights reserved.
+#
+# Redistribution and use of this software in source and binary forms, with or
+# without modification, are permitted provided that the following conditions
+# are met:
+#
+#   Redistributions of source code must retain the above
+#   copyright notice, this list of conditions and the
+#   following disclaimer.
+#
+#   Redistributions in binary form must reproduce the above
+#   copyright notice, this list of conditions and the
+#   following disclaimer in the documentation and/or other
+#   materials provided with the distribution.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+# ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+# LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE.
 
-import argparse
-## TODO:  remove the stuff above and add the regular license header
 import hashlib
 import multiprocessing
 import itertools
 import os.path
-import progressbar
 import random
 import subprocess
 import sys
@@ -14,19 +39,27 @@ import tarfile
 import threading
 import time
 
-
-## TODO:  make the progress bar optional
+# Note:  show_progress=True in a couple methods imports progressbar
+## TODO:  document that fact
 
 
 class Bundle(object):
-    DEFAULT_PART_SIZE = 1024 * 1024  ## FIXME
+    DEFAULT_PART_SIZE = 10 * 1024 * 1024
 
     def __init__(self):
+        self.digest = None
+        self.digest_algorithm = 'SHA1'
+        self.enc_algorithm = 'AES-128-CBC'
         self.enc_key = None
         self.enc_iv = None
+        self.image_filename = None
+        self.image_size = None
         self.parts = None
-        self.tarball_sha1sum = None
         self._lock = threading.Lock()
+
+    @property
+    def bundled_size(self):
+        return sum(part['size'] for part in self.parts)
 
     @classmethod
     def create_from_image(cls, image_filename, part_prefix, part_size=None,
@@ -41,6 +74,9 @@ class Bundle(object):
                             show_progress=False):
         if part_size is None:
             part_size = self.DEFAULT_PART_SIZE
+        with self._lock:
+            self.image_filename = image_filename
+            self.image_size = os.path.getsize(image_filename)
         # pipe for getting the digest from sha1sum
         digest_pipe_out, digest_pipe_in = multiprocessing.Pipe(duplex=False)
         # pipe for tar --> sha1sum
@@ -79,13 +115,13 @@ class Bundle(object):
 
         # gzip --> openssl
         srand = random.SystemRandom()
-        key = format(srand.getrandbits(128), 'x')
-        iv = format(srand.getrandbits(128), 'x')
+        enc_key = format(srand.getrandbits(128), 'x')
+        enc_iv = format(srand.getrandbits(128), 'x')
         with self._lock:
-            self.key = key
-            self.iv = iv
+            self.enc_key = enc_key
+            self.enc_iv = enc_iv
         openssl = subprocess.Popen(['openssl', 'enc', '-e', '-aes-128-cbc',
-                                    '-K', key, '-iv', iv],
+                                    '-K', enc_key, '-iv', enc_iv],
                                    stdin=gzip.stdout, stdout=subprocess.PIPE,
                                    close_fds=True, bufsize=-1)
 
@@ -101,10 +137,10 @@ class Bundle(object):
                 _write_tarball(image, tar_input, show_progress=show_progress)
             writer_thread.join()
 
-            digest = digest_pipe_out.recv()
+            overall_digest = digest_pipe_out.recv()
             digest_pipe_out.close()
             with self._lock:
-                self.digest = digest
+                self.digest = overall_digest
 
     def _write_parts(self, infile, part_prefix, part_size):
         with self._lock:
@@ -119,15 +155,18 @@ class Bundle(object):
                 return
 
 
+### BUNDLE CREATION ###
 def _write_tarball(infile, outfile, show_progress=False):
-    widgets = [progressbar.Percentage(), ' ', progressbar.Bar(marker='='), ' ',
-               progressbar.FileTransferSpeed(), ' ', progressbar.AdaptiveETA()]
-    bar = progressbar.ProgressBar(maxval=os.path.getsize(infile.name),
-                                  widgets=widgets)
     tar_thread = threading.Thread(target=_add_fileobj_to_tarball,
                                   args=(infile, outfile))
     tar_thread.start()
     if show_progress:
+        import progressbar
+        widgets = [progressbar.Percentage(), ' ', progressbar.Bar(marker='='),
+                   ' ', progressbar.FileTransferSpeed(), ' ',
+                   progressbar.AdaptiveETA()]
+        bar = progressbar.ProgressBar(maxval=os.path.getsize(infile.name),
+                                      widgets=widgets)
         bar.start()
         while tar_thread.is_alive():
             bar.update(infile.tell())
@@ -178,14 +217,3 @@ def _write_single_part(infile, part_fname, part_size):
                 break
         return {'path': part_fname, 'digest': part_digest.hexdigest(),
                 'size': part.tell()}
-
-
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument('image_filename')
-    parser.add_argument('part_prefix')
-    args = parser.parse_args()
-    bundle = Bundle.create_from_image(args.image_filename, args.part_prefix,
-                                      part_size=None, show_progress=True)
-    from pprint import pprint
-    pprint(vars(bundle))

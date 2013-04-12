@@ -99,6 +99,17 @@ def ec2_block_device_mapping(map_as_str):
     return map_dict
 
 
+def filesize(size):
+    suffixes = 'kmgt'
+    s_size = size.lower().rstrip('b')
+    if len(s_size) > 0 and s_size[-1] in suffixes:
+        multiplier = 1024 ** (suffixes.find(s_size[-1]) + 1)
+        s_size = s_size[:-1]
+    else:
+        multiplier = 1
+    return multiplier * int(s_size)
+
+
 def vpc_interface(iface_as_str):
     '''
     Nine-part VPC network interface definition:
