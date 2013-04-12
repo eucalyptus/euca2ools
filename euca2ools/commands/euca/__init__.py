@@ -106,6 +106,8 @@ class EC2CompatibleQuerySigV2Auth(QuerySigV2Auth):
             self.args['key_id'] = os.getenv('EC2_ACCESS_KEY')
         if 'EC2_SECRET_KEY' in os.environ and not self.args.get('secret_key'):
             self.args['secret_key'] = os.getenv('EC2_SECRET_KEY')
+        # --region
+        self.configure_from_configfile(only_if_explicit=True)
         # AWS credential file (location given in the environment)
         self.configure_from_aws_credential_file()
         # Regular config file
