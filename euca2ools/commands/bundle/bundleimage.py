@@ -61,20 +61,22 @@ def manifest_block_device_mappings(mappings_as_str):
 
 
 class BundleImage(BaseCommand):
-    DESCRIPTION = ('Create a bundled form of an image suitable for uploading '
-                   'to a cloud')
+    DESCRIPTION = 'Prepare an image for uploading to a cloud'
     SUITE = Euca2ools
-    ARGS = [Arg('-k', '--privatekey', metavar='FILE', help='''file containing
-                the private key to sign the bundle's manifest with'''),
-            Arg('-c', '--cert', metavar='FILE', help='''file containing your
-                X.509 certificate.  This certificate will be required to
-                unbundle the image in the future.'''),
-            Arg('-u', '--user', metavar='ACCOUNT', help='your account ID'),
-            Arg('-i', '--image', metavar='FILE', required=True,
+    ARGS = [Arg('-i', '--image', metavar='FILE', required=True,
                 help='file containing the image to bundle (required)'),
             Arg('-r', '--arch', choices=('i386', 'x86_64', 'armhf'),
                 required=True,
                 help="the image's processor architecture (required)"),
+            Arg('--region', dest='userregion', metavar='USER@REGION',
+                help='''use encryption keys and the account ID specified for
+                a user and/or region in configuration files'''),
+            Arg('-c', '--cert', metavar='FILE', help='''file containing your
+                X.509 certificate.  This certificate will be required to
+                unbundle the image in the future.'''),
+            Arg('-k', '--privatekey', metavar='FILE', help='''file containing
+                the private key to sign the bundle's manifest with'''),
+            Arg('-u', '--user', metavar='ACCOUNT', help='your account ID'),
             Arg('-d', '--destination', metavar='DIR', help='''location to
                 place the bundle's files (default:  dir named by TMPDIR, TEMP,
                 or TMP environment variables, or otherwise /var/tmp)'''),
@@ -89,69 +91,97 @@ class BundleImage(BaseCommand):
             Arg('--block-device-mappings',
                 metavar='VIRTUAL1=DEVICE1,VIRTUAL2=DEVICE2,...',
                 type=manifest_block_device_mappings,
-                default=argparse.SUPPRESS,
                 help='''[machine image only] default block device mapping
                 scheme with which to launch instances of this image'''),
+            Arg('--productcodes', metavar='CODE1,CODE2,...',
+                type=delimited_list(','),
+                help='comma-separated list of product codes'),
             Arg('--progress', action='store_true', help='show progress'),
+            Arg('--batch', action='store_true', help=argparse.SUPPRESS),
             Arg('--part-size', type=filesize, default=10485760,  # 10m
                 help=argparse.SUPPRESS),
             Arg('--image-type', choices=('machine', 'kernel', 'ramdisk'),
                 default='machine', help=argparse.SUPPRESS)]
 
-    ## TODO:  add --region support
-
     def configure(self):
         BaseCommand.configure(self)
-        # User's private key (user-level)
-        if not self.args.get('privatekey'):
-            privatekey = self.config.get_user_option('private-key')
-            if privatekey is not None:
-                self.args['privatekey'] = privatekey
-            else:
-                raise ArgumentError(
-                    'missing private key; please supply one with -k')
-        if not os.path.exists(self.args['privatekey']):
-            raise ArgumentError("private key file '{0}' does not exist"
-                                .format(self.args['privatekey']))
-        if not os.path.isfile(self.args['privatekey']):
-            raise ArgumentError("private key file '{0}' is not a file"
-                                .format(self.args['privatekey']))
-        # User's X.509 cert (user-level)
+        if self.args.get('userregion'):
+            self.process_userregion(self.args['userregion'])
+
+        # User's X.509 cert (user-level in config)
         if not self.args.get('cert'):
-            cert = self.config.get_user_option('certificate')
-            if cert is not None:
-                self.args['cert'] = cert
+            config_cert = self.config.get_user_option('certificate')
+            if 'EC2_CERT' in os.environ:
+                self.args['cert'] = os.getenv('EC2_CERT')
+            elif config_cert:
+                self.args['cert'] = config_cert
             else:
                 raise ArgumentError(
                     'missing certificate; please supply one with -c')
+        self.args['cert'] = os.path.expanduser(os.path.expandvars(
+            self.args['cert']))
         if not os.path.exists(self.args['cert']):
             raise ArgumentError("certificate file '{0}' does not exist"
                                 .format(self.args['cert']))
         if not os.path.isfile(self.args['cert']):
             raise ArgumentError("certificate file '{0}' is not a file"
                                 .format(self.args['cert']))
-        # Cloud's X.509 cert (region-level)
+        self.log.debug('certificate: %s', self.args['cert'])
+
+        # User's private key (user-level in config)
+        if not self.args.get('privatekey'):
+            config_privatekey = self.config.get_user_option('private-key')
+            if 'EC2_PRIVATE_KEY' in os.environ:
+                self.args['privatekey'] = os.getenv('EC2_PRIVATE_KEY')
+            elif config_privatekey:
+                self.args['privatekey'] = config_privatekey
+            else:
+                raise ArgumentError(
+                    'missing private key; please supply one with -k')
+        self.args['privatekey'] = os.path.expanduser(os.path.expandvars(
+            self.args['privatekey']))
+        if not os.path.exists(self.args['privatekey']):
+            raise ArgumentError("private key file '{0}' does not exist"
+                                .format(self.args['privatekey']))
+        if not os.path.isfile(self.args['privatekey']):
+            raise ArgumentError("private key file '{0}' is not a file"
+                                .format(self.args['privatekey']))
+        self.log.debug('private key: %s', self.args['privatekey'])
+
+        # Cloud's X.509 cert (region-level in config)
         if not self.args.get('ec2cert'):
-            ec2cert = self.config.get_region_option('ec2-certificate')
-            if ec2cert is not None:
-                self.args['ec2cert'] = ec2cert
+            config_ec2cert = self.config.get_region_option('ec2-certificate')
+            if 'EUCALYPTUS_CERT' in os.environ:
+                # This doesn't have an EC2 equivalent since they just bundle
+                # their certificate.
+                self.args['ec2cert'] = os.getenv('EUCALYPTUS_CERT')
+            elif config_ec2cert:
+                self.args['ec2cert'] = config_ec2cert
             else:
                 raise ArgumentError('missing cloud certificate; please '
                                     'supply one with --ec2cert')
+        self.args['ec2cert'] = os.path.expanduser(os.path.expandvars(
+            self.args['ec2cert']))
         if not os.path.exists(self.args['ec2cert']):
             raise ArgumentError("cloud certificate file '{0}' does not exist"
                                 .format(self.args['ec2cert']))
         if not os.path.isfile(self.args['ec2cert']):
             raise ArgumentError("cloud certificate file '{0}' is not a file"
                                 .format(self.args['ec2cert']))
+        self.log.debug('cloud certificate: %s', self.args['ec2cert'])
+
         # User's account ID (user-level)
         if not self.args.get('user'):
-            account_id = self.config.get_user_option('account-id')
-            if account_id is not None:
-                self.args['user'] = account_id
+            config_account_id = self.config.get_user_option('account-id')
+            if 'EC2_USER_ID' in os.environ:
+                self.args['user'] = os.getenv('EC2_USER_ID')
+            elif config_account_id:
+                self.args['user'] = config_account_id
             else:
                 raise ArgumentError('missing account ID; please supply one '
                                     'with --user')
+        self.log.debug('account ID: %s', self.args['user'])
+
         # kernel/ramdisk image IDs
         if self.args.get('kernel') == 'true':
             self.args['image_type'] = 'kernel'
@@ -205,6 +235,17 @@ class BundleImage(BaseCommand):
             print 'Wrote', part_filename
         print 'Wrote', result[1]  # manifest
 
+    def process_userregion(self, userregion):
+        if '@' in userregion:
+            user, region = userregion.split('@', 1)
+        else:
+            user = None
+            region = userregion
+        if region and self.config.current_region is None:
+            self.config.current_region = region
+        if user and self.config.current_user is None:
+            self.config.current_user = user
+
     def generate_manifest_xml(self, bundle):
         manifest = lxml.objectify.Element('manifest')
 
@@ -234,9 +275,9 @@ class BundleImage(BaseCommand):
                     bd_elem.device = device
                     manifest.machine_configuration.block_device_mapping.append(
                         bd_elem)
-            if self.args.get('product_codes'):
+            if self.args.get('productcodes'):
                 manifest.machine_configuration.product_codes = None
-                for code in self.args['product_codes']:
+                for code in self.args['productcodes']:
                     code_elem = lxml.objectify.Element('product_code')
                     manifest.machine_configuration.product_codes.append(
                         code_elem)
@@ -281,10 +322,13 @@ class BundleImage(BaseCommand):
             part_elem.digest.set('algorithm', bundle.digest_algorithm)
 
         # Parent image IDs
-        if self.args['image_type'] == 'machine':
+        if (self.args['image_type'] == 'machine' and
+            self.args.get('ancestor_image_ids')):
+            # I think this info only comes from the metadata service when you
+            # run ec2-bundle-vol on an instance.  ec2-bundle-image doesn't seem
+            # to have an option for it.
             manifest.image.ancestry = None
-            ancestor_image_ids = self.args.get('ancestor_image_ids', [])
-            for ancestor_image_id in ancestor_image_ids:
+            for ancestor_image_id in self.args['ancestor_image_ids']:
                 ancestor_elem = lxml.objectify.Element('ancestor_ami_id')
                 manifest.image.ancestry.append(ancestor_elem)
                 manifest.image.ancestry.ancestor_ami_id[-1] = ancestor_image_id
