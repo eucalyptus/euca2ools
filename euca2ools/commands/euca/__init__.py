@@ -141,7 +141,7 @@ class Eucalyptus(requestbuilder.service.BaseService):
     URL_ENVVAR = 'EC2_URL'
 
     ARGS = [Arg('--config', dest='shell_configfile', metavar='CFGFILE',
-                 default='', route_to=SERVICE, help=argparse.SUPPRESS),
+                 default='', route_to=(SERVICE, AUTH), help=argparse.SUPPRESS),
             MutuallyExclusiveArgList(
                 Arg('--region', dest='userregion', metavar='USER@REGION',
                     route_to=SERVICE, help='''name of the region and/or user
@@ -181,10 +181,6 @@ class Eucalyptus(requestbuilder.service.BaseService):
         # Ensure everything is okay and finish up
         self.validate_config()
         if self.auth is not None:
-            # HACK:  this was an easy way to make a CLI-supplied shell-style
-            # config file name available to the auth handler.
-            # Remove this line in 3.2.
-            self.auth.args['shell_configfile'] = self.args['shell_configfile']
             self.auth.configure()
 
     def handle_http_error(self, response):
