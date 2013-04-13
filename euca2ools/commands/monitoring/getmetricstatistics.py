@@ -42,7 +42,7 @@ class GetMetricStatistics(CloudWatchRequest, TabifyingCommand):
     DESCRIPTION = "Show a metric's statistics"
     ARGS = [Arg('MetricName', metavar='METRIC',
                 help='name of the metric to get statistics for (required)'),
-            Arg('-n', '--namespace', dest='Namespace',
+            Arg('-n', '--namespace', dest='Namespace', required=True,
                 help="the metric's namespace (required)"),
             Arg('-s', '--statistics', dest='Statistics.member', required=True,
                 metavar='STAT1,STAT2,...', type=delimited_list(','),
