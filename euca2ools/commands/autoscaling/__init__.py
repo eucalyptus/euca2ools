@@ -41,6 +41,7 @@ class AutoScaling(requestbuilder.service.BaseService):
     DESCRIPTION = 'Auto-scaling service'
     API_VERSION = '2011-01-01'
     AUTH_CLASS = requestbuilder.auth.QuerySigV2Auth
+    REGION_ENVVAR = 'EUCA_REGION'
     URL_ENVVAR = 'AWS_AUTO_SCALING_URL'
 
     ARGS = [MutuallyExclusiveArgList(

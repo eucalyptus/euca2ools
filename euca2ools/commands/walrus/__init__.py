@@ -43,6 +43,7 @@ class Walrus(requestbuilder.service.BaseService):
     NAME = 's3'
     DESCRIPTION = 'Object storage service'
     AUTH_CLASS = requestbuilder.auth.S3RestAuth
+    REGION_ENVVAR = 'EUCA_REGION'
     URL_ENVVAR = 'S3_URL'
 
     ARGS = [MutuallyExclusiveArgList(

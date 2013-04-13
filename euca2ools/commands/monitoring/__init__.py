@@ -41,6 +41,7 @@ class CloudWatch(requestbuilder.service.BaseService):
     DESCRIPTION = 'Instance monitoring service'
     API_VERSION = '2010-08-01'
     AUTH_CLASS = requestbuilder.auth.QuerySigV2Auth
+    REGION_ENVVAR = 'EUCA_REGION'
     URL_ENVVAR = 'AWS_CLOUDWATCH_URL'
 
     ARGS = [MutuallyExclusiveArgList(

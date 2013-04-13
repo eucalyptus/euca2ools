@@ -41,6 +41,7 @@ class ELB(requestbuilder.service.BaseService):
     DESCRIPTION = 'Load balancing service'
     API_VERSION = '2012-06-01'
     AUTH_CLASS = requestbuilder.auth.QuerySigV2Auth
+    REGION_ENVVAR = 'EUCA_REGION'
     URL_ENVVAR = 'AWS_ELB_URL'
 
     ARGS = [MutuallyExclusiveArgList(

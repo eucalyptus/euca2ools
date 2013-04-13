@@ -138,6 +138,7 @@ class Eucalyptus(requestbuilder.service.BaseService):
     DESCRIPTION = 'Eucalyptus compute cloud service'
     API_VERSION = '2013-02-01'
     AUTH_CLASS  = EC2CompatibleQuerySigV2Auth
+    REGION_ENVVAR = 'EUCA_REGION'
     URL_ENVVAR = 'EC2_URL'
 
     ARGS = [Arg('--config', dest='shell_configfile', metavar='CFGFILE',
@@ -165,6 +166,8 @@ class Eucalyptus(requestbuilder.service.BaseService):
             if self.URL_ENVVAR in config:
                 self.process_url(config[self.URL_ENVVAR])
         # Environment
+        if self.REGION_ENVVAR in os.environ:
+            self.process_userregion(os.getenv(self.REGION_ENVVAR))
         self.process_url(os.getenv(self.URL_ENVVAR))
         # Regular config file
         self.process_url(self.config.get_region_option(self.NAME + '-url'))
