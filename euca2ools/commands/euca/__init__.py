@@ -224,8 +224,8 @@ class EucalyptusRequest(requestbuilder.request.AWSQueryRequest,
                      for group in reservation['groupSet']]
         res_line.append(', '.join(group_ids))
         print self.tabify(res_line)
-        for instance in sorted(reservation.get('instancesSet', []),
-                               itemgetter('launchTime')):
+        for instance in sorted(reservation.get('instancesSet') or [],
+                               key=itemgetter('launchTime')):
             self.print_instance(instance)
 
     def print_instance(self, instance):
