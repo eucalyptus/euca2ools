@@ -48,9 +48,8 @@ import sys
 class EC2CompatibleQuerySigV2Auth(QuerySigV2Auth):
     # -a and -s are deprecated; remove them in 3.2
     ARGS = [Arg('-a', '--access-key', metavar='KEY_ID',
-                dest='deprecated_key_id', route_to=AUTH,
-                help=argparse.SUPPRESS),
-            Arg('-s', metavar='KEY', dest='deprecated_sec_key', route_to=AUTH,
+                dest='deprecated_key_id', help=argparse.SUPPRESS),
+            Arg('-s', metavar='KEY', dest='deprecated_sec_key',
                 help=argparse.SUPPRESS)]
 
     def preprocess_arg_objs(self, arg_objs):
@@ -145,9 +144,9 @@ class Eucalyptus(requestbuilder.service.BaseService):
                  default='', route_to=(SERVICE, AUTH), help=argparse.SUPPRESS),
             MutuallyExclusiveArgList(
                 Arg('--region', dest='userregion', metavar='USER@REGION',
-                    route_to=SERVICE, help='''name of the region and/or user
-                    in config files to use to connect to the service'''),
-                Arg('-U', '--url', metavar='URL', route_to=SERVICE,
+                    help='''name of the region and/or user in config files to
+                    use to connect to the service'''),
+                Arg('-U', '--url', metavar='URL',
                     help='compute service endpoint URL'))]
 
     def configure(self):

@@ -48,9 +48,9 @@ class Walrus(requestbuilder.service.BaseService):
 
     ARGS = [MutuallyExclusiveArgList(
                 Arg('--region', dest='userregion', metavar='USER@REGION',
-                    route_to=SERVICE, help='''name of the region and/or user
-                    in config files to use to connect to the service'''),
-                Arg('-U', '--url', metavar='URL', route_to=SERVICE,
+                    help='''name of the region and/or user in config files to
+                    use to connect to the service'''),
+                Arg('-U', '--url', metavar='URL',
                     help='storage service endpoint URL'))]
 
     def handle_http_error(self, response):
