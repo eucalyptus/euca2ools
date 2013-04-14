@@ -83,6 +83,9 @@ class WalrusRequest(requestbuilder.request.BaseRequest):
                 self.log.debug('redirecting to %s (%i redirects remaining)',
                                new_url, self.redirects_left)
                 self.service.endpoint = new_url
+                if isinstance(self.body, file):
+                    self.log.info('re-seeking body to beginning of file')
+                    self.body.seek(0)
                 return self.send()
             else:
                 self.log.warn('too many redirects; giving up')
