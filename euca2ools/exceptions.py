@@ -140,9 +140,9 @@ import six
 class AWSError(requestbuilder.exceptions.ServerError):
     def __init__(self, response, *args):
         requestbuilder.exceptions.ServerError.__init__(self, response, *args)
-        self.code     = None # API error code
-        self.message  = None # Error message
-        self.elements = {}   # Elements in the error response's body
+        self.code = None  # API error code
+        self.message = None  # Error message
+        self.elements = {}  # Elements in the error response's body
 
         if self.body:
             try:
@@ -154,8 +154,10 @@ class AWSError(requestbuilder.exceptions.ServerError):
                     parsed = parsed['Errors']
                 if 'Error' in parsed:
                     parsed = parsed['Error']
-                self.code     = parsed.get('Code') or response.status_code
-                self.message  = parsed.get('Message') or response.reason
+                if parsed.get('Code'):
+                    self.code = parsed['Code']
+                    self.args += (parsed['Code'],)
+                self.message = parsed.get('Message')
                 self.elements = parsed
             except ValueError:
                 # Dump the unparseable message body so we don't include
@@ -163,14 +165,8 @@ class AWSError(requestbuilder.exceptions.ServerError):
                 # frequently returns plain text and/or broken XML, store it
                 # in case we need it later.
                 self.message = self.body
-                self.body    = None
-                self.code    = response.status_code
-        else:
-            self.code    = response.status_code
-            self.message = response.reason
+            self.args += (self.message,)
 
-    def __str__(self):
-        s_bits = [self.__class__.__name__ + ':', self.code or self.status_code]
-        if self.message:
-            s_bits.append(self.message)
-        return ' '.join(s_bits)
+    def format_for_cli(self):
+        return 'error ({0}): {1}'.format(self.code or self.status_code,
+                                         self.message or self.reason)
