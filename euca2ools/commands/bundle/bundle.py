@@ -170,7 +170,7 @@ def _write_tarball(infile, outfile, show_progress=False):
         bar.start()
         while tar_thread.is_alive():
             bar.update(infile.tell())
-            time.sleep(0.5)
+            time.sleep(0.01)
         bar.finish()
     tar_thread.join()
 
@@ -190,7 +190,7 @@ def _calc_digest_and_exit(in_fileno, out_fileno, result_pipe):
     outfile = os.fdopen(out_fileno, 'w')
     digest = hashlib.sha1()
     while True:
-        chunk = infile.read(65536)
+        chunk = infile.read(8192)
         if chunk:
             digest.update(chunk)
             outfile.write(chunk)
@@ -208,7 +208,7 @@ def _write_single_part(infile, part_fname, part_size):
     with open(part_fname, 'w') as part:
         bytes_to_write = part_size
         while bytes_to_write > 0:
-            chunk = infile.read(min((bytes_to_write, 65536)))
+            chunk = infile.read(min((bytes_to_write, 8192)))
             if chunk:
                 part.write(chunk)
                 part_digest.update(chunk)
