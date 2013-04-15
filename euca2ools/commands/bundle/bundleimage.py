@@ -315,11 +315,12 @@ class BundleImage(BaseCommand):
         manifest.image.parts = None
         manifest.image.parts.set('count', str(len(bundle.parts)))
         for index, part in enumerate(bundle.parts):
-            part_elem = lxml.objectify.SubElement(manifest.image.parts, 'part')
+            part_elem = lxml.objectify.Element('part')
             part_elem.set('index', str(index))
             part_elem.filename = os.path.basename(part['path'])
             part_elem.digest = part['digest']
             part_elem.digest.set('algorithm', bundle.digest_algorithm)
+            manifest.image.parts.append(part_elem)
 
         # Parent image IDs
         if (self.args['image_type'] == 'machine' and
@@ -333,16 +334,16 @@ class BundleImage(BaseCommand):
                 manifest.image.ancestry.append(ancestor_elem)
                 manifest.image.ancestry.ancestor_ami_id[-1] = ancestor_image_id
 
-        lxml.objectify.deannotate(manifest, xsi_nil=True,
-                                  cleanup_namespaces=True)
+        lxml.objectify.deannotate(manifest, xsi_nil=True)
+        lxml.etree.cleanup_namespaces(manifest)
         to_sign = (lxml.etree.tostring(manifest.machine_configuration) +
                    lxml.etree.tostring(manifest.image))
         self.log.debug('string to sign: %s', repr(to_sign))
         signature = rsa_sha1_sign(to_sign, self.args['privatekey'])
         manifest.signature = signature
         self.log.debug('hex-encoded signature: %s', signature)
-        lxml.objectify.deannotate(manifest, xsi_nil=True,
-                                  cleanup_namespaces=True)
+        lxml.objectify.deannotate(manifest, xsi_nil=True)
+        lxml.etree.cleanup_namespaces(manifest)
         self.log.debug('-- manifest content --\n', extra={'append': True})
         pretty_manifest = lxml.etree.tostring(manifest,
                                               pretty_print=True).strip()
