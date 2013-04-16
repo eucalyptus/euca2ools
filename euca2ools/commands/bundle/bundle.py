@@ -44,7 +44,8 @@ import time
 
 
 class Bundle(object):
-    DEFAULT_PART_SIZE = 10 * 1024 * 1024
+    DEFAULT_PART_SIZE = 10 * 1024 * 1024  # 10M
+    EC2_IMAGE_SIZE_LIMIT = 10 * 1024 * 1024 * 1024  # 10G
 
     def __init__(self):
         self.digest = None
@@ -77,6 +78,10 @@ class Bundle(object):
         with self._lock:
             self.image_filename = image_filename
             self.image_size = os.path.getsize(image_filename)
+        if self.image_size > self.EC2_IMAGE_SIZE_LIMIT:
+            msg = "this image is larger than EC2's size limit"
+            self.log.warn(msg)
+            print >> sys.stderr, 'warning:', msg
         # pipe for getting the digest from sha1sum
         digest_pipe_out, digest_pipe_in = multiprocessing.Pipe(duplex=False)
         # pipe for tar --> sha1sum
