@@ -39,5 +39,8 @@ class CheckBucket(WalrusRequest):
     ARGS = [Arg('bucket', route_to=None, help='name of the bucket to check')]
 
     def preprocess(self):
-        self.method = 'HEAD'
+        # We use GET instead of HEAD so we can get redirections when we talk
+        # to the wrong region.
+        self.method = 'GET'
         self.path = self.args['bucket']
+        self.params['max-keys'] = 0
