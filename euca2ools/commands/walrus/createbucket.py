@@ -36,7 +36,10 @@ import xml.etree.ElementTree as ET
 
 class CreateBucket(WalrusRequest):
     DESCRIPTION = 'Create a new bucket'
-    ARGS = [Arg('bucket', route_to=None, help='name of the new bucket')]
+    ARGS = [Arg('bucket', route_to=None, help='name of the new bucket'),
+            Arg('--location', route_to=None, help='''location constraint to
+                configure the bucket with (default: inferred from
+                s3-location-constraint in configuration, or otherwise none)''')]
 
     def configure(self):
         WalrusRequest.configure(self)
@@ -47,7 +50,8 @@ class CreateBucket(WalrusRequest):
         self.path = self.args['bucket']
         cb_config = ET.Element('CreateBucketConfiguration')
         cb_config.set('xmlns', 'http://doc.s3.amazonaws.com/2006-03-01')
-        lconstraint = self.config.get_region_option('s3-location-constraint')
+        lconstraint = (self.args['location'] or
+                       self.config.get_region_option('s3-location-constraint'))
         if lconstraint:
             cb_lconstraint = ET.SubElement(cb_config, 'LocationConstraint')
             cb_lconstraint.text = lconstraint

@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2013, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -27,163 +27,118 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#
-# Author: Neil Soman neil@eucalyptus.com
-#         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.commands.eucacommand
-from boto.roboto.param import Param
-import sys
-import os
-from xml.dom import minidom
-from boto.exception import S3ResponseError, S3CreateError
-from boto.s3.key import Key
-from boto.s3.connection import Location
+from euca2ools.commands import Euca2ools
+from euca2ools.commands.walrus import Walrus
+from euca2ools.commands.walrus.checkbucket import CheckBucket
+from euca2ools.commands.walrus.createbucket import CreateBucket
+from euca2ools.commands.walrus.putobject import PutObject
+from euca2ools.exceptions import AWSError
+import lxml.etree
+import lxml.objectify
+import os.path
+from requestbuilder import Arg, MutuallyExclusiveArgList
+from requestbuilder.command import BaseCommand
+from requestbuilder.exceptions import ServerError
 
-class UploadBundle(euca2ools.commands.eucacommand.EucaCommand):
 
-    Description = 'Upload a previously bundled image to the cloud.'
-    Options = [Param(name='bucket', short_name='b', long_name='bucket',
-                     optional=False, ptype='string',
-                     doc='Name of the bucket to upload to.'),
-               Param(name='manifest_path',
-                     short_name='m', long_name='manifest',
-                     optional=False, ptype='file',
-                     doc='Path to the manifest file for bundled image.'),
-               Param(name='canned_acl',  long_name='acl',
-                     optional=True, ptype='string', default='aws-exec-read',
-                     doc='Canned access policy'),
-               Param(name='ec2cert_path', long_name='ec2cert',
-                     optional=True, ptype='file',
-                     doc="Path to the Cloud's X509 public key certificate."),
-               Param(name='bundle_path',
-                     short_name='d', long_name='directory',
-                     optional=True, ptype='string',
-                     doc="""The directory containing the bundled
-                     image to upload (defaults to the manifest directory)."""),
-               Param(name='part', long_name='part',
-                     optional=True, ptype='integer',
-                     doc='Uploads specified part and all subsequent parts.'),
-               Param(name='skip_manifest', long_name='skipmanifest',
-                     optional=True, ptype='boolean', default=False,
-                     doc='Do not  upload the manifest.'),
-               Param(name='location', long_name='location',
-                     optional=True, ptype='string', default=Location.DEFAULT,
-                     doc="""The location of the destination S3 bucket
-                            Valid values: EU|us-west-1|ap-southeast-1|ap-northeast-1""")]
+class UploadBundle(BaseCommand):
+    DESCRIPTION = 'Upload a bundle prepared by euca-bundle-image to the cloud'
+    SUITE = Euca2ools
+    ARGS = [Arg('-b', '--bucket', metavar='BUCKET[/PREFIX]', required=True,
+                help='bucket to upload the bundle to (required)'),
+            Arg('-m', '--manifest', metavar='FILE', required=True,
+                help='manifest for the bundle to upload (required)'),
+            MutuallyExclusiveArgList(
+                Arg('--region', dest='userregion', metavar='USER@REGION',
+                    help='''name of the region and/or user in config files to
+                    use for connection and credential info'''),
+                Arg('-U', '--url', help='storage service endpoint URL')),
+            Arg('-I', '-a', '--access-key-id', '--access-key', dest='key_id',
+                metavar='KEY_ID'),
+            Arg('-S', '-s', '--secret-key', metavar='KEY'),
+            Arg('--acl', choices=('public-read', 'aws-exec-read'),
+                default='aws-exec-read', help='''canned ACL policy to apply
+                to the bundle (default: aws-exec-read)'''),
+            Arg('-d', '--directory', metavar='DIR',
+                help='''directory that contains the bundle parts (default:
+                directory that contains the manifest)'''),
+            Arg('--part', metavar='INT', type=int, default=0, help='''begin
+                uploading with a specific part number (default: 0)'''),
+            Arg('--location', help='''location constraint of the destination
+                bucket (default: inferred from s3-location-constraint in
+                configuration, or otherwise none)'''),
+            Arg('--retry', dest='retries', action='store_const', const=5,
+                default=1, help='retry failed uploads up to 5 times'),
+            Arg('--skipmanifest', action='store_true',
+                help='do not upload the manifest'),
+            Arg('--progress', action='store_true',
+                help='show upload progress')]
 
-    def ensure_bucket(self, acl, location=Location.DEFAULT):
-        bucket_instance = None
-        s3conn = self.make_connection_cli('s3')
-        try:
-            print 'Checking bucket:', self.bucket
-            bucket_instance = s3conn.get_bucket(self.bucket)
-            if location:
-                if location != bucket_instance.get_location():
-                    msg = 'Supplied location does not match bucket location'
-                    self.display_error_and_exit(msg)
-        except S3ResponseError, s3error:
-            s3error_string = '%s' % s3error
-            if s3error_string.find('404') >= 0:
-                try:
-                    print 'Creating bucket:', self.bucket
-                    bucket_instance = s3conn.create_bucket(self.bucket,
-                                                           policy=acl,
-                                                           location=location)
-                except S3CreateError:
-                    msg = 'Unable to create bucket %s' % self.bucket
-                    self.display_error_and_exit(msg)
-            elif s3error_string.find('403') >= 0:
-                msg = 'You do not have permission to access bucket:', self.bucket
-                self.display_error_and_exit(msg)
-            else:
-                self.display_error_and_exit(s3error_string)
-        return bucket_instance
-
-    def get_parts(self, manifest_filename):
-        parts = []
-        dom = minidom.parse(manifest_filename)
-        manifest_elem = dom.getElementsByTagName('manifest')[0]
-        parts_list = manifest_elem.getElementsByTagName('filename')
-        for part_elem in parts_list:
-            nodes = part_elem.childNodes
-            for node in nodes:
-                if node.nodeType == node.TEXT_NODE:
-                    parts.append(node.data)
-        return parts
-
-    def upload_manifest(self, bucket_instance, manifest_filename,
-                        canned_acl=None, upload_policy=None,
-                        upload_policy_signature=None):
-        print 'Uploading manifest file'
-        k = Key(bucket_instance)
-        k.key = self.get_relative_filename(manifest_filename)
-        manifest_file = open(manifest_filename, 'rb')
-        headers = {}
-        if upload_policy:
-            headers['S3UploadPolicy'] = upload_policy
-        if upload_policy_signature:
-            headers['S3UploadPolicySignature']=upload_policy_signature
-
-        try:
-            k.set_contents_from_file(manifest_file, policy=canned_acl,
-                                     headers=headers)
-        except S3ResponseError, s3error:
-            s3error_string = '%s' % s3error
-            if s3error_string.find('403') >= 0:
-                msg = 'Permission denied while writing:', k.key
-            else:
-                msg = s3error_string
-            self.display_error_and_exit(msg)
-
-    def upload_parts(self, bucket_instance, directory, parts,
-                     part_to_start_from, canned_acl=None,
-                     upload_policy=None, upload_policy_signature=None):
-        if part_to_start_from:
-            okay_to_upload = False
-        else:
-            okay_to_upload = True
-
-        headers = {}
-        if upload_policy:
-            headers['S3UploadPolicy'] = upload_policy
-        if upload_policy_signature:
-            headers['S3UploadPolicySignature']=upload_policy_signature
-
-        for part in parts:
-            if part == part_to_start_from:
-                okay_to_upload = True
-            if okay_to_upload:
-                print 'Uploading part:', part
-                k = Key(bucket_instance)
-                k.key = part
-                part_file = open(os.path.join(directory, part), 'rb')
-                try:
-                    k.set_contents_from_file(part_file, policy=canned_acl,
-                                             headers=headers)
-                except S3ResponseError, s3error:
-                    s3error_string = '%s' % s3error
-                    if s3error_string.find('403') >= 0:
-                        msg = 'Permission denied while writing:', k.key
-                    else:
-                        msg = s3error_string
-                    self.display_error_and_exit(msg)
+    def configure(self):
+        BaseCommand.configure(self)
+        if self.args.get('userregion'):
+            self.process_userregion(self.args['userregion'])
 
     def main(self):
-        bucket_instance = self.ensure_bucket(self.canned_acl, self.location)
-        parts = self.get_parts(self.manifest_path)
-        manifest_directory, manifest_file = os.path.split(self.manifest_path)
-        if not self.bundle_path:
-            self.bundle_path = manifest_directory
-        if not self.skip_manifest and not self.part:
-            self.upload_manifest(bucket_instance, self.manifest_path,
-                                 self.canned_acl)
-        self.upload_parts(bucket_instance, self.bundle_path,
-                          parts, self.part, self.canned_acl)
-        print 'Uploaded image as %s/%s' % (self.bucket,
-                self.get_relative_filename(self.manifest_path))
+        (bucket, __, prefix) = self.args['bucket'].partition('/')
+        if prefix and not prefix.endswith('/'):
+            prefix += '/'
+        full_prefix = bucket + '/' + prefix
+        walrus = Walrus(userregion=self.args['userregion'],
+                        url=self.args['url'], config=self.config,
+                        loglevel=self.log.level)
+        # First make sure the bucket exists
+        try:
+            req = CheckBucket(bucket=bucket, service=walrus,
+                              config=self.config, key_id=self.args['key_id'],
+                              secret_key=self.args['secret_key'])
+            req.main()
+        except AWSError as err:
+            if err.status_code == 404:
+                # No such bucket
+                self.log.info("creating bucket '%s'", bucket)
+                req = CreateBucket(bucket=bucket,
+                                   location=self.args['location'],
+                                   config=self.config, service=walrus,
+                                   key_id=self.args['key_id'],
+                                   secret_key=self.args['secret_key'])
+                req.main()
+            else:
+                raise
+        # At this point we know we can at least see the bucket, but it's still
+        # possible that we can't write to it with the desired key names.  So
+        # many policies are in play here that it isn't worth trying to be
+        # proactive about it.
 
-    def main_cli(self):
-        self.main()
+        with open(self.args['manifest']) as manifest_file:
+            manifest = lxml.objectify.parse(manifest_file).getroot()
 
+        # Now we actually upload stuff
+        part_dir = (self.args.get('directory') or
+                    os.path.dirname(self.args['manifest']))
+        parts = {}
+        for part in manifest.image.parts.part:
+            parts[int(part.get('index'))] = part.filename.text
+        part_paths = [os.path.join(part_dir, path) for (index, path) in
+                      sorted(parts.items()) if index >= self.args['part']]
+        req = PutObject(sources=part_paths,
+                        dest=full_prefix,
+                        retries=self.args['retries'],
+                        progress=self.args['progress'],
+                        config=self.config, service=walrus,
+                        key_id=self.args['key_id'],
+                        secret_key=self.args['secret_key'])
+        req.main()
+        if not self.args['skipmanifest']:
+            req = PutObject(sources=[self.args['manifest']],
+                            dest=full_prefix, retries=self.args['retries'],
+                            progress=self.args['progress'], config=self.config,
+                            service=walrus, key_id=self.args['key_id'],
+                            secret_key=self.args['secret_key'])
+            req.main()
+        manifest_loc = full_prefix + os.path.basename(self.args['manifest'])
+        return manifest_loc
 
+    def print_result(self, manifest_loc):
+        print 'Uploaded', manifest_loc
