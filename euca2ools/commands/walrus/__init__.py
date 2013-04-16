@@ -84,12 +84,15 @@ class WalrusRequest(requestbuilder.request.BaseRequest):
                                new_url, self.redirects_left)
                 self.service.endpoint = new_url
                 if isinstance(self.body, file):
-                    self.log.info('re-seeking body to beginning of file')
+                    self.log.debug('re-seeking body to beginning of file')
                     self.body.seek(0)
                 return self.send()
             else:
                 self.log.warn('too many redirects; giving up')
-        raise
+            raise
+        else:
+            return requestbuilder.request.BaseRequest.handle_server_error(
+                self, err)
 
 
 def validate_generic_bucket_name(bucket):
