@@ -1,8 +1,6 @@
-# -*- coding: utf-8 -*-
-
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
+# Copyright (c) 2011-2013, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -29,66 +27,37 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#
-# Author: David Kavanagh david.kavanagh@eucalyptus.com
 
-import os
-import urllib2
-from boto.roboto.param import Param
-from boto.roboto.awsqueryrequest import AWSQueryRequest
-import euca2ools.commands.eustore
-import euca2ools.utils
+from euca2ools.commands.eustore import EuStoreRequest
+from requestbuilder import Arg
+from requestbuilder.mixins import TabifyingCommand
 
-try:
-    import simplejson as json
-except ImportError:
-    import json
 
-class DescribeImages(AWSQueryRequest):
+class DescribeImages(EuStoreRequest, TabifyingCommand):
+    DESCRIPTION = 'List images available for installation from EuStore'
+    ARGS = [Arg('-v', '--verbose', action='store_true',
+                help='display more information about images than the default')]
 
-    ServiceClass = euca2ools.commands.eustore.Eustore
+    def preprocess(self):
+        self.path = 'catalog'
+        # Requests 1 adds Transfer-Encoding: chunked unconditionally when
+        # self.body is None.  emis.eucalyptus.com currently runs nginx without
+        # the module needed for that loaded, so this hacks around it.
+        self.body = ''
 
-    Description = """lists images from Eucalyptus.com"""
-    Params = [
-        Param(name='verbose',
-              short_name='v',
-              long_name='verbose',
-              optional=True,
-              ptype='boolean',
-              doc="""display more information about images""")
-    ]
+    def parse_response(self, response):
+        self.log.debug('-- response content --\n', extra={'append': True})
+        self.log.debug(response.text, extra={'append': True})
+        self.log.debug('-- end of response content --')
+        return response.json()
 
-    def fmtCol(self, value, width):
-        valLen = len(value)
-        if valLen > width:
-            return value[0:width-2]+".."
-        else:
-            return value.ljust(width, ' ')
-
-    def main(self):
-        self.eustore_url = self.ServiceClass.StoreBaseURL
-        if os.environ.has_key('EUSTORE_URL'):
-            self.eustore_url = os.environ['EUSTORE_URL']
-        catURL = self.eustore_url + "catalog"
-        req = urllib2.Request(catURL, headers=self.ServiceClass.RequestHeaders)
-        response = urllib2.urlopen(req).read()
-        parsed_cat = json.loads(response)
-        if len(parsed_cat) > 0:
-            image_list = parsed_cat['images']
-            for image in image_list:
-                print self.fmtCol(image['name'],11)+ \
-                      self.fmtCol(image['os'],12)+ \
-                      self.fmtCol(image['architecture'],8)+ \
-                      self.fmtCol(image['version'],15)+ \
-                      self.fmtCol(', '.join(image['hypervisors-supported']),18)+ \
-                      image['description']
-                if self.cli_options.verbose:
-                    print "     "+self.fmtCol(image['date'],20)+ \
-                          self.fmtCol(image['stamp'],12)+ \
-                          self.fmtCol(image['recipe'],23)+ \
-                          image['contact']
-
-    def main_cli(self):
-        euca2ools.utils.print_version_if_necessary()
-        self.do_cli()
-
+    def print_result(self, catalog):
+        for image in catalog.get('images', []):
+            hypervisors = image.get('hypervisors-supported', [])
+            bits = [image.get('name'), image.get('os'),
+                    image.get('architecture'), image.get('version'),
+                    ','.join(hypervisors), image.get('description')]
+            if self.args['verbose']:
+                bits.extend([image.get('date'), image.get('stamp'),
+                             image.get('recipe'), image.get('contact')])
+            print self.tabify(bits)

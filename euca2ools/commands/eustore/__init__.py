@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
+# Copyright (c) 2011-2013, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -27,43 +27,26 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#
-# Author: David Kavanagh david.kavanagh@eucalyptus.com
+
+from euca2ools.commands import Euca2ools
+from requestbuilder import Arg
+from requestbuilder.request import BaseRequest
+from requestbuilder.service import BaseService
 
 
-import sys
-from boto.roboto.awsqueryservice import AWSQueryService
+class EuStore(BaseService):
+    NAME = 'eustore'
+    DESCRIPTION = 'Eucalyptus Image Store'
+    URL_ENVVAR = 'EUSTORE_URL'
+    ARGS = [Arg('-U', '--url', default='http://emis.eucalyptus.com/',
+                help='''EuStore service URL (default:
+                http://emis.eucalyptus.com)''')]
 
-class Eustore(AWSQueryService):
 
-    Name = 'eustore'
-    Description = 'Eucalyptus Image Store'
-    APIVersion = '2011-01-01'
-    Authentication = 'sign-v2'
-    Path = '/'
-    Port = 443
-    Provider = 'aws'
-    EnvURL = 'EC2_URL'
+class EuStoreRequest(BaseRequest):
+    SUITE = Euca2ools
+    SERVICE_CLASS = EuStore
 
-    StoreBaseURL = 'http://emis.eucalyptus.com/'
-    EuStoreVersion = 'eustore-catalog-2011-12-29'
-    RequestHeaders = {'User-Agent': 'euca2ools/eustore',
-                      'eustore-version': EuStoreVersion}
-
-class progressBar:
-    def __init__(self, maxVal):
-        self.maxVal=maxVal
-        self.currVal=0
-        print "0-----1-----2-----3-----4-----5-----6-----7-----8-----9-----10"
-        self.progShowing=0
-
-    def update(self, val):
-        count=min(val, self.maxVal)
-        progDone=62*count/self.maxVal
-        if self.progShowing < progDone:
-            for i in range(progDone - self.progShowing):
-                sys.stdout.write("#")
-            sys.stdout.flush()
-            self.progShowing = progDone
-        if progDone==62:
-            sys.stdout.write("\n")
+    @property
+    def default_routes(self):
+        return ()
