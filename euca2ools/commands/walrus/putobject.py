@@ -53,6 +53,7 @@ class PutObject(WalrusRequest):
                 help='''treat the destination as the full bucket and key name
                 for the uploaded object instead of a bucket and prefix.  This
                 only works when uploading a single file.'''),
+            Arg('--acl', dest='x-amz-acl', route_to=None),  ## FIXME
             Arg('--guess-mime-type', action='store_true', route_to=None,
                 help='''automatically select MIME types for the files being
                 uploaded'''),
@@ -93,6 +94,8 @@ class PutObject(WalrusRequest):
             self.path = bucket + '/' + keyname
             self.headers['Content-Length'] = os.path.getsize(source_filename)
             self.headers.pop('Content-Type', None)
+            if self.args.get('acl'):
+                self.headers['x-amz-acl'] = self.args['acl']
             if self.args.get('guess_mime_type', False):
                 mtype = mimetypes.guess_type(source_filename)
                 if mtype:

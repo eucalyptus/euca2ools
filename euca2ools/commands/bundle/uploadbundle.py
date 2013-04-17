@@ -122,8 +122,8 @@ class UploadBundle(BaseCommand):
             parts[int(part.get('index'))] = part.filename.text
         part_paths = [os.path.join(part_dir, path) for (index, path) in
                       sorted(parts.items()) if index >= self.args['part']]
-        req = PutObject(sources=part_paths,
-                        dest=full_prefix,
+        req = PutObject(sources=part_paths, dest=full_prefix,
+                        acl=self.args['acl'],
                         retries=self.args['retries'],
                         progress=self.args['progress'],
                         config=self.config, service=walrus,
@@ -133,6 +133,7 @@ class UploadBundle(BaseCommand):
         if not self.args['skipmanifest']:
             req = PutObject(sources=[self.args['manifest']],
                             dest=full_prefix, retries=self.args['retries'],
+                            acl=self.args['acl'],
                             progress=self.args['progress'], config=self.config,
                             service=walrus, key_id=self.args['key_id'],
                             secret_key=self.args['secret_key'])
