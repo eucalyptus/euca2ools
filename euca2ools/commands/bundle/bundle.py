@@ -51,8 +51,8 @@ class Bundle(object):
         self.digest = None
         self.digest_algorithm = 'SHA1'
         self.enc_algorithm = 'AES-128-CBC'
-        self.enc_key = None
-        self.enc_iv = None
+        self.enc_key = None  # a hex string
+        self.enc_iv = None  # a hex string
         self.image_filename = None
         self.image_size = None
         self.parts = None
@@ -120,8 +120,8 @@ class Bundle(object):
 
         # gzip --> openssl
         srand = random.SystemRandom()
-        enc_key = format(srand.getrandbits(128), 'x')
-        enc_iv = format(srand.getrandbits(128), 'x')
+        enc_key = '{0:0>32x}'.format(srand.getrandbits(128))
+        enc_iv = '{0:0>32x}'.format(srand.getrandbits(128))
         with self._lock:
             self.enc_key = enc_key
             self.enc_iv = enc_iv
