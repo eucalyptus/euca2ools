@@ -169,7 +169,7 @@ def _write_tarball(infile, outfile, show_progress=False):
         import progressbar
         widgets = [progressbar.Percentage(), ' ', progressbar.Bar(marker='='),
                    ' ', progressbar.FileTransferSpeed(), ' ',
-                   progressbar.AdaptiveETA()]
+                   progressbar.ETA()]
         bar = progressbar.ProgressBar(maxval=os.path.getsize(infile.name),
                                       widgets=widgets)
         bar.start()

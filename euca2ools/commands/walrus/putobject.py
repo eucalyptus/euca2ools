@@ -117,7 +117,7 @@ class PutObject(WalrusRequest):
                                filename_padding, ' ', progressbar.Percentage(),
                                ' ', progressbar.Bar(marker='='), ' ',
                                progressbar.FileTransferSpeed(), ' ',
-                               progressbar.AdaptiveETA()]
+                               progressbar.ETA()]
                     bar = progressbar.ProgressBar(
                         maxval=os.path.getsize(source_filename),
                         widgets=widgets)
