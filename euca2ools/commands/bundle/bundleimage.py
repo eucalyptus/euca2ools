@@ -233,7 +233,7 @@ class BundleImage(BaseCommand):
     def print_result(self, result):
         for part_filename in result[0]:
             print 'Wrote', part_filename
-        print 'Wrote', result[1]  # manifest
+        print 'Wrote manifest', result[1]  # manifest
 
     def process_userregion(self, userregion):
         if '@' in userregion:

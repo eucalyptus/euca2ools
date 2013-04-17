@@ -77,6 +77,7 @@ class UploadBundle(BaseCommand):
 
     def configure(self):
         BaseCommand.configure(self)
+        ## FIXME
         if self.args.get('userregion'):
             self.process_userregion(self.args['userregion'])
 
