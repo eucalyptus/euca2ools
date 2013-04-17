@@ -53,7 +53,9 @@ class PutObject(WalrusRequest):
                 help='''treat the destination as the full bucket and key name
                 for the uploaded object instead of a bucket and prefix.  This
                 only works when uploading a single file.'''),
-            Arg('--acl', dest='x-amz-acl', route_to=None),  ## FIXME
+            Arg('--acl', choices=('private', 'public-read',
+                'public-read-write', 'authenticated-read', 'bucket-owner-read',
+                'bucket-owner-full-control', 'aws-exec-read'), route_to=None),
             Arg('--guess-mime-type', action='store_true', route_to=None,
                 help='''automatically select MIME types for the files being
                 uploaded'''),
