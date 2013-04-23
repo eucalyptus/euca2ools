@@ -33,6 +33,7 @@ import binascii
 import euca2ools
 from euca2ools.commands import Euca2ools
 from euca2ools.commands.argtypes import delimited_list, filesize
+from euca2ools.commands.bundle import add_bundle_creds
 from euca2ools.commands.bundle.bundle import Bundle
 import hashlib
 import lxml.etree
@@ -41,6 +42,7 @@ import os.path
 from requestbuilder import Arg
 from requestbuilder.command import BaseCommand
 from requestbuilder.exceptions import ArgumentError
+from requestbuilder.util import set_userregion
 import subprocess
 import tempfile
 
@@ -71,11 +73,12 @@ class BundleImage(BaseCommand):
             Arg('--region', dest='userregion', metavar='USER@REGION',
                 help='''use encryption keys and the account ID specified for
                 a user and/or region in configuration files'''),
-            Arg('-c', '--cert', metavar='FILE', help='''file containing your
-                X.509 certificate.  This certificate will be required to
-                unbundle the image in the future.'''),
+            Arg('-c', '--cert', metavar='FILE',
+                help='file containing your X.509 certificate.'),
             Arg('-k', '--privatekey', metavar='FILE', help='''file containing
-                the private key to sign the bundle's manifest with'''),
+                the private key to sign the bundle's manifest with.  This
+                private key will also be required to unbundle the image in
+                the future.'''),
             Arg('-u', '--user', metavar='ACCOUNT', help='your account ID'),
             Arg('-d', '--destination', metavar='DIR', help='''location to
                 place the bundle's files (default:  dir named by TMPDIR, TEMP,
@@ -105,81 +108,25 @@ class BundleImage(BaseCommand):
 
     def configure(self):
         BaseCommand.configure(self)
-        if self.args.get('userregion'):
-            self.process_userregion(self.args['userregion'])
+        set_userregion(self.config, self.args.get('userregion'))
 
-        # User's X.509 cert (user-level in config)
+        # Get creds
+        add_bundle_creds(self.args, self.config)
         if not self.args.get('cert'):
-            config_cert = self.config.get_user_option('certificate')
-            if 'EC2_CERT' in os.environ:
-                self.args['cert'] = os.getenv('EC2_CERT')
-            elif config_cert:
-                self.args['cert'] = config_cert
-            else:
-                raise ArgumentError(
-                    'missing certificate; please supply one with -c')
-        self.args['cert'] = os.path.expanduser(os.path.expandvars(
-            self.args['cert']))
-        if not os.path.exists(self.args['cert']):
-            raise ArgumentError("certificate file '{0}' does not exist"
-                                .format(self.args['cert']))
-        if not os.path.isfile(self.args['cert']):
-            raise ArgumentError("certificate file '{0}' is not a file"
-                                .format(self.args['cert']))
+            raise ArgumentError(
+                'missing certificate; please supply one with -c')
         self.log.debug('certificate: %s', self.args['cert'])
-
-        # User's private key (user-level in config)
         if not self.args.get('privatekey'):
-            config_privatekey = self.config.get_user_option('private-key')
-            if 'EC2_PRIVATE_KEY' in os.environ:
-                self.args['privatekey'] = os.getenv('EC2_PRIVATE_KEY')
-            elif config_privatekey:
-                self.args['privatekey'] = config_privatekey
-            else:
-                raise ArgumentError(
-                    'missing private key; please supply one with -k')
-        self.args['privatekey'] = os.path.expanduser(os.path.expandvars(
-            self.args['privatekey']))
-        if not os.path.exists(self.args['privatekey']):
-            raise ArgumentError("private key file '{0}' does not exist"
-                                .format(self.args['privatekey']))
-        if not os.path.isfile(self.args['privatekey']):
-            raise ArgumentError("private key file '{0}' is not a file"
-                                .format(self.args['privatekey']))
+            raise ArgumentError(
+                'missing private key; please supply one with -k')
         self.log.debug('private key: %s', self.args['privatekey'])
-
-        # Cloud's X.509 cert (region-level in config)
         if not self.args.get('ec2cert'):
-            config_ec2cert = self.config.get_region_option('ec2-certificate')
-            if 'EUCALYPTUS_CERT' in os.environ:
-                # This doesn't have an EC2 equivalent since they just bundle
-                # their certificate.
-                self.args['ec2cert'] = os.getenv('EUCALYPTUS_CERT')
-            elif config_ec2cert:
-                self.args['ec2cert'] = config_ec2cert
-            else:
-                raise ArgumentError('missing cloud certificate; please '
-                                    'supply one with --ec2cert')
-        self.args['ec2cert'] = os.path.expanduser(os.path.expandvars(
-            self.args['ec2cert']))
-        if not os.path.exists(self.args['ec2cert']):
-            raise ArgumentError("cloud certificate file '{0}' does not exist"
-                                .format(self.args['ec2cert']))
-        if not os.path.isfile(self.args['ec2cert']):
-            raise ArgumentError("cloud certificate file '{0}' is not a file"
-                                .format(self.args['ec2cert']))
+            raise ArgumentError(
+                'missing cloud certificate; please supply one with --ec2cert')
         self.log.debug('cloud certificate: %s', self.args['ec2cert'])
-
-        # User's account ID (user-level)
         if not self.args.get('user'):
-            config_account_id = self.config.get_user_option('account-id')
-            if 'EC2_USER_ID' in os.environ:
-                self.args['user'] = os.getenv('EC2_USER_ID')
-            elif config_account_id:
-                self.args['user'] = config_account_id
-            else:
-                raise ArgumentError('missing account ID; please supply one '
-                                    'with --user')
+            raise ArgumentError(
+                'missing account ID; please supply one with --user')
         self.log.debug('account ID: %s', self.args['user'])
 
         # kernel/ramdisk image IDs

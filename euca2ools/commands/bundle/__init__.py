@@ -27,3 +27,67 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
+
+import os.path
+from requestbuilder.exceptions import ArgumentError
+
+
+def add_bundle_creds(args, config):
+    # User's X.509 certificate (user-level in config)
+    if not args.get('cert'):
+        config_cert = config.get_user_option('x509-cert')
+        if 'EC2_CERT' in os.environ:
+            args['cert'] = os.getenv('EC2_CERT')
+        elif config_cert:
+            args['cert'] = config_cert
+    if args.get('cert'):
+        args['cert'] = os.path.expanduser(os.path.expandvars(args['cert']))
+        if not os.path.exists(args['cert']):
+            raise ArgumentError("certificate file '{0}' does not exist"
+                                .format(args['cert']))
+        if not os.path.isfile(args['cert']):
+            raise ArgumentError("certificate file '{0}' is not a file"
+                                .format(args['cert']))
+
+    # User's private key (user-level in config)
+    if not args.get('privatekey'):
+        config_privatekey = config.get_user_option('x509-key')
+        if 'EC2_PRIVATE_KEY' in os.environ:
+            args['privatekey'] = os.getenv('EC2_PRIVATE_KEY')
+        elif config_privatekey:
+            args['privatekey'] = config_privatekey
+    if args.get('privatekey'):
+        args['privatekey'] = os.path.expanduser(os.path.expandvars(
+            args['privatekey']))
+        if not os.path.exists(args['privatekey']):
+            raise ArgumentError("private key file '{0}' does not exist"
+                                .format(args['privatekey']))
+        if not os.path.isfile(args['privatekey']):
+            raise ArgumentError("private key file '{0}' is not a file"
+                                .format(args['privatekey']))
+
+    # Cloud's X.509 cert (region-level in config)
+    if not args.get('ec2cert'):
+        config_privatekey = config.get_region_option('x509-cert')
+        if 'EUCALYPTUS_CERT' in os.environ:
+            # This has no EC2 equivalent since they just bundle their cert.
+            args['ec2cert'] = os.getenv('EUCALYPTUS_CERT')
+        elif config_privatekey:
+            args['ec2cert'] = config_privatekey
+    if args.get('ec2cert'):
+        args['ec2cert'] = os.path.expanduser(os.path.expandvars(
+            args['ec2cert']))
+        if not os.path.exists(args['ec2cert']):
+            raise ArgumentError("cloud certificate file '{0}' does not exist"
+                                .format(args['ec2cert']))
+        if not os.path.isfile(args['ec2cert']):
+            raise ArgumentError("cloud certificate file '{0}' is not a file"
+                                .format(args['ec2cert']))
+
+    # User's account ID (user-level)
+    if not args.get('user'):
+        config_account_id = config.get_user_option('account-id')
+        if 'EC2_USER_ID' in os.environ:
+            args['user'] = os.getenv('EC2_USER_ID')
+        elif config_account_id:
+            args['user'] = config_account_id
