@@ -42,6 +42,7 @@ import os.path
 from requestbuilder import Arg
 from requestbuilder.command import BaseCommand
 from requestbuilder.exceptions import ArgumentError
+from requestbuilder.mixins import FileTransferProgressBarMixin
 from requestbuilder.util import set_userregion
 import subprocess
 import tempfile
@@ -62,7 +63,7 @@ def manifest_block_device_mappings(mappings_as_str):
     return mappings
 
 
-class BundleImage(BaseCommand):
+class BundleImage(BaseCommand, FileTransferProgressBarMixin):
     DESCRIPTION = 'Prepare an image for uploading to a cloud'
     SUITE = Euca2ools
     ARGS = [Arg('-i', '--image', metavar='FILE', required=True,
@@ -99,7 +100,6 @@ class BundleImage(BaseCommand):
             Arg('--productcodes', metavar='CODE1,CODE2,...',
                 type=delimited_list(','),
                 help='comma-separated list of product codes'),
-            Arg('--progress', action='store_true', help='show progress'),
             Arg('--batch', action='store_true', help=argparse.SUPPRESS),
             Arg('--part-size', type=filesize, default=10485760,  # 10m
                 help=argparse.SUPPRESS),
@@ -168,9 +168,11 @@ class BundleImage(BaseCommand):
             path_prefix = os.path.join(tempdir, prefix)
         self.log.debug('bundle path prefix: %s', path_prefix)
 
+        bar = self.get_progressbar(label='Bundling image',
+                                   maxval=os.path.getsize(self.args['image']))
         bundle = Bundle.create_from_image(
             self.args['image'], path_prefix, part_size=self.args['part_size'],
-            show_progress=self.args['progress'])
+            progressbar=bar)
         manifest = self.generate_manifest_xml(bundle)
         manifest_filename = path_prefix + '.manifest.xml'
         with open(manifest_filename, 'w') as manifest_file:

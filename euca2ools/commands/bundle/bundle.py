@@ -64,15 +64,15 @@ class Bundle(object):
 
     @classmethod
     def create_from_image(cls, image_filename, part_prefix, part_size=None,
-                          show_progress=False):
+                          progressbar=None):
         new_bundle = cls()
         new_bundle.__create_from_image(image_filename, part_prefix,
                                        part_size=part_size,
-                                       show_progress=show_progress)
+                                       progressbar=progressbar)
         return new_bundle
 
     def __create_from_image(self, image_filename, part_prefix, part_size=None,
-                            show_progress=False):
+                            progressbar=None):
         if part_size is None:
             part_size = self.DEFAULT_PART_SIZE
         with self._lock:
@@ -139,7 +139,7 @@ class Bundle(object):
         # Drive everything by feeding tar
         with open(image_filename) as image:
             with os.fdopen(tar_out_pipe_in, 'w') as tar_input:
-                _write_tarball(image, tar_input, show_progress=show_progress)
+                _write_tarball(image, tar_input, progressbar=progressbar)
             writer_thread.join()
 
             overall_digest = digest_pipe_out.recv()
@@ -161,22 +161,16 @@ class Bundle(object):
 
 
 ### BUNDLE CREATION ###
-def _write_tarball(infile, outfile, show_progress=False):
+def _write_tarball(infile, outfile, progressbar=None):
     tar_thread = threading.Thread(target=_add_fileobj_to_tarball,
                                   args=(infile, outfile))
     tar_thread.start()
-    if show_progress:
-        import progressbar
-        widgets = [progressbar.Percentage(), ' ', progressbar.Bar(marker='='),
-                   ' ', progressbar.FileTransferSpeed(), ' ',
-                   progressbar.ETA()]
-        bar = progressbar.ProgressBar(maxval=os.path.getsize(infile.name),
-                                      widgets=widgets)
-        bar.start()
+    if progressbar is not None:
+        progressbar.start()
         while tar_thread.is_alive():
-            bar.update(infile.tell())
+            progressbar.update(infile.tell())
             time.sleep(0.01)
-        bar.finish()
+        progressbar.finish()
     tar_thread.join()
 
 
