@@ -84,7 +84,7 @@ class CreateLaunchConfiguration(AutoScalingRequest):
                     file by that name exists first'''),
                 Arg('-f', '--user-data-file', metavar='FILE', route_to=None,
                     help='''file containing user data to make available to
-                    instances''')),
+                    instances'''))]
 
     def configure(self):
         AutoScalingRequest.configure(self)
