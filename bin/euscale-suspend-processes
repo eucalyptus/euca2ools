@@ -1,6 +1,6 @@
 #!/usr/bin/python -tt
 
-import euca2ools.commands.autoscaling.resumeprocesses
+import euca2ools.commands.autoscaling.suspendprocesses
 
 if __name__ == '__main__':
-    euca2ools.commands.autoscaling.resumeprocesses.ResumeProcesses.run()
+    euca2ools.commands.autoscaling.suspendprocesses.SuspendProcesses.run()
