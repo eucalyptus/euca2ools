@@ -31,7 +31,7 @@
 import os.path
 import subprocess
 
-__version__ = '3.0.0-alpha5'
+__version__ = '3.0.0-alpha6'
 
 if '__file__' in globals():
     # Check if this is a git repo; maybe we can get more precise version info
