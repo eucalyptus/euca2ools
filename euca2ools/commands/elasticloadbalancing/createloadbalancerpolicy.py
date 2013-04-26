@@ -64,7 +64,7 @@ class CreateLoadBalancerPolicy(ELBRequest):
             Arg('--policy-type', dest='PolicyTypeName', metavar='POLTYPE',
                 required=True,
                 help='''type of the new policy.  For a list of policy types,
-                use euelb-describe-lb-policy-types.  (required)'''),
+                use eulb-describe-lb-policy-types.  (required)'''),
             Arg('-a', '--attribute', dest='PolicyAttributes.member',
                 action='append', metavar='"name=NAME, value=VALUE"',
                 type=attribute, help='''name and value for each attribute
