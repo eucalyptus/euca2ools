@@ -66,7 +66,7 @@ class EuareRequest(requestbuilder.request.AWSQueryRequest):
         requestbuilder.request.AWSQueryRequest.configure(self)
         if self.args.get('deprecated_delegate'):
             # Use it and complain
-            self.args['DelegateAccount'] = self.args['deprecated_delegate']
+            self.params['DelegateAccount'] = self.args['deprecated_delegate']
             msg = 'argument --delegate is deprecated; use --as-account instead'
             self.log.warn(msg)
             print >> sys.stderr, 'warning:', msg
