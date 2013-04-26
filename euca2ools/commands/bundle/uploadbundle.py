@@ -29,7 +29,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 from euca2ools.commands import Euca2ools
-from euca2ools.commands.walrus import Walrus
+from euca2ools.commands.walrus import WalrusRequest
 from euca2ools.commands.walrus.checkbucket import CheckBucket
 from euca2ools.commands.walrus.createbucket import CreateBucket
 from euca2ools.commands.walrus.putobject import PutObject
@@ -38,25 +38,19 @@ import lxml.etree
 import lxml.objectify
 import os.path
 from requestbuilder import Arg, MutuallyExclusiveArgList
+from requestbuilder.auth import S3RestAuth
 from requestbuilder.command import BaseCommand
 from requestbuilder.exceptions import ServerError
+from requestbuilder.mixins import FileTransferProgressBarMixin
+from requestbuilder.util import set_userregion
 
 
-class UploadBundle(BaseCommand):
+class UploadBundle(WalrusRequest, FileTransferProgressBarMixin):
     DESCRIPTION = 'Upload a bundle prepared by euca-bundle-image to the cloud'
-    SUITE = Euca2ools
     ARGS = [Arg('-b', '--bucket', metavar='BUCKET[/PREFIX]', required=True,
                 help='bucket to upload the bundle to (required)'),
             Arg('-m', '--manifest', metavar='FILE', required=True,
                 help='manifest for the bundle to upload (required)'),
-            MutuallyExclusiveArgList(
-                Arg('--region', dest='userregion', metavar='USER@REGION',
-                    help='''name of the region and/or user in config files to
-                    use for connection and credential info'''),
-                Arg('-U', '--url', help='storage service endpoint URL')),
-            Arg('-I', '-a', '--access-key-id', '--access-key', dest='key_id',
-                metavar='KEY_ID'),
-            Arg('-S', '-s', '--secret-key', metavar='KEY'),
             Arg('--acl', choices=('public-read', 'aws-exec-read'),
                 default='aws-exec-read', help='''canned ACL policy to apply
                 to the bundle (default: aws-exec-read)'''),
@@ -71,39 +65,26 @@ class UploadBundle(BaseCommand):
             Arg('--retry', dest='retries', action='store_const', const=5,
                 default=1, help='retry failed uploads up to 5 times'),
             Arg('--skipmanifest', action='store_true',
-                help='do not upload the manifest'),
-            Arg('--progress', action='store_true',
-                help='show upload progress')]
-
-    def configure(self):
-        BaseCommand.configure(self)
-        ## FIXME
-        if self.args.get('userregion'):
-            self.process_userregion(self.args['userregion'])
+                help='do not upload the manifest')]
 
     def main(self):
         (bucket, __, prefix) = self.args['bucket'].partition('/')
         if prefix and not prefix.endswith('/'):
             prefix += '/'
         full_prefix = bucket + '/' + prefix
-        walrus = Walrus(userregion=self.args['userregion'],
-                        url=self.args['url'], config=self.config,
-                        loglevel=self.log.level)
+
         # First make sure the bucket exists
         try:
-            req = CheckBucket(bucket=bucket, service=walrus,
-                              config=self.config, key_id=self.args['key_id'],
-                              secret_key=self.args['secret_key'])
+            req = CheckBucket(bucket=bucket, service=self.service,
+                              config=self.config)
             req.main()
         except AWSError as err:
             if err.status_code == 404:
                 # No such bucket
                 self.log.info("creating bucket '%s'", bucket)
                 req = CreateBucket(bucket=bucket,
-                                   location=self.args['location'],
-                                   config=self.config, service=walrus,
-                                   key_id=self.args['key_id'],
-                                   secret_key=self.args['secret_key'])
+                                   location=self.args.get('location'),
+                                   config=self.config, service=self.service)
                 req.main()
             else:
                 raise
@@ -122,22 +103,22 @@ class UploadBundle(BaseCommand):
         for part in manifest.image.parts.part:
             parts[int(part.get('index'))] = part.filename.text
         part_paths = [os.path.join(part_dir, path) for (index, path) in
-                      sorted(parts.items()) if index >= self.args['part']]
+                      sorted(parts.items())
+                      if index >= self.args.get('part', 0)]
         req = PutObject(sources=part_paths, dest=full_prefix,
                         acl=self.args['acl'],
-                        retries=self.args['retries'],
-                        progress=self.args['progress'],
-                        config=self.config, service=walrus,
-                        key_id=self.args['key_id'],
-                        secret_key=self.args['secret_key'])
+                        retries=self.args.get('retries', 1),
+                        progress=self.args.get('show_progress', False),
+                        config=self.config, service=self.service)
+
         req.main()
-        if not self.args['skipmanifest']:
+        if not self.args.get('skipmanifest', False):
             req = PutObject(sources=[self.args['manifest']],
-                            dest=full_prefix, retries=self.args['retries'],
+                            dest=full_prefix,
                             acl=self.args['acl'],
-                            progress=self.args['progress'], config=self.config,
-                            service=walrus, key_id=self.args['key_id'],
-                            secret_key=self.args['secret_key'])
+                            retries=self.args.get('retries', 1),
+                            progress=self.args.get('show_progress', False),
+                            config=self.config, service=self.service)
             req.main()
         manifest_loc = full_prefix + os.path.basename(self.args['manifest'])
         return manifest_loc

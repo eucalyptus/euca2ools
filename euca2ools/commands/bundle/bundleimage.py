@@ -104,7 +104,8 @@ class BundleImage(BaseCommand, FileTransferProgressBarMixin):
             Arg('--part-size', type=filesize, default=10485760,  # 10m
                 help=argparse.SUPPRESS),
             Arg('--image-type', choices=('machine', 'kernel', 'ramdisk'),
-                default='machine', help=argparse.SUPPRESS)]
+                default='machine', help=argparse.SUPPRESS),
+            Arg('--progressbar-label', help=argparse.SUPPRESS)]
 
     def configure(self):
         BaseCommand.configure(self)
@@ -168,11 +169,12 @@ class BundleImage(BaseCommand, FileTransferProgressBarMixin):
             path_prefix = os.path.join(tempdir, prefix)
         self.log.debug('bundle path prefix: %s', path_prefix)
 
-        bar = self.get_progressbar(label='Bundling image',
+        label = self.args.get('progressbar_label', 'Bundling image')
+        bar = self.get_progressbar(label=label,
                                    maxval=os.path.getsize(self.args['image']))
         bundle = Bundle.create_from_image(
-            self.args['image'], path_prefix, part_size=self.args['part_size'],
-            progressbar=bar)
+            self.args['image'], path_prefix,
+            part_size=self.args.get('part_size'), progressbar=bar)
         manifest = self.generate_manifest_xml(bundle)
         manifest_filename = path_prefix + '.manifest.xml'
         with open(manifest_filename, 'w') as manifest_file:

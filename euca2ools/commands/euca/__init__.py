@@ -37,6 +37,7 @@ from requestbuilder import Arg, MutuallyExclusiveArgList, AUTH, SERVICE
 from requestbuilder.auth import QuerySigV2Auth
 from requestbuilder.exceptions import AuthError
 from requestbuilder.mixins import TabifyingCommand
+from requestbuilder.util import set_userregion
 import requestbuilder.request
 import requestbuilder.service
 import requests
@@ -152,8 +153,7 @@ class Eucalyptus(requestbuilder.service.BaseService):
     def configure(self):
         # self.args gets highest precedence for self.endpoint and user/region
         self.process_url(self.args.get('url'))
-        if self.args.get('userregion'):
-            self.process_userregion(self.args['userregion'])
+        set_userregion(self.config, self.args.get('userregion'))
         # Shell-style config file given at the CLI
         # Deprecated; should be removed in 3.2
         if os.path.isfile(self.args['shell_configfile']):
@@ -165,8 +165,7 @@ class Eucalyptus(requestbuilder.service.BaseService):
             if self.URL_ENVVAR in config:
                 self.process_url(config[self.URL_ENVVAR])
         # Environment
-        if self.REGION_ENVVAR in os.environ:
-            self.process_userregion(os.getenv(self.REGION_ENVVAR))
+        set_userregion(self.config, os.getenv(self.REGION_ENVVAR))
         self.process_url(os.getenv(self.URL_ENVVAR))
         # Regular config file
         self.process_url(self.config.get_region_option(self.NAME + '-url'))

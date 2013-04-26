@@ -31,5 +31,6 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 import euca2ools.commands
+import sys
 
-euca2ools.commands.Euca2ools().print_version_and_exit()
+print >> sys.stderr, euca2ools.commands.Euca2ools().format_version()

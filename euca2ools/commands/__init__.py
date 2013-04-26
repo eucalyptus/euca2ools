@@ -50,17 +50,17 @@ class Euca2ools(object):
         self.__user_agent = None
 
     @staticmethod
-    def print_version_and_exit():
-        print >> sys.stderr, 'euca2ools', __version__, '(Sparta)'
+    def format_version():
+        version_lines = ['euca2ools {0} (Sparta)'.format(__version__)]
         try:
             if os.path.isfile('/etc/eucalyptus/eucalyptus-version'):
                 with open('/etc/eucalyptus/eucalyptus-version') as ver_file:
                     euca_version = ver_file.readline().strip()
-                print >> sys.stderr, 'eucalyptus', euca_version
+                version_lines.append('eucalyptus {0}'.format(euca_version))
         except:
             # Those were just more crunchy bits.  If they don't work, oh well!
             pass
-        sys.exit()
+        return '\n'.join(version_lines)
 
     def list_config_files(self):
         config_files = []

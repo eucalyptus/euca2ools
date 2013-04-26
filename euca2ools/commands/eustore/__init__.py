@@ -46,7 +46,4 @@ class EuStore(BaseService):
 class EuStoreRequest(BaseRequest):
     SUITE = Euca2ools
     SERVICE_CLASS = EuStore
-
-    @property
-    def default_routes(self):
-        return ()
+    DEFAULT_ROUTES = ()
