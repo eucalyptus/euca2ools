@@ -92,7 +92,8 @@ class ListUserPolicies(AWSQueryRequest):
                     continue
                 if self.cli_options.verbose:
                     obj = euca2ools.commands.euare.getuserpolicy.GetUserPolicy()
-                    data = obj.main(user_name=user_name, policy_name=policy)
+                    data = obj.main(user_name=user_name, policy_name=policy,
+                                    delegate=self.request_params.get('DelegateAccount'))
                     obj.cli_formatter(data)
                 else:
                     print policy
