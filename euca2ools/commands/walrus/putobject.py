@@ -83,9 +83,8 @@ class PutObject(WalrusRequest):
 
     def main(self):
         sources = list(self.args['sources'])
-        max_source_len = max(len(os.path.basename(source)) for source
-                             in sources)
-        for source_filename in sources:
+        template = build_progressbar_label_template(sources)
+        for index, source_filename in enumerate(sources, 1):
             if self.args.get('literal_dest', False):
                 (bucket, __, keyname) = self.args['dest'].partition('/')
                 if not keyname:
@@ -116,10 +115,9 @@ class PutObject(WalrusRequest):
                 upload_thread.start()
                 if self.args['progress']:
                     import progressbar
-                    filename_padding = ' ' * (max_source_len -
-                        len(os.path.basename(source_filename)))
-                    widgets = [os.path.basename(source_filename),
-                               filename_padding, ' ', progressbar.Percentage(),
+                    label = template.format(index=index,
+                        fname=os.path.basename(source_filename))
+                    widgets = [label, ' ', progressbar.Percentage(),
                                ' ', progressbar.Bar(marker='='), ' ',
                                progressbar.FileTransferSpeed(), ' ',
                                progressbar.ETA()]
@@ -160,3 +158,16 @@ class PutObject(WalrusRequest):
                     with self._lock:
                         self.last_upload_error = err
                     raise
+
+
+def build_progressbar_label_template(fnames):
+    if len(fnames) == 0:
+        return None
+    elif len(fnames) == 1:
+        return '{fname}'
+    else:
+        max_fname_len = max(len(os.path.basename(fname)) for fname in fnames)
+        fmt_template = '{{fname:<{maxlen}}} ({{index:>{lenlen}}}/{total})'
+        return fmt_template.format(maxlen=max_fname_len,
+                                   lenlen=len(str(len(fnames))),
+                                   total=len(fnames))
