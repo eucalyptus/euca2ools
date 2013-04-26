@@ -198,6 +198,9 @@ class InstallImage(EuStoreRequest, FileTransferProgressBarMixin):
         image_ids = self.bundle_and_register_all(tempdir, tarball_path)
         return image_ids
 
+    def print_result(self, image_ids):
+        print 'Installed new image', image_ids['machine']
+
     def get_tarball(self, workdir):
         if self.args.get('tarball'):
             self.log.info('using local tarball %s', self.args['tarball'])
@@ -338,6 +341,8 @@ class InstallImage(EuStoreRequest, FileTransferProgressBarMixin):
                         print 'Registered machine image', machine_id
         finally:
             tarball.close()
+        if self.args['show_progress']:
+            print '-- Done --'
         return {'machine': machine_id, 'kernel': kernel_id,
                 'ramdisk': ramdisk_id}
 
