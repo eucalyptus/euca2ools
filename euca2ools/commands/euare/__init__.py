@@ -80,7 +80,7 @@ class EuareRequest(requestbuilder.request.AWSQueryRequest):
         useful_keys = list(filter(lambda x: x != 'ResponseMetadata',
                                   response_dict.keys()))
         if len(useful_keys) == 1:
-            return response_dict[useful_keys[0]]
+            return response_dict[useful_keys[0]] or {}
         else:
             return response_dict
 

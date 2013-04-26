@@ -205,7 +205,7 @@ class EucalyptusRequest(requestbuilder.request.AWSQueryRequest,
         # RequestId then just return its contents.
         useful_keys = filter(lambda x: x != 'RequestId', response.keys())
         if len(useful_keys) == 1:
-            return response[useful_keys[0]]
+            return response[useful_keys[0]] or {}
         else:
             return response
 
