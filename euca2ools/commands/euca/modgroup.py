@@ -162,9 +162,10 @@ class ModifySecurityGroupRequest(EucalyptusRequest):
         self.params['IpPermissions.1.FromPort'] = from_port
         self.params['IpPermissions.1.ToPort']   = to_port
 
-        if not self.args.get('IpPermissions.1.IpRanges.1.GroupName'):
-            self.args.setdefault('IpPermissions.1.IpRanges.1.CidrIp',
-                                 '0.0.0.0/0')
+        if (not self.args.get('IpPermissions.1.IpRanges.1.GroupName') and
+            not self.args.get('IpPermissions.1.IpRanges.1.CidrIp')):
+            # Default rule target is the entire Internet
+            self.params['IpPermissions.1.IpRanges.1.CidrIp'] = '0.0.0.0/0'
         if (self.params.get('IpPermissions.1.Groups.1.GroupName') and
             not self.args.get('IpPermissions.1.Groups.1.UserId')):
             raise ArgumentError('argument -u is required when -o names a '
