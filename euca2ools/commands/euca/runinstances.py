@@ -30,8 +30,8 @@
 
 import argparse
 import base64
-from euca2ools.commands.argtypes import (b64encoded_file_contents,
-    ec2_block_device_mapping, vpc_interface)
+from euca2ools.commands.argtypes import (ec2_block_device_mapping,
+    vpc_interface)
 from euca2ools.commands.euca import EucalyptusRequest
 import os.path
 from requestbuilder import Arg, MutuallyExclusiveArgList
@@ -55,17 +55,15 @@ class RunInstances(EucalyptusRequest):
             Arg('-k', '--key', dest='KeyName', metavar='KEYPAIR',
                 help='name of the key pair to use'),
             MutuallyExclusiveArgList(
-                Arg('-d', '--user-data', dest='UserData', metavar='DATA',
-                    type=base64.b64encode,
+                Arg('-d', '--user-data', metavar='DATA', route_to=None,
                     help='''user data to make available to instances in this
                             reservation'''),
-                Arg('--user-data-force', dest='UserData',
-                    type=base64.b64encode, help=argparse.SUPPRESS),
-                    # ^ deprecated  ## TODO:  decide if that should remain the case
-                Arg('-f', '--user-data-file', dest='UserData',
-                    metavar='DATA-FILE', type=b64encoded_file_contents,
+                Arg('--user-data-force', metavar='DATA', route_to=None,
+                    help='''same as -d/--user-data, but without checking if a
+                    file by that name exists first'''),
+                Arg('-f', '--user-data-file', metavar='FILE', route_to=None,
                     help='''file containing user data to make available to the
-                            instances in this reservation''')),
+                    instances in this reservation''')),
             Arg('--addressing', dest='AddressingType',
                 choices=('public', 'private'), help='''[Eucalyptus only]
                 addressing scheme to launch the instance with.  Use "private"
@@ -145,6 +143,26 @@ class RunInstances(EucalyptusRequest):
     LIST_TAGS = ['reservationSet', 'instancesSet', 'groupSet', 'tagSet',
                  'blockDeviceMapping', 'productCodes', 'networkInterfaceSet',
                  'attachment', 'association', 'privateIpAddressesSet']
+
+    def configure(self):
+        EucalyptusRequest.configure(self)
+        if self.args.get('user_data'):
+            if os.path.isfile(self.args['user_data']):
+                raise ArgumentError(
+                    'argument -d/--user-data: to pass the contents of a file '
+                    'as user data, use -f/--user-data-file.  To pass the '
+                    "literal value '{0}' as user data even though it matches "
+                    'the name of a file, use --user-data-force.')
+            else:
+                self.params['UserData'] = base64.b64encode(
+                    self.args['user_data'])
+        elif self.args.get('user_data_force'):
+            self.params['UserData'] = base64.b64encode(
+                self.args['user_data_force'])
+        elif self.args.get('user_data_file'):
+            with open(self.args['user_data_file']) as user_data_file:
+                self.params['UserData'] = base64.b64encode(
+                    user_data_file.read())
 
     def preprocess(self):
         counts = self.args['count'].split('-')

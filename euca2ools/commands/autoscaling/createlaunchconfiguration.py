@@ -28,8 +28,9 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+import base64
 from euca2ools.commands.argtypes import (delimited_list,
-                                         ec2_block_device_mapping)
+    ec2_block_device_mapping)
 from euca2ools.commands.autoscaling import AutoScalingRequest
 from requestbuilder import Arg, MutuallyExclusiveArgList
 
@@ -76,11 +77,34 @@ class CreateLaunchConfiguration(AutoScalingRequest):
             Arg('--spot-price', dest='SpotPrice', metavar='PRICE',
                 help='maximum hourly price for any spot instances launched'),
             MutuallyExclusiveArgList(
-                Arg('--user-data', dest='UserData', metavar='DATA',
-                    help='data to make available to instances'),
-                Arg('--user-data-file', dest='UserData', metavar='FILE',
-                    type=open, help='''file containing data to make available
-                    to instances'''))]
+                Arg('-d', '--user-data', metavar='DATA', route_to=None,
+                    help='user data to make available to instances'),
+                Arg('--user-data-force', metavar='DATA', route_to=None,
+                    help='''same as -d/--user-data, but without checking if a
+                    file by that name exists first'''),
+                Arg('-f', '--user-data-file', metavar='FILE', route_to=None,
+                    help='''file containing user data to make available to
+                    instances''')),
+
+    def configure(self):
+        AutoScalingRequest.configure(self)
+        if self.args.get('user_data'):
+            if os.path.isfile(self.args['user_data']):
+                raise ArgumentError(
+                    'argument -d/--user-data: to pass the contents of a file '
+                    'as user data, use -f/--user-data-file.  To pass the '
+                    "literal value '{0}' as user data even though it matches "
+                    'the name of a file, use --user-data-force.')
+            else:
+                self.params['UserData'] = base64.b64encode(
+                    self.args['user_data'])
+        elif self.args.get('user_data_force'):
+            self.params['UserData'] = base64.b64encode(
+                self.args['user_data_force'])
+        elif self.args.get('user_data_file'):
+            with open(self.args['user_data_file']) as user_data_file:
+                self.params['UserData'] = base64.b64encode(
+                    user_data_file.read())
 
     def preprocess(self):
         if self.args.get('block_device_mapping'):
