@@ -29,7 +29,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 from euca2ools.commands import Euca2ools
-from requestbuilder import Arg
+from requestbuilder import Arg, MutuallyExclusiveArgList
 from requestbuilder.request import BaseRequest
 from requestbuilder.service import BaseService
 
@@ -37,10 +37,13 @@ from requestbuilder.service import BaseService
 class EuStore(BaseService):
     NAME = 'eustore'
     DESCRIPTION = 'Eucalyptus Image Store'
+    REGION_ENVVAR = 'EUCA_REGION'
     URL_ENVVAR = 'EUSTORE_URL'
-    ARGS = [Arg('-U', '--url', default='http://emis.eucalyptus.com/',
-                help='''EuStore service URL (default:
-                http://emis.eucalyptus.com)''')]
+    ARGS = [MutuallyExclusiveArgList(
+                Arg('--region', dest='userregion', metavar='USER@REGION',
+                    help='''name of the region and/or user in config files to
+                    use to connect to the service'''),
+                Arg('-U', '--url', help='EuStore service URL'))]
 
 
 class EuStoreRequest(BaseRequest):

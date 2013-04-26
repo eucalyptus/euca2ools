@@ -94,7 +94,7 @@ class EC2CompatibleQuerySigV2Auth(QuerySigV2Auth):
             print >> sys.stderr, 'warning:', msg
         # Shell-style config file given at the CLI
         # Deprecated; should be removed in 3.2
-        if os.path.isfile(self.args['shell_configfile']):
+        if os.path.isfile(self.args.get('shell_configfile', '')):
             # We already complained about this in the service
             config = _parse_shell_configfile(self.args['shell_configfile'])
             if 'EC2_ACCESS_KEY' in config and not self.args.get('key_id'):
@@ -156,7 +156,7 @@ class Eucalyptus(requestbuilder.service.BaseService):
         set_userregion(self.config, self.args.get('userregion'))
         # Shell-style config file given at the CLI
         # Deprecated; should be removed in 3.2
-        if os.path.isfile(self.args['shell_configfile']):
+        if os.path.isfile(self.args.get('shell_configfile', '')):
             msg = 'argument --config is deprecated'
             self.log.warn(msg)
             print >> sys.stderr, 'warning:', msg

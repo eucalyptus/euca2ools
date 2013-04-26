@@ -99,7 +99,7 @@ class DescribeImages(EucalyptusRequest):
 
     def configure(self):
         EucalyptusRequest.configure(self)
-        if self.args['all']:
+        if self.args.get('all', False):
             if self.args.get('ImageId'):
                 raise ArgumentError('argument -a/--all: not allowed with '
                                     'a list of images')
