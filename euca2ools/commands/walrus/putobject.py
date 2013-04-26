@@ -34,13 +34,14 @@ import mimetypes
 import os.path
 from requestbuilder import Arg
 from requestbuilder.exceptions import ArgumentError, ClientError
+from requestbuilder.mixins import FileTransferProgressBarMixin
 import socket
 import sys
 import threading
 import time
 
 
-class PutObject(WalrusRequest):
+class PutObject(WalrusRequest, FileTransferProgressBarMixin):
     DESCRIPTION = ('Upload objects to the server\n\nNote that uploading a '
                    'large file to a region other than the one the bucket is '
                    'may result in "Broken pipe" errors or other connection '
@@ -61,9 +62,7 @@ class PutObject(WalrusRequest):
                 uploaded'''),
             Arg('--retry', dest='retries', action='store_const', const=5,
                 default=1, route_to=None,
-                help='retry interrupted uploads up to 5 times'),
-            Arg('--progress', action='store_true', route_to=None,
-                help='show upload progress')]
+                help='retry interrupted uploads up to 5 times')]
     METHOD = 'PUT'
 
     def __init__(self, **kwargs):
@@ -83,7 +82,7 @@ class PutObject(WalrusRequest):
 
     def main(self):
         sources = list(self.args['sources'])
-        template = build_progressbar_label_template(sources)
+        label_template = build_progressbar_label_template(sources)
         for index, source_filename in enumerate(sources, 1):
             if self.args.get('literal_dest', False):
                 (bucket, __, keyname) = self.args['dest'].partition('/')
@@ -113,29 +112,15 @@ class PutObject(WalrusRequest):
                 # more cleanly.
                 upload_thread.daemon = True
                 upload_thread.start()
-                if self.args['progress']:
-                    import progressbar
-                    label = template.format(index=index,
-                        fname=os.path.basename(source_filename))
-                    widgets = [label, ' ', progressbar.Percentage(),
-                               ' ', progressbar.Bar(marker='='), ' ',
-                               progressbar.FileTransferSpeed(), ' ',
-                               progressbar.ETA()]
-                    bar = progressbar.ProgressBar(
-                        maxval=os.path.getsize(source_filename),
-                        widgets=widgets)
-                    bar.start()
-                    while upload_thread.is_alive():
-                        bar.update(source.tell())
-                        time.sleep(0.01)
-                    bar.finish()
-                else:
-                    # If we don't at least do *something* in the main thread
-                    # then attempts to kill the program with ^C will only be
-                    # handled when the current upload completes, which could
-                    # be minutes away or even longer.
-                    while upload_thread.is_alive():
-                        time.sleep(0.01)
+                label = label_template.format(index=index,
+                    fname=os.path.basename(source_filename))
+                pbar = self.get_progressbar(label=label,
+                    maxval=os.path.getsize(source_filename))
+                pbar.start()
+                while upload_thread.is_alive():
+                    pbar.update(source.tell())
+                    time.sleep(0.01)
+                pbar.finish()
                 upload_thread.join()
             with self._lock:
                 if self.last_upload_error is not None:

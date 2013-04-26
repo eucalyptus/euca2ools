@@ -108,7 +108,7 @@ class UploadBundle(WalrusRequest, FileTransferProgressBarMixin):
         req = PutObject(sources=part_paths, dest=full_prefix,
                         acl=self.args['acl'],
                         retries=self.args.get('retries', 1),
-                        progress=self.args.get('show_progress', False),
+                        show_progress=self.args.get('show_progress', False),
                         config=self.config, service=self.service)
 
         req.main()
@@ -117,7 +117,8 @@ class UploadBundle(WalrusRequest, FileTransferProgressBarMixin):
                             dest=full_prefix,
                             acl=self.args['acl'],
                             retries=self.args.get('retries', 1),
-                            progress=self.args.get('show_progress', False),
+                            show_progress=self.args.get('show_progress',
+                                                        False),
                             config=self.config, service=self.service)
             req.main()
         manifest_loc = full_prefix + os.path.basename(self.args['manifest'])
