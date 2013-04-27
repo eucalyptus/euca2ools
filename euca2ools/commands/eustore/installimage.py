@@ -218,7 +218,9 @@ class InstallImage(EuStoreRequest, FileTransferProgressBarMixin):
                                .format(self.args['image_name']))
             self.log.debug('image data: %s', str(image))
             if self.args.get('architecture') is None:
-                self.args['architecture'] = image['architecture']
+                self.args['architecture'] = image.get('architecture')
+            if self.args.get('description') is None:
+                self.args['description'] = image.get('description')
             if bool(image.get('single-kernel', False)):
                 self.log.debug('image catalog data specify single-kernel; '
                                "setting hypervisor to 'universal'")
