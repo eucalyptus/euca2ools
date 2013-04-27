@@ -48,6 +48,7 @@ import requestbuilder.commands.http
 from requestbuilder.exceptions import ArgumentError, ClientError
 from requestbuilder.mixins import FileTransferProgressBarMixin
 from requestbuilder.util import set_userregion
+import shutil
 import tarfile
 import tempfile
 import urlparse
@@ -189,13 +190,21 @@ class InstallImage(EuStoreRequest, FileTransferProgressBarMixin):
         if not self.args.get('kernel') or not self.args.get('ramdisk'):
             self.ensure_kernel_reg_privs()
 
-        tempdir_base = (os.getenv('TMPDIR') or os.getenv('TEMP') or
-                        os.getenv('TMP') or '/var/tmp')
-        tempdir = tempfile.mkdtemp(dir=tempdir_base)
-        self.log.debug('created tempdir %s', tempdir)
+        if self.args.get('directory'):
+            workdir = self.args['directory']
+            should_delete_workdir = False
+        else:
+            # We do this by hand to default to /var/tmp instead of /tmp.
+            workdir_base = (os.getenv('TMPDIR') or os.getenv('TEMP') or
+                            os.getenv('TMP') or '/var/tmp')
+            workdir = tempfile.mkdtemp(dir=workdir_base)
+            self.log.debug('created working directory %s', workdir)
+            should_delete_workdir = True
 
-        tarball_path = self.get_tarball(workdir=tempdir)
-        image_ids = self.bundle_and_register_all(tempdir, tarball_path)
+        tarball_path = self.get_tarball(workdir=workdir)
+        image_ids = self.bundle_and_register_all(workdir, tarball_path)
+        if should_delete_workdir:
+            shutil.rmtree(workdir)
         return image_ids
 
     def print_result(self, image_ids):
