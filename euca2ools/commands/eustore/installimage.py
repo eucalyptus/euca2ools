@@ -282,11 +282,13 @@ class InstallImage(EuStoreRequest, FileTransferProgressBarMixin):
                 hv_type_dir = self.args['hypervisor'] + '-kernel'
                 hv_prefix = os.path.join(commonprefix, hv_type_dir)
             # Get any kernel and ramdisk images we're missing
+            bundled_images = []
             for member in members:
                 if member.name.startswith(hv_prefix):
                     if kernel_id is None and 'vmlinu' in member.name:
                         # Note that vmlinux/vmlinuz is not always at the
                         # beginning of the file name
+                        bundled_images.append(member.name)
                         kernel_image = self.extract_without_path(
                             tarball, member, workdir, 'Extracting kernel ')
                         manifest_loc = self.bundle_and_upload_image(
@@ -303,6 +305,7 @@ class InstallImage(EuStoreRequest, FileTransferProgressBarMixin):
                     elif (ramdisk_id is None and
                           any(s in member.name for s in ('initrd', 'initramfs',
                                                          'loader'))):
+                        bundled_images.append(member.name)
                         ramdisk_image = self.extract_without_path(
                             tarball, member, workdir, 'Extracting ramdisk')
                         manifest_loc = self.bundle_and_upload_image(
@@ -324,7 +327,10 @@ class InstallImage(EuStoreRequest, FileTransferProgressBarMixin):
             # machine image
             machine_id = None
             for member in members:
+                if member.name in bundled_images:
+                    continue
                 if machine_id is None and member.name.endswith('.img'):
+                    bundled_images.append(member.name)
                     machine_image = self.extract_without_path(
                         tarball, member, workdir, 'Extracting image  ')
                     manifest_loc = self.bundle_and_upload_image(machine_image,
