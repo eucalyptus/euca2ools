@@ -71,7 +71,7 @@ class InstallImage(EuStoreRequest, FileTransferProgressBarMixin):
             Arg('--hypervisor', choices=('xen', 'kvm', 'universal'),
                 help='''hypervisor the kernel image is built for (required for
                 images with hypervisor-specific kernels'''),
-            Arg('--kernel-type', dest='kernel_type',
+            Arg('-k', '--kernel-type', dest='kernel_type',
                 choices=('xen', 'kvm', 'universal'), help=argparse.SUPPRESS),
             Arg('-d', '--directory', dest='directory', metavar='DIR',
                 help='''location to place the image and other artifacts
@@ -107,7 +107,7 @@ class InstallImage(EuStoreRequest, FileTransferProgressBarMixin):
         if self.args.get('kernel_type'):
             # Use it and complain
             self.args['hypervisor'] = self.args['kernel_type']
-            msg = ('argument --kernel-type is deprecated; use --hypervisor '
+            msg = ('argument -k/--kernel-type is deprecated; use --hypervisor '
                    'instead')
             self.log.warn(msg)
             print >> sys.stderr, 'warning:', msg
