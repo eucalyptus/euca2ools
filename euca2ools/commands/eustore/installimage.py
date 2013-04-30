@@ -42,6 +42,8 @@ import shutil
 import tempfile
 import urllib2
 import boto
+import random
+import time
 from boto.roboto.param import Param
 from boto.roboto.awsqueryrequest import AWSQueryRequest
 from boto.roboto.awsqueryservice import AWSQueryService
@@ -116,7 +118,7 @@ class InstallImage(AWSQueryRequest):
         Param(name='bucket',
               short_name='b',
               long_name='bucket',
-              optional=False,
+              optional=True,
               ptype='string',
               doc="""specify the bucket to store the images in"""),
         Param(name='kernel_type',
@@ -147,7 +149,24 @@ class InstallImage(AWSQueryRequest):
               long_name='yes',
               optional=True,
               ptype='boolean',
-              doc="""Answer \"yes\" to questions during install""")
+              doc="""Answer \"yes\" to questions during install"""),
+        Param(name='bfebs_url',
+              short_name='u',
+              long_name='bfebs_url',
+              optional=True,
+              ptype='string',
+              doc="""specify the URL to a BFEBS image to be registered"""),
+        Param(name='volume_size',
+              short_name='v',
+              long_name='volume_size',
+              optional=True,
+              ptype='integer',
+              doc="""specify the unapacked size BFEBS image to be registered (in GB)"""),
+        Param(name='key',
+              long_name='key',
+              optional=True,
+              ptype='string',
+              doc="""specify the ssh key name to be used to spawn an instance""")
         ]
     ImageList = None
 
@@ -320,32 +339,54 @@ class InstallImage(AWSQueryRequest):
         self.user = os.environ['EC2_USER_ID']
         self.ec2cert_path = os.environ['EUCALYPTUS_CERT']
 
-        # tarball and image option are mutually exclusive
-        if (not(self.cli_options.image_name) and not(self.cli_options.tarball)):
-            print >> sys.stderr, "Error: one of -i or -t must be specified"
-            sys.exit(-1)
+        if self.cli_options.bfebs_url:
+            if (not self.cli_options.architecture or not (self.cli_options.architecture == 'i386' or\
+                                                          self.cli_options.architecture == 'x86_64')):
+                print >> sys.stderr, "Error: architecture must be either 'i386' or 'x86_64'"
+                sys.exit(-1)
+            if not self.cli_options.key:
+                print >> sys.stderr, "Error: an ssh key name must be specified to create an EBS image"
+                sys.exit(-1)
+            if not self.cli_options.volume_size:
+                self.cli_options.volume_size = 2
+            if not self.cli_options.image_name:
+                print >> sys.stderr, "Error: An image name is required when creating an EBS image"
+                sys.exit(-1)
+            if not self.cli_options.description:
+                print >> sys.stderr, "Error: A description is required when creating an EBS image"
+                sys.exit(-1)
+                
+        else:
+          # tarball and image option are mutually exclusive
+          if (not(self.cli_options.image_name) and not(self.cli_options.tarball)):
+              print >> sys.stderr, "Error: one of -i or -t must be specified"
+              sys.exit(-1)
 
-        if (self.cli_options.image_name and self.cli_options.tarball):
-            print >> sys.stderr, "Error: -i and -t cannot be specified together"
-            sys.exit(-1)
+          if (self.cli_options.image_name and self.cli_options.tarball):
+              print >> sys.stderr, "Error: -i and -t cannot be specified together"
+              sys.exit(-1)
 
-        if (self.cli_options.tarball and \
-            (not(self.cli_options.description) or not(self.cli_options.architecture))):
-            print >> sys.stderr, "Error: when -t is specified, -s and -a are required"
-            sys.exit(-1)
+          if (self.cli_options.tarball and \
+              (not(self.cli_options.description) or not(self.cli_options.architecture))):
+              print >> sys.stderr, "Error: when -t is specified, -s and -a are required"
+              sys.exit(-1)
 
-        if (self.cli_options.architecture and \
-            not(self.cli_options.architecture == 'i386' or self.cli_options.architecture == 'x86_64')):
-            print >> sys.stderr, "Error: architecture must be either 'i386' or 'x86_64'"
-            sys.exit(-1)
+          if (self.cli_options.architecture and \
+              not(self.cli_options.architecture == 'i386' or self.cli_options.architecture == 'x86_64')):
+              print >> sys.stderr, "Error: architecture must be either 'i386' or 'x86_64'"
+              sys.exit(-1)
 
-        if (self.cli_options.kernel and not(self.cli_options.ramdisk)) or \
-           (not(self.cli_options.kernel) and self.cli_options.ramdisk):
-            print >> sys.stderr, "Error: kernel and ramdisk must both be overridden"
-            sys.exit(-1)
+          if (self.cli_options.kernel and not(self.cli_options.ramdisk)) or \
+             (not(self.cli_options.kernel) and self.cli_options.ramdisk):
+              print >> sys.stderr, "Error: kernel and ramdisk must both be overridden"
+              sys.exit(-1)
 
-        if (self.cli_options.architecture and self.cli_options.image_name):
-            print >> sys.stderr, "Warning: you may be overriding the default architecture of this image!"
+          if (self.cli_options.architecture and self.cli_options.image_name):
+              print >> sys.stderr, "Warning: you may be overriding the default architecture of this image!"
+
+          if not self.cli_options.bucket:
+              print >> sys.stderr, "Error: Required parameters are missing: (-b, --bucket)"
+              sys.exit(-1)
 
 
         euare_svc = EuareService()
@@ -369,72 +410,216 @@ class InstallImage(AWSQueryRequest):
                         
         self.ImageList = ec2_conn.get_all_images()
 
-        if os.environ.has_key('EUSTORE_URL'):
-            self.eustore_url = os.environ['EUSTORE_URL']
-
-        self.destination = "/tmp/"
-        if self.cli_options.dir:
-            self.destination = self.cli_options.dir
-        if not(self.destination.endswith('/')):
-            self.destination += '/'
-        # for security, add random directory within to work in
-        self.destination = tempfile.mkdtemp(prefix=self.destination)+'/'
-
-        if self.cli_options.tarball:
-            # local tarball path instead
-            print "Installed image: "+self.bundleAll(self.cli_options.tarball, self.cli_options.prefix, self.cli_options.description, self.cli_options.architecture)
-        else:
-            catURL = self.eustore_url + "catalog"
-            req = urllib2.Request(catURL, headers=self.ServiceClass.RequestHeaders)
-            response = urllib2.urlopen(req).read()
-            parsed_cat = json.loads(response)
-            if len(parsed_cat) > 0:
-                image_list = parsed_cat['images']
-                image_found = False
-                for image in image_list:
-                    if image['name'].find(self.cli_options.image_name) > -1:
-                        image_found = True
-                        break
-                if image_found:
-                    # more param checking now
-                    if image['single-kernel']=='True':
-                        if self.cli_options.kernel_type:
-                            print >> sys.stderr, "The -k option will be ignored because the image is single-kernel"
-                    else:
-                        # Warn about kernel type for multi-kernel images, but not if already installed
-                        # kernel/ramdisk have been specified.
-                        if not(self.cli_options.kernel_type) and not(self.cli_options.kernel):
-                            print >> sys.stderr, "Error: The -k option must be specified because this image has separate kernels"
-                            sys.exit(-1)
-                    print "Downloading Image : ",image['description']
-                    imageURL = self.eustore_url+image['url']
-                    req = urllib2.Request(imageURL, headers=self.ServiceClass.RequestHeaders)
-                    req = urllib2.urlopen(req)
-                    file_size = int(req.info()['Content-Length'])/1000
-                    size_count = 0;
-                    prog_bar = euca2ools.commands.eustore.progressBar(file_size)
-                    BUF_SIZE = 128*1024
-                    with open(self.destination+'eucaimage.tar.gz', 'wb') as fp:
-                        while True:
-                            buf = req.read(BUF_SIZE)
-                            size_count += len(buf)
-                            prog_bar.update(size_count/1000)
-                            if not buf: break
-                            fp.write(buf)
-                    fp.close()
-                    # validate download by re-computing serial # (name)
-                    print "Checking image bundle"
-                    file = open(fp.name, 'r')
-                    m = hashlib.md5()
-                    m.update(file.read())
-                    hash = m.hexdigest()
-                    crc = str(zlib.crc32(hash)& 0xffffffffL)
-                    if image['name'] == crc.rjust(10,"0"):
-                        print "Installed image: "+self.bundleAll(fp.name, None, image['description'], image['architecture'])
-                    else:
-                        print >> sys.stderr, "Error: Downloaded image was incomplete or corrupt, please try again"
+        if self.cli_options.bfebs_url:
+            #run first emi
+            emi = None
+            for i in range(0,len(self.ImageList)):
+                #check to see if any images are named the same as that being passed
+                if self.ImageList[i].name == self.cli_options.image_name:
+                    print >> sys.stderr, "Error: an image already exists with the name you specified - please choose another."
+                    sys.exit(-1)
+                #only use an instance store image as we don't want an already attached EBS vol to deal with
+                if self.ImageList[i].root_device_type != 'instance-store':
+                    continue
+                elif str(self.ImageList[i]).split(":")[1].startswith("emi"):
+                  emi =  str(self.ImageList[i]).split(":")[1]
+            if not emi:
+                print >> sys.stderr, "Error: You just first register an instance-store image before importing an EBS image."
+                sys.exit(-1)
+            reservation = ec2_conn.run_instances(image_id=emi,key_name=self.cli_options.key)
+            #we should have only one instance
+            instance = reservation.instances[0]
+            zones = ec2_conn.get_all_zones()
+            zone = random.choice(zones).name
+            #create 2 volumes - one to download the data to and one to be used for the EBS snapshot later
+            volume1 = ec2_conn.create_volume(zone=zone,size=self.cli_options.volume_size + 1)
+            volume2 = ec2_conn.create_volume(zone=zone,size=self.cli_options.volume_size)
+            device_name1 = "/dev/vdb"
+            device_name2 = "/dev/vdc"
+            #make sure instance is running, timeout after 2 mins
+            print "Waiting for instance to launch..."
+            for i in range(0,120):
+                if instance.state.lower() == "running": 
+                    state = "running"
+                    break
                 else:
-                    print >> sys.stderr, "Image name not found, please run eustore-describe-images"
+                    instance.update()
+                    time.sleep(1)
+                    continue
+            if state == "pending":
+                print >> sys.stderr, "Error: Instance failed to enter 'running' state."
+                sys.exit(-1)
+            #attach our volumes
+            retval = ec2_conn.attach_volume(volume1.id,instance.id,device_name1)
+            if not retval:
+                print >> sys.stderr, "Error: Failed to attach newly created volume to instance at " + device_name1
+                sys.exit(-1)
+            retval = ec2_conn.attach_volume(volume2.id,instance.id,device_name2)
+            if not retval:
+                print >> sys.stderr, "Error: Failed to attach newly created volume to instance at " + device_name2
+                sys.exit(-1)
+            #locate the users' ssh key
+            home_contents = os.listdir(os.path.expanduser('~'))
+            keys = []
+            for fname in home_contents:
+                if fname.startswith(self.cli_options.key):
+                    keys.append(fname)
+            if len(keys) == 0: 
+                print >> sys.stderr, "Error: Unable to find your ssh key in your home directory. Please place it there and name it "\
+                                     + self.cli_options.key + ".priv" 
+                sys.exit(-1)
+            elif len(keys) > 1:
+                print >> sys.stderr, "Error: Located multiple files beginning with your key name in your home directory"
+                print >> sys.stderr, "Please ensure that your key is in your home directory and is the only file that begins with: "\
+                                     + self.cli_options.key
+                sys.exit(-1)
+            key = keys[0] 
+            #we need to ensure ssh has started and keys have been injected
+            print "Waiting on volume attachment..."
+            time.sleep(20)
+            #format the volume where we will download the image to
+            cmd = "ssh -i ~/" + key + " root@" + instance.ip_address + " mkfs.ext3 " + device_name1
+            retval = os.system(cmd)
+            if retval != 0:
+                print >> sys.stderr, "Error: Failed to format the volume attached at " + device_name1
+                sys.exit(-1)
+            #mount the volume
+            cmd = "ssh -i ~/" + key + " root@" + instance.ip_address + " mkdir /volume1"
+            os.system(cmd)
+            cmd = "ssh -i ~/" + key + " root@" + instance.ip_address + " mount -t ext3 " + device_name1 + " /volume1" 
+            retval = os.system(cmd)
+            if retval != 0:
+                print >> sys.stderr, "Error: Failed to mount the volume attached at " + device_name1
+                sys.exit(-1)
+            #download the image
+            image_fname = "/volume1/" + os.path.basename(self.cli_options.bfebs_url)
+            cmd = "ssh -i ~/" + key + " root@" + instance.ip_address + " wget " + self.cli_options.bfebs_url + " -O " + image_fname
+            print "Downloading the EBS image - this could take a while..."
+            retval = os.system(cmd)
+            if retval != 0:
+                print >> sys.stderr, "Error: Failed to download image"
+                sys.exit(-1)
+            #write the image to the second volume
+            print "Creating EBS volume - this may take a while..."
+            cmd = "ssh -i ~/" + key + " root@" + instance.ip_address + " dd if=" + image_fname + " of=" + device_name2 + " bs=1M" 
+            retval = os.system(cmd)
+            if retval != 0:
+                print >> sys.stderr, "Error: Failed to write image to volume"
+                sys.exit(-1)
+            #unmount volume1
+            cmd = "ssh -i ~/" + key + " root@" + instance.ip_address + " umount /volume1"
+            retval = os.system(cmd)
+            if retval != 0:
+                print >> sys.stderr, "Error: Failed to unmount volume (non-fatal)"
+            #delete volume1
+            retval = ec2_conn.detach_volume(volume1.id) 
+            if not retval:
+                print >> sys.stderr, "Error: Failed to delete volume (non-fatal)"
+            else:
+                print "Waiting for volume to detach..."
+                while not volume1.status == "available":
+                    time.sleep(5)
+                    volume1.update()
+                ec2_conn.delete_volume(volume1.id) 
+            #take snapshot
+            snapshot = ec2_conn.create_snapshot(volume2.id)
+            print "Preparing snapshot - this will take some time..."
+            while not snapshot.progress.startswith("100"):
+                print "Progress: " + snapshot.progress
+                snapshot.update()
+                time.sleep(5)
+            print "Successfully created snapshot: " + snapshot.id
+            #delete volume2
+            retval = ec2_conn.detach_volume(volume2.id) 
+            if not retval:
+                print >> sys.stderr, "Error: Failed to delete volume (non-fatal)"
+            else:
+                print "Waiting for volume to detach..."
+                while not volume2.status == "available":
+                    time.sleep(5)
+                    volume2.update()
+                ec2_conn.delete_volume(volume2.id) 
+            obj = LocalRegister()
+            obj.image_location=None
+            obj.name=self.cli_options.image_name
+            obj.description=self.cli_options.description
+            obj.snapshot=snapshot.id
+            obj.architecture=self.cli_options.architecture
+            obj.block_device_mapping=[]
+            obj.root_device_name="/dev/sda1"
+            obj.kernel=None
+            obj.ramdisk=None
+            print "Successfully registered EBS image: " + obj.main()
+            #terminate instance
+            instance.terminate()
+            
+        else:
+            if os.environ.has_key('EUSTORE_URL'):
+                self.eustore_url = os.environ['EUSTORE_URL']
+
+            self.destination = "/tmp/"
+            if self.cli_options.dir:
+                self.destination = self.cli_options.dir
+            if not(self.destination.endswith('/')):
+                self.destination += '/'
+            # for security, add random directory within to work in
+            self.destination = tempfile.mkdtemp(prefix=self.destination)+'/'
+
+            if self.cli_options.tarball:
+                # local tarball path instead
+                print "Installed image: "+self.bundleAll(self.cli_options.tarball, self.cli_options.prefix, self.cli_options.description, self.cli_options.architecture)
+            else:
+                catURL = self.eustore_url + "catalog"
+                req = urllib2.Request(catURL, headers=self.ServiceClass.RequestHeaders)
+                response = urllib2.urlopen(req).read()
+                parsed_cat = json.loads(response)
+                if len(parsed_cat) > 0:
+                    image_list = parsed_cat['images']
+                    image_found = False
+                    for image in image_list:
+                        if image['name'].find(self.cli_options.image_name) > -1:
+                            image_found = True
+                            break
+                    if image_found:
+                        # more param checking now
+                        if image['single-kernel']=='True':
+                            if self.cli_options.kernel_type:
+                                print >> sys.stderr, "The -k option will be ignored because the image is single-kernel"
+                        else:
+                            # Warn about kernel type for multi-kernel images, but not if already installed
+                            # kernel/ramdisk have been specified.
+                            if not(self.cli_options.kernel_type) and not(self.cli_options.kernel):
+                                print >> sys.stderr, "Error: The -k option must be specified because this image has separate kernels"
+                                sys.exit(-1)
+                        print "Downloading Image : ",image['description']
+                        imageURL = self.eustore_url+image['url']
+                        req = urllib2.Request(imageURL, headers=self.ServiceClass.RequestHeaders)
+                        req = urllib2.urlopen(req)
+                        file_size = int(req.info()['Content-Length'])/1000
+                        size_count = 0;
+                        prog_bar = euca2ools.commands.eustore.progressBar(file_size)
+                        BUF_SIZE = 128*1024
+                        with open(self.destination+'eucaimage.tar.gz', 'wb') as fp:
+                            while True:
+                                buf = req.read(BUF_SIZE)
+                                size_count += len(buf)
+                                prog_bar.update(size_count/1000)
+                                if not buf: break
+                                fp.write(buf)
+                        fp.close()
+                        # validate download by re-computing serial # (name)
+                        print "Checking image bundle"
+                        file = open(fp.name, 'r')
+                        m = hashlib.md5()
+                        m.update(file.read())
+                        hash = m.hexdigest()
+                        crc = str(zlib.crc32(hash)& 0xffffffffL)
+                        if image['name'] == crc.rjust(10,"0"):
+                            print "Installed image: "+self.bundleAll(fp.name, None, image['description'], image['architecture'])
+                        else:
+                            print >> sys.stderr, "Error: Downloaded image was incomplete or corrupt, please try again"
+                    else:
+                        print >> sys.stderr, "Image name not found, please run eustore-describe-images"
 
     def main_cli(self):
         euca2ools.utils.print_version_if_necessary()
