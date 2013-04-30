@@ -56,6 +56,7 @@ class DescribeAutoScalingGroups(AutoScalingRequest, TabifyingCommand):
         return response.get('NextToken') or None
 
     def print_result(self, result):
+        lines = []
         for group in result.get('AutoScalingGroups', []):
             bits = ['AUTO-SCALING-GROUP']
             bits.append(group.get('AutoScalingGroupName'))
@@ -84,4 +85,36 @@ class DescribeAutoScalingGroups(AutoScalingRequest, TabifyingCommand):
                 bits.append(','.join(policies))
             else:
                 bits.append(None)
-            print self.tabify(bits)
+            lines.append(self.tabify(bits))
+            for instance in group.get('Instances', []):
+                lines.append(self._get_tabified_instance(instance))
+            scale_group = group.get('AutoScalingGroupName')
+            for process in group.get('SuspendedProcesses', []):
+                lines.append(self._get_tabified_suspended_process(process,
+                                                                  scale_group))
+            for metric in group.get('EnabledMetrics', []):
+                lines.append(self._get_tabified_metric(metric))
+        for line in lines:
+            print line
+
+    def _get_tabified_instance(self, instance):
+        return self.tabify(['INSTANCE',
+                            instance.get('InstanceId'),
+                            instance.get('AvailabilityZone'),
+                            instance.get('LifecycleState'),
+                            instance.get('HealthStatus'),
+                            instance.get('LaunchConfigurationName')
+                            ])
+
+    def _get_tabified_suspended_process(self, process, scale_group):
+        return self.tabify(['SUSPENDED-PROCESS',
+                            process.get('ProcessName'),
+                            process.get('SuspensionReason'),
+                            scale_group
+                            ])
+
+    def _get_tabified_metric(self, metric):
+        return self.tabify(['ENABLED-METRICS',
+                            metric.get('Metric'),
+                            metric.get('Granularity')
+                            ])
