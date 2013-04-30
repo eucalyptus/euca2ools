@@ -29,14 +29,18 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 
+from argparse import ArgumentTypeError
+
+
 def autoscaling_tag_def(tag_str):
     tag_dict = {}
     pieces = ','.split(tag_str)
     for piece in pieces:
         piece = piece.strip()
         if '=' not in piece:
-            raise ValueError(("invalid tag definition: each segment of '{0}' "
-                              "must have format KEY=VALUE").format(piece))
+            raise ArgumentTypeError(
+                "invalid tag definition: each segment of '{0}' must have "
+                "format KEY=VALUE".format(piece))
         key, val = piece.split('=', 1)
         if key == 'k':
             tag_dict['Key'] = val
@@ -50,10 +54,12 @@ def autoscaling_tag_def(tag_str):
             if val.lower() in ('true', 'false'):
                 tag_dict['PropagateAtLaunch'] = val.lower()
             else:
-                raise ValueError("value for to 'p=' must be 'true' or 'false'")
+                raise ArgumentTypeError(
+                    "value for to 'p=' must be 'true' or 'false'")
         else:
-            raise ValueError("unrecognized tag segment '{0}'".format(piece))
+            raise ArgumentTypeError(
+                "unrecognized tag segment '{0}'".format(piece))
     if not tag_dict.get('Key'):
-        raise ValueError(
+        raise ArgumentTypeError(
             "tag '{0}' must contain a 'k=' segment with a non-empty value")
     return tag_dict
