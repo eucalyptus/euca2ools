@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009-2013, Eucalyptus Systems, Inc.
+# Copyright (c) 2013, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -27,3 +27,16 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
+
+import argparse
+import euca2ools.commands.walrus.checkbucket
+import euca2ools.nc.services
+from requestbuilder import Arg
+
+
+class CheckBucket(euca2ools.commands.walrus.checkbucket.CheckBucket):
+    DESCRIPTION = ('[Eucalyptus NC internal] Return successfully if a bucket '
+                   'already exists')
+    SERVICE_CLASS = euca2ools.nc.services.NCInternalWalrus
+    ARGS = [Arg('-b', action='store_true', route_to=None,
+                help=argparse.SUPPRESS)]  # This makes the -b optional

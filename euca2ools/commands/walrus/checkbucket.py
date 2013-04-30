@@ -29,9 +29,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 from euca2ools.commands.walrus import WalrusRequest
-from euca2ools.exceptions import AWSError
 from requestbuilder import Arg
-from requestbuilder.exceptions import ServerError
 
 
 class CheckBucket(WalrusRequest):

@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009-2013, Eucalyptus Systems, Inc.
+# Copyright (c) 2013, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -27,3 +27,10 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
+
+import euca2ools.nc.auth
+import euca2ools.commands.walrus
+
+
+class NCInternalWalrus(euca2ools.commands.walrus.Walrus):
+    AUTH_CLASS = euca2ools.nc.auth.EucaRsaV2Auth

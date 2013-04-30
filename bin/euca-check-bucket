@@ -1,6 +1,6 @@
 #!/usr/bin/python -tt
 
-import euca2ools.commands.walrus.checkbucket
+import euca2ools.nc.commands.checkbucket
 
 if __name__ == '__main__':
-    euca2ools.commands.walrus.checkbucket.CheckBucket.run()
+    euca2ools.nc.commands.checkbucket.CheckBucket.run()
