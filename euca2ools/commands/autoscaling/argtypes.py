@@ -31,7 +31,7 @@
 
 def autoscaling_tag_def(tag_str):
     tag_dict = {}
-    pieces = ','.split(tag_str)
+    pieces = tag_str.split(',')
     for piece in pieces:
         piece = piece.strip()
         if '=' not in piece:
