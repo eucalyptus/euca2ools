@@ -30,7 +30,7 @@
 
 from euca2ools.commands.argtypes import delimited_list
 from euca2ools.commands.autoscaling import AutoScalingRequest
-from euca2ools.commands.autoscaling.argtypes import autoscaling_tag_def
+from euca2ools.commands.autoscaling.arghelpers import TagArg
 from requestbuilder import Arg
 
 
@@ -64,16 +64,7 @@ class CreateAutoScalingGroup(AutoScalingRequest):
                 help='comma-separated list of load balancers to use'),
             Arg('--placement-group', dest='PlacementGroup',
                 help='placement group in which to launch new instances'),
-            Arg('--tag', dest='Tags.member', type=autoscaling_tag_def,
-                action='append', metavar=('"k=VALUE, id=VALUE, t=VALUE, '
-                'v=VALUE, p={true,false}"'), help=('''
-                tags to create or update.  Tags follow the following format:
-                "id=resource-name, t=resource-type, k=tag-key, v=tag-val,
-                p=propagate-at-launch-flag", where k is the tag's name, v is
-                the tag's value, id is a resource ID, t is a resource type, and
-                p is whether to propagate tags to instances created by the new
-                group.  A value for 'k=' is required for each tag.  The
-                remainders are optional.''')),
+            TagArg(required=False),
             Arg('--termination-policies', dest='TerminationPolicies.member',
                 metavar='POLICY1,POLICY2,...', type=delimited_list(','),
                 help='''ordered list of termination policies.  The first has
