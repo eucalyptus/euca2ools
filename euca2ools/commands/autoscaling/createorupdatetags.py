@@ -28,11 +28,10 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.argtypes import delimited_list
 from euca2ools.commands.autoscaling import AutoScalingRequest
 from euca2ools.commands.autoscaling.arghelpers import TagArg
 
 
 class CreateOrUpdateTags(AutoScalingRequest):
-    DESCRIPTION = 'Creates new tags or updates existing tags'
+    DESCRIPTION = 'Create or update one or more resource tags'
     ARGS = [TagArg(required=True)]
