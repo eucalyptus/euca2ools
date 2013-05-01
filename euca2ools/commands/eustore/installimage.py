@@ -277,7 +277,7 @@ class InstallImage(EuStoreRequest, FileTransferProgressBarMixin):
 
     def bundle_and_register_all(self, workdir, tarball_filename):
         if self.args['show_progress']:
-            print 'Preparing to extract image'
+            print 'Preparing to extract image...'
         image_name = 'eustore-{0}'.format(
             os.path.splitext(os.path.basename(tarball_filename))[0])
         tarball = tarfile.open(tarball_filename, 'r:gz')
