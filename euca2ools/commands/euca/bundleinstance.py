@@ -30,13 +30,12 @@
 
 import base64
 from datetime import datetime, timedelta
-from euca2ools.commands.euca import EucalyptusRequest
 import hashlib
 import hmac
 import json
 from requestbuilder import Arg
 from requestbuilder.exceptions import ArgumentError
-import textwrap
+from euca2ools.commands.euca import EucalyptusRequest
 
 
 class BundleInstance(EucalyptusRequest):
@@ -81,12 +80,12 @@ class BundleInstance(EucalyptusRequest):
                   'expiration': expire_time.isoformat()}
         policy_json = json.dumps(policy)
         self.log.info('generated default policy: %s', policy_json)
-        self.args['Storage.S3.UploadPolicy'] = base64.b64encode(policy_json)
+        self.params['Storage.S3.UploadPolicy'] = base64.b64encode(policy_json)
 
     def sign_policy(self):
         my_hmac = hmac.new(self.args['owner_sak'], digestmod=hashlib.sha1)
-        my_hmac.update(self.args['Storage.S3.UploadPolicy'])
-        self.args['Storage.S3.UploadPolicySignature'] = \
+        my_hmac.update(self.params.get('Storage.S3.UploadPolicy'))
+        self.params['Storage.S3.UploadPolicySignature'] = \
                 base64.b64encode(my_hmac.digest())
 
     def configure(self):
@@ -103,7 +102,7 @@ class BundleInstance(EucalyptusRequest):
     def preprocess(self):
         if not self.args.get('Storage.S3.UploadPolicy'):
             self.generate_default_policy()
-        if not self.args.get('Storage.S3.UploadPplicySignature'):
+        if not self.args.get('Storage.S3.UploadPolicySignature'):
             self.sign_policy()
 
     def print_result(self, result):
