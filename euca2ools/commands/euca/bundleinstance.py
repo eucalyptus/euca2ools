@@ -30,12 +30,12 @@
 
 import base64
 from datetime import datetime, timedelta
+from euca2ools.commands.euca import EucalyptusRequest
 import hashlib
 import hmac
 import json
 from requestbuilder import Arg
 from requestbuilder.exceptions import ArgumentError
-from euca2ools.commands.euca import EucalyptusRequest
 
 
 class BundleInstance(EucalyptusRequest):
