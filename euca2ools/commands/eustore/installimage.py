@@ -49,6 +49,7 @@ from requestbuilder.exceptions import ArgumentError, ClientError
 from requestbuilder.mixins import FileTransferProgressBarMixin
 from requestbuilder.util import set_userregion
 import shutil
+import sys
 import tarfile
 import tempfile
 import urlparse
