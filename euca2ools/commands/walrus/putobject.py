@@ -30,6 +30,7 @@
 
 import datetime
 from euca2ools.commands.walrus import WalrusRequest
+from euca2ools.utils import build_progressbar_label_template
 import mimetypes
 import os.path
 from requestbuilder import Arg
@@ -147,16 +148,3 @@ class PutObject(WalrusRequest, FileTransferProgressBarMixin):
             with self._lock:
                 self.last_upload_error = err
             raise
-
-
-def build_progressbar_label_template(fnames):
-    if len(fnames) == 0:
-        return None
-    elif len(fnames) == 1:
-        return '{fname}'
-    else:
-        max_fname_len = max(len(os.path.basename(fname)) for fname in fnames)
-        fmt_template = '{{fname:<{maxlen}}} ({{index:>{lenlen}}}/{total})'
-        return fmt_template.format(maxlen=max_fname_len,
-                                   lenlen=len(str(len(fnames))),
-                                   total=len(fnames))
