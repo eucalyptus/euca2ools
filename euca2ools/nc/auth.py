@@ -163,7 +163,7 @@ class EucaRsaV2Auth(BaseAuth):
         return headers
 
     def _get_canonical_headers(self, headers):
-        header_strs = [key.lower().strip() + ':' + val.strip()
+        header_strs = [str(key).lower().strip() + ':' + str(val).strip()
                        for key, val in headers.iteritems()]
         return '\n'.join(sorted(header_strs))
 
