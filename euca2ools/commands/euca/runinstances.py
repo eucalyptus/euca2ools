@@ -164,6 +164,14 @@ class RunInstances(EucalyptusRequest):
                 self.params['UserData'] = base64.b64encode(
                     user_data_file.read())
 
+        if self.args.get('KeyName') is None:
+            default_key_name = self.config.get_region_option(
+                'ec2-default-keypair')
+            if default_key_name:
+                self.log.info("using default key pair '%s'", default_key_name)
+                self.params['KeyName'] = default_key_name
+
+
     def preprocess(self):
         counts = self.args['count'].split('-')
         if len(counts) == 1:
