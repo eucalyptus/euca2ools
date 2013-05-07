@@ -48,7 +48,7 @@ class GetConsoleOutput(euca2ools.commands.eucacommand.EucaCommand):
     def display_console_output(self, console_output):
         print console_output.instance_id
         print console_output.timestamp
-        output = console_output.output
+        output = console_output.output or ''
         if not self.raw:
             # Escape control characters
             esc_ords = (list(range(0x00, 0x09)) + list(range(0x0e, 0x1f)) +
