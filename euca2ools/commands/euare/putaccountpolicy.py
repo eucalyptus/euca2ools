@@ -33,8 +33,7 @@ from requestbuilder import Arg, MutuallyExclusiveArgList
 
 
 class PutAccountPolicy(EuareRequest):
-    DESCRIPTION = ('[Eucalyptus only] Attach a policy to an account. This '
-                   'command is only usable by cloud administrators.')
+    DESCRIPTION = '[Eucalyptus cloud admin only] Attach a policy to an account'
     ARGS = [Arg('-a', '--account-name', dest='AccountName', metavar='ACCOUNT',
                 required=True,
                 help='account to attach the policy to (required)'),

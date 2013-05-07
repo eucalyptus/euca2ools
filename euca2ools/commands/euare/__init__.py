@@ -85,8 +85,7 @@ class EuareRequest(requestbuilder.request.AWSQueryRequest):
             return response_dict
 
 AS_ACCOUNT = [Arg('--as-account', dest='DelegateAccount', metavar='ACCOUNT',
-                  help='''[Eucalyptus only] run this command as the
-                          administrator of another account (only usable by
-                          cloud administrators)'''),
+                  help='''[Eucalyptus cloud admin only] run this command as
+                  the administrator of another account'''),
               Arg('--delegate', dest='deprecated_delegate', route_to=None,
                   help=argparse.SUPPRESS)]

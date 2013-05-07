@@ -33,9 +33,8 @@ from requestbuilder.mixins import TabifyingMixin
 
 
 class GetLdapSyncStatus(EuareRequest, TabifyingMixin):
-    DESCRIPTION = ("[Eucalyptus only] Describe the server's current LDAP "
-                   "synchronization status. This command is only usable by "
-                   "cloud administrators.")
+    DESCRIPTION = ("[Eucalyptus cloud admin only] Show the status of the "
+                   "cloud's LDAP synchronization")
 
     def print_result(self, result):
         print self.tabify(('SyncEnabled', result.get('SyncEnabled')))

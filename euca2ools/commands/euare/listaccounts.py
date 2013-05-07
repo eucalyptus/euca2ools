@@ -34,8 +34,8 @@ from requestbuilder.mixins import TabifyingMixin
 
 
 class ListAccounts(EuareRequest, TabifyingMixin):
-    DESCRIPTION = ("[Eucalyptus only] List all of the cloud's accounts. This "
-                   "command is only usable by cloud administrators.")
+    DESCRIPTION = ("[Eucalyptus cloud admin only] List all of the cloud's "
+                   "accounts")
     LIST_TAGS = ['Accounts']
 
     def print_result(self, result):

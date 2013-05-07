@@ -34,8 +34,7 @@ from requestbuilder.mixins import TabifyingMixin
 
 
 class CreateAccount(EuareRequest, TabifyingMixin):
-    DESCRIPTION = ('[Eucalyptus only] Create a new account. This command is '
-                   'only usable by cloud administrators.')
+    DESCRIPTION = '[Eucalyptus cloud admin only] Create a new account'
     ARGS = [Arg('-a', '--account-name', dest='AccountName', metavar='ACCOUNT',
                 required=True, help='name of the account to create (required)')]
 
