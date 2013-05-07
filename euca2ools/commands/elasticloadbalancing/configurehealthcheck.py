@@ -30,6 +30,7 @@
 
 from euca2ools.commands.elasticloadbalancing import ELBRequest
 from requestbuilder import Arg
+from requestbuilder.exceptions import ArgumentError
 from requestbuilder.mixins import TabifyingCommand
 
 
@@ -55,6 +56,17 @@ class ConfigureHealthCheck(ELBRequest, TabifyingCommand):
                 metavar='COUNT', type=int, required=True,
                 help='''number of consecutive failed health checks that will
                 mark instances as Unhealthy (required)''')]
+
+    def configure(self):
+        ELBRequest.configure(self)
+        target = self.args['HealthCheck.Target']
+        protocol, __, rest = target.partition(':')
+        if not rest:
+            raise ArgumentError('argument -t/--target: must have form '
+                                'PROTOCOL:PORT[/PATH]')
+        if protocol.lower() in ('http', 'https') and '/' not in rest:
+            raise ArgumentError('argument -t/--target: path is required for '
+                                "protocol '{0}'".format(protocol))
 
     def print_result(self, result):
         check = result.get('HealthCheck', {})
