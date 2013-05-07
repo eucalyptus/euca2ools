@@ -110,6 +110,7 @@ class BundleImage(BaseCommand, FileTransferProgressBarMixin):
     def configure(self):
         BaseCommand.configure(self)
         set_userregion(self.config, self.args.get('userregion'))
+        set_userregion(self.config, os.getenv('EUCA_REGION'))
 
         # Get creds
         add_bundle_creds(self.args, self.config)
