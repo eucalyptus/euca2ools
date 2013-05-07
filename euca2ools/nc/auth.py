@@ -48,10 +48,15 @@ class EucaRsaV2Auth(BaseAuth):
                 certificate to use when signing requests'''),
             Arg('--privatekey', metavar='FILE',
                 help='file containing the private key to sign requests with'),
+            Arg('--spoof-key-id', metavar='KEY_ID',
+                help='run this command as if signed by a specific access key'),
             Arg('--euca-auth', action='store_true', help=argparse.SUPPRESS)]
 
     def configure(self):
         BaseAuth.configure(self)
+        if not self.args.get('spoof_key_id'):
+            self.args['spoof_key_id'] = os.getenv('EC2_ACCESS_KEY')
+
         cert = self.args.get('cert') or os.getenv('EUCA_CERT')
         privkey = self.args.get('privatekey') or os.getenv('EUCA_PRIVATE_KEY')
         if not cert:
@@ -84,6 +89,10 @@ class EucaRsaV2Auth(BaseAuth):
         request.headers['Date'] = now.strftime('%Y%m%dT%H%M%SZ')
         if 'Authorization' in request.headers:
             del request.headers['Authorization']
+        if self.args.get('spoof_key_id'):
+            request.headers['AWSAccessKeyId'] = self.args['spoof_key_id']
+        elif 'AWSAccessKeyId' in request.headers:
+            del request.headers['AWSAccessKeyId']
 
         cert_fp = self._get_fingerprint()
         self.log.debug('certificate fingerprint: %s', cert_fp)

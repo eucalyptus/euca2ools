@@ -64,6 +64,8 @@ class BundleAndUpload(requestbuilder.command.BaseCommand):
             Arg('--privatekey', metavar='FILE',
                 help='''file containing the private key to use when signing
                 requests and bundling the image'''),
+            Arg('--spoof-key-id', metavar='KEY_ID',
+                help='run this command as if signed by a specific access key'),
             Arg('--ec2cert', metavar='FILE',
                 help="file containing the cloud's X.509 certificate"),
             Arg('--user', metavar='ACCOUNT', help="the user's account ID"),
@@ -85,7 +87,8 @@ class BundleAndUpload(requestbuilder.command.BaseCommand):
 
         walrus_auth = EucaRsaV2Auth(
             config=self.config, loglevel=self.log.level,
-            cert=self.args.get('cert'), privatekey=self.args.get('privatekey'))
+            cert=self.args.get('cert'), privatekey=self.args.get('privatekey'),
+            spoof_key_id=self.args.get('spoof_key_id'))
         self.__walrus = NCInternalWalrus(auth=walrus_auth, config=self.config,
                                          loglevel=self.log.level,
                                          url=self.args.get('url'))
