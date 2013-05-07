@@ -31,19 +31,26 @@
 # Author: Neil Soman neil@eucalyptus.com
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.commands.eucacommand
-from boto.roboto.param import Param
+from euca2ools.commands.walrus import WalrusRequest
+from euca2ools.commands.walrus.checkbucket import CheckBucket
+from euca2ools.commands.walrus.deletebucket import DeleteBucket
+from euca2ools.commands.walrus.deleteobject import DeleteObject
+from euca2ools.commands.walrus.listbucket import ListBucket
+from euca2ools.commands.walrus.getobject import GetObject
+from euca2ools.exceptions import AWSError
+from requestbuilder import Arg, MutuallyExclusiveArgList
+import argparse
 import os
+import shutil
 import sys
+import tempfile
 import textwrap
 import time
 from xml.dom import minidom
-from boto.exception import S3ResponseError, S3CreateError
-from boto.s3.key import Key
 
-class DeleteBundle(euca2ools.commands.eucacommand.EucaCommand):
 
-    Description = textwrap.dedent('''\
+class DeleteBundle(WalrusRequest):
+    DESCRIPTION = textwrap.dedent('''\
             Delete a previously-uploaded bundle.
 
             Use --manifest to delete a specific bundle based on the contents of
@@ -55,161 +62,123 @@ class DeleteBundle(euca2ools.commands.eucacommand.EucaCommand):
             (Deprecated)  When neither --manifest nor --prefix is supplied, all
             bundles in the given bucket are deleted.''')
 
-    Options = [Param(name='bucket', short_name='b', long_name='bucket',
-                     optional=False, ptype='string',
-                     doc='Name of the bucket to delete from.'),
-               Param(name='manifest_path',
-                     short_name='m', long_name='manifest',
-                     optional=True, ptype='file',
-                     doc='Delete a bundle based on a local manifest file'),
-               Param(name='prefix', short_name='p', long_name='prefix',
-                     optional=True, ptype='string',
-                     doc=('Delete a bundle with a manifest in the bucket that '
-                          'begins with a specific name  (e.g. "fry" for '
-                          '"fry.manifest.xml")')),
-               Param(name='clear', long_name='clear',
-                     optional=True, ptype='boolean', default=False,
-                     doc='Delete the bucket if possible.')]
+    ARGS = [Arg('-b', '--bucket', dest='bucket', metavar='BUCKET',
+                required=True, help='Name of the bucket to delete from.'),
+            MutuallyExclusiveArgList(True,
+                Arg('-m', '--manifest', dest='manifest_path', metavar='MANIFEST',
+                    help='Delete a bundle based on a local manifest file'),
+                Arg('-p', '--prefix', dest='prefix',
+                    help=('Delete a bundle with a manifest in the bucket that '
+                        'begins with a specific name  (e.g. "fry" for '
+                        '"fry.manifest.xml")')),
+                Arg('--delete-all-bundles', dest='delete_all',
+                    action='store_true', help=argparse.SUPPRESS)),
+            Arg('--clear', dest='clear', action='store_true',
+                  help='Delete the entire bucket if possible')]
 
-    def ensure_bucket(self, bucket):
-        bucket_instance = None
-        s3conn = self.make_connection_cli('s3')
+    def _get_part_paths(self, manifest):
+        paths = []
+        bucket = self.args.get('bucket')
         try:
-            bucket_instance = s3conn.get_bucket(bucket)
-        except S3ResponseError, s3error:
-            print >> sys.stderr, 'Unable to get bucket %s' % bucket
-            sys.exit()
-        return bucket_instance
-
-    def get_parts(self, manifest_filename):
-        parts = []
-        try:
-            dom = minidom.parse(manifest_filename)
-            manifest_elem = dom.getElementsByTagName('manifest')[0]
-            parts_list = manifest_elem.getElementsByTagName('filename')
-            for part_elem in parts_list:
-                nodes = part_elem.childNodes
-                for node in nodes:
+            dom = minidom.parse(manifest)
+            elem = dom.getElementsByTagName('manifest')[0]
+            for tag in elem.getElementsByTagName('filename'):
+                for node in tag.childNodes:
                     if node.nodeType == node.TEXT_NODE:
-                        parts.append(node.data)
+                        paths.append(os.path.join(bucket, node.data))
         except:
-            print >> sys.stderr, 'problem parsing: %s' % manifest_filename
-        return parts
+            print >> sys.stderr, 'problem parsing: %s' % manifest
+        return paths
 
-    def get_manifests(self, bucket):
+    def _get_manifest_keys(self):
         manifests = []
-        keys = bucket.get_all_keys()
-        for k in keys:
-            if k.name:
-                if k.name.find('manifest') >= 0:
-                    manifests.append(k.name)
+        response = ListBucket(paths=[self.args.get('bucket')],
+                              service=self.service, config=self.config).main()
+        for item in response.get('Contents'):
+            key = item.get('Key')
+            if key.endswith('.manifest.xml'):
+                manifests.append(key)
         return manifests
 
-    def download_manifests(self, bucket, manifests, directory):
-        if len(manifests) > 0:
-            if not os.path.exists(directory):
-                os.makedirs(directory)
-        for manifest in manifests:
-            k = Key(bucket)
-            k.key = manifest
-            manifest_filename = os.path.join(directory, manifest)
-            manifest_file = open(manifest_filename, 'wb')
-            try:
-                k.get_contents_to_file(manifest_file)
-            except S3ResponseError, s3error:
-                s3error_string = '%s' % s3error
-                if s3error_string.find('200') < 0:
-                    print >> sys.stderr, s3error_string
-                    print >> sys.stderr, 'unable to download manifest %s' % manifest
-                    if os.path.exists(manifest_filename):
-                        os.remove(manifest_filename)
-                    return False
-            manifest_file.close()
-        return True
+    def _download_manifests(self, manifest_keys, directory):
+        bucket = self.args.get('bucket')
+        paths = [os.path.join(bucket, key) for key in manifest_keys]
+        try:
+            GetObject(paths=paths, opath=directory).main()
+            return True
+        except AWSError as err:
+            return False
 
-    def delete_parts(self, bucket, manifests, directory=None):
-        for manifest in manifests:
-            manifest_filename = os.path.join(directory, manifest)
-            parts = self.get_parts(manifest_filename)
-            for part in parts:
-                k = Key(bucket)
-                k.key = part
-                try:
-                    k.delete()
-                except S3ResponseError, s3error:
-                    s3error_string = '%s' % s3error
-                    if s3error_string.find('200') < 0:
-                        print >> sys.stderr, s3error_string
-                        print >> sys.stderr, 'unable to delete part %s' % part
-                        sys.exit()
+    def _delete_manifest_parts(self, manifest_keys, directory):
+        for key in manifest_keys:
+            paths = self._get_part_paths(os.path.join(directory, key))
+            DeleteObject(paths=paths, service=self.service,
+                         config=self.config).main()
 
+    def _delete_manifest_keys(self, manifest_keys):
+        bucket = self.args.get('bucket')
+        paths = [os.path.join(bucket, key) for key in manifest_keys]
+        DeleteObject(paths=paths).main()
 
-    def delete_manifests(self, bucket, manifests, clear, bucket_name):
-        for manifest in manifests:
-            k = Key(bucket)
-            k.key = manifest
-            try:
-                k.delete()
-            except Exception, s3error:
-                s3error_string = '%s' % s3error
-                if s3error_string.find('200') < 0:
-                    print >> sys.stderr, s3error_string
-                    print >> sys.stderr, 'unable to delete manifest %s' % manifest
-                    try:
-                        bucket = self.ensure_bucket(bucket_name)
-                    except ConnectionFailed, e:
-                        print >> sys.stderr, e.message
-                        sys.exit(1)
-        if clear:
-            try:
-                bucket.delete()
-            except Exception, s3error:
-                s3error_string = '%s' % s3error
-                if s3error_string.find('200') < 0:
-                    print >> sys.stderr, s3error_string
-                    print >> sys.stderr, 'unable to delete bucket %s' % bucket.name
+    def _delete_by_local_manifest(self):
+        manifest_path = self.args.get('manifest_path')
+        manifest_keys = [self.get_relative_filename(manifest_path)]
+        directory = self.get_file_path(manifest_path)
+        self._delete_manifest_parts(manifest_keys, directory)
 
-    def remove_manifests(self, manifests, directory):
-        for manifest in manifests:
-            manifest_filename = os.path.join(directory, manifest)
-            if os.path.exists(manifest_filename):
-                os.remove(manifest_filename)
+    def _delete_by_prefix(self):
+        directory = tempfile.mkdtemp()
+        try:
+            manifest_keys = ['%s.manifest.xml' % self.args.get('prefix')]
+            if self._download_manifests(manifest_keys, directory):
+                self._delete_manifest_parts(manifest_keys, directory)
+            self._delete_manifest_keys(manifest_keys)
+        finally:
+            shutil.rmtree(directory)
+
+    def _delete_all_bundles(self):
+        bucket = self.args.get('bucket')
+        print >> sys.stderr, """All bundles in bucket '%s' will be deleted.
+If this is not what you want, press Ctrl+C in the next 10 seconds""" % bucket
+        try:
+            for _ in range(10):
+                sys.stderr.write('.')
+                sys.stderr.flush()
+                time.sleep(1)
+        except KeyboardInterrupt:
+            print >> sys.stderr
+            print >> sys.stderr, 'Bundle deletion canceled by user.'
+            sys.exit(1)
+        finally:
+            sys.stderr.write('\n')
+            sys.stderr.flush()
+
+        directory = tempfile.mkdtemp()
+        try:
+            manifest_keys = self._get_manifest_keys()
+            if self._download_manifests(manifest_keys, directory):
+                self._delete_manifest_parts(manifest_keys, directory)
+            self._delete_manifest_keys(manifest_keys)
+        finally:
+            shutil.rmtree(directory)
 
     def main(self):
-        directory = os.path.abspath('/tmp')
+        bucket = self.args.get('bucket')
 
-        if not self.manifest_path and not self.prefix:
-            print >> sys.stderr, 'Neither a manifestpath nor a prefix was specified.'
-            print >> sys.stderr, 'All bundles in bucket', self.bucket, 'will be deleted.'
-            print >> sys.stderr, ('If this is not what you want, press Ctrl+C in the next '
-                   '10 seconds'),
-            for __ in range(10):
-                sys.stdout.write('.')
-                sys.stdout.flush()
-                time.sleep(1)
-            print
+        # Verify bucket existence
+        CheckBucket(bucket=bucket, service=self.service,
+                    config=self.config).main()
 
-        bucket_instance = self.ensure_bucket(self.bucket)
-        manifests = None
-        delete_local_manifests = True
-        if not self.manifest_path:
-            if not self.prefix:
-                manifests = self.get_manifests(bucket_instance)
-            else:
-                manifests = ['%s.manifest.xml' % self.prefix]
-        else:
-            manifests = ['%s'
-                         % self.get_relative_filename(self.manifest_path)]
-            directory = '%s' % self.get_file_path(self.manifest_path)
-            delete_local_manifests = False
-        return_code = self.download_manifests(bucket_instance, manifests,
-                                              directory)
-        if return_code:
-            self.delete_parts(bucket_instance, manifests, directory)
-        self.delete_manifests(bucket_instance, manifests,
-                              self.clear, self.bucket)
-        if delete_local_manifests:
-            self.remove_manifests(manifests, directory)
+        # Use local manifest file
+        if self.args.get('manifest_path'):
+            self._delete_by_local_manifest()
+        # Use manifest file in walrus
+        elif self.args.get('prefix'):
+            self._delete_by_prefix()
+        # Delete all bundles in the bucket
+        elif self.args.get('delete_all') is True:
+            self._delete_all_bundles()
 
-    def main_cli(self):
-        self.main()
+        if self.args.get('clear') is True:
+            DeleteBucket(bucket=bucket, service=self.service,
+                         config=self.config).main()
