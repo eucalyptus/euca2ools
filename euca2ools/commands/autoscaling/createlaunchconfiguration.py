@@ -54,8 +54,8 @@ class CreateLaunchConfiguration(AutoScalingRequest):
             Arg('--ebs-optimized', dest='EbsOptimized', action='store_const',
                 const='true',
                 help='whether the instance is optimized for EBS I/O'),
-            Arg('--group', metavar='GROUP1,GROUP2,...',
-                type=delimited_list(','), route_to=None,
+            Arg('--group', dest='SecurityGroups.member',
+                metavar='GROUP1,GROUP2,...', type=delimited_list(','),
                 help='''a comma-separated list of security groups with which
                 to associate instances.  Either all group names or all group
                 IDs are allowed, but not both.'''),

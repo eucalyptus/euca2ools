@@ -38,6 +38,8 @@ def add_bundle_creds(args, config):
         config_cert = config.get_user_option('x509-cert')
         if 'EC2_CERT' in os.environ:
             args['cert'] = os.getenv('EC2_CERT')
+        elif 'EUCA_CERT' in os.environ:  # used by the NC
+            args['cert'] = os.getenv('EUCA_CERT')
         elif config_cert:
             args['cert'] = config_cert
     if args.get('cert'):
@@ -54,6 +56,8 @@ def add_bundle_creds(args, config):
         config_privatekey = config.get_user_option('x509-key')
         if 'EC2_PRIVATE_KEY' in os.environ:
             args['privatekey'] = os.getenv('EC2_PRIVATE_KEY')
+        if 'EUCA_PRIVATE_KEY' in os.environ:  # used by the NC
+            args['privatekey'] = os.getenv('EUCA_PRIVATE_KEY')
         elif config_privatekey:
             args['privatekey'] = config_privatekey
     if args.get('privatekey'):

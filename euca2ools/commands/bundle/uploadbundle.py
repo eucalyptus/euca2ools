@@ -51,9 +51,10 @@ class UploadBundle(WalrusRequest, FileTransferProgressBarMixin):
                 help='bucket to upload the bundle to (required)'),
             Arg('-m', '--manifest', metavar='FILE', required=True,
                 help='manifest for the bundle to upload (required)'),
-            Arg('--acl', choices=('public-read', 'aws-exec-read'),
-                default='aws-exec-read', help='''canned ACL policy to apply
-                to the bundle (default: aws-exec-read)'''),
+            Arg('--acl', default='aws-exec-read',
+                choices=('public-read', 'aws-exec-read', 'ec2-bundle-read'),
+                help='''canned ACL policy to apply to the bundle (default:
+                aws-exec-read)'''),
             Arg('-d', '--directory', metavar='DIR',
                 help='''directory that contains the bundle parts (default:
                 directory that contains the manifest)'''),

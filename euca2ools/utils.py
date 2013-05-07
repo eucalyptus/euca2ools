@@ -148,3 +148,16 @@ def handle_availability_zones(requested_zones, response=None):
         'sandwich' in requested_zones):
         # humor dfed
         print >> sys.stderr, msg
+
+
+def build_progressbar_label_template(fnames):
+    if len(fnames) == 0:
+        return None
+    elif len(fnames) == 1:
+        return '{fname}'
+    else:
+        max_fname_len = max(len(os.path.basename(fname)) for fname in fnames)
+        fmt_template = '{{fname:<{maxlen}}} ({{index:>{lenlen}}}/{total})'
+        return fmt_template.format(maxlen=max_fname_len,
+                                   lenlen=len(str(len(fnames))),
+                                   total=len(fnames))

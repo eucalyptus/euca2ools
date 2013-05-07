@@ -179,6 +179,18 @@ class Eucalyptus(requestbuilder.service.BaseService):
                 if self.URL_ENVVAR in config:
                     self.process_url(config[self.URL_ENVVAR])
 
+        # Set timeout and retry handlers
+        if self.max_retries is None:
+            config_max_retries = self.config.get_global_option('max-retries')
+            if config_max_retries is not None:
+                self.max_retries = int(config_max_retries)
+            else:
+                self.max_retries = self.MAX_RETRIES
+
+        # SSL cert verification is opt-in
+        self.session_args['verify'] = self.config.get_region_option_bool(
+            'verify-ssl', default=False)
+
         # Ensure everything is okay and finish up
         self.validate_config()
         if self.auth is not None:
@@ -218,7 +230,7 @@ class EucalyptusRequest(requestbuilder.request.AWSQueryRequest,
         res_line = ['RESERVATION', reservation['reservationId'],
                     reservation.get('ownerId')]
         # group.get('entry') is a workaround for a CLC bug
-        group_ids = [group.get('groupId') or group.get('entry') or ''
+        group_ids = [group.get('groupName') or group.get('entry') or ''
                      for group in reservation['groupSet']]
         res_line.append(', '.join(group_ids))
         print self.tabify(res_line)

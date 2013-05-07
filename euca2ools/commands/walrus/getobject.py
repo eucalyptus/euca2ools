@@ -29,11 +29,13 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 from euca2ools.commands.walrus import WalrusRequest
+from euca2ools.utils import build_progressbar_label_template
 import os.path
 from requestbuilder import Arg
+from requestbuilder.mixins import FileTransferProgressBarMixin
 
 
-class GetObject(WalrusRequest):
+class GetObject(WalrusRequest, FileTransferProgressBarMixin):
     DESCRIPTION = 'Retrieve objects from the server'
     ARGS = [Arg('paths', metavar='BUCKET/KEY', nargs='+', route_to=None),
             Arg('-o', dest='opath', metavar='PATH', default='.', route_to=None,
@@ -46,25 +48,46 @@ class GetObject(WalrusRequest):
 
     def main(self):
         opath = self.args['opath']
+        label_template = build_progressbar_label_template(self.args['paths'])
         if opath.endswith('/') and not os.path.isdir(opath):
             # Ends with '/' and does not exist -> create it
             os.mkdir(opath)
         if os.path.isdir(opath):
             # Download one per directory
-            for path in self.args['paths']:
+            for index, path in enumerate(self.args['paths'], 1):
                 ofile_name = os.path.join(opath, path.rsplit('/', 1)[-1])
                 self.path = path
                 response = self.send()
+                if 'Content-Length' in response.headers:
+                    maxval = int(response.headers['Content-Length'])
+                else:
+                    maxval = None
+                label = label_template.format(index=index, fname=path)
+                pbar = self.get_progressbar(label=label, maxval=maxval)
+                pbar.start()
                 with open(ofile_name, 'w') as ofile:
                     for chunk in response.iter_content(chunk_size=16384):
                         ofile.write(chunk)
+                        pbar.update(ofile.tell())
                     ofile.flush()
+                    pbar.finish()
         else:
             # Download everything to one file
             with open(opath, 'w') as ofile:
-                for path in self.args['paths']:
+                for index, path in enumerate(self.args['paths'], 1):
                     self.path = path
                     response = self.send()
+                    bytes_written = 0
+                    if 'Content-Length' in response.headers:
+                        maxval = int(response.headers['Content-Length'])
+                    else:
+                        maxval = None
+                    label = label_template.format(index=index, fname=path)
+                    pbar = self.get_progressbar(label=label, maxval=maxval)
+                    pbar.start()
                     for chunk in response.iter_content(chunk_size=16384):
                         ofile.write(chunk)
+                        bytes_written += len(chunk)
+                        pbar.update(bytes_written)
+                    pbar.finish()
                 ofile.flush()
