@@ -143,6 +143,10 @@ class PutObject(WalrusRequest, FileTransferProgressBarMixin):
                     with self._lock:
                         self.last_upload_error = err
                     raise
+        except Exception as err:
+            with self._lock:
+                self.last_upload_error = err
+            raise
 
 
 def build_progressbar_label_template(fnames):
