@@ -30,11 +30,11 @@
 
 from euca2ools.commands.autoscaling import AutoScalingRequest
 from requestbuilder import Arg
-from requestbuilder.mixins import TabifyingCommand
+from requestbuilder.mixins import TabifyingMixin
 from requestbuilder.response import PaginatedResponse
 
 
-class DescribeAutoScalingGroups(AutoScalingRequest, TabifyingCommand):
+class DescribeAutoScalingGroups(AutoScalingRequest, TabifyingMixin):
     DESCRIPTION = 'Describe auto-scaling groups'
     ARGS = [Arg('AutoScalingGroupNames.member', metavar='ASGROUP',
                 nargs='*',

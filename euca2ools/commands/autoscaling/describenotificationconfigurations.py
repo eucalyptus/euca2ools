@@ -30,11 +30,11 @@
 
 from euca2ools.commands.autoscaling import AutoScalingRequest
 from requestbuilder import Arg
-from requestbuilder.mixins import TabifyingCommand
+from requestbuilder.mixins import TabifyingMixin
 from requestbuilder.response import PaginatedResponse
 
 
-class DescribeNotificationConfigurations(AutoScalingRequest, TabifyingCommand):
+class DescribeNotificationConfigurations(AutoScalingRequest, TabifyingMixin):
     DESCRIPTION = ('Describe notification actions associated with '
                    'auto-scaling groups')
     ARGS = [Arg('AutoScalingGroupNames.member', metavar='ASGROUP',

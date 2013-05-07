@@ -30,10 +30,10 @@
 
 from euca2ools.commands.euare import EuareRequest, AS_ACCOUNT
 from requestbuilder import Arg
-from requestbuilder.mixins import TabifyingCommand
+from requestbuilder.mixins import TabifyingMixin
 
 
-class GetUserInfo(EuareRequest, TabifyingCommand):
+class GetUserInfo(EuareRequest, TabifyingMixin):
     DESCRIPTION = '[Eucalyptus only] Display information about a user'
     ARGS = [Arg('-u', '--user-name', dest='UserName', metavar='USER',
                 help='''name of the user to display info for (default: current

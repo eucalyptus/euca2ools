@@ -30,11 +30,11 @@
 
 from euca2ools.commands.autoscaling import AutoScalingRequest
 from requestbuilder import Arg
-from requestbuilder.mixins import TabifyingCommand
+from requestbuilder.mixins import TabifyingMixin
 from requestbuilder.response import PaginatedResponse
 
 
-class DescribeScheduledActions(AutoScalingRequest, TabifyingCommand):
+class DescribeScheduledActions(AutoScalingRequest, TabifyingMixin):
     DESCRIPTION = 'Describe scheduled auto-scaling group actions'
     ARGS = [Arg('ScheduledActionNames.member', metavar='ACTION', nargs='*',
                 help='limit results to specific actions'),

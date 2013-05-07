@@ -31,11 +31,11 @@
 import argparse
 from euca2ools.commands.monitoring import CloudWatchRequest
 from requestbuilder import Arg
-from requestbuilder.mixins import TabifyingCommand
+from requestbuilder.mixins import TabifyingMixin
 from requestbuilder.response import PaginatedResponse
 
 
-class DescribeAlarms(CloudWatchRequest, TabifyingCommand):
+class DescribeAlarms(CloudWatchRequest, TabifyingMixin):
     DESCRIPTION = 'Describe alarms'
     ARGS = [Arg('AlarmNames.member', metavar='ALARM', nargs='*',
                 help='limit results to specific alarms'),

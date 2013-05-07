@@ -33,11 +33,11 @@ from euca2ools.commands.argtypes import delimited_list
 from euca2ools.commands.monitoring import CloudWatchRequest
 from euca2ools.commands.monitoring.argtypes import cloudwatch_dimension
 from requestbuilder import Arg
-from requestbuilder.mixins import TabifyingCommand
+from requestbuilder.mixins import TabifyingMixin
 from requestbuilder.response import PaginatedResponse
 
 
-class DescribeAlarmsForMetric(CloudWatchRequest, TabifyingCommand):
+class DescribeAlarmsForMetric(CloudWatchRequest, TabifyingMixin):
     DESCRIPTION = ('Describe alarms for a single metric.\n\nNote that all '
                    "of an alarm's metrics must match exactly to obtain any "
                    'results.')

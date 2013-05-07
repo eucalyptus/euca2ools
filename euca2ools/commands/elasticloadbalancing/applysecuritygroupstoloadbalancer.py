@@ -31,10 +31,10 @@
 from euca2ools.commands.argtypes import delimited_list
 from euca2ools.commands.elasticloadbalancing import ELBRequest
 from requestbuilder import Arg
-from requestbuilder.mixins import TabifyingCommand
+from requestbuilder.mixins import TabifyingMixin
 
 
-class ApplySecurityGroupsToLoadBalancer(ELBRequest, TabifyingCommand):
+class ApplySecurityGroupsToLoadBalancer(ELBRequest, TabifyingMixin):
     DESCRIPTION = ('[VPC only] Associate one or more security groups with a '
                    'load balancer.  All previous associations with security '
                    'groups will be replaced.')

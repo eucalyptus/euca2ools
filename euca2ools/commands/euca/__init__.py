@@ -36,10 +36,10 @@ import os.path
 from requestbuilder import Arg, MutuallyExclusiveArgList, AUTH, SERVICE
 from requestbuilder.auth import QuerySigV2Auth
 from requestbuilder.exceptions import AuthError
-from requestbuilder.mixins import TabifyingCommand
+from requestbuilder.mixins import TabifyingMixin
+from requestbuilder.request import AWSQueryRequest
+from requestbuilder.service import BaseService
 from requestbuilder.util import set_userregion
-import requestbuilder.request
-import requestbuilder.service
 import requests
 import shlex
 from string import Template
@@ -133,7 +133,7 @@ class EC2CompatibleQuerySigV2Auth(QuerySigV2Auth):
             raise AuthError('missing secret key; please supply one with -S')
 
 
-class Eucalyptus(requestbuilder.service.BaseService):
+class Eucalyptus(BaseService):
     NAME = 'ec2'
     DESCRIPTION = 'Eucalyptus compute cloud service'
     API_VERSION = '2013-02-01'
@@ -200,18 +200,16 @@ class Eucalyptus(requestbuilder.service.BaseService):
         raise AWSError(response)
 
 
-class EucalyptusRequest(requestbuilder.request.AWSQueryRequest,
-                        TabifyingCommand):
+class EucalyptusRequest(AWSQueryRequest, TabifyingMixin):
     SUITE = Euca2ools
     SERVICE_CLASS = Eucalyptus
     METHOD = 'POST'
 
     def __init__(self, **kwargs):
-        requestbuilder.request.AWSQueryRequest.__init__(self, **kwargs)
+        AWSQueryRequest.__init__(self, **kwargs)
 
     def parse_http_response(self, response_body):
-        response = requestbuilder.request.AWSQueryRequest.parse_http_response(
-            self, response_body)
+        response = AWSQueryRequest.parse_http_response(self, response_body)
         # Compute cloud controller responses enclose their useful data inside
         # FooResponse elements.  If that's all we have after stripping out
         # RequestId then just return its contents.

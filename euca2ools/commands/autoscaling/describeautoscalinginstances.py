@@ -31,11 +31,11 @@
 import argparse
 from euca2ools.commands.autoscaling import AutoScalingRequest
 from requestbuilder import Arg
-from requestbuilder.mixins import TabifyingCommand
+from requestbuilder.mixins import TabifyingMixin
 from requestbuilder.response import PaginatedResponse
 
 
-class DescribeAutoScalingInstances(AutoScalingRequest, TabifyingCommand):
+class DescribeAutoScalingInstances(AutoScalingRequest, TabifyingMixin):
     DESCRIPTION = 'Describe instances in auto-scaling groups'
     ARGS = [Arg('InstanceIds.member', metavar='INSTANCE', nargs='*',
                 help='limit results to specific instances'),

@@ -31,10 +31,10 @@
 from euca2ools.commands.argtypes import delimited_list
 from euca2ools.commands.elasticloadbalancing import ELBRequest
 from requestbuilder import Arg
-from requestbuilder.mixins import TabifyingCommand
+from requestbuilder.mixins import TabifyingMixin
 
 
-class DetachLoadBalancerFromSubnets(ELBRequest, TabifyingCommand):
+class DetachLoadBalancerFromSubnets(ELBRequest, TabifyingMixin):
     DESCRIPTION = '[VPC only] Remove a load balancer from one or more subnets'
     ARGS = [Arg('LoadBalancerName', metavar='ELB',
                 help='name of the load balancer to modify (required)'),

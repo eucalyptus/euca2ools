@@ -30,10 +30,10 @@
 
 from euca2ools.commands.elasticloadbalancing import ELBRequest
 from requestbuilder import Arg
-from requestbuilder.mixins import TabifyingCommand
+from requestbuilder.mixins import TabifyingMixin
 
 
-class DescribeLoadBalancers(ELBRequest, TabifyingCommand):
+class DescribeLoadBalancers(ELBRequest, TabifyingMixin):
     DESCRIPTION = 'Show information about load balancers'
     ARGS = [Arg('LoadBalancerNames.member', metavar='ELB', nargs='*',
                 help='limit results to specific load balancers'),

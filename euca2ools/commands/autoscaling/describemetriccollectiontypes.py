@@ -29,10 +29,10 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 from euca2ools.commands.autoscaling import AutoScalingRequest
-from requestbuilder.mixins import TabifyingCommand
+from requestbuilder.mixins import TabifyingMixin
 
 
-class DescribeMetricCollectionTypes(AutoScalingRequest, TabifyingCommand):
+class DescribeMetricCollectionTypes(AutoScalingRequest, TabifyingMixin):
     DESCRIPTION = 'Describe auto-scaling metrics and granularities'
     LIST_TAGS = ['Metrics', 'Granularities']
 

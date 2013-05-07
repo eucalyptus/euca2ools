@@ -29,10 +29,10 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 from euca2ools.commands.euare import EuareRequest, AS_ACCOUNT
-from requestbuilder.mixins import TabifyingCommand
+from requestbuilder.mixins import TabifyingMixin
 
 
-class GetLdapSyncStatus(EuareRequest, TabifyingCommand):
+class GetLdapSyncStatus(EuareRequest, TabifyingMixin):
     DESCRIPTION = ("[Eucalyptus only] Describe the server's current LDAP "
                    "synchronization status. This command is only usable by "
                    "cloud administrators.")

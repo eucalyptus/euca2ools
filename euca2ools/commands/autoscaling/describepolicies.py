@@ -30,11 +30,11 @@
 
 from euca2ools.commands.autoscaling import AutoScalingRequest
 from requestbuilder import Arg
-from requestbuilder.mixins import TabifyingCommand
+from requestbuilder.mixins import TabifyingMixin
 from requestbuilder.response import PaginatedResponse
 
 
-class DescribePolicies(AutoScalingRequest, TabifyingCommand):
+class DescribePolicies(AutoScalingRequest, TabifyingMixin):
     DESCRIPTION = 'Describe auto-scaling policies'
     ARGS = [Arg('PolicyNames.member', metavar='POLICY', nargs='*',
                 help='limit results to specific auto-scaling policies'),

@@ -29,10 +29,10 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 from euca2ools.commands.autoscaling import AutoScalingRequest
-from requestbuilder.mixins import TabifyingCommand
+from requestbuilder.mixins import TabifyingMixin
 
 
-class DescribeScalingProcessTypes(AutoScalingRequest, TabifyingCommand):
+class DescribeScalingProcessTypes(AutoScalingRequest, TabifyingMixin):
     DESCRIPTION = 'List all types of scaling processes'
     LIST_TAGS = ['Processes']
 

@@ -31,10 +31,10 @@
 from euca2ools.commands.elasticloadbalancing import ELBRequest
 from requestbuilder import Arg
 from requestbuilder.exceptions import ArgumentError
-from requestbuilder.mixins import TabifyingCommand
+from requestbuilder.mixins import TabifyingMixin
 
 
-class ConfigureHealthCheck(ELBRequest, TabifyingCommand):
+class ConfigureHealthCheck(ELBRequest, TabifyingMixin):
     DESCRIPTION = ('Configure health checking for instance registerd with a '
                    'load balancer')
     ARGS = [Arg('LoadBalancerName', metavar='ELB',

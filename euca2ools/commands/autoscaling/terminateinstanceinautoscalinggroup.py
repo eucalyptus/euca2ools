@@ -31,11 +31,11 @@
 import argparse
 from euca2ools.commands.autoscaling import AutoScalingRequest
 from requestbuilder import Arg, MutuallyExclusiveArgList
-from requestbuilder.mixins import TabifyingCommand
+from requestbuilder.mixins import TabifyingMixin
 
 
 class TerminateInstanceInAutoScalingGroup(AutoScalingRequest,
-                                          TabifyingCommand):
+                                          TabifyingMixin):
     DESCRIPTION = "Manually terminate an auto-scaling instance"
     ARGS = [Arg('InstanceId', metavar='INSTANCE',
                 help='ID of the instance to terminate (required)'),

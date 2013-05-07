@@ -29,10 +29,10 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 from euca2ools.commands.autoscaling import AutoScalingRequest
-from requestbuilder.mixins import TabifyingCommand
+from requestbuilder.mixins import TabifyingMixin
 
 
-class DescribeAdjustmentTypes(AutoScalingRequest, TabifyingCommand):
+class DescribeAdjustmentTypes(AutoScalingRequest, TabifyingMixin):
     DESCRIPTION = ('Describe policy adjustment types usable with scaling '
                    'policies')
     LIST_TAGS = ['AdjustmentTypes']

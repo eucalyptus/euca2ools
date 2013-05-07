@@ -33,12 +33,12 @@ from euca2ools.commands.walrus import (WalrusRequest,
     validate_generic_bucket_name)
 from requestbuilder import Arg
 from requestbuilder.exceptions import ArgumentError
-from requestbuilder.mixins import TabifyingCommand
+from requestbuilder.mixins import TabifyingMixin
 from requestbuilder.response import PaginatedResponse
 from requestbuilder.xmlparse import parse_aws_xml
 
 
-class ListBucket(WalrusRequest, TabifyingCommand):
+class ListBucket(WalrusRequest, TabifyingMixin):
     DESCRIPTION = 'List keys in one or more buckets'
     ARGS = [Arg('paths', metavar='BUCKET[/KEY]', nargs='+', route_to=None),
             Arg('--max-keys-per-request', dest='max-keys', type=int,

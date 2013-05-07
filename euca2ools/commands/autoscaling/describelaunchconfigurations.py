@@ -30,11 +30,11 @@
 
 from euca2ools.commands.autoscaling import AutoScalingRequest
 from requestbuilder import Arg
-from requestbuilder.mixins import TabifyingCommand
+from requestbuilder.mixins import TabifyingMixin
 from requestbuilder.response import PaginatedResponse
 
 
-class DescribeLaunchConfigurations(AutoScalingRequest, TabifyingCommand):
+class DescribeLaunchConfigurations(AutoScalingRequest, TabifyingMixin):
     DESCRIPTION = 'Describe auto-scaling instance launch configurations'
     ARGS = [Arg('LaunchConfigurationNames.member', metavar='LAUNCHCONFIG',
                 nargs='*',

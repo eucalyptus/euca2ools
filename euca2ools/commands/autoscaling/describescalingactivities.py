@@ -30,11 +30,11 @@
 
 from euca2ools.commands.autoscaling import AutoScalingRequest
 from requestbuilder import Arg
-from requestbuilder.mixins import TabifyingCommand
+from requestbuilder.mixins import TabifyingMixin
 from requestbuilder.response import PaginatedResponse
 
 
-class DescribeScalingActivities(AutoScalingRequest, TabifyingCommand):
+class DescribeScalingActivities(AutoScalingRequest, TabifyingMixin):
     DESCRIPTION = 'Describe past and current auto-scaling activities'
     ARGS = [Arg('ActivityIds.member', metavar='ACTIVITY', nargs='*',
                 help='limit results to specific auto-scaling activities'),
