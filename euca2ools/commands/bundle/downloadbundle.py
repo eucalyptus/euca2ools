@@ -68,27 +68,36 @@ class DownloadBundle(WalrusRequest):
     def _download_by_local_manifest(self, directory):
         manifest_path = self.args.get('manifest_path')
         if not os.path.isfile(manifest_path):
-            raise ArgumentError("manifest file '%s' does not exist." % manifest_path)
+            raise ArgumentError(
+                "manifest file '{0}' does not exist.".format(manifest_path))
         manifest_key = os.path.basename(manifest_path)
         if not os.path.exists(os.path.join(directory, manifest_key)):
-            shutil.copyfile(manifest_path, directory)
-        self._download_parts(manifest_key, directory)
+            shutil.copy(manifest_path, directory)
+        self._download_parts([manifest_key], directory)
 
     def _download_by_prefix(self, directory):
         bucket = self.args.get('bucket')
         prefix = self.args.get('prefix')
         manifest_keys = get_manifest_keys(bucket, prefix, service=self.service,
                                           config=self.config)
+        if not manifest_keys:
+            if prefix:
+                raise ArgumentError(
+                    "no manifests found with prefix '{0}' in bucket '{1}'."
+                    .format(prefix, bucket))
+            else:
+                raise ArgumentError("no manifests found in bucket '{0}'."
+                                    .format(bucket))
         try:
             download_files(bucket, manifest_keys, directory,
                            service=self.service, config=self.config,
                            show_progress=self.args.get('show_progress', True))
         except AWSError as err:
-            if err[2] != 'NoSuchEntity':
+            if err.code != 'NoSuchEntity':
                 raise
-            raise ArgumentError("cannot find manifest file(s) %s in "
-                                "bucket '%s'."
-                                % (",".join(manifest_keys), bucket))
+            raise ArgumentError(
+                "cannot find manifest file(s) {0} in bucket '{1}'."
+                .format(",".join(manifest_keys), bucket))
         self._download_parts(manifest_keys, directory)
 
     def main(self):
@@ -98,14 +107,15 @@ class DownloadBundle(WalrusRequest):
 
         directory = self.args.get('directory') or tempfile.mkdtemp()
         if not os.path.isdir(directory):
-            raise ArgumentError("location '%s' is either not a directory or " \
-                                    "does not exist." % directory)
+            raise ArgumentError(
+                "location '{0}' is either not a directory or does not exist."
+                .format(directory))
 
-        if self.args.get('manifest'):
+        if self.args.get('manifest_path'):
             self._download_by_local_manifest(directory)
         else:
             self._download_by_prefix(directory)
 
         # Print location if we used a temp directory
         if not self.args.get('directory'):
-            print >> sys.stderr, "Bundle downloaded to '%s'" % directory
+            print >> sys.stderr, "Bundle downloaded to '{0}'".format(directory)

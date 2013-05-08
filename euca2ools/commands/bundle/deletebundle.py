@@ -38,8 +38,6 @@ from euca2ools.commands.walrus import WalrusRequest
 from euca2ools.commands.walrus.checkbucket import CheckBucket
 from euca2ools.commands.walrus.deletebucket import DeleteBucket
 from euca2ools.commands.walrus.deleteobject import DeleteObject
-from euca2ools.commands.walrus.getobject import GetObject
-from euca2ools.commands.walrus.listbucket import ListBucket
 from euca2ools.exceptions import AWSError
 from requestbuilder import Arg, MutuallyExclusiveArgList
 from requestbuilder.exceptions import ArgumentError
@@ -49,7 +47,6 @@ import shutil
 import sys
 import tempfile
 import time
-from xml.dom import minidom
 
 
 class DeleteBundle(WalrusRequest):
@@ -83,7 +80,8 @@ class DeleteBundle(WalrusRequest):
     def _delete_by_local_manifest(self):
         manifest_path = self.args.get('manifest_path')
         if not os.path.isfile(manifest_path):
-            raise ArgumentError("manifest file '%s' does not exist." % manifest_path)
+            raise ArgumentError(
+                "manifest file '{0}' does not exist.".format(manifest_path))
         manifest_keys = [os.path.basename(manifest_path)]
         directory = os.path.dirname(manifest_path) or '.'
         # When we use a local manifest file, we should still check if there is
@@ -92,7 +90,7 @@ class DeleteBundle(WalrusRequest):
         try:
             self._delete_manifest_keys(manifest_keys)
         except AWSError as err:
-            if err[2] == 'NoSuchEntity':
+            if err.code == 'NoSuchEntity':
                 pass
             else:
                 raise
@@ -102,15 +100,14 @@ class DeleteBundle(WalrusRequest):
         bucket = self.args.get('bucket')
         directory = tempfile.mkdtemp()
         try:
-            manifest_keys = ['%s.manifest.xml' % self.args.get('prefix')]
+            manifest_keys = ["{0}.manifest.xml".format(self.args.get('prefix'))]
             try:
                 download_files(bucket, manifest_keys, directory,
                                service=self.service, config=self.config)
             except AWSError as err:
-                if err[2] == 'NoSuchEntity':
-                    raise ArgumentError("manifest file '%s' does not exist in "
-                                        "bucket '%s'."
-                                        % (manifest_keys[0], bucket))
+                if err.code == 'NoSuchEntity':
+                    error = "manifest file '{0}' does not exist in bucket '{1}'."
+                    raise ArgumentError(error.format(manifest_keys[0], bucket))
                 else:
                     raise
             self._delete_manifest_parts(manifest_keys, directory)
@@ -120,8 +117,8 @@ class DeleteBundle(WalrusRequest):
 
     def _delete_all_bundles(self):
         bucket = self.args.get('bucket')
-        print >> sys.stderr, """All bundles in bucket '%s' will be deleted.
-If this is not what you want, press Ctrl+C in the next 10 seconds""" % bucket
+        print >> sys.stderr, """All bundles in bucket '{0}' will be deleted.
+If this is not what you want, press Ctrl+C in the next 10 seconds""".format(bucket)
         try:
             for _ in range(10):
                 sys.stderr.write('.')

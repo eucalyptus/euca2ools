@@ -42,7 +42,6 @@ def get_manifest_parts(manifest, bucket=None):
     :param bucket: (optional) bucket name to append to the part key.
     """
     part_paths = []
-    # try:
     dom = minidom.parse(manifest)
     elem = dom.getElementsByTagName('manifest')[0]
     for tag in elem.getElementsByTagName('filename'):
@@ -52,8 +51,6 @@ def get_manifest_parts(manifest, bucket=None):
                     part_paths.append(os.path.join(bucket, node.data))
                 else:
                     part_paths.append(node.data)
-    # except:
-        # print >> sys.stderr, 'problem parsing: %s' % manifest
     return part_paths
 
 
