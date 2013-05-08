@@ -29,13 +29,12 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 from euca2ools.commands.euare import EuareRequest, AS_ACCOUNT
-from requestbuilder.mixins import TabifyingCommand
+from requestbuilder.mixins import TabifyingMixin
 
 
-class GetLdapSyncStatus(EuareRequest, TabifyingCommand):
-    DESCRIPTION = ("[Eucalyptus only] Describe the server's current LDAP "
-                   "synchronization status. This command is only usable by "
-                   "cloud administrators.")
+class GetLdapSyncStatus(EuareRequest, TabifyingMixin):
+    DESCRIPTION = ("[Eucalyptus cloud admin only] Show the status of the "
+                   "cloud's LDAP synchronization")
 
     def print_result(self, result):
         print self.tabify(('SyncEnabled', result.get('SyncEnabled')))

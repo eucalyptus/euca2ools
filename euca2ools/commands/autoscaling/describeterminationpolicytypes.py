@@ -29,10 +29,10 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 from euca2ools.commands.autoscaling import AutoScalingRequest
-from requestbuilder.mixins import TabifyingCommand
+from requestbuilder.mixins import TabifyingMixin
 
 
-class DescribeTerminationPolicyTypes(AutoScalingRequest, TabifyingCommand):
+class DescribeTerminationPolicyTypes(AutoScalingRequest, TabifyingMixin):
     DESCRIPTION = 'List all termination policies supported by the service'
     LIST_TAGS = ['TerminationPolicyTypes']
 

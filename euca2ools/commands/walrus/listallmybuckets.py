@@ -30,11 +30,11 @@
 
 from euca2ools.commands.walrus import WalrusRequest
 from requestbuilder import Arg
-from requestbuilder.mixins import TabifyingCommand
+from requestbuilder.mixins import TabifyingMixin
 from requestbuilder.xmlparse import parse_listdelimited_aws_xml
 
 
-class ListAllMyBuckets(WalrusRequest, TabifyingCommand):
+class ListAllMyBuckets(WalrusRequest, TabifyingMixin):
     DESCRIPTION = 'List all buckets owned by your account'
     ARGS = [Arg('-l', dest='long_output', action='store_true', route_to=None,
                 help='''list in long format, with creation dates and owner

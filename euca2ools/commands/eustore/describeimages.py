@@ -30,10 +30,10 @@
 
 from euca2ools.commands.eustore import EuStoreRequest
 from requestbuilder import Arg
-from requestbuilder.mixins import TabifyingCommand
+from requestbuilder.mixins import TabifyingMixin
 
 
-class DescribeImages(EuStoreRequest, TabifyingCommand):
+class DescribeImages(EuStoreRequest, TabifyingMixin):
     DESCRIPTION = 'List images available for installation from EuStore'
     ARGS = [Arg('-v', '--verbose', action='store_true',
                 help='display more information about images than the default')]

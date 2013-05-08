@@ -30,12 +30,12 @@
 
 from euca2ools.commands.euare import EuareRequest
 from requestbuilder import Arg
-from requestbuilder.mixins import TabifyingCommand
+from requestbuilder.mixins import TabifyingMixin
 
 
-class ListAccounts(EuareRequest, TabifyingCommand):
-    DESCRIPTION = ("[Eucalyptus only] List all of the cloud's accounts. This "
-                   "command is only usable by cloud administrators.")
+class ListAccounts(EuareRequest, TabifyingMixin):
+    DESCRIPTION = ("[Eucalyptus cloud admin only] List all of the cloud's "
+                   "accounts")
     LIST_TAGS = ['Accounts']
 
     def print_result(self, result):

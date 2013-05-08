@@ -33,8 +33,7 @@ from requestbuilder import Arg
 
 
 class DeleteAccount(EuareRequest):
-    DESCRIPTION = ('[Eucalyptus only] Delete an account. This command is only '
-                   'usable by cloud administrators.')
+    DESCRIPTION = '[Eucalyptus cloud admin only] Delete an account'
     ARGS = [Arg('-a', '--account-name', dest='AccountName', metavar='ACCOUNT',
                 required=True, help='name of the account to delete (required)'),
             Arg('-r', '--recursive', dest='Recursive', action='store_const',

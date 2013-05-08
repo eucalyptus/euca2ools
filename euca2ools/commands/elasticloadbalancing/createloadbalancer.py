@@ -32,10 +32,10 @@ from euca2ools.commands.argtypes import delimited_list
 from euca2ools.commands.elasticloadbalancing import ELBRequest
 from euca2ools.commands.elasticloadbalancing.argtypes import listener
 from requestbuilder import Arg, MutuallyExclusiveArgList
-from requestbuilder.mixins import TabifyingCommand
+from requestbuilder.mixins import TabifyingMixin
 
 
-class CreateLoadBalancer(ELBRequest, TabifyingCommand):
+class CreateLoadBalancer(ELBRequest, TabifyingMixin):
     DESCRIPTION = ('Create a load balancer\n\nAfter the load balancer is '
                    'created, instances must be registered with it separately.')
     ARGS = [Arg('LoadBalancerName', metavar='ELB',

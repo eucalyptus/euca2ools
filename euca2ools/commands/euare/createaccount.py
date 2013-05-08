@@ -30,12 +30,11 @@
 
 from euca2ools.commands.euare import EuareRequest
 from requestbuilder import Arg
-from requestbuilder.mixins import TabifyingCommand
+from requestbuilder.mixins import TabifyingMixin
 
 
-class CreateAccount(EuareRequest, TabifyingCommand):
-    DESCRIPTION = ('[Eucalyptus only] Create a new account. This command is '
-                   'only usable by cloud administrators.')
+class CreateAccount(EuareRequest, TabifyingMixin):
+    DESCRIPTION = '[Eucalyptus cloud admin only] Create a new account'
     ARGS = [Arg('-a', '--account-name', dest='AccountName', metavar='ACCOUNT',
                 required=True, help='name of the account to create (required)')]
 

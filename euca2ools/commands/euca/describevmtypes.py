@@ -30,10 +30,10 @@
 
 from euca2ools.commands.euca import EucalyptusRequest
 from requestbuilder import Arg
-from requestbuilder.mixins import TabifyingCommand
+from requestbuilder.mixins import TabifyingMixin
 
 
-class DescribeVmTypes(EucalyptusRequest, TabifyingCommand):
+class DescribeVmTypes(EucalyptusRequest, TabifyingMixin):
     DESCRIPTION = '[Eucalyptus only] Show information about instance types'
     ARGS = [Arg('VmTypes', metavar='INSTANCETYPE', nargs='*',
                 help='limit results to specific instance types'),

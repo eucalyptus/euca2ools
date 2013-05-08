@@ -31,10 +31,10 @@
 from euca2ools.commands.argtypes import delimited_list
 from euca2ools.commands.elasticloadbalancing import ELBRequest
 from requestbuilder import Arg
-from requestbuilder.mixins import TabifyingCommand
+from requestbuilder.mixins import TabifyingMixin
 
 
-class DescribeLoadBalancerPolicies(ELBRequest, TabifyingCommand):
+class DescribeLoadBalancerPolicies(ELBRequest, TabifyingMixin):
     DESCRIPTION = 'Show information about load balancer policies'
     ARGS = [Arg('LoadBalancerName', metavar='ELB', nargs='?', help='''show
                 policies associated with a specific load balancer (default:

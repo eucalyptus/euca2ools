@@ -30,10 +30,10 @@
 
 from euca2ools.commands.elasticloadbalancing import ELBRequest
 from requestbuilder import Arg
-from requestbuilder.mixins import TabifyingCommand
+from requestbuilder.mixins import TabifyingMixin
 
 
-class DescribeLoadBalancerPolicyTypes(ELBRequest, TabifyingCommand):
+class DescribeLoadBalancerPolicyTypes(ELBRequest, TabifyingMixin):
     DESCRIPTION = 'Show information about load balancer policy types'
     ARGS = [Arg('PolicyTypeNames.member', metavar='POLTYPE', nargs='*',
                 help='limit results to specific policy types'),

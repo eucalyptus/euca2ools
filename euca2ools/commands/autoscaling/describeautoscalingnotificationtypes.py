@@ -29,11 +29,11 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 from euca2ools.commands.autoscaling import AutoScalingRequest
-from requestbuilder.mixins import TabifyingCommand
+from requestbuilder.mixins import TabifyingMixin
 
 
 class DescribeAutoScalingNotificationTypes(AutoScalingRequest,
-                                           TabifyingCommand):
+                                           TabifyingMixin):
     DESCRIPTION = 'List all notification types supported by the service'
     LIST_TAGS = ['AutoScalingNotificationTypes']
 

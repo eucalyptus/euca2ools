@@ -31,14 +31,14 @@
 from euca2ools.commands.argtypes import delimited_list
 from euca2ools.commands.elasticloadbalancing import ELBRequest
 from requestbuilder import Arg
-from requestbuilder.mixins import TabifyingCommand
+from requestbuilder.mixins import TabifyingMixin
 
 
 def instance(inst_as_str):
     return {'InstanceId': inst_as_str}
 
 
-class RegisterInstancesWithLoadBalancer(ELBRequest, TabifyingCommand):
+class RegisterInstancesWithLoadBalancer(ELBRequest, TabifyingMixin):
     DESCRIPTION = 'Add one or more instances to a load balancer'
     ARGS = [Arg('LoadBalancerName', metavar='ELB',
                 help='name of the load balancer to modify (required)'),

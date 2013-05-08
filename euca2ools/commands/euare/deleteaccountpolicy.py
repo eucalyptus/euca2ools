@@ -33,8 +33,8 @@ from requestbuilder import Arg
 
 
 class DeleteAccountPolicy(EuareRequest):
-    DESCRIPTION = ('[Eucalyptus only] Remove a policy from an account. This '
-                   'command is only usable by cloud administrators.')
+    DESCRIPTION = ('[Eucalyptus cloud admin only] Remove a policy from an '
+                   'account')
     ARGS = [Arg('-a', '--account-name', dest='AccountName', metavar='ACCOUNT',
                 required=True,
                 help='account the policy is attached to (required)'),

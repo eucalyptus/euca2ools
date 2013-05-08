@@ -32,11 +32,11 @@ from euca2ools.commands.argtypes import delimited_list
 from euca2ools.commands.monitoring import CloudWatchRequest
 from euca2ools.commands.monitoring.argtypes import cloudwatch_dimension
 from requestbuilder import Arg
-from requestbuilder.mixins import TabifyingCommand
+from requestbuilder.mixins import TabifyingMixin
 from requestbuilder.response import PaginatedResponse
 
 
-class ListMetrics(CloudWatchRequest, TabifyingCommand):
+class ListMetrics(CloudWatchRequest, TabifyingMixin):
     DESCRIPTION = 'Show a list of monitoring metrics'
     ARGS = [Arg('-d', '--dimensions', dest='Dimensions.member',
                 metavar='KEY1=VALUE1,KEY2=VALUE2,...',

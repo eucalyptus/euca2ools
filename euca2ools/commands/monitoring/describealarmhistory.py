@@ -30,11 +30,11 @@
 
 from euca2ools.commands.monitoring import CloudWatchRequest
 from requestbuilder import Arg
-from requestbuilder.mixins import TabifyingCommand
+from requestbuilder.mixins import TabifyingMixin
 from requestbuilder.response import PaginatedResponse
 
 
-class DescribeAlarmHistory(CloudWatchRequest, TabifyingCommand):
+class DescribeAlarmHistory(CloudWatchRequest, TabifyingMixin):
     DESCRIPTION = 'Retrieve history for one alarm or all alarms'
     ARGS = [Arg('AlarmName', metavar='ALARM', nargs='?',
                 help='limit results to a specific alarm'),

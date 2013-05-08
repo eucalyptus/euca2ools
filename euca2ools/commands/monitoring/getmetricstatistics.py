@@ -34,11 +34,11 @@ from euca2ools.commands.monitoring import CloudWatchRequest
 from euca2ools.commands.monitoring.argtypes import cloudwatch_dimension
 from requestbuilder import Arg
 from requestbuilder.exceptions import ArgumentError
-from requestbuilder.mixins import TabifyingCommand
+from requestbuilder.mixins import TabifyingMixin
 from requestbuilder.response import PaginatedResponse
 
 
-class GetMetricStatistics(CloudWatchRequest, TabifyingCommand):
+class GetMetricStatistics(CloudWatchRequest, TabifyingMixin):
     DESCRIPTION = "Show a metric's statistics"
     ARGS = [Arg('MetricName', metavar='METRIC',
                 help='name of the metric to get statistics for (required)'),
