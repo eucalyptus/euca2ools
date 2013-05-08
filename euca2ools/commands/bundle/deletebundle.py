@@ -31,37 +31,29 @@
 # Author: Neil Soman neil@eucalyptus.com
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
+from euca2ools.commands.bundle.helpers import download_files
+from euca2ools.commands.bundle.helpers import get_manifest_keys
+from euca2ools.commands.bundle.helpers import get_manifest_parts
 from euca2ools.commands.walrus import WalrusRequest
 from euca2ools.commands.walrus.checkbucket import CheckBucket
 from euca2ools.commands.walrus.deletebucket import DeleteBucket
 from euca2ools.commands.walrus.deleteobject import DeleteObject
-from euca2ools.commands.walrus.listbucket import ListBucket
 from euca2ools.commands.walrus.getobject import GetObject
+from euca2ools.commands.walrus.listbucket import ListBucket
 from euca2ools.exceptions import AWSError
 from requestbuilder import Arg, MutuallyExclusiveArgList
+from requestbuilder.exceptions import ArgumentError
 import argparse
 import os
 import shutil
 import sys
 import tempfile
-import textwrap
 import time
 from xml.dom import minidom
 
 
 class DeleteBundle(WalrusRequest):
-    DESCRIPTION = textwrap.dedent('''\
-            Delete a previously-uploaded bundle.
-
-            Use --manifest to delete a specific bundle based on the contents of
-            a locally-available manifest file.
-
-            Use --prefix to delete a specific bundle based on the contents of a
-            manifest file in the bucket.
-
-            (Deprecated)  When neither --manifest nor --prefix is supplied, all
-            bundles in the given bucket are deleted.''')
-
+    DESCRIPTION = 'Delete a previously-uploaded bundle.'
     ARGS = [Arg('-b', '--bucket', dest='bucket', metavar='BUCKET',
                 required=True, help='Name of the bucket to delete from.'),
             MutuallyExclusiveArgList(True,
@@ -74,44 +66,12 @@ class DeleteBundle(WalrusRequest):
                 Arg('--delete-all-bundles', dest='delete_all',
                     action='store_true', help=argparse.SUPPRESS)),
             Arg('--clear', dest='clear', action='store_true',
-                  help='Delete the entire bucket if possible')]
-
-    def _get_part_paths(self, manifest):
-        paths = []
-        bucket = self.args.get('bucket')
-        try:
-            dom = minidom.parse(manifest)
-            elem = dom.getElementsByTagName('manifest')[0]
-            for tag in elem.getElementsByTagName('filename'):
-                for node in tag.childNodes:
-                    if node.nodeType == node.TEXT_NODE:
-                        paths.append(os.path.join(bucket, node.data))
-        except:
-            print >> sys.stderr, 'problem parsing: %s' % manifest
-        return paths
-
-    def _get_manifest_keys(self):
-        manifests = []
-        response = ListBucket(paths=[self.args.get('bucket')],
-                              service=self.service, config=self.config).main()
-        for item in response.get('Contents'):
-            key = item.get('Key')
-            if key.endswith('.manifest.xml'):
-                manifests.append(key)
-        return manifests
-
-    def _download_manifests(self, manifest_keys, directory):
-        bucket = self.args.get('bucket')
-        paths = [os.path.join(bucket, key) for key in manifest_keys]
-        try:
-            GetObject(paths=paths, opath=directory).main()
-            return True
-        except AWSError as err:
-            return False
+                help='Delete the entire bucket if possible')]
 
     def _delete_manifest_parts(self, manifest_keys, directory):
+        bucket = self.args.get('bucket')
         for key in manifest_keys:
-            paths = self._get_part_paths(os.path.join(directory, key))
+            paths = get_manifest_parts(os.path.join(directory, key), bucket)
             DeleteObject(paths=paths, service=self.service,
                          config=self.config).main()
 
@@ -122,16 +82,38 @@ class DeleteBundle(WalrusRequest):
 
     def _delete_by_local_manifest(self):
         manifest_path = self.args.get('manifest_path')
-        manifest_keys = [self.get_relative_filename(manifest_path)]
-        directory = self.get_file_path(manifest_path)
+        if not os.path.isfile(manifest_path):
+            raise ArgumentError("manifest file '%s' does not exist." % manifest_path)
+        manifest_keys = [os.path.basename(manifest_path)]
+        directory = os.path.dirname(manifest_path) or '.'
+        # When we use a local manifest file, we should still check if there is
+        # a matching manifest in the bucket. If it's there then we delete it.
+        # It's okay if this fails. It might not be there.
+        try:
+            self._delete_manifest_keys(manifest_keys)
+        except AWSError as err:
+            if err[2] == 'NoSuchEntity':
+                pass
+            else:
+                raise
         self._delete_manifest_parts(manifest_keys, directory)
 
     def _delete_by_prefix(self):
+        bucket = self.args.get('bucket')
         directory = tempfile.mkdtemp()
         try:
             manifest_keys = ['%s.manifest.xml' % self.args.get('prefix')]
-            if self._download_manifests(manifest_keys, directory):
-                self._delete_manifest_parts(manifest_keys, directory)
+            try:
+                download_files(bucket, manifest_keys, directory,
+                               service=self.service, config=self.config)
+            except AWSError as err:
+                if err[2] == 'NoSuchEntity':
+                    raise ArgumentError("manifest file '%s' does not exist in "
+                                        "bucket '%s'."
+                                        % (manifest_keys[0], bucket))
+                else:
+                    raise
+            self._delete_manifest_parts(manifest_keys, directory)
             self._delete_manifest_keys(manifest_keys)
         finally:
             shutil.rmtree(directory)
@@ -155,9 +137,11 @@ If this is not what you want, press Ctrl+C in the next 10 seconds""" % bucket
 
         directory = tempfile.mkdtemp()
         try:
-            manifest_keys = self._get_manifest_keys()
-            if self._download_manifests(manifest_keys, directory):
-                self._delete_manifest_parts(manifest_keys, directory)
+            manifest_keys = get_manifest_keys(bucket, service=self.service,
+                                              config=self.config)
+            download_files(bucket, manifest_keys, directory,
+                           service=self.service, config=self.config)
+            self._delete_manifest_parts(manifest_keys, directory)
             self._delete_manifest_keys(manifest_keys)
         finally:
             shutil.rmtree(directory)

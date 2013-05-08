@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 20092011, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2013, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -31,96 +31,81 @@
 # Author: Neil Soman neil@eucalyptus.com
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.commands.eucacommand
-from boto.roboto.param import Param
-import sys
+from euca2ools.commands.bundle.helpers import download_files
+from euca2ools.commands.bundle.helpers import get_manifest_keys
+from euca2ools.commands.bundle.helpers import get_manifest_parts
+from euca2ools.commands.walrus import WalrusRequest
+from euca2ools.commands.walrus.checkbucket import CheckBucket
+from euca2ools.exceptions import AWSError
 import os
-from xml.dom import minidom
-from boto.exception import S3ResponseError, S3CreateError
-from boto.s3.key import Key
+from requestbuilder import Arg, MutuallyExclusiveArgList
+from requestbuilder.exceptions import ArgumentError
+import shutil
+import sys
+import tempfile
 
-class DownloadBundle(euca2ools.commands.eucacommand.EucaCommand):
 
-    Description = 'Downloads a bundled image from a bucket.'
-    Options = [Param(name='bucket', short_name='b', long_name='bucket',
-                     optional=False, ptype='string',
-                     doc='Name of the bucket to upload to.'),
-               Param(name='manifest_path',
-                     short_name='m', long_name='manifest',
-                     optional=True, ptype='string',
-                     doc='Path to the manifest file for bundled image.'),
-               Param(name='prefix', short_name='p', long_name='prefix',
-                     optional=True, ptype='string',
-                     doc='Prefix used to identify the image in the bucket'),
-               Param(name='directory',
-                     short_name='d', long_name='directory',
-                     optional=True, ptype='dir', default='/tmp',
-                     doc='The directory to download the parts to.')]
+class DownloadBundle(WalrusRequest):
+    DESCRIPTION = 'Downloads a bundled image from a bucket.'
+    ARGS = [Arg('-b', '--bucket', metavar='BUCKET', required=True,
+                help='Name of the bucket to upload to.'),
+            MutuallyExclusiveArgList(
+                Arg('-m', '--manifest', dest='manifest_path', metavar='FILE',
+                    help='Path to local manifest file for bundled image.'),
+                Arg('-p', '--prefix', metavar='PREFIX',
+                    help='Prefix used to identify the image in the bucket')),
+            Arg('-d', '--directory', metavar='DIRECTORY',
+                help='The directory to download the parts to.')]
 
-    def ensure_bucket(self, bucket):
-        bucket_instance = None
-        s3conn = self.make_connection_cli('s3')
+    def _download_parts(self, manifests, directory):
+        bucket = self.args.get('bucket')
+        for manifest in manifests:
+            parts = get_manifest_parts(os.path.join(directory, manifest))
+            download_files(bucket, parts, directory, service=self.service,
+                           config=self.config,
+                           show_progress=self.args.get('show_progress', True))
+
+    def _download_by_local_manifest(self, directory):
+        manifest_path = self.args.get('manifest_path')
+        if not os.path.isfile(manifest_path):
+            raise ArgumentError("manifest file '%s' does not exist." % manifest_path)
+        manifest_key = os.path.basename(manifest_path)
+        if not os.path.exists(os.path.join(directory, manifest_key)):
+            shutil.copyfile(manifest_path, directory)
+        self._download_parts(manifest_key, directory)
+
+    def _download_by_prefix(self, directory):
+        bucket = self.args.get('bucket')
+        prefix = self.args.get('prefix')
+        manifest_keys = get_manifest_keys(bucket, prefix, service=self.service,
+                                          config=self.config)
         try:
-            bucket_instance = s3conn.get_bucket(bucket)
-        except S3ResponseError, s3error:
-            print >> sys.stderr, 'Unable to get bucket %s' % bucket
-            sys.exit()
-        return bucket_instance
-
-    def get_parts(self, manifest_filename):
-        parts = []
-        dom = minidom.parse(manifest_filename)
-        manifest_elem = dom.getElementsByTagName('manifest')[0]
-        parts_list = manifest_elem.getElementsByTagName('filename')
-        for part_elem in parts_list:
-            nodes = part_elem.childNodes
-            for node in nodes:
-                if node.nodeType == node.TEXT_NODE:
-                    parts.append(node.data)
-        return parts
-
-    def get_manifests(self, bucket, image_prefix=None):
-        manifests = []
-        keys = bucket.get_all_keys()
-        for k in keys:
-            if k.name:
-                if k.name.find('manifest') >= 0:
-                    if image_prefix:
-                        if k.name.startswith(image_prefix):
-                            manifests.append(k.name)
-                    else:
-                        manifests.append(k.name)
-        return manifests
-
-    def download_manifests(self, bucket, manifests, directory):
-        if len(manifests) > 0:
-            if not os.path.exists(directory):
-                os.makedirs(directory)
-        for manifest in manifests:
-            k = Key(bucket)
-            k.key = manifest
-            print 'Downloading', manifest
-            manifest_file = open(os.path.join(directory, manifest), 'wb')
-            k.get_contents_to_file(manifest_file)
-            manifest_file.close()
-
-    def download_parts(self, bucket, manifests, directory):
-        for manifest in manifests:
-            manifest_filename = os.path.join(directory, manifest)
-            parts = self.get_parts(manifest_filename)
-            for part in parts:
-                k = Key(bucket)
-                k.key = part
-                print 'Downloading', part
-                part_file = open(os.path.join(directory, part), 'wb')
-                k.get_contents_to_file(part_file)
-                part_file.close()
+            download_files(bucket, manifest_keys, directory,
+                           service=self.service, config=self.config,
+                           show_progress=self.args.get('show_progress', True))
+        except AWSError as err:
+            if err[2] != 'NoSuchEntity':
+                raise
+            raise ArgumentError("cannot find manifest file(s) %s in "
+                                "bucket '%s'."
+                                % (",".join(manifest_keys), bucket))
+        self._download_parts(manifest_keys, directory)
 
     def main(self):
-        bucket_instance = self.ensure_bucket(self.bucket)
-        manifests = self.get_manifests(bucket_instance, self.prefix)
-        self.download_manifests(bucket_instance, manifests, self.directory)
-        self.download_parts(bucket_instance, manifests, self.directory)
+        bucket = self.args.get('bucket')
+        CheckBucket(bucket=bucket, service=self.service,
+                    config=self.config).main()
 
-    def main_cli(self):
-        self.main()
+        directory = self.args.get('directory') or tempfile.mkdtemp()
+        if not os.path.isdir(directory):
+            raise ArgumentError("location '%s' is either not a directory or " \
+                                    "does not exist." % directory)
+
+        if self.args.get('manifest'):
+            self._download_by_local_manifest(directory)
+        else:
+            self._download_by_prefix(directory)
+
+        # Print location if we used a temp directory
+        if not self.args.get('directory'):
+            print >> sys.stderr, "Bundle downloaded to '%s'" % directory
