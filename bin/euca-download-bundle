@@ -37,6 +37,5 @@
 import euca2ools.commands.bundle.downloadbundle
 
 if __name__ == '__main__':
-    cmd = euca2ools.commands.bundle.downloadbundle.DownloadBundle()
-    cmd.main_cli()
+    euca2ools.commands.bundle.downloadbundle.DownloadBundle.run()
 

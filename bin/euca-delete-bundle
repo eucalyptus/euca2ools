@@ -37,6 +37,5 @@
 import euca2ools.commands.bundle.deletebundle
 
 if __name__ == '__main__':
-    cmd = euca2ools.commands.bundle.deletebundle.DeleteBundle()
-    cmd.main_cli()
+    euca2ools.commands.bundle.deletebundle.DeleteBundle.run()
 
