@@ -43,7 +43,6 @@ import os
 import shutil
 import sys
 import tempfile
-import time
 
 
 class DeleteBundle(WalrusRequest):
@@ -119,23 +118,6 @@ class DeleteBundle(WalrusRequest):
 
     def _delete_all_bundles(self):
         bucket = self.args.get('bucket')
-        msg = ("All bundles in bucket '{0}' will be deleted!  If this is not "
-               "what you want, press Ctrl+C in the next 10 seconds".format(
-               bucket))
-        print >> sys.stderr, msg
-        try:
-            for __ in range(10):
-                sys.stderr.write('.')
-                sys.stderr.flush()
-                time.sleep(1)
-        except KeyboardInterrupt:
-            print >> sys.stderr
-            print >> sys.stderr, 'Bundle deletion canceled by user.'
-            sys.exit(1)
-        finally:
-            sys.stderr.write('\n')
-            sys.stderr.flush()
-
         directory = tempfile.mkdtemp()
         try:
             manifest_keys = get_manifest_keys(bucket, service=self.service,
