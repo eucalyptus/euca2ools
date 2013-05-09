@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2013, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -27,9 +27,6 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#
-# Author: Neil Soman neil@eucalyptus.com
-#         Mitch Garnaat mgarnaat@eucalyptus.com
 
 from euca2ools.commands.bundle.helpers import download_files
 from euca2ools.commands.bundle.helpers import get_manifest_keys
@@ -50,20 +47,21 @@ import time
 
 
 class DeleteBundle(WalrusRequest):
-    DESCRIPTION = 'Delete a previously-uploaded bundle.'
-    ARGS = [Arg('-b', '--bucket', dest='bucket', metavar='BUCKET',
-                required=True, help='Name of the bucket to delete from.'),
+    DESCRIPTION = 'Delete a previously-uploaded bundle'
+    ARGS = [Arg('-b', '--bucket', dest='bucket', metavar='BUCKET[/PREFIX]',
+                required=True,
+                help='location of the bundle to delete (required)'),
             MutuallyExclusiveArgList(True,
-                Arg('-m', '--manifest', dest='manifest_path', metavar='MANIFEST',
-                    help='Delete a bundle based on a local manifest file'),
+                Arg('-m', '--manifest', dest='manifest_path',
+                    metavar='MANIFEST', help='''use a local manifest file to
+                    figure out what to delete'''),
                 Arg('-p', '--prefix', dest='prefix',
-                    help=('Delete a bundle with a manifest in the bucket that '
-                        'begins with a specific name  (e.g. "fry" for '
-                        '"fry.manifest.xml")')),
+                    help='''delete the bundle that begins with a specific
+                    prefix (e.g. "fry" for "fry.manifest.xml")'''),
                 Arg('--delete-all-bundles', dest='delete_all',
                     action='store_true', help=argparse.SUPPRESS)),
             Arg('--clear', dest='clear', action='store_true',
-                help='Delete the entire bucket if possible')]
+                help='attempt to delete the bucket as well')]
 
     def _delete_manifest_parts(self, manifest_keys, directory):
         bucket = self.args.get('bucket')
@@ -75,7 +73,8 @@ class DeleteBundle(WalrusRequest):
     def _delete_manifest_keys(self, manifest_keys):
         bucket = self.args.get('bucket')
         paths = [os.path.join(bucket, key) for key in manifest_keys]
-        DeleteObject(paths=paths).main()
+        DeleteObject(paths=paths, service=self.service,
+                     config=self.config).main()
 
     def _delete_by_local_manifest(self):
         manifest_path = self.args.get('manifest_path')
@@ -100,14 +99,17 @@ class DeleteBundle(WalrusRequest):
         bucket = self.args.get('bucket')
         directory = tempfile.mkdtemp()
         try:
-            manifest_keys = ["{0}.manifest.xml".format(self.args.get('prefix'))]
+            manifest_keys = ["{0}.manifest.xml".format(
+                             self.args.get('prefix'))]
             try:
                 download_files(bucket, manifest_keys, directory,
                                service=self.service, config=self.config)
             except AWSError as err:
                 if err.code == 'NoSuchEntity':
-                    error = "manifest file '{0}' does not exist in bucket '{1}'."
-                    raise ArgumentError(error.format(manifest_keys[0], bucket))
+                    error = ("manifest file '{0}' does not exist in bucket "
+                             "'{1}'.")
+                    raise ArgumentError(error.format(manifest_keys[0],
+                                                     bucket))
                 else:
                     raise
             self._delete_manifest_parts(manifest_keys, directory)
@@ -117,10 +119,12 @@ class DeleteBundle(WalrusRequest):
 
     def _delete_all_bundles(self):
         bucket = self.args.get('bucket')
-        print >> sys.stderr, """All bundles in bucket '{0}' will be deleted.
-If this is not what you want, press Ctrl+C in the next 10 seconds""".format(bucket)
+        msg = ("All bundles in bucket '{0}' will be deleted!  If this is not "
+               "what you want, press Ctrl+C in the next 10 seconds".format(
+               bucket))
+        print >> sys.stderr, msg
         try:
-            for _ in range(10):
+            for __ in range(10):
                 sys.stderr.write('.')
                 sys.stderr.flush()
                 time.sleep(1)
@@ -144,7 +148,7 @@ If this is not what you want, press Ctrl+C in the next 10 seconds""".format(buck
             shutil.rmtree(directory)
 
     def main(self):
-        bucket = self.args.get('bucket')
+        bucket = self.args.get('bucket').split('/', 1)[0]
 
         # Verify bucket existence
         CheckBucket(bucket=bucket, service=self.service,
@@ -157,9 +161,9 @@ If this is not what you want, press Ctrl+C in the next 10 seconds""".format(buck
         elif self.args.get('prefix'):
             self._delete_by_prefix()
         # Delete all bundles in the bucket
-        elif self.args.get('delete_all') is True:
+        elif self.args.get('delete_all'):
             self._delete_all_bundles()
 
-        if self.args.get('clear') is True:
+        if self.args.get('clear'):
             DeleteBucket(bucket=bucket, service=self.service,
                          config=self.config).main()

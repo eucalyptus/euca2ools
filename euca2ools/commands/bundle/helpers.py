@@ -75,6 +75,7 @@ def get_manifest_keys(bucket, prefix=None, **kwargs):
                 manifests.append(key)
     return manifests
 
+
 def download_files(bucket, keys, directory, **kwargs):
     """Download manifests from a Walrus bucket to a local directory.
     :param bucket: The bucket to download manifests from.

@@ -27,9 +27,6 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#
-# Author: Neil Soman neil@eucalyptus.com
-#         Mitch Garnaat mgarnaat@eucalyptus.com
 
 from euca2ools.commands.bundle.helpers import download_files
 from euca2ools.commands.bundle.helpers import get_manifest_keys
@@ -46,15 +43,19 @@ import tempfile
 
 
 class DownloadBundle(WalrusRequest):
-    DESCRIPTION = 'Downloads a bundled image from a bucket.'
+    DESCRIPTION = ('Download a bundled image from the cloud\n\nYou must run '
+                   'euca-unbundle-image on the bundle you download to obtain '
+                   'the original image.')
     ARGS = [Arg('-b', '--bucket', metavar='BUCKET', required=True,
-                help='Name of the bucket to upload to.'),
+                help='bucket to download the bucket from (required)'),
             MutuallyExclusiveArgList(
                 Arg('-m', '--manifest', dest='manifest_path', metavar='FILE',
-                    help='Path to local manifest file for bundled image.'),
+                    help='''use a local manifest file to figure out what to
+                    download'''),
                 Arg('-p', '--prefix', metavar='PREFIX',
-                    help='Prefix used to identify the image in the bucket')),
-            Arg('-d', '--directory', metavar='DIRECTORY',
+                    help='''download the bundle that begins with a specific
+                    prefix (e.g. "fry" for "fry.manifest.xml")''')),
+            Arg('-d', '--directory', metavar='DIR',
                 help='The directory to download the parts to.')]
 
     def _download_parts(self, manifests, directory):
@@ -101,7 +102,7 @@ class DownloadBundle(WalrusRequest):
         self._download_parts(manifest_keys, directory)
 
     def main(self):
-        bucket = self.args.get('bucket')
+        bucket = self.args.get('bucket').split('/', 1)[0]
         CheckBucket(bucket=bucket, service=self.service,
                     config=self.config).main()
 
