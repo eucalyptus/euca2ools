@@ -92,7 +92,7 @@ class RegisterImage(EucalyptusRequest):
                         break
             else:
                 if snapshot:
-                    self.args['BlockDeviceMapping'].append(
+                    self.params['BlockDeviceMapping'].append(
                             {'DeviceName': self.args['RootDeviceName'],
                              'Ebs': {'SnapshotId': snapshot}})
                 else:
