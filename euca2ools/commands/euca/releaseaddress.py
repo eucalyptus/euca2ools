@@ -42,6 +42,7 @@ class ReleaseAddress(EucalyptusRequest):
                 (required)''')]
 
     def configure(self):
+        EucalyptusRequest.configure(self)
         if (self.args.get('PublicIp') is not None and
             self.args.get('AllocationId') is not None):
             # Can't be both EC2 and VPC
