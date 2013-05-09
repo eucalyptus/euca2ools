@@ -35,6 +35,7 @@ import base64
 import os.path
 import subprocess
 import sys
+import tempfile
 from euca2ools import exceptions, __version__
 
 def check_prerequisite_command(command):
@@ -161,3 +162,17 @@ def build_progressbar_label_template(fnames):
         return fmt_template.format(maxlen=max_fname_len,
                                    lenlen=len(str(len(fnames))),
                                    total=len(fnames))
+
+
+def mkdtemp_for_large_files(suffix='', prefix='tmp', dir=None):
+    '''
+    Like tempfile.mkdtemp, but using /var/tmp as a last resort instead of /tmp.
+
+    This is meant for utilities that create large files, as /tmp is often a
+    ramdisk.
+    '''
+
+    if dir is None:
+        dir = (os.getenv('TMPDIR') or os.getenv('TEMP') or os.getenv('TMP') or
+               '/var/tmp')
+    return tempfile.mkdtemp(suffix=suffix, prefix=prefix, dir=dir)

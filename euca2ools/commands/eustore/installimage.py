@@ -40,6 +40,7 @@ from euca2ools.commands.euca.registerimage import RegisterImage
 from euca2ools.commands.eustore import EuStoreRequest
 import euca2ools.commands.eustore.describeimages
 from euca2ools.commands.walrus import Walrus
+from euca2ools.utils import mkdtemp_for_large_files
 import hashlib
 import os.path
 from requestbuilder import Arg, MutuallyExclusiveArgList
@@ -51,7 +52,6 @@ from requestbuilder.util import set_userregion
 import shutil
 import sys
 import tarfile
-import tempfile
 import urlparse
 import zlib
 
@@ -195,10 +195,7 @@ class InstallImage(EuStoreRequest, FileTransferProgressBarMixin):
             workdir = self.args['directory']
             should_delete_workdir = False
         else:
-            # We do this by hand to default to /var/tmp instead of /tmp.
-            workdir_base = (os.getenv('TMPDIR') or os.getenv('TEMP') or
-                            os.getenv('TMP') or '/var/tmp')
-            workdir = tempfile.mkdtemp(dir=workdir_base)
+            workdir = mkdtemp_for_large_files()
             self.log.debug('created working directory %s', workdir)
             should_delete_workdir = True
 

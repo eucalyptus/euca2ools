@@ -35,6 +35,7 @@ from euca2ools.commands import Euca2ools
 from euca2ools.commands.argtypes import delimited_list, filesize
 from euca2ools.commands.bundle import add_bundle_creds
 from euca2ools.commands.bundle.bundle import Bundle
+from euca2ools.utils import mkdtemp_for_large_files
 import hashlib
 import lxml.etree
 import lxml.objectify
@@ -45,7 +46,6 @@ from requestbuilder.exceptions import ArgumentError
 from requestbuilder.mixins import FileTransferProgressBarMixin
 from requestbuilder.util import set_userregion
 import subprocess
-import tempfile
 
 
 def manifest_block_device_mappings(mappings_as_str):
@@ -164,9 +164,7 @@ class BundleImage(BaseCommand, FileTransferProgressBarMixin):
             if not os.path.exists(self.args['destination']):
                 os.mkdir(self.args['destination'])
         else:
-            tempdir_base = (os.getenv('TMPDIR') or os.getenv('TEMP') or
-                            os.getenv('TMP') or '/var/tmp')
-            tempdir = tempfile.mkdtemp(prefix='bundle-', dir=tempdir_base)
+            tempdir = mkdtemp_for_large_files(prefix='bundle-')
             path_prefix = os.path.join(tempdir, prefix)
         self.log.debug('bundle path prefix: %s', path_prefix)
 

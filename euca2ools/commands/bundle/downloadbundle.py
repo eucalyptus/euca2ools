@@ -34,12 +34,12 @@ from euca2ools.commands.bundle.helpers import get_manifest_parts
 from euca2ools.commands.walrus import WalrusRequest
 from euca2ools.commands.walrus.checkbucket import CheckBucket
 from euca2ools.exceptions import AWSError
+from euca2ools.utils import mkdtemp_for_large_files
 import os
 from requestbuilder import Arg, MutuallyExclusiveArgList
 from requestbuilder.exceptions import ArgumentError
 import shutil
 import sys
-import tempfile
 
 
 class DownloadBundle(WalrusRequest):
@@ -106,7 +106,7 @@ class DownloadBundle(WalrusRequest):
         CheckBucket(bucket=bucket, service=self.service,
                     config=self.config).main()
 
-        directory = self.args.get('directory') or tempfile.mkdtemp()
+        directory = self.args.get('directory') or mkdtemp_for_large_files()
         if not os.path.isdir(directory):
             raise ArgumentError(
                 "location '{0}' is either not a directory or does not exist."
@@ -117,6 +117,4 @@ class DownloadBundle(WalrusRequest):
         else:
             self._download_by_prefix(directory)
 
-        # Print location if we used a temp directory
-        if not self.args.get('directory'):
-            print >> sys.stderr, "Bundle downloaded to '{0}'".format(directory)
+        print "Bundle downloaded to '{0}'".format(directory)
