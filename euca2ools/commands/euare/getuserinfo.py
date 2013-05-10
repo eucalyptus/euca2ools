@@ -44,5 +44,5 @@ class GetUserInfo(EuareRequest, TabifyingMixin):
     LIST_TAGS = ['Infos']
 
     def print_result(self, result):
-        for info in data.get('Infos', []):
+        for info in result.get('Infos', []):
             print self.tabify((info.get('Key'), info.get('Value')))
