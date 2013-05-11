@@ -32,24 +32,67 @@
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
 import base64
-import os.path
-import subprocess
+import os
+from subprocess import Popen, PIPE
 import sys
 import tempfile
 from euca2ools import exceptions, __version__
 
-def check_prerequisite_command(command):
-    cmd = [command]
+
+def execute(command, raise_exception=True, exception=None, success=0):
+    """Execute a process with optional arguments.
+    Returns a tuple containing stdout, stderr and return code.
+    :param command: A string or list of arguments to execute.
+    :param raise_exception: (optional) True if we should throw an exception
+    when the returncode is not equal to the success value.
+    :param exception: (optional) Exception object to use when raising an
+    exception. If this is not set a CommandFailed exception will be used.
+    :param success: (optional) Set the returncode that signifies success.
+    """
+    if isinstance(command, basestring):
+        command = command.split()
+    proc = Popen(command, stdout=PIPE, stderr=PIPE)
+    (out, err) = proc.communicate()
+    if proc.returncode != success:
+        if raise_exception:
+            if exception:
+                raise exception
+            else:
+                raise exceptions.CommandFailed(" ".join(command), err)
+    return (out, err, proc.returncode)
+
+
+def check_command(command, **kwargs):
+    """Check if an executable exists on the current system. If an exception
+    is not raised, it is assumed that the command exists.
+    :param command: The executable to check existence of.
+    :param kwargs: (optional) Arguments to pass along to the execute method.
+    """
     try:
-        output = subprocess.Popen(cmd, stdout=subprocess.PIPE,
-                                  stderr=subprocess.PIPE).communicate()
-    except OSError, e:
-        error_string = '%s' % e
-        if 'No such' in error_string:
-            print >> sys.stderr, 'Command %s not found. Is it installed?' % command
+        if isinstance(command, basestring):
+            command = command.split()
+        if command:
+            execute(command[0], **kwargs)
+        else:
+            raise ArgumentError("No executable supplied to check command.")
+    except OSError as err:
+        if 'No such' in err.message:
+            print >> sys.stderr, 'Command {0} not found. Is it installed?'.format(command)
             raise exceptions.NotFoundError
         else:
-            raise OSError(e)
+            raise
+
+
+def sanitize_path(path):
+    """Make a fully expanded and absolute path for us to work with.
+    Returns a santized path string.
+    :param path: The path string to sanitize.
+    """
+    return os.path.abspath(
+        os.path.expandvars(
+            os.path.expanduser(
+                os.path.normpath(path))))
+
 
 def parse_config(config, dict, keylist):
     fmt = ''
@@ -61,9 +104,9 @@ def parse_config(config, dict, keylist):
     cmd = ['bash', '-ec', ". '%s' >/dev/null; printf '%s' %s"
            % (config, fmt, str)]
 
-    handle = subprocess.Popen(cmd, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
-    (stdout, stderr) = handle.communicate()
-    if handle.returncode != 0:
+    (out, err, retval) = execute(cmd, exception=False)
+
+    if retval != 0:
         raise exceptions.ParseError('Parsing config file %s failed:\n\t%s'
                          % (config, stderr))
 
@@ -71,6 +114,7 @@ def parse_config(config, dict, keylist):
     for i in range(len(values) - 1):
         if values[i] != '':
             dict[keylist[i]] = values[i]
+
 
 def print_instances(instances, nil=""):
 
@@ -119,6 +163,7 @@ def print_instances(instances, nil=""):
             for tag in instance.tags:
                 print '\t'.join(('TAG', 'instance', instance.id, tag,
                                  instance.tags[tag]))
+
 
 def print_version_if_necessary():
     """

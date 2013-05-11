@@ -99,8 +99,10 @@ class CopyError(EucaError):
 
 class MetadataReadError(EucaError):
 
-    def __init__(self):
+    def __init__(self, metadata_type=None):
         self._message = 'Unable to read metadata'
+        if metadata_type:
+            self._message += ' for {0}'.format(metadata_type)
 
 class NotFoundError(EucaError):
 
@@ -111,14 +113,23 @@ class UnsupportedException(EucaError):
 
     def __init__(self, msg=None):
         if msg:
-            self._message = 'Not supported: %s' % msg
+            self._message = 'Not supported: {0}'.format(msg)
         else:
             self._message = 'Not supported'
 
 class CommandFailed(EucaError):
 
-    def __init__(self):
+    def __init__(self, cmd=None, err=None):
         self._message = 'Command failed'
+        self.err = err
+        if cmd:
+            self._message += ': {0}'.format(cmd)
+
+    @property
+    def message(self):
+        if err:
+            return "\n".join(self._message, self.err)
+        return self._message
 
 class ConnectionFailed(EucaError):
 

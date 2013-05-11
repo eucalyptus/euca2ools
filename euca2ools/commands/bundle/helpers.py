@@ -30,9 +30,15 @@
 
 from euca2ools.commands.walrus.getobject import GetObject
 from euca2ools.commands.walrus.listbucket import ListBucket
+from euca2ools.exceptions import MetadataReadError
 import os
+import requests
 import sys
+from urlparse import urljoin
 from xml.dom import minidom
+
+
+METADATA_URL = 'http://169.254.169.254/latest/meta-data/'
 
 
 def get_manifest_parts(manifest, bucket=None):
@@ -86,3 +92,52 @@ def download_files(bucket, keys, directory, **kwargs):
     paths = [os.path.join(bucket, key) for key in keys]
     kwargs.update(paths=paths, opath=directory)
     GetObject(**kwargs).main()
+
+
+def check_metadata():
+    """Check if instance metadata is available."""
+    if not requests.get(METADATA_URL).ok:
+        raise MetadataReadError
+
+
+def get_metadata(*paths):
+    """Get a single metadata value.
+    Returns a string containing the value of the metadata key.
+    :param paths: A variable number of items to be joined together as segments
+    of the metadata url.
+    """
+    url = METADATA_URL
+    if paths:
+        url = urljoin(url, "/".join(paths))
+    response = requests.get(url)
+    if response.ok:
+        return response.content
+    else:
+        raise MetadataReadError
+
+
+def get_metadata_list(*paths):
+    """Get a list of metadata values.
+    Returns a list containing the values of the metadata key.
+    :param paths: A variable number of items to be joined together as segments
+    of the metadata url.
+    """
+    return get_metadata(*paths).split('\n')
+
+
+def get_metadata_dict(*paths):
+    """Get a dict of metadata values.
+    Returns a dict containing the values of the metadata sub-keys.
+    :param paths: A variable number of items to be joined together as segments
+    of the metadata url.
+    """
+    items = get_metadata_list(*paths)
+    return dict((item, get_metadata(*(list(paths) + [item]))) \
+			for item in items)
+
+def parse_block_device_mapping_arg(arg):
+    """Parses the bundle argument string for block device mappings.
+    Returns a dict of block device mappings.
+    :param arg: The argument string for block device mappings.
+    """
+    return dict(pair.split('=') for pair in mapping.split(','))
