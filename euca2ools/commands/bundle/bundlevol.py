@@ -171,10 +171,15 @@ class BundleVol(BundleCommand):
             self._inherit_metadata()
         
         image_file = ImageCreator(log=self.log, **self.args).run()
-        image_args = self._filter_args_for_bundle_image()
-        image_args.update(image=image_file, image_type='machine')
-        self.log.info("bundling image: {0}".format(image_file))
-        return BundleImage(**image_args).main()
+        try:
+            image_args = self._filter_args_for_bundle_image()
+            image_args.update(image=image_file, image_type='machine')
+            self.log.info("bundling image: {0}".format(image_file))
+            return BundleImage(**image_args).main()
+        finally:
+            if os.path.exists(image_file):
+                os.remove(image_file)
+                os.rmdir(os.path.dirname(image_file))
 
     def print_result(self, result):
         for part_filename in result[0]:
