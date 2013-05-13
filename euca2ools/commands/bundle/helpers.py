@@ -30,15 +30,16 @@
 
 from euca2ools.commands.walrus.getobject import GetObject
 from euca2ools.commands.walrus.listbucket import ListBucket
-from euca2ools.exceptions import MetadataReadError
 import os
+from requestbuilder.exceptions import ClientError, ServerError
 import requests
-import sys
+from requests.exceptions import Timeout
 from urlparse import urljoin
 from xml.dom import minidom
 
 
 METADATA_URL = 'http://169.254.169.254/latest/meta-data/'
+METADATA_TIMEOUT = 10
 
 
 def get_manifest_parts(manifest, bucket=None):
@@ -96,8 +97,9 @@ def download_files(bucket, keys, directory, **kwargs):
 
 def check_metadata():
     """Check if instance metadata is available."""
-    if not requests.get(METADATA_URL).ok:
-        raise MetadataReadError
+    response = requests.get(METADATA_URL)
+    if not response.ok:
+        raise ServerError(response)
 
 
 def get_metadata(*paths):
@@ -109,11 +111,16 @@ def get_metadata(*paths):
     url = METADATA_URL
     if paths:
         url = urljoin(url, "/".join(paths))
-    response = requests.get(url)
+
+    try:
+        response = requests.get(url)
+    except Timeout:
+        raise ClientError("timeout occurred when getting instance metadata.")
+
     if response.ok:
         return response.content
     else:
-        raise MetadataReadError
+        raise ServerError(response)
 
 
 def get_metadata_list(*paths):

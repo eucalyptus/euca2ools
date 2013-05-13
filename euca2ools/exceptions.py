@@ -30,7 +30,6 @@
 #
 # Author: Neil Soman neil@eucalyptus.com
 
-import logging
 
 class EucaError(Exception):
 
@@ -100,13 +99,6 @@ class CopyError(EucaError):
 
     def __init__(self):
         self._message = 'Unable to copy'
-
-class MetadataReadError(EucaError):
-
-    def __init__(self, metadata_type=None):
-        self._message = 'Unable to read metadata'
-        if metadata_type:
-            self._message += ' for {0}'.format(metadata_type)
 
 class NotFoundError(EucaError):
 

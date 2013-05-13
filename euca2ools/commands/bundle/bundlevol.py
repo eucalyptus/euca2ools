@@ -38,15 +38,16 @@ import sys
 from euca2ools.commands.argtypes import delimited_list, filesize
 from euca2ools.commands.bundle import BundleCommand
 from euca2ools.commands.bundle.bundleimage import BundleImage
-from euca2ools.commands.bundle.helpers import (get_metadata, get_metadata_dict,
+from euca2ools.commands.bundle.helpers import (check_metadata, get_metadata,
+                                               get_metadata_dict,
                                                get_metadata_list)
-from euca2ools.commands.bundle.imagecreator import ImageCreator
-from euca2ools.exceptions import AWSError, MetadataReadError
+from euca2ools.commands.bundle.imagecreator import ImageCreator, IMAGE_MAX_SIZE
 from requestbuilder import Arg, MutuallyExclusiveArgList
-from requestbuilder.mixins import FileTransferProgressBarMixin
+from requestbuilder.command import BaseCommand
+from requestbuilder.exceptions import ServerError
 
 
-IMAGE_MAX_SIZE_IN_MB = euca2ools.bundler.IMAGE_MAX_SIZE / 1024 // 1024
+IMAGE_MAX_SIZE_IN_MB = IMAGE_MAX_SIZE / 1024 // 1024
 #
 # We pass our args dict along to BundleImage so we need to remove all the
 # args that it doesn't understand.
@@ -108,6 +109,8 @@ class BundleVol(BundleCommand):
         a bundled image.
         """
         try:
+            check_metadata()
+
             if not self.args.get('ramdisk'):
                 self.args['ramdisk'] = get_metadata('ramdisk-id')
                 self.log.debug("inheriting ramdisk: {0}"
@@ -122,25 +125,30 @@ class BundleVol(BundleCommand):
                 self.log.debug("inheriting block device mappings: {0}"
                                .format(self.args.get('block_device_mappings')))
             #
-            # Product codes and ancestor AMI ids are special cases since they
-            # aren't supported by Eucalyptus yet.
+            # Product codes and ancestor ids are special cases since they
+            # aren't always there.
             #
             try:
-                self.args['productcodes'].extend(get_metadata_list('product-codes'))
-            except MetadataReadError:
-                print >> sys.stderr, 'Unable to read product codes.'
+                self.args['productcodes'].extend(
+                    get_metadata_list('product-codes'))
+            except ServerError:
+                msg = 'unable to read product codes from metadata.'
+                print sys.stderr, msg
+                self.log.warn(msg)
             try:
                 if not self.args.get('ancestor_image_ids'):
                     self.args['ancestor_image_ids'] = []
                 self.args['ancestor_image_ids'].extend(
                     get_metadata_list('ancestor-ami-ids'))
-            except MetadataReadError:
-                print >> sys.stderr, 'Unable to read ancestor ids.'
-        except MetadataReadError:
+            except ServerError:
+                msg = 'unable to read ancestor ids.'
+                print sys.stderr, msg
+                self.log.warn(msg)
+        except ServerError:
             print >> sys.stderr, 'Unable to read instance metadata.'
             print >> sys.stderr, 'Pass the --no-inherit option if you wish to', \
                 'exclude instance metadata.'
-            sys.exit(1)
+            raise
             
     def _filter_args_for_bundle_image(self):
         """Make a complete copy of args to pass along to BundleImage. We first

@@ -29,7 +29,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 
-from euca2ools.exceptions import CopyError
+from euca2ools.exceptions import CommandFailed, UnsupportedException
 from euca2ools.utils import execute, check_command, sanitize_path
 from euca2ools.utils import mkdtemp_for_large_files as mkdtemp
 from requestbuilder.exceptions import ArgumentError
@@ -102,6 +102,7 @@ DEFAULT_FS_EXCLUDES = [
     '/proc',
     '/sys',
 ]
+IMAGE_MAX_SIZE = 10 * 1024 * 1024 * 1024 # 10GB Max Size in bytes
 
 
 class VolumeSync(object):
@@ -135,7 +136,7 @@ class VolumeSync(object):
         # the user keeps their fstab from the original volume.
         #
         if self.fstab:
-            with open(fstab, 'r') as fp:
+            with open(self.fstab, 'r') as fp:
                 self._install_fstab(fp.read())
         elif self.generate_fstab_file:
             self._install_generated_fstab()
@@ -154,7 +155,7 @@ class VolumeSync(object):
             else:
                 self.includes.append(include)
 
-    def bundle_all_dirs(self):
+    def bundle_all(self):
         self.bundle_all_dirs = True
 
     def filter_files(self):
@@ -271,11 +272,11 @@ class VolumeSync(object):
         # rsync return code 24: Partial transfer due to vanished source files
         #
         if retval in (23, 24):
-            print >> sys.stderr, 'Warning: rsync reports files partially copied:'
-            print >> sys.stderr, out
+            if self.log:
+                self.log.warn('rsync reports files partially copied.')
+            print sys.stderr, "Warning: rsync reports files partially copied."
         elif retval != 0:
-            print >> sys.stderr, 'Error: rsync failed with return code {0}'.format(retval)
-            raise CopyError
+            raise Exception('rsync failed with return code {0}.'.format(retval))
 
     def _sync_disks(self):
         execute('sync', log=self.log)
@@ -364,6 +365,8 @@ class ImageCreator(object):
                 volsync.generate_fstab()
             if self.filter:
                 volsync.filter_files()
+            if self.bundle_all_dirs:
+                volsync.bundle_all()
             volsync.exclude(self.excludes)
             volsync.include(self.includes)
             volsync.run()
