@@ -39,7 +39,8 @@ import tempfile
 from euca2ools import exceptions, __version__
 
 
-def execute(command, raise_exception=True, exception=None, success=0):
+def execute(command, raise_exception=True, exception=None, success=0,
+            shell=False, log=None):
     """Execute a process with optional arguments.
     Returns a tuple containing stdout, stderr and return code.
     :param command: A string or list of arguments to execute.
@@ -48,17 +49,35 @@ def execute(command, raise_exception=True, exception=None, success=0):
     :param exception: (optional) Exception object to use when raising an
     exception. If this is not set a CommandFailed exception will be used.
     :param success: (optional) Set the returncode that signifies success.
+    :param shell: (optional) Tell Popen to use a shell to execute the command.
+    :param log: (optional) Logger to use when logging debug information.
+    This is generally a security risk, so only do it when necessary with
+    trusted input.
     """
-    if isinstance(command, basestring):
-        command = command.split()
-    proc = Popen(command, stdout=PIPE, stderr=PIPE)
+    #
+    # If we're using a shell we have to provide Popen a string to execute,
+    # otherwise Popen wants a list.
+    #
+    if shell is True:
+        if isinstance(command, list):
+            command = " ".join(command)
+    else:
+        if isinstance(command, basestring):
+            command = command.split()
+    if log:
+        log.debug("executing command: {0}".format(command))
+    proc = Popen(command, stdout=PIPE, stderr=PIPE, shell=shell)
     (out, err) = proc.communicate()
+    if log:
+        log.debug("command retval: {0}".format(proc.returncode))
     if proc.returncode != success:
         if raise_exception:
             if exception:
                 raise exception
             else:
-                raise exceptions.CommandFailed(" ".join(command), err)
+                if isinstance(command, list):
+                    command = " ".join(command)
+                raise exceptions.CommandFailed(command, err)
     return (out, err, proc.returncode)
 
 
@@ -72,6 +91,12 @@ def check_command(command, **kwargs):
         if isinstance(command, basestring):
             command = command.split()
         if command:
+            #
+            # We don't want to raise a CommandFailed exception here.
+            # We only care if we get an OSError exception, which means the
+            # executable doesn't exist.
+            #
+            kwargs.update(raise_exception=False)
             execute(command[0], **kwargs)
         else:
             raise ArgumentError("No executable supplied to check command.")

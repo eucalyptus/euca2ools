@@ -28,14 +28,20 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+import argparse
 import os.path
-from euca2ools.commands.argtypes import manifest_block_device_mappings
+from euca2ools.commands import Euca2ools
+from euca2ools.commands.argtypes import (delimited_list,
+                                         manifest_block_device_mappings)
+from requestbuilder import Arg
+from requestbuilder.command import BaseCommand
 from requestbuilder.exceptions import ArgumentError
 from requestbuilder.mixins import FileTransferProgressBarMixin
 from requestbuilder.util import set_userregion
 
 
 class BundleCommand(BaseCommand, FileTransferProgressBarMixin):
+    SUITE = Euca2ools
     ARGS = [Arg('-r', '--arch', choices=('i386', 'x86_64', 'armhf'),
                 required=True,
                 help="the image's processor architecture (required)"),
@@ -55,7 +61,7 @@ class BundleCommand(BaseCommand, FileTransferProgressBarMixin):
                 of the kernel image to associate with the bundle'''),
             Arg('--ramdisk', metavar='IMAGE', help='''[machine image only] ID
                 of the ramdisk image to associate with the bundle'''),
-            Arg('--block-device-mappings',
+            Arg('-B', '--block-device-mappings',
                 metavar='VIRTUAL1=DEVICE1,VIRTUAL2=DEVICE2,...',
                 type=manifest_block_device_mappings,
                 help='''[machine image only] default block device mapping
@@ -64,9 +70,8 @@ class BundleCommand(BaseCommand, FileTransferProgressBarMixin):
                 place the bundle's files (default:  dir named by TMPDIR, TEMP,
                 or TMP environment variables, or otherwise /var/tmp)'''),
             Arg('--productcodes', metavar='CODE1,CODE2,...',
-                type=delimited_list(','),
-                help='comma-separated list of product codes'),
-            Arg('--batch', action='store_true', help=argparse.SUPPRESS)]
+                type=delimited_list(','), default=[],
+                help='comma-separated list of product codes')]
 
     def configure(self):
         BaseCommand.configure(self)

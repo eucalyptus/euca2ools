@@ -29,12 +29,16 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 
+from euca2ools.exceptions import CopyError
 from euca2ools.utils import execute, check_command, sanitize_path
 from euca2ools.utils import mkdtemp_for_large_files as mkdtemp
+from requestbuilder.exceptions import ArgumentError
 import os
 import sys
 import platform
 import shutil
+import stat
+import time
 
 
 NO_EXCLUDE_ENVAR = 'EUCA_BUNDLE_VOL_EMPTY_EXCLUDES'
@@ -43,18 +47,18 @@ ALLOWED_FS_TYPES = ('ext2', 'ext3', 'xfs', 'jfs', 'reiserfs')
 EXCLUDED_DIRS = ('/dev', '/media', '/mnt', '/proc',
                  '/sys', '/cdrom', '/tmp')
 SYSTEM_DIRS = ('proc', 'tmp', 'dev', 'mnt', 'sys')
-DEVICE_NODES = (('/dev/console', 'c', '5', '1'),
-                ('/dev/full', 'c', '1', '7'),
-                ('/dev/null', 'c', '1', '3'),
-                ('/dev/zero', 'c', '1', '5'),
-                ('/dev/tty', 'c', '5', '0'),
-                ('/dev/tty0', 'c', '4', '0'),
-                ('/dev/tty1', 'c', '4', '1'),
-                ('/dev/tty2', 'c', '4', '2'),
-                ('/dev/tty3', 'c', '4', '3'),
-                ('/dev/tty4', 'c', '4', '4'),
-                ('/dev/tty5', 'c', '4', '5'),
-                ('/dev/xvc0', 'c', '204', '191'))
+DEVICE_NODES = (('dev/console', 'c', '5', '1'),
+                ('dev/full', 'c', '1', '7'),
+                ('dev/null', 'c', '1', '3'),
+                ('dev/zero', 'c', '1', '5'),
+                ('dev/tty', 'c', '5', '0'),
+                ('dev/tty0', 'c', '4', '0'),
+                ('dev/tty1', 'c', '4', '1'),
+                ('dev/tty2', 'c', '4', '2'),
+                ('dev/tty3', 'c', '4', '3'),
+                ('dev/tty4', 'c', '4', '4'),
+                ('dev/tty5', 'c', '4', '5'),
+                ('dev/xvc0', 'c', '204', '191'))
 FSTAB_BODY_TEMPLATE = dict(
     i386="""/dev/sda1\t/\text3\tdefaults 1 1
 /dev/sdb\t/mnt\text3\tdefaults 0 0
@@ -101,21 +105,22 @@ DEFAULT_FS_EXCLUDES = [
 
 
 class VolumeSync(object):
-    def __init__(self, volume, image):
-        self.mount = mkdtemp()
+    def __init__(self, volume, image, log=None):
+        self.log = log
+        self.mpoint = mkdtemp(prefix='vol-')
         self.excludes = []
         self.filter = False
         self.fstab = None
-        self.generate_fstab = False
+        self.generate_fstab_file = False
         self.image = image
         self.includes = []
         self.volume = volume
         self.bundle_all_dirs = False
 
     def run(self):
-        #
-        # This is where ALL the magic happens!
-        #
+        """
+        This is where ALL the magic happens!
+        """
         self._sync_files()
         self._populate_system_dirs()
         self._populate_device_nodes()
@@ -132,7 +137,7 @@ class VolumeSync(object):
         if self.fstab:
             with open(fstab, 'r') as fp:
                 self._install_fstab(fp.read())
-        elif self.generate_fstab:
+        elif self.generate_fstab_file:
             self._install_generated_fstab()
 
     def exclude(self, exclude):
@@ -158,27 +163,28 @@ class VolumeSync(object):
     def install_fstab_from_file(self, fstab):
         if not os.path.exists(fstab):
             raise ArgumentError(
-                'fstab file '{0}' does not exist.'.format(fstab))
+                "fstab file '{0}' does not exist.".format(fstab))
         self.fstab = fstab
 
     def generate_fstab(self):
-        self.generate_fstab = True
+        self.generate_fstab_file = True
 
     def _update_exclusions(self):
-        #
-        # Here we update the following sync exclusions:
-        #
-        # 1. Exclude our disk image we are syncing to.
-        # 2. Exclude our mount point for our image.
-        # 3. Exclude filesystems that are not allowed.
-        # 4. Exclude special system directories.
-        # 5. Exclude file patterns for privacy.
-        # 6. Exclude problematic udev rules.
-        #
+        """
+        Here we update the following sync exclusions:
+
+        1. Exclude our disk image we are syncing to.
+        2. Exclude our mount point for our image.
+        3. Exclude filesystems that are not allowed.
+        4. Exclude special system directories.
+        5. Exclude file patterns for privacy.
+        6. Exclude problematic udev rules.
+        """
+
         if self.image.find(self.volume) == 0:
             self.exclude(os.path.dirname(self.image))
-        if self.mount(self.volume) == 0:
-            self.exclude(self.mount)
+        if self.mpoint.find(self.volume) == 0:
+            self.exclude(self.mpoint)
         if not self.bundle_all_dirs:
             self._add_mtab_exclusions()
         self.excludes.extend(EXCLUDED_DIRS)
@@ -190,6 +196,10 @@ class VolumeSync(object):
                  '/etc/udev/rules.d/z25_persistent-net.rules'])
 
     def _add_mtab_exclusions(self):
+        """Exclude locations from the volume rsync based on whether we are
+        allowed to sync the type of filesystem. If you have chosen to bundle
+        all using '--all' then this will not get called.
+        """
         with open('/etc/mtab', 'r') as mtab:
             for line in mtab.readlines():
                 (mount, type) = line.split()[1:3]
@@ -205,23 +215,29 @@ class VolumeSync(object):
                     self.excludes.append(mount)
 
     def _populate_tmpfs_mounts(self):
+        """Find all tmpfs mounts on our volume and make sure that they are
+        created on the image.
+        """
         with open('/etc/mtab', 'r') as mtab:
             for line in mtab.readlines():
                 (mount, type) = line.split()[1:3]
                 if type == 'tmpfs':
-                    fullpath = os.path.join(self.mount, mount[1:])
+                    fullpath = os.path.join(self.mpoint, mount[1:])
                     if not os.path.exists(fullpath):
                         os.makedirs(fullpath)
 
     def _populate_device_nodes(self):
+        """Populate the /dev directory in our image with common device nodes."""
         template = 'mknod {0} {1} {2} {3}'
         for node in DEVICE_NODES:
-            cmd = template.format(node[0], *node[1:])
-            execute(cmd)
+            cmd = template.format(os.path.join(self.mpoint, node[0]),
+                                  *node[1:])
+            execute(cmd, log=self.log)
 
     def _populate_system_dirs(self):
+        """Populate our image with common system directories."""
         for sysdir in SYSTEM_DIRS:
-            fullpath = os.path.join(self.mount, sysdir)
+            fullpath = os.path.join(self.mpoint, sysdir)
             if not os.path.exists(fullpath):
                 os.makedirs(fullpath)
                 if sysdir == 'tmp':
@@ -231,11 +247,11 @@ class VolumeSync(object):
         self._install_fstab(_generate_fstab_content())
 
     def _install_fstab(self, content):
-        curr_fstab = os.path.join(self.mount, 'etc', 'fstab')
+        curr_fstab = os.path.join(self.mpoint, 'etc', 'fstab')
         if os.path.exists(curr_fstab):
             shutil.copyfile(curr_fstab, curr_fstab + '.old')
             os.remove(curr_fstab)
-        with open(os.path.join(mount, 'etc', 'fstab'), 'wb') as fp:
+        with open(os.path.join(self.mpoint, 'etc', 'fstab'), 'wb') as fp:
             fp.write(content)
 
     def _sync_files(self):
@@ -246,8 +262,9 @@ class VolumeSync(object):
             cmd.extend(['--exclude', exclude])
         for include in self.includes:
             cmd.extend(['--include', include])
-        cmd.extend([os.path.join(self.volume, '*'), self.dest])
-        (out, _, retval) = execute(cmd)
+        cmd.extend([os.path.join(self.volume, '*'), self.mpoint])
+        (out, _, retval) = execute(cmd, shell=True, raise_exception=False,
+                                   log=self.log)
 
         #
         # rsync return code 23: Partial transfer due to error
@@ -256,28 +273,28 @@ class VolumeSync(object):
         if retval in (23, 24):
             print >> sys.stderr, 'Warning: rsync reports files partially copied:'
             print >> sys.stderr, out
-        else:
+        elif retval != 0:
             print >> sys.stderr, 'Error: rsync failed with return code {0}'.format(retval)
             raise CopyError
 
     def _sync_disks(self):
-        execute('sync')
+        execute('sync', log=self.log)
 
     def mount(self):
         self._sync_disks()
-        if not os.path.exists(self.mount):
-            os.makedirs(self.mount)
+        if not os.path.exists(self.mpoint):
+            os.makedirs(self.mpoint)
         check_command('mount')
-        cmd = ['mount', '-o', 'loop', self.image, self.mount]
-        execute(cmd)
+        cmd = ['mount', '-o', 'loop', self.image, self.mpoint]
+        execute(cmd, log=self.log)
 
     def unmount(self):
         self._sync_disks()
-        utils.check_command('umount')
-        cmd = ['umount', '-d', self.dest]
-        execute(cmd)
-        if os.path.exists(self.mount):
-            os.remove(self.mount)
+        check_command('umount')
+        cmd = ['umount', '-d', self.mpoint]
+        execute(cmd, log=self.log)
+        if os.path.exists(self.mpoint):
+            os.rmdir(self.mpoint)
 
     def __enter__(self):
         self.mount()
@@ -288,31 +305,59 @@ class VolumeSync(object):
 
 
 class ImageCreator(object):
-    def __init__(self, **kwargs):
-        self.volume = sanitize_path(kwargs.get('volume', '/'))
+    def __init__(self, log=None, **kwargs):
+        #
+        # Assign settings for image creation
+        #
+        self.log = log
+        self.fs = {}
+        self.volume = kwargs.get('volume')
         self.fstab = kwargs.get('fstab')
         self.generate_fstab = kwargs.get('generate_fstab', False)
         self.excludes = kwargs.get('exclude', [])
         self.includes = kwargs.get('include', [])
         self.bundle_all_dirs = kwargs.get('bundle_all_dirs', False)
-        self.size = kwargs.get('size')
         self.prefix = kwargs.get('prefix')
-        self.image = os.path.join(mkdtemp(), '{0}.img'.format(self.prefix))
-        self.fs = {}
+        self.filter = kwargs.get('filter', True)
+        self.size = kwargs.get('size')
+        self.destination = kwargs.get('destination') or mkdtemp(prefix='image-')
+        self.image = os.path.join(self.destination,
+                                  '{0}.img'.format(self.prefix))
+
+        #
+        # Validate settings
+        #
+        if not self.volume:
+            raise ArgumentError("must supply a source volume.")
+        self.volume = sanitize_path(self.volume)
+        if not self.size:
+            raise ArgumentError("must supply a size for the generated image.")
+        if not self.prefix:
+            raise ArgumentError("must supply a prefix.")
+        if not self.volume:
+            raise ArgumentError("must supply a volume.")
+        if not (os.path.exists(self.destination) or \
+                    os.path.isdir(self.destination)):
+            raise ArgumentError("'{0}' is not a directory or does not exist."
+                                .format(self.destination))
 
     def run(self):
-        #
-        # Prepare a disk image
-        # 
+        """
+        Prepare a disk image
+        """
+        sys.stderr.write("Creating image...")
         self._create_raw_diskimage()
         self._populate_filesystem_info()
         self._make_filesystem(**self.fs)
+        sys.stderr.write(" done\n")
+        sys.stderr.flush()
         #
         # Inside the VolumeSync context we will mount our image
         # as a loop device. If for any reason a failure occurs
         # the device will automatically be unmounted and cleaned up.
         #
-        with VolumeSync(self.volume, self.image) as volsync:
+        sys.stderr.write("Syncing volume contents...")
+        with VolumeSync(self.volume, self.image, log=self.log) as volsync:
             if self.fstab:
                 volsync.install_fstab_from_file(self.fstab)
             elif self.generate_fstab:
@@ -322,22 +367,25 @@ class ImageCreator(object):
             volsync.exclude(self.excludes)
             volsync.include(self.includes)
             volsync.run()
+        sys.stderr.write(" done\n")
+        sys.stderr.flush()
 
         return self.image
 
     def _create_raw_diskimage(self):
-        template = 'dd if=/dev/zero of={0} count=1 bs=1M seek {1}'
-        cmd = template.format(self.image, self.args.get('size') - 1)
-        execute(cmd)
+        """Create a sparse raw image file."""
+        template = 'dd if=/dev/zero of={0} count=1 bs=1M seek={1}'
+        cmd = template.format(self.image, self.size - 1)
+        execute(cmd, log=self.log)
 
     def _populate_filesystem_info(self):
-        #
-        # Create a temporary device node for the volume we're going
-        # to copy. We'll use it to get information about the filesystem.
-        #
+        """Create a temporary device node for the volume we're going
+        to copy. We'll use it to get information about the source volume's
+        filesystem.
+        """
         st_dev = os.stat(self.volume).st_dev
         devid = os.makedev(os.major(st_dev), os.minor(st_dev))
-        directory = mkdtemp()
+        directory = mkdtemp(prefix='devnode-')
         devnode = os.path.join(directory, 'rootdev')
         os.mknod(devnode, 0400 | stat.S_IFBLK, devid)
         template = 'blkid -s {0} -ovalue {1}'
@@ -345,7 +393,7 @@ class ImageCreator(object):
             for tag in BLKID_TAGS:
                 cmd = template.format(tag, devnode)
                 try:
-                    (out, _, _) = execute(cmd)
+                    (out, _, _) = execute(cmd, log=self.log)
                     self.fs[tag.lower()] = out.rstrip()
                 except CommandFailed:
                     pass
@@ -354,6 +402,11 @@ class ImageCreator(object):
             os.rmdir(directory)
    
     def _make_filesystem(self, type='ext3', uuid=None, label=None):
+        """Format our raw image.
+        :param type: (optional) Filesystem type, one of ext3, ext4, xfs, btrfs.
+        :param uuid: (optional) UUID of the filesystem.
+        :param label: (optional) Label of the filesystem.
+        """
         mkfs_cmd = 'mkfs.{0}'.format(type)
         tunefs = None
 
@@ -373,18 +426,25 @@ class ImageCreator(object):
 
         if label:
             mkfs.extend(['-L', label])
-        utils.check_command(mkfs)
-        execute(mkfs)
+        check_command(mkfs)
+        execute(mkfs, log=self.log)
         if tunefs:
-            utils.check_command(tunefs)
-            execute(tunefs)
+            check_command(tunefs)
+            execute(tunefs, log=self.log)
 
 
 def _generate_fstab_content(arch=platform.machine()):
+    """Generate an fstab file based on the system's architecture.
+    Returns the fstab file contents as a string.
+    :param arch: (optional) The architecture to use when creating the fstab
+    file. It will default to the architecture of the currently running system.
+    If the system is 'i386' then the legacy fstab configuration will be used,
+    and if the system is 'x86_64' then the new fstab configuration will be used.
+    """
     if arch in FSTAB_BODY_TEMPLATE:
-        return "\n".join(FSTAB_HEADER_TEMPLATE.format(
+        return "\n".join([FSTAB_HEADER_TEMPLATE.format(
                 time.strftime(FSTAB_TIME_FORMAT)),
-                         FSTAB_BODY_TEMPLATE.get(arch))
+                         FSTAB_BODY_TEMPLATE.get(arch)])
     else:
         raise UnsupportedException(
             "platform architecture {0} not supported".format(arch))

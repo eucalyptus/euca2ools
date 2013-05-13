@@ -134,10 +134,3 @@ def get_metadata_dict(*paths):
     items = get_metadata_list(*paths)
     return dict((item, get_metadata(*(list(paths) + [item]))) \
 			for item in items)
-
-def parse_block_device_mapping_arg(arg):
-    """Parses the bundle argument string for block device mappings.
-    Returns a dict of block device mappings.
-    :param arg: The argument string for block device mappings.
-    """
-    return dict(pair.split('=') for pair in mapping.split(','))

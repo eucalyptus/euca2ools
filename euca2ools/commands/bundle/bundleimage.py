@@ -32,7 +32,8 @@ import argparse
 import binascii
 import euca2ools
 from euca2ools.commands import Euca2ools
-from euca2ools.commands.argtypes import delimited_list, filesize
+from euca2ools.commands.argtypes import (delimited_list, filesize,
+                                         manifest_block_device_mappings)
 from euca2ools.commands.bundle import add_bundle_creds
 from euca2ools.commands.bundle.bundle import Bundle
 from euca2ools.utils import mkdtemp_for_large_files

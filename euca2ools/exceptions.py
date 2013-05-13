@@ -41,6 +41,10 @@ class EucaError(Exception):
     def message(self):
         return self._message
 
+    @property
+    def args(self):
+        return (self._message,)
+
 class ValidationError(Exception):
 
     @property
@@ -124,12 +128,8 @@ class CommandFailed(EucaError):
         self.err = err
         if cmd:
             self._message += ': {0}'.format(cmd)
-
-    @property
-    def message(self):
         if err:
-            return "\n".join(self._message, self.err)
-        return self._message
+            self._message += '\n{0}'.format(err)
 
 class ConnectionFailed(EucaError):
 
