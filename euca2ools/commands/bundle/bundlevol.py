@@ -75,7 +75,7 @@ class BundleVol(BundleCreator):
                     default=True, help='''Do not add instance metadata to the
                     bundled image (defaults to inheriting metadata).'''),
                 Arg('--inherit', dest='inherit', action='store_true',
-                    default=True, help='''Explicity inherit instance metadata
+                    default=True, help='''Explicitly inherit instance metadata
                     and add it to the bundled image (this is the default
                     behavior)''')),
             Arg('-i', '--include', metavar='FILE1,FILE2,...',
