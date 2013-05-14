@@ -86,13 +86,12 @@ class BundleVol(BundleCreator):
                 directories to exclude.'''),
             Arg('--volume', metavar='PATH', default='/', help='''Path to
                 mounted volume to bundle (defaults to '/').'''),
-            Arg('--no-filter', dest='filter', default=True,
-                action='store_false', help='''Do not use the default filtered
-                files list.'''),
+            Arg('--no-filter', dest='filter', action='store_false',
+                help='''Do not use the default filtered files list.'''),
             MutuallyExclusiveArgList(
                 Arg('--fstab', metavar='PATH', help='''Path to the fstab to be
                     bundled with image.'''),
-                Arg('--generate-fstab', default=False, action='store_true',
+                Arg('--generate-fstab', action='store_true',
                     help='Generate fstab to bundle in image.'))]
 
     def __init__(self, **kwargs):
