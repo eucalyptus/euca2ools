@@ -44,3 +44,6 @@ class UploadSigningCertificate(EuareRequest):
                 help='''user the signing certificate is for (default: current
                         user)'''),
             AS_ACCOUNT]
+
+    def print_result(self, result):
+        print result.get('Certificate', {}).get('CertificateId')
