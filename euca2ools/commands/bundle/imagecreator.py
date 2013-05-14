@@ -271,9 +271,10 @@ class VolumeSync(object):
             # rsync return code 24: Partial transfer due to missing source files
             #
             if err.returncode in (23, 24):
+                msg = 'rsync reports files partially copied'
                 if self.log:
-                    self.log.warn('rsync reports files partially copied.')
-                print sys.stderr, "Warning: rsync reports files partially copied."
+                    self.log.warn(msg)
+                print >> sys.stderr, 'warning:', msg
             else:
                 raise
 
@@ -336,13 +337,13 @@ class ImageCreator(object):
         if not (os.path.exists(self.destination) or \
                     os.path.isdir(self.destination)):
             raise ValueError("'{0}' is not a directory or does not exist."
-                                .format(self.destination))
+                             .format(self.destination))
 
     def run(self):
         """
         Prepare a disk image
         """
-        sys.stderr.write("Creating image...")
+        print >> sys.stderr, "Creating image...",
         self._create_raw_diskimage()
         self._populate_filesystem_info()
         self._make_filesystem(**self.fs)
@@ -352,7 +353,7 @@ class ImageCreator(object):
         # as a loop device. If for any reason a failure occurs
         # the device will automatically be unmounted and cleaned up.
         #
-        sys.stderr.write("Syncing volume contents...")
+        print >> sys.stderr, "Syncing volume contents...",
         with VolumeSync(self.volume, self.image, log=self.log) as volsync:
             if self.fstab:
                 volsync.install_fstab_from_file(self.fstab)

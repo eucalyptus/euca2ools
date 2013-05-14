@@ -147,11 +147,12 @@ class BundleVol(BundleCreator):
                 print sys.stderr, msg
                 self.log.warn(msg)
         except ServerError:
-            print >> sys.stderr, 'Unable to read instance metadata.'
-            print >> sys.stderr, 'Pass the --no-inherit option if you wish to', \
-                'exclude instance metadata.'
+            msg = ('Unable to read instance metadata.  Use --no-inherit if '
+                   'you want to proceed without the metadata service.')
+            print >> sys.stderr, msg
+            self.log.warn(msg)
             raise
-            
+
     def _filter_args_for_bundle_image(self):
         """Make a complete copy of args to pass along to BundleImage. We first
         need to remove any arguments that BundleImage would not know about.
