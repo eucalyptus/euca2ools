@@ -228,7 +228,8 @@ class EucalyptusRequest(AWSQueryRequest, TabifyingMixin):
         res_line = ['RESERVATION', reservation['reservationId'],
                     reservation.get('ownerId')]
         # group.get('entry') is a workaround for a CLC bug
-        group_ids = [group.get('groupName') or group.get('entry') or ''
+        group_ids = [group.get('groupName') or group.get('groupId') or
+                     group.get('entry') or ''
                      for group in reservation['groupSet']]
         res_line.append(', '.join(group_ids))
         print self.tabify(res_line)
