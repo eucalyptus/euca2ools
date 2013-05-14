@@ -42,7 +42,7 @@ class DescribeScalingActivities(AutoScalingRequest, TabifyingMixin):
                 metavar='ASGROUP', help='''name of an Auto Scaling group by
                 which to filter the request'''),
             Arg('--show-long', action='store_true', route_to=None,
-                help="show all of the groups' info")]
+                help="show all of the activities' info")]
     LIST_TAGS = ['Activities']
 
     def main(self):
