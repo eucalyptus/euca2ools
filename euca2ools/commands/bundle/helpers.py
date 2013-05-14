@@ -140,5 +140,5 @@ def get_metadata_dict(*paths):
     of the metadata url.
     """
     items = get_metadata_list(*paths)
-    return dict((item, get_metadata(*(list(paths) + [item]))) \
-                    for item in items)
+    return dict((item, get_metadata(*(list(paths) + [item])))
+                for item in items)

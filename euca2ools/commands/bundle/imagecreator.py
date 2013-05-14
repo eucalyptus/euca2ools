@@ -27,7 +27,6 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#
 
 from euca2ools.utils import sanitize_path
 from euca2ools.utils import mkdtemp_for_large_files as mkdtemp
@@ -261,7 +260,7 @@ class VolumeSync(object):
             cmd.extend(['--include', include])
         cmd.extend(glob.glob(os.path.join(self.volume, '*')))
         cmd.append(self.mpoint + os.path.sep)
-        
+
         try:
             if self.log:
                 self.log.debug('executing {0}'.format(cmd))
@@ -399,7 +398,7 @@ class ImageCreator(object):
         finally:
             os.remove(devnode)
             os.rmdir(directory)
-   
+
     def _make_filesystem(self, type='ext3', uuid=None, label=None):
         """Format our raw image.
         :param type: (optional) Filesystem type, one of ext3, ext4, xfs, btrfs.

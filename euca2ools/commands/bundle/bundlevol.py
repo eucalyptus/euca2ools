@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2013, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -27,9 +27,6 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#
-# Author: Neil Soman neil@eucalyptus.com
-#         Mitch Garnaat mgarnaat@eucalyptus.com
 
 import copy
 import os
@@ -123,8 +120,8 @@ class BundleVol(BundleCreator):
             if not self.args.get('block_device_mappings'):
                 self.args['block_device_mappings'] = \
                     get_metadata_dict('block-device-mapping')
-                self.log.debug("inheriting block device mappings: {0}"
-                               .format(self.args.get('block_device_mappings')))
+                self.log.debug("inheriting block device mappings: {0}".format(
+                    self.args.get('block_device_mappings')))
             #
             # Product codes and ancestor ids are special cases since they
             # aren't always there.
@@ -174,7 +171,7 @@ class BundleVol(BundleCreator):
     def main(self):
         if self.args.get('inherit'):
             self._inherit_metadata()
-        
+
         image_file = ImageCreator(log=self.log, **self.args).run()
         try:
             image_args = self._filter_args_for_bundle_image()
