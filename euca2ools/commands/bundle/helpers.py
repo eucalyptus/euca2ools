@@ -31,8 +31,15 @@
 from euca2ools.commands.walrus.getobject import GetObject
 from euca2ools.commands.walrus.listbucket import ListBucket
 import os
-import sys
+from requestbuilder.exceptions import ClientError, ServerError
+import requests
+from requests.exceptions import Timeout
+from urlparse import urljoin
 from xml.dom import minidom
+
+
+METADATA_URL = 'http://169.254.169.254/latest/meta-data/'
+METADATA_TIMEOUT = 10
 
 
 def get_manifest_parts(manifest, bucket=None):
@@ -86,3 +93,52 @@ def download_files(bucket, keys, directory, **kwargs):
     paths = [os.path.join(bucket, key) for key in keys]
     kwargs.update(paths=paths, opath=directory)
     GetObject(**kwargs).main()
+
+
+def check_metadata():
+    """Check if instance metadata is available."""
+    response = requests.get(METADATA_URL)
+    if not response.ok:
+        raise ServerError(response)
+
+
+def get_metadata(*paths):
+    """Get a single metadata value.
+    Returns a string containing the value of the metadata key.
+    :param paths: A variable number of items to be joined together as segments
+    of the metadata url.
+    """
+    url = METADATA_URL
+    if paths:
+        url = urljoin(url, "/".join(paths))
+
+    try:
+        response = requests.get(url, timeout=METADATA_TIMEOUT)
+    except Timeout:
+        raise ClientError("timeout occurred when getting metadata from {0}"
+                          .format(url))
+
+    if response.ok:
+        return response.content
+    else:
+        raise ServerError(response)
+
+
+def get_metadata_list(*paths):
+    """Get a list of metadata values.
+    Returns a list containing the values of the metadata key.
+    :param paths: A variable number of items to be joined together as segments
+    of the metadata url.
+    """
+    return get_metadata(*paths).split('\n')
+
+
+def get_metadata_dict(*paths):
+    """Get a dict of metadata values.
+    Returns a dict containing the values of the metadata sub-keys.
+    :param paths: A variable number of items to be joined together as segments
+    of the metadata url.
+    """
+    items = get_metadata_list(*paths)
+    return dict((item, get_metadata(*(list(paths) + [item]))) \
+                    for item in items)

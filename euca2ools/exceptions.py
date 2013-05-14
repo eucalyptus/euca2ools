@@ -30,7 +30,6 @@
 #
 # Author: Neil Soman neil@eucalyptus.com
 
-import logging
 
 class EucaError(Exception):
 
@@ -40,6 +39,10 @@ class EucaError(Exception):
     @property
     def message(self):
         return self._message
+
+    @property
+    def args(self):
+        return (self._message,)
 
 class ValidationError(Exception):
 
@@ -97,11 +100,6 @@ class CopyError(EucaError):
     def __init__(self):
         self._message = 'Unable to copy'
 
-class MetadataReadError(EucaError):
-
-    def __init__(self):
-        self._message = 'Unable to read metadata'
-
 class NotFoundError(EucaError):
 
     def __init__(self):
@@ -111,14 +109,19 @@ class UnsupportedException(EucaError):
 
     def __init__(self, msg=None):
         if msg:
-            self._message = 'Not supported: %s' % msg
+            self._message = 'Not supported: {0}'.format(msg)
         else:
             self._message = 'Not supported'
 
 class CommandFailed(EucaError):
 
-    def __init__(self):
+    def __init__(self, cmd=None, err=None):
         self._message = 'Command failed'
+        self.err = err
+        if cmd:
+            self._message += ': {0}'.format(cmd)
+        if err:
+            self._message += '\n{0}'.format(err)
 
 class ConnectionFailed(EucaError):
 

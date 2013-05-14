@@ -34,6 +34,21 @@ from requestbuilder import EMPTY
 import sys
 
 
+def manifest_block_device_mappings(mappings_as_str):
+    mappings = {}
+    mapping_strs = mappings_as_str.split(',')
+    for mapping_str in mapping_strs:
+        if mapping_str.strip():
+            bits = mapping_str.strip().split('=')
+            if len(bits) == 2:
+                mappings[bits[0].strip()] = bits[1].strip()
+            else:
+                raise argparse.ArgumentTypeError(
+                    "invalid device mapping '{0}' (must have format "
+                    "'VIRTUAL=DEVICE')".format(mapping_str))
+    return mappings
+
+
 def ec2_block_device_mapping(map_as_str):
     '''
     Parse a block device mapping from an image registration command line.
