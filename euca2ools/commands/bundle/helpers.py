@@ -113,9 +113,10 @@ def get_metadata(*paths):
         url = urljoin(url, "/".join(paths))
 
     try:
-        response = requests.get(url)
+        response = requests.get(url, timeout=METADATA_TIMEOUT)
     except Timeout:
-        raise ClientError("timeout occurred when getting instance metadata.")
+        raise ClientError("timeout occurred when getting metadata from {0}"
+                          .format(url))
 
     if response.ok:
         return response.content
@@ -140,4 +141,4 @@ def get_metadata_dict(*paths):
     """
     items = get_metadata_list(*paths)
     return dict((item, get_metadata(*(list(paths) + [item]))) \
-			for item in items)
+                    for item in items)

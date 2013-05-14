@@ -31,7 +31,7 @@
 import argparse
 import os.path
 from euca2ools.commands import Euca2ools
-from euca2ools.commands.argtypes import (delimited_list,
+from euca2ools.commands.argtypes import (delimited_list, filesize,
                                          manifest_block_device_mappings)
 from requestbuilder import Arg
 from requestbuilder.command import BaseCommand
@@ -40,7 +40,7 @@ from requestbuilder.mixins import FileTransferProgressBarMixin
 from requestbuilder.util import set_userregion
 
 
-class BundleCommand(BaseCommand, FileTransferProgressBarMixin):
+class BundleCreator(BaseCommand, FileTransferProgressBarMixin):
     SUITE = Euca2ools
     ARGS = [Arg('-r', '--arch', choices=('i386', 'x86_64', 'armhf'),
                 required=True,
@@ -57,21 +57,24 @@ class BundleCommand(BaseCommand, FileTransferProgressBarMixin):
                 a user and/or region in configuration files'''),
             Arg('--ec2cert', metavar='FILE', help='''file containing the
                 cloud's X.509 certificate'''),
-            Arg('--kernel', metavar='IMAGE', help='''[machine image only] ID
-                of the kernel image to associate with the bundle'''),
-            Arg('--ramdisk', metavar='IMAGE', help='''[machine image only] ID
-                of the ramdisk image to associate with the bundle'''),
+            Arg('--kernel', metavar='IMAGE', help='''ID of the kernel image to
+                associate with the machine bundle'''),
+            Arg('--ramdisk', metavar='IMAGE', help='''ID of the ramdisk image
+                to associate with the machine bundle'''),
             Arg('-B', '--block-device-mappings',
                 metavar='VIRTUAL1=DEVICE1,VIRTUAL2=DEVICE2,...',
                 type=manifest_block_device_mappings,
-                help='''[machine image only] default block device mapping
-                scheme with which to launch instances of this image'''),
+                help='''default block device mapping scheme with which to
+                launch instances of this machine image'''),
             Arg('-d', '--destination', metavar='DIR', help='''location to
                 place the bundle's files (default:  dir named by TMPDIR, TEMP,
                 or TMP environment variables, or otherwise /var/tmp)'''),
+            Arg('--part-size', type=filesize, default=10485760,  # 10m
+                help=argparse.SUPPRESS),
             Arg('--productcodes', metavar='CODE1,CODE2,...',
                 type=delimited_list(','), default=[],
-                help='comma-separated list of product codes')]
+                help='comma-separated list of product codes'),
+            Arg('--batch', action='store_true', help=argparse.SUPPRESS)]
 
     def configure(self):
         BaseCommand.configure(self)
@@ -97,16 +100,11 @@ class BundleCommand(BaseCommand, FileTransferProgressBarMixin):
                 'missing account ID; please supply one with --user')
         self.log.debug('account ID: %s', self.args['user'])
 
-    def process_userregion(self, userregion):
-        if '@' in userregion:
-            user, region = userregion.split('@', 1)
-        else:
-            user = None
-            region = userregion
-        if region and self.config.current_region is None:
-            self.config.current_region = region
-        if user and self.config.current_user is None:
-            self.config.current_user = user
+        if (self.args.get('destination') and
+            os.path.exists(self.args['destination']) and not
+            os.path.isdir(self.args['destination'])):
+            raise ArgumentError("argument -d/--destination: '{0}' is not a "
+                                "directory".format(self.args['destination']))
 
 
 def add_bundle_creds(args, config):

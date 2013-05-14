@@ -31,34 +31,36 @@
 # Author: Neil Soman neil@eucalyptus.com
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import argparse
 import copy
 import os
 import sys
 from euca2ools.commands.argtypes import delimited_list, filesize
-from euca2ools.commands.bundle import BundleCommand
+from euca2ools.commands.bundle import BundleCreator
+from euca2ools.commands.bundle.bundle import Bundle
 from euca2ools.commands.bundle.bundleimage import BundleImage
 from euca2ools.commands.bundle.helpers import (check_metadata, get_metadata,
                                                get_metadata_dict,
                                                get_metadata_list)
-from euca2ools.commands.bundle.imagecreator import ImageCreator, IMAGE_MAX_SIZE
+from euca2ools.commands.bundle.imagecreator import ImageCreator
 from requestbuilder import Arg, MutuallyExclusiveArgList
 from requestbuilder.command import BaseCommand
 from requestbuilder.exceptions import ServerError
 
 
-IMAGE_MAX_SIZE_IN_MB = IMAGE_MAX_SIZE / 1024 // 1024
+IMAGE_MAX_SIZE_IN_MB = Bundle.EC2_IMAGE_SIZE_LIMIT / 1024 // 1024
 #
 # We pass our args dict along to BundleImage so we need to remove all the
 # args that it doesn't understand.
 #
 BUNDLE_IMAGE_ARG_FILTER = ('generate_fstab', 'fstab', 'bundle_all_dirs',
-                           'filter', 'inherit', 'size', 'volume',
-                           'exclude', 'include', 'ancestor_image_ids')
+                           'filter', 'no_inherit', 'inherit', 'size',
+                           'volume', 'exclude', 'include',
+                           'ancestor_image_ids')
 
 
-class BundleVol(BundleCommand):
-    DESCRIPTION = 'Bundles an image for use with Eucalyptus or Amazon EC2.'
+class BundleVol(BundleCreator):
+    DESCRIPTION = '''Bundle an image for use with Eucalyptus or Amazon EC2
+                  (requires superuser privileges).'''
     ARGS = [Arg('-s', '--size', metavar='MB',
                 type=filesize, default=IMAGE_MAX_SIZE_IN_MB,
                 help='''Size of the image in MB (default: {0}; recommended
@@ -70,12 +72,12 @@ class BundleVol(BundleCommand):
                 help='''Bundle all directories (including mounted
                 filesystems).'''),
             MutuallyExclusiveArgList(
-                Arg('--no-inherit', dest='inherit', default=False,
-                    action='store_false', help='''Do not add instance metadata to
-                    the bundled image (use the --inherit option to explicitly
-                    inherit instance metadata).'''),
-                Arg('--inherit', dest='inherit', default=True,
-                    action='store_true', help=argparse.SUPPRESS)),
+                Arg('--no-inherit', dest='no_inherit', action='store_true',
+                    help='''Do not add instance metadata to the bundled image
+                    (defaults to inherting metadata).'''),
+                Arg('--inherit', dest='inherit', action='store_true',
+                    help='''Explicity inhert instance metadata and add it to
+                    the bundled image (this is the default behavior)''')),
             Arg('-i', '--include', metavar='FILE1,FILE2,...',
                 type=delimited_list(','), help='''Comma-separated list of
                 absolute file paths to include.'''),
@@ -91,13 +93,13 @@ class BundleVol(BundleCommand):
                 Arg('--fstab', metavar='PATH', help='''Path to the fstab to be
                     bundled with image.'''),
                 Arg('--generate-fstab', default=False, action='store_true',
-                    help='Generate fstab to bundle in image.')),
-            Arg('--batch',
-                help='Run in batch mode.  For compatibility has no effect')]
+                    help='Generate fstab to bundle in image.'))]
 
     def __init__(self, **kwargs):
         #
-        # Do root check before anything else happens
+        # We want to do this before arguments to the command are processed.
+        # Users should be informed if they don't have sufficient privileges
+        # before being told about missing required arguments.
         #
         if os.geteuid() != 0:
             raise Exception("must be root user to run euca-bundle-vol.")
@@ -129,8 +131,10 @@ class BundleVol(BundleCommand):
             # aren't always there.
             #
             try:
-                self.args['productcodes'].extend(
-                    get_metadata_list('product-codes'))
+                productcodes = get_metadata_list('product-codes')
+                self.args['productcodes'].extend(productcodes)
+                self.log.debug("inheriting product codes: {0}"
+                               .format(productcodes))
             except ServerError:
                 msg = 'unable to read product codes from metadata.'
                 print sys.stderr, msg
@@ -138,10 +142,12 @@ class BundleVol(BundleCommand):
             try:
                 if not self.args.get('ancestor_image_ids'):
                     self.args['ancestor_image_ids'] = []
-                self.args['ancestor_image_ids'].extend(
-                    get_metadata_list('ancestor-ami-ids'))
+                ancestor_ids = get_metadata_list('ancestor-ami-ids')
+                self.args['ancestor_image_ids'].extend(ancestor_ids)
+                self.log.debug("inheriting ancestor ids: {0}"
+                               .format(ancestor_ids))
             except ServerError:
-                msg = 'unable to read ancestor ids.'
+                msg = 'unable to read ancestor ids from metadata.'
                 print sys.stderr, msg
                 self.log.warn(msg)
         except ServerError:
@@ -163,11 +169,11 @@ class BundleVol(BundleCommand):
         return args
 
     def configure(self):
-        BundleCommand.configure(self)
+        BundleCreator.configure(self)
         self.args['user'] = self.args.get('user').replace('-', '')
 
     def main(self):
-        if self.args.get('inherit') is True:
+        if self.args.get('inherit') or not self.args.get('no_inherit'):
             self._inherit_metadata()
         
         image_file = ImageCreator(log=self.log, **self.args).run()

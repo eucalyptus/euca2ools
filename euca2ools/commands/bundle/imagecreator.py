@@ -29,36 +29,36 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 
-from euca2ools.exceptions import CommandFailed, UnsupportedException
-from euca2ools.utils import execute, check_command, sanitize_path
+from euca2ools.utils import sanitize_path
 from euca2ools.utils import mkdtemp_for_large_files as mkdtemp
-from requestbuilder.exceptions import ArgumentError
+import glob
 import os
 import sys
 import platform
 import shutil
 import stat
+import subprocess
 import time
 
 
 NO_EXCLUDE_ENVAR = 'EUCA_BUNDLE_VOL_EMPTY_EXCLUDES'
 BLKID_TAGS = ('LABEL', 'TYPE', 'UUID')
-ALLOWED_FS_TYPES = ('ext2', 'ext3', 'xfs', 'jfs', 'reiserfs')
+ALLOWED_FS_TYPES = ('ext2', 'ext3', 'ext4', 'xfs', 'jfs', 'reiserfs')
 EXCLUDED_DIRS = ('/dev', '/media', '/mnt', '/proc',
                  '/sys', '/cdrom', '/tmp')
 SYSTEM_DIRS = ('proc', 'tmp', 'dev', 'mnt', 'sys')
-DEVICE_NODES = (('dev/console', 'c', '5', '1'),
-                ('dev/full', 'c', '1', '7'),
-                ('dev/null', 'c', '1', '3'),
-                ('dev/zero', 'c', '1', '5'),
-                ('dev/tty', 'c', '5', '0'),
-                ('dev/tty0', 'c', '4', '0'),
-                ('dev/tty1', 'c', '4', '1'),
-                ('dev/tty2', 'c', '4', '2'),
-                ('dev/tty3', 'c', '4', '3'),
-                ('dev/tty4', 'c', '4', '4'),
-                ('dev/tty5', 'c', '4', '5'),
-                ('dev/xvc0', 'c', '204', '191'))
+DEVICE_NODES = {'dev/console': ['c', '5', '1'],
+                'dev/full': ['c', '1', '7'],
+                'dev/null': ['c', '1', '3'],
+                'dev/zero': ['c', '1', '5'],
+                'dev/tty': ['c', '5', '0'],
+                'dev/tty0': ['c', '4', '0'],
+                'dev/tty1': ['c', '4', '1'],
+                'dev/tty2': ['c', '4', '2'],
+                'dev/tty3': ['c', '4', '3'],
+                'dev/tty4': ['c', '4', '4'],
+                'dev/tty5': ['c', '4', '5'],
+                'dev/xvc0': ['c', '204', '191']}
 FSTAB_BODY_TEMPLATE = dict(
     i386="""/dev/sda1\t/\text3\tdefaults 1 1
 /dev/sdb\t/mnt\text3\tdefaults 0 0
@@ -95,14 +95,13 @@ DEFAULT_PATTERN_EXCLUDES = [
     '*/.ssh/authorized_keys',
     '*/.bash_history',
 ]
-DEFAULT_FS_EXCLUDES = [
-    '/dev',
-    '/media',
-    '/mnt',
-    '/proc',
-    '/sys',
-]
-IMAGE_MAX_SIZE = 10 * 1024 * 1024 * 1024 # 10GB Max Size in bytes
+#
+# We're using /etc/mtab since this is what the AWS tools do. Other tools like
+# df also read the /etc/mtab file for mounts. Even though /proc/mounts is
+# more up to date, we'll stick with this unless there's a good reason to
+# change it.
+#
+MOUNTS_FILE = '/etc/mtab'
 
 
 class VolumeSync(object):
@@ -163,7 +162,7 @@ class VolumeSync(object):
 
     def install_fstab_from_file(self, fstab):
         if not os.path.exists(fstab):
-            raise ArgumentError(
+            raise ValueError(
                 "fstab file '{0}' does not exist.".format(fstab))
         self.fstab = fstab
 
@@ -187,7 +186,7 @@ class VolumeSync(object):
         if self.mpoint.find(self.volume) == 0:
             self.exclude(self.mpoint)
         if not self.bundle_all_dirs:
-            self._add_mtab_exclusions()
+            self._add_mounts_exclusions()
         self.excludes.extend(EXCLUDED_DIRS)
         if self.filter:
             self.excludes.extend(DEFAULT_PATTERN_EXCLUDES)
@@ -196,13 +195,13 @@ class VolumeSync(object):
                 ['/etc/udev/rules.d/70-persistent-net.rules',
                  '/etc/udev/rules.d/z25_persistent-net.rules'])
 
-    def _add_mtab_exclusions(self):
+    def _add_mounts_exclusions(self):
         """Exclude locations from the volume rsync based on whether we are
         allowed to sync the type of filesystem. If you have chosen to bundle
         all using '--all' then this will not get called.
         """
-        with open('/etc/mtab', 'r') as mtab:
-            for line in mtab.readlines():
+        with open(MOUNTS_FILE, 'r') as mounts:
+            for line in mounts.readlines():
                 (mount, type) = line.split()[1:3]
                 #
                 # If we find that a mount in our volume's mtab file is
@@ -219,8 +218,8 @@ class VolumeSync(object):
         """Find all tmpfs mounts on our volume and make sure that they are
         created on the image.
         """
-        with open('/etc/mtab', 'r') as mtab:
-            for line in mtab.readlines():
+        with open(MOUNTS_FILE, 'r') as mounts:
+            for line in mounts.readlines():
                 (mount, type) = line.split()[1:3]
                 if type == 'tmpfs':
                     fullpath = os.path.join(self.mpoint, mount[1:])
@@ -229,11 +228,9 @@ class VolumeSync(object):
 
     def _populate_device_nodes(self):
         """Populate the /dev directory in our image with common device nodes."""
-        template = 'mknod {0} {1} {2} {3}'
-        for node in DEVICE_NODES:
-            cmd = template.format(os.path.join(self.mpoint, node[0]),
-                                  *node[1:])
-            execute(cmd, log=self.log)
+        for node, args in DEVICE_NODES.iteritems():
+            subprocess.check_call(['mknod',
+                                   os.path.join(self.mpoint, node)] + args)
 
     def _populate_system_dirs(self):
         """Populate our image with common system directories."""
@@ -256,44 +253,44 @@ class VolumeSync(object):
             fp.write(content)
 
     def _sync_files(self):
-        check_command('rsync')
         cmd = ['rsync', '-aXS']
         self._update_exclusions()
         for exclude in self.excludes:
             cmd.extend(['--exclude', exclude])
         for include in self.includes:
             cmd.extend(['--include', include])
-        cmd.extend([os.path.join(self.volume, '*'), self.mpoint])
-        (out, _, retval) = execute(cmd, shell=True, raise_exception=False,
-                                   log=self.log)
-
-        #
-        # rsync return code 23: Partial transfer due to error
-        # rsync return code 24: Partial transfer due to vanished source files
-        #
-        if retval in (23, 24):
+        cmd.extend(glob.glob(os.path.join(self.volume, '*')))
+        cmd.append(self.mpoint + os.path.sep)
+        
+        try:
             if self.log:
-                self.log.warn('rsync reports files partially copied.')
-            print sys.stderr, "Warning: rsync reports files partially copied."
-        elif retval != 0:
-            raise Exception('rsync failed with return code {0}.'.format(retval))
-
-    def _sync_disks(self):
-        execute('sync', log=self.log)
+                self.log.debug('executing {0}'.format(cmd))
+            subprocess.check_call(cmd)
+        except subprocess.CalledProcessError as err:
+            #
+            # rsync return code 23: Partial transfer due to error
+            # rsync return code 24: Partial transfer due to missing source files
+            #
+            if err.returncode in (23, 24):
+                if self.log:
+                    self.log.warn('rsync reports files partially copied.')
+                print sys.stderr, "Warning: rsync reports files partially copied."
+            else:
+                raise
 
     def mount(self):
-        self._sync_disks()
+        subprocess.check_call('sync')
         if not os.path.exists(self.mpoint):
             os.makedirs(self.mpoint)
-        check_command('mount')
-        cmd = ['mount', '-o', 'loop', self.image, self.mpoint]
-        execute(cmd, log=self.log)
+        if self.log:
+            self.log.debug("mounting {0}".format(self.mpoint))
+        subprocess.check_call(['mount', '-o', 'loop', self.image, self.mpoint])
 
     def unmount(self):
-        self._sync_disks()
-        check_command('umount')
-        cmd = ['umount', '-d', self.mpoint]
-        execute(cmd, log=self.log)
+        subprocess.check_call('sync')
+        if self.log:
+            self.log.debug("unmounting {0}".format(self.mpoint))
+        subprocess.check_call(['umount', '-d', self.mpoint])
         if os.path.exists(self.mpoint):
             os.rmdir(self.mpoint)
 
@@ -329,17 +326,17 @@ class ImageCreator(object):
         # Validate settings
         #
         if not self.volume:
-            raise ArgumentError("must supply a source volume.")
+            raise ValueError("must supply a source volume.")
         self.volume = sanitize_path(self.volume)
         if not self.size:
-            raise ArgumentError("must supply a size for the generated image.")
+            raise ValueError("must supply a size for the generated image.")
         if not self.prefix:
-            raise ArgumentError("must supply a prefix.")
+            raise ValueError("must supply a prefix.")
         if not self.volume:
-            raise ArgumentError("must supply a volume.")
+            raise ValueError("must supply a volume.")
         if not (os.path.exists(self.destination) or \
                     os.path.isdir(self.destination)):
-            raise ArgumentError("'{0}' is not a directory or does not exist."
+            raise ValueError("'{0}' is not a directory or does not exist."
                                 .format(self.destination))
 
     def run(self):
@@ -350,8 +347,7 @@ class ImageCreator(object):
         self._create_raw_diskimage()
         self._populate_filesystem_info()
         self._make_filesystem(**self.fs)
-        sys.stderr.write(" done\n")
-        sys.stderr.flush()
+        print >> sys.stderr, " done"
         #
         # Inside the VolumeSync context we will mount our image
         # as a loop device. If for any reason a failure occurs
@@ -370,16 +366,15 @@ class ImageCreator(object):
             volsync.exclude(self.excludes)
             volsync.include(self.includes)
             volsync.run()
-        sys.stderr.write(" done\n")
-        sys.stderr.flush()
+        print >> sys.stderr, " done"
 
         return self.image
 
     def _create_raw_diskimage(self):
         """Create a sparse raw image file."""
-        template = 'dd if=/dev/zero of={0} count=1 bs=1M seek={1}'
-        cmd = template.format(self.image, self.size - 1)
-        execute(cmd, log=self.log)
+        subprocess.check_call(['dd', 'if=/dev/zero',
+                               'of={0}'.format(self.image), 'count=1', 'bs=1M',
+                               'seek={0}'.format(self.size - 1)])
 
     def _populate_filesystem_info(self):
         """Create a temporary device node for the volume we're going
@@ -390,15 +385,16 @@ class ImageCreator(object):
         devid = os.makedev(os.major(st_dev), os.minor(st_dev))
         directory = mkdtemp(prefix='devnode-')
         devnode = os.path.join(directory, 'rootdev')
-        os.mknod(devnode, 0400 | stat.S_IFBLK, devid)
-        template = 'blkid -s {0} -ovalue {1}'
+        os.mknod(devnode, 0o400 | stat.S_IFBLK, devid)
         try:
             for tag in BLKID_TAGS:
-                cmd = template.format(tag, devnode)
                 try:
-                    (out, _, _) = execute(cmd, log=self.log)
+                    out = subprocess.Popen(['blkid', '-s', tag,
+                                            '-ovalue', devnode],
+                                           stdout=subprocess.PIPE
+                                           ).communicate()[0]
                     self.fs[tag.lower()] = out.rstrip()
-                except CommandFailed:
+                except subprocess.CalledProcessError:
                     pass
         finally:
             os.remove(devnode)
@@ -423,17 +419,16 @@ class ImageCreator(object):
         elif type == 'btrfs':
             mkfs = [mkfs_cmd, self.image]
             if uuid:
-                raise UnsupportedException("btrfs with uuid not supported")
+                raise Exception("btrfs with uuid not supported")
         else:
-            raise UnsupportedException("unsupported fs {0}".format(type))
+            raise Exception("unsupported fs {0}".format(type))
 
         if label:
             mkfs.extend(['-L', label])
-        check_command(mkfs)
-        execute(mkfs, log=self.log)
+        subprocess.check_call(mkfs)
+
         if tunefs:
-            check_command(tunefs)
-            execute(tunefs, log=self.log)
+            subprocess.check_call(tunefs)
 
 
 def _generate_fstab_content(arch=platform.machine()):
@@ -449,5 +444,4 @@ def _generate_fstab_content(arch=platform.machine()):
                 time.strftime(FSTAB_TIME_FORMAT)),
                          FSTAB_BODY_TEMPLATE.get(arch)])
     else:
-        raise UnsupportedException(
-            "platform architecture {0} not supported".format(arch))
+        raise Exception("platform architecture {0} not supported".format(arch))
