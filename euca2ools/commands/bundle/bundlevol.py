@@ -72,12 +72,13 @@ class BundleVol(BundleCreator):
                 help='''Bundle all directories (including mounted
                 filesystems).'''),
             MutuallyExclusiveArgList(
-                Arg('--no-inherit', dest='no_inherit', action='store_true',
-                    help='''Do not add instance metadata to the bundled image
-                    (defaults to inherting metadata).'''),
+                Arg('--no-inherit', dest='inherit', action='store_false',
+                    default=True, help='''Do not add instance metadata to the
+                    bundled image (defaults to inherting metadata).'''),
                 Arg('--inherit', dest='inherit', action='store_true',
-                    help='''Explicity inhert instance metadata and add it to
-                    the bundled image (this is the default behavior)''')),
+                    default=True, help='''Explicity inhert instance metadata
+                    and add it to the bundled image (this is the default
+                    behavior)''')),
             Arg('-i', '--include', metavar='FILE1,FILE2,...',
                 type=delimited_list(','), help='''Comma-separated list of
                 absolute file paths to include.'''),
@@ -172,7 +173,7 @@ class BundleVol(BundleCreator):
         self.args['user'] = self.args.get('user').replace('-', '')
 
     def main(self):
-        if self.args.get('inherit') or not self.args.get('no_inherit'):
+        if self.args.get('inherit'):
             self._inherit_metadata()
         
         image_file = ImageCreator(log=self.log, **self.args).run()
