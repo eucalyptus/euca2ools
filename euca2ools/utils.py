@@ -32,24 +32,19 @@
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
 import base64
-import os.path
-import subprocess
+import os
 import sys
 import tempfile
 from euca2ools import exceptions, __version__
 
-def check_prerequisite_command(command):
-    cmd = [command]
-    try:
-        output = subprocess.Popen(cmd, stdout=subprocess.PIPE,
-                                  stderr=subprocess.PIPE).communicate()
-    except OSError, e:
-        error_string = '%s' % e
-        if 'No such' in error_string:
-            print >> sys.stderr, 'Command %s not found. Is it installed?' % command
-            raise exceptions.NotFoundError
-        else:
-            raise OSError(e)
+
+def sanitize_path(path):
+    """Make a fully expanded and absolute path for us to work with.
+    Returns a santized path string.
+    :param path: The path string to sanitize.
+    """
+    return os.path.abspath(os.path.expandvars(os.path.expanduser(path)))
+
 
 def parse_config(config, dict, keylist):
     fmt = ''
@@ -61,9 +56,9 @@ def parse_config(config, dict, keylist):
     cmd = ['bash', '-ec', ". '%s' >/dev/null; printf '%s' %s"
            % (config, fmt, str)]
 
-    handle = subprocess.Popen(cmd, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
-    (stdout, stderr) = handle.communicate()
-    if handle.returncode != 0:
+    (out, err, retval) = execute(cmd, exception=False)
+
+    if retval != 0:
         raise exceptions.ParseError('Parsing config file %s failed:\n\t%s'
                          % (config, stderr))
 
@@ -71,6 +66,7 @@ def parse_config(config, dict, keylist):
     for i in range(len(values) - 1):
         if values[i] != '':
             dict[keylist[i]] = values[i]
+
 
 def print_instances(instances, nil=""):
 
@@ -119,6 +115,7 @@ def print_instances(instances, nil=""):
             for tag in instance.tags:
                 print '\t'.join(('TAG', 'instance', instance.id, tag,
                                  instance.tags[tag]))
+
 
 def print_version_if_necessary():
     """

@@ -37,6 +37,4 @@
 import euca2ools.commands.bundle.bundlevol
 
 if __name__ == '__main__':
-    cmd = euca2ools.commands.bundle.bundlevol.BundleVol()
-    cmd.main_cli()
-
+    euca2ools.commands.bundle.bundlevol.BundleVol.run()

@@ -31,9 +31,7 @@
 import argparse
 import binascii
 import euca2ools
-from euca2ools.commands import Euca2ools
-from euca2ools.commands.argtypes import delimited_list, filesize
-from euca2ools.commands.bundle import add_bundle_creds
+from euca2ools.commands.bundle import BundleCreator
 from euca2ools.commands.bundle.bundle import Bundle
 from euca2ools.utils import mkdtemp_for_large_files
 import hashlib
@@ -41,95 +39,22 @@ import lxml.etree
 import lxml.objectify
 import os.path
 from requestbuilder import Arg
-from requestbuilder.command import BaseCommand
 from requestbuilder.exceptions import ArgumentError
-from requestbuilder.mixins import FileTransferProgressBarMixin
-from requestbuilder.util import set_userregion
 import subprocess
 
 
-def manifest_block_device_mappings(mappings_as_str):
-    mappings = {}
-    mapping_strs = mappings_as_str.split(',')
-    for mapping_str in mapping_strs:
-        if mapping_str.strip():
-            bits = mapping_str.strip().split('=')
-            if len(bits) == 2:
-                mappings[bits[0].strip()] = bits[1].strip()
-            else:
-                raise argparse.ArgumentTypeError(
-                    "invalid device mapping '{0}' (must have format "
-                    "'VIRTUAL=DEVICE')".format(mapping_str))
-    return mappings
-
-
-class BundleImage(BaseCommand, FileTransferProgressBarMixin):
+class BundleImage(BundleCreator):
     DESCRIPTION = 'Prepare an image for uploading to a cloud'
-    SUITE = Euca2ools
     ARGS = [Arg('-i', '--image', metavar='FILE', required=True,
                 help='file containing the image to bundle (required)'),
-            Arg('-r', '--arch', choices=('i386', 'x86_64', 'armhf'),
-                required=True,
-                help="the image's processor architecture (required)"),
-            Arg('--region', dest='userregion', metavar='USER@REGION',
-                help='''use encryption keys and the account ID specified for
-                a user and/or region in configuration files'''),
-            Arg('-c', '--cert', metavar='FILE',
-                help='file containing your X.509 certificate.'),
-            Arg('-k', '--privatekey', metavar='FILE', help='''file containing
-                the private key to sign the bundle's manifest with.  This
-                private key will also be required to unbundle the image in
-                the future.'''),
-            Arg('-u', '--user', metavar='ACCOUNT', help='your account ID'),
-            Arg('-d', '--destination', metavar='DIR', help='''location to
-                place the bundle's files (default:  dir named by TMPDIR, TEMP,
-                or TMP environment variables, or otherwise /var/tmp)'''),
             Arg('-p', '--prefix', help='''the file name prefix to give the
                 bundle's files (default: the image's file name)'''),
-            Arg('--ec2cert', metavar='FILE', help='''file containing the
-                cloud's X.509 certificate'''),
-            Arg('--kernel', metavar='IMAGE', help='''[machine image only] ID
-                of the kernel image to associate with the bundle'''),
-            Arg('--ramdisk', metavar='IMAGE', help='''[machine image only] ID
-                of the ramdisk image to associate with the bundle'''),
-            Arg('--block-device-mappings',
-                metavar='VIRTUAL1=DEVICE1,VIRTUAL2=DEVICE2,...',
-                type=manifest_block_device_mappings,
-                help='''[machine image only] default block device mapping
-                scheme with which to launch instances of this image'''),
-            Arg('--productcodes', metavar='CODE1,CODE2,...',
-                type=delimited_list(','),
-                help='comma-separated list of product codes'),
-            Arg('--batch', action='store_true', help=argparse.SUPPRESS),
-            Arg('--part-size', type=filesize, default=10485760,  # 10m
-                help=argparse.SUPPRESS),
             Arg('--image-type', choices=('machine', 'kernel', 'ramdisk'),
                 default='machine', help=argparse.SUPPRESS),
             Arg('--progressbar-label', help=argparse.SUPPRESS)]
 
     def configure(self):
-        BaseCommand.configure(self)
-        set_userregion(self.config, self.args.get('userregion'))
-        set_userregion(self.config, os.getenv('EUCA_REGION'))
-
-        # Get creds
-        add_bundle_creds(self.args, self.config)
-        if not self.args.get('cert'):
-            raise ArgumentError(
-                'missing certificate; please supply one with -c')
-        self.log.debug('certificate: %s', self.args['cert'])
-        if not self.args.get('privatekey'):
-            raise ArgumentError(
-                'missing private key; please supply one with -k')
-        self.log.debug('private key: %s', self.args['privatekey'])
-        if not self.args.get('ec2cert'):
-            raise ArgumentError(
-                'missing cloud certificate; please supply one with --ec2cert')
-        self.log.debug('cloud certificate: %s', self.args['ec2cert'])
-        if not self.args.get('user'):
-            raise ArgumentError(
-                'missing account ID; please supply one with --user')
-        self.log.debug('account ID: %s', self.args['user'])
+        BundleCreator.configure(self)
 
         # kernel/ramdisk image IDs
         if self.args.get('kernel') == 'true':
@@ -150,11 +75,6 @@ class BundleImage(BaseCommand, FileTransferProgressBarMixin):
             if self.args.get('ramdisk') and self.args['ramdisk'] != 'true':
                 raise ArgumentError("argument --ramdisk: not compatible with "
                                     "image type 'ramdisk'")
-        if (self.args.get('destination') and
-            os.path.exists(self.args['destination']) and not
-            os.path.isdir(self.args['destination'])):
-            raise ArgumentError("argument -d/--destination: '{0}' is not a "
-                                "directory".format(self.args['destination']))
 
     def main(self):
         prefix = (self.args.get('prefix') or
@@ -184,17 +104,6 @@ class BundleImage(BaseCommand, FileTransferProgressBarMixin):
         for part_filename in result[0]:
             print 'Wrote', part_filename
         print 'Wrote manifest', result[1]  # manifest
-
-    def process_userregion(self, userregion):
-        if '@' in userregion:
-            user, region = userregion.split('@', 1)
-        else:
-            user = None
-            region = userregion
-        if region and self.config.current_region is None:
-            self.config.current_region = region
-        if user and self.config.current_user is None:
-            self.config.current_user = user
 
     def generate_manifest_xml(self, bundle):
         manifest = lxml.objectify.Element('manifest')
