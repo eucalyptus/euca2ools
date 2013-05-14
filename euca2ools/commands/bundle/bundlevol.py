@@ -53,9 +53,8 @@ IMAGE_MAX_SIZE_IN_MB = Bundle.EC2_IMAGE_SIZE_LIMIT / 1024 // 1024
 # args that it doesn't understand.
 #
 BUNDLE_IMAGE_ARG_FILTER = ('generate_fstab', 'fstab', 'bundle_all_dirs',
-                           'filter', 'no_inherit', 'inherit', 'size',
-                           'volume', 'exclude', 'include',
-                           'ancestor_image_ids')
+                           'filter', 'inherit', 'size', 'volume', 'exclude',
+                           'include', 'ancestor_image_ids')
 
 
 class BundleVol(BundleCreator):
@@ -74,9 +73,9 @@ class BundleVol(BundleCreator):
             MutuallyExclusiveArgList(
                 Arg('--no-inherit', dest='inherit', action='store_false',
                     default=True, help='''Do not add instance metadata to the
-                    bundled image (defaults to inherting metadata).'''),
+                    bundled image (defaults to inheriting metadata).'''),
                 Arg('--inherit', dest='inherit', action='store_true',
-                    default=True, help='''Explicity inhert instance metadata
+                    default=True, help='''Explicity inherit instance metadata
                     and add it to the bundled image (this is the default
                     behavior)''')),
             Arg('-i', '--include', metavar='FILE1,FILE2,...',
