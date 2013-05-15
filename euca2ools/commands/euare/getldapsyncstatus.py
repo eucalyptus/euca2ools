@@ -38,3 +38,4 @@ class GetLdapSyncStatus(EuareRequest, TabifyingMixin):
 
     def print_result(self, result):
         print self.tabify(('SyncEnabled', result.get('SyncEnabled')))
+        print self.tabify(('InSync', result.get('InSync')))
