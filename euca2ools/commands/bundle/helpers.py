@@ -33,7 +33,7 @@ from euca2ools.commands.walrus.listbucket import ListBucket
 import os
 from requestbuilder.exceptions import ClientError, ServerError
 import requests
-from requests.exceptions import Timeout
+from requests.exceptions import Timeout, ConnectionError
 from urlparse import urljoin
 from xml.dom import minidom
 
@@ -97,9 +97,13 @@ def download_files(bucket, keys, directory, **kwargs):
 
 def check_metadata():
     """Check if instance metadata is available."""
-    response = requests.get(METADATA_URL)
-    if not response.ok:
-        raise ServerError(response)
+    try:
+        response = requests.get(METADATA_URL)
+        if not response.ok:
+            raise ServerError(response)
+    except ConnectionError as err:
+        raise ClientError("unable to contact metadata service: {0}"
+                          .format(err.args[0]))
 
 
 def get_metadata(*paths):
@@ -117,6 +121,9 @@ def get_metadata(*paths):
     except Timeout:
         raise ClientError("timeout occurred when getting metadata from {0}"
                           .format(url))
+    except ConnectionError as err:
+        raise ClientError("error occurred when getting metadata from {0}: {1}"
+                          .format(url, err.args[0]))
 
     if response.ok:
         return response.content
