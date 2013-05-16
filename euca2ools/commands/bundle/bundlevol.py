@@ -41,7 +41,7 @@ from euca2ools.commands.bundle.helpers import (check_metadata, get_metadata,
 from euca2ools.commands.bundle.imagecreator import ImageCreator
 from requestbuilder import Arg, MutuallyExclusiveArgList
 from requestbuilder.command import BaseCommand
-from requestbuilder.exceptions import ServerError
+from requestbuilder.exceptions import ClientError, ServerError
 
 
 IMAGE_MAX_SIZE_IN_MB = Bundle.EC2_IMAGE_SIZE_LIMIT / 1024 // 1024
@@ -131,7 +131,7 @@ class BundleVol(BundleCreator):
                 self.args['productcodes'].extend(productcodes)
                 self.log.debug("inheriting product codes: {0}"
                                .format(productcodes))
-            except ServerError:
+            except (ClientError, ServerError):
                 msg = 'unable to read product codes from metadata.'
                 print sys.stderr, msg
                 self.log.warn(msg)
@@ -142,11 +142,11 @@ class BundleVol(BundleCreator):
                 self.args['ancestor_image_ids'].extend(ancestor_ids)
                 self.log.debug("inheriting ancestor ids: {0}"
                                .format(ancestor_ids))
-            except ServerError:
+            except (ClientError, ServerError):
                 msg = 'unable to read ancestor ids from metadata.'
                 print sys.stderr, msg
                 self.log.warn(msg)
-        except ServerError:
+        except (ClientError, ServerError):
             msg = ('Unable to read instance metadata.  Use --no-inherit if '
                    'you want to proceed without the metadata service.')
             print >> sys.stderr, msg
