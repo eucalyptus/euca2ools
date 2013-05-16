@@ -34,7 +34,7 @@ from requestbuilder.exceptions import ArgumentError
 from requestbuilder.mixins import TabifyingMixin
 
 
-class ModifyVmTypeAttribute(EucalyptusRequest, TabifyingMixin):
+class ModifyInstanceTypeAttribute(EucalyptusRequest, TabifyingMixin):
     DESCRIPTION = '[Eucalyptus cloud admin only] Modify an instance type'
     ARGS = [Arg('Name', metavar='INSTANCETYPE',
                 help='name of the instance type to modify (required)'),
@@ -57,7 +57,7 @@ class ModifyVmTypeAttribute(EucalyptusRequest, TabifyingMixin):
                                     'instance type attributes')
 
     def print_result(self, result):
-        newtype = result.get('vmType', {})
+        newtype = result.get('instanceType', {})
         print self.tabify(('INSTANCETYPE', newtype.get('name'),
                            newtype.get('cpu'), newtype.get('memory'),
                            newtype.get('disk')))

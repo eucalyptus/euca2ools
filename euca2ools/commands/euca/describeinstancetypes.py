@@ -33,16 +33,16 @@ from requestbuilder import Arg
 from requestbuilder.mixins import TabifyingMixin
 
 
-class DescribeVmTypes(EucalyptusRequest, TabifyingMixin):
+class DescribeInstanceTypes(EucalyptusRequest, TabifyingMixin):
     DESCRIPTION = '[Eucalyptus only] Show information about instance types'
-    ARGS = [Arg('VmTypes', metavar='INSTANCETYPE', nargs='*',
+    ARGS = [Arg('InstanceType', metavar='INSTANCETYPE', nargs='*',
                 help='limit results to specific instance types'),
             Arg('--by-zone', dest='by_zone', action='store_true',
                 route_to=None,
                 help='show info for each availability zone separately'),
             Arg('--show-capacity', dest='Availability', action='store_true',
                 help='show info about instance capacity')]
-    LIST_TAGS = ['vmTypeDetails', 'availability']
+    LIST_TAGS = ['instanceTypeDetails', 'availability']
 
     def configure(self):
         EucalyptusRequest.configure(self)
@@ -55,7 +55,7 @@ class DescribeVmTypes(EucalyptusRequest, TabifyingMixin):
                            # of OrderedDict
         vmtypes = {}  # vmtype -> info and total capacity
         zones = {}  # zone -> vmtype -> info and zone capacity
-        for vmtype in result.get('vmTypeDetails', []):
+        for vmtype in result.get('instanceTypeDetails', []):
             vmtype_names.append(vmtype['name'])
             vmtypes[vmtype['name']] = {'cpu': vmtype.get('cpu'),
                                        'memory': vmtype.get('memory'),
