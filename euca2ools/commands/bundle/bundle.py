@@ -31,6 +31,7 @@
 import hashlib
 import multiprocessing
 import itertools
+import logging
 import os.path
 import random
 import subprocess
@@ -55,6 +56,7 @@ class Bundle(object):
         self.enc_iv = None  # a hex string
         self.image_filename = None
         self.image_size = None
+        self.log = logging.getLogger("Bundle")
         self.parts = None
         self._lock = threading.Lock()
 
