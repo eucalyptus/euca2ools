@@ -56,7 +56,7 @@ class Bundle(object):
         self.enc_iv = None  # a hex string
         self.image_filename = None
         self.image_size = None
-        self.log = logging.getLogger("Bundle")
+        self.log = logging.getLogger(self.__class__.__name__)
         self.parts = None
         self._lock = threading.Lock()
 
