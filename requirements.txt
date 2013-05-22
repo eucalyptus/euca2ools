@@ -1,4 +1,3 @@
-boto>=2.3
-M2Crypto
-requestbuilder>=0.1.0-alpha4
+requestbuilder>=0.1.0-beta1
 requests
+six

@@ -34,7 +34,7 @@ from euca2ools.commands.bundle.helpers import get_manifest_parts
 from euca2ools.commands.walrus import WalrusRequest
 from euca2ools.commands.walrus.checkbucket import CheckBucket
 from euca2ools.exceptions import AWSError
-from euca2ools.utils import mkdtemp_for_large_files
+from euca2ools.util import mkdtemp_for_large_files
 import os
 from requestbuilder import Arg, MutuallyExclusiveArgList
 from requestbuilder.exceptions import ArgumentError

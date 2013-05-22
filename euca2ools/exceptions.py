@@ -28,114 +28,11 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-class EucaError(Exception):
-
-    def __init__(self):
-        self._message = ''
-
-    @property
-    def message(self):
-        return self._message
-
-    @property
-    def args(self):
-        return (self._message,)
-
-class ValidationError(Exception):
-
-    @property
-    def message(self):
-        return self._message
-
-class AddressValidationError(ValidationError):
-
-    def __init__(self):
-        self._message = 'Invalid address'
-
-class InstanceValidationError(ValidationError):
-
-    def __init__(self):
-        self._message = 'Invalid instance id'
-
-class VolumeValidationError(ValidationError):
-
-    def __init__(self):
-        self._message = 'Invalid volume id'
-
-class SizeValidationError(ValidationError):
-
-    def __init__(self):
-        self._message = 'Invalid size'
-
-class SnapshotValidationError(ValidationError):
-
-    def __init__(self):
-        self._message = 'Invalid snapshot id'
-
-class ProtocolValidationError(ValidationError):
-
-    def __init__(self):
-        self._message = 'Invalid protocol'
-
-class FileValidationError(ValidationError):
-
-    def __init__(self):
-        self._message = 'Invalid file'
-
-class DirValidationError(ValidationError):
-
-    def __init__(self):
-        self._message = 'Invalid directory'
-
-class BundleValidationError(ValidationError):
-
-    def __init__(self):
-        self._message = 'Invalid bundle id'
-
-class CopyError(EucaError):
-
-    def __init__(self):
-        self._message = 'Unable to copy'
-
-class NotFoundError(EucaError):
-
-    def __init__(self):
-        self._message = 'Unable to find'
-
-class UnsupportedException(EucaError):
-
-    def __init__(self, msg=None):
-        if msg:
-            self._message = 'Not supported: {0}'.format(msg)
-        else:
-            self._message = 'Not supported'
-
-class CommandFailed(EucaError):
-
-    def __init__(self, cmd=None, err=None):
-        self._message = 'Command failed'
-        self.err = err
-        if cmd:
-            self._message += ': {0}'.format(cmd)
-        if err:
-            self._message += '\n{0}'.format(err)
-
-class ConnectionFailed(EucaError):
-
-    def __init__(self):
-        self._message = 'Connection failed'
-
-class ParseError(EucaError):
-
-    def __init__(self, msg):
-        self._message = msg
-
-######## NEW CODE STARTS HERE ########
-
 import io
 import requestbuilder.exceptions
 from requestbuilder.xmlparse import parse_aws_xml
 import six
+
 
 class AWSError(requestbuilder.exceptions.ServerError):
     def __init__(self, response, *args):

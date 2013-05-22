@@ -28,8 +28,8 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.utils import sanitize_path
-from euca2ools.utils import mkdtemp_for_large_files as mkdtemp
+from euca2ools.util import sanitize_path
+from euca2ools.util import mkdtemp_for_large_files as mkdtemp
 import glob
 import os
 import sys

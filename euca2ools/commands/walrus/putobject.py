@@ -30,7 +30,7 @@
 
 import datetime
 from euca2ools.commands.walrus import WalrusRequest
-from euca2ools.utils import build_progressbar_label_template
+from euca2ools.util import build_progressbar_label_template
 import mimetypes
 import os.path
 from requestbuilder import Arg

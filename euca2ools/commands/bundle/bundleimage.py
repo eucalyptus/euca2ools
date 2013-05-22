@@ -33,7 +33,7 @@ import binascii
 import euca2ools
 from euca2ools.commands.bundle import BundleCreator
 from euca2ools.commands.bundle.bundle import Bundle
-from euca2ools.utils import mkdtemp_for_large_files
+from euca2ools.util import mkdtemp_for_large_files
 import hashlib
 import lxml.etree
 import lxml.objectify

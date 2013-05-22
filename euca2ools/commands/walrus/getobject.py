@@ -29,7 +29,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 from euca2ools.commands.walrus import WalrusRequest
-from euca2ools.utils import build_progressbar_label_template
+from euca2ools.util import build_progressbar_label_template
 import os.path
 from requestbuilder import Arg
 from requestbuilder.mixins import FileTransferProgressBarMixin

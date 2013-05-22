@@ -28,24 +28,40 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.euca import EucalyptusRequest
-from requestbuilder import Arg, Filter
+import os
+import tempfile
 
 
-class DescribeAvailabilityZones(EucalyptusRequest):
-    DESCRIPTION = 'Display availability zones within the current region'
-    ARGS = [Arg('ZoneName', metavar='ZONE', nargs='*',
-                help='limit results to specific availability zones')]
-    FILTERS = [Filter('message', help='''message giving information about the
-                      'availability zone'''),
-               Filter('region-name',
-                      help='region the availability zone is in'),
-               Filter('state', help='state of the availability zone'),
-               Filter('zone-name', help='name of the availability zone')]
-    LIST_TAGS = ['availabilityZoneInfo', 'messageSet']
+def build_progressbar_label_template(fnames):
+    if len(fnames) == 0:
+        return None
+    elif len(fnames) == 1:
+        return '{fname}'
+    else:
+        max_fname_len = max(len(os.path.basename(fname)) for fname in fnames)
+        fmt_template = '{{fname:<{maxlen}}} ({{index:>{lenlen}}}/{total})'
+        return fmt_template.format(maxlen=max_fname_len,
+                                   lenlen=len(str(len(fnames))),
+                                   total=len(fnames))
 
-    def print_result(self, result):
-        for zone in result.get('availabilityZoneInfo', []):
-            msgs = ', '.join(msg for msg in zone.get('messageSet', []))
-            print self.tabify(('AVAILABILITYZONE', zone.get('zoneName'),
-                               zone.get('zoneState'), msgs))
+
+def mkdtemp_for_large_files(suffix='', prefix='tmp', dir=None):
+    '''
+    Like tempfile.mkdtemp, but using /var/tmp as a last resort instead of /tmp.
+
+    This is meant for utilities that create large files, as /tmp is often a
+    ramdisk.
+    '''
+
+    if dir is None:
+        dir = (os.getenv('TMPDIR') or os.getenv('TEMP') or os.getenv('TMP') or
+               '/var/tmp')
+    return tempfile.mkdtemp(suffix=suffix, prefix=prefix, dir=dir)
+
+
+def sanitize_path(path):
+    """Make a fully expanded and absolute path for us to work with.
+    Returns a santized path string.
+    :param path: The path string to sanitize.
+    """
+    return os.path.abspath(os.path.expandvars(os.path.expanduser(path)))

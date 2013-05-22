@@ -40,7 +40,7 @@ from euca2ools.commands.euca.registerimage import RegisterImage
 from euca2ools.commands.eustore import EuStoreRequest
 import euca2ools.commands.eustore.describeimages
 from euca2ools.commands.walrus import Walrus
-from euca2ools.utils import mkdtemp_for_large_files
+from euca2ools.util import mkdtemp_for_large_files
 import hashlib
 import os.path
 from requestbuilder import Arg, MutuallyExclusiveArgList
