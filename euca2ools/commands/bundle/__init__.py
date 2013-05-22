@@ -110,7 +110,7 @@ class BundleCreator(BaseCommand, FileTransferProgressBarMixin):
 def add_bundle_creds(args, config):
     # User's X.509 certificate (user-level in config)
     if not args.get('cert'):
-        config_cert = config.get_user_option('x509-cert')
+        config_cert = config.get_user_option('certificate')
         if 'EC2_CERT' in os.environ:
             args['cert'] = os.getenv('EC2_CERT')
         elif 'EUCA_CERT' in os.environ:  # used by the NC
@@ -128,7 +128,7 @@ def add_bundle_creds(args, config):
 
     # User's private key (user-level in config)
     if not args.get('privatekey'):
-        config_privatekey = config.get_user_option('x509-key')
+        config_privatekey = config.get_user_option('private-key')
         if 'EC2_PRIVATE_KEY' in os.environ:
             args['privatekey'] = os.getenv('EC2_PRIVATE_KEY')
         if 'EUCA_PRIVATE_KEY' in os.environ:  # used by the NC
@@ -147,7 +147,7 @@ def add_bundle_creds(args, config):
 
     # Cloud's X.509 cert (region-level in config)
     if not args.get('ec2cert'):
-        config_privatekey = config.get_region_option('x509-cert')
+        config_privatekey = config.get_region_option('certificate')
         if 'EUCALYPTUS_CERT' in os.environ:
             # This has no EC2 equivalent since they just bundle their cert.
             args['ec2cert'] = os.getenv('EUCALYPTUS_CERT')
