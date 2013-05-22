@@ -34,7 +34,7 @@ from requestbuilder import Arg
 from requestbuilder.mixins import TabifyingMixin
 
 
-def instance(inst_as_str):
+def instance_id(inst_as_str):
     return {'InstanceId': inst_as_str}
 
 
@@ -44,7 +44,7 @@ class DescribeInstanceHealth(ELBRequest, TabifyingMixin):
                 balancer to describe instances for (required)'''),
             Arg('--instances', dest='Instances.member',
                 metavar='INSTANCE1,INSTANCE2,...',
-                type=delimited_list(',', item_type=instance),
+                type=delimited_list(',', item_type=instance_id),
                 help='limit results to specific instances'),
             Arg('--show-long', action='store_true', route_to=None,
                 help="show all of the instances' info")]

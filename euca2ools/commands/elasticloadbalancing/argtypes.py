@@ -32,7 +32,6 @@ import argparse
 
 
 def listener(listener_str):
-    bits = listener_str.split(',')
     pairs = {}
     for pair_str in listener_str.strip().split(','):
         if pair_str:

@@ -199,12 +199,12 @@ def vpc_interface(iface_as_str):
         iface['SecurityGroupId'] = groups
     if bits[6]:
         # DeleteOnTermination
-            if bits[6] in ('true', 'false'):
-                iface['DeleteOnTermination'] = bits[6]
-            else:
-                raise argparse.ArgumentTypeError(
-                    'seventh element of network interface definition "{0}" '
-                    'must be "true" or "false"'.format(iface_as_str))
+        if bits[6] in ('true', 'false'):
+            iface['DeleteOnTermination'] = bits[6]
+        else:
+            raise argparse.ArgumentTypeError(
+                'seventh element of network interface definition "{0}" '
+                'must be "true" or "false"'.format(iface_as_str))
     if bits[7]:
         # SecondaryPrivateIpAddressCount
         if bits[8]:
@@ -219,10 +219,10 @@ def vpc_interface(iface_as_str):
                 'an integer'.format(iface_as_str))
     if bits[8]:
         # PrivateIpAddresses.n.PrivateIpAddress
-            sec_ips = [{'PrivateIpAddress': addr} for addr in
-                       bits[8].split(',') if addr]
-            iface.setdefault('PrivateIpAddresses', [])
-            iface['PrivateIpAddresses'].extend(sec_ips)
+        sec_ips = [{'PrivateIpAddress': addr} for addr in
+                   bits[8].split(',') if addr]
+        iface.setdefault('PrivateIpAddresses', [])
+        iface['PrivateIpAddresses'].extend(sec_ips)
     return iface
 
 

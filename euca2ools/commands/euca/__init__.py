@@ -208,8 +208,8 @@ class EucalyptusRequest(AWSQueryRequest, TabifyingMixin):
     def __init__(self, **kwargs):
         AWSQueryRequest.__init__(self, **kwargs)
 
-    def parse_http_response(self, response_body):
-        response = AWSQueryRequest.parse_http_response(self, response_body)
+    def parse_response(self, response_body):
+        response = AWSQueryRequest.parse_response(self, response_body)
         # Compute cloud controller responses enclose their useful data inside
         # FooResponse elements.  If that's all we have after stripping out
         # RequestId then just return its contents.
@@ -238,8 +238,6 @@ class EucalyptusRequest(AWSQueryRequest, TabifyingMixin):
             self.print_instance(instance)
 
     def print_instance(self, instance):
-        # FIXME: Amazon's documentation doesn't say what order the fields in
-        #        ec2-describe-instances output appear.
         instance_line = ['INSTANCE']
         for key in ['instanceId', 'imageId', 'dnsName', 'privateDnsName']:
             instance_line.append(instance.get(key))
@@ -251,7 +249,8 @@ class EucalyptusRequest(AWSQueryRequest, TabifyingMixin):
                              instance.get('productCodes', [])]))
         instance_line.append(instance.get('instanceType'))
         instance_line.append(instance.get('launchTime'))
-        instance_line.append(instance.get('placement', {}).get('availabilityZone'))
+        instance_line.append(instance.get('placement', {}).get(
+            'availabilityZone'))
         instance_line.append(instance.get('kernelId'))
         instance_line.append(instance.get('ramdiskId'))
         instance_line.append(instance.get('platform'))
@@ -378,7 +377,7 @@ class _ResourceTypeMap(object):
             'i':      'instance',
             'igw':    'internet-gateway',
             'acl':    'network-acl',
-            'XXX':    'reserved-instances',  # reserved instance IDs are UUIDs
+            'xxx':    'reserved-instances',  # reserved instance IDs are UUIDs
             'rtb':    'route-table',
             'sg':     'security-group',
             'snap':   'snapshot',

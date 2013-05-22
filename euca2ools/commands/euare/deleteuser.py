@@ -32,17 +32,18 @@ import argparse
 from euca2ools.commands.euare import EuareRequest, AS_ACCOUNT
 from euca2ools.commands.euare.deleteaccesskey import DeleteAccessKey
 from euca2ools.commands.euare.deleteloginprofile import DeleteLoginProfile
-from euca2ools.commands.euare.deletesigningcertificate import DeleteSigningCertificate
+from euca2ools.commands.euare.deletesigningcertificate import \
+    DeleteSigningCertificate
 from euca2ools.commands.euare.deleteuserpolicy import DeleteUserPolicy
 from euca2ools.commands.euare.getloginprofile import GetLoginProfile
 from euca2ools.commands.euare.listaccesskeys import ListAccessKeys
 from euca2ools.commands.euare.listgroupsforuser import ListGroupsForUser
-from euca2ools.commands.euare.listsigningcertificates import ListSigningCertificates
+from euca2ools.commands.euare.listsigningcertificates import \
+    ListSigningCertificates
 from euca2ools.commands.euare.listuserpolicies import ListUserPolicies
 from euca2ools.commands.euare.removeuserfromgroup import RemoveUserFromGroup
 from euca2ools.exceptions import AWSError
 from requestbuilder import Arg
-import sys
 
 
 class DeleteUser(EuareRequest):

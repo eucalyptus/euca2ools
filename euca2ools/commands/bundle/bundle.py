@@ -71,9 +71,9 @@ class Bundle(object):
     def create_from_image(cls, image_filename, part_prefix, part_size=None,
                           progressbar=None):
         new_bundle = cls()
-        new_bundle.__create_from_image(image_filename, part_prefix,
-                                       part_size=part_size,
-                                       progressbar=progressbar)
+        new_bundle._create_from_image(image_filename, part_prefix,
+                                      part_size=part_size,
+                                      progressbar=progressbar)
         return new_bundle
 
     @classmethod
@@ -107,8 +107,8 @@ class Bundle(object):
             new_bundle.parts.append(part_dict)
         return new_bundle
 
-    def __create_from_image(self, image_filename, part_prefix, part_size=None,
-                            progressbar=None):
+    def _create_from_image(self, image_filename, part_prefix, part_size=None,
+                           progressbar=None):
         if part_size is None:
             part_size = self.DEFAULT_PART_SIZE
         with self._lock:
@@ -363,7 +363,7 @@ def _try_to_decrypt_keys(hex_encrypted_keys, privkey_filename):
             return decrypted_key
         except ValueError:
             pass
-    raise ValueError("Failed to decrypt the manifest's encryption info.  "
+    raise ValueError("Failed to decrypt the bundle's encryption key.  "
                      "Ensure the key supplied matches the one used for "
                      "bundling.")
 

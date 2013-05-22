@@ -89,11 +89,11 @@ class BundleImage(BundleCreator):
         self.log.debug('bundle path prefix: %s', path_prefix)
 
         label = self.args.get('progressbar_label', 'Bundling image')
-        bar = self.get_progressbar(label=label,
-                                   maxval=os.path.getsize(self.args['image']))
+        pbar = self.get_progressbar(label=label,
+                                    maxval=os.path.getsize(self.args['image']))
         bundle = Bundle.create_from_image(
             self.args['image'], path_prefix,
-            part_size=self.args.get('part_size'), progressbar=bar)
+            part_size=self.args.get('part_size'), progressbar=pbar)
         manifest = self.generate_manifest_xml(bundle)
         manifest_filename = path_prefix + '.manifest.xml'
         with open(manifest_filename, 'w') as manifest_file:

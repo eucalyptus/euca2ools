@@ -46,7 +46,8 @@ def statistic_set(set_as_str):
         try:
             pairs[key] = float(val)
         except ValueError:
-            raise argparse.ArgumentTypeError('value "{0}" must be numeric'.format(val))
+            raise argparse.ArgumentTypeError('value "{0}" must be numeric'
+                                             .format(val))
     for field in ('Maximum', 'Minimum', 'SampleCount', 'Sum'):
         if field not in pairs:
             raise argparse.ArgumentTypeError(

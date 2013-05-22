@@ -32,7 +32,9 @@ import base64
 from euca2ools.commands.argtypes import (delimited_list,
     ec2_block_device_mapping)
 from euca2ools.commands.autoscaling import AutoScalingRequest
+import os.path
 from requestbuilder import Arg, MutuallyExclusiveArgList
+from requestbuilder.exceptions import ArgumentError
 
 
 class CreateLaunchConfiguration(AutoScalingRequest):

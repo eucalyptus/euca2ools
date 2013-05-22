@@ -34,7 +34,7 @@ from requestbuilder import Arg
 from requestbuilder.mixins import TabifyingMixin
 
 
-def instance(inst_as_str):
+def instance_id(inst_as_str):
     return {'InstanceId': inst_as_str}
 
 
@@ -44,7 +44,7 @@ class DeregisterInstancesFromLoadBalancer(ELBRequest, TabifyingMixin):
                 help='name of the load balancer to modify (required)'),
             Arg('--instances', dest='Instances.member', required=True,
                 metavar='INSTANCE1,INSTANCE2,...',
-                type=delimited_list(',', item_type=instance),
+                type=delimited_list(',', item_type=instance_id),
                 help='''IDs of the instances to remove from the load balancer
                 (required)''')]
     LIST_TAGS = ['Instances']

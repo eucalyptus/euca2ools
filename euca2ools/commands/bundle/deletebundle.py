@@ -41,7 +41,6 @@ from requestbuilder.exceptions import ArgumentError
 import argparse
 import os
 import shutil
-import sys
 import tempfile
 
 

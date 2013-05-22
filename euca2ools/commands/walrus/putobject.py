@@ -28,7 +28,6 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-import datetime
 from euca2ools.commands.walrus import WalrusRequest
 from euca2ools.util import build_progressbar_label_template
 import mimetypes
@@ -37,7 +36,6 @@ from requestbuilder import Arg
 from requestbuilder.exceptions import ArgumentError, ClientError
 from requestbuilder.mixins import FileTransferProgressBarMixin
 import socket
-import sys
 import threading
 import time
 
@@ -125,7 +123,9 @@ class PutObject(WalrusRequest, FileTransferProgressBarMixin):
                 upload_thread.join()
             with self._lock:
                 if self.last_upload_error is not None:
+                    # pylint: disable=E0702
                     raise self.last_upload_error
+                    # pylint: enable=E0702
 
     def try_send(self, source, retries_left=0):
         self.body = source

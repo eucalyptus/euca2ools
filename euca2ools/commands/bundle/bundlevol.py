@@ -40,7 +40,6 @@ from euca2ools.commands.bundle.helpers import (check_metadata, get_metadata,
                                                get_metadata_list)
 from euca2ools.commands.bundle.imagecreator import ImageCreator
 from requestbuilder import Arg, MutuallyExclusiveArgList
-from requestbuilder.command import BaseCommand
 from requestbuilder.exceptions import ClientError, ServerError
 
 
@@ -55,8 +54,8 @@ BUNDLE_IMAGE_ARG_FILTER = ('generate_fstab', 'fstab', 'bundle_all_dirs',
 
 
 class BundleVol(BundleCreator):
-    DESCRIPTION = '''Bundle an image for use with Eucalyptus or Amazon EC2
-                  (requires superuser privileges).'''
+    DESCRIPTION = ("Create a bundled iamge based on the running machine's "
+                   'filesystem\n\nThis command must be run as the superuser.')
     ARGS = [Arg('-s', '--size', metavar='MB',
                 type=filesize, default=IMAGE_MAX_SIZE_IN_MB,
                 help='''Size of the image in MB (default: {0}; recommended
@@ -92,14 +91,13 @@ class BundleVol(BundleCreator):
                     help='Generate fstab to bundle in image.'))]
 
     def __init__(self, **kwargs):
-        #
-        # We want to do this before arguments to the command are processed.
-        # Users should be informed if they don't have sufficient privileges
-        # before being told about missing required arguments.
-        #
-        if os.geteuid() != 0:
-            raise Exception("must be root user to run euca-bundle-vol.")
-        BaseCommand.__init__(self, **kwargs)
+        if (os.geteuid() != 0 and '--help' not in sys.argv and
+            '-h' not in sys.argv):
+            # Inform people with insufficient privileges before parsing args
+            # so they don't have to wade through required arg messages and
+            # whatnot first.
+            raise Exception("must be superuser")
+        BundleCreator.__init__(self, **kwargs)
 
     def _inherit_metadata(self):
         """Read instance metadata which we will propagate to the BundleImage

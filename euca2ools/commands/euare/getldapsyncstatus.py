@@ -28,7 +28,7 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.euare import EuareRequest, AS_ACCOUNT
+from euca2ools.commands.euare import EuareRequest
 from requestbuilder.mixins import TabifyingMixin
 
 

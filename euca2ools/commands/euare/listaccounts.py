@@ -29,7 +29,6 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 from euca2ools.commands.euare import EuareRequest
-from requestbuilder import Arg
 from requestbuilder.mixins import TabifyingMixin
 
 

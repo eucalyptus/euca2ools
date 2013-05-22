@@ -85,7 +85,9 @@ class WalrusRequest(requestbuilder.request.BaseRequest):
                 self.service.endpoint = new_url
                 if isinstance(self.body, file):
                     self.log.debug('re-seeking body to beginning of file')
+                    # pylint: disable=E1101
                     self.body.seek(0)
+                    # pylint: enable=E1101
                 return self.send()
             else:
                 self.log.warn('too many redirects; giving up')
@@ -123,13 +125,13 @@ def validate_dns_bucket_name(bucket):
                 raise ValueError('invalid character \'{0}\''.format(char))
         if label[0] not in string.ascii_lowercase + string.digits:
             raise ValueError(('character \'{0}\' may not begin part of a '
-                              'bucket name').format(char))
+                              'bucket name').format(label[0]))
         if label[-1] not in string.ascii_lowercase + string.digits:
             raise ValueError(('character \'{0}\' may not end part of a '
-                              'bucket name').format(char))
+                              'bucket name').format(label[-1]))
     if len(labels) == 4:
         try:
-            bucket_as_digits = map(int, bucket.split('.'))
+            map(int, bucket.split('.'))
         except ValueError:
             # This is actually the case we want
             pass

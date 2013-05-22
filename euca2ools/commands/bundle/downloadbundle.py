@@ -39,7 +39,6 @@ import os
 from requestbuilder import Arg, MutuallyExclusiveArgList
 from requestbuilder.exceptions import ArgumentError
 import shutil
-import sys
 
 
 class DownloadBundle(WalrusRequest):

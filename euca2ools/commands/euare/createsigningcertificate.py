@@ -29,6 +29,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 from euca2ools.commands.euare import EuareRequest, AS_ACCOUNT
+import os
 from requestbuilder import Arg
 
 

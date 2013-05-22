@@ -53,8 +53,8 @@ class ModifyInstanceTypeAttribute(EucalyptusRequest, TabifyingMixin):
             any(self.args.get(attr) is not None for attr in ('Cpu', 'Disk',
                                                             'Memory'))):
             # Basically, reset is mutually exclusive with everything else.
-                raise ArgumentError('argument --reset may not be used with '
-                                    'instance type attributes')
+            raise ArgumentError('argument --reset may not be used with '
+                                'instance type attributes')
 
     def print_result(self, result):
         newtype = result.get('instanceType', {})

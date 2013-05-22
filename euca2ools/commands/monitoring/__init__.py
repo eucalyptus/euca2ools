@@ -32,8 +32,9 @@ from euca2ools.commands import Euca2ools
 from euca2ools.exceptions import AWSError
 from requestbuilder import Arg, MutuallyExclusiveArgList, SERVICE
 import requestbuilder.auth
+from requestbuilder.mixins import TabifyingMixin
 import requestbuilder.service
-import requestbuilder.request
+from requestbuilder.request import AWSQueryRequest
 
 
 class CloudWatch(requestbuilder.service.BaseService):
@@ -55,14 +56,13 @@ class CloudWatch(requestbuilder.service.BaseService):
         raise AWSError(response)
 
 
-class CloudWatchRequest(requestbuilder.request.AWSQueryRequest):
+class CloudWatchRequest(AWSQueryRequest, TabifyingMixin):
     SUITE = Euca2ools
     SERVICE_CLASS = CloudWatch
     METHOD = 'POST'
 
     def parse_response(self, response):
-        response_dict = requestbuilder.request.AWSQueryRequest.parse_response(
-            self, response)
+        response_dict = AWSQueryRequest.parse_response(self, response)
         useful_keys = list(filter(lambda x: x != 'ResponseMetadata',
                                   response_dict.keys()))
         if len(useful_keys) == 1:

@@ -28,7 +28,6 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-import argparse
 import base64
 from euca2ools.commands.argtypes import (ec2_block_device_mapping,
     vpc_interface)
@@ -36,7 +35,6 @@ from euca2ools.commands.euca import EucalyptusRequest
 import os.path
 from requestbuilder import Arg, MutuallyExclusiveArgList
 from requestbuilder.exceptions import ArgumentError
-import sys
 
 
 class RunInstances(EucalyptusRequest):
@@ -123,7 +121,7 @@ class RunInstances(EucalyptusRequest):
                 help='''[VPC only] add a network interface to the new
                 instance.  If the interface already exists, supply its ID and
                 a numeric index for it, separated by ":", in the form
-                "eni-XXXXXXXX:INDEX".  To create a new interface, supply a
+                "eni-NNNNNNNN:INDEX".  To create a new interface, supply a
                 numeric index and subnet ID for it, along with (in order) an
                 optional description, a primary private IP address, a list of
                 security group IDs to associate with the interface, whether to

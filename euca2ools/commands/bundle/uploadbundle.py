@@ -28,7 +28,6 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands import Euca2ools
 from euca2ools.commands.walrus import WalrusRequest
 from euca2ools.commands.walrus.checkbucket import CheckBucket
 from euca2ools.commands.walrus.createbucket import CreateBucket
@@ -37,12 +36,8 @@ from euca2ools.exceptions import AWSError
 import lxml.etree
 import lxml.objectify
 import os.path
-from requestbuilder import Arg, MutuallyExclusiveArgList
-from requestbuilder.auth import S3RestAuth
-from requestbuilder.command import BaseCommand
-from requestbuilder.exceptions import ServerError
+from requestbuilder import Arg
 from requestbuilder.mixins import FileTransferProgressBarMixin
-from requestbuilder.util import set_userregion
 
 
 class UploadBundle(WalrusRequest, FileTransferProgressBarMixin):

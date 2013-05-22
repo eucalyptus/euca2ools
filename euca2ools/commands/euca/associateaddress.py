@@ -73,7 +73,7 @@ class AssociateAddress(EucalyptusRequest):
             # VPC
             print self.tabify(('ADDRESS', self.args.get('InstanceId'),
                                self.args.get('AllocationId'),
-                               response.get('associationId'),
+                               result.get('associationId'),
                                self.args.get('PrivateIpAddress')))
         else:
             # EC2

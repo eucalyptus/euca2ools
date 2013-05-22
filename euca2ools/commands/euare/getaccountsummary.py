@@ -29,7 +29,6 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 from euca2ools.commands.euare import EuareRequest, AS_ACCOUNT
-from requestbuilder import Arg
 
 
 class GetAccountSummary(EuareRequest):

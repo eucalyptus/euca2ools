@@ -45,6 +45,7 @@ def build_progressbar_label_template(fnames):
                                    total=len(fnames))
 
 
+# pylint: disable=W0622
 def mkdtemp_for_large_files(suffix='', prefix='tmp', dir=None):
     '''
     Like tempfile.mkdtemp, but using /var/tmp as a last resort instead of /tmp.
@@ -57,6 +58,7 @@ def mkdtemp_for_large_files(suffix='', prefix='tmp', dir=None):
         dir = (os.getenv('TMPDIR') or os.getenv('TEMP') or os.getenv('TMP') or
                '/var/tmp')
     return tempfile.mkdtemp(suffix=suffix, prefix=prefix, dir=dir)
+# pylint: enable=W0622
 
 
 def sanitize_path(path):

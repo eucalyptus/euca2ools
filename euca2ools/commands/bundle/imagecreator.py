@@ -134,8 +134,8 @@ class VolumeSync(object):
         # the user keeps their fstab from the original volume.
         #
         if self.fstab:
-            with open(self.fstab, 'r') as fp:
-                self._install_fstab(fp.read())
+            with open(self.fstab, 'r') as fstab_file:
+                self._install_fstab(fstab_file.read())
         elif self.generate_fstab_file:
             self._install_generated_fstab()
 
@@ -201,7 +201,7 @@ class VolumeSync(object):
         """
         with open(MOUNTS_FILE, 'r') as mounts:
             for line in mounts.readlines():
-                (mount, type) = line.split()[1:3]
+                (mount, fstype) = line.split()[1:3]
                 #
                 # If we find that a mount in our volume's mtab file is
                 # and shares a parent directory with the volume we will
@@ -209,8 +209,9 @@ class VolumeSync(object):
                 # (e.g., NFS) and we will exclude it. This will not happen
                 # if you have chosen the 'all' option.
                 #
-                if mount.find(self.volume) == 0 and type \
-                    not in ALLOWED_FS_TYPES:
+                if (mount.find(self.volume) == 0 and
+                    fstype not in ALLOWED_FS_TYPES):
+
                     self.excludes.append(mount)
 
     def _populate_tmpfs_mounts(self):
@@ -219,8 +220,8 @@ class VolumeSync(object):
         """
         with open(MOUNTS_FILE, 'r') as mounts:
             for line in mounts.readlines():
-                (mount, type) = line.split()[1:3]
-                if type == 'tmpfs':
+                (mount, fstype) = line.split()[1:3]
+                if fstype == 'tmpfs':
                     fullpath = os.path.join(self.mpoint, mount[1:])
                     if not os.path.exists(fullpath):
                         os.makedirs(fullpath)
@@ -244,12 +245,12 @@ class VolumeSync(object):
         self._install_fstab(_generate_fstab_content())
 
     def _install_fstab(self, content):
-        curr_fstab = os.path.join(self.mpoint, 'etc', 'fstab')
-        if os.path.exists(curr_fstab):
-            shutil.copyfile(curr_fstab, curr_fstab + '.old')
-            os.remove(curr_fstab)
-        with open(os.path.join(self.mpoint, 'etc', 'fstab'), 'wb') as fp:
-            fp.write(content)
+        fstab_path = os.path.join(self.mpoint, 'etc', 'fstab')
+        if os.path.exists(fstab_path):
+            shutil.copyfile(fstab_path, fstab_path + '.old')
+            os.remove(fstab_path)
+        with open(fstab_path, 'wb') as fstab:
+            fstab.write(content)
 
     def _sync_files(self):
         cmd = ['rsync', '-aXS']
@@ -298,7 +299,7 @@ class VolumeSync(object):
         self.mount()
         return self
 
-    def __exit__(self, type, value, traceback):
+    def __exit__(self, exc_type, exc_value, traceback):
         self.unmount()
 
 
@@ -308,7 +309,7 @@ class ImageCreator(object):
         # Assign settings for image creation
         #
         self.log = log
-        self.fs = {}
+        self.filesystem = {}
         self.volume = kwargs.get('volume')
         self.fstab = kwargs.get('fstab')
         self.generate_fstab = kwargs.get('generate_fstab', False)
@@ -346,7 +347,7 @@ class ImageCreator(object):
         print >> sys.stderr, "Creating image...",
         self._create_raw_diskimage()
         self._populate_filesystem_info()
-        self._make_filesystem(**self.fs)
+        self._make_filesystem(**self.filesystem)
         print >> sys.stderr, " done"
         #
         # Inside the VolumeSync context we will mount our image
@@ -393,7 +394,7 @@ class ImageCreator(object):
                                             '-ovalue', devnode],
                                            stdout=subprocess.PIPE
                                            ).communicate()[0]
-                    self.fs[tag.lower()] = out.rstrip()
+                    self.filesystem[tag.lower()] = out.rstrip()
                 except subprocess.CalledProcessError:
                     pass
         finally:

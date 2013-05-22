@@ -223,6 +223,7 @@ class InstallImage(EuStoreRequest, FileTransferProgressBarMixin):
             else:
                 raise KeyError("no such image: '{0}'"
                                .format(self.args['image_name']))
+            # pylint: disable=W0631
             self.log.debug('image data: %s', str(image))
             if self.args.get('architecture') is None:
                 self.args['architecture'] = image.get('architecture')
@@ -258,18 +259,20 @@ class InstallImage(EuStoreRequest, FileTransferProgressBarMixin):
                                    '(checksum: {0}, expected: {1})'
                                    .format(real_crc, expected_crc))
             return tarball_path
+            # pylint: enable=W0631
 
     def calc_file_checksum(self, filename):
         filesize = os.path.getsize(filename)
-        bar = self.get_progressbar(label='Verifying image   ', maxval=filesize)
+        pbar = self.get_progressbar(label='Verifying image   ',
+                                    maxval=filesize)
         digest = hashlib.md5()
         with open(filename) as file_:
-            bar.start()
+            pbar.start()
             while file_.tell() < filesize:
                 chunk = file_.read(4096)
                 digest.update(chunk)
-                bar.update(file_.tell())
-        bar.finish()
+                pbar.update(file_.tell())
+        pbar.finish()
         crc = zlib.crc32(digest.hexdigest()) & 0xffffffff
         return '{0:0>10d}'.format(crc)
 
@@ -366,7 +369,7 @@ class InstallImage(EuStoreRequest, FileTransferProgressBarMixin):
         self.log.info('extracting %s from tarball to %s', member.name,
                       dest_filename)
         src = tarball.extractfile(member)
-        bar = self.get_progressbar(label=bar_label, maxval=member.size)
+        pbar = self.get_progressbar(label=bar_label, maxval=member.size)
         try:
             with open(dest_filename, 'w') as dest:
                 while dest.tell() < member.size:
@@ -374,10 +377,10 @@ class InstallImage(EuStoreRequest, FileTransferProgressBarMixin):
                     # doesn't support seeking.
                     chunk = src.read(16384)
                     dest.write(chunk)
-                    if bar.start_time is None:
-                        bar.start()
-                    bar.update(dest.tell())
-                bar.finish()
+                    if pbar.start_time is None:
+                        pbar.start()
+                    pbar.update(dest.tell())
+                pbar.finish()
         finally:
             src.close()
         return dest_filename

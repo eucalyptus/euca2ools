@@ -54,23 +54,23 @@ class ModifyImageAttribute(EucalyptusRequest):
 
     def preprocess(self):
         if self.args.get('launch_permission'):
-            lp = {}
+            lperm = {}
             for entity in self.args.get('add', []):
-                lp.setdefault('Add', [])
+                lperm.setdefault('Add', [])
                 if entity == 'all':
-                    lp['Add'].append({'Group':  entity})
+                    lperm['Add'].append({'Group':  entity})
                 else:
-                    lp['Add'].append({'UserId': entity})
+                    lperm['Add'].append({'UserId': entity})
             for entity in self.args.get('remove', []):
-                lp.setdefault('Remove', [])
+                lperm.setdefault('Remove', [])
                 if entity == 'all':
-                    lp['Remove'].append({'Group':  entity})
+                    lperm['Remove'].append({'Group':  entity})
                 else:
-                    lp['Remove'].append({'UserId': entity})
-            if not lp:
+                    lperm['Remove'].append({'UserId': entity})
+            if not lperm:
                 raise ArgumentError('at least one entity must be specified '
                                     'with -a/--add or -r/--remove')
-            self.params['LaunchPermission'] = lp
+            self.params['LaunchPermission'] = lperm
         else:
             if self.args.get('add'):
                 raise ArgumentError('argument -a/--add may only be used '
