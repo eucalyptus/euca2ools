@@ -77,6 +77,8 @@ class ListUserPolicies(EuareRequest):
                 print policy_name
                 if self.args['verbose']:
                     self.print_policy(policy_name)
+        # We already take care of pagination
+        print 'IsTruncated: false'
 
     def print_policy(self, policy_name):
         req = GetUserPolicy(
