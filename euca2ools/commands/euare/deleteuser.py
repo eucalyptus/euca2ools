@@ -61,25 +61,30 @@ class DeleteUser(EuareRequest):
     def main(self):
         if self.args['recursive'] or self.args['pretend']:
             # Figure out what we'd have to delete
-            req = ListAccessKeys(service=self.service,
+            req = ListAccessKeys(
+                config=self.config, service=self.service,
                 UserName=self.args['UserName'],
-                DelegateAccount=self.args['DelegateAccount'])
+                DelegateAccount=self.params['DelegateAccount'])
             keys = req.main().get('AccessKeyMetadata', [])
-            req = ListUserPolicies(service=self.service,
+            req = ListUserPolicies(
+                config=self.config, service=self.service,
                 UserName=self.args['UserName'],
-                DelegateAccount=self.args['DelegateAccount'])
+                DelegateAccount=self.params['DelegateAccount'])
             policies = req.main().get('PolicyNames', [])
-            req = ListSigningCertificates(service=self.service,
+            req = ListSigningCertificates(
+                config=self.config, service=self.service,
                 UserName=self.args['UserName'],
-                DelegateAccount=self.args['DelegateAccount'])
+                DelegateAccount=self.params['DelegateAccount'])
             certs = req.main().get('Certificates', [])
-            req = ListGroupsForUser(service=self.service,
+            req = ListGroupsForUser(
+                config=self.config, service=self.service,
                 UserName=self.args['UserName'],
-                DelegateAccount=self.args['DelegateAccount'])
+                DelegateAccount=self.params['DelegateAccount'])
             groups = req.main().get('Groups', [])
-            req = GetLoginProfile(service=self.service,
+            req = GetLoginProfile(
+                config=self.config, service=self.service,
                 UserName=self.args['UserName'],
-                DelegateAccount=self.args['DelegateAccount'])
+                DelegateAccount=self.params['DelegateAccount'])
             try:
                 # This will raise an exception if no login profile is found.
                 req.main()
@@ -98,33 +103,38 @@ class DeleteUser(EuareRequest):
         else:
             if self.args['recursive']:
                 for key in keys:
-                    req = DeleteAccessKey(service=self.service,
+                    req = DeleteAccessKey(
+                        config=self.config, service=self.service,
                         UserName=self.args['UserName'],
                         AccessKeyId=key['AccessKeyId'],
-                        DelegateAccount=self.args['DelegateAccount'])
+                        DelegateAccount=self.params['DelegateAccount'])
                     req.send()
                 for policy in policies:
-                    req = DeleteUserPolicy(service=self.service,
+                    req = DeleteUserPolicy(
+                        config=self.config, service=self.service,
                         UserName=self.args['UserName'],
                         PolicyName=policy,
-                        DelegateAccount=self.args['DelegateAccount'])
+                        DelegateAccount=self.params['DelegateAccount'])
                     req.send()
                 for cert in certs:
-                    req = DeleteSigningCertificate(service=self.service,
+                    req = DeleteSigningCertificate(
+                        config=self.config, service=self.service,
                         UserName=self.args['UserName'],
                         CertificateId=cert['CertificateId'],
-                        DelegateAccount=self.args['DelegateAccount'])
+                        DelegateAccount=self.params['DelegateAccount'])
                     req.send()
                 for group in groups:
-                    req = RemoveUserFromGroup(service=self.service,
+                    req = RemoveUserFromGroup(
+                        config=self.config, service=self.service,
                         user_names=[self.args['UserName']],
                         GroupName=group['GroupName'],
-                        DelegateAccount=self.args['DelegateAccount'])
+                        DelegateAccount=self.params['DelegateAccount'])
                     req.send()
                 if has_login_profile:
-                    req = DeleteLoginProfile(service=self.service,
+                    req = DeleteLoginProfile(
+                        config=self.config, service=self.service,
                         UserName=self.args['UserName'],
-                        DelegateAccount=self.args['DelegateAccount'])
+                        DelegateAccount=self.params['DelegateAccount'])
                     req.send()
             return self.send()
 

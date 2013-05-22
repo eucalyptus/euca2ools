@@ -52,15 +52,17 @@ class CreateUser(EuareRequest):
 
     def postprocess(self, result):
         if self.args.get('group_name'):
-            obj = AddUserToGroup(service=self.service,
+            obj = AddUserToGroup(
+                config=self.config, service=self.service,
                 UserName=self.args['UserName'],
                 GroupName=self.args['group_name'],
-                DelegateAccount=self.args['DelegateAccount'])
+                DelegateAccount=self.params['DelegateAccount'])
             obj.main()
         if self.args.get('create_accesskey'):
-            obj = CreateAccessKey(service=self.service,
+            obj = CreateAccessKey(
+                config=self.config, service=self.service,
                 UserName=self.args['UserName'],
-                DelegateAccount=self.args['DelegateAccount'])
+                DelegateAccount=self.params['DelegateAccount'])
             key_result = obj.main()
             result.update(key_result)
 

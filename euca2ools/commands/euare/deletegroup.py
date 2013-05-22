@@ -54,13 +54,14 @@ class DeleteGroup(EuareRequest):
     def main(self):
         if self.args['recursive'] or self.args['pretend']:
             # Figure out what we'd have to delete
-            req = GetGroup(service=self.service,
+            req = GetGroup(config=self.config, service=self.service,
                            GroupName=self.args['GroupName'],
-                           DelegateAccount=self.args['DelegateAccount'])
+                           DelegateAccount=self.params['DelegateAccount'])
             members = req.main().get('Users', [])
-            req = ListGroupPolicies(service=self.service,
+            req = ListGroupPolicies(
+                config=self.config, service=self.service,
                 GroupName=self.args['GroupName'],
-                DelegateAccount=self.args['DelegateAccount'])
+                DelegateAccount=self.params['DelegateAccount'])
             policies = req.main().get('PolicyNames', [])
         if self.args['pretend']:
             return {'members':  [member['Arn'] for member in members],
@@ -68,15 +69,17 @@ class DeleteGroup(EuareRequest):
         else:
             if self.args['recursive']:
                 member_names = [member['UserName'] for member in members]
-                req = RemoveUserFromGroup(service=self.service,
+                req = RemoveUserFromGroup(
+                    config=self.config, service=self.service,
                     GroupName=self.args['GroupName'],
                     user_names=member_names,
-                    DelegateAccount=self.args['DelegateAccount'])
+                    DelegateAccount=self.params['DelegateAccount'])
                 req.main()
                 for policy in policies:
-                    req = DeleteGroupPolicy(service=self.service,
+                    req = DeleteGroupPolicy(
+                        config=self.config, service=self.service,
                         GroupName=self.args['GroupName'], PolicyName=policy,
-                        DelegateAccount=self.args['DelegateAccount'])
+                        DelegateAccount=self.params['DelegateAccount'])
                     req.main()
             return self.send()
 

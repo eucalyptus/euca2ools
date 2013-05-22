@@ -61,10 +61,11 @@ class AddUserPolicy(EuareRequest):
 
     def main(self):
         policy_doc = json.dumps(self.build_policy())
-        req = PutUserPolicy(service=self.service,
+        req = PutUserPolicy(
+            config=self.config, service=self.service,
             UserName=self.args['user_name'],
             PolicyName=self.args['policy_name'], PolicyDocument=policy_doc,
-            DelegateAccount=self.args['DelegateAccount'])
+            DelegateAccount=self.params['DelegateAccount'])
         response = req.main()
         response['PolicyDocument'] = policy_doc
         return response

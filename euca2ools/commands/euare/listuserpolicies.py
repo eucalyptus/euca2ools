@@ -79,9 +79,10 @@ class ListUserPolicies(EuareRequest):
                     self.print_policy(policy_name)
 
     def print_policy(self, policy_name):
-        req = GetUserPolicy(service=self.service,
+        req = GetUserPolicy(
+            config=self.config, service=self.service,
             UserName=self.args['UserName'], PolicyName=policy_name,
             pretty_print=self.args['pretty_print'],
-            DelegateAccount=self.args.get('DelegateAccount'))
+            DelegateAccount=self.params.get('DelegateAccount'))
         response = req.main()
         req.print_result(response)
