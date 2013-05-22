@@ -1,6 +1,6 @@
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2013, Eucalyptus Systems, Inc.
 # All rights reserved.
 #
 # Redistribution and use of this software in source and binary forms, with or
@@ -27,66 +27,70 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#
-# Author: Neil Soman neil@eucalyptus.com
-#         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import os
-import sys
-from boto.roboto.param import Param
-import euca2ools.commands.eucacommand
-import euca2ools.bundler
-from euca2ools.exceptions import NotFoundError, CommandFailed
+from euca2ools.commands import Euca2ools
+from euca2ools.commands.bundle.bundle import Bundle
+import os.path
+from requestbuilder import Arg
+from requestbuilder.command import BaseCommand
+from requestbuilder.exceptions import ArgumentError
+from requestbuilder.mixins import FileTransferProgressBarMixin
+from requestbuilder.util import set_userregion
 
-class Unbundle(euca2ools.commands.eucacommand.EucaCommand):
 
-    Description = 'Unbundles a previously uploaded bundle.'
-    Options = [Param(name='manifest_path',
-                     short_name='m', long_name='manifest',
-                     optional=False, ptype='file',
-                     doc='Path to the manifest file.'),
-               Param(name='private_key_path',
-                     short_name='k', long_name='privatekey',
-                     optional=True, ptype='file',
-                     doc='Path to private key used to encrypt bundle.'),
-               Param(name='destination_dir',
-                     short_name='d', long_name='destination',
-                     optional=True, ptype='dir', default='.',
-                     doc="""Directory to store the image to.
-                     Defaults to the current directory."""),
-               Param(name='source_dir',
-                     short_name='s', long_name='source',
-                     optional=True, ptype='dir',
-                     doc="""Source directory for the bundled image parts.
-                     Defaults to manifest directory.""")]
+class Unbundle(BaseCommand, FileTransferProgressBarMixin):
+    DESCRIPTION = ('Recreate an image from its bundled parts\n\nThe key used '
+                   'to unbundle the image must match the certificate that was '
+                   'used to bundle it.')
+    SUITE = Euca2ools
+    ARGS = [Arg('-m', '--manifest', metavar='FILE', required=True,
+                help="the bundle's manifest file (required)"),
+            Arg('-k', '--privatekey', metavar='FILE',
+                help='''file containing the private key to decrypt the bundle
+                with.  This must match the certificate used when bundling the
+                image.'''),
+            Arg('-d', '--destination', metavar='DIR', default='.',
+                help='''where to place the unbundled image (default: current
+                directory)'''),
+            Arg('-s', '--source', metavar='DIR', default='.',
+                help='''directory containing the bundled image parts (default:
+                current directory)'''),
+            Arg('--region', dest='userregion', metavar='USER@REGION',
+                help='''use encryption keys specified for a user and/or region
+                in configuration files''')]
+
+    def configure(self):
+        BaseCommand.configure(self)
+        set_userregion(self.config, self.args.get('userregion'))
+        set_userregion(self.config, os.getenv('EUCA_REGION'))
+
+        if not self.args.get('privatekey'):
+            config_privatekey = self.config.get_user_option('private-key')
+            if self.args.get('userregion'):
+                self.args['privatekey'] = config_privatekey
+            elif 'EC2_PRIVATE_KEY' in os.environ:
+                self.args['privatekey'] = os.getenv('EC2_PRIVATE_KEY')
+            elif config_privatekey:
+                self.args['privatekey'] = config_privatekey
+            else:
+                raise ArgumentError(
+                    'missing private key; please supply one with -k')
+        self.args['privatekey'] = os.path.expanduser(os.path.expandvars(
+            self.args['privatekey']))
+        if not os.path.exists(self.args['privatekey']):
+            raise ArgumentError("private key file '{0}' does not exist"
+                                .format(self.args['privatekey']))
+        if not os.path.isfile(self.args['privatekey']):
+            raise ArgumentError("private key file '{0}' is not a file"
+                                .format(self.args['privatekey']))
 
     def main(self):
-        if not self.source_dir:
-            self.source_dir = self.get_file_path(self.manifest_path)
-        if not self.private_key_path:
-            self.private_key_path = self.get_environ('EC2_PRIVATE_KEY')
-            if not os.path.isfile(self.private_key_path):
-                msg = 'Private Key not found: %s' % self.private_key_path
-                self.display_error_and_exit(msg)
+        bundle = Bundle.create_from_manifest(
+            self.args['manifest'], partdir=self.args['source'],
+            privkey_filename=self.args['privatekey'])
+        pbar = self.get_progressbar(maxval=bundle.bundled_size)
+        return bundle.extract_image(self.args['destination'],
+                                    progressbar=pbar)
 
-        bundler = euca2ools.bundler.Bundler(self)
-        (parts, encrypted_key, encrypted_iv) = \
-            bundler.parse_manifest(self.manifest_path)
-        image = bundler.assemble_parts(self.source_dir, self.destination_dir,
-                                       self.manifest_path, parts)
-        print 'Decrypting image'
-        decrypted_image = bundler.decrypt_image(image, encrypted_key,
-                                                encrypted_iv, self.private_key_path)
-        os.remove(image)
-        print 'Uncompressing image'
-        try:
-            bundler.untarzip_image(self.destination_dir, decrypted_image)
-        except NotFoundError:
-            sys.exit(1)
-        except CommandFailed:
-            sys.exit(1)
-        os.remove(decrypted_image)
-
-    def main_cli(self):
-        self.main()
-
+    def print_result(self, result):
+        print 'Wrote', result
