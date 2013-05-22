@@ -127,7 +127,10 @@ class DescribeImages(EucalyptusRequest):
             return self.send()
 
     def print_result(self, result):
+        images = {}
         for image in result.get('imagesSet', []):
+            images.setdefault(image['imageId'], image)
+        for image_id, image in sorted(images.iteritems()):
             self.print_image(image)
 
     def print_image(self, image):
