@@ -208,17 +208,6 @@ class EucalyptusRequest(AWSQueryRequest, TabifyingMixin):
     def __init__(self, **kwargs):
         AWSQueryRequest.__init__(self, **kwargs)
 
-    def parse_response(self, response_body):
-        response = AWSQueryRequest.parse_response(self, response_body)
-        # Compute cloud controller responses enclose their useful data inside
-        # FooResponse elements.  If that's all we have after stripping out
-        # RequestId then just return its contents.
-        useful_keys = filter(lambda x: x != 'RequestId', response.keys())
-        if len(useful_keys) == 1:
-            return response[useful_keys[0]] or {}
-        else:
-            return response
-
     def print_resource_tag(self, resource_tag, resource_id):
         resource_type = RESOURCE_TYPE_MAP.lookup(resource_id)
         print self.tabify(['TAG', resource_type, resource_id,
