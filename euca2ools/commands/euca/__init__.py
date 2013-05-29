@@ -101,7 +101,11 @@ class EC2CompatibleQuerySigV2Auth(QuerySigV2Auth):
                 self.args['key_id'] = config['EC2_ACCESS_KEY']
             if 'EC2_SECRET_KEY' in config and not self.args.get('secret_key'):
                 self.args['secret_key'] = config['EC2_SECRET_KEY']
-        # Environment (for compatibility with EC2 tools)
+        # Environment (for compatibility with AWS tools)
+        if 'AWS_ACCESS_KEY' in os.environ and not self.args.get('key_id'):
+            self.args['key_id'] = os.getenv('AWS_ACCESS_KEY')
+        if 'AWS_SECRET_KEY' in os.environ and not self.args.get('secret_key'):
+            self.args['secret_key'] = os.getenv('AWS_SECRET_KEY')
         if 'EC2_ACCESS_KEY' in os.environ and not self.args.get('key_id'):
             self.args['key_id'] = os.getenv('EC2_ACCESS_KEY')
         if 'EC2_SECRET_KEY' in os.environ and not self.args.get('secret_key'):
