@@ -1,81 +1,58 @@
-Euca2ools: Command-line tools for interacting with Amazon EC2 and S3
-           API-compatible Web services using the REST/Query API.
+Euca2ools 3 Installation
+========================
 
-These instructions describe how to install and run Euca2ools.  Please,
-see the README file for general information and the COPYING file for
-the license for this software.
+This file describes the steps needed to install euca2ools from source.
+Your operating system vendor may already offer euca2ools in packaged
+form that use can install using yum, apt-get, or a similar tool.
 
-============
+
+Requirements
+------------
+
+Euca2ools currently work with python versions 2.6 and 2.7.  Work is
+ongoing to port the suite to version 3.3.
+
+You must also have the following python libraries installed.  All of
+them are available on PyPi:
+ - lxml (http://lxml.de/)
+ - requestbuilder (https://github.com/boto/requestbuilder)
+ - requests (http://www.python-requests.org/)
+ - setuptools (https://pypi.python.org/pypi/setuptools)
+ - six (http://pythonhosted.org/six/)
+
+The bundle-related tools require several other executables as well:
+ - blkid
+ - dd
+ - gzip or pigz
+ - mkfs
+ - mount
+ - openssl
+ - sync
+ - umount
+
+Finally, euca-get-password requires openssl.
+
+
 Installation
-============
+------------
 
-Euca2ools can be installed from source or as a binary package (DEB
-or RPM).  The latest source tarball and binary packages can be found here:
+To install from a source tarball:
 
-  http://downloads.eucalyptus.com/software/euca2ools/
+    $ tar xzf euca2ools-3.0.0.tar.gz
+    $ cd euca2ools-3.0.0
+    $ python setup.py install
 
-Please, download the correct package for your distribution or the tarball.
-Euca2ools are written in Python, relying on the Boto AWS library and
-the M2Crypto cryptography and SSL toolkit.  The acceptable
-versions for the dependencies are:
+To install directly from git:
 
-  Python   2.6 or higher
-  Boto     2.2
-  M2Crypto 0.20.2 or higher
+    $ git clone git://github.com/eucalyptus/euca2ools
+    $ cd euca2ools
+    $ python setup.py install
 
-- If you are installing a binary package, please, follow the standard
-process on your distribution for installing euca2ools package and the
-prerequisites.
+The euca2ools suite also ships with a default configuration file and
+certificates that you may find useful.  To use them we recommend
+copying them onto your system like so:
 
-- To install from source, build the dependencies and install as follows:
-
-python setup.py build
-su -c 'python setup.py install'
-
-=======
-Running
-=======
-
-Euca2ools use cryptographic credentials for authentication.  Two types of
-credentials are issued by EC2- and S3-compatible services: x509 certificates
-and keys.  While some commands only require the latter, it is best to always
-specify both types of credentials.  Furthermore, unless the front end Web services
-reside on 'localhost', the URLs of the EC2- and S3-compatible service
-endpoints must also be specified.
-
-The credentials and URLs can be specified via the command line option
-or by setting environment variables as follows:
-
-  variable        option                    explanation
-  --------------- ------------------------- --------------------------------
-  EC2_URL         -U or --url <url>         http://host:8773/services/Eucalyptus
-                                            or http://ec2.amazonaws.com
-  S3_URL          -U or --url <url>         http://host:8773/services/Walrus
-                                            or http://s3.amazonaws.com
-  EC2_ACCESS_KEY  -a or --access-key <key>  Access Key ID / Query ID
-  EC2_SECRET_KEY  -s or --secret-key <key>  Secret Access Key / Secret Key
-  EC2_CERT        -c or --cert <file>       user's PEM-encoded certificate
-  EC2_PRIVATE_KEY -k or --privatekey <file> user's PEM-encoded private key
-  EUCALYPTUS_CERT --ec2cert_path <file>     OPTIONAL path to cloud cert
-
-If you are running Euca2ools against Eucalyptus, sourcing the "eucarc"
-file that is included as part of the credentials zip-file that you
-downloaded from the Eucalyptus Web interface should be enough to set up
-all of the above variables correctly.
-
-To get started, try:
-
-euca-describe-availability-zones
-AVAILABILITYZONE	mycluster	  UP mycluster.mydomain
-
-For more information, try the --help option of the individual commands. E.g.,
-
-  euca-describe-availability-zones --help
-
-or check the man pages. For example,
-
-  man euca-describe-availability-zones
-
-or consult the complete documentation at
-
-  http://open.eucalyptus.com/wiki/Documentation
+    # mkdir /etc/euca2ools
+    # cp conf/euca2ools.ini /etc/euca2ools/euca2ools.ini
+    # mkdir /usr/share/euca2ools
+    # cp -R certs /usr/share/euca2ools/certs
