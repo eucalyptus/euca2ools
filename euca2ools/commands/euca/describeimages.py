@@ -1,189 +1,150 @@
-# Software License Agreement (BSD License)
+# Copyright 2009-2013 Eucalyptus Systems, Inc.
 #
-# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
-# All rights reserved.
+# Redistribution and use of this software in source and binary forms,
+# with or without modification, are permitted provided that the following
+# conditions are met:
 #
-# Redistribution and use of this software in source and binary forms, with or
-# without modification, are permitted provided that the following conditions
-# are met:
+#   Redistributions of source code must retain the above copyright notice,
+#   this list of conditions and the following disclaimer.
 #
-#   Redistributions of source code must retain the above
-#   copyright notice, this list of conditions and the
-#   following disclaimer.
+#   Redistributions in binary form must reproduce the above copyright
+#   notice, this list of conditions and the following disclaimer in the
+#   documentation and/or other materials provided with the distribution.
 #
-#   Redistributions in binary form must reproduce the above
-#   copyright notice, this list of conditions and the
-#   following disclaimer in the documentation and/or other
-#   materials provided with the distribution.
-#
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-# ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
-# LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-# POSSIBILITY OF SUCH DAMAGE.
-#
-# Author: Neil Soman neil@eucalyptus.com
-#         Mitch Garnaat mgarnaat@eucalyptus.com
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+# "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+# A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+# OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+# SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+# LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+# DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+# THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import euca2ools.commands.eucacommand
-from boto.roboto.param import Param
+from euca2ools.commands.euca import EucalyptusRequest
+from requestbuilder import Arg, Filter, GenericTagFilter
+from requestbuilder.exceptions import ArgumentError
 
-class DescribeImages(euca2ools.commands.eucacommand.EucaCommand):
 
-    APIVersion = '2010-08-31'
-    Description = 'Shows information about machine images.'
-    Options = [Param(name='all', short_name='a', long_name='all',
-                     optional=True, ptype='boolean', default=False,
-                     doc='Show all images that the user has access to.'),
-               Param(name='owner', short_name='o', long_name='owner',
-                     optional=True, ptype='string', cardinality='*',
-                     doc="""Show only images owned by the user.
-                            Valid values: account ID|self|amazon"""),
-               Param(name='executable_by',
-                     short_name='x', long_name='executable-by',
-                     optional=True, ptype='string', cardinality='*',
-                     doc="""Show only images for which user has
-                     explicit launch permissions.
-                     Valid values: account ID|self|all""")]
-    Args = [Param(name='image', ptype='string',
-                  cardinality='+', optional=True)]
-    Filters = [Param(name='architecture', ptype='string',
-                     doc='Image architecture.  Valid values are i386 | x86_64 | armhf'),
-               Param(name='block-device-mapping.delete-on-termination',
-                     ptype='boolean',
-                     doc="""Whether the Amazon EBS volume is deleted on
-                     instance termination."""),
-               Param(name='block-device-mapping.device-name', ptype='string',
-                     doc="""Device name (e.g., /dev/sdh) for an Amazon EBS volume
-                     mapped to the image."""),
-               Param(name='block-device-mapping.snapshot-id', ptype='string',
-                     doc="""Snapshot ID for an Amazon EBS volume mapped
-                     to the image."""),
-               Param(name='block-device-mapping.volume-size', ptype='integer',
-                     doc="""Volume size for an Amazon EBS volume mapped
-                     to the image."""),
-               Param(name='description', ptype='string',
-                     doc='Description of the AMI'),
-               Param(name='hypervisor', ptype='string',
-                     doc="""Hypervisor type of the image.
-                     Valid values are ovm | xen."""),
-               Param(name='image-id', ptype='string',
-                     doc='ID of the imageID'),
-               Param(name='image-type', ptype='string',
-                     doc="""Type of the image.
-                     Valid values are machine | kernel | ramdisk"""),
-               Param(name='is-public', ptype='boolean',
-                     doc='Whether the image is public.'),
-               Param(name='kernel-id', ptype='string',
-                     doc='Kernel ID.'),
-               Param(name='manifest-location', ptype='string',
-                     doc='Location of the image manifest.'),
-               Param(name='name', ptype='string',
-                     doc='Name of the AMI.'),
-               Param(name='owner-alias', ptype='string',
-                     doc="""AWS account alias (e.g., amazon or self) or
-                     AWS account ID that owns the AMI."""),
-               Param(name='owner-id', ptype='string',
-                     doc='AWS account ID of the image owner.'),
-               Param(name='platform', ptype='string',
-                     doc="""Use windows if you have Windows based AMIs;
-                     otherwise leave blank."""),
-               Param(name='product-code', ptype='string',
-                     doc='Product code associated with the AMI.'),
-               Param(name='ramdisk-id', ptype='string',
-                     doc='The ramdisk ID.'),
-               Param(name='root-device-name', ptype='string',
-                     doc='Root device name of the AMI (e.g., /dev/sda1).'),
-               Param(name='root-device-type', ptype='string',
-                     doc="""Root device type the AMI uses.
-                     Valid Values: ebs | instance-store."""),
-               Param(name='state', ptype='string',
-                     doc="""State of the image.
-                     Valid values: available | pending | failed."""),
-               Param(name='state-reason-code', ptype='string',
-                     doc='Reason code for the state change.'),
-               Param(name='state-reason-message', ptype='string',
-                     doc='Message for the state change.'),
-               Param(name='tag-key', ptype='string',
-                     doc='Key of a tag assigned to the resource.'),
-               Param(name='tag-value', ptype='string',
-                     doc='Value of a tag assigned to the resource.'),
-               Param(name='tag:key', ptype='string',
-                     doc="""Filters the results based on a specific
-                     tag/value combination."""),
-               Param(name='virtualization-type', ptype='string',
-                     doc="""Virtualization type of the image.
-                     Valid values: paravirtual | hvm""")]
-    
-    def display_images(self, images):
-        for image in images:
-            image_string = '%s\t%s\t%s\t%s' % (image.id, image.location,
-                    image.ownerId, image.state)
-            if image.is_public:
-                image_string += '\tpublic'
-            else:
-                image_string += '\tprivate'
+class DescribeImages(EucalyptusRequest):
+    DESCRIPTION = ('Show information about images\n\nBy default, only images '
+                   'your account owns and images for which your account has '
+                   'explicit launch permissions are shown.')
+    ARGS = [Arg('ImageId', metavar='IMAGE', nargs='*',
+                help='limit results to specific images'),
+            Arg('-a', '--all', action='store_true', route_to=None,
+                help='describe all images'),
+            Arg('-o', '--owner', dest='Owner', metavar='ACCOUNT',
+                action='append',
+                help='describe images owned by the specified owner'),
+            Arg('-x', '--executable-by', dest='ExecutableBy',
+                metavar='ACCOUNT', action='append',
+                help='''describe images for which the specified account has
+                explicit launch permissions''')]
+    FILTERS = [Filter('architecture', choices=('i386', 'x86_64', 'armhf'),
+                      help='CPU architecture'),
+               Filter('block-device-mapping.delete-on-termination',
+                      help='''whether a volume is deleted upon instance
+                      termination'''),
+               Filter('block-device-mapping.device-name',
+                      help='device name for a volume mapped to the image'),
+               Filter('block-device-mapping.snapshot-id',
+                      help='snapshot ID for a volume mapped to the image'),
+               Filter('block-device-mapping.volume-size',
+                      help='volume size for a volume mapped to the image'),
+               Filter('block-device-mapping.volume-type',
+                      help='volume type for a volume mapped to the image'),
+               Filter('description', help='image description'),
+               Filter('hypervisor', help='image\'s hypervisor type'),
+               Filter('image-id'),
+               Filter('image-type', choices=('machine', 'kernel', 'ramdisk'),
+                      help='image type ("machine", "kernel", or "ramdisk")'),
+               Filter('is-public', help='whether the image is public'),
+               Filter('kernel-id'),
+               Filter('manifest-location'),
+               Filter('name'),
+               Filter('owner-alias', help="image owner's account alias"),
+               Filter('owner-id', help="image owner's account ID"),
+               Filter('platform', help='"windows" for Windows images'),
+               Filter('product-code',
+                      help='product code associated with the image'),
+               Filter('product-code.type', choices=('devpay', 'marketplace'),
+                      help='type of product code associated with the image'),
+               Filter('ramdisk-id'),
+               Filter('root-device-name'),
+               Filter('root-device-type', choices=('ebs', 'instance-store'),
+                      help='root device type ("ebs" or "instance-store")'),
+               Filter('state', choices=('available', 'pending', 'failed'),
+                      help='''image state ("available", "pending", or
+                      "failed")'''),
+               Filter('state-reason-code',
+                      help='reason code for the most recent state change'),
+               Filter('state-reason-message',
+                      help='message for the most recent state change'),
+               Filter('tag-key', help='key of a tag assigned to the image'),
+               Filter('tag-value',
+                      help='value of a tag assigned to the image'),
+               GenericTagFilter('tag:KEY',
+                                help='specific tag key/value combination'),
+               Filter('virtualization-type', choices=('paravirtual', 'hvm'),
+                      help='virtualization type ("paravirtual" or "hvm")')]
+    LIST_TAGS = ['imagesSet', 'productCodes', 'blockDeviceMapping', 'tagSet']
 
-            image_string += '\t%s' % ','.join(image.product_codes)
-
-            for i in [image.architecture, image.type, image.kernel_id,
-                      image.ramdisk_id, image.platform,
-                      image.root_device_type]:
-                image_string += '\t%s' % (('' if i == None else i))
-
-            print 'IMAGE\t%s' % image_string
-            if image.block_device_mapping:
-                block_dev_mapping = image.block_device_mapping
-                if image.root_device_type == 'ebs':
-                    block_dev_string = '%s\t%s\t%s' \
-                        % (block_dev_mapping.current_name,
-                           block_dev_mapping.current_value.snapshot_id,
-                           block_dev_mapping.current_value.size)
-                    print 'BLOCKDEVICEMAPPING\t%s' % block_dev_string
-            if hasattr(image, 'tags') and isinstance(image.tags, dict):
-                for tag in image.tags:
-                    print '\t'.join(('TAG', 'image', image.id, tag,
-                                     image.tags[tag]))
+    def configure(self):
+        EucalyptusRequest.configure(self)
+        if self.args.get('all', False):
+            if self.args.get('ImageId'):
+                raise ArgumentError('argument -a/--all: not allowed with '
+                                    'a list of images')
+            if self.args.get('ExecutableBy'):
+                raise ArgumentError('argument -a/--all: not allowed with '
+                                    'argument -x/--executable-by')
+            if self.args.get('Owner'):
+                raise ArgumentError('argument -a/--all: not allowed with '
+                                    'argument -o/--owner')
 
     def main(self):
-        if self.all and (self.owner or self.executable_by or self.image):
-            msg = '-a cannot be combined with owner, launch, or image list'
-            self.display_error_and_exit(msg)
-
-        # if you specify "-a" then it means return ALL images
-        if self.all:
-            self.executable_by = []
-            self.owner = []
-
-        conn = self.make_connection_cli()
-        if (self.executable_by or self.owner or self.image or self.all):
-            images = self.make_request_cli(conn, 'get_all_images',
-                                           image_ids=self.image,
-                                           owners=self.owner,
-                                           executable_by=self.executable_by)
+        if not any(self.args.get(item) for item in ('all', 'ImageId',
+                                                    'ExecutableBy', 'Owner')):
+            # Default to owned images and images with explicit launch perms
+            self.params['Owner'] = ['self']
+            owned = self.send()
+            del self.params['Owner']
+            self.params['ExecutableBy'] = ['self']
+            executable = self.send()
+            del self.params['ExecutableBy']
+            owned['imagesSet'] = (owned.get('imagesSet', []) +
+                                  executable.get('imagesSet', []))
+            return owned
         else:
-            owned = self.make_request_cli(conn, 'get_all_images',
-                image_ids = None, owners = ("self",), executable_by = None)
-            launchable = self.make_request_cli(conn, 'get_all_images',
-                image_ids = None, owners = None, executable_by = ("self"))
+            return self.send()
 
-            seen = { }
-            images = [ ]
-            for image in owned:
-                seen[image.id] = True
-                images.append(image)
-            for image in launchable:
-                if image.id not in seen:
-                    images.append(image)
+    def print_result(self, result):
+        images = {}
+        for image in result.get('imagesSet', []):
+            images.setdefault(image['imageId'], image)
+        for image_id, image in sorted(images.iteritems()):
+            self.print_image(image)
 
-        return images
+    def print_image(self, image):
+        print self.tabify(('IMAGE', image.get('imageId'),
+                image.get('imageLocation'),
+                image.get('imageOwnerAlias') or image.get('imageOwnerId'),
+                image.get('imageState'),
+                ('public' if image.get('isPublic') == 'true' else 'private'),
+                image.get('architecture'), image.get('imageType'),
+                image.get('kernelId'), image.get('ramdiskId'),
+                image.get('platform'), image.get('rootDeviceType'),
+                image.get('virtualizationType'), image.get('hypervisor')))
+        for mapping in image.get('blockDeviceMapping', []):
+            self.print_blockdevice_mapping(mapping)
+        for tag in image.get('tagSet', []):
+            self.print_resource_tag(tag, image.get('imageId'))
 
-    def main_cli(self):
-        images = self.main()
-        self.display_images(images)
+    def print_blockdevice_mapping(self, mapping):
+        print self.tabify(('BLOCKDEVICEMAPPING', mapping.get('deviceName'),
+                           mapping.get('ebs', {}).get('snapshotId'),
+                           mapping.get('ebs', {}).get('volumeSize'),
+                           mapping.get('ebs', {}).get('deleteOnTermination')))

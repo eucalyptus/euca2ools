@@ -1,172 +1,190 @@
-# Software License Agreement (BSD License)
+# Copyright 2009-2013 Eucalyptus Systems, Inc.
 #
-# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
-# All rights reserved.
+# Redistribution and use of this software in source and binary forms,
+# with or without modification, are permitted provided that the following
+# conditions are met:
 #
-# Redistribution and use of this software in source and binary forms, with or
-# without modification, are permitted provided that the following conditions
-# are met:
+#   Redistributions of source code must retain the above copyright notice,
+#   this list of conditions and the following disclaimer.
 #
-#   Redistributions of source code must retain the above
-#   copyright notice, this list of conditions and the
-#   following disclaimer.
+#   Redistributions in binary form must reproduce the above copyright
+#   notice, this list of conditions and the following disclaimer in the
+#   documentation and/or other materials provided with the distribution.
 #
-#   Redistributions in binary form must reproduce the above
-#   copyright notice, this list of conditions and the
-#   following disclaimer in the documentation and/or other
-#   materials provided with the distribution.
-#
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-# ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
-# LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-# POSSIBILITY OF SUCH DAMAGE.
-#
-# Author: Neil Soman neil@eucalyptus.com
-#         Mitch Garnaat mgarnaat@eucalyptus.com
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+# "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+# A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+# OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+# SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+# LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+# DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+# THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import euca2ools.commands.eucacommand
-from boto.roboto.param import Param
-import euca2ools.utils
+from euca2ools.commands.euca import EucalyptusRequest
+from requestbuilder import Arg, Filter, GenericTagFilter
 
-class DescribeInstances(euca2ools.commands.eucacommand.EucaCommand):
 
-    APIVersion = '2010-08-31'
-    Description = 'Shows information about instances.'
-    Args = [Param(name='instance', ptype='string',
-                  cardinality='+', optional=True)]
-    Filters = [Param(name='architecture', ptype='string',
-                     doc="""Instance architecture.
-                     Valid values are i386 | x86_64 | armhf"""),
-               Param(name='availability-zone', ptype='string',
-                     doc="Instance's Availability Zone"),
-               Param(name='block-device-mapping.attach-time',
-                     ptype='datetime',
-                     doc="""Attach time for an Amazon EBS volume mapped
-                     to the instance"""),
-               Param(name='block-device-mapping.delete-on-termination',
-                     ptype='boolean',
-                     doc="""Whether the Amazon EBS volume is deleted on
-                     instance termination."""),
-               Param(name='block-device-mapping.device-name', ptype='string',
-                     doc="""Device name (e.g., /dev/sdh) for an Amazon EBS volume
-                     mapped to the image."""),
-               Param(name='block-device-mapping.status', ptype='string',
-                     doc="""Status for an Amazon EBS volume mapped to the instance.
-                     Valid Values: attaching | attached | detaching | detached"""),
-               Param(name='block-device-mapping.volume-id', ptype='string',
-                     doc="""ID for an Amazon EBS volume mapped to the instance."""),
-               Param(name='client-token', ptype='string',
-                     doc="""Idempotency token you provided when you launched
-                     the instance."""),
-               Param(name='dns-name', ptype='string',
-                     doc='Public DNS name of the instance.'),
-               Param(name='group-id', ptype='string',
-                     doc='A security group the instance is in.'),
-               Param(name='hypervisor', ptype='string',
-                     doc="""Hypervisor type of the instance.
-                     Valid values are ovm | xen."""),
-               Param(name='image-id', ptype='string',
-                     doc='ID of the imageID used to launch the instance'),
-               Param(name='instance-id', ptype='string',
-                     doc='ID of the instance'),
-               Param(name='instance-lifecycle', ptype='string',
-                     doc='Whether this is a Spot Instance.'),
-               Param(name='instance-state-code', ptype='integer',
-                     doc='Code identifying the state of the instance'),
-               Param(name='instance-state-name', ptype='string',
-                     doc='State of the instance.'),
-               Param(name='instance-type', ptype='string',
-                     doc="""Type of the instance."""),
-               Param(name='ip-address', ptype='string',
-                     doc='Public IP address of the instance.'),
-               Param(name='kernel-id', ptype='string',
-                     doc='Kernel ID.'),
-               Param(name='key-name', ptype='string',
-                     doc="""Name of the key pair used when the
-                     instance was launched."""),
-               Param(name='launch-index', ptype='string',
-                     doc="""When launching multiple instances at once,
-                     this is the index for the instance in the launch group"""),
-               Param(name='launch-time', ptype='string',
-                     doc='Time instance was launched'),
-               Param(name='monitoring-state', ptype='string',
-                     doc='Whether monitoring is enabled for the instance.'),
-               Param(name='owner-id', ptype='string',
-                     doc='AWS account ID of the image owner.'),
-               Param(name='placement-group-name', ptype='string',
-                     doc='Name of the placement group the instance is in'),
-               Param(name='platform', ptype='string',
-                     doc="""Use windows if you have Windows based AMIs;
-                     otherwise leave blank."""),
-               Param(name='private-dns-name', ptype='string',
-                     doc='Private DNS name of the instance.'),
-               Param(name='private-ip-address', ptype='string',
-                     doc='Private ip address of the instance.'),
-               Param(name='product-code', ptype='string',
-                     doc='Product code associated with the AMI.'),
-               Param(name='ramdisk-id', ptype='string',
-                     doc='The ramdisk ID.'),
-               Param(name='reason', ptype='string',
-                     doc="""Reason for the instance's current state."""),
-               Param(name='requestor-id', ptype='string',
-                     doc="""ID of the entity that launched the instance
-                     on your behalf."""),
-               Param(name='reservation-id', ptype='string',
-                     doc="""ID of the instance's reservation."""),
-               Param(name='root-device-name', ptype='string',
-                     doc='Root device name of the AMI (e.g., /dev/sda1).'),
-               Param(name='root-device-type', ptype='string',
-                     doc="""Root device type the AMI uses.
-                     Valid Values: ebs | instance-store."""),
-               Param(name='spot-instance-request-id', ptype='string',
-                     doc='ID of the Spot Instance request.'),
-               Param(name='state-reason-code', ptype='string',
-                     doc='Reason code for the state change.'),
-               Param(name='state-reason-message', ptype='string',
-                     doc='Message for the state change.'),
-               Param(name='subnet-id', ptype='string',
-                     doc='ID of the subnet the instance is in (VPC).'),
-               Param(name='tag-key', ptype='string',
-                     doc='Key of a tag assigned to the resource.'),
-               Param(name='tag-value', ptype='string',
-                     doc='Value of a tag assigned to the resource.'),
-               Param(name='tag:key', ptype='string',
-                     doc="""Filters the results based on a specific
-                     tag/value combination."""),
-               Param(name='virtualization-type', ptype='string',
-                     doc="""Virtualization type of the instance.
-                     Valid values: paravirtual | hvm"""),
-               Param(name='vpc-id', ptype='string',
-                     doc='ID of the VPC the instance is in.')]
-    
-    def display_reservations(self, reservations):
-        for reservation in reservations:
-            instances = []
-            instances = reservation.instances
-            if len(instances) == 0:
-                continue
-            reservation_string = '%s\t%s' % (reservation.id,
-                    reservation.owner_id)
-            group_delim = '\t'
-            for group in reservation.groups:
-                reservation_string += '%s%s' % (group_delim, group.id)
-                group_delim = ', '
-            print 'RESERVATION\t%s' % reservation_string
-            euca2ools.utils.print_instances(instances)
+class DescribeInstances(EucalyptusRequest):
+    DESCRIPTION = 'Show information about instances'
+    ARGS = [Arg('InstanceId', metavar='INSTANCE', nargs='*',
+                help='limit results to specific instances')]
+    FILTERS = [Filter('architecture', choices=('i386', 'x86_64', 'armhf'),
+                      help='CPU architecture'),
+               Filter('association.allocation-id',
+                      help='''[VPC only] allocation ID bound to a network
+                      interface's elastic IP address'''),
+               Filter('association.association-id', help='''[VPC only]
+                      association ID returned when an elastic IP was associated
+                      with a network interface'''),
+               Filter('association.ip-owner-id',
+                      help='''[VPC only] ID of the owner of the elastic IP
+                      address associated with a network interface'''),
+               Filter('association.public-ip', help='''[VPC only] address of
+                      the elastic IP address bound to a network interface'''),
+               Filter('availability-zone'),
+               Filter('block-device-mapping.attach-time',
+                      help='volume attachment time'),
+               Filter('block-device-mapping.delete-on-termination', type=bool,
+                      help='''whether a volume is deleted upon instance
+                      termination'''),
+               Filter('block-device-mapping.device-name',
+                      help='volume device name (e.g. /dev/sdf)'),
+               Filter('block-device-mapping.status', help='volume status'),
+               Filter('block-device-mapping.volume-id', help='volume ID'),
+               Filter('client-token',
+                      help='idempotency token provided at instance run time'),
+               Filter('dns-name', help='public DNS name'),
+               # EC2's documentation for "group-id" refers VPC users to
+               # "instance.group-id", while their documentation for the latter
+               # refers them to the former.  Consequently, I'm not going to
+               # document a difference for either.  They both seem to work for
+               # non-VPC instances.
+               Filter('group-id', help='security group ID'),
+               Filter('group-name', help='security group name'),
+               Filter('hypervisor', help='hypervisor type'),
+               Filter('image-id', help='machine image ID'),
+               Filter('instance.group-id', help='security group ID'),
+               Filter('instance.group-name', help='security group name'),
+               Filter('instance-id'),
+               Filter('instance-lifecycle', choices=('spot',),
+                      help='whether this is a spot instance'),
+               Filter('instance-state-code', type=int,
+                      help='numeric code identifying instance state'),
+               Filter('instance-state-name', help='instance state'),
+               Filter('instance-type'),
+               Filter('ip-address', help='public IP address'),
+               Filter('kernel-id', help='kernel image ID'),
+               Filter('key-name',
+                      help='key pair name provided at instance launch time'),
+               Filter('launch-index', help='launch index within a reservation'),
+               Filter('launch-time', help='instance launch time'),
+               Filter('monitoring-state', choices=('enabled', 'disabled'),
+                      help='monitoring state ("enabled" or "disabled")'),
+               Filter('network-interface.addresses.association.ip-owner-id',
+                      help='''[VPC only] ID of the owner of the private IP
+                      address associated with a network interface'''),
+               Filter('network-interface.addresses.association.public-ip',
+                      help='''[VPC only] ID of the association of an elastic IP
+                      address with a network interface'''),
+               Filter('network-interface.addresses.primary',
+                      choices=('true', 'false'),
+                      help='''[VPC only] whether the IP address of the VPC
+                      network interface is the primary private IP address'''),
+               Filter('network-interface.addresses.private-ip-address',
+                      help='''[VPC only] network interface's private IP
+                      address'''),
+               Filter('network-interface.attachment.device-index', type=int,
+                      help='''[VPC only] device index to which a network
+                      interface is attached'''),
+               Filter('network-interface.attachment.attach-time',
+                      help='''[VPC only] time a network interface was attached
+                      to an instance'''),
+               Filter('network-interface.attachment.attachment-id',
+                      help='''[VPC only] ID of a network interface's
+                      attachment'''),
+               Filter('network-interface.attachment.delete-on-termination',
+                      choices=('true', 'false'),
+                      help='''[VPC only] whether a network interface attachment
+                      is deleted when an instance is terminated'''),
+               Filter('network-interface.attachment.instance-owner-id',
+                      help='''[VPC only] ID of the instance to which a network
+                      interface is attached'''),
+               Filter('network-interface.attachment.status',
+                      choices=('attaching', 'attached', 'detaching',
+                               'detached'),
+                      help="[VPC only] network interface's attachment status"),
+               Filter('network-interface.availability-zone',
+                      help="[VPC only] network interface's availability zone"),
+               Filter('network-interface.description',
+                      help='[VPC only] description of a network interface'),
+               Filter('network-interface.group-id',
+                      help="[VPC only] network interface's security group ID"),
+               Filter('network-interface.group-name', help='''[VPC only]
+                      network interface's security group name'''),
+               Filter('network-interface.mac-address',
+                      help="[VPC only] network interface's hardware address"),
+               Filter('network-interface.network-interface.id',
+                      help='[VPC only] ID of a network interface'),
+               Filter('network-interface.owner-id',
+                      help="[VPC only] ID of a network interface's owner"),
+               Filter('network-interface.private-dns-name',
+                      help="[VPC only] network interface's private DNS name"),
+               Filter('network-interface.requester-id',
+                      help="[VPC only] network interface's requester ID"),
+               Filter('network-interface.requester-managed',
+                      help='''[VPC only] whether the network interface is
+                      managed by the service'''),
+               Filter('network-interface.source-destination-check',
+                      choices=('true', 'false'),
+                      help='''[VPC only] whether source/destination checking is
+                      enabled for a network interface'''),
+               Filter('network-interface.status',
+                      help="[VPC only] network interface's status"),
+               Filter('network-interface.subnet-id',
+                      help="[VPC only] ID of a network interface's subnet"),
+               Filter('network-interface.vpc-id',
+                      help="[VPC only] ID of a network interface's VPC"),
+               Filter('owner-id', help="instance owner's account ID"),
+               Filter('placement-group-name'),
+               Filter('platform', help='"windows" for Windows instances'),
+               Filter('private-dns-name'),
+               Filter('private-ip-address'),
+               Filter('product-code'),
+               Filter('product-code.type', choices=('devpay', 'marketplace'),
+                      help='type of product code ("devpay" or "marketplace")'),
+               Filter('ramdisk-id', help='ramdisk image ID'),
+               Filter('reason',
+                      help="reason for the instance's current state"),
+               Filter('requestor-id',
+                      help='ID of the entity that launched an instance'),
+               Filter('reservation-id'),
+               Filter('root-device-name',
+                      help='root device name (e.g. /dev/sda1)'),
+               Filter('root-device-type', choices=('ebs', 'instance-store'),
+                      help='root device type ("ebs" or "instance-store")'),
+               Filter('spot-instance-request-id'),
+               Filter('state-reason-code',
+                      help='reason code for the most recent state change'),
+               Filter('state-reason-message',
+                      help='message describing the most recent state change'),
+               Filter('subnet-id',
+                      help='[VPC only] ID of the subnet the instance is in'),
+               Filter('tag-key',
+                      help='name of any tag assigned to the instance'),
+               Filter('tag-value',
+                      help='value of any tag assigned to the instance'),
+               GenericTagFilter('tag:KEY',
+                                help='specific tag key/value combination'),
+               Filter('virtualization-type', choices=('paravirtual', 'hvm')),
+               Filter('vpc-id',
+                      help='[VPC only] ID of the VPC the instance is in')]
+    LIST_TAGS = ['reservationSet', 'instancesSet', 'groupSet', 'tagSet',
+                 'blockDeviceMapping', 'productCodes', 'networkInterfaceSet',
+                 'attachment', 'association', 'privateIpAddressesSet']
 
-    def main(self):
-        conn = self.make_connection_cli()
-        return self.make_request_cli(conn, 'get_all_instances',
-                                     instance_ids=self.instance)
-
-    def main_cli(self):
-        reservations = self.main()
-        self.display_reservations(reservations)
-
+    def print_result(self, result):
+        for reservation in result.get('reservationSet'):
+            self.print_reservation(reservation)

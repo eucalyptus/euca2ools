@@ -1,0 +1,6 @@
+#!/usr/bin/python -tt
+
+import euca2ools.commands.euca.modifyinstancetypeattribute
+
+if __name__ == '__main__':
+    euca2ools.commands.euca.modifyinstancetypeattribute.ModifyInstanceTypeAttribute.run()

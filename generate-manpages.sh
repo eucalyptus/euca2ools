@@ -1,15 +1,17 @@
-#!/bin/sh -e
+#!/bin/sh -ex
 
 mkdir -p man
-rm -rf man/*
 export PYTHONPATH=".:$PYTHONPATH"
 
-# eucacommand-based
-for exe in build/*/euca-*; do
-    help2man "$exe" -N -o "man/$(basename $exe).1" -n "$($exe --help | sed '/^$/,$d')"
-done
+version="$(build/*/euca-version 2>&1 | sed -e 's/^euca2ools *\([^(]*\).*/\1/' -e 's/ *$//')"
 
-# roboto-based
-for exe in build/*/euare-* build/*/eustore-*; do
-    help2man "$exe" -N -o "man/$(basename $exe).1" -n "$($exe --help | sed '1,2d;/^$/,$d')"
+for exe in $@; do
+    description="$(build/*/$exe --help 2>&1 | python -c 'import sys; print sys.stdin.read().split("\n\n")[1]')"
+    #version="$(build/*/$exe --version 2>&1 | sed -e 's/^euca2ools *\([^(]*\).*/\1/' -e 's/ *$//')"
+    help2man -N --no-discard-stderr -S "euca2ools $version" -n "$description" --version-string "$version" -o man/$(basename $exe).1 build/*/$exe
+    sed -i -e 's/^.SH DESCRIPTION/.SH SYNOPSIS/' \
+           -e 's/usage: *//' \
+           -e '/^\.IP/{/^\.IP/d}' \
+           -e '/^\.PP/{s/^\.PP.*/.SH DESCRIPTION/}' \
+           man/$(basename $exe).1
 done

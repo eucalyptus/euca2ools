@@ -1,117 +1,89 @@
-# Software License Agreement (BSD License)
+# Copyright 2009-2013 Eucalyptus Systems, Inc.
 #
-# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
-# All rights reserved.
+# Redistribution and use of this software in source and binary forms,
+# with or without modification, are permitted provided that the following
+# conditions are met:
 #
-# Redistribution and use of this software in source and binary forms, with or
-# without modification, are permitted provided that the following conditions
-# are met:
+#   Redistributions of source code must retain the above copyright notice,
+#   this list of conditions and the following disclaimer.
 #
-#   Redistributions of source code must retain the above
-#   copyright notice, this list of conditions and the
-#   following disclaimer.
+#   Redistributions in binary form must reproduce the above copyright
+#   notice, this list of conditions and the following disclaimer in the
+#   documentation and/or other materials provided with the distribution.
 #
-#   Redistributions in binary form must reproduce the above
-#   copyright notice, this list of conditions and the
-#   following disclaimer in the documentation and/or other
-#   materials provided with the distribution.
-#
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-# ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
-# LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-# POSSIBILITY OF SUCH DAMAGE.
-#
-# Author: Neil Soman neil@eucalyptus.com
-#         Mitch Garnaat mgarnaat@eucalyptus.com
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+# "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+# A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+# OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+# SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+# LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+# DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+# THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import euca2ools.commands.eucacommand
-from boto.roboto.param import Param
+from euca2ools.commands.euca import EucalyptusRequest
+from requestbuilder import Arg, Filter, GenericTagFilter
+from requestbuilder.exceptions import ArgumentError
 
-class DescribeSnapshots(euca2ools.commands.eucacommand.EucaCommand):
 
-    APIVersion = '2010-08-31'
-    Description = 'Shows information about snapshots.'
-    Options = [Param(name='owner', short_name='o', long_name='owner',
-                     optional=True, ptype='string',
-                     doc='ID of the user who owns the snapshot.'),
-               Param(name='all', short_name='a', long_name='all',
-                     optional=True, ptype='boolean', default=False,
-                     doc='Describe all snapshots, public, private or shared'),
-               Param(name='restorable_by',
-                     short_name='r', long_name='restorable-by',
-                     optional=True, ptype='string',
-                     doc="""restorable by (user id of the user that can
-                     create volumes from the snapshot).""")]
-    Args = [Param(name='snapshot', ptype='string',
-                  doc='snapshots to describe',
-                  cardinality='+', optional=True)]
-    Filters = [Param(name='description', ptype='string',
-                     doc='Description of the snapshot'),
-               Param(name='owner-alias', ptype='string',
-                     doc="""AWS account alias (e.g., amazon or self) or
-                     AWS account ID that owns the snapshot."""),
-               Param(name='owner-id', ptype='string',
-                     doc='AWS account ID of the snapshot owner.'),
-               Param(name='progress', ptype='string',
-                     doc='The progress of the snapshot, in percentage.'),
-               Param(name='snapshot-id', ptype='string',
-                     doc='The ID of the snapshot.'),
-               Param(name='start-time', ptype='datetime',
-                     doc='Time stamp when the snapshot was initiated.'),
-               Param(name='status', ptype='string',
-                     doc="""Status of the snapshost.
-                     Valid values: pending | completed | error."""),
-               Param(name='tag-key', ptype='string',
-                     doc='Key of a tag assigned to the resource.'),
-               Param(name='tag-value', ptype='string',
-                     doc='Value of a tag assigned to the resource.'),
-               Param(name='tag:key', ptype='string',
-                     doc="""Filters the results based on a specific
-                     tag/value combination."""),
-               Param(name='volume-id', ptype='string',
-                     doc='ID of the volume the snapshot is for'),
-               Param(name='volume-size', ptype='integer',
-                     doc='The size of the volume, in GiB.')]
-    
-    def display_snapshots(self, snapshots):
-        members=( "id", "volume_id", "status", "start_time", "progress",
-                  "owner_id", "volume_size", "description" )
+class DescribeSnapshots(EucalyptusRequest):
+    DESCRIPTION = ('Show information about snapshots\n\nBy default, only '
+                   'snapshots your account owns and snapshots for which your '
+                   'account has explicit restore permissions are shown.')
+    ARGS = [Arg('SnapshotId', nargs='*', metavar='SNAPSHOT',
+                help='limit results to specific snapshots'),
+            Arg('-a', '--all', action='store_true', route_to=None,
+                help='describe all snapshots'),
+            Arg('-o', '--owner', dest='Owner', metavar='ACCOUNT',
+                action='append', default=[],
+                help='limit results to snapshots owned by specific accounts'),
+            Arg('-r', '--restorable-by', dest='RestorableBy', action='append',
+                metavar='ACCOUNT', default=[], help='''limit results to
+                snapahots restorable by specific accounts''')]
+    FILTERS = [Filter('description', help='snapshot description'),
+               Filter('owner-alias', help="snapshot owner's account alias"),
+               Filter('owner-id', help="snapshot owner's account ID"),
+               Filter('progress', help='snapshot progress, in percentage'),
+               Filter('snapshot-id'),
+               Filter('start-time', help='snapshot initiation time'),
+               Filter('status', choices=('pending', 'completed', 'error')),
+               Filter('tag-key', help='key of a tag assigned to the snapshot'),
+               Filter('tag-value',
+                      help='value of a tag assigned to the snapshot'),
+               GenericTagFilter('tag:KEY',
+                                help='specific tag key/value combination'),
+               Filter('volume-id', help='source volume ID'),
+               Filter('volume-size', type=int)]
+    LIST_TAGS = ['snapshotSet', 'tagSet']
 
-        for snapshot in snapshots:
-            items=[ ]
-            for member in members:
-                val = getattr(snapshot, member, "")
-                items.append(str(val))
-            print "SNAPSHOT\t%s" % '\t'.join(items)
-            if hasattr(snapshot, 'tags') and isinstance(snapshot.tags, dict):
-                for tag in snapshot.tags:
-                    print '\t'.join(('TAG', 'snapshot', snapshot.id, tag,
-                                     snapshot.tags[tag]))
-
+    def configure(self):
+        EucalyptusRequest.configure(self)
+        if self.args.get('all'):
+            if self.args.get('Owner'):
+                raise ArgumentError('argument -a/--all: not allowed with '
+                                    'argument -o/--owner')
+            if self.args.get('RestorableBy'):
+                raise ArgumentError('argument -a/--all: not allowed with '
+                                    'argument -r/--restorable-by')
 
     def main(self):
-        conn = self.make_connection_cli()
+        if not any(self.args.get(item) for item in ('all', 'Owner',
+                                                    'RestorableBy')):
+            # Default to owned snapshots and those with explicit restore perms
+            self.params['Owner'] = ['self']
+            owned = self.send()
+            del self.params['Owner']
+            self.params['RestorableBy'] = ['self']
+            restorable = self.send()
+            del self.params['RestorableBy']
+            owned['snapshotSet'] = (owned.get('snapshotSet', []) +
+                                    restorable.get('snapshotSet', []))
+            return owned
+        else:
+            return self.send()
 
-        if self.all and (self.owner or self.snapshot):
-            msg = "--all is incompatible with --owner or --restorable-by"
-            self.display_error_and_exit(msg)
-
-        if not (self.all or self.owner or self.restorable_by or self.snapshot):
-            self.restorable_by = "self"
-
-        return self.make_request_cli(conn, 'get_all_snapshots',
-                                     snapshot_ids=self.snapshot,
-                                     owner=self.owner,
-                                     restorable_by=self.restorable_by)
-
-    def main_cli(self):
-        snapshots = self.main()
-        self.display_snapshots(snapshots)
-
+    def print_result(self, result):
+        for snapshot in result.get('snapshotSet', []):
+            self.print_snapshot(snapshot)

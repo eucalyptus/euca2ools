@@ -1,56 +1,39 @@
-# Software License Agreement (BSD License)
+# Copyright 2009-2013 Eucalyptus Systems, Inc.
 #
-# Copyright (c) 20092011, Eucalyptus Systems, Inc.
-# All rights reserved.
+# Redistribution and use of this software in source and binary forms,
+# with or without modification, are permitted provided that the following
+# conditions are met:
 #
-# Redistribution and use of this software in source and binary forms, with or
-# without modification, are permitted provided that the following conditions
-# are met:
+#   Redistributions of source code must retain the above copyright notice,
+#   this list of conditions and the following disclaimer.
 #
-#   Redistributions of source code must retain the above
-#   copyright notice, this list of conditions and the
-#   following disclaimer.
+#   Redistributions in binary form must reproduce the above copyright
+#   notice, this list of conditions and the following disclaimer in the
+#   documentation and/or other materials provided with the distribution.
 #
-#   Redistributions in binary form must reproduce the above
-#   copyright notice, this list of conditions and the
-#   following disclaimer in the documentation and/or other
-#   materials provided with the distribution.
-#
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-# ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
-# LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-# POSSIBILITY OF SUCH DAMAGE.
-#
-# Author: Neil Soman neil@eucalyptus.com
-#         Mitch Garnaat mgarnaat@eucalyptus.com
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+# "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+# A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+# OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+# SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+# LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+# DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+# THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import euca2ools.commands.eucacommand
-from boto.roboto.param import Param
+from euca2ools.commands.euca import EucalyptusRequest
+from requestbuilder import Arg
 
-class UnmonitorInstances(euca2ools.commands.eucacommand.EucaCommand):
 
-    Description = 'Disables monitoring for running instances.'
-    Args = [Param(name='instance_id', ptype='string',
-                  optional=False, cardinality='+',
-                  doc='unique identifier for instance to stop monitoring')]
+class UnmonitorInstances(EucalyptusRequest):
+    DESCRIPTION = 'Disable monitoring for one or more instances'
+    ARGS = [Arg('InstanceId', metavar='INSTANCE', nargs='+', help='''ID(s) ofthe
+                the instance(s) to stop monitoring (at least 1 required)''')]
+    LIST_TAGS = ['instancesSet']
 
-    def display_monitor_info(self, info):
-        for item in info:
-            print '%s\t%s' % (item.id, item.state)
-            
-    def main(self):
-        conn = self.make_connection_cli()
-        return self.make_request_cli(conn, 'unmonitor_instances',
-                                     instance_ids=self.instance_id)
-
-    def main_cli(self):
-        info = self.main()
-        self.display_monitor_info(info)
-
+    def print_result(self, result):
+        for instance in result.get('instancesSet', []):
+            print self.tabify((instance.get('instanceId'), 'monitoring-' +
+                    instance.get('monitoring', {}).get('state')))

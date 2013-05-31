@@ -1,160 +1,233 @@
-# Software License Agreement (BSD License)
+# Copyright 2009-2013 Eucalyptus Systems, Inc.
 #
-# Copyright (c) 20092011, Eucalyptus Systems, Inc.
-# All rights reserved.
+# Redistribution and use of this software in source and binary forms,
+# with or without modification, are permitted provided that the following
+# conditions are met:
 #
-# Redistribution and use of this software in source and binary forms, with or
-# without modification, are permitted provided that the following conditions
-# are met:
+#   Redistributions of source code must retain the above copyright notice,
+#   this list of conditions and the following disclaimer.
 #
-#   Redistributions of source code must retain the above
-#   copyright notice, this list of conditions and the
-#   following disclaimer.
+#   Redistributions in binary form must reproduce the above copyright
+#   notice, this list of conditions and the following disclaimer in the
+#   documentation and/or other materials provided with the distribution.
 #
-#   Redistributions in binary form must reproduce the above
-#   copyright notice, this list of conditions and the
-#   following disclaimer in the documentation and/or other
-#   materials provided with the distribution.
-#
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-# ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
-# LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-# POSSIBILITY OF SUCH DAMAGE.
-#
-# Author: Neil Soman neil@eucalyptus.com
-#         Mitch Garnaat mgarnaat@eucalyptus.com
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+# "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+# A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+# OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+# SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+# LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+# DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+# THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import euca2ools.commands.eucacommand
-from boto.roboto.param import Param
-import euca2ools.utils
+import base64
+from euca2ools.commands.argtypes import (ec2_block_device_mapping,
+    vpc_interface)
+from euca2ools.commands.euca import EucalyptusRequest
 import os.path
+from requestbuilder import Arg, MutuallyExclusiveArgList
+from requestbuilder.exceptions import ArgumentError
 
-class RunInstances(euca2ools.commands.eucacommand.EucaCommand):
 
-    Description = 'Starts instances.'
-    Options = [Param(name='count', short_name='n', long_name='instance-count',
-                     optional=True, ptype='string', default='1',
-                     doc='Number of instances to run.'),
-               Param(name='group_name', short_name='g', long_name='group',
-                     optional=True, ptype='string', cardinality='*',
-                     doc='Security group to run the instance in.'),
-               Param(name='keyname', short_name='k', long_name='key',
-                     optional=True, ptype='string',
-                     doc='Name of a keypair.'),
-               Param(name='user_data', short_name='d', long_name='user-data',
-                     optional=True, doc='User data to pass to the instance.'),
-               Param(name='user_data_force', long_name='user-data-force',
-                     optional=True,
-                     doc='Just like --user-data, but ignore any checks.'),
-               Param(name='user_data_file',
-                     short_name='f', long_name='user-data-file',
-                     optional=True, ptype='file',
-                     doc='File containing user data to pass to the instance.'),
-               Param(name='addressing', long_name='addressing',
-                     optional=True, ptype='string',
-                     doc=('[Eucalyptus extension] Address assignment method.  '
-                          'Use "private" to run an instance with no public '
-                          'address.')),
-               Param(name='instance_type',
-                     short_name='t', long_name='instance-type',
-                     optional=True, ptype='string', default='m1.small',
-                     doc='VM Image type to run the instance as.'),
-               Param(name='kernel', long_name='kernel',
-                     optional=True, ptype='string',
-                     doc='ID of the kernel to be used.'),
-               Param(name='ramdisk', long_name='ramdisk',
-                     optional=True, ptype='string',
-                     doc='ID of the ramdisk to be used.'),
-               Param(name='block_device_mapping',
-                     short_name='b', long_name='block-device-mapping',
-                     optional=True, ptype='string', cardinality='*',
-                     doc="""Block device mapping for the instance(s).
-                     Option may be used multiple times"""),
-               Param(name='monitor', long_name='monitor',
-                     optional=True, ptype='boolean', default=False,
-                     doc='Enable monitoring for the instance.'),
-               Param(name='subnet', short_name='s', long_name='subnet',
-                     optional=True, ptype='string',
-                     doc='Amazon VPC subnet ID for the instance.'),
-               Param(name='zone', short_name='z', long_name='availability-zone',
-                     optional=True, ptype='string',
-                     doc='availability zone to run the instance in'),
-               Param(name='instance_initiated_shutdown_behavior',
-                     long_name='instance-initiated-shutdown-behavior',
-                     optional=True, ptype='string',
-                     doc='Whether to "stop" (default) or "terminate" instance when it is shut down')]
-    Args = [Param(name='image_id', ptype='string',
-                  optional=False,
-                  doc='ID of the image to run.')]
+class RunInstances(EucalyptusRequest):
+    DESCRIPTION = 'Launch instances of a machine image'
+    ARGS = [Arg('ImageId', metavar='IMAGE',
+                help='ID of the image to instantiate (required)'),
+            Arg('-n', '--instance-count', dest='count', metavar='MIN[-MAX]',
+                default='1', route_to=None,
+                help='''number of instances to launch. If this number of
+                        instances cannot be launched, no instances will launch.
+                        If specified as a range (min-max), the server will
+                        attempt to launch the maximum number, but no fewer
+                        than the minimum number.'''),
+            Arg('-g', '--group', action='append', default=[], route_to=None,
+                help='security group(s) in which to launch the instances'),
+            Arg('-k', '--key', dest='KeyName', metavar='KEYPAIR',
+                help='name of the key pair to use'),
+            MutuallyExclusiveArgList(
+                Arg('-d', '--user-data', metavar='DATA', route_to=None,
+                    help='''user data to make available to instances in this
+                            reservation'''),
+                Arg('--user-data-force', metavar='DATA', route_to=None,
+                    help='''same as -d/--user-data, but without checking if a
+                    file by that name exists first'''),
+                Arg('-f', '--user-data-file', metavar='FILE', route_to=None,
+                    help='''file containing user data to make available to the
+                    instances in this reservation''')),
+            Arg('--addressing', dest='AddressingType',
+                choices=('public', 'private'), help='''[Eucalyptus only]
+                addressing scheme to launch the instance with.  Use "private"
+                to run an instance with no public address.'''),
+            Arg('-t', '--instance-type', dest='InstanceType',
+                help='type of instance to launch'),
+            Arg('-z', '--availability-zone', metavar='ZONE',
+                dest='Placement.AvailabilityZone'),
+            Arg('--kernel', dest='KernelId', metavar='KERNEL',
+                help='ID of the kernel to launch the instance(s) with'),
+            Arg('--ramdisk', dest='RamdiskId', metavar='RAMDISK',
+                help='ID of the ramdisk to launch the instance(s) with'),
+            Arg('-b', '--block-device-mapping', metavar='DEVICE=MAPPED',
+                dest='BlockDeviceMapping', action='append',
+                type=ec2_block_device_mapping, default=[],
+                help='''define a block device mapping for the instances, in the
+                form DEVICE=MAPPED, where "MAPPED" is "none", "ephemeral(0-3)",
+                or
+                "[SNAP-ID]:[SIZE]:[true|false]:[standard|VOLTYPE[:IOPS]]"'''),
+            Arg('-m', '--monitor', dest='Monitoring.Enabled',
+                action='store_const', const='true',
+                help='enable detailed monitoring for the instance(s)'),
+            Arg('--disable-api-termination', dest='DisableApiTermination',
+                action='store_const', const='true',
+                help='prevent API users from terminating the instance(s)'),
+            Arg('--instance-initiated-shutdown-behavior',
+                dest='InstanceInitiatedShutdownBehavior',
+                choices=('stop', 'terminate'),
+                help=('whether to "stop" (default) or terminate EBS instances '
+                      'when they shut down')),
+            Arg('--placement-group', dest='Placement.GroupName',
+                metavar='PLGROUP', help='''name of a placement group to launch
+                into'''),
+            Arg('--tenancy', dest='Placement.Tenancy',
+                choices=('default', 'dedicated'), help='''[VPC only]
+                "dedicated" to run on single-tenant hardware'''),
+            Arg('--client-token', dest='ClientToken', metavar='TOKEN',
+                help='unique identifier to ensure request idempotency'),
+            Arg('-s', '--subnet', metavar='SUBNET', route_to=None,
+                help='''[VPC only] subnet to create the instance's network
+                interface in'''),
+            Arg('--private-ip-address', metavar='ADDRESS', route_to=None,
+                help='''[VPC only] assign a specific primary private IP address
+                to an instance's interface'''),
+            MutuallyExclusiveArgList(
+                Arg('--secondary-private-ip-address', metavar='ADDRESS',
+                    action='append', route_to=None, help='''[VPC only]
+                    assign a specific secondary private IP address to an
+                    instance's network interface.  Use this option multiple
+                    times to add additional addresses.'''),
+                Arg('--secondary-private-ip-address-count', metavar='COUNT',
+                    type=int, route_to=None, help='''[VPC only]
+                    automatically assign a specific number of secondary private
+                    IP addresses to an instance's network interface''')),
+            Arg('-a', '--network-interface', dest='NetworkInterface',
+                metavar='INTERFACE', action='append', type=vpc_interface,
+                help='''[VPC only] add a network interface to the new
+                instance.  If the interface already exists, supply its ID and
+                a numeric index for it, separated by ":", in the form
+                "eni-NNNNNNNN:INDEX".  To create a new interface, supply a
+                numeric index and subnet ID for it, along with (in order) an
+                optional description, a primary private IP address, a list of
+                security group IDs to associate with the interface, whether to
+                delete the interface upon instance termination ("true" or
+                "false"), a number of secondary private IP addresses to create
+                automatically, and a list of secondary private IP addresses to
+                assign to the interface, separated by ":", in the form
+                ":INDEX:SUBNET:[DESCRIPTION]:[PRIV_IP]:[GROUP1,GROUP2,...]:[true|false]:[SEC_IP_COUNT|:SEC_IP1,SEC_IP2,...]".  You cannot specify both of the
+                latter two.  This option may be used multiple times.  Each adds
+                another network interface.'''),
+            Arg('-p', '--iam-profile', metavar='IPROFILE', route_to=None,
+                help='''name or ARN of the IAM instance profile to associate
+                with the new instance(s)'''),
+            Arg('--ebs-optimized', dest='EbsOptimized', action='store_const',
+                const='true', help='optimize the new instance(s) for EBS I/O')]
 
-    def display_reservations(self, reservation):
-        reservation_string = '%s\t%s' % (reservation.id,
-                reservation.owner_id)
-        group_delim = '\t'
-        for group in reservation.groups:
-            reservation_string += '%s%s' % (group_delim, group.id)
-            group_delim = ', '
-        print 'RESERVATION\t%s' % reservation_string
-        euca2ools.utils.print_instances(reservation.instances)
+    LIST_TAGS = ['reservationSet', 'instancesSet', 'groupSet', 'tagSet',
+                 'blockDeviceMapping', 'productCodes', 'networkInterfaceSet',
+                 'attachment', 'association', 'privateIpAddressesSet']
 
-    def read_user_data(self, user_data_filename):
-        fp = open(user_data_filename)
-        user_data = fp.read()
-        fp.close()
-        return user_data
-
-    def main(self):
-        t = self.count.split('-')
-        try:
-            if len(t) > 1:
-                min_count = int(t[0])
-                max_count = int(t[1])
+    def configure(self):
+        EucalyptusRequest.configure(self)
+        if self.args.get('user_data'):
+            if os.path.isfile(self.args['user_data']):
+                raise ArgumentError(
+                    'argument -d/--user-data: to pass the contents of a file '
+                    'as user data, use -f/--user-data-file.  To pass the '
+                    "literal value '{0}' as user data even though it matches "
+                    'the name of a file, use --user-data-force.')
             else:
-                min_count = max_count = int(t[0])
-        except ValueError:
-            msg = 'Invalid value for --instance-count: %s' % count
-            self.display_error_and_exit(msg)
-                
-        if self.user_data and os.path.isfile(self.user_data):
-            msg = ('string provided as user-data [%s] is a file.\nTry %s or %s'
-                    % (self.user_data, '--user-data-file', '--user-data-force'))
-            self.display_error_and_exit(msg)
+                self.params['UserData'] = base64.b64encode(
+                    self.args['user_data'])
+        elif self.args.get('user_data_force'):
+            self.params['UserData'] = base64.b64encode(
+                self.args['user_data_force'])
+        elif self.args.get('user_data_file'):
+            with open(self.args['user_data_file']) as user_data_file:
+                self.params['UserData'] = base64.b64encode(
+                    user_data_file.read())
 
-        if self.user_data_force:
-            self.user_data = self.user_data_force
+        if self.args.get('KeyName') is None:
+            default_key_name = self.config.get_region_option(
+                'ec2-default-keypair')
+            if default_key_name:
+                self.log.info("using default key pair '%s'", default_key_name)
+                self.params['KeyName'] = default_key_name
 
-        if not self.user_data:
-            if self.user_data_file:
-                self.user_data = self.read_user_data(self.user_data_file)
 
-        if self.block_device_mapping:
-            self.block_device_mapping = self.parse_block_device_args(self.block_device_mapping)
-        conn = self.make_connection_cli()
-        return self.make_request_cli(conn, 'run_instances',
-                                     image_id=self.image_id,
-                                     min_count=min_count,
-                                     max_count=max_count,
-                                     key_name=self.keyname,
-                                     security_groups=self.group_name,
-                                     user_data=self.user_data,
-                                     addressing_type=self.addressing,
-                                     instance_type=self.instance_type,
-                                     placement=self.zone,
-                                     kernel_id=self.kernel,
-                                     ramdisk_id=self.ramdisk,
-                                     block_device_map=self.block_device_mapping,
-                                     monitoring_enabled=self.monitor,
-                                     subnet_id=self.subnet,
-                                     instance_initiated_shutdown_behavior=self.instance_initiated_shutdown_behavior)
+    def preprocess(self):
+        counts = self.args['count'].split('-')
+        if len(counts) == 1:
+            try:
+                self.params['MinCount'] = int(counts[0])
+                self.params['MaxCount'] = int(counts[0])
+            except ValueError:
+                raise ArgumentError('argument -n/--instance-count: instance '
+                                    'count must be an integer')
+        elif len(counts) == 2:
+            try:
+                self.params['MinCount'] = int(counts[0])
+                self.params['MaxCount'] = int(counts[1])
+            except ValueError:
+                raise ArgumentError('argument -n/--instance-count: instance '
+                                    'count range must be must be comprised of '
+                                    'integers')
+        else:
+            raise ArgumentError('argument -n/--instance-count: value must '
+                                'have format "1" or "1-2"')
+        if self.params['MinCount'] < 1 or self.params['MaxCount'] < 1:
+            raise ArgumentError('argument -n/--instance-count: instance count '
+                                'must be positive')
+        if self.params['MinCount'] > self.params['MaxCount']:
+            self.log.debug('MinCount > MaxCount; swapping')
+            self.params.update({'MinCount': self.params['MaxCount'],
+                                'MaxCount': self.params['MinCount']})
 
-    def main_cli(self):
-        reservation = self.main()
-        self.display_reservations(reservation)
+        for group in self.args['group']:
+            if group.startswith('sg-'):
+                self.params.setdefault('SecurityGroupId', [])
+                self.params['SecurityGroupId'].append(group)
+            else:
+                self.params.setdefault('SecurityGroup', [])
+                self.params['SecurityGroup'].append(group)
 
+        iprofile = self.args.get('iam_profile')
+        if iprofile:
+            if iprofile.startswith('arn:'):
+                self.params['IamInstanceProfile.Arn'] = iprofile
+            else:
+                self.params['IamInstanceProfile.Name'] = iprofile
+
+        # Assemble an interface out of the "friendly" split interface options
+        cli_iface = {}
+        if self.args.get('private_ip_address'):
+            cli_iface['PrivateIpAddresses'] = [
+                {'PrivateIpAddress': self.args['private_ip_address'],
+                 'Primary': 'true'}]
+        if self.args.get('secondary_private_ip_address'):
+            sec_ips = [{'PrivateIpAddress': addr} for addr in
+                       self.args['secondary_private_ip_address']]
+            cli_iface.setdefault('PrivateIpAddresses', [])
+            cli_iface['PrivateIpAddresses'].extend(sec_ips)
+        if self.args.get('secondary_private_ip_address_count'):
+            sec_ip_count = self.args['secondary_private_ip_address_count']
+            cli_iface['SecondaryPrivateIpAddressCount'] = sec_ip_count
+        if self.args.get('subnet'):
+            cli_iface['SubnetId'] = self.args['subnet']
+        if cli_iface:
+            cli_iface['DeviceIndex'] = 0
+            self.params.setdefault('NetworkInterface', [])
+            self.params['NetworkInterface'].append(cli_iface)
+
+    def print_result(self, result):
+        self.print_reservation(result)
