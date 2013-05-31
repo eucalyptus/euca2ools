@@ -97,8 +97,7 @@ class ModifySecurityGroupRequest(EucalyptusRequest):
                 raise ArgumentError('argument -p/--port-range: not compatible '
                                     'with protocol ' + protocol)
             if not self.args.get('icmp_type_code'):
-                raise ArgumentError('argument -t/--icmp-type-code is required '
-                                    'for protocol ' + protocol)
+                self.args['icmp_type_code'] = '-1:-1'
             types = self.args['icmp_type_code'].split(':')
             if len(types) == 2:
                 try:
