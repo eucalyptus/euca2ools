@@ -178,13 +178,19 @@ class Eucalyptus(BaseService):
                 if self.URL_ENVVAR in config:
                     self.process_url(config[self.URL_ENVVAR])
 
-        # Set timeout and retry handlers
+        # Configure request timeouts and retry handlers
         if self.max_retries is None:
             config_max_retries = self.config.get_global_option('max-retries')
             if config_max_retries is not None:
                 self.max_retries = int(config_max_retries)
             else:
                 self.max_retries = self.MAX_RETRIES
+        if self.timeout is None:
+            config_timeout = self.config.get_global_option('timeout')
+            if config_timeout is not None:
+                self.timeout = float(config_timeout)
+            else:
+                self.timeout = self.TIMEOUT
 
         # SSL cert verification is opt-in
         self.session_args['verify'] = self.config.get_region_option_bool(
