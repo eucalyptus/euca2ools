@@ -56,7 +56,10 @@ class RegisterImage(EucalyptusRequest):
                 help='''define a block device mapping for the image, in the
                 form DEVICE=MAPPED, where "MAPPED" is "none", "ephemeral(0-3)",
                 or
-                "[SNAP-ID]:[SIZE]:[true|false]:[standard|VOLTYPE[:IOPS]]"''')]
+                "[SNAP-ID]:[SIZE]:[true|false]:[standard|VOLTYPE[:IOPS]]"'''),
+            Arg('--virtualization-type', dest='VirtualizationType',
+                choices=('paravirtual', 'hvm'),
+                help='[Privileged] virtualization type for the new image')]
 
     def preprocess(self):
         if self.args.get('ImageLocation'):
