@@ -50,7 +50,7 @@ class DescribeSecurityGroups(EucalyptusRequest):
                       help='end of TCP/UDP port range, or ICMP code'),
                Filter('ip-permission.user-id',
                       help='ID of an account granted permission'),
-               Filter('owner-id', help=="account ID of the group's owner"),
+               Filter('owner-id', help="account ID of the group's owner"),
                Filter('tag-key', help='key of a tag assigned to the group'),
                Filter('tag-value',
                       help='value of a tag assigned to the group'),
