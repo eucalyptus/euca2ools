@@ -51,7 +51,6 @@ class DescribeAddresses(EucalyptusRequest):
         alloc_ids = set(addr for addr in self.args.get('address', [])
                         if addr.startswith('eipalloc-'))
         public_ips = set(self.args.get('address', [])) - alloc_ids
-        self.params = {}
         if alloc_ids:
             self.params['AllocationId'] = list(sorted(alloc_ids))
         if public_ips:
