@@ -135,7 +135,7 @@ class RunInstances(EucalyptusRequest):
 
     LIST_TAGS = ['reservationSet', 'instancesSet', 'groupSet', 'tagSet',
                  'blockDeviceMapping', 'productCodes', 'networkInterfaceSet',
-                 'attachment', 'association', 'privateIpAddressesSet']
+                 'association', 'privateIpAddressesSet']
 
     def configure(self):
         EucalyptusRequest.configure(self)

@@ -294,8 +294,8 @@ class EucalyptusRequest(AWSQueryRequest, TabifyingMixin):
             'subnetId', 'vpcId', 'ownerId', 'status', 'privateIpAddress',
             'privateDnsName', 'sourceDestCheck')]
         print self.tabify(['NIC'] + nic_info)
-        for attachment in nic.get('attachment', []):
-            attachment_info = [attachment.get(attr) for attr in (
+        if nic.get('attachment'):
+            attachment_info = [nic['attachment'].get(attr) for attr in (
                 'attachmentID', 'deviceIndex', 'status', 'attachTime',
                 'deleteOnTermination')]
             print self.tabify(['NICATTACHMENT'] + attachment_info)
