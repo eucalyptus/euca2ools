@@ -115,6 +115,10 @@ class Bundle(object):
             msg = "this image is larger than EC2's size limit"
             self.log.warn(msg)
             print >> sys.stderr, 'warning:', msg
+        elif self.image_size == 0:
+            msg = 'this image is an empty file'
+            self.log.warn(msg)
+            print >> sys.stderr, 'warning:', msg
         # pipe for getting the digest from sha1sum
         digest_pipe_out, digest_pipe_in = multiprocessing.Pipe(duplex=False)
         # pipe for tar --> sha1sum
