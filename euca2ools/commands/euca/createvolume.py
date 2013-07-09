@@ -30,9 +30,9 @@ from requestbuilder.exceptions import ArgumentError
 
 class CreateVolume(EucalyptusRequest):
     DESCRIPTION = 'Create a new volume'
-    ARGS = [Arg('-z', '--zone', dest='AvailabilityZone', metavar='ZONE',
-                required=True, help='''availability zone in which to create the
-                new volume (required)'''),
+    ARGS = [Arg('-z', '--availability-zone', '--zone', dest='AvailabilityZone',
+                metavar='ZONE', required=True, help='''availability zone in
+                which to create the new volume (required)'''),
             Arg('-s', '--size', dest='Size', type=int, help='''size of the new
                 volume in GiB (required unless --snapshot is used)'''),
             Arg('--snapshot', dest='SnapshotId', metavar='SNAPSHOT',
