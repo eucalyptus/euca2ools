@@ -48,13 +48,15 @@ class GetConsoleOutput(EucalyptusRequest):
                 obtain console output from (required)'''),
             Arg('-r', '--raw-console-output', action='store_true',
                 route_to=None,
-                help='Display raw output without escaping control characters')]
+                help='display raw output without escaping control characters'),
+            Arg('--encoding', route_to=None, default='utf-8', help='''character
+                encoding of the console output (default: utf-8)''')]
 
     def print_result(self, result):
         print result.get('instanceId', '')
         print result.get('timestamp', '')
         output = base64.b64decode(result.get('output', ''))
-        output = output.decode()
+        output = output.decode(self.args.get('encoding', 'utf-8'), 'replace')
         if not self.args['raw_console_output']:
             # Escape control characters
             for char, escape in CHAR_ESCAPES.iteritems():
