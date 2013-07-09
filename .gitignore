@@ -10,6 +10,7 @@ core.*
 *.pyc
 *.pyo
 __pycache__
+/.idea
 /build
 /dist
 /*.egg-info
