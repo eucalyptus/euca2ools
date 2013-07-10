@@ -27,6 +27,24 @@
 from argparse import ArgumentTypeError
 
 
+def autoscaling_filter_def(filter_str):
+    filter_dict = {}
+    pieces = filter_str.split(',')
+    for piece in pieces:
+        piece = piece.strip()
+        if '=' not in piece:
+            raise ArgumentTypeError(
+                "invalid filter: each segment of '{0}' must have format "
+                "KEY=VALUE".format(piece))
+        key, val = piece.split('=', 1)
+        filter_dict.setdefault(key.strip(), [])
+        filter_dict[key.strip()].append(val.strip())
+    filter_list = []
+    for key, values in filter_dict.iteritems():
+        filter_list.append({'Name': key, 'Values': values})
+    return filter_list
+
+
 def autoscaling_tag_def(tag_str):
     tag_dict = {}
     pieces = tag_str.split(',')
@@ -58,3 +76,4 @@ def autoscaling_tag_def(tag_str):
         raise ArgumentTypeError(
             "tag '{0}' must contain a 'k=' segment with a non-empty value")
     return tag_dict
+
