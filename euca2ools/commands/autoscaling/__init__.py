@@ -25,7 +25,7 @@
 
 from euca2ools.commands import Euca2ools
 from euca2ools.exceptions import AWSError
-from requestbuilder import Arg, MutuallyExclusiveArgList, SERVICE
+from requestbuilder import Arg, MutuallyExclusiveArgList
 import requestbuilder.auth
 import requestbuilder.service
 import requestbuilder.request
@@ -40,11 +40,11 @@ class AutoScaling(requestbuilder.service.BaseService):
     URL_ENVVAR = 'AWS_AUTO_SCALING_URL'
 
     ARGS = [MutuallyExclusiveArgList(
-                Arg('--region', dest='userregion', metavar='USER@REGION',
-                    help='''name of the region and/or user in config files to
-                    use to connect to the service'''),
-                Arg('-U', '--url', metavar='URL',
-                    help='auto-scaling service endpoint URL'))]
+            Arg('--region', dest='userregion', metavar='USER@REGION',
+                help='''name of the region and/or user in config files to
+                use to connect to the service'''),
+            Arg('-U', '--url', metavar='URL',
+                help='auto-scaling service endpoint URL'))]
 
     def handle_http_error(self, response):
         raise AWSError(response)

@@ -51,10 +51,10 @@ class DescribeLaunchConfigurations(AutoScalingRequest, TabifyingMixin):
 
     def print_result(self, result):
         for config in result.get('LaunchConfigurations', []):
-            bits = ['LAUNCH-CONFIG']
-            bits.append(config.get('LaunchConfigurationName'))
-            bits.append(config.get('ImageId'))
-            bits.append(config.get('InstanceType'))
+            bits = ['LAUNCH-CONFIG',
+                    config.get('LaunchConfigurationName'),
+                    config.get('ImageId'),
+                    config.get('InstanceType')]
             if self.args['show_long']:
                 bits.append(config.get('KeyName'))
                 bits.append(config.get('KernelId'))

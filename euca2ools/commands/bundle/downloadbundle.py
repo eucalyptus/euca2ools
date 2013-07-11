@@ -60,6 +60,7 @@ class DownloadBundle(WalrusRequest):
                            config=self.config,
                            show_progress=self.args.get('show_progress', True))
 
+    # noinspection PyExceptionInherit
     def _download_by_local_manifest(self, directory):
         manifest_path = self.args.get('manifest_path')
         if not os.path.isfile(manifest_path):
@@ -70,6 +71,7 @@ class DownloadBundle(WalrusRequest):
             shutil.copy(manifest_path, directory)
         self._download_parts([manifest_key], directory)
 
+    # noinspection PyExceptionInherit
     def _download_by_prefix(self, directory):
         bucket = self.args.get('bucket')
         prefix = self.args.get('prefix')
@@ -95,6 +97,7 @@ class DownloadBundle(WalrusRequest):
                 .format(",".join(manifest_keys), bucket))
         self._download_parts(manifest_keys, directory)
 
+    # noinspection PyExceptionInherit
     def main(self):
         bucket = self.args.get('bucket').split('/', 1)[0]
         CheckBucket(bucket=bucket, service=self.service,

@@ -24,13 +24,14 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import argparse
+import sys
+
 from euca2ools.commands import Euca2ools
 from euca2ools.exceptions import AWSError
-from requestbuilder import Arg, MutuallyExclusiveArgList, SERVICE
+from requestbuilder import Arg, MutuallyExclusiveArgList
 import requestbuilder.auth
 import requestbuilder.request
 import requestbuilder.service
-import sys
 
 
 class Euare(requestbuilder.service.BaseService):

@@ -30,9 +30,9 @@ import sys
 
 
 class ModifySecurityGroupRequest(EucalyptusRequest):
-    '''
+    """
     The basis for security group-editing commands
-    '''
+    """
 
     ARGS = [Arg('group', metavar='GROUP', route_to=None,
                 help='name or ID of the security group to modify (required)'),
@@ -45,17 +45,17 @@ class ModifySecurityGroupRequest(EucalyptusRequest):
             Arg('-p', '--port-range', dest='port_range', metavar='RANGE',
                 route_to=None, help='''range of ports (specified as "from-to")
                 or a single port number (required for tcp and udp)'''),
-                # ^ required for tcp and udp
+            # ^ required for tcp and udp
             Arg('-t', '--icmp-type-code', dest='icmp_type_code',
                 metavar='TYPE:CODE', route_to=None,
                 help='''ICMP type and code (specified as "type:code") (required
                 for icmp)'''),
-                # ^ required for icmp
+            # ^ required for icmp
             MutuallyExclusiveArgList(
                 Arg('-s', '--cidr', metavar='CIDR',
                     dest='IpPermissions.1.IpRanges.1.CidrIp',
                     help='''IP range (default: 0.0.0.0/0)'''),
-                    # ^ default is added by main()
+                # ^ default is added by main()
                 Arg('-o', dest='target_group', metavar='GROUP', route_to=None,
                     help='''[Non-VPC only] name of a security group with which
                     to affect network communication''')),
@@ -64,11 +64,12 @@ class ModifySecurityGroupRequest(EucalyptusRequest):
                 help='''ID of the account that owns the security group
                 specified with -o''')]
 
+    # noinspection PyExceptionInherit
     def configure(self):
         EucalyptusRequest.configure(self)
 
         if (self.args['group'].startswith('sg-') and
-            len(self.args['group']) == 11):
+                    len(self.args['group']) == 11):
             # The check could probably be a little better, but meh.  Fix if
             # needed.
             self.params['GroupId'] = self.args['group']
@@ -89,8 +90,6 @@ class ModifySecurityGroupRequest(EucalyptusRequest):
                                     'IDs, not names')
             self.params['IpPermissions.1.Groups.1.GroupName'] = target_group
 
-        from_port = None
-        to_port   = None
         protocol = self.args.get('IpPermissions.1.IpProtocol')
         if protocol in ['icmp', '1']:
             if self.args.get('port_range'):
@@ -102,7 +101,7 @@ class ModifySecurityGroupRequest(EucalyptusRequest):
             if len(types) == 2:
                 try:
                     from_port = int(types[0])
-                    to_port   = int(types[1])
+                    to_port = int(types[1])
                 except ValueError:
                     raise ArgumentError('argument -t/--icmp-type-code: value '
                                         'must have format "1:2"')
@@ -132,7 +131,7 @@ class ModifySecurityGroupRequest(EucalyptusRequest):
             if len(ports) == 2:
                 try:
                     from_port = int(ports[0])
-                    to_port   = int(ports[1])
+                    to_port = int(ports[1])
                 except ValueError:
                     raise ArgumentError('argument -p/--port-range: multi-port '
                                         'value must be comprised of integers')
@@ -154,14 +153,14 @@ class ModifySecurityGroupRequest(EucalyptusRequest):
             raise ValueError('unrecognized protocol: "{0}"'.format(protocol))
 
         self.params['IpPermissions.1.FromPort'] = from_port
-        self.params['IpPermissions.1.ToPort']   = to_port
+        self.params['IpPermissions.1.ToPort'] = to_port
 
         if (not self.args.get('IpPermissions.1.IpRanges.1.GroupName') and
-            not self.args.get('IpPermissions.1.IpRanges.1.CidrIp')):
+                not self.args.get('IpPermissions.1.IpRanges.1.CidrIp')):
             # Default rule target is the entire Internet
             self.params['IpPermissions.1.IpRanges.1.CidrIp'] = '0.0.0.0/0'
         if (self.params.get('IpPermissions.1.Groups.1.GroupName') and
-            not self.args.get('IpPermissions.1.Groups.1.UserId')):
+                not self.args.get('IpPermissions.1.Groups.1.UserId')):
             raise ArgumentError('argument -u is required when -o names a '
                                 'security group by name')
 
@@ -193,14 +192,16 @@ class ModifySecurityGroupRequest(EucalyptusRequest):
         # of Python bug 9334, which prevents argparse from recognizing '-1:-1'
         # as an option value and not a (nonexistent) option name.
         saved_sys_argv = list(sys.argv)
+
         def parse_neg_one_value(opt_name):
             if opt_name in sys.argv:
                 index = sys.argv.index(opt_name)
                 if (index < len(sys.argv) - 1 and
-                    sys.argv[index + 1].startswith('-1')):
+                        sys.argv[index + 1].startswith('-1')):
                     opt_val = sys.argv[index + 1]
                     del sys.argv[index:index + 2]
                     return opt_val
+
         icmp_type_code = (parse_neg_one_value('-t') or
                           parse_neg_one_value('--icmp-type-code'))
         port_range = (parse_neg_one_value('-p') or

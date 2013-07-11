@@ -48,6 +48,7 @@ class BundleImage(BundleCreator):
                 default='machine', help=argparse.SUPPRESS),
             Arg('--progressbar-label', help=argparse.SUPPRESS)]
 
+    # noinspection PyExceptionInherit
     def configure(self):
         BundleCreator.configure(self)
 
@@ -100,6 +101,7 @@ class BundleImage(BundleCreator):
             print 'Wrote', part_filename
         print 'Wrote manifest', result[1]  # manifest
 
+    # noinspection PyUnresolvedReferences
     def generate_manifest_xml(self, bundle):
         manifest = lxml.objectify.Element('manifest')
 

@@ -42,9 +42,9 @@ class DescribeLoadBalancers(ELBRequest, TabifyingMixin):
 
     def print_result(self, result):
         for desc in result.get('LoadBalancerDescriptions', []):
-            bits = ['LOAD_BALANCER']
-            bits.append(desc.get('LoadBalancerName'))
-            bits.append(desc.get('DNSName'))
+            bits = ['LOAD_BALANCER',
+                    desc.get('LoadBalancerName'),
+                    desc.get('DNSName')]
             if self.args['show_long']:
                 bits.append(desc.get('CanonicalHostedZoneName'))
                 bits.append(desc.get('CanonicalHostedZoneNameID'))
@@ -86,8 +86,8 @@ class DescribeLoadBalancers(ELBRequest, TabifyingMixin):
                             listener_str_bits.append(name + '=' +
                                                      listener[xmlname])
                     if listenerdesc.get('PolicyNames'):
-                        listener_str_bits.append('{' +
-                            ','.join(listenerdesc['PolicyNames']) + '}')
+                        listener_str_bits.append(
+                            '{' + ','.join(listenerdesc['PolicyNames']) + '}')
                     listeners.append('{' + ','.join(listener_str_bits) + '}')
                 if len(listeners) > 0:
                     bits.append(','.join(listeners))

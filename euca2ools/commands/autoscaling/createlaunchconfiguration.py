@@ -24,10 +24,11 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import base64
-from euca2ools.commands.argtypes import (delimited_list,
-    ec2_block_device_mapping)
-from euca2ools.commands.autoscaling import AutoScalingRequest
 import os.path
+
+from euca2ools.commands.argtypes import (delimited_list,
+                                         ec2_block_device_mapping)
+from euca2ools.commands.autoscaling import AutoScalingRequest
 from requestbuilder import Arg, MutuallyExclusiveArgList
 from requestbuilder.exceptions import ArgumentError
 
@@ -83,6 +84,7 @@ class CreateLaunchConfiguration(AutoScalingRequest):
                     help='''file containing user data to make available to
                     instances'''))]
 
+    # noinspection PyExceptionInherit
     def configure(self):
         AutoScalingRequest.configure(self)
         if self.args.get('user_data'):

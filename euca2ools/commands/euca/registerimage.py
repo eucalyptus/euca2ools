@@ -61,6 +61,7 @@ class RegisterImage(EucalyptusRequest):
                 choices=('paravirtual', 'hvm'),
                 help='[Privileged] virtualization type for the new image')]
 
+    # noinspection PyExceptionInherit
     def preprocess(self):
         if self.args.get('ImageLocation'):
             # instance-store image

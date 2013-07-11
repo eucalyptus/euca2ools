@@ -50,6 +50,7 @@ class AssociateAddress(EucalyptusRequest):
                 help='''[VPC only] allow the address to be associated even if
                 it is already associated with another interface''')]
 
+    # noinspection PyExceptionInherit
     def configure(self):
         EucalyptusRequest.configure(self)
         if (self.args.get('PublicIp') is not None and

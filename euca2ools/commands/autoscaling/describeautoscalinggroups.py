@@ -53,10 +53,10 @@ class DescribeAutoScalingGroups(AutoScalingRequest, TabifyingMixin):
     def print_result(self, result):
         lines = []
         for group in result.get('AutoScalingGroups', []):
-            bits = ['AUTO-SCALING-GROUP']
-            bits.append(group.get('AutoScalingGroupName'))
-            bits.append(group.get('LaunchConfigurationName'))
-            bits.append(','.join(group.get('AvailabilityZones')))
+            bits = ['AUTO-SCALING-GROUP',
+                    group.get('AutoScalingGroupName'),
+                    group.get('LaunchConfigurationName'),
+                    ','.join(group.get('AvailabilityZones'))]
             if self.args['show_long']:
                 bits.append(group.get('CreatedTime'))
             balancers = group.get('LoadBalancerNames')

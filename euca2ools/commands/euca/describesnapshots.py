@@ -58,6 +58,7 @@ class DescribeSnapshots(EucalyptusRequest):
                Filter('volume-size', type=int)]
     LIST_TAGS = ['snapshotSet', 'tagSet']
 
+    # noinspection PyExceptionInherit
     def configure(self):
         EucalyptusRequest.configure(self)
         if self.args.get('all'):

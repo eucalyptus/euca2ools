@@ -58,6 +58,7 @@ class GetMetricStatistics(CloudWatchRequest, TabifyingMixin):
             Arg('--unit', dest='Unit', help='unit the metric is reported in')]
     LIST_TAGS = ['Datapoints']
 
+    # noinspection PyExceptionInherit
     def configure(self):
         CloudWatchRequest.configure(self)
         if self.args.get('period'):
@@ -76,7 +77,7 @@ class GetMetricStatistics(CloudWatchRequest, TabifyingMixin):
         if not self.args.get('EndTime'):
             self.params['EndTime'] = now.strftime('%Y-%m-%dT%H:%M:%SZ')
 
-        return PaginatedResponse(self, (None,), ('Datapoints,'))
+        return PaginatedResponse(self, (None,), ('Datapoints',))
 
     def prepare_for_page(self, page):
         self.params['NextToken'] = page

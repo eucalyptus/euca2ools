@@ -23,7 +23,6 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-
 from argparse import ArgumentTypeError
 
 
@@ -76,4 +75,3 @@ def autoscaling_tag_def(tag_str):
         raise ArgumentTypeError(
             "tag '{0}' must contain a 'k=' segment with a non-empty value")
     return tag_dict
-

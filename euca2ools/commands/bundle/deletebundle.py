@@ -44,7 +44,8 @@ class DeleteBundle(WalrusRequest):
     ARGS = [Arg('-b', '--bucket', dest='bucket', metavar='BUCKET[/PREFIX]',
                 required=True,
                 help='location of the bundle to delete (required)'),
-            MutuallyExclusiveArgList(True,
+            MutuallyExclusiveArgList(
+                True,
                 Arg('-m', '--manifest', dest='manifest_path',
                     metavar='MANIFEST', help='''use a local manifest file to
                     figure out what to delete'''),
@@ -69,6 +70,7 @@ class DeleteBundle(WalrusRequest):
         DeleteObject(paths=paths, service=self.service,
                      config=self.config).main()
 
+    # noinspection PyExceptionInherit
     def _delete_by_local_manifest(self):
         manifest_path = self.args.get('manifest_path')
         if not os.path.isfile(manifest_path):
@@ -88,6 +90,7 @@ class DeleteBundle(WalrusRequest):
                 raise
         self._delete_manifest_parts(manifest_keys, directory)
 
+    # noinspection PyExceptionInherit
     def _delete_by_prefix(self):
         bucket = self.args.get('bucket')
         directory = tempfile.mkdtemp()

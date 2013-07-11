@@ -97,6 +97,7 @@ class InstallImage(EuStoreRequest, FileTransferProgressBarMixin):
                 help='storage service endpoint URL'),
             Arg('-y', '--yes', action='store_true', help=argparse.SUPPRESS)]
 
+    # noinspection PyExceptionInherit
     def configure(self):
         EuStoreRequest.configure(self)
         set_userregion(self.config, self.args.get('userregion'))
@@ -240,7 +241,8 @@ class InstallImage(EuStoreRequest, FileTransferProgressBarMixin):
             url = urlparse.urljoin(endpoint, image['url'])
             self.log.info('downloading image from %s', url)
             label = 'Downloading image '.format(os.path.basename(url))
-            req = requestbuilder.commands.http.Get(label=label, url=url,
+            req = requestbuilder.commands.http.Get(
+                label=label, url=url,
                 show_progress=self.args.get('show_progress', False),
                 dest=workdir, config=self.config)
             tarball_path, tarball_size = req.main()
@@ -300,8 +302,8 @@ class InstallImage(EuStoreRequest, FileTransferProgressBarMixin):
                             tarball, member, workdir, 'Extracting kernel ')
                         manifest_loc = self.bundle_and_upload_image(
                             kernel_image, 'kernel', workdir)
-                        req = RegisterImage(config=self.config,
-                            service=self.__eucalyptus,
+                        req = RegisterImage(
+                            config=self.config, service=self.__eucalyptus,
                             ImageLocation=manifest_loc, Name=image_name,
                             Description=self.args.get('description'),
                             Architecture=self.args.get('architecture'))
@@ -317,8 +319,8 @@ class InstallImage(EuStoreRequest, FileTransferProgressBarMixin):
                             tarball, member, workdir, 'Extracting ramdisk')
                         manifest_loc = self.bundle_and_upload_image(
                             ramdisk_image, 'ramdisk', workdir)
-                        req = RegisterImage(config=self.config,
-                            service=self.__eucalyptus,
+                        req = RegisterImage(
+                            config=self.config, service=self.__eucalyptus,
                             ImageLocation=manifest_loc, Name=image_name,
                             Description=self.args.get('description'),
                             Architecture=self.args.get('architecture'))
@@ -340,12 +342,12 @@ class InstallImage(EuStoreRequest, FileTransferProgressBarMixin):
                     bundled_images.append(member.name)
                     machine_image = self.extract_without_path(
                         tarball, member, workdir, 'Extracting image  ')
-                    manifest_loc = self.bundle_and_upload_image(machine_image,
-                        'machine', workdir, kernel_id=kernel_id,
+                    manifest_loc = self.bundle_and_upload_image(
+                        machine_image, 'machine', workdir, kernel_id=kernel_id,
                         ramdisk_id=ramdisk_id)
-                    req = RegisterImage(config=self.config,
-                        service=self.__eucalyptus, ImageLocation=manifest_loc,
-                        Name=image_name,
+                    req = RegisterImage(
+                        config=self.config, service=self.__eucalyptus,
+                        ImageLocation=manifest_loc, Name=image_name,
                         Description=self.args.get('description'),
                         Architecture=self.args.get('architecture'))
                     response = req.main()

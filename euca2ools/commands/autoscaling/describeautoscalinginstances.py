@@ -51,11 +51,10 @@ class DescribeAutoScalingInstances(AutoScalingRequest, TabifyingMixin):
 
     def print_result(self, result):
         for instance in result.get('AutoScalingInstances', []):
-            bits = ['INSTANCE']
-            bits.append(instance.get('InstanceId'))
-            bits.append(instance.get('AutoScalingGroupName'))
-            bits.append(instance.get('AvailabilityZone'))
-            bits.append(instance.get('LifecycleState'))
-            bits.append(instance.get('HealthStatus'))
-            bits.append(instance.get('LaunchConfigurationName'))
-            print self.tabify(bits)
+            print self.tabify(('INSTANCE',
+                               instance.get('InstanceId'),
+                               instance.get('AutoScalingGroupName'),
+                               instance.get('AvailabilityZone'),
+                               instance.get('LifecycleState'),
+                               instance.get('HealthStatus'),
+                               instance.get('LaunchConfigurationName')))

@@ -42,6 +42,7 @@ class CreateVolume(EucalyptusRequest):
             Arg('-i', '--iops', dest='Iops', type=int,
                 help='number of I/O operations per second')]
 
+    # noinspection PyExceptionInherit
     def configure(self):
         EucalyptusRequest.configure(self)
         if not self.args.get('Size') and not self.args.get('SnapshotId'):

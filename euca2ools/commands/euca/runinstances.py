@@ -25,7 +25,7 @@
 
 import base64
 from euca2ools.commands.argtypes import (ec2_block_device_mapping,
-    vpc_interface)
+                                         vpc_interface)
 from euca2ools.commands.euca import EucalyptusRequest
 import os.path
 from requestbuilder import Arg, MutuallyExclusiveArgList
@@ -124,9 +124,10 @@ class RunInstances(EucalyptusRequest):
                 "false"), a number of secondary private IP addresses to create
                 automatically, and a list of secondary private IP addresses to
                 assign to the interface, separated by ":", in the form
-                ":INDEX:SUBNET:[DESCRIPTION]:[PRIV_IP]:[GROUP1,GROUP2,...]:[true|false]:[SEC_IP_COUNT|:SEC_IP1,SEC_IP2,...]".  You cannot specify both of the
-                latter two.  This option may be used multiple times.  Each adds
-                another network interface.'''),
+                ":INDEX:SUBNET:[DESCRIPTION]:[PRIV_IP]:[GROUP1,GROUP2,...]:[true
+                |false]:[SEC_IP_COUNT|:SEC_IP1,SEC_IP2,...]".  You cannot
+                specify both of the latter two.  This option may be used
+                multiple times.  Each adds another network interface.'''),
             Arg('-p', '--iam-profile', metavar='IPROFILE', route_to=None,
                 help='''name or ARN of the IAM instance profile to associate
                 with the new instance(s)'''),
@@ -137,6 +138,7 @@ class RunInstances(EucalyptusRequest):
                  'blockDeviceMapping', 'productCodes', 'networkInterfaceSet',
                  'association', 'privateIpAddressesSet']
 
+    # noinspection PyExceptionInherit
     def configure(self):
         EucalyptusRequest.configure(self)
         if self.args.get('user_data'):
@@ -164,7 +166,7 @@ class RunInstances(EucalyptusRequest):
                 self.log.info("using default key pair '%s'", default_key_name)
                 self.params['KeyName'] = default_key_name
 
-
+    # noinspection PyExceptionInherit
     def preprocess(self):
         counts = self.args['count'].split('-')
         if len(counts) == 1:

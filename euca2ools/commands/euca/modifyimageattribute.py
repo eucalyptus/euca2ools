@@ -47,6 +47,7 @@ class ModifyImageAttribute(EucalyptusRequest):
                 default=[], route_to=None, help='''account to remove launch
                 permission from, or "all" for all accounts''')]
 
+    # noinspection PyExceptionInherit
     def preprocess(self):
         if self.args.get('launch_permission'):
             lperm = {}

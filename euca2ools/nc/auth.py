@@ -37,7 +37,7 @@ import urllib
 
 
 class EucaRsaV2Auth(BaseAuth):
-    '''Provides authentication for inter-component requests'''
+    """Provides authentication for inter-component requests"""
 
     ARGS = [Arg('--cert', metavar='FILE', help='''file containing the X.509
                 certificate to use when signing requests'''),
@@ -47,6 +47,7 @@ class EucaRsaV2Auth(BaseAuth):
                 help='run this command as if signed by a specific access key'),
             Arg('--euca-auth', action='store_true', help=argparse.SUPPRESS)]
 
+    # noinspection PyExceptionInherit
     def configure(self):
         BaseAuth.configure(self)
         if not self.args.get('spoof_key_id'):
@@ -93,7 +94,7 @@ class EucaRsaV2Auth(BaseAuth):
         self.log.debug('certificate fingerprint: %s', cert_fp)
 
         headers_to_sign = self._get_headers_to_sign(request)
-        signed_headers  = self._get_signed_headers(headers_to_sign)
+        signed_headers = self._get_signed_headers(headers_to_sign)
         self.log.debug('SignedHeaders:%s', signed_headers)
 
         canonical_request = self._get_canonical_request(request)
@@ -129,7 +130,7 @@ class EucaRsaV2Auth(BaseAuth):
         # 1.  request method
         method = request.method.upper()
         # 2.  CanonicalURI
-        c_uri  = self._get_canonical_uri(request)
+        c_uri = self._get_canonical_uri(request)
         # 3.  CanonicalQueryString
         c_querystr = self._get_canonical_querystr(request)
         # 4.  CanonicalHeaders

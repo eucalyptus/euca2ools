@@ -85,6 +85,7 @@ class UploadBundle(WalrusRequest, FileTransferProgressBarMixin):
         # proactive about it.
 
         with open(self.args['manifest']) as manifest_file:
+            # noinspection PyUnresolvedReferences
             manifest = lxml.objectify.parse(manifest_file).getroot()
 
         # Now we actually upload stuff

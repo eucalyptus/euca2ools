@@ -24,7 +24,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 from euca2ools.commands.walrus import (WalrusRequest,
-    validate_generic_bucket_name)
+                                       validate_generic_bucket_name)
 from requestbuilder import Arg
 import xml.etree.ElementTree as ET
 

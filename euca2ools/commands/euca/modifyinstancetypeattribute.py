@@ -42,6 +42,7 @@ class ModifyInstanceTypeAttribute(EucalyptusRequest, TabifyingMixin):
             Arg('--reset', dest='Reset', action='store_true',
                 help='reset the instance type to its default configuration')]
 
+    # noinspection PyExceptionInherit
     def configure(self):
         EucalyptusRequest.configure(self)
         if (self.args.get('Reset') and

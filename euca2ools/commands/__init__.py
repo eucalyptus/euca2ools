@@ -33,9 +33,9 @@ import sys
 
 
 class Euca2ools(object):
-    '''
+    """
     A class with attributes and methods that define the entire euca2ools suite
-    '''
+    """
 
     CONFIG_PATHS = ('/etc/euca2ools/euca2ools.ini',
                     '/etc/euca2ools/conf.d/*.ini',
@@ -44,6 +44,7 @@ class Euca2ools(object):
     def __init__(self):
         self.__user_agent = None
 
+    # noinspection PyBroadException
     @staticmethod
     def format_version():
         version_lines = ['euca2ools {0} (Sparta)'.format(__version__)]
@@ -76,9 +77,9 @@ class Euca2ools(object):
             impl = platform.python_implementation()
             if impl == 'PyPy':
                 impl_version = '{0}.{1}.{2}'.format(
-                        sys.pypy_version_info.major,
-                        sys.pypy_version_info.minor,
-                        sys.pypy_version_info.micro)
+                    sys.pypy_version_info.major,
+                    sys.pypy_version_info.minor,
+                    sys.pypy_version_info.micro)
                 if sys.pypy_version_info.releaselevel != 'final':
                     impl_version += sys.pypy_version_info.releaselevel
             else:
@@ -99,7 +100,7 @@ class Euca2ools(object):
             user_agent_bits.append('({0})'.format('; '.join(tokens)))
 
             user_agent_bits.append('requestbuilder/{0}'.format(
-                    requestbuilder.__version__))
+                requestbuilder.__version__))
             user_agent_bits.append('requests/{0}'.format(requests.__version__))
             self.__user_agent = ' '.join(user_agent_bits)
         return self.__user_agent

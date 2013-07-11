@@ -36,6 +36,7 @@ class ReleaseAddress(EucalyptusRequest):
                 help='''[VPC only] allocation ID for the address to release
                 (required)''')]
 
+    # noinspection PyExceptionInherit
     def configure(self):
         EucalyptusRequest.configure(self)
         if (self.args.get('PublicIp') is not None and

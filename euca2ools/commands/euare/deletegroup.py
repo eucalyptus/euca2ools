@@ -58,6 +58,10 @@ class DeleteGroup(EuareRequest):
                 GroupName=self.args['GroupName'],
                 DelegateAccount=self.params['DelegateAccount'])
             policies = req.main().get('PolicyNames', [])
+        else:
+            # Just in case
+            members = []
+            policies = []
         if self.args['pretend']:
             return {'members':  [member['Arn'] for member in members],
                     'policies': policies}

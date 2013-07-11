@@ -36,6 +36,7 @@ class DisassociateAddress(EucalyptusRequest):
                 metavar='ASSOC',
                 help="[VPC only] address's association ID (required)")]
 
+    # noinspection PyExceptionInherit
     def configure(self):
         EucalyptusRequest.configure(self)
         if self.args.get('PublicIp'):

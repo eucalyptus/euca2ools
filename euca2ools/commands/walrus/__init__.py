@@ -23,15 +23,15 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import string
+import urlparse
+
 from euca2ools.commands import Euca2ools
 from euca2ools.exceptions import AWSError
-from requestbuilder import Arg, MutuallyExclusiveArgList, SERVICE
+from requestbuilder import Arg, MutuallyExclusiveArgList
 import requestbuilder.auth
 import requestbuilder.request
 import requestbuilder.service
-from requestbuilder.xmlparse import parse_aws_xml
-import string
-import urlparse
 
 
 class Walrus(requestbuilder.service.BaseService):
@@ -81,6 +81,7 @@ class WalrusRequest(requestbuilder.request.BaseRequest):
                 if isinstance(self.body, file):
                     self.log.debug('re-seeking body to beginning of file')
                     # pylint: disable=E1101
+                    # noinspection PyUnresolvedReferences
                     self.body.seek(0)
                     # pylint: enable=E1101
                 return self.send()

@@ -45,7 +45,7 @@ class DescribeAlarmHistory(CloudWatchRequest, TabifyingMixin):
     LIST_TAGS = ['AlarmHistoryItems']
 
     def main(self):
-        return PaginatedResponse(self, (None,), ('AlarmHistoryItems,'))
+        return PaginatedResponse(self, (None,), ('AlarmHistoryItems',))
 
     def prepare_for_page(self, page):
         self.params['NextToken'] = page

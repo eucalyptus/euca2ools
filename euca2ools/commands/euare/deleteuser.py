@@ -92,6 +92,13 @@ class DeleteUser(EuareRequest):
                 else:
                     # Something else went wrong; not our problem
                     raise
+        else:
+            # Just in case
+            keys = []
+            policies = []
+            certs = []
+            groups = []
+            has_login_profile = False
         if self.args['pretend']:
             return {'keys': keys,          'policies': policies,
                     'certificates': certs, 'groups': groups,

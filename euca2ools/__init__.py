@@ -32,6 +32,7 @@ if '__file__' in globals():
     # Check if this is a git repo; maybe we can get more precise version info
     try:
         repo_path = os.path.join(os.path.dirname(__file__), '..')
+        # noinspection PyUnresolvedReferences
         git = subprocess.Popen(['git', 'describe'], stdout=subprocess.PIPE,
                                stderr=subprocess.PIPE,
                                env={'GIT_DIR': os.path.join(repo_path, '.git')})

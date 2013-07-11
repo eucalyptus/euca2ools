@@ -39,7 +39,7 @@ class RemoveUserFromGroup(EuareRequest):
     def main(self):
         for user in self.args['user_names']:
             self.params['UserName'] = user
-            response = self.send()
-        # The response doesn't actually contain anything of interest, so just
-        # return whatever
-        return response
+            self.send()
+        # The response doesn't actually contain anything of interest, so don't
+        # bother returning anything
+        return None

@@ -71,6 +71,7 @@ class BundleCreator(BaseCommand, FileTransferProgressBarMixin):
                 help='comma-separated list of product codes'),
             Arg('--batch', action='store_true', help=argparse.SUPPRESS)]
 
+    # noinspection PyExceptionInherit
     def configure(self):
         BaseCommand.configure(self)
         set_userregion(self.config, self.args.get('userregion'))
@@ -102,6 +103,7 @@ class BundleCreator(BaseCommand, FileTransferProgressBarMixin):
                                 "directory".format(self.args['destination']))
 
 
+# noinspection PyExceptionInherit
 def add_bundle_creds(args, config):
     # User's X.509 certificate (user-level in config)
     if not args.get('cert'):

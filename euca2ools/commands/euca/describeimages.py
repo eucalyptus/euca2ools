@@ -92,6 +92,7 @@ class DescribeImages(EucalyptusRequest):
                       help='virtualization type ("paravirtual" or "hvm")')]
     LIST_TAGS = ['imagesSet', 'productCodes', 'blockDeviceMapping', 'tagSet']
 
+    # noinspection PyExceptionInherit
     def configure(self):
         EucalyptusRequest.configure(self)
         if self.args.get('all', False):
@@ -129,15 +130,16 @@ class DescribeImages(EucalyptusRequest):
             self.print_image(image)
 
     def print_image(self, image):
-        print self.tabify(('IMAGE', image.get('imageId'),
-                image.get('imageLocation'),
-                image.get('imageOwnerAlias') or image.get('imageOwnerId'),
-                image.get('imageState'),
-                ('public' if image.get('isPublic') == 'true' else 'private'),
-                image.get('architecture'), image.get('imageType'),
-                image.get('kernelId'), image.get('ramdiskId'),
-                image.get('platform'), image.get('rootDeviceType'),
-                image.get('virtualizationType'), image.get('hypervisor')))
+        print self.tabify((
+            'IMAGE', image.get('imageId'),
+            image.get('imageLocation'),
+            image.get('imageOwnerAlias') or image.get('imageOwnerId'),
+            image.get('imageState'),
+            ('public' if image.get('isPublic') == 'true' else 'private'),
+            image.get('architecture'), image.get('imageType'),
+            image.get('kernelId'), image.get('ramdiskId'),
+            image.get('platform'), image.get('rootDeviceType'),
+            image.get('virtualizationType'), image.get('hypervisor')))
         for mapping in image.get('blockDeviceMapping', []):
             self.print_blockdevice_mapping(mapping)
         for tag in image.get('tagSet', []):

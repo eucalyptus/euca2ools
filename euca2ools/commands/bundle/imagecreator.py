@@ -63,8 +63,7 @@ none\t/sys\tsysfs\tdefaults 0 0""",
 /dev/sda2\t/mnt\text3\tdefaults\t0 0
 /dev/sda3\tswap\tswap\tdefaults\t0 0
 proc\t/proc\tproc\tdefaults\t0 0
-devpts\t/dev/pts\tdevpts\tgid=5,mode=620 0 0""",
-    )
+devpts\t/dev/pts\tdevpts\tgid=5,mode=620 0 0""")
 FSTAB_HEADER_TEMPLATE = """#
 #
 # /etc/fstab
@@ -294,6 +293,7 @@ class VolumeSync(object):
         self.mount()
         return self
 
+    # noinspection PyUnusedLocal
     def __exit__(self, exc_type, exc_value, traceback):
         self.unmount()
 
@@ -330,8 +330,8 @@ class ImageCreator(object):
             raise ValueError("must supply a prefix.")
         if not self.volume:
             raise ValueError("must supply a volume.")
-        if not (os.path.exists(self.destination) or \
-                    os.path.isdir(self.destination)):
+        if not (os.path.exists(self.destination) or
+                os.path.isdir(self.destination)):
             raise ValueError("'{0}' is not a directory or does not exist."
                              .format(self.destination))
 
@@ -396,28 +396,28 @@ class ImageCreator(object):
             os.remove(devnode)
             os.rmdir(directory)
 
-    def _make_filesystem(self, type='ext3', uuid=None, label=None):
+    def _make_filesystem(self, fstype='ext3', uuid=None, label=None):
         """Format our raw image.
-        :param type: (optional) Filesystem type, one of ext3, ext4, xfs, btrfs.
+        :param fstype: (optional) Filesystem type, one of ext3, ext4, xfs, btrfs.
         :param uuid: (optional) UUID of the filesystem.
         :param label: (optional) Label of the filesystem.
         """
-        mkfs_cmd = 'mkfs.{0}'.format(type)
+        mkfs_cmd = 'mkfs.{0}'.format(fstype)
         tunefs = None
 
-        if type.startswith('ext'):
+        if fstype.startswith('ext'):
             mkfs = [mkfs_cmd, '-F', self.image]
             if uuid:
                 tunefs = ['tune2fs', '-U', uuid, self.image]
-        elif type == 'xfs':
+        elif fstype == 'xfs':
             mkfs = [mkfs_cmd, self.image]
             tunefs = ['xfs_admin', '-U', uuid, self.image]
-        elif type == 'btrfs':
+        elif fstype == 'btrfs':
             mkfs = [mkfs_cmd, self.image]
             if uuid:
                 raise Exception("btrfs with uuid not supported")
         else:
-            raise Exception("unsupported fs {0}".format(type))
+            raise Exception("unsupported fs {0}".format(fstype))
 
         if label:
             mkfs.extend(['-L', label])
@@ -438,6 +438,6 @@ def _generate_fstab_content(arch=platform.machine()):
     if arch in FSTAB_BODY_TEMPLATE:
         return "\n".join([FSTAB_HEADER_TEMPLATE.format(
                 time.strftime(FSTAB_TIME_FORMAT)),
-                         FSTAB_BODY_TEMPLATE.get(arch)])
+                FSTAB_BODY_TEMPLATE.get(arch)])
     else:
         raise Exception("platform architecture {0} not supported".format(arch))

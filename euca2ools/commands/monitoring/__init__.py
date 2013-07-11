@@ -25,7 +25,7 @@
 
 from euca2ools.commands import Euca2ools
 from euca2ools.exceptions import AWSError
-from requestbuilder import Arg, MutuallyExclusiveArgList, SERVICE
+from requestbuilder import Arg, MutuallyExclusiveArgList
 import requestbuilder.auth
 from requestbuilder.mixins import TabifyingMixin
 import requestbuilder.service

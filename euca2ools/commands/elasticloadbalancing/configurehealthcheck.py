@@ -52,6 +52,7 @@ class ConfigureHealthCheck(ELBRequest, TabifyingMixin):
                 help='''number of consecutive failed health checks that will
                 mark instances as Unhealthy (required)''')]
 
+    # noinspection PyExceptionInherit
     def configure(self):
         ELBRequest.configure(self)
         target = self.args['HealthCheck.Target']

@@ -52,11 +52,11 @@ class TerminateInstanceInAutoScalingGroup(AutoScalingRequest,
 
     def print_result(self, result):
         activity = result['Activity']
-        bits = ['INSTANCE']
-        bits.append(activity.get('ActivityId'))
-        bits.append(activity.get('EndTime'))
-        bits.append(activity.get('StatusCode'))
-        bits.append(activity.get('Cause'))
+        bits = ['INSTANCE',
+                activity.get('ActivityId'),
+                activity.get('EndTime'),
+                activity.get('StatusCode'),
+                activity.get('Cause')]
         if self.args['show_long']:
             bits.append(activity.get('StatusMessage'))
             bits.append(activity.get('Progress'))

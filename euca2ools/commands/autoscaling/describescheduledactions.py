@@ -60,14 +60,14 @@ class DescribeScheduledActions(AutoScalingRequest, TabifyingMixin):
 
     def print_result(self, result):
         for action in result.get('ScheduledUpdateGroupActions', []):
-            bits = ['UPDATE-GROUP-ACTION']
-            bits.append(action.get('AutoScalingGroupName'))
-            bits.append(action.get('ScheduledActionName'))
-            bits.append(action.get('StartTime'))
-            bits.append(action.get('Recurrence'))
-            bits.append(action.get('MinSize'))
-            bits.append(action.get('MaxSize'))
-            bits.append(action.get('DesiredCapacity'))
+            bits = ['UPDATE-GROUP-ACTION',
+                    action.get('AutoScalingGroupName'),
+                    action.get('ScheduledActionName'),
+                    action.get('StartTime'),
+                    action.get('Recurrence'),
+                    action.get('MinSize'),
+                    action.get('MaxSize'),
+                    action.get('DesiredCapacity')]
             if self.args['show_long']:
                 bits.append(action.get('ScheduledActionARN'))
             print self.tabify(bits)

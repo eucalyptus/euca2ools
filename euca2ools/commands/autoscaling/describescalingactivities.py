@@ -52,12 +52,12 @@ class DescribeScalingActivities(AutoScalingRequest, TabifyingMixin):
 
     def print_result(self, result):
         for activity in result.get('Activities', []):
-            bits = ['ACTIVITY']
-            bits.append(activity.get('ActivityId'))
-            bits.append(activity.get('EndTime'))
-            bits.append(activity.get('AutoScalingGroupName'))
-            bits.append(activity.get('StatusCode'))
-            bits.append(activity.get('StatusMessage'))
+            bits = ['ACTIVITY',
+                    activity.get('ActivityId'),
+                    activity.get('EndTime'),
+                    activity.get('AutoScalingGroupName'),
+                    activity.get('StatusCode'),
+                    activity.get('StatusMessage')]
             if self.args['show_long']:
                 bits.append(activity.get('Cause'))
                 bits.append(activity.get('Progress'))

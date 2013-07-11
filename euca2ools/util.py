@@ -42,12 +42,12 @@ def build_progressbar_label_template(fnames):
 
 # pylint: disable=W0622
 def mkdtemp_for_large_files(suffix='', prefix='tmp', dir=None):
-    '''
+    """
     Like tempfile.mkdtemp, but using /var/tmp as a last resort instead of /tmp.
 
     This is meant for utilities that create large files, as /tmp is often a
     ramdisk.
-    '''
+    """
 
     if dir is None:
         dir = (os.getenv('TMPDIR') or os.getenv('TEMP') or os.getenv('TMP') or

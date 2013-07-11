@@ -35,7 +35,6 @@ from requestbuilder.mixins import TabifyingMixin
 from requestbuilder.request import AWSQueryRequest
 from requestbuilder.service import BaseService
 from requestbuilder.util import set_userregion
-import requests
 import shlex
 from string import Template
 import sys
@@ -136,12 +135,12 @@ class Eucalyptus(BaseService):
     NAME = 'ec2'
     DESCRIPTION = 'Eucalyptus compute cloud service'
     API_VERSION = '2013-02-01'
-    AUTH_CLASS  = EC2CompatibleQuerySigV2Auth
+    AUTH_CLASS = EC2CompatibleQuerySigV2Auth
     REGION_ENVVAR = 'EUCA_REGION'
     URL_ENVVAR = 'EC2_URL'
 
     ARGS = [Arg('--config', dest='shell_configfile', metavar='CFGFILE',
-                 default='', route_to=(SERVICE, AUTH), help=argparse.SUPPRESS),
+                default='', route_to=(SERVICE, AUTH), help=argparse.SUPPRESS),
             MutuallyExclusiveArgList(
                 Arg('--region', dest='userregion', metavar='USER@REGION',
                     help='''name of the region and/or user in config files to
@@ -252,6 +251,7 @@ class EucalyptusRequest(AWSQueryRequest, TabifyingMixin):
             instance_line.append('monitoring-' +
                                  instance['monitoring'].get('state'))
         else:
+            # noinspection PyTypeChecker
             instance_line.append(None)
         instance_line.append(instance.get('ipAddress'))
         instance_line.append(instance.get('privateIpAddress'))
@@ -260,6 +260,7 @@ class EucalyptusRequest(AWSQueryRequest, TabifyingMixin):
         instance_line.append(instance.get('rootDeviceType'))
         instance_line.append(instance.get('instanceLifecycle'))
         instance_line.append(instance.get('showInstanceRequestId'))
+        # noinspection PyTypeChecker
         instance_line.append(None)  # Should be the license, but where is it?
         instance_line.append(instance.get('placement', {}).get('groupName'))
         instance_line.append(instance.get('virtualizationType'))
@@ -290,9 +291,9 @@ class EucalyptusRequest(AWSQueryRequest, TabifyingMixin):
                            blockdev.get('ebs', {}).get('iops')))
 
     def print_interface(self, nic):
-        nic_info = [nic.get(attr) for attr in ('networkInterfaceId',
-            'subnetId', 'vpcId', 'ownerId', 'status', 'privateIpAddress',
-            'privateDnsName', 'sourceDestCheck')]
+        nic_info = [nic.get(attr) for attr in (
+            'networkInterfaceId', 'subnetId', 'vpcId', 'ownerId', 'status',
+            'privateIpAddress', 'privateDnsName', 'sourceDestCheck')]
         print self.tabify(['NIC'] + nic_info)
         if nic.get('attachment'):
             attachment_info = [nic['attachment'].get(attr) for attr in (
@@ -360,27 +361,27 @@ class EucalyptusRequest(AWSQueryRequest, TabifyingMixin):
 
 class _ResourceTypeMap(object):
     _prefix_type_map = {
-            'cgw':    'customer-gateway',
-            'dopt':   'dhcp-options',
-            'aki':    'image',
-            'ami':    'image',
-            'ari':    'image',
-            'eki':    'image',
-            'emi':    'image',
-            'eri':    'image',
-            'i':      'instance',
-            'igw':    'internet-gateway',
-            'acl':    'network-acl',
-            'xxx':    'reserved-instances',  # reserved instance IDs are UUIDs
-            'rtb':    'route-table',
-            'sg':     'security-group',
-            'snap':   'snapshot',
-            'sir':    'spot-instances-request',
-            'subnet': 'subnet',
-            'vol':    'volume',
-            'vpc':    'vpc',
-            'vpn':    'vpn-connection',
-            'vgw':    'vpn-gateway'}
+        'cgw':    'customer-gateway',
+        'dopt':   'dhcp-options',
+        'aki':    'image',
+        'ami':    'image',
+        'ari':    'image',
+        'eki':    'image',
+        'emi':    'image',
+        'eri':    'image',
+        'i':      'instance',
+        'igw':    'internet-gateway',
+        'acl':    'network-acl',
+        'xxx':    'reserved-instances',  # reserved instance IDs are UUIDs
+        'rtb':    'route-table',
+        'sg':     'security-group',
+        'snap':   'snapshot',
+        'sir':    'spot-instances-request',
+        'subnet': 'subnet',
+        'vol':    'volume',
+        'vpc':    'vpc',
+        'vpn':    'vpn-connection',
+        'vgw':    'vpn-gateway'}
 
     def lookup(self, item):
         if not isinstance(item, basestring):
@@ -393,6 +394,7 @@ class _ResourceTypeMap(object):
         return iter(set(self._prefix_type_map.values()))
 
 RESOURCE_TYPE_MAP = _ResourceTypeMap()
+
 
 def _find_args_by_parg(arglike, parg):
     if isinstance(arglike, Arg):
@@ -408,6 +410,7 @@ def _find_args_by_parg(arglike, parg):
     else:
         raise TypeError('Unsearchable type ' + arglike.__class__.__name__)
 
+
 def _parse_shell_configfile(configfile_name):
     # Should be able to drop this in 3.2
     def sourcehook(filename):
@@ -415,7 +418,7 @@ def _parse_shell_configfile(configfile_name):
         filename = Template(filename).safe_substitute(config)
         filename = os.path.expandvars(filename)
         filename = os.path.expanduser(filename)
-        return (filename, open(filename))
+        return filename, open(filename)
 
     config = {}
     configfile_name = os.path.expandvars(configfile_name)

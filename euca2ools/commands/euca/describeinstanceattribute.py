@@ -26,7 +26,6 @@
 import base64
 from euca2ools.commands.euca import EucalyptusRequest
 from requestbuilder import Arg, MutuallyExclusiveArgList
-from requestbuilder.exceptions import ArgumentError
 
 
 class DescribeInstanceAttribute(EucalyptusRequest):

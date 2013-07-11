@@ -25,7 +25,7 @@
 
 import argparse
 from euca2ools.commands.walrus import (WalrusRequest,
-    validate_generic_bucket_name)
+                                       validate_generic_bucket_name)
 from requestbuilder import Arg
 from requestbuilder.exceptions import ArgumentError
 from requestbuilder.mixins import TabifyingMixin
@@ -39,11 +39,13 @@ class ListBucket(WalrusRequest, TabifyingMixin):
             Arg('--max-keys-per-request', dest='max-keys', type=int,
                 help=argparse.SUPPRESS)]
 
+    # noinspection PyExceptionInherit
     def configure(self):
         WalrusRequest.configure(self)
         for path in self.args['paths']:
             if path.startswith('/'):
-                raise ArgumentError(('argument \'{0}\' must not start with '
+                raise ArgumentError((
+                    'argument \'{0}\' must not start with '
                     '"/"; format is BUCKET[/KEY]').format(path))
             bucket = path.split('/', 1)[0]
             try:
@@ -59,7 +61,7 @@ class ListBucket(WalrusRequest, TabifyingMixin):
 
     def get_next_page(self, response):
         if response.get('IsTruncated') == 'true':
-            return (self.path, {'marker': response['Contents'][-1]['Key']})
+            return self.path, {'marker': response['Contents'][-1]['Key']}
 
     def prepare_for_page(self, page):
         bucket, __, prefix = page[0].partition('/')
@@ -75,8 +77,9 @@ class ListBucket(WalrusRequest, TabifyingMixin):
             del self.params['marker']
 
     def parse_response(self, response):
-        response_dict = self.log_and_parse_response(response,
-            parse_aws_xml, list_item_tags=('Contents', 'CommonPrefixes'))
+        response_dict = self.log_and_parse_response(
+            response, parse_aws_xml,
+            list_item_tags=('Contents', 'CommonPrefixes'))
         return response_dict['ListBucketResult']
 
     def print_result(self, result):

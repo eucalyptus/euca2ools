@@ -54,6 +54,7 @@ class Unbundle(BaseCommand, FileTransferProgressBarMixin):
                 help='''use encryption keys specified for a user and/or region
                 in configuration files''')]
 
+    # noinspection PyExceptionInherit
     def configure(self):
         BaseCommand.configure(self)
         set_userregion(self.config, self.args.get('userregion'))

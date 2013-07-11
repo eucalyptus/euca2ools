@@ -81,8 +81,9 @@ class BundleInstance(EucalyptusRequest):
         my_hmac = hmac.new(self.args['owner_sak'], digestmod=hashlib.sha1)
         my_hmac.update(self.params.get('Storage.S3.UploadPolicy'))
         self.params['Storage.S3.UploadPolicySignature'] = \
-                base64.b64encode(my_hmac.digest())
+            base64.b64encode(my_hmac.digest())
 
+    # noinspection PyExceptionInherit
     def configure(self):
         EucalyptusRequest.configure(self)
         if not self.args.get('Storage.S3.UploadPolicy'):

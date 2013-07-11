@@ -78,6 +78,7 @@ class Bundle(object):
             partdir = os.path.dirname(manifest_filename)
         new_bundle = cls()
         with open(manifest_filename) as manifest_file:
+            # noinspection PyUnresolvedReferences
             manifest = lxml.objectify.parse(manifest_file).getroot()
         new_bundle.digest = manifest.image.digest.text
         new_bundle.digest_algorithm = manifest.image.digest.get('algorithm')

@@ -44,7 +44,7 @@ class ListMetrics(CloudWatchRequest, TabifyingMixin):
     LIST_TAGS = ['Metrics', 'Dimensions']
 
     def main(self):
-        return PaginatedResponse(self, (None,), ('Metrics,'))
+        return PaginatedResponse(self, (None,), ('Metrics',))
 
     def prepare_for_page(self, page):
         self.params['NextToken'] = page

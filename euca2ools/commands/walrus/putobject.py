@@ -64,6 +64,7 @@ class PutObject(WalrusRequest, FileTransferProgressBarMixin):
         self.last_upload_error = None
         self._lock = threading.Lock()
 
+    # noinspection PyExceptionInherit
     def configure(self):
         WalrusRequest.configure(self)
         if (self.args.get('literal_dest', False) and
@@ -74,6 +75,7 @@ class PutObject(WalrusRequest, FileTransferProgressBarMixin):
         if self.args['dest'].startswith('/'):
             raise ArgumentError('destination must begin with a bucket name')
 
+    # noinspection PyExceptionInherit
     def main(self):
         sources = list(self.args['sources'])
         label_template = build_progressbar_label_template(sources)

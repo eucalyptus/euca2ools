@@ -42,6 +42,7 @@ class ModifySnapshotAttribute(EucalyptusRequest):
                 default=[], route_to=None, help='''account to remove permission
                 from, or "all" for all accounts''')]
 
+    # noinspection PyExceptionInherit
     def preprocess(self):
         if self.args.get('create_volume_permission'):
             cvperm = {}

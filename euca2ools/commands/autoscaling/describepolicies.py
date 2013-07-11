@@ -51,10 +51,10 @@ class DescribePolicies(AutoScalingRequest, TabifyingMixin):
 
     def print_result(self, result):
         for policy in result.get('ScalingPolicies', []):
-            bits = ['SCALING-POLICY']
-            bits.append(policy.get('AutoScalingGroupName'))
-            bits.append(policy.get('PolicyName'))
-            bits.append(policy.get('ScalingAdjustment'))
+            bits = ['SCALING-POLICY',
+                    policy.get('AutoScalingGroupName'),
+                    policy.get('PolicyName'),
+                    policy.get('ScalingAdjustment')]
             if self.args['show_long']:
                 bits.append(policy.get('MinAdjustmentStep'))
             bits.append(policy.get('AdjustmentType'))

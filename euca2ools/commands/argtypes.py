@@ -45,9 +45,9 @@ def manifest_block_device_mappings(mappings_as_str):
 
 
 def ec2_block_device_mapping(map_as_str):
-    '''
+    """
     Parse a block device mapping from an image registration command line.
-    '''
+    """
     try:
         (device, mapping) = map_as_str.split('=')
     except ValueError:
@@ -121,11 +121,11 @@ def filesize(size):
 
 
 def vpc_interface(iface_as_str):
-    '''
+    """
     Nine-part VPC network interface definition:
     [INTERFACE]:INDEX:[SUBNET]:[DESCRIPTION]:[PRIV_IP]:[GROUP1,GROUP2,...]:
     [true|false]:[SEC_IP_COUNT|:SEC_IP1,SEC_IP2,...]
-    '''
+    """
 
     if len(iface_as_str) == 0:
         raise argparse.ArgumentTypeError(
@@ -238,14 +238,14 @@ def b64encoded_file_contents(filename):
 
 
 def binary_tag_def(tag_str):
-    '''
+    """
     Parse a tag definition from the command line.  Return a dict that depends
     on the format of the string given:
 
      - 'key=value': {'Key': key, 'Value': value}
      - 'key=':      {'Key': key, 'Value': EMPTY}
      - 'key':       {'Key': key, 'Value': EMPTY}
-    '''
+    """
     if '=' in tag_str:
         (key, val) = tag_str.split('=', 1)
         return {'Key': key,     'Value': val or EMPTY}
@@ -254,14 +254,14 @@ def binary_tag_def(tag_str):
 
 
 def ternary_tag_def(tag_str):
-    '''
+    """
     Parse a tag definition from the command line.  Return a dict that depends
     on the format of the string given:
 
      - 'key=value': {'Key': key, 'Value': value}
      - 'key=':      {'Key': key, 'Value': EMPTY}
      - 'key':       {'Key': key}
-    '''
+    """
     if '=' in tag_str:
         (key, val) = tag_str.split('=', 1)
         return {'Key': key, 'Value': val or EMPTY}

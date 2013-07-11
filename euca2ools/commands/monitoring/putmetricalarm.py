@@ -26,7 +26,7 @@
 from euca2ools.commands.argtypes import delimited_list
 from euca2ools.commands.monitoring import CloudWatchRequest
 from euca2ools.commands.monitoring.argtypes import cloudwatch_dimension
-from requestbuilder import Arg, MutuallyExclusiveArgList
+from requestbuilder import Arg
 
 
 class PutMetricAlarm(CloudWatchRequest):

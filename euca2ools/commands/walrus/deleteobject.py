@@ -32,6 +32,7 @@ class DeleteObject(WalrusRequest):
     DESCRIPTION = 'Delete objects from the server'
     ARGS = [Arg('paths', metavar='BUCKET/KEY', nargs='+', route_to=None)]
 
+    # noinspection PyExceptionInherit
     def configure(self):
         WalrusRequest.configure(self)
         for path in self.args['paths']:

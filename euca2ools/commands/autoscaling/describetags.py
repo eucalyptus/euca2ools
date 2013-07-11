@@ -32,7 +32,7 @@ from requestbuilder.response import PaginatedResponse
 
 class DescribeTags(AutoScalingRequest, TabifyingMixin):
     DESCRIPTION = 'Describe auto-scaling tags'
-    ARGS = [Arg('--filter', dest='Filters.member',type=autoscaling_filter_def,
+    ARGS = [Arg('--filter', dest='Filters.member', type=autoscaling_filter_def,
                 metavar='NAME=VALUE,...', action='append',
                 help='restrict results to those that meet criteria')]
     LIST_TAGS = ['Tags']
