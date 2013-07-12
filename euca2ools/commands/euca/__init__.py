@@ -301,7 +301,8 @@ class EucalyptusRequest(AWSQueryRequest, TabifyingMixin):
                 'deleteOnTermination')]
             print self.tabify(['NICATTACHMENT'] + attachment_info)
         privaddresses = nic.get('privateIpAddressesSet', [])
-        for association in nic.get('association', []):
+        if nic.get('association'):
+            association = nic['association']
             # The EC2 tools apparently print private IP info in the
             # association even though that info doesn't appear there
             # in the response, so we have to look it up elsewhere.

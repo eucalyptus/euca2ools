@@ -183,7 +183,7 @@ class DescribeInstances(EucalyptusRequest):
                       help='[VPC only] ID of the VPC the instance is in')]
     LIST_TAGS = ['reservationSet', 'instancesSet', 'groupSet', 'tagSet',
                  'blockDeviceMapping', 'productCodes', 'networkInterfaceSet',
-                 'association', 'privateIpAddressesSet']
+                 'privateIpAddressesSet']
 
     def print_result(self, result):
         for reservation in result.get('reservationSet'):
