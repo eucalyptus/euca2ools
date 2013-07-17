@@ -136,7 +136,7 @@ class RunInstances(EucalyptusRequest):
 
     LIST_TAGS = ['reservationSet', 'instancesSet', 'groupSet', 'tagSet',
                  'blockDeviceMapping', 'productCodes', 'networkInterfaceSet',
-                 'association', 'privateIpAddressesSet']
+                 'privateIpAddressesSet']
 
     # noinspection PyExceptionInherit
     def configure(self):
