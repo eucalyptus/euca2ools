@@ -69,8 +69,8 @@ class InstallImage(EuStoreRequest, FileTransferProgressBarMixin):
                 help='''hypervisor the kernel image is built for (required for
                 images with hypervisor-specific kernels'''),
             Arg('--separate-buckets', action='store_true',
-                help='''store kernel, ramdisk, and root image will be
-                in separate buckets (i.e.<bucket-name>[-kernel|-ramdisk])'''), 
+                help='''store kernel, ramdisk, and machine images in separate
+                buckets (BUCKET-kernel, BUCKET-ramdisk)'''),
             Arg('-k', '--kernel-type', dest='kernel_type',
                 choices=('xen', 'kvm', 'universal'), help=argparse.SUPPRESS),
             Arg('-d', '--directory', dest='directory', metavar='DIR',
@@ -395,12 +395,12 @@ class InstallImage(EuStoreRequest, FileTransferProgressBarMixin):
         elif image_type == 'kernel':
             image_type_args = {'kernel': 'true'}
             progressbar_label = 'Bundling kernel   '
-            if self.args['separate_buckets']:
+            if self.args.get('separate_buckets'):
                 unique_bucket = ''.join([self.args['bucket'], '-kernel'])
         elif image_type == 'ramdisk':
             image_type_args = {'ramdisk': 'true'}
             progressbar_label = 'Bundling ramdisk  '
-            if self.args['separate_buckets']:
+            if self.args.get('separate_buckets'):
                 unique_bucket = ''.join([self.args['bucket'], '-ramdisk'])
         else:
             raise ValueError("unrecognized image type: '{0}'"
