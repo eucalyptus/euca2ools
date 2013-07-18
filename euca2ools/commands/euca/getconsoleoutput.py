@@ -26,6 +26,7 @@
 import base64
 from euca2ools.commands.euca import EucalyptusRequest
 from requestbuilder import Arg
+import sys
 
 
 CHAR_ESCAPES = {
@@ -48,15 +49,14 @@ class GetConsoleOutput(EucalyptusRequest):
                 obtain console output from (required)'''),
             Arg('-r', '--raw-console-output', action='store_true',
                 route_to=None,
-                help='display raw output without escaping control characters'),
-            Arg('--encoding', route_to=None, default='utf-8', help='''character
-                encoding of the console output (default: utf-8)''')]
+                help='display raw output without escaping control characters')]
 
     def print_result(self, result):
         print result.get('instanceId', '')
         print result.get('timestamp', '')
         output = base64.b64decode(result.get('output', ''))
-        output = output.decode(self.args.get('encoding', 'utf-8'), 'replace')
+        output = output.decode(sys.stdout.encoding, 'replace')
+        output = output.replace(u'\ufffd', u'?')
         if not self.args['raw_console_output']:
             # Escape control characters
             for char, escape in CHAR_ESCAPES.iteritems():
