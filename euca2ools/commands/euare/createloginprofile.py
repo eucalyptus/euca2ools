@@ -24,7 +24,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 from euca2ools.commands.euare import EuareRequest, AS_ACCOUNT
-import getpass
+from euca2ools.util import prompt_for_password
 from requestbuilder import Arg
 
 
@@ -42,9 +42,4 @@ class CreateLoginProfile(EuareRequest):
         EuareRequest.configure(self)
         if self.args['Password'] is None:
             self.log.info('no password supplied; prompting')
-            pass1 = '1'
-            pass2 = '2'
-            while pass1 != pass2:
-                pass1 = getpass.getpass(prompt='New password: ')
-                pass2 = getpass.getpass(prompt='Retype new password: ')
-            self.params['Password'] = pass1
+            self.params['Password'] = prompt_for_password()
