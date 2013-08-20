@@ -42,4 +42,9 @@ class CreateLoginProfile(EuareRequest):
         EuareRequest.configure(self)
         if self.args['Password'] is None:
             self.log.info('no password supplied; prompting')
-            self.params['Password'] = getpass.getpass()
+            pass1 = '1'
+            pass2 = '2'
+            while pass1 != pass2:
+                pass1 = getpass.getpass(prompt='New password: ')
+                pass2 = getpass.getpass(prompt='Retype new password: ')
+            self.params['Password'] = pass1
