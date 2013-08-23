@@ -23,7 +23,9 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import getpass
 import os
+import sys
 import tempfile
 
 
@@ -62,3 +64,13 @@ def sanitize_path(path):
     :param path: The path string to sanitize.
     """
     return os.path.abspath(os.path.expandvars(os.path.expanduser(path)))
+
+
+def prompt_for_password():
+    pass1 = getpass.getpass(prompt='New password: ')
+    pass2 = getpass.getpass(prompt='Retype new password: ')
+    if pass1 == pass2:
+        return pass1
+    else:
+        print >> sys.stderr, 'error: passwords do not match'
+        return prompt_for_password()

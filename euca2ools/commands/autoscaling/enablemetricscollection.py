@@ -33,7 +33,8 @@ class EnableMetricsCollection(AutoScalingRequest):
     ARGS = [Arg('AutoScalingGroupName', metavar='ASGROUP',
                 help='name of the auto-scaling group to update (required)'),
             Arg('-g', '--granularity', dest='Granularity', required=True,
-                help='granularity at which to collect metrics (required)'),
+                help='''granularity at which to collect metrics (e.g.,
+                '1Minute') (required)'''),
             Arg('-m', '--metrics', dest='Metrics.member',
                 metavar='METRIC1,METRIC2,...', type=delimited_list(','),
                 help='list of metrics to collect (default: all metrics)')]
