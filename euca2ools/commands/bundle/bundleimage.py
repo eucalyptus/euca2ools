@@ -97,9 +97,7 @@ class BundleImage(BundleCreator):
         return (part['path'] for part in bundle.parts), manifest_filename
 
     def print_result(self, result):
-        for part_filename in result[0]:
-            print 'Wrote', part_filename
-        print 'Wrote manifest', result[1]  # manifest
+        print 'Wrote manifest', result[1]
 
     # noinspection PyUnresolvedReferences
     def generate_manifest_xml(self, bundle):
