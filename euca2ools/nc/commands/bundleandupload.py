@@ -71,7 +71,11 @@ class BundleAndUpload(requestbuilder.command.BaseCommand):
                 route_to=None, help='''signature for the upload policy given
                 with --upload-policy'''),
             Arg('-U', '--url', help='storage service endpoint URL'),
-            Arg('--euca-auth', action='store_true', help=argparse.SUPPRESS)]
+            Arg('--euca-auth', action='store_true', help=argparse.SUPPRESS),
+            Arg('--kernel', metavar='IMAGE', help='''ID of the kernel image to
+                associate with the machine bundle'''),
+            Arg('--ramdisk', metavar='IMAGE', help='''ID of the ramdisk image
+                to associate with the machine bundle''')]
     # Note that this is a back end service for which region support is
     # out of scope.  This isn't going to get tested with that.
 
@@ -97,7 +101,9 @@ class BundleAndUpload(requestbuilder.command.BaseCommand):
                           user=self.args['user'],
                           destination=self.args.get('directory'),
                           ec2cert=self.args['ec2cert'], image_type='machine',
-                          config=self.config)
+                          config=self.config,
+                          kernel=self.args['kernel'],
+                          ramdisk=self.args['ramdisk'])
         parts, manifest = cmd.main()
 
         cmd = UploadBundle(bucket=self.args['bucket'], manifest=manifest,
