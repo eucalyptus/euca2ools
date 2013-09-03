@@ -95,24 +95,15 @@ class BundleAndUpload(requestbuilder.command.BaseCommand):
 
 
     def main(self):
-        if self.args.get('kernel') and self.args.get('ramdisk'):
-            cmd = BundleImage(image=self.args['image'], arch=self.args['arch'],
-                              cert=self.args['cert'],
-                              privatekey=self.args['privatekey'],
-                              user=self.args['user'],
-                              destination=self.args.get('directory'),
-                              ec2cert=self.args['ec2cert'], image_type='machine',
-                              config=self.config,
-                              kernel=self.args['kernel'],
-                              ramdisk=self.args['ramdisk'])
-        else:
-            cmd = BundleImage(image=self.args['image'], arch=self.args['arch'],
-                              cert=self.args['cert'],
-                              privatekey=self.args['privatekey'],
-                              user=self.args['user'],
-                              destination=self.args.get('directory'),
-                              ec2cert=self.args['ec2cert'], image_type='machine',
-                              config=self.config)
+        cmd = BundleImage(image=self.args['image'], arch=self.args['arch'],
+                          cert=self.args['cert'],
+                          privatekey=self.args['privatekey'],
+                          user=self.args['user'],
+                          destination=self.args.get('directory'),
+                          ec2cert=self.args['ec2cert'], image_type='machine',
+                          config=self.config,
+                          kernel=self.args['kernel'],
+                          ramdisk=self.args['ramdisk'])
         parts, manifest = cmd.main()
 
         cmd = UploadBundle(bucket=self.args['bucket'], manifest=manifest,
