@@ -31,10 +31,10 @@ class DetachVolume(EucalyptusRequest):
     DESCRIPTION = 'Detach a volume from an instance'
     ARGS = [Arg('VolumeId', metavar='VOLUME',
                 help='ID of the volume to detach (required)'),
-            Arg('-i', '--instance', dest='InstanceID', metavar='INSTANCE',
+            Arg('-i', '--instance', dest='InstanceId', metavar='INSTANCE',
                 help='instance to detach from'),
             Arg('-d', '--device', dest='Device', help='device name'),
-            Arg('-f', '--force', action='store_const', const='true',
+            Arg('-f', '--force', dest='Force', action='store_true',
                 help='''detach without waiting for the instance.  Data may be
                 lost.''')]
 
