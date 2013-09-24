@@ -277,7 +277,8 @@ class InstallImage(EuStoreRequest, FileTransferProgressBarMixin):
         if self.args['show_progress']:
             print 'Preparing to extract image...'
         image_name = 'eustore-{0}'.format(
-            os.path.splitext(os.path.basename(tarball_filename))[0])
+            os.path.splitext(os.path.basename(tarball_filename))[0]
+            .replace('.', '_'))
         tarball = tarfile.open(tarball_filename, 'r:gz')
         try:
             members = tarball.getmembers()
