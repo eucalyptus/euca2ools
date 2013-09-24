@@ -38,6 +38,7 @@ from euca2ools.commands.walrus import Walrus
 from euca2ools.util import mkdtemp_for_large_files
 import hashlib
 import os.path
+import random
 from requestbuilder import Arg, MutuallyExclusiveArgList
 from requestbuilder.auth import QuerySigV2Auth, S3RestAuth
 import requestbuilder.commands.http
@@ -276,7 +277,8 @@ class InstallImage(EuStoreRequest, FileTransferProgressBarMixin):
     def bundle_and_register_all(self, workdir, tarball_filename):
         if self.args['show_progress']:
             print 'Preparing to extract image...'
-        image_name = 'eustore-{0}'.format(
+        image_name = 'eustore-{0:0>8x}-{1}'.format(
+            random.randrange(16**8),
             os.path.splitext(os.path.basename(tarball_filename))[0]
             .replace('.', '_'))
         tarball = tarfile.open(tarball_filename, 'r:gz')
