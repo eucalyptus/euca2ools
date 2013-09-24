@@ -305,7 +305,8 @@ class InstallImage(EuStoreRequest, FileTransferProgressBarMixin):
                             kernel_image, 'kernel', workdir)
                         req = RegisterImage(
                             config=self.config, service=self.__eucalyptus,
-                            ImageLocation=manifest_loc, Name=image_name,
+                            ImageLocation=manifest_loc,
+                            Name=(image_name + '-kernel'),
                             Description=self.args.get('description'),
                             Architecture=self.args.get('architecture'))
                         response = req.main()
@@ -322,7 +323,8 @@ class InstallImage(EuStoreRequest, FileTransferProgressBarMixin):
                             ramdisk_image, 'ramdisk', workdir)
                         req = RegisterImage(
                             config=self.config, service=self.__eucalyptus,
-                            ImageLocation=manifest_loc, Name=image_name,
+                            ImageLocation=manifest_loc,
+                            Name=(image_name + '-ramdisk'),
                             Description=self.args.get('description'),
                             Architecture=self.args.get('architecture'))
                         response = req.main()
