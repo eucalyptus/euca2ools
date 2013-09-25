@@ -75,6 +75,8 @@ class InstallImage(EuStoreRequest, FileTransferProgressBarMixin):
                 help='''location to place the image and other artifacts
                 (default:  dir named by TMPDIR, TEMP, or TMP environment
                 variables, or otherwise /var/tmp)'''),
+            Arg('--pad-name', action='store_true', help='''add some random
+                characters to the image's name to ensure it is unique'''),
             Arg('--kernel', help='''ID of the kernel image to use instead of
                 the one bundled with the image'''),
             Arg('--ramdisk', help='''ID of the ramdisk image to use instead of
@@ -277,8 +279,12 @@ class InstallImage(EuStoreRequest, FileTransferProgressBarMixin):
     def bundle_and_register_all(self, workdir, tarball_filename):
         if self.args['show_progress']:
             print 'Preparing to extract image...'
-        image_name = 'eustore-{0:0>8x}-{1}'.format(
-            random.randrange(16**8),
+        if self.args.get('pad_name', False):
+            image_name_pad = '{0:0>8x}-'.format(random.randrange(16**8))
+        else:
+            image_name_pad = ''
+        image_name = 'eustore-{0}{1}'.format(
+            image_name_pad,
             os.path.splitext(os.path.basename(tarball_filename))[0]
             .replace('.', '_'))
         tarball = tarfile.open(tarball_filename, 'r:gz')
