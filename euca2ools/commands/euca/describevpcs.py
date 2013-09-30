@@ -34,42 +34,33 @@
 import euca2ools.commands.eucacommand
 from boto.roboto.param import Param
 
-class DescribeSecurityGroups(euca2ools.commands.eucacommand.EucaCommand):
+class DescribeVpcs(euca2ools.commands.eucacommand.EucaCommand):
 
     APIVersion = '2013-06-15'
-    Description = 'Describe security groups.'
-    Args = [Param(name='group_name', ptype='string',
-                  doc='group(s) to describe',
+    Description = 'Shows information about VPCs.'
+    Options = [Param(name='all', short_name='a', long_name='all',
+                     optional=True, ptype='boolean', default=False,
+                     doc='Show all vpcs.')]
+    Args = [Param(name='vpcid', ptype='string',
                   cardinality='+', optional=True)]
-
-    def display_groups(self, groups):
-        for group in groups:
-            print "\n"
-            print '%-16s%-16s%-24s%-24s' % ("GroupId", "VpcId", "Name", "Description")
-            print '%-16s%-16s%-24s%-24s' % ("-------", "-----", "----", "-----------")
-            if group.vpc_id:
-                print '%-16s%-16s%-24s%-24s' % (group.id, group.vpc_id, group.name, group.description)
-            else:
-                print '%-16s%-16s%-24s%-24s' % (group.id, "", group.name, group.description)
-             
-            print "\n"
-            print '%-16s%-16s%-8s%-8s%-8s%-24s' % ("", "Direction", "Proto", "Start", "End", "Remote")
-            print '%-16s%-16s%-8s%-8s%-8s%-24s' % ("", "---------", "-----", "-----", "---", "------")
-            for rule in group.rules:
-                if rule.ip_protocol == '-1':
-                    rule.ip_protocol = 'any'
-                print '%-16s%-16s%-8s%-8s%-8s%-24s' % ("", "Ingress", rule.ip_protocol, rule.from_port, rule.to_port, rule.grants)
-            for rule in group.rules_egress:
-                if rule.ip_protocol == '-1':
-                    rule.ip_protocol = 'any'
-                print '%-16s%-16s%-8s%-8s%-8s%-24s' % ("", "Egress", rule.ip_protocol, rule.from_port, rule.to_port, rule.grants)
-        print "\n"
+    
+    Filters = [Param(name='cidrBlock', ptype='string',
+                     doc = "The CIDR block of the VPC."),
+               Param(name='state', ptype='string',
+                     doc = "The state of the VPC.Valid values: pending | available"), 
+               Param(name='dhcpOptionsId', ptype='string',
+                     doc="The ID of a set of DHCP options.")]
+    def display_vpcs(self, vpcs):
+        print "%-16s%-16s%-16s" % ('VpcId', 'CidrBlock', 'DhcpOptions')
+        print "%-16s%-16s%-16s" % ('-----', '---------', '-----------')
+        for vpc in vpcs:
+            print "%-16s%-16s%-16s" % (vpc.id, vpc.cidr_block, vpc.dhcp_options_id)
 
     def main(self):
         conn = self.make_connection_cli('vpc')
-        return self.make_request_cli(conn, 'get_all_security_groups',
-                                     groupnames=self.group_name)
+        vpcs = self.make_request_cli(conn, 'get_all_vpcs', vpc_ids=self.vpcid, filters=self.filters)
+        return vpcs
 
     def main_cli(self):
-        groups = self.main()
-        self.display_groups(groups)
+        vpcs = self.main()
+        self.display_vpcs(vpcs)

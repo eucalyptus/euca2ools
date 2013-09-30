@@ -34,22 +34,22 @@
 import euca2ools.commands.eucacommand
 from boto.roboto.param import Param
 
-class DeleteSecurityGroup(euca2ools.commands.eucacommand.EucaCommand):
+class DeleteVpc(euca2ools.commands.eucacommand.EucaCommand):
 
     APIVersion = '2013-06-15'
-    Description = """Delete Security Group"""
-    Args = [Param(name='group_id', ptype='string',
+    Description = """Delete VPC"""
+    Args = [Param(name='vpc_id', ptype='string',
                   optional=False,
-                  doc='Group-id to be deleted.')]
+                  doc='Vpc-id to be deleted.')]
 
     def main(self):
         conn = self.make_connection_cli('vpc')
-        return self.make_request_cli(conn, 'delete_security_group',
-                                     group_id = self.group_id)
+        return self.make_request_cli(conn, 'delete_vpc',
+                                     vpc_id = self.vpc_id)
 
     def main_cli(self):
         status = self.main()
         if status:
-            print 'Group %s deleted' % self.group_id
+            print 'VPC %s deleted' % self.vpc_id
         else:
             self.error_exit()

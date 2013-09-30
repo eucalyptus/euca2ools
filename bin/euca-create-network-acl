@@ -1,3 +1,6 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
 # Software License Agreement (BSD License)
 #
 # Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
@@ -31,25 +34,9 @@
 # Author: Neil Soman neil@eucalyptus.com
 #         Mitch Garnaat mgarnaat@eucalyptus.com
 
-import euca2ools.commands.eucacommand
-from boto.roboto.param import Param
+import euca2ools.commands.euca.createnetworkacl
 
-class DeleteSecurityGroup(euca2ools.commands.eucacommand.EucaCommand):
+if __name__ == '__main__':
+    cmd = euca2ools.commands.euca.createnetworkacl.CreateNetworkAcl()
+    cmd.main_cli()
 
-    APIVersion = '2013-06-15'
-    Description = """Delete Security Group"""
-    Args = [Param(name='group_id', ptype='string',
-                  optional=False,
-                  doc='Group-id to be deleted.')]
-
-    def main(self):
-        conn = self.make_connection_cli('vpc')
-        return self.make_request_cli(conn, 'delete_security_group',
-                                     group_id = self.group_id)
-
-    def main_cli(self):
-        status = self.main()
-        if status:
-            print 'Group %s deleted' % self.group_id
-        else:
-            self.error_exit()

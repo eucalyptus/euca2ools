@@ -34,22 +34,25 @@
 import euca2ools.commands.eucacommand
 from boto.roboto.param import Param
 
-class DeleteSecurityGroup(euca2ools.commands.eucacommand.EucaCommand):
+class CreateSubnet(euca2ools.commands.eucacommand.EucaCommand):
 
     APIVersion = '2013-06-15'
-    Description = """Delete Security Group"""
-    Args = [Param(name='group_id', ptype='string',
-                  optional=False,
-                  doc='Group-id to be deleted.')]
-
+    Description = """Create subnet in a VPC with a CIDR block"""
+    Options = [Param(name='cidr_block', short_name='c',
+                     optional=False, ptype='string', default=False,
+                     doc='Cidr block.')]
+    Args = [Param(name='vpc_id', ptype='string',
+                  optional=False)]
+ 
     def main(self):
         conn = self.make_connection_cli('vpc')
-        return self.make_request_cli(conn, 'delete_security_group',
-                                     group_id = self.group_id)
+        return self.make_request_cli(conn, 'create_subnet',
+                                     vpc_id=self.vpc_id,
+                                     cidr_block=self.cidr_block)
 
     def main_cli(self):
-        status = self.main()
-        if status:
-            print 'Group %s deleted' % self.group_id
+        subnet_id = self.main()
+        if subnet_id:
+            print 'Subnet\t%s created' % subnet_id
         else:
             self.error_exit()

@@ -34,22 +34,30 @@
 import euca2ools.commands.eucacommand
 from boto.roboto.param import Param
 
-class DeleteSecurityGroup(euca2ools.commands.eucacommand.EucaCommand):
+class DeleteNetworkAclEntry(euca2ools.commands.eucacommand.EucaCommand):
 
     APIVersion = '2013-06-15'
-    Description = """Delete Security Group"""
-    Args = [Param(name='group_id', ptype='string',
-                  optional=False,
-                  doc='Group-id to be deleted.')]
+    Description = """Deletes an entry (a rule) in a network ACL
+                      with the specified rule number"""
+
+    Options = [Param(name='rule_no', short_name='r', ptype='string',
+                     optional=False, long_name='rule-num',
+                     doc='Rule number to identify order of rules'),
+               Param(name='direction', short_name='d', ptype='string',
+                     optional=True, long_name = 'direction',
+                     doc='Direction: ingress|egress')]
+
+    Args = [Param(name='acl_id',  ptype='string', optional=False,
+                  cardinality=1, doc='ID of the acl to delete a rule')]
 
     def main(self):
         conn = self.make_connection_cli('vpc')
-        return self.make_request_cli(conn, 'delete_security_group',
-                                     group_id = self.group_id)
+        return self.make_request_cli(conn, 'delete_network_acl_entry', acl_id=self.acl_id,
+                                            rule_no=self.rule_no, direction=self.direction)
 
     def main_cli(self):
         status = self.main()
         if status:
-            print 'Group %s deleted' % self.group_id
+            print status
         else:
             self.error_exit()
