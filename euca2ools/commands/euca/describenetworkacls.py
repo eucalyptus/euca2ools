@@ -24,24 +24,42 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 from euca2ools.commands.euca import EucalyptusRequest
-from requestbuilder import Arg
+from requestbuilder import Arg, Filter, GenericTagFilter
+from requestbuilder.exceptions import ArgumentError
 
 
-class CreateNetworkAcl(EucalyptusRequest):
-    DESCRIPTION = 'Create ACL for VPC'
-    ARGS = [Arg('VpcId', metavar='VPC',
-                help='vpc id to create acl (required)')]
-    LIST_TAGS = ['entrySet']
+class DescribeNetworkAcls(EucalyptusRequest):
+    DESCRIPTION = 'Describe a network ACL'
+    ARGS = [Arg('AclId', metavar='ACL', nargs='*',
+                help='Id of acl to display'),
+            Arg('-a', '--all', action='store_true', route_to=None,
+                help='describe all acls')]
+    LIST_TAGS = ['networkAclSet', 'entrySet', 'associationSet']
+
+    def configure(self):
+        EucalyptusRequest.configure(self)
+        if self.args.get('all', False):
+            if self.args.get('AclId'):
+                raise ArgumentError('argument -a/--all: not allowed with '
+                                    'a list of acls')
 
     def print_result(self, result):
-        acl = result.get('networkAcl')
+        acls = {}
+        for acl in result.get('networkAclSet', []):
+            acls.setdefault(acl['networkAclId'], acl)
+
+        for acl_id, acl in sorted(acls.iteritems()):
+            self.print_acls(acl)
+
+    def print_acls(self, acl):
         print self.tabify((
-            'ACLID', acl.get('networkAclId'),
+            'ACL', acl.get('networkAclId'),
             acl.get('vpcId'),
             acl.get('default')))
-
         for entry in acl.get('entrySet', []):
             self.print_entry(entry, acl.get('networkAclId'))
+        for assoc in acl.get('associationSet', []):
+            self.print_association(assoc, acl.get('networkAclId'))
 
     def print_entry(self, entry, acl_id):
         print self.tabify((
@@ -52,3 +70,10 @@ class CreateNetworkAcl(EucalyptusRequest):
             entry.get('cidrBlock'),
             entry.get('portRange'),
             entry.get('egress')))
+
+    def print_association(self, assoc, acl_id):
+        print self.tabify((
+            'ASSOC', acl_id,
+            assoc.get('networkAclAssociationId'),
+            assoc.get('networkAclId'),
+            assoc.get('subnetId')))

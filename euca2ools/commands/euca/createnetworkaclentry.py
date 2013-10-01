@@ -1,81 +1,53 @@
-# Software License Agreement (BSD License)
+# Copyright 2009-2013 Eucalyptus Systems, Inc.
 #
-# Copyright (c) 2009-2011, Eucalyptus Systems, Inc.
-# All rights reserved.
+# Redistribution and use of this software in source and binary forms,
+# with or without modification, are permitted provided that the following
+# conditions are met:
 #
-# Redistribution and use of this software in source and binary forms, with or
-# without modification, are permitted provided that the following conditions
-# are met:
+#   Redistributions of source code must retain the above copyright notice,
+#   this list of conditions and the following disclaimer.
 #
-#   Redistributions of source code must retain the above
-#   copyright notice, this list of conditions and the
-#   following disclaimer.
+#   Redistributions in binary form must reproduce the above copyright
+#   notice, this list of conditions and the following disclaimer in the
+#   documentation and/or other materials provided with the distribution.
 #
-#   Redistributions in binary form must reproduce the above
-#   copyright notice, this list of conditions and the
-#   following disclaimer in the documentation and/or other
-#   materials provided with the distribution.
-#
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-# ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
-# LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-# POSSIBILITY OF SUCH DAMAGE.
-#
-# Author: Neil Soman neil@eucalyptus.com
-#         Mitch Garnaat mgarnaat@eucalyptus.com
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+# "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+# A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+# OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+# SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+# LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+# DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+# THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import euca2ools.commands.eucacommand
-from boto.roboto.param import Param
+from euca2ools.commands.euca import EucalyptusRequest
+from requestbuilder import Arg
 
-class CreateNetworkAclEntry(euca2ools.commands.eucacommand.EucaCommand):
 
-    APIVersion = '2013-07-15'
-    Description = """Creates an entry (a rule) in a network ACL
-                      with the specified rule number"""
+class CreateNetworkAclEntry(EucalyptusRequest):
+    DESCRIPTION = 'Creates a network acl rule'
+    ARGS = [Arg('NetworkAclId', metavar='ACLID',
+                help='acl id to create rule in (required)'),
+            Arg('-r', '--rule-number', dest='RuleNumber', required=True,
+                help='rule number for the acl entry'),
+            Arg('-p', '--protocol', dest='Protocol',
+                choices=['tcp', 'udp', 'icmp', '-1'], default='-1',
+                help='ip protocol number for the rule'),
+            Arg('-a', '--rule-action', dest='RuleAction',
+                choices=['allow', 'deny'], default='deny',
+                help='allow or deny action'),
+            Arg('-c', '--cidr-block', dest='CidrBlock', default='0.0.0.0/0',
+                help='cidr range e.g. 1.1.1.0/24'),
+            Arg('-e', '--egress',
+                choices=['true', 'false'], default='false',
+                help='egress rule'),
+            Arg('-f', '--from-port', dest='PortRange.From', default='0',
+                help='start of port range for tcp, udp'),
+            Arg('-t', '--to-port', dest='PortRange.To', default='65535',
+                help='end of port range for tcp, udp')]
 
-    Options = [Param(name='rule_no', short_name='r', ptype='string',
-                     optional=False, long_name='rule-num',
-                     doc='Rule number to identify order of rules'),
-               Param(name='protocol', short_name='p', ptype='string',
-                     optional=False, long_name='protocol',
-                     doc='IP protocol number for the rule'),
-               Param(name='action', short_name='a', ptype='string',
-                     optional=False, long_name='action',
-                     doc='allow or deny the specified traffic.'),
-               Param(name='network', short_name='n', ptype='string',
-                     optional=False, long_name='network',
-                     doc='CIDR range for the rule. e.g. 1.1.1.0/24'),
-               Param(name='direction', short_name='d', ptype='string',
-                     optional=True, long_name = 'direction',
-                     doc='Direction: ingress|egress'),
-               Param(name='fromport', short_name='f', ptype='string',
-                     optional=True, long_name='from-port',
-                     doc='start of port range for tcp, udp'),
-               Param(name='toport', short_name='t', ptype='string',
-                     optional=True, long_name='to-port',
-                     doc='end of port range for tcp, udp')]
-
-    Args = [Param(name='acl_id',  ptype='string', optional=False,
-                  cardinality=1, doc='ID of the acl to create new rule')]
-
-    def main(self):
-        conn = self.make_connection_cli('vpc')
-        return self.make_request_cli(conn, 'create_network_acl_entry', acl_id=self.acl_id,
-                                            rule_no=self.rule_no, protocol=self.protocol,
-                                            action=self.action, network=self.network,
-                                            direction=self.direction, fromport=self.fromport,
-                                            toport=self.toport)
-
-    def main_cli(self):
-        status = self.main()
-        if status:
-            print status
-        else:
-            self.error_exit()
+    def print_result(self, result):
+        print self.tabify(('ACLID', self.args['NetworkAclId'], result['return']))
