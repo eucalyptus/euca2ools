@@ -349,6 +349,12 @@ class InstallImage(EuStoreRequest, FileTransferProgressBarMixin):
             for member in members:
                 if member.name in bundled_images:
                     continue
+                if any(s in member.name for s in ('initrd', 'initramfs',
+                                                  'loader')):
+                    # Make sure we don't accidentally register a ramdisk image.
+                    # This can happen when use of --ramdisk prevents us from
+                    # pruning it later.
+                    continue
                 if machine_id is None and member.name.endswith('.img'):
                     bundled_images.append(member.name)
                     machine_image = self.extract_without_path(
