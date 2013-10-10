@@ -188,14 +188,17 @@ class Bundle(object):
     def _write_parts(self, infile, part_prefix, part_size):
         with self._lock:
             self.parts = []
-        for part_no in itertools.count():
-            part_fname = '{0}.part.{1}'.format(part_prefix, part_no)
-            part_info = _write_single_part(infile, part_fname, part_size)
-            with self._lock:
-                self.parts.append(part_info)
-            if part_info['size'] < part_size:
-                # That's the last part
-                return
+        try:
+            for part_no in itertools.count():
+                part_fname = '{0}.part.{1}'.format(part_prefix, part_no)
+                part_info = _write_single_part(infile, part_fname, part_size)
+                with self._lock:
+                    self.parts.append(part_info)
+                if part_info['size'] < part_size:
+                    # That's the last part
+                    return
+        finally:
+            infile.close()
 
     def extract_image(self, destdir, progressbar=None):
         assert self.digest_algorithm == 'SHA1'

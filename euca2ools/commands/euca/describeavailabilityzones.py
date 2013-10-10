@@ -32,7 +32,7 @@ class DescribeAvailabilityZones(EucalyptusRequest):
     ARGS = [Arg('ZoneName', metavar='ZONE', nargs='*',
                 help='limit results to specific availability zones')]
     FILTERS = [Filter('message', help='''message giving information about the
-                      'availability zone'''),
+                      availability zone'''),
                Filter('region-name',
                       help='region the availability zone is in'),
                Filter('state', help='state of the availability zone'),

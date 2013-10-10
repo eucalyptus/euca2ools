@@ -36,7 +36,9 @@ import time
 
 
 NO_EXCLUDE_ENVAR = 'EUCA_BUNDLE_VOL_EMPTY_EXCLUDES'
-BLKID_TAGS = ('LABEL', 'TYPE', 'UUID')
+BLKID_TAGS = {'LABEL': 'label',
+              'TYPE': 'fstype',
+              'UUID': 'uuid'}
 ALLOWED_FS_TYPES = ('ext2', 'ext3', 'ext4', 'xfs', 'jfs', 'reiserfs')
 EXCLUDED_DIRS = ('/dev', '/media', '/mnt', '/proc',
                  '/sys', '/cdrom', '/tmp')
@@ -389,7 +391,7 @@ class ImageCreator(object):
                                             '-ovalue', devnode],
                                            stdout=subprocess.PIPE
                                            ).communicate()[0]
-                    self.filesystem[tag.lower()] = out.rstrip()
+                    self.filesystem[BLKID_TAGS[tag]] = out.rstrip()
                 except subprocess.CalledProcessError:
                     pass
         finally:

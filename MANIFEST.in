@@ -3,3 +3,4 @@ include INSTALL
 include README
 recursive-include certs *
 recursive-include conf *
+recursive-include man *

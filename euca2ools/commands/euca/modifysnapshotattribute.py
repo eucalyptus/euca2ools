@@ -33,7 +33,7 @@ class ModifySnapshotAttribute(EucalyptusRequest):
     ARGS = [Arg('SnapshotId', metavar='SNAPSHOT',
                 help='ID of the snapshot to modify'),
             Arg('-c', '--create-volume-permission', action='store_true',
-                required=True,
+                required=True, route_to=None,
                 help='grant/revoke volume creation permission with -a/-r'),
             Arg('-a', '--add', metavar='ENTITY', action='append', default=[],
                 route_to=None,

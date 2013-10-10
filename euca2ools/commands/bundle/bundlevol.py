@@ -175,7 +175,8 @@ class BundleVol(BundleCreator):
         finally:
             if os.path.exists(image_file):
                 os.remove(image_file)
-                os.rmdir(os.path.dirname(image_file))
+                if len(os.listdir(os.path.dirname(image_file))) == 0:
+                    os.rmdir(os.path.dirname(image_file))
 
     def print_result(self, result):
         for part_filename in result[0]:
