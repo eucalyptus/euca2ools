@@ -29,7 +29,7 @@ from requestbuilder import Arg, Filter
 
 class DescribeAddresses(EucalyptusRequest):
     DESCRIPTION = 'Show information about elastic IP addresses'
-    ARGS = [Arg('address', nargs='*', route_to=None,
+    ARGS = [Arg('address', metavar='ADDRESS', nargs='*', route_to=None,
                 help='''limit results to specific elastic IP addresses or
                 VPC allocation IDs''')]
     FILTERS = [Filter('allocation-id', help='[VPC only] allocation ID'),
