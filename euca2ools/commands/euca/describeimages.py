@@ -130,9 +130,14 @@ class DescribeImages(EucalyptusRequest):
             self.print_image(image)
 
     def print_image(self, image):
+        if image.get('name'):
+            imagename = '/'.join((image.get('imageOwnerId', ''), image['name']))
+        else:
+            imagename = image.get('imageLocation')
+
         print self.tabify((
-            'IMAGE', image.get('imageId'),
-            image.get('imageOwnerAlias') or image.get('imageOwnerId') + '/' +image.get('name'),
+            'IMAGE', image.get('imageId'), imagename,
+            image.get('imageOwnerAlias') or image.get('imageOwnerId'),
             image.get('imageState'),
             ('public' if image.get('isPublic') == 'true' else 'private'),
             image.get('architecture'), image.get('imageType'),
