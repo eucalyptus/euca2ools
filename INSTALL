@@ -58,7 +58,7 @@ copying them onto your system like so:
     # mkdir /usr/share/euca2ools
     # cp -R certs /usr/share/euca2ools/certs
     
-Ubuntu 12.04
-------------
+Ubuntu 12.04 Dependencies
+-------------------------
 
     $ sudo apt-get install python python-support python-dev python-libxml2 gcc libxml2 libxml2-dev libxslt1.1 libxslt1-dev python-libxslt1
