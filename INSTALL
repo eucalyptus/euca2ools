@@ -3,7 +3,7 @@ Euca2ools 3 Installation
 
 This file describes the steps needed to install euca2ools from source.
 Your operating system vendor may already offer euca2ools in packaged
-form that use can install using yum, apt-get, or a similar tool.
+form that you can install using yum, apt-get, or a similar tool.
 
 
 Requirements
