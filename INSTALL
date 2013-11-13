@@ -32,7 +32,8 @@ The bundle-related tools require several other executables as well:
 
 Finally, euca-get-password requires openssl.
 
-Check distribution-specific sections below for suggestion on how to install required dependencies on your distribution.
+For specific package names for these dependencies, check the
+distribution-specific sections below.
 
 Installation
 ------------
@@ -57,8 +58,29 @@ copying them onto your system like so:
     # cp conf/euca2ools.ini /etc/euca2ools/euca2ools.ini
     # mkdir /usr/share/euca2ools
     # cp -R certs /usr/share/euca2ools/certs
-    
-Ubuntu 12.04 Dependencies
--------------------------
 
-    $ sudo apt-get install python python-support python-dev python-libxml2 gcc libxml2 libxml2-dev libxslt1.1 libxslt1-dev python-libxslt1
+For distribution-specific instructions, check the distribution-specific
+sections below.
+
+
+Distribution-specific Instructions
+==================================
+
+This section contains distribution-specific instructions and package
+lists to assist with installation of euca2ools and its dependencies.
+
+
+Ubuntu 12.04
+------------
+
+Dependency packages:
+ - gcc
+ - libxml2
+ - libxml2-dev
+ - libxslt1-dev
+ - libxslt1.1
+ - python
+ - python-dev
+ - python-libxml2
+ - python-libxslt1
+ - python-support
