@@ -54,7 +54,7 @@ class GetConsoleOutput(EucalyptusRequest):
     def print_result(self, result):
         print result.get('instanceId', '')
         print result.get('timestamp', '')
-        output = base64.b64decode(result.get('output', ''))
+        output = base64.b64decode(result.get('output') or '')
         output = output.decode(sys.stdout.encoding, 'replace')
         output = output.replace(u'\ufffd', u'?')
         if not self.args['raw_console_output']:

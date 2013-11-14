@@ -59,7 +59,10 @@ class RegisterImage(EucalyptusRequest):
                 "[SNAP-ID]:[SIZE]:[true|false]:[standard|VOLTYPE[:IOPS]]"'''),
             Arg('--virtualization-type', dest='VirtualizationType',
                 choices=('paravirtual', 'hvm'),
-                help='[Privileged] virtualization type for the new image')]
+                help='[Privileged] virtualization type for the new image'),
+            Arg('--platform', dest='Platform', metavar='windows',
+                choices=('windows',),
+                help="[Privileged] the new image's platform (windows)")]
 
     # noinspection PyExceptionInherit
     def preprocess(self):
@@ -73,8 +76,8 @@ class RegisterImage(EucalyptusRequest):
                     'argument MANIFEST')
         else:
             # Try for an EBS image
-            if not self.args.get('RootDeviceName'):
-                self.args['RootDeviceName'] = '/dev/sda1'
+            if not self.params.get('RootDeviceName'):
+                self.params['RootDeviceName'] = '/dev/sda1'
             snapshot = self.args.get('snapshot')
             # Look for a mapping for the root device
             for mapping in self.args['BlockDeviceMapping']:
