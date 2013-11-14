@@ -113,10 +113,16 @@ class DescribeLoadBalancers(ELBRequest, TabifyingMixin):
                 for poltype in ('AppCookieStickinessPolicies',
                                 'LBCookieStickinessPolicies'):
                     policies = desc.get('Policies', {}).get(poltype)
-                    if policies:
+                    if policies and poltype == 'AppCookieStickinessPolicies':
                         policy_strs = ('{{policy-name={0},cookie-name={1}}}'
                                        .format(policy['PolicyName'],
                                                policy['CookieName'])
+                                       for policy in policies)
+                        bits.append(','.join(policy_strs))
+                    elif policies and poltype == 'LBCookieStickinessPolicies':
+                        policy_strs = ('{{policy-name={0},expiration-period={1}}}'
+                                       .format(policy['PolicyName'],
+                                               policy['CookieExpirationPeriod'])
                                        for policy in policies)
                         bits.append(','.join(policy_strs))
                     else:
