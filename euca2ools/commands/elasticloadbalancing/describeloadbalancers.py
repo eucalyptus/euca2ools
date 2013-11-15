@@ -110,27 +110,27 @@ class DescribeLoadBalancers(ELBRequest, TabifyingMixin):
                 else:
                     bits.append(None)
 
-                for poltype in ('AppCookieStickinessPolicies',
-                                'LBCookieStickinessPolicies'):
-                    policies = desc.get('Policies', {}).get(poltype)
-                    if policies and poltype == 'AppCookieStickinessPolicies':
-                        policy_strs = ('{{policy-name={0},cookie-name={1}}}'
-                                       .format(policy['PolicyName'],
-                                               policy['CookieName'])
-                                       for policy in policies)
-                        bits.append(','.join(policy_strs))
-                    elif policies and poltype == 'LBCookieStickinessPolicies':
-                        policy_strs = ('{{policy-name={0},expiration-period={1}}}'
-                                       .format(policy['PolicyName'],
-                                               policy['CookieExpirationPeriod'])
-                                       for policy in policies)
-                        bits.append(','.join(policy_strs))
-                    else:
-                        bits.append(None)
+                all_policies = desc.get('Policies') or {}
 
-                otherpolicies = desc.get('Policies', {}).get('OtherPolicies')
-                if otherpolicies:
-                    bits.append('{' + ','.join(otherpolicies) + '}')
+                app_policies = all_policies.get(
+                    'AppCookieStickinessPolicies') or {}
+                app_policy_strs = ('{{policy-name={0},cookie-name={1}}}'
+                                   .format(policy.get('PolicyName'),
+                                           policy.get('CookieName'))
+                                   for policy in app_policies)
+                bits.append(','.join(app_policy_strs) or None)
+
+                lb_policies = all_policies.get(
+                    'LBCookieStickinessPolicies') or {}
+                lb_policy_strs = ('{{policy-name={0},expiration-period={1}}}'
+                                  .format(policy['PolicyName'],
+                                          policy['CookieExpirationPeriod'])
+                                  for policy in lb_policies)
+                bits.append(','.join(lb_policy_strs) or None)
+
+                other_policies = all_policies.get('OtherPolicies') or {}
+                if other_policies:
+                    bits.append('{' + ','.join(other_policies) + '}')
                 else:
                     bits.append(None)
 
