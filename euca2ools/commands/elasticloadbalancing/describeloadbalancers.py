@@ -114,18 +114,18 @@ class DescribeLoadBalancers(ELBRequest, TabifyingMixin):
 
                 app_policies = all_policies.get(
                     'AppCookieStickinessPolicies') or {}
-                app_policy_strs = ('{{policy-name={0},cookie-name={1}}}'
+                app_policy_strs = ['{{policy-name={0},cookie-name={1}}}'
                                    .format(policy.get('PolicyName'),
                                            policy.get('CookieName'))
-                                   for policy in app_policies)
+                                   for policy in app_policies]
                 bits.append(','.join(app_policy_strs) or None)
 
                 lb_policies = all_policies.get(
                     'LBCookieStickinessPolicies') or {}
-                lb_policy_strs = ('{{policy-name={0},expiration-period={1}}}'
-                                  .format(policy['PolicyName'],
-                                          policy['CookieExpirationPeriod'])
-                                  for policy in lb_policies)
+                lb_policy_strs = ['{{policy-name={0},expiration-period={1}}}'
+                                  .format(policy.get('PolicyName'),
+                                          policy.get('CookieExpirationPeriod'))
+                                  for policy in lb_policies]
                 bits.append(','.join(lb_policy_strs) or None)
 
                 other_policies = all_policies.get('OtherPolicies') or {}
