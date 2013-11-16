@@ -43,6 +43,12 @@ class GetUserPolicy(EuareRequest):
     def print_result(self, result):
         policy_content = urllib.unquote(result['PolicyDocument'])
         if self.args['pretty_print']:
-            policy_json = json.loads(policy_content)
+            try:
+                policy_json = json.loads(policy_content)
+            except ValueError:
+                self.log.debug('JSON parse error', exc_info=True)
+                raise ValueError(
+                    "policy '{0}' does not appear to be valid JSON"
+                    .format(self.args['PolicyName']))
             policy_content = json.dumps(policy_json, indent=4)
         print policy_content
