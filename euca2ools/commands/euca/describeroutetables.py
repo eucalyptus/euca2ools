@@ -53,16 +53,24 @@ class DescribeRouteTables(EucalyptusRequest):
             self.print_association(assoc, table.get('routeTableId'))
 
     def print_entry(self, entry, rt_id):
+        next_hop = 'local'
+        if entry.get('gatewayId'):
+            next_hop = entry.get('gatewayId')
+        elif entry.get('instanceId'):
+            next_hop = entry.get('instanceId')
+
         print self.tabify((
-            'ROUTEENTRY', rt_id,
+            'ROUTE',
+            next_hop,
+            entry.get('state'),
             entry.get('destinationCidrBlock'),
-            entry.get('gatewayId'),
-            entry.get('instanceId'),
-            entry.get('state')))
+            entry.get('origin')))
 
     def print_association(self, entry, rt_id):
+        main = ''
+        if entry.get('main'):
+            main = 'main'
         print self.tabify((
-            'ASSOCIATION', rt_id,
+            'ASSOCIATION',
             entry.get('routeTableAssociationId'),
-            entry.get('subnetId'),
-            entry.get('main')))
+            main))

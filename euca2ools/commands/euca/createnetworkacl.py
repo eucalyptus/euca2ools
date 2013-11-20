@@ -36,19 +36,21 @@ class CreateNetworkAcl(EucalyptusRequest):
     def print_result(self, result):
         acl = result.get('networkAcl')
         print self.tabify((
-            'ACLID', acl.get('networkAclId'),
-            acl.get('vpcId'),
-            acl.get('default')))
+            'NETWORKACL', acl.get('networkAclId'),
+            acl.get('vpcId')))
 
         for entry in acl.get('entrySet', []):
             self.print_entry(entry, acl.get('networkAclId'))
 
     def print_entry(self, entry, acl_id):
+        direction = 'ingress'
+        if entry.get('egress'):
+            direction = 'egress'
+
         print self.tabify((
-            'RULE', acl_id,
+            'ENTRY', direction,
             entry.get('ruleNumber'),
-            entry.get('protocol'),
             entry.get('ruleAction'),
             entry.get('cidrBlock'),
-            entry.get('portRange'),
-            entry.get('egress')))
+            entry.get('protocol'),
+            entry.get('portRange')))

@@ -29,10 +29,15 @@ from requestbuilder import Arg
 
 class CreateSubnet(EucalyptusRequest):
     DESCRIPTION = 'Create subnet in a VPC with a CIDR block'
-    ARGS = [Arg('VpcId', metavar='VPC',
+    ARGS = [Arg('-c', '--vpc', dest='VpcId', required=True,
                 help='vpc id to create subnet'),
-            Arg('-c', '--cidr', dest='CidrBlock', required=True,
+            Arg('-i', '--cidr', dest='CidrBlock', required=True,
                 help='cidr block for the subnet')]
 
     def print_result(self, result):
-        print self.tabify(('SUBNET', result['subnet']['subnetId']))
+        print self.tabify(('SUBNET',
+                          result['subnet']['subnetId'],
+                          result['subnet']['state'],
+                          result['subnet']['vpcId'],
+                          result['subnet']['availableIpAddressCount'],
+                          result['subnet']['availabilityZone']))

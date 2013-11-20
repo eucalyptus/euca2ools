@@ -33,4 +33,4 @@ class DeleteRouteTable(EucalyptusRequest):
                 help='route table id to delete (required)')]
 
     def print_result(self, result):
-        print self.tabify(('ROUTETABLE', self.args['RouteTableId'], result['return']))
+        print self.tabify(('RETURN', result['return']))

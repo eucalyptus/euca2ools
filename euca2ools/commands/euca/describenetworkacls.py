@@ -30,7 +30,7 @@ from requestbuilder.exceptions import ArgumentError
 
 class DescribeNetworkAcls(EucalyptusRequest):
     DESCRIPTION = 'Describe a network ACL'
-    ARGS = [Arg('AclId', metavar='ACL', nargs='*',
+    ARGS = [Arg('NetworkAclId', metavar='ACL', nargs='*',
                 help='Id of acl to display'),
             Arg('-a', '--all', action='store_true', route_to=None,
                 help='describe all acls')]
@@ -53,7 +53,7 @@ class DescribeNetworkAcls(EucalyptusRequest):
 
     def print_acls(self, acl):
         print self.tabify((
-            'ACL', acl.get('networkAclId'),
+            'NETWORKACL', acl.get('networkAclId'),
             acl.get('vpcId'),
             acl.get('default')))
         for entry in acl.get('entrySet', []):
@@ -62,18 +62,20 @@ class DescribeNetworkAcls(EucalyptusRequest):
             self.print_association(assoc, acl.get('networkAclId'))
 
     def print_entry(self, entry, acl_id):
+        direction = 'ingress'
+        if entry.get('egress'):
+            direction = 'egress'
+
         print self.tabify((
-            'RULE', acl_id,
+            'ENTRY', direction,
             entry.get('ruleNumber'),
-            entry.get('protocol'),
             entry.get('ruleAction'),
             entry.get('cidrBlock'),
-            entry.get('portRange'),
-            entry.get('egress')))
+            entry.get('protocol'),
+            entry.get('portRange')))
 
     def print_association(self, assoc, acl_id):
         print self.tabify((
-            'ASSOC', acl_id,
+            'ASSOCIATION',
             assoc.get('networkAclAssociationId'),
-            assoc.get('networkAclId'),
             assoc.get('subnetId')))

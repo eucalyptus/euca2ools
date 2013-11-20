@@ -33,4 +33,8 @@ class CreateVpc(EucalyptusRequest):
                 help='cidr block for VPC (required)')]
 
     def print_result(self, result):
-        print self.tabify(('VPCID', result['vpc']['vpcId']))
+        print self.tabify(('VPCID', result['vpc']['vpcId'],
+                          result['vpc']['state'], 
+                          result['vpc']['cidrBlock'],
+                          result['vpc']['dhcpOptionsId'],
+                          result['vpc']['instanceTenancy']))

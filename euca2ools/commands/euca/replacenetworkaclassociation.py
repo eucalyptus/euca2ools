@@ -29,10 +29,10 @@ from requestbuilder import Arg
 
 class ReplaceNetworkAclAssociation(EucalyptusRequest):
     DESCRIPTION = 'Change network ACL subnet association'
-    ARGS = [Arg('NetworkAclId', metavar='ACLID',
+    ARGS = [Arg('-a', dest='NetworkAclId', metavar='ACLID',
                 help='new acl id to be associated (required)'),
-            Arg('-a', '--assoc', dest='AssociationId', required=True,
+            Arg('AssociationId', required=True,
                 help='association id to be replaced')]
 
     def print_result(self, result):
-        print self.tabify(('ASSOCIATIONID', result.get('newAssociationId')))
+        print self.tabify(('ASSOCIATION', result.get('newAssociationId')))

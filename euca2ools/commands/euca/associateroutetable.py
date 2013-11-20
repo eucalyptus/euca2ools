@@ -31,11 +31,12 @@ class AssociateRouteTable(EucalyptusRequest):
     DESCRIPTION = 'Associate subnet with a route table'
     ARGS = [Arg('RouteTableId', metavar='ROUTETABLE',
                 help='route table id to associate (required)'),
-            Arg('SubnetId', metavar='SUBNET',
+            Arg('-s', dest='SubnetId', metavar='SUBNET',
                 help='subnet id to associate with (required)')]
 
     def print_result(self, result):
         print self.tabify((
-            'ROUTETABLE', self.args['RouteTableId'],
-            self.args['SubnetId'],
-            result.get('associationId')))
+            'ASSOCIATION', 
+            result.get('associationId'),
+            self.args['RouteTableId'],
+            self.args['SubnetId']))

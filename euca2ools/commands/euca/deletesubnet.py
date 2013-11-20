@@ -33,4 +33,4 @@ class DeleteSubnet(EucalyptusRequest):
                 help='subnet id to delete (required)')]
 
     def print_result(self, result):
-        print self.tabify(('SUBNET', self.args['SubnetId'], result['return']))
+        print self.tabify(('SUBNET', self.args['SubnetId']))

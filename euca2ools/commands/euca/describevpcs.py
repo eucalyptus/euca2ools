@@ -60,5 +60,8 @@ class DescribeVpcs(EucalyptusRequest):
     def print_vpcs(self, vpc):
         print self.tabify((
             'VPC', vpc.get('vpcId'),
+            vpc.get('state'),
             vpc.get('cidrBlock'),
-            vpc.get('dhcpOptionsId')))
+            vpc.get('dhcpOptionsId'),
+            vpc.get('instanceTenancy'),
+            vpc.get('isDefault')))

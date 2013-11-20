@@ -54,5 +54,10 @@ class DescribeSubnets(EucalyptusRequest):
     def print_subnets(self, subnet):
         print self.tabify((
             'SUBNET', subnet.get('subnetId'),
+            subnet.get('state'),
             subnet.get('vpcId'),
-            subnet.get('cidrBlock')))
+            subnet.get('cidrBlock'),
+            subnet.get('availableIpAddressCount'),
+            subnet.get('availabilityZone'),
+            subnet.get('defaultForAz'),
+            subnet.get('mapPublicIpOnLaunch')))

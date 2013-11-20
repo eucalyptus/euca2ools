@@ -33,4 +33,4 @@ class DeleteVpc(EucalyptusRequest):
                 help='vpc id to delete (required)')]
 
     def print_result(self, result):
-        print self.tabify(('VPC', self.args['VpcId'], result['return']))
+        print self.tabify(('VPC', self.args['VpcId']))

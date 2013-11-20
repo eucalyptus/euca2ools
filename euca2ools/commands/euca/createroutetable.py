@@ -45,12 +45,17 @@ class CreateRouteTable(EucalyptusRequest):
             self.print_assoc(entry, rt.get('routeTableId'))
 
     def print_entry(self, entry, rt_id):
+        next_hop = 'local'
+        if entry.get('gatewayId'):
+            next_hop = entry.get('gatewayId')
+        elif entry.get('instanceId'):
+            next_hop = entry.get('instanceId')
+
         print self.tabify((
-            'ROUTEENTRY', rt_id,
-            entry.get('destinationCidrBlock'),
-            entry.get('gatewayId'),
-            entry.get('instanceId'),
-            entry.get('state')))
+            'ROUTE',
+            next_hop,
+            entry.get('state'),
+            entry.get('destinationCidrBlock')))
 
     def print_assoc(self, entry, rt_id):
         print self.tabify((

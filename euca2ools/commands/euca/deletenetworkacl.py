@@ -33,4 +33,4 @@ class DeleteNetworkAcl(EucalyptusRequest):
                 help='acl id to delete (required)')]
 
     def print_result(self, result):
-        print self.tabify(('ACL', self.args['NetworkAclId'], result['return']))
+        print self.tabify(('RETURN', result['return']))
