@@ -40,42 +40,7 @@ import euca2ools.bundle.part
 _BUFSIZE = 8192
 
 
-def create_bundle_part_writer(infile, part_prefix, part_size):
-    ## TODO:  test this
-    partinfo_result_mpqueue = multiprocessing.Queue()
-
-    pid = fork()
-    if pid == 0:
-        for part_no in itertools.count():
-            part_fname = '{0}.part.{1}'.format(part_prefix, part_no)
-            part_digest = hashlib.sha1()
-            with open(part_fname, 'w') as part:
-                bytes_written = 0
-                bytes_to_write = part_size
-                while bytes_written < part_size:
-                    chunk = infile.read(min((part_size - bytes_to_write,
-                                             _BUFSIZE)))
-                    if chunk:
-                        part.write(chunk)
-                        digest.update(chunk)
-                        bytes_to_write -= len(chunk)
-                    else:
-                        break
-                partinfo = euca2ools.bundle.part.BundlePart(
-                    part_fname, bytes_written, part_digest.hexdigest())
-                partinfo_result_mpqueue.put(partinfo)
-            if bytes_written < part_size:
-                # That's the last part
-                infile.close()
-                partinfo_result_mpqueue.close()
-                partinfo_result_mpqueue.join_thread()
-                os._exit(0)
-    infile.close()
-    _waitpid_in_thread(pid)
-    return partinfo_result_mpqueue
-
-
-### (UN)BUNDLE PIPELINE HANDLING ###
+### (UN)BUNDLE PIPELINES ###
 
 def create_bundle_pipeline(infile, outfile, enc_key, enc_iv, tarinfo):
     digest_result_mpqueue = multiprocessing.Queue()
@@ -202,6 +167,43 @@ def create_unbundle_pipeline(infile, outfile, enc_key, enc_iv):
 
     # Return the queue the caller can use to obtain the final digest
     return digest_result_mpqueue
+
+
+### PIPELINE FITTINGS ###
+
+def create_bundle_part_writer(infile, part_prefix, part_size):
+    ## TODO:  test this
+    partinfo_result_mpqueue = multiprocessing.Queue()
+
+    pid = fork()
+    if pid == 0:
+        for part_no in itertools.count():
+            part_fname = '{0}.part.{1}'.format(part_prefix, part_no)
+            part_digest = hashlib.sha1()
+            with open(part_fname, 'w') as part:
+                bytes_written = 0
+                bytes_to_write = part_size
+                while bytes_written < part_size:
+                    chunk = infile.read(min((part_size - bytes_to_write,
+                                             _BUFSIZE)))
+                    if chunk:
+                        part.write(chunk)
+                        digest.update(chunk)
+                        bytes_to_write -= len(chunk)
+                    else:
+                        break
+                partinfo = euca2ools.bundle.part.BundlePart(
+                    part_fname, part_digest.hexdigest(), 'SHA1')
+                partinfo_result_mpqueue.put(partinfo)
+            if bytes_written < part_size:
+                # That's the last part
+                infile.close()
+                partinfo_result_mpqueue.close()
+                partinfo_result_mpqueue.join_thread()
+                os._exit(0)
+    infile.close()
+    _waitpid_in_thread(pid)
+    return partinfo_result_mpqueue
 
 
 ### UTILITY METHODS ###
