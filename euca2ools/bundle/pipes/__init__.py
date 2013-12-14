@@ -23,13 +23,9 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-class BundlePart(object):
-    def __init__(self, filename, hexdigest, digest_algorithm):
-        self.digest_algorithm = digest_algorithm
-        self.filename = filename
-        self.hexdigest = hexdigest
 
-    def __repr__(self):
-        return 'BundlePart({0}, {1}, {2})'.format(
-            repr(self.filename), repr(self.hexdigest),
-            repr(self.digest_algorithm))
+from euca2ools.bundle.pipes.core import (create_bundle_pipeline,
+                                         create_unbundle_pipeline)
+
+
+_BUFSIZE = 8192

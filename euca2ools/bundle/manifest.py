@@ -23,18 +23,25 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import binascii
+import hashlib
+import logging
+import os.path
+import subprocess
+
+import lxml.etree
 import lxml.objectify
 
-import euca2ools.bundle.blockdevicemapping
-import euca2ools.bundle.part
+import euca2ools.bundle
 
 
 class BundleManifest(object):
-    def __init__(self):
+    def __init__(self, log=None):
+        self.log = log or logging.getLogger(self.__class__.__name__)
         self.image_arch = None
         self.kernel_id = None
         self.ramdisk_id = None
-        self.block_device_mappings = []
+        self.block_device_mappings = {}  # virtual -> device
         self.product_codes = []
         self.image_name = None
         self.account_id = None
@@ -46,7 +53,7 @@ class BundleManifest(object):
         self.enc_key = None
         self.enc_iv = None
         self.enc_algorithm = None
-        self.parts = []
+        self.image_parts = []
 
     @classmethod
     def read_from_file(cls, manifest_filename, privkey_filename):
@@ -54,54 +61,168 @@ class BundleManifest(object):
             xml = lxml.objectify.parse(manifest_file).getroot()
         manifest = cls()
         mconfig = xml.machine_configuration
-        manifest.image_arch = mconfig.arch.text
+        manifest.image_arch = mconfig.architecture.text.strip()
         if hasattr(mconfig, 'kernel_id'):
-            manifest.kernel_id = mconfig.kernel_id.text
+            manifest.kernel_id = mconfig.kernel_id.text.strip()
         if hasattr(mconfig, 'ramdisk_id'):
-            manifest.ramdisk_id = mconfig.ramdisk_id.text
+            manifest.ramdisk_id = mconfig.ramdisk_id.text.strip()
         if hasattr(mconfig, 'block_device_mappings'):
             for xml_mapping in mconfig.block_device_mappings.iter(
                     tag='block_device_mapping'):
-                manifest.block_device_mappings.append(
-                    euca2ools.bundle.blockdevicemapping.BlockDeviceMapping(
-                        device=xml_mapping.device.text,
-                        virtual=xml_mapping.virtual.text)
+                device = xml_mapping.device.text.strip()
+                virtual = xml_mapping.virtual.text.strip()
+                manifest.block_device_mappings[virtual] = device
         if hasattr(mconfig, 'productcodes'):
             for xml_pcode in mconfig.productcodes.iter(tag='product_code'):
-                manifest.product_codes.append(xml_pcode.text)
-        manifest.image_name = xml.image.name.text
-        manifest.account_id = xml.image.user.text
-        manifest.image_digest = xml.image.digest.text
+                manifest.product_codes.append(xml_pcode.text.strip())
+        manifest.image_name = xml.image.name.text.strip()
+        manifest.account_id = xml.image.user.text.strip()
+        manifest.image_type = xml.image.type.text.strip()
+        manifest.image_digest = xml.image.digest.text.strip()
         manifest.image_digest_algorithm = xml.image.digest.get('algorithm')
-        manifest.image_size = int(xml.image.size.text)
-        manifest.bundled_image_size = int(xml.image.bundled_size.text)
+        manifest.image_size = int(xml.image.size.text.strip())
+        manifest.bundled_image_size = int(xml.image.bundled_size.text.strip())
+        ## TODO:  test this
         try:
-            manifest.enc_key = _decrypt_hex(xml.image.user_encrypted_key.text,
-                                            privkey_filename)
+            manifest.enc_key = _decrypt_hex(
+                xml.image.user_encrypted_key.text.strip(), privkey_filename)
         except ValueError:
-            manifest.enc_key = _decrypt_hex(xml.image.ec2_encrypted_key.text,
-                                            privkey_filename)
+            manifest.enc_key = _decrypt_hex(
+                xml.image.ec2_encrypted_key.text.strip(), privkey_filename)
         manifest.enc_algorithm = xml.image.user_encrypted_key.get('algorithm')
         try:
-            manifest.enc_iv = _decrypt_hex(xml.image.user_encrypted_iv.text,
-                                           privkey_filename)
+            manifest.enc_iv = _decrypt_hex(
+                xml.image.user_encrypted_iv.text.strip(), privkey_filename)
         except ValueError:
-            manifest.enc_iv = _decrypt_hex(xml.image.ec2_encrypted_iv.text,
-                                           privkey_filename)
-        manifest.parts = [None] * int(xml.parts.get('count'))
-        for xml_part in xml.parts.iter(tag='part'):
+            manifest.enc_iv = _decrypt_hex(
+                xml.image.ec2_encrypted_iv.text.strip(), privkey_filename)
+
+        manifest.image_parts = [None] * int(xml.image.parts.get('count'))
+        for xml_part in xml.image.parts.iter(tag='part'):
             index = int(xml_part.get('index'))
-            manifest.parts[index] = euca2ools.bundle.part.BundlePart(
-                xml_part.filename.text, xml_part.digest.text,
+            manifest.image_parts[index] = euca2ools.bundle.BundlePart(
+                xml_part.filename.text.strip(), xml_part.digest.text.strip(),
                 xml_part.digest.get('algorithm'))
+        for index, part in enumerate(manifest.image_parts):
+            if part is None:
+                raise ValueError('part {0} must not be None'.format(index))
         return manifest
+
+    def dump_to_str(self, privkey_filename, user_cert_filename,
+                    ec2_cert_filename, pretty_print=False):
+        xml = lxml.objectify.Element('manifest')
+
+        # Manifest version
+        xml.version = '2007-10-10'
+
+        # Our version
+        xml.bundler = None
+        xml.bundler.name = 'euca2ools'
+        xml.bundler.version = euca2ools.__version__
+        xml.bundler.release = 0
+
+        # Target hardware
+        xml.machine_configuration = None
+        mconfig = xml.machine_configuration
+        assert self.image_arch is not None
+        mconfig.architecture = self.image_arch
+        if self.image_type == 'machine':
+            if self.kernel_id:
+                mconfig.kernel_id = self.kernel_id
+            if self.ramdisk_id:
+                mconfig.ramdisk_id = self.ramdisk_id
+            if self.block_device_mappings:
+                mconfig.block_device_mapping = None
+                for virtual, device in sorted(
+                        self.block_device_mappings.items()):
+                    xml_mapping = lxml.objectify.Element('mapping')
+                    xml_mapping.device = device
+                    xml_mapping.virtual = virtual
+                    mconfig.block_device_mapping.append(xml_mapping)
+            if self.product_codes:
+                mconfig.product_codes = None
+                for code in self.product_codes:
+                    xml_code = lxml.objectify.Element('product_code')
+                    mconfig.product_codes.append(xml_code)
+                    mconfig.product_codes.product_code[-1] = code
+
+        # Image info
+        xml.image = None
+        assert self.image_name is not None
+        xml.image.name = self.image_name
+        assert self.account_id is not None
+        xml.image.user = self.account_id
+        assert self.image_digest is not None
+        xml.image.digest = self.image_digest
+        assert self.image_digest_algorithm is not None
+        xml.image.digest.set('algorithm', self.image_digest_algorithm)
+
+        assert self.image_size is not None
+        xml.image.size = self.image_size
+        assert self.bundled_image_size is not None
+        xml.image.bundled_size = self.bundled_image_size
+        assert self.image_type is not None
+
+        xml.image.type = self.image_type
+
+        # Bundle encryption keys (these are cloud-specific)
+        assert self.enc_key is not None
+        assert self.enc_iv is not None
+        assert self.enc_algorithm is not None
+        xml.image.ec2_encrypted_key = _public_encrypt(self.enc_key,
+                                                      ec2_cert_filename)
+        xml.image.ec2_encrypted_key.set('algorithm', self.enc_algorithm)
+        xml.image.user_encrypted_key = _public_encrypt(self.enc_key,
+                                                       user_cert_filename)
+        xml.image.user_encrypted_key.set('algorithm', self.enc_algorithm)
+        xml.image.ec2_encrypted_iv = _public_encrypt(self.enc_iv,
+                                                     ec2_cert_filename)
+        xml.image.user_encrypted_iv = _public_encrypt(self.enc_iv,
+                                                      user_cert_filename)
+
+        # Bundle parts
+        xml.image.parts = None
+        xml.image.parts.set('count', str(len(self.image_parts)))
+        for index, part in enumerate(self.image_parts):
+            if part is None:
+                raise ValueError('part {0} must not be None'.format(index))
+            part_elem = lxml.objectify.Element('part')
+            part_elem.set('index', str(index))
+            part_elem.filename = os.path.basename(part.filename)
+            part_elem.digest = part.hexdigest
+            part_elem.digest.set('algorithm', part.digest_algorithm)
+            xml.image.parts.append(part_elem)
+
+        # Cleanup for signature
+        lxml.objectify.deannotate(xml, xsi_nil=True)
+        lxml.etree.cleanup_namespaces(xml)
+        to_sign = (lxml.etree.tostring(xml.machine_configuration) +
+                   lxml.etree.tostring(xml.image))
+        self.log.debug('string to sign: %s', repr(to_sign))
+        signature = _rsa_sha1_sign(to_sign, privkey_filename)
+        xml.signature = signature
+        self.log.debug('hex-encoded signature: %s', signature)
+        lxml.objectify.deannotate(xml, xsi_nil=True)
+        lxml.etree.cleanup_namespaces(xml)
+        self.log.debug('-- manifest content --\n', extra={'append': True})
+        pretty_manifest = lxml.etree.tostring(xml, pretty_print=True).strip()
+        self.log.debug('%s', pretty_manifest, extra={'append': True})
+        self.log.debug('-- end of manifest content --')
+        return lxml.etree.tostring(xml, pretty_print=pretty_print).strip()
+
+    def dump_to_file(self, manifest_filename, privkey_filename,
+                     user_cert_filename, ec2_cert_filename):
+        with open(manifest_filename, 'w') as manifest:
+            manifest.write(self.dump_to_str(
+                privkey_filename, user_cert_filename, ec2_cert_filename))
 
 
 def _decrypt_hex(hex_encrypted_key, privkey_filename):
     popen = subprocess.Popen(['openssl', 'rsautl', '-decrypt', '-pkcs',
                               '-inkey', privkey_filename],
                              stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-    (decrypted_key, __) = popen.communicate(binascii.unhexlify(key))
+    binary_encrypted_key = binascii.unhexlify(hex_encrypted_key)
+    (decrypted_key, _) = popen.communicate(binary_encrypted_key)
     try:
         # Make sure it might actually be an encryption key.
         # This isn't perfect, but it's still better than nothing.
@@ -112,3 +233,21 @@ def _decrypt_hex(hex_encrypted_key, privkey_filename):
     raise ValueError("Failed to decrypt the bundle's encryption key.  "
                      "Ensure the key supplied matches the one used for "
                      "bundling.")
+
+
+def _public_encrypt(content, cert_filename):
+    popen = subprocess.Popen(['openssl', 'rsautl', '-encrypt', '-pkcs',
+                              '-inkey', cert_filename, '-certin'],
+                             stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+    (stdout, _) = popen.communicate(content)
+    return binascii.hexlify(stdout)
+
+
+def _rsa_sha1_sign(content, privkey_filename):
+    digest = hashlib.sha1()
+    digest.update(content)
+    popen = subprocess.Popen(['openssl', 'pkeyutl', '-sign', '-inkey',
+                              privkey_filename, '-pkeyopt', 'digest:sha1'],
+                             stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+    (stdout, _) = popen.communicate(digest.digest())
+    return binascii.hexlify(stdout)

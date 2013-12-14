@@ -23,8 +23,22 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-class BundlePart(object):
-    def __init__(self, filename, hexdigest, digest_algorithm):
-        self.digest_algorithm = digest_algorithm
-        self.filename = filename
-        self.hexdigest = hexdigest
+
+import os
+import threading
+
+
+def open_pipe_fileobjs():
+    pipe_r, pipe_w = os.pipe()
+    return os.fdopen(pipe_r), os.fdopen(pipe_w, 'w')
+
+
+def waitpid_in_thread(pid):
+    """
+    Start a thread that calls os.waitpid on a particular PID to prevent
+    zombie processes from hanging around after they have finished.
+    """
+
+    pid_thread = threading.Thread(target=os.waitpid, args=(pid, 0))
+    pid_thread.daemon = True
+    pid_thread.start()
