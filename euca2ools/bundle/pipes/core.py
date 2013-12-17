@@ -159,6 +159,26 @@ def create_unbundle_pipeline(infile, outfile, enc_key, enc_iv):
     return digest_result_mpqueue
 
 
+def copy_with_progressbar(infile, outfile, progressbar=None):
+    """
+    Synchronously copy data from infile to outfile, updating a progress bar
+    with the total number of bytes copied along the way if one was provided.
+
+    This method must be run on the main thread.
+    """
+    bytes_written = 0
+    progressbar.start()
+    while True:
+        chunk = infile.read(euca2ools.bundle.pipes._BUFSIZE)
+        if chunk:
+            bytes_written += len(chunk)
+            outfile.write(chunk)
+        else:
+            progressbar.finish()
+            return
+        progressbar.update(bytes_written)
+
+
 def _calc_sha1_for_pipe(infile, outfile, result_mpqueue):
     """
     Read data from infile and write it to outfile, calculating a running SHA1
