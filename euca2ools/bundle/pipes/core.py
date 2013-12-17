@@ -53,8 +53,6 @@ def create_bundle_pipeline(infile, outfile, enc_key, enc_iv, tarinfo):
             infile.close()
             tarball.close()
             tar_out_w.close()
-        # Closing sys.stdin at the OS level makes interactive interpreters
-        # that catch SystemExit actually let the process exit.
         os._exit(os.EX_OK)
     infile.close()
     tar_out_w.close()
@@ -70,8 +68,6 @@ def create_bundle_pipeline(infile, outfile, enc_key, enc_iv, tarinfo):
         finally:
             tar_out_r.close()
             digest_out_w.close()
-        # Closing sys.stdin at the OS level makes interactive interpreters
-        # that catch SystemExit actually let the process exit.
         os._exit(os.EX_OK)
     digest_out_w.close()
 
