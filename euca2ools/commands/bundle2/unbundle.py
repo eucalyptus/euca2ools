@@ -25,6 +25,15 @@
 
 from euca2ools.commands import Euca2ools
 import os.path
+from StringIO import StringIO
+from euca2ools.bundle.pipes.core import create_unbundle_by_manifest_pipeline, create_unbundle_by_inputfile_pipeline
+from euca2ools.bundle.manifest import BundleManifest
+from os import remove, pipe, fdopen
+import os
+import pty
+import time
+import traceback
+import hashlib
 from requestbuilder import Arg
 from requestbuilder.command import BaseCommand
 from requestbuilder.exceptions import ArgumentError
@@ -58,6 +67,16 @@ class Unbundle(BaseCommand):
         set_userregion(self.config, self.args.get('userregion'))
         set_userregion(self.config, os.getenv('EUCA_REGION'))
 
+        #Get Mandatory manifest...
+        if not self.args.get('manifest'):
+            raise ArgumentError('missing manifest; please supply one with -m')
+        self.manifest_path = os.path.expanduser(os.path.abspath(self.args['manifest']))
+        if not os.path.exists(self.manifest_path):
+            raise ArgumentError("Manifest '{0}' does not exist".format(self.args['manifest']))
+        if not os.path.isfile(self.manifest_path):
+            raise ArgumentError("Manifest '{0}' is not a file".format(self.args['manifest']))
+
+        #Get the mandatory private key...
         if not self.args.get('privatekey'):
             config_privatekey = self.config.get_user_option('private-key')
             if self.args.get('userregion'):
@@ -73,14 +92,88 @@ class Unbundle(BaseCommand):
             self.args['privatekey']))
         if not os.path.exists(self.args['privatekey']):
             raise ArgumentError("private key file '{0}' does not exist"
-                                .format(self.args['privatekey']))
+            .format(self.args['privatekey']))
         if not os.path.isfile(self.args['privatekey']):
             raise ArgumentError("private key file '{0}' is not a file"
-                                .format(self.args['privatekey']))
+            .format(self.args['privatekey']))
+        self.private_key_path = self.args.get('privatekey')
 
+        #Get optional source directory...
+        self.source_dir = os.path.expanduser(os.path.abspath(self.args['source']))
+        if not os.path.exists(self.source_dir):
+            raise ArgumentError("Source directory '{0}' does not exist".format(self.args['source']))
+        if not os.path.isdir(self.source_dir):
+            raise ArgumentError("Source '{0}' is not Directory".format(self.args['source']))
+
+        #Get optional destination directory...
+        self.dest_dir = os.path.expanduser(os.path.abspath(self.args['destination']))
+        if not os.path.exists(self.source_dir):
+            raise ArgumentError("Source directory '{0}' does not exist".format(self.args['destination']))
+        if not os.path.isdir(self.source_dir):
+            raise ArgumentError("Source '{0}' is not Directory".format(self.args['destination']))
+
+
+    def _rw_create_file(self, path, mode):
+        fd = os.open(path, os.O_RDWR | os.O_CREAT)
+        return os.fdopen(fd, mode)
+
+
+    def concatenate_parts_to_file_for_pipe(self, outfile):
+        print "Using manifest path:" + str(self.manifest_path)
+        print "Using private key path:" + str(self.private_key_path)
+        manifest = BundleManifest.read_from_file(self.manifest_path, self.private_key_path)
+        try:
+            for part in manifest.image_parts:
+                print "Concatenating Part:" + str(part.filename)
+                sha1sum = hashlib.sha1()
+                part_file_path = self.source_dir + "/" + part.filename
+                with open(part_file_path) as part_file:
+                    data = part_file.read(4096)
+                    while data:
+                        sha1sum.update(data)
+                        outfile.write(data)
+                        outfile.flush()
+                        data = part_file.read(4096)
+                    part_digest = sha1sum.hexdigest()
+                    print 'Part sha1sum:' + str(part_digest)
+                    print 'Expected sum:' + str(part.hexdigest)
+                    if part_digest != part.hexdigest:
+                        raise ValueError('Input part file may be corrupt '
+                                         '(expected digest: {0}, actual: {1})'.format(part.hexdigest, part_digest))
+        finally:
+            print 'Closing write end of pipe after writing'
+            outfile.close()
+
+    @property
     def main(self):
-        ## TODO:  use UnbundleStream here
-        raise NotImplementedError()
+        try:
+            manifest = BundleManifest.read_from_file(self.manifest_path, self.private_key_path)
+            dest_file = file(self.dest_dir + "/" + manifest.image_name, 'w')
+            mpq = create_unbundle_by_manifest_pipeline(dest_file, manifest, self.source_dir, self.private_key_path)
+            print 'Waiting on Queue.'
+            written_digest = mpq.get()
+            print "Expected digest:" + str(manifest.image_digest)
+            print "Actual digest:" + str(written_digest)
+            if dest_file:
+                dest_file.close()
+            if written_digest != manifest.image_digest:
+                raise ValueError('extracted image appears to be corrupt '
+                                 '(expected digest: {0}, actual: {1})'.format(manifest.image_digest, written_digest))
+        except Exception:
+            traceback.print_exc()
+            if dest_file:
+                os.remove(dest_file.name)
+            raise
+        finally:
+            dest_file.close()
+        return dest_file.name
+
+    def get_destination_file(self, dest_dir=None):
+        return
 
     def print_result(self, result):
         print 'Wrote', result
+
+
+if __name__ == '__main__':
+    Unbundle.run()

@@ -42,3 +42,9 @@ def waitpid_in_thread(pid):
     pid_thread = threading.Thread(target=os.waitpid, args=(pid, 0))
     pid_thread.daemon = True
     pid_thread.start()
+
+def spawn_thread(func, **kwargs):
+    t = threading.Thread(target=func, kwargs=kwargs)
+    t.start()
+    return t
+
