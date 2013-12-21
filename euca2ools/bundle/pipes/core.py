@@ -56,8 +56,6 @@ def create_bundle_pipeline(infile, outfile, enc_key, enc_iv, tarinfo):
             infile.close()
             tarball.close()
             tar_out_w.close()
-            # Closing sys.stdin at the OS level makes interactive interpreters
-        # that catch SystemExit actually let the process exit.
         os._exit(os.EX_OK)
     infile.close()
     tar_out_w.close()
@@ -73,8 +71,6 @@ def create_bundle_pipeline(infile, outfile, enc_key, enc_iv, tarinfo):
         finally:
             tar_out_r.close()
             digest_out_w.close()
-            # Closing sys.stdin at the OS level makes interactive interpreters
-        # that catch SystemExit actually let the process exit.
         os._exit(os.EX_OK)
     digest_out_w.close()
 
@@ -266,6 +262,26 @@ def _get_gzip_subprocess(infile, decompress=True):
                                 bufsize=-1)
     euca2ools.bundle.util.waitpid_in_thread(gzip.pid)
     return gzip
+
+
+def copy_with_progressbar(infile, outfile, progressbar=None):
+    """
+    Synchronously copy data from infile to outfile, updating a progress bar
+    with the total number of bytes copied along the way if one was provided.
+
+    This method must be run on the main thread.
+    """
+    bytes_written = 0
+    progressbar.start()
+    while True:
+        chunk = infile.read(euca2ools.bundle.pipes._BUFSIZE)
+        if chunk:
+            bytes_written += len(chunk)
+            outfile.write(chunk)
+        else:
+            progressbar.finish()
+            return
+        progressbar.update(bytes_written)
 
 
 def _calc_sha1_for_pipe(infile, outfile, result_mpqueue):
