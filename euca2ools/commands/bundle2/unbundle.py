@@ -148,7 +148,7 @@ class Unbundle(BaseCommand):
         try:
             manifest = BundleManifest.read_from_file(self.manifest_path, self.private_key_path)
             dest_file = open(self.dest_dir + "/" + manifest.image_name, 'w')
-            mpq = create_unbundle_by_manifest_pipeline(dest_file, manifest, self.source_dir, self.private_key_path)
+            mpq = create_unbundle_by_manifest_pipeline(dest_file, manifest, self.source_dir)
             written_digest = mpq.get()
             print "Expected digest:" + str(manifest.image_digest)
             print "  Actual digest:" + str(written_digest)

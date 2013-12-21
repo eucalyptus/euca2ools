@@ -102,7 +102,7 @@ def create_bundle_pipeline(infile, outfile, enc_key, enc_iv, tarinfo):
     return digest_result_mpqueue
 
 
-def create_unbundle_pipeline(outfile, enc_key, enc_iv, writer_func, progressbar, **writerkwargs):
+def create_unbundle_pipeline(outfile, enc_key, enc_iv, progressbar, writer_func, **writerkwargs):
     """
     Creates a pipeline to perform the unbundle operation on the input provided by 'writer_func(writerkwargs)'.
     The resulting unbundled image will be written to 'outfile'.
@@ -150,7 +150,7 @@ def create_unbundle_pipeline(outfile, enc_key, enc_iv, writer_func, progressbar,
     return digest_result_mpqueue
 
 
-def create_unbundle_by_manifest_pipeline(outfile, manifest, source_dir):
+def create_unbundle_by_manifest_pipeline(outfile, manifest, source_dir, progressbar=None):
     """
     Creates a pipeline to perform the unbundle operation on parts specified in 'manifest'. Parts located in
     the local 'source_dir' are processed through the unbundle pipe and the resulting unbundled image is written
@@ -159,6 +159,7 @@ def create_unbundle_by_manifest_pipeline(outfile, manifest, source_dir):
     :param outfile: file obj to write unbundled image to
     :param manifest: euca2ools.manifest obj
     :param source_dir: local path to dir containing bundle parts.
+    :param progressbar: the progressbar obj to be updated during the unbundle pipe's work flow
     :returns multiprocessing.Queue: Queue contains the checksum (sha1) for the unbundled image
     """
     enc_key = manifest.enc_key
@@ -166,12 +167,13 @@ def create_unbundle_by_manifest_pipeline(outfile, manifest, source_dir):
     return create_unbundle_pipeline(outfile,
                                     enc_key,
                                     enc_iv,
+                                    progressbar,
                                     _concatenate_parts_to_file_for_pipe,
                                     image_parts=manifest.image_parts,
                                     source_dir=source_dir)
 
 
-def create_unbundle_by_inputfile_pipeline(outfile, inputfile, enc_key, enc_iv):
+def create_unbundle_by_inputfile_pipeline(outfile, inputfile, enc_key, enc_iv, progressbar=None):
     """
     Creates a pipeline to perform the unbundle operation on bundled input read in from 'inputfile'. The resulting
     unbundled image is written to 'outfile'.
@@ -180,11 +182,13 @@ def create_unbundle_by_inputfile_pipeline(outfile, inputfile, enc_key, enc_iv):
     :param inputfile: file obj to read bundled image input from
     :param enc_key: the encryption key used to bundle the image
     :param enc_iv: the encyrption initialization vector used to bundle the image
+    :param progressbar: the progressbar obj to be updated during the unbundle pipe's work flow
     :returns multiprocessing.Queue: Queue contains the checksum (sha1) for the unbundled image
     """
     return create_unbundle_pipeline(outfile,
                                     enc_key,
                                     enc_iv,
+                                    progressbar,
                                     _write_file_to_pipe,
                                     inputfile=inputfile)
 
@@ -202,6 +206,7 @@ def copy_with_progressbar(infile, outfile, progressbar=None):
     """
     bytes_written = 0
     if progressbar:
+        print 'progressbar:', progressbar
         progressbar.start()
     try:
         while not infile.closed:
@@ -210,7 +215,8 @@ def copy_with_progressbar(infile, outfile, progressbar=None):
                 bytes_written += len(chunk)
                 outfile.write(chunk)
                 outfile.flush()
-                progressbar.update(bytes_written)
+                if progressbar:
+                    progressbar.update(bytes_written)
             else:
                 break
     finally:
@@ -254,12 +260,13 @@ def _get_gzip_subprocess(infile, decompress=True):
     if decompress:
         gzip_args = ['-c', '-d']
     try:
-        gzip = subprocess.Popen(['pigz'].extend(gzip_args), stdin=infile,
+        args = ['pigz']
+        gzip = subprocess.Popen(['pigz'] + gzip_args, stdin=infile,
                                 stdout=subprocess.PIPE, close_fds=True,
                                 bufsize=-1)
         #gzip._set_cloexec_flag(gzip.stdin)
     except OSError:
-        gzip = subprocess.Popen(['gzip'].extend(gzip_args), stdin=infile,
+        gzip = subprocess.Popen(['gzip'] + gzip_args, stdin=infile,
                                 stdout=subprocess.PIPE, close_fds=True,
                                 bufsize=-1)
     euca2ools.bundle.util.waitpid_in_thread(gzip.pid)
