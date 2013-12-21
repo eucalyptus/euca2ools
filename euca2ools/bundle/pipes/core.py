@@ -225,7 +225,8 @@ def _get_ssl_subprocess(enc_key, enc_iv, decrypt=True):
     :param enc_key: the encryption key to be used
     :param enc_iv: the encyrption initialization vector to be used
     :param decrypt: boolean. If True will decrypt. If false will encrypt.
-    returns subprocess.Popen obj
+    :returns: openssl subprocess
+    :rtype: subprocess.Popen
     """
     debug('get_ssl_decrypt_subprocess...')
     action = '-e'
@@ -245,7 +246,8 @@ def _get_gzip_subprocess(infile, decompress=True):
 
     :param infile: The file obj containing gzip input
     :param decompress: boolean. If True will used gzip decompress. If False will use gzip compress.
-    :returns subprocess.Popen obj
+    :returns: gzip subprocess
+    :rtype: subprocess.Popen obj
     """
     debug('get_gzip_subprocess...')
     gzip_args = ['-c']
@@ -263,25 +265,6 @@ def _get_gzip_subprocess(infile, decompress=True):
     euca2ools.bundle.util.waitpid_in_thread(gzip.pid)
     return gzip
 
-
-def copy_with_progressbar(infile, outfile, progressbar=None):
-    """
-    Synchronously copy data from infile to outfile, updating a progress bar
-    with the total number of bytes copied along the way if one was provided.
-
-    This method must be run on the main thread.
-    """
-    bytes_written = 0
-    progressbar.start()
-    while True:
-        chunk = infile.read(euca2ools.bundle.pipes._BUFSIZE)
-        if chunk:
-            bytes_written += len(chunk)
-            outfile.write(chunk)
-        else:
-            progressbar.finish()
-            return
-        progressbar.update(bytes_written)
 
 
 def _calc_sha1_for_pipe(infile, outfile, result_mpqueue):
@@ -338,6 +321,7 @@ def _do_tar_extract(infile, outfile):
 def _concatenate_parts_to_file_for_pipe(outfile, image_parts, source_dir):
     """
     Concatenate a list of 'image_parts' files found in 'source_dir' into pipeline fed by 'outfile'
+    Parts are checked against checksum contained in part obj against calculated checksums as they are read/written.
     :param outfile: file obj used to output concatenated parts to
     :param image_parts: list of euca2ools.manifest.part objs
     :param source_dir: local path to parts contained in image_parts

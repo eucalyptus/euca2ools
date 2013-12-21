@@ -144,16 +144,14 @@ class Unbundle(BaseCommand):
             print 'Closing write end of pipe after writing'
             outfile.close()
 
-    @property
     def main(self):
         try:
             manifest = BundleManifest.read_from_file(self.manifest_path, self.private_key_path)
-            dest_file = file(self.dest_dir + "/" + manifest.image_name, 'w')
+            dest_file = open(self.dest_dir + "/" + manifest.image_name, 'w')
             mpq = create_unbundle_by_manifest_pipeline(dest_file, manifest, self.source_dir, self.private_key_path)
-            print 'Waiting on Queue.'
             written_digest = mpq.get()
             print "Expected digest:" + str(manifest.image_digest)
-            print "Actual digest:" + str(written_digest)
+            print "  Actual digest:" + str(written_digest)
             if dest_file:
                 dest_file.close()
             if written_digest != manifest.image_digest:
