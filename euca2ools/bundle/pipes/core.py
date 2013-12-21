@@ -206,7 +206,6 @@ def copy_with_progressbar(infile, outfile, progressbar=None):
     """
     bytes_written = 0
     if progressbar:
-        print 'progressbar:', progressbar
         progressbar.start()
     try:
         while not infile.closed:

@@ -38,6 +38,12 @@ from requestbuilder import Arg
 from requestbuilder.command import BaseCommand
 from requestbuilder.exceptions import ArgumentError
 from requestbuilder.util import set_userregion
+#from requestbuilder.mixins import FileTransferProgressBarMixin
+
+try:
+    from progressbar import ProgressBar, Bar, Percentage,ETA
+except:pass
+
 
 
 class Unbundle(BaseCommand):
@@ -113,42 +119,16 @@ class Unbundle(BaseCommand):
             raise ArgumentError("Source '{0}' is not Directory".format(self.args['destination']))
 
 
-    def _rw_create_file(self, path, mode):
-        fd = os.open(path, os.O_RDWR | os.O_CREAT)
-        return os.fdopen(fd, mode)
-
-
-    def concatenate_parts_to_file_for_pipe(self, outfile):
-        print "Using manifest path:" + str(self.manifest_path)
-        print "Using private key path:" + str(self.private_key_path)
-        manifest = BundleManifest.read_from_file(self.manifest_path, self.private_key_path)
-        try:
-            for part in manifest.image_parts:
-                print "Concatenating Part:" + str(part.filename)
-                sha1sum = hashlib.sha1()
-                part_file_path = self.source_dir + "/" + part.filename
-                with open(part_file_path) as part_file:
-                    data = part_file.read(4096)
-                    while data:
-                        sha1sum.update(data)
-                        outfile.write(data)
-                        outfile.flush()
-                        data = part_file.read(4096)
-                    part_digest = sha1sum.hexdigest()
-                    print 'Part sha1sum:' + str(part_digest)
-                    print 'Expected sum:' + str(part.hexdigest)
-                    if part_digest != part.hexdigest:
-                        raise ValueError('Input part file may be corrupt '
-                                         '(expected digest: {0}, actual: {1})'.format(part.hexdigest, part_digest))
-        finally:
-            print 'Closing write end of pipe after writing'
-            outfile.close()
-
     def main(self):
+        manifest = BundleManifest.read_from_file(self.manifest_path, self.private_key_path)
+        dest_file = open(self.dest_dir + "/" + manifest.image_name, 'w')
         try:
-            manifest = BundleManifest.read_from_file(self.manifest_path, self.private_key_path)
-            dest_file = open(self.dest_dir + "/" + manifest.image_name, 'w')
-            mpq = create_unbundle_by_manifest_pipeline(dest_file, manifest, self.source_dir)
+            widgets=[Percentage(), Bar(), ETA()]
+            pbar = ProgressBar(widgets=widgets, maxval=manifest.image_size)
+        except Exception as pe:
+            pbar = None
+        try:
+            mpq = create_unbundle_by_manifest_pipeline(dest_file, manifest, self.source_dir, pbar)
             written_digest = mpq.get()
             print "Expected digest:" + str(manifest.image_digest)
             print "  Actual digest:" + str(written_digest)
@@ -166,8 +146,6 @@ class Unbundle(BaseCommand):
             dest_file.close()
         return dest_file.name
 
-    def get_destination_file(self, dest_dir=None):
-        return
 
     def print_result(self, result):
         print 'Wrote', result
