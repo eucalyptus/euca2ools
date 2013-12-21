@@ -25,25 +25,19 @@
 
 from euca2ools.commands import Euca2ools
 import os.path
-from StringIO import StringIO
 from euca2ools.bundle.pipes.core import create_unbundle_by_manifest_pipeline, create_unbundle_by_inputfile_pipeline
 from euca2ools.bundle.manifest import BundleManifest
-from os import remove, pipe, fdopen
 import os
-import pty
-import time
 import traceback
-import hashlib
 from requestbuilder import Arg
 from requestbuilder.command import BaseCommand
 from requestbuilder.exceptions import ArgumentError
 from requestbuilder.util import set_userregion
 #from requestbuilder.mixins import FileTransferProgressBarMixin
-
 try:
-    from progressbar import ProgressBar, Bar, Percentage,ETA
-except:pass
-
+    from progressbar import ProgressBar, Bar, Percentage, ETA
+except:
+    pass
 
 
 class Unbundle(BaseCommand):
@@ -97,11 +91,9 @@ class Unbundle(BaseCommand):
         self.args['privatekey'] = os.path.expanduser(os.path.expandvars(
             self.args['privatekey']))
         if not os.path.exists(self.args['privatekey']):
-            raise ArgumentError("private key file '{0}' does not exist"
-            .format(self.args['privatekey']))
+            raise ArgumentError("private key file '{0}' does not exist".format(self.args['privatekey']))
         if not os.path.isfile(self.args['privatekey']):
-            raise ArgumentError("private key file '{0}' is not a file"
-            .format(self.args['privatekey']))
+            raise ArgumentError("private key file '{0}' is not a file".format(self.args['privatekey']))
         self.private_key_path = self.args.get('privatekey')
 
         #Get optional source directory...
@@ -123,9 +115,9 @@ class Unbundle(BaseCommand):
         manifest = BundleManifest.read_from_file(self.manifest_path, self.private_key_path)
         dest_file = open(self.dest_dir + "/" + manifest.image_name, 'w')
         try:
-            widgets=[Percentage(), Bar(), ETA()]
+            widgets = [Percentage(), Bar(), ETA()]
             pbar = ProgressBar(widgets=widgets, maxval=manifest.image_size)
-        except Exception as pe:
+        except NameError:
             pbar = None
         try:
             mpq = create_unbundle_by_manifest_pipeline(dest_file, manifest, self.source_dir, pbar)
