@@ -19,6 +19,7 @@ them are available on PyPi:
  - requests (http://www.python-requests.org/)
  - setuptools (https://pypi.python.org/pypi/setuptools)
  - six (http://pythonhosted.org/six/)
+ - argparse (https://pypi.python.org/pypi/argparse)
 
 The bundle-related tools require several other executables as well:
  - blkid
@@ -69,6 +70,17 @@ Distribution-specific Instructions
 This section contains distribution-specific instructions and package
 lists to assist with installation of euca2ools and its dependencies.
 
+CentOS 6.4/6.5
+--------------
+
+Dependency packages:
+- gcc
+- python-setuptools
+- python-devel
+- libxslt
+- libxslt-devel
+- libxml2
+- libxml2-devel
 
 Ubuntu 12.04
 ------------
