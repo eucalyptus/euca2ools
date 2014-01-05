@@ -36,8 +36,10 @@ import euca2ools.bundle
 
 
 class BundleManifest(object):
-    def __init__(self, log=None):
-        self.log = log or logging.getLogger(self.__class__.__name__)
+    def __init__(self, loglevel=None):
+        self.log = logging.getLogger(self.__class__.__name__)
+        if loglevel is not None:
+            self.log.level = loglevel
         self.image_arch = None
         self.kernel_id = None
         self.ramdisk_id = None
@@ -125,11 +127,17 @@ class BundleManifest(object):
         mconfig = xml.machine_configuration
         assert self.image_arch is not None
         mconfig.architecture = self.image_arch
+        # kernel_id and ramdisk_id are normally meaningful only for machine
+        # images, but eucalyptus also uses them to indicate kernel and ramdisk
+        # images using the magic string "true", so their presence cannot be
+        # made contingent on whether the image is a machine image or not.  Be
+        # careful not to create invalid kernel or ramdisk manifests because of
+        # this.
+        if self.kernel_id:
+            mconfig.kernel_id = self.kernel_id
+        if self.ramdisk_id:
+            mconfig.ramdisk_id = self.ramdisk_id
         if self.image_type == 'machine':
-            if self.kernel_id:
-                mconfig.kernel_id = self.kernel_id
-            if self.ramdisk_id:
-                mconfig.ramdisk_id = self.ramdisk_id
             if self.block_device_mappings:
                 mconfig.block_device_mapping = None
                 for virtual, device in sorted(
@@ -168,9 +176,16 @@ class BundleManifest(object):
         assert self.enc_key is not None
         assert self.enc_iv is not None
         assert self.enc_algorithm is not None
+        ## TODO:  test canonicalization/validation with comments
+        ec2_fp = euca2ools.bundle.util.get_cert_fingerprint(ec2_cert_filename)
+        user_fp = euca2ools.bundle.util.get_cert_fingerprint(user_cert_filename)
+        xml.image.append(lxml.etree.Comment(' EC2 cert fingerprint:  {0} '
+                                            .format(ec2_fp)))
         xml.image.ec2_encrypted_key = _public_encrypt(self.enc_key,
                                                       ec2_cert_filename)
         xml.image.ec2_encrypted_key.set('algorithm', self.enc_algorithm)
+        xml.image.append(lxml.etree.Comment(' User cert fingerprint: {0} '
+                                            .format(user_fp)))
         xml.image.user_encrypted_key = _public_encrypt(self.enc_key,
                                                        user_cert_filename)
         xml.image.user_encrypted_key.set('algorithm', self.enc_algorithm)
@@ -190,6 +205,9 @@ class BundleManifest(object):
             part_elem.filename = os.path.basename(part.filename)
             part_elem.digest = part.hexdigest
             part_elem.digest.set('algorithm', part.digest_algorithm)
+            ## TODO:  test canonicalization/validation with this comment, too
+            part_elem.append(lxml.etree.Comment(
+                ' size: {0} '.format(part.size)))
             xml.image.parts.append(part_elem)
 
         # Cleanup for signature
