@@ -25,7 +25,42 @@
 
 
 import os
+import subprocess
 import threading
+
+
+def close_all_fds(except_fds=None):
+    except_filenos = [1, 2]
+    if except_fds is not None:
+        for except_fd in except_fds:
+            if except_fd is None:
+                pass
+            elif isinstance(except_fd, int):
+                except_filenos.append(except_fd)
+            elif hasattr(except_fd, 'fileno'):
+                except_filenos.append(except_fd.fileno())
+            else:
+                raise ValueError('{0} must be an int or have a fileno method'
+                                 .format(repr(except_fd)))
+
+    fileno_ranges = []
+    next_range_min = 0
+    for except_fileno in sorted(except_filenos):
+        if except_fileno > next_range_min:
+            fileno_ranges.append((next_range_min, except_fileno - 1))
+        next_range_min = max(next_range_min, except_fileno + 1)
+    fileno_ranges.append((next_range_min, 1024))
+
+    for fileno_range in fileno_ranges:
+        os.closerange(fileno_range[0], fileno_range[1])
+
+
+def get_cert_fingerprint(cert_filename):
+    openssl = subprocess.Popen(('openssl', 'x509', '-in', cert_filename,
+                                '-fingerprint', '-sha1', '-noout'),
+                               stdout=subprocess.PIPE)
+    (fingerprint, _) = openssl.communicate()
+    return fingerprint.strip().rsplit('=', 1)[-1].replace(':', '').lower()
 
 
 def open_pipe_fileobjs():

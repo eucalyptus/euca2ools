@@ -49,7 +49,6 @@ class BundleManifest(object):
         self.image_digest = None
         self.image_digest_algorithm = None
         self.image_size = None
-        self.bundled_image_size = None
         self.enc_key = None
         self.enc_iv = None
         self.enc_algorithm = None
@@ -210,11 +209,14 @@ class BundleManifest(object):
         self.log.debug('-- end of manifest content --')
         return lxml.etree.tostring(xml, pretty_print=pretty_print).strip()
 
-    def dump_to_file(self, manifest_filename, privkey_filename,
+    def dump_to_file(self, manifest_file, privkey_filename,
                      user_cert_filename, ec2_cert_filename):
-        with open(manifest_filename, 'w') as manifest:
-            manifest.write(self.dump_to_str(
-                privkey_filename, user_cert_filename, ec2_cert_filename))
+        manifest_file.write(self.dump_to_str(
+            privkey_filename, user_cert_filename, ec2_cert_filename))
+
+    @property
+    def bundled_image_size(self):
+        return sum(part.size for part in self.image_parts)
 
 
 def _decrypt_hex(hex_encrypted_key, privkey_filename):

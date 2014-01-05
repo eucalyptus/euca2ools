@@ -29,39 +29,69 @@ import itertools
 import multiprocessing
 import os
 
+import euca2ools.bundle.manifest
 import euca2ools.bundle.pipes
 import euca2ools.bundle.util
 
 
-def create_bundle_part_writer(infile, part_prefix, part_size):
-    partinfo_result_mpqueue = multiprocessing.Queue()
+def create_bundle_part_writer(infile, part_prefix, part_size, close_fds=None):
+    partinfo_result_r, partinfo_result_w = multiprocessing.Pipe(duplex=False)
 
     pid = os.fork()
     if pid == 0:
+        euca2ools.bundle.util.close_all_fds(
+            except_fds=(infile, partinfo_result_w))
         for part_no in itertools.count():
-            part_fname = '{0}.part.{1}'.format(part_prefix, part_no)
+            part_fname = '{0}.part.{1:02}'.format(part_prefix, part_no)
             part_digest = hashlib.sha1()
             with open(part_fname, 'w') as part:
                 bytes_written = 0
                 bytes_to_write = part_size
-                while bytes_written < part_size:
-                    chunk = infile.read(min((part_size - bytes_to_write,
-                                             euca2ools.bundle.pipes._BUFSIZE)))
+                while bytes_to_write > 0:
+                    chunk = infile.read(min(bytes_to_write,
+                                            euca2ools.bundle.pipes._BUFSIZE))
                     if chunk:
                         part.write(chunk)
                         part_digest.update(chunk)
                         bytes_to_write -= len(chunk)
+                        bytes_written += len(chunk)
                     else:
                         break
                 partinfo = euca2ools.bundle.BundlePart(
-                    part_fname, part_digest.hexdigest(), 'SHA1')
-                partinfo_result_mpqueue.put(partinfo)
+                    part_fname, part_digest.hexdigest(), 'SHA1', bytes_written)
+                partinfo_result_w.send(partinfo)
             if bytes_written < part_size:
                 # That's the last part
                 infile.close()
-                partinfo_result_mpqueue.close()
-                partinfo_result_mpqueue.join_thread()
+                partinfo_result_w.close()
                 os._exit(os.EX_OK)
+    partinfo_result_w.close()
     infile.close()
     euca2ools.bundle.util.waitpid_in_thread(pid)
-    return partinfo_result_mpqueue
+    return partinfo_result_r
+
+
+def create_mpconn_aggregator(in_mpconn, out_mpconn=None):
+    result_mpconn_r, result_mpconn_w = multiprocessing.Pipe(duplex=False)
+    pid = os.fork()
+    if pid == 0:
+        euca2ools.bundle.util.close_all_fds(
+            except_fds=(in_mpconn, out_mpconn, result_mpconn_w))
+        results = []
+        try:
+            while True:
+                next_result = in_mpconn.recv()
+                results.append(next_result)
+                if out_mpconn is not None:
+                    out_mpconn.send(next_result)
+        except EOFError:
+            result_mpconn_w.send(results)
+        finally:
+            result_mpconn_w.close()
+            in_mpconn.close()
+            if out_mpconn is not None:
+                out_mpconn.close()
+        os._exit(os.EX_OK)
+    result_mpconn_w.close()
+    euca2ools.bundle.util.waitpid_in_thread(pid)
+    return result_mpconn_r
