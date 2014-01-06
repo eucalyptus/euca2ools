@@ -176,16 +176,15 @@ class BundleManifest(object):
         assert self.enc_key is not None
         assert self.enc_iv is not None
         assert self.enc_algorithm is not None
-        ## TODO:  test canonicalization/validation with comments
         ec2_fp = euca2ools.bundle.util.get_cert_fingerprint(ec2_cert_filename)
         user_fp = euca2ools.bundle.util.get_cert_fingerprint(user_cert_filename)
-        xml.image.append(lxml.etree.Comment(' EC2 cert fingerprint:  {0} '
-                                            .format(ec2_fp)))
+        #xml.image.append(lxml.etree.Comment(' EC2 cert fingerprint:  {0} '
+        #                                    .format(ec2_fp)))
         xml.image.ec2_encrypted_key = _public_encrypt(self.enc_key,
                                                       ec2_cert_filename)
         xml.image.ec2_encrypted_key.set('algorithm', self.enc_algorithm)
-        xml.image.append(lxml.etree.Comment(' User cert fingerprint: {0} '
-                                            .format(user_fp)))
+        #xml.image.append(lxml.etree.Comment(' User cert fingerprint: {0} '
+        #                                    .format(user_fp)))
         xml.image.user_encrypted_key = _public_encrypt(self.enc_key,
                                                        user_cert_filename)
         xml.image.user_encrypted_key.set('algorithm', self.enc_algorithm)
@@ -205,9 +204,8 @@ class BundleManifest(object):
             part_elem.filename = os.path.basename(part.filename)
             part_elem.digest = part.hexdigest
             part_elem.digest.set('algorithm', part.digest_algorithm)
-            ## TODO:  test canonicalization/validation with this comment, too
-            part_elem.append(lxml.etree.Comment(
-                ' size: {0} '.format(part.size)))
+            #part_elem.append(lxml.etree.Comment(
+            #    ' size: {0} '.format(part.size)))
             xml.image.parts.append(part_elem)
 
         # Cleanup for signature
