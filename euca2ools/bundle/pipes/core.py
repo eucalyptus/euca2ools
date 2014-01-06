@@ -35,52 +35,45 @@ import tarfile
 import euca2ools.bundle.util
 
 
+def _create_tarball_from_stream(infile, outfile, tarinfo, debug=False):
+    euca2ools.bundle.util.close_all_fds(except_fds=(infile, outfile))
+    tarball = tarfile.open(mode='w|', fileobj=outfile,
+                           bufsize=euca2ools.bundle.pipes._BUFSIZE)
+    try:
+        tarball.addfile(tarinfo, fileobj=infile)
+    except IOError:
+        # HACK
+        if not debug:
+            return
+        raise
+    finally:
+        infile.close()
+        tarball.close()
+        outfile.close()
+
+
 def create_bundle_pipeline(infile, outfile, enc_key, enc_iv, tarinfo,
                            debug=False):
     pids = []
 
     # infile -> tar
     tar_out_r, tar_out_w = euca2ools.bundle.util.open_pipe_fileobjs()
-    pid = os.fork()
-    pids.append(pid)
-    if pid == 0:
-        euca2ools.bundle.util.close_all_fds(
-            except_fds=(infile, tar_out_w))
-        tarball = tarfile.open(mode='w|', fileobj=tar_out_w,
-                               bufsize=euca2ools.bundle.pipes._BUFSIZE)
-        try:
-            tarball.addfile(tarinfo, fileobj=infile)
-        except IOError:
-            if not debug:
-                os._exit(os.EX_IOERR)
-            raise
-        finally:
-            infile.close()
-            tarball.close()
-            tar_out_w.close()
-        os._exit(os.EX_OK)
+    tar_p = multiprocessing.Process(target=_create_tarball_from_stream,
+                                    args=(infile, tar_out_w, tarinfo),
+                                    kwargs={'debug': debug})
+    tar_p.start()
+    pids.append(tar_p.pid)
     infile.close()
     tar_out_w.close()
 
     # tar -> sha1sum
     digest_out_r, digest_out_w = euca2ools.bundle.util.open_pipe_fileobjs()
     digest_result_r, digest_result_w = multiprocessing.Pipe(duplex=False)
-    pid = os.fork()
-    pids.append(pid)
-    if pid == 0:
-        euca2ools.bundle.util.close_all_fds(
-            except_fds=(tar_out_r, digest_out_w, digest_result_w))
-        try:
-            _calc_sha1_for_pipe(tar_out_r, digest_out_w, digest_result_w)
-        except IOError:
-            if not debug:
-                os._exit(os.EX_IOERR)
-            raise
-        finally:
-            tar_out_r.close()
-            digest_out_w.close()
-            digest_result_w.close()
-        os._exit(os.EX_OK)
+    digest_p = multiprocessing.Process(
+        target=_calc_sha1_for_pipe,
+        args=(tar_out_r, digest_out_w, digest_result_w))
+    digest_p.start()
+    pids.append(digest_p.pid)
     digest_out_w.close()
     digest_result_w.close()
 
@@ -219,6 +212,8 @@ def _calc_sha1_for_pipe(infile, outfile, result_mpconn):
     hex form to result_mpconn and exit.
     """
 
+    euca2ools.bundle.util.close_all_fds(
+        except_fds=(infile, outfile, result_mpconn))
     digest = hashlib.sha1()
     while True:
         chunk = infile.read(euca2ools.bundle.pipes._BUFSIZE)
@@ -228,3 +223,6 @@ def _calc_sha1_for_pipe(infile, outfile, result_mpconn):
         else:
             break
     result_mpconn.send(digest.hexdigest())
+    result_mpconn.close()
+    infile.close()
+    outfile.close()
