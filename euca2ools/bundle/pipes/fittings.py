@@ -51,7 +51,7 @@ def create_bundle_part_writer(infile, part_prefix, part_size, debug=False):
                     try:
                         chunk = infile.read(
                             min(bytes_to_write,
-                            euca2ools.bundle.pipes._BUFSIZE))
+                                euca2ools.bundle.pipes._BUFSIZE))
                     except IOError:
                         if not debug:
                             os._exit(os.EX_IOERR)
