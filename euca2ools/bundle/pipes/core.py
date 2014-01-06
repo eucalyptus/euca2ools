@@ -35,7 +35,8 @@ import tarfile
 import euca2ools.bundle.util
 
 
-def create_bundle_pipeline(infile, outfile, enc_key, enc_iv, tarinfo):
+def create_bundle_pipeline(infile, outfile, enc_key, enc_iv, tarinfo,
+                           debug=False):
     pids = []
 
     # infile -> tar
@@ -49,6 +50,10 @@ def create_bundle_pipeline(infile, outfile, enc_key, enc_iv, tarinfo):
                                bufsize=euca2ools.bundle.pipes._BUFSIZE)
         try:
             tarball.addfile(tarinfo, fileobj=infile)
+        except IOError:
+            if not debug:
+                os._exit(os.EX_IOERR)
+            raise
         finally:
             infile.close()
             tarball.close()
@@ -67,6 +72,10 @@ def create_bundle_pipeline(infile, outfile, enc_key, enc_iv, tarinfo):
             except_fds=(tar_out_r, digest_out_w, digest_result_w))
         try:
             _calc_sha1_for_pipe(tar_out_r, digest_out_w, digest_result_w)
+        except IOError:
+            if not debug:
+                os._exit(os.EX_IOERR)
+            raise
         finally:
             tar_out_r.close()
             digest_out_w.close()
@@ -103,7 +112,7 @@ def create_bundle_pipeline(infile, outfile, enc_key, enc_iv, tarinfo):
     return digest_result_r
 
 
-def create_unbundle_pipeline(infile, outfile, enc_key, enc_iv):
+def create_unbundle_pipeline(infile, outfile, enc_key, enc_iv, debug=False):
     pids = []
 
     # infile -> openssl
@@ -137,6 +146,10 @@ def create_unbundle_pipeline(infile, outfile, enc_key, enc_iv):
         try:
             _calc_sha1_for_pipe(gzip.stdout, digest_out_w,
                                 digest_result_w)
+        except IOError:
+            if not debug:
+                os._exit(os.EX_IOERR)
+            raise
         finally:
             gzip.stdout.close()
             digest_out_w.close()
@@ -155,6 +168,10 @@ def create_unbundle_pipeline(infile, outfile, enc_key, enc_iv):
         try:
             tarinfo = tarball.next()
             shutil.copyfileobj(tarball.extractfile(tarinfo), outfile)
+        except IOError:
+            if not debug:
+                os._exit(os.EX_IOERR)
+            raise
         finally:
             tarball.close()
             digest_out_r.close()

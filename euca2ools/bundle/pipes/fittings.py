@@ -34,7 +34,7 @@ import euca2ools.bundle.pipes
 import euca2ools.bundle.util
 
 
-def create_bundle_part_writer(infile, part_prefix, part_size, close_fds=None):
+def create_bundle_part_writer(infile, part_prefix, part_size, debug=False):
     partinfo_result_r, partinfo_result_w = multiprocessing.Pipe(duplex=False)
 
     pid = os.fork()
@@ -48,8 +48,14 @@ def create_bundle_part_writer(infile, part_prefix, part_size, close_fds=None):
                 bytes_written = 0
                 bytes_to_write = part_size
                 while bytes_to_write > 0:
-                    chunk = infile.read(min(bytes_to_write,
-                                            euca2ools.bundle.pipes._BUFSIZE))
+                    try:
+                        chunk = infile.read(
+                            min(bytes_to_write,
+                            euca2ools.bundle.pipes._BUFSIZE))
+                    except IOError:
+                        if not debug:
+                            os._exit(os.EX_IOERR)
+                        raise
                     if chunk:
                         part.write(chunk)
                         part_digest.update(chunk)
@@ -71,7 +77,7 @@ def create_bundle_part_writer(infile, part_prefix, part_size, close_fds=None):
     return partinfo_result_r
 
 
-def create_mpconn_aggregator(in_mpconn, out_mpconn=None):
+def create_mpconn_aggregator(in_mpconn, out_mpconn=None, debug=False):
     result_mpconn_r, result_mpconn_w = multiprocessing.Pipe(duplex=False)
     pid = os.fork()
     if pid == 0:
@@ -85,7 +91,16 @@ def create_mpconn_aggregator(in_mpconn, out_mpconn=None):
                 if out_mpconn is not None:
                     out_mpconn.send(next_result)
         except EOFError:
-            result_mpconn_w.send(results)
+            try:
+                result_mpconn_w.send(results)
+            except IOError:
+                if not debug:
+                    os._exit(os.EX_IOERR)
+                raise
+        except IOError:
+            if not debug:
+                os._exit(os.EX_IOERR)
+            raise
         finally:
             result_mpconn_w.close()
             in_mpconn.close()

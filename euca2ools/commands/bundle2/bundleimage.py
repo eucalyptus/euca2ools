@@ -250,19 +250,20 @@ class BundleImage(BaseCommand, FileTransferProgressBarMixin):
             euca2ools.bundle.util.open_pipe_fileobjs()
         digest_result_mpconn = create_bundle_pipeline(
             bundle_in_r, partwriter_in_w, self.args['enc_key'],
-            self.args['enc_iv'], tarinfo)
+            self.args['enc_iv'], tarinfo, debug=self.debug)
         bundle_in_r.close()
         partwriter_in_w.close()
 
         # bundler --(bytes)-> part writer
         bundle_partinfo_mpconn = create_bundle_part_writer(
-            partwriter_in_r, path_prefix, self.args['part_size'])
+            partwriter_in_r, path_prefix, self.args['part_size'],
+            debug=self.debug)
         partwriter_in_r.close()
 
         # part writer --(part info)-> part info aggregator
         # (needed for building the manifest)
         bundle_partinfo_aggregate_mpconn = create_mpconn_aggregator(
-            bundle_partinfo_mpconn)
+            bundle_partinfo_mpconn, debug=self.debug)
         bundle_partinfo_mpconn.close()
 
         # disk --(bytes)-> bundler
@@ -270,8 +271,15 @@ class BundleImage(BaseCommand, FileTransferProgressBarMixin):
         label = self.args.get('progressbar_label') or 'Bundling image'
         pbar = self.get_progressbar(label=label, maxval=self.args['image_size'])
         with self.args['image'] as image:
-            read_size = copy_with_progressbar(image, bundle_in_w,
-                                              progressbar=pbar)
+            try:
+                read_size = copy_with_progressbar(image, bundle_in_w,
+                                                  progressbar=pbar)
+            except ValueError:
+                self.log.debug('error from copy_with_progressbar',
+                               exc_info=True)
+                raise RuntimeError('corrupt bundle: input size was larger '
+                                   'than expected image size of {0}'
+                                   .format(self.args['image_size']))
         bundle_in_w.close()
         if read_size != self.args['image_size']:
             raise RuntimeError('corrupt bundle: input size did not match '
