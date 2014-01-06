@@ -111,6 +111,14 @@ class BundleManifest(object):
 
     def dump_to_str(self, privkey_filename, user_cert_filename,
                     ec2_cert_filename, pretty_print=False):
+        ec2_fp = euca2ools.bundle.util.get_cert_fingerprint(ec2_cert_filename)
+        user_fp = euca2ools.bundle.util.get_cert_fingerprint(user_cert_filename)
+        self.log.info('creating manifest for EC2 service with fingerprint %s',
+                      ec2_fp)
+        self.log.debug('EC2 certificate:  %s', ec2_cert_filename)
+        self.log.debug('user certificate: %s', user_cert_filename)
+        self.log.debug('user private key: %s', privkey_filename)
+
         xml = lxml.objectify.Element('manifest')
 
         # Manifest version
@@ -176,8 +184,6 @@ class BundleManifest(object):
         assert self.enc_key is not None
         assert self.enc_iv is not None
         assert self.enc_algorithm is not None
-        ec2_fp = euca2ools.bundle.util.get_cert_fingerprint(ec2_cert_filename)
-        user_fp = euca2ools.bundle.util.get_cert_fingerprint(user_cert_filename)
         #xml.image.append(lxml.etree.Comment(' EC2 cert fingerprint:  {0} '
         #                                    .format(ec2_fp)))
         xml.image.ec2_encrypted_key = _public_encrypt(self.enc_key,
