@@ -175,6 +175,9 @@ class BundleImage(BaseCommand, FileTransferProgressBarMixin):
                 raise ArgumentError("argument -B/--block-device-mappings: not "
                                     "compatible with image type 'ramdisk'")
 
+        if '/' in self.args.get('prefix', ''):
+            raise ArgumentError(
+                "argument --prefix: value must not contain '/'")
         if self.args['image'] == '-':
             self.args['image'] = sys.stdin
             if not self.args.get('prefix'):
@@ -287,7 +290,8 @@ class BundleImage(BaseCommand, FileTransferProgressBarMixin):
         finally:
             digest_result_mpconn.close()
             bundle_partinfo_aggregate_mpconn.close()
-        self.log.debug('%i bundle parts written', len(partinfo))
+        self.log.info('%i bundle parts written to %s', len(partinfo),
+                      os.path.dirname(path_prefix))
         self.log.debug('bundle digest: %s', digest)
         return digest, partinfo
 
