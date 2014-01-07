@@ -54,10 +54,10 @@ def spawn_process(func, **kwargs):
     p.start()
     return p
 
-def close_open_files(filelist=[]):
+def close_open_files(exclude_files=[]):
     procs = []
     fdlist = []
-    for f in filelist:
+    for f in exclude_files:
         fdlist.append(f.fileno())
     pid = os.getpid()
     #debug(str(pid) + ', fdlist:' + ",".join(str(x) for x in fdlist))

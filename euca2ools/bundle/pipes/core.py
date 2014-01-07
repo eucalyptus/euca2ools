@@ -102,7 +102,7 @@ def create_bundle_pipeline(infile, outfile, enc_key, enc_iv, tarinfo):
     return digest_result_mpqueue
 
 
-def create_unbundle_pipeline(outfile, enc_key, enc_iv, progressbar, writer_func, **writerkwargs):
+def create_unbundle_pipeline(outfile, enc_key, enc_iv, progressbar, writer_func, debug=False, **writerkwargs):
     """
     Creates a pipeline to perform the unbundle operation on the input provided by 'writer_func(writerkwargs)'.
     The resulting unbundled image will be written to 'outfile'.
@@ -134,12 +134,12 @@ def create_unbundle_pipeline(outfile, enc_key, enc_iv, progressbar, writer_func,
 
     # gzip -> sha1sum
     sha1 = spawn_process(_calc_sha1_for_pipe, infile=gzip.stdout, outfile=sha1_io_w,
-                        digest_out_pipe_w=sha1_checksum_w)
+                        digest_out_pipe_w=sha1_checksum_w, debug=debug)
     pids.append(sha1.pid)
 
     # sha1sum -> tar
     progress_r, progress_w = euca2ools.bundle.util.open_pipe_fileobjs()
-    tar = spawn_process(_do_tar_extract, infile=sha1_io_r, outfile=progress_w)
+    tar = spawn_process(_do_tar_extract, infile=sha1_io_r, outfile=progress_w, debug=debug)
     pids.append(tar.pid)
 
     #start the writer method to feed the pipeline something to unbundle
@@ -186,7 +186,7 @@ def create_unbundle_by_manifest_pipeline(outfile, manifest, source_dir, progress
                                     source_dir=source_dir)
 
 
-def create_unbundle_by_inputfile_pipeline(outfile, inputfile, enc_key, enc_iv, progressbar=None):
+def create_unbundle_by_inputfile_pipeline(inputfile, outfile, enc_key, enc_iv, progressbar=None):
     """
     Creates a pipeline to perform the unbundle operation on bundled input read in from 'inputfile'. The resulting
     unbundled image is written to 'outfile'.
@@ -396,13 +396,15 @@ def _concatenate_parts_to_file_for_pipe(outfile, image_parts, source_dir, debug=
         outfile.close()
 
 
-def _write_file_to_pipe(outfile, inputfile):
+def _write_file_to_pipe(inputfile, outfile, debug=False):
     """
     Intended for reading from file 'inputfile' and writing to pipe via 'outfile'.
     :param outfile: file obj used for writing inputfile to
     :param inputfile: file obj used for reading input from to feed pipe at 'outfile'
     """
     try:
+        shutil.copyfileobj(inputfile, outfile)
+        '''
         while not inputfile.closed:
             data = inputfile.read(euca2ools.bundle.pipes._BUFSIZE)
             if data:
@@ -410,6 +412,12 @@ def _write_file_to_pipe(outfile, inputfile):
                 outfile.flush()
             else:
                 break
+        '''
+    except IOError:
+        # HACK
+        if not debug:
+            return
+        raise
     finally:
         print_debug('Done, closing write end of pipe after writing')
         inputfile.close()

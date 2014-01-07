@@ -51,6 +51,9 @@ class Unbundle(BaseCommand):
                 help='''file containing the private key to decrypt the bundle
                 with.  This must match the certificate used when bundling the
                 image.'''),
+            Arg('-c', '--checksum', metavar='CHECKSUM',
+                help='''Bundled Image checksum, used to verify image
+                resulting from this unbundle operation'''),
             Arg('-d', '--destination', metavar='DIR', default='.',
                 help='''where to place the unbundled image (default: current
                 directory)'''),
@@ -111,6 +114,7 @@ class Unbundle(BaseCommand):
             raise ArgumentError("Source '{0}' is not Directory".format(self.args['destination']))
 
 
+
     def main(self):
         manifest = BundleManifest.read_from_file(self.manifest_path, self.private_key_path)
         dest_file = open(self.dest_dir + "/" + manifest.image_name, 'w')
@@ -133,7 +137,10 @@ class Unbundle(BaseCommand):
         except Exception:
             traceback.print_exc()
             if dest_file:
-                os.remove(dest_file.name)
+                try:
+                    os.remove(dest_file.name)
+                except:
+                    print "Could not remove failed destination file."
             raise
         finally:
             dest_file.close()
