@@ -24,12 +24,13 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 class BundlePart(object):
-    def __init__(self, filename, hexdigest, digest_algorithm):
+    def __init__(self, filename, hexdigest, digest_algorithm, size):
         self.digest_algorithm = digest_algorithm
         self.filename = filename
         self.hexdigest = hexdigest
+        self.size = size
 
     def __repr__(self):
-        return 'BundlePart({0}, {1}, {2})'.format(
+        return 'BundlePart({0}, {1}, {2}, {3})'.format(
             repr(self.filename), repr(self.hexdigest),
-            repr(self.digest_algorithm))
+            repr(self.digest_algorithm), repr(self.size))

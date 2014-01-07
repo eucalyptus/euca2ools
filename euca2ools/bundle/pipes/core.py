@@ -33,46 +33,52 @@ import sys
 import tarfile
 
 import euca2ools.bundle.util
-from euca2ools.bundle.util import spawn_process, close_open_files
+from euca2ools.bundle.util import spawn_process, find_and_close_open_files
 
 show_debug = False
 
 
-def create_bundle_pipeline(infile, outfile, enc_key, enc_iv, tarinfo):
-    digest_result_mpqueue = multiprocessing.Queue()
+def _create_tarball_from_stream(infile, outfile, tarinfo, debug=False):
+    euca2ools.bundle.util.close_all_fds(except_fds=(infile, outfile))
+    tarball = tarfile.open(mode='w|', fileobj=outfile,
+                           bufsize=euca2ools.bundle.pipes._BUFSIZE)
+    try:
+        tarball.addfile(tarinfo, fileobj=infile)
+    except IOError:
+        # HACK
+        if not debug:
+            return
+        raise
+    finally:
+        infile.close()
+        tarball.close()
+        outfile.close()
+
+
+def create_bundle_pipeline(infile, outfile, enc_key, enc_iv, tarinfo,
+                           debug=False):
     pids = []
 
     # infile -> tar
     tar_out_r, tar_out_w = euca2ools.bundle.util.open_pipe_fileobjs()
-    pid = os.fork()
-    pids.append(pid)
-    if pid == 0:
-        tar_out_r.close()
-        tarball = tarfile.open(mode='w|', fileobj=tar_out_w,
-                               bufsize=euca2ools.bundle.pipes._BUFSIZE)
-        try:
-            tarball.addfile(tarinfo, fileobj=infile)
-        finally:
-            infile.close()
-            tarball.close()
-            tar_out_w.close()
-        os._exit(os.EX_OK)
+    tar_p = multiprocessing.Process(target=_create_tarball_from_stream,
+                                    args=(infile, tar_out_w, tarinfo),
+                                    kwargs={'debug': debug})
+    tar_p.start()
+    pids.append(tar_p.pid)
     infile.close()
     tar_out_w.close()
 
     # tar -> sha1sum
     digest_out_r, digest_out_w = euca2ools.bundle.util.open_pipe_fileobjs()
-    pid = os.fork()
-    pids.append(pid)
-    if pid == 0:
-        digest_out_r.close()
-        try:
-            _calc_sha1_for_pipe(tar_out_r, digest_out_w, digest_result_mpqueue)
-        finally:
-            tar_out_r.close()
-            digest_out_w.close()
-        os._exit(os.EX_OK)
+    digest_result_r, digest_result_w = multiprocessing.Pipe(duplex=False)
+    digest_p = multiprocessing.Process(
+        target=_calc_sha1_for_pipe,
+        args=(tar_out_r, digest_out_w, digest_result_w))
+    digest_p.start()
+    pids.append(digest_p.pid)
     digest_out_w.close()
+    digest_result_w.close()
 
     # sha1sum -> gzip
     try:
@@ -98,8 +104,8 @@ def create_bundle_pipeline(infile, outfile, enc_key, enc_iv, tarinfo):
     for pid in pids:
         euca2ools.bundle.util.waitpid_in_thread(pid)
 
-    # Return the queue the caller can use to obtain the final digest
-    return digest_result_mpqueue
+    # Return the connection the caller can use to obtain the final digest
+    return digest_result_r
 
 
 def create_unbundle_pipeline(outfile, enc_key, enc_iv, progressbar, writer_func, debug=False, **writerkwargs):
@@ -206,10 +212,12 @@ def create_unbundle_by_inputfile_pipeline(inputfile, outfile, enc_key, enc_iv, p
                                     inputfile=inputfile)
 
 
+
 def _copy_with_progressbar(infile, outfile, progressbar=None):
     """
     Synchronously copy data from infile to outfile, updating a progress bar
-    with the total number of bytes copied along the way if one was provided.
+    with the total number of bytes copied along the way if one was provided,
+    and return the number of bytes copied.
 
     This method must be run on the main thread.
 
@@ -292,11 +300,11 @@ def _calc_sha1_for_pipe(infile, outfile, digest_out_pipe_w, debug=False):
     """
     Read data from infile and write it to outfile, calculating a running SHA1
     digest along the way.  When infile hits end-of-file, send the digest in
-    hex form to result_mpqueue and exit.
+    hex form to result_mpconn and exit.
     """
     print_debug("_calc_sha1_for_pipe...")
     print_debug( "My pid: " + str(os.getpid())+", my parent pid:" + str(os.getppid()))
-    close_open_files([infile,outfile,digest_out_pipe_w])
+    find_and_close_open_files([infile,outfile,digest_out_pipe_w])
     total = 0
     digest = hashlib.sha1()
     try:
@@ -335,7 +343,7 @@ def _do_tar_extract(infile, outfile, debug=False):
     """
     print_debug('do_tar_extract...')
     print_debug("My pid: " + str(os.getpid())+", my parent pid:" + str(os.getppid()))
-    close_open_files([infile,outfile])
+    find_and_close_open_files([infile,outfile])
     #sys.stdin.close()
     tarball = tarfile.open(mode='r|', fileobj=infile)
     try:
@@ -362,7 +370,7 @@ def _concatenate_parts_to_file_for_pipe(outfile, image_parts, source_dir, debug=
     :param source_dir: local path to parts contained in image_parts
     """
     print_debug("My pid: " + str(os.getpid())+", my parent pid:" + str(os.getppid()))
-    close_open_files([outfile])
+    find_and_close_open_files([outfile])
     part_count = len(image_parts)
     try:
         for part in image_parts:
@@ -428,6 +436,5 @@ def print_debug(msg, *args):
     if show_debug:
         msg += " ".join(str(x) for x in args)
         print >> sys.stderr, msg
-
 
 
