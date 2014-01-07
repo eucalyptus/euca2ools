@@ -121,7 +121,8 @@ class Unbundle(BaseCommand):
             pbar = None
         try:
             mpq = create_unbundle_by_manifest_pipeline(dest_file, manifest, self.source_dir, pbar)
-            written_digest = mpq.get()
+            #written_digest = mpq.get()
+            written_digest = mpq.strip()
             print "Expected digest:" + str(manifest.image_digest)
             print "  Actual digest:" + str(written_digest)
             if dest_file:

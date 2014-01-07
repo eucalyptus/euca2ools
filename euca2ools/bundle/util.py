@@ -26,12 +26,13 @@
 
 import os
 import threading
+from multiprocessing import Process
+from subprocess import check_output
 
 
 def open_pipe_fileobjs():
     pipe_r, pipe_w = os.pipe()
     return os.fdopen(pipe_r), os.fdopen(pipe_w, 'w')
-
 
 def waitpid_in_thread(pid):
     """
@@ -47,4 +48,38 @@ def spawn_thread(func, **kwargs):
     t = threading.Thread(target=func, kwargs=kwargs)
     t.start()
     return t
+
+def spawn_process(func, **kwargs):
+    p = Process(target=func, kwargs=kwargs)
+    p.start()
+    return p
+
+def close_open_files(filelist=[]):
+    procs = []
+    fdlist = []
+    for f in filelist:
+        fdlist.append(f.fileno())
+    pid = os.getpid()
+    #debug(str(pid) + ', fdlist:' + ",".join(str(x) for x in fdlist))
+    proc_output = check_output(
+        [ "lsof", '-w', '-Ff', "-p", str( pid ) ] )
+    for fd in filter( lambda s: s and s[ 0 ] == 'f' and s[1: ].isdigit(), proc_output.split( '\n' ) ):
+        procs.append(int(fd.lstrip('f')))
+    #debug(str(len(procs)) + " procs for pid before:" +str(pid)+" = " + ",".join(str(x) for x in procs))
+    for fd in procs:
+        if fd > 3 and fdlist and not fd in fdlist:
+            #debug('Closing fd:' +str(fd))
+            try:
+                os.close(fd)
+            except Exception as e:
+                pass
+                #debug(str(pid) + ", Couldn't close fd:" + str(fd) + ", err:" + str(e))
+    procs = []
+    proc_output = check_output(
+        [ "lsof", '-w', '-Ff', "-p", str( pid ) ] )
+    for fd in filter( lambda s: s and s[ 0 ] == 'f' and s[1: ].isdigit(), proc_output.split( '\n' ) ):
+        procs.append(int(fd.lstrip('f')))
+    #debug(str(len(procs)) + " procs for pid after" +str(pid)+" = " + ",".join(str(x) for x in procs))
+    return procs
+
 

@@ -33,7 +33,7 @@ import sys
 import tarfile
 
 import euca2ools.bundle.util
-from euca2ools.bundle.util import spawn_thread
+from euca2ools.bundle.util import spawn_process, close_open_files
 
 show_debug = False
 
@@ -115,39 +115,52 @@ def create_unbundle_pipeline(outfile, enc_key, enc_iv, progressbar, writer_func,
     :param writerkwargs: the keyword arguements used when calling writer_func. ie: writer_func(writerkwargs)
     :returns multiprocessing.Queue: Queue contains the checksum (sha1) for the unbundled image
     """
-    debug('Starting test_unbundle_pipe_line...')
-    digest_result_mpqueue = multiprocessing.Queue()
+    pids = []
+    print_debug('Starting test_unbundle_pipe_line...')
 
+    print_debug( "Main pid. My pid: " + str(os.getpid())+", my parent pid:" + str(os.getppid()))
     #Create the sub processes
     # infile -> openssl
     openssl = _get_ssl_subprocess(enc_key, enc_iv, decrypt=True)
+    pids.append(openssl.pid)
+
     # openssl -> gzip
     gzip = _get_gzip_subprocess(openssl.stdout, decompress=True)
-
-    #Create the python threads
-    #start the writer method to feed the pipeline something to unbundle
-    writerkwargs['outfile'] = openssl.stdin
-    start_writer = spawn_thread(writer_func, **writerkwargs)
+    pids.append(gzip.pid)
 
     #Create pipe file objs to handle i/o...
-    digest_out_r, digest_out_w = euca2ools.bundle.util.open_pipe_fileobjs()
-    progress_r, progress_w = euca2ools.bundle.util.open_pipe_fileobjs()
+    sha1_io_r, sha1_io_w = euca2ools.bundle.util.open_pipe_fileobjs()
+    sha1_checksum_r, sha1_checksum_w = euca2ools.bundle.util.open_pipe_fileobjs()
 
     # gzip -> sha1sum
-    sha1 = spawn_thread(_calc_sha1_for_pipe, infile=gzip.stdout, outfile=digest_out_w,
-                        result_mpqueue=digest_result_mpqueue)
+    sha1 = spawn_process(_calc_sha1_for_pipe, infile=gzip.stdout, outfile=sha1_io_w,
+                        digest_out_pipe_w=sha1_checksum_w)
+    pids.append(sha1.pid)
 
     # sha1sum -> tar
-    tar = spawn_thread(_do_tar_extract, infile=digest_out_r, outfile=progress_w)
+    progress_r, progress_w = euca2ools.bundle.util.open_pipe_fileobjs()
+    tar = spawn_process(_do_tar_extract, infile=sha1_io_r, outfile=progress_w)
+    pids.append(tar.pid)
+
+    #start the writer method to feed the pipeline something to unbundle
+    writerkwargs['outfile'] = openssl.stdin
+    start_writer = spawn_process(writer_func, **writerkwargs)
+    pids.append(start_writer.pid)
+
+    openssl.stdin.close()
+    progress_w.close()
 
     # tar -> final output and update progressbar
-    copy_with_progressbar(infile=progress_r, outfile=outfile, progressbar=progressbar)
+    _copy_with_progressbar(infile=progress_r, outfile=outfile, progressbar=progressbar)
+    sha1_checksum_w.close()
+    sha1_checksum = sha1_checksum_r.read()
+    print_debug('done!!!')
 
     for t in [sha1, tar, start_writer]:
         t.join()
 
     # Return the queue the caller can use to obtain the final digest
-    return digest_result_mpqueue
+    return  sha1_checksum
 
 
 def create_unbundle_by_manifest_pipeline(outfile, manifest, source_dir, progressbar=None):
@@ -193,7 +206,7 @@ def create_unbundle_by_inputfile_pipeline(outfile, inputfile, enc_key, enc_iv, p
                                     inputfile=inputfile)
 
 
-def copy_with_progressbar(infile, outfile, progressbar=None):
+def _copy_with_progressbar(infile, outfile, progressbar=None):
     """
     Synchronously copy data from infile to outfile, updating a progress bar
     with the total number of bytes copied along the way if one was provided.
@@ -216,11 +229,13 @@ def copy_with_progressbar(infile, outfile, progressbar=None):
                 outfile.flush()
                 if progressbar:
                     progressbar.update(bytes_written)
+
             else:
                 break
     finally:
         if progressbar:
             progressbar.finish()
+        infile.close()
         outfile.close()
 
 
@@ -233,7 +248,7 @@ def _get_ssl_subprocess(enc_key, enc_iv, decrypt=True):
     :returns: openssl subprocess
     :rtype: subprocess.Popen
     """
-    debug('get_ssl_decrypt_subprocess...')
+    print_debug('get_ssl_decrypt_subprocess...')
     action = '-e'
     if decrypt:
         action = '-d'
@@ -254,7 +269,7 @@ def _get_gzip_subprocess(infile, decompress=True):
     :returns: gzip subprocess
     :rtype: subprocess.Popen obj
     """
-    debug('get_gzip_subprocess...')
+    print_debug('get_gzip_subprocess...')
     gzip_args = ['-c']
     if decompress:
         gzip_args = ['-c', '-d']
@@ -273,58 +288,72 @@ def _get_gzip_subprocess(infile, decompress=True):
 
 
 
-def _calc_sha1_for_pipe(infile, outfile, result_mpqueue):
+def _calc_sha1_for_pipe(infile, outfile, digest_out_pipe_w, debug=False):
     """
     Read data from infile and write it to outfile, calculating a running SHA1
     digest along the way.  When infile hits end-of-file, send the digest in
     hex form to result_mpqueue and exit.
     """
-    debug("_calc_sha1_for_pipe...")
+    print_debug("_calc_sha1_for_pipe...")
+    print_debug( "My pid: " + str(os.getpid())+", my parent pid:" + str(os.getppid()))
+    close_open_files([infile,outfile,digest_out_pipe_w])
     total = 0
     digest = hashlib.sha1()
     try:
-        while not infile.closed:
-            debug('Waiting to read from', infile.fileno(), ' closed?', infile.closed)
+        while True:
             chunk = infile.read(euca2ools.bundle.pipes._BUFSIZE)
             if chunk:
                 total += len(chunk)
-                debug('calc total:', total)
+                #print_debug('calc total:', total)
                 digest.update(chunk)
                 outfile.write(chunk)
                 outfile.flush()
             else:
-                debug('Done with sha1. Input file ', infile.fileno(), ' closed? ', infile.closed)
+                print_debug('Done with sha1. Input file ', infile.fileno(), ' closed? ', infile.closed)
                 break
-                #outfile.close()
-
-        debug("_calc_sha1_for_pipe digest returning: ", digest.hexdigest())
-        result_mpqueue.put(digest.hexdigest())
+        print_debug("_calc_sha1_for_pipe digest returning: ", digest.hexdigest())
+        digest_out_pipe_w.write(digest.hexdigest())
+        digest_out_pipe_w.flush()
+        digest_out_pipe_w.close()
+        print_debug('Digest sent to pipe')
+    except IOError:
+        # HACK
+        if not debug:
+            return
+        raise
     finally:
+        infile.close()
         outfile.close()
-        #todo should we close/join here?
-        #result_mpqueue.close()
-        #result_mpqueue.join_thread()
 
 
-def _do_tar_extract(infile, outfile):
+
+def _do_tar_extract(infile, outfile, debug=False):
     """
     Perform tar extract on infile and write to outfile
     :param infile: file obj providing input for tar
     :param outfile: file obj destination for tar output
     """
-    debug('do_tar_extract...')
+    print_debug('do_tar_extract...')
+    print_debug("My pid: " + str(os.getpid())+", my parent pid:" + str(os.getppid()))
+    close_open_files([infile,outfile])
     #sys.stdin.close()
     tarball = tarfile.open(mode='r|', fileobj=infile)
     try:
         tarinfo = tarball.next()
         shutil.copyfileobj(tarball.extractfile(tarinfo), outfile)
+    except IOError:
+        # HACK
+        if not debug:
+            return
+        raise
     finally:
         tarball.close()
+        infile.close()
         outfile.close()
         #os._exit(os.EX_OK)
 
 
-def _concatenate_parts_to_file_for_pipe(outfile, image_parts, source_dir):
+def _concatenate_parts_to_file_for_pipe(outfile, image_parts, source_dir, debug=False):
     """
     Concatenate a list of 'image_parts' files found in 'source_dir' into pipeline fed by 'outfile'
     Parts are checked against checksum contained in part obj against calculated checksums as they are read/written.
@@ -332,9 +361,12 @@ def _concatenate_parts_to_file_for_pipe(outfile, image_parts, source_dir):
     :param image_parts: list of euca2ools.manifest.part objs
     :param source_dir: local path to parts contained in image_parts
     """
+    print_debug("My pid: " + str(os.getpid())+", my parent pid:" + str(os.getppid()))
+    close_open_files([outfile])
+    part_count = len(image_parts)
     try:
         for part in image_parts:
-            debug("Concatenating Part:" + str(part.filename))
+            print_debug("Concatenating Part:" + str(part.filename))
             sha1sum = hashlib.sha1()
             part_file_path = source_dir + "/" + part.filename
             with open(part_file_path) as part_file:
@@ -345,13 +377,22 @@ def _concatenate_parts_to_file_for_pipe(outfile, image_parts, source_dir):
                     outfile.flush()
                     data = part_file.read(euca2ools.bundle.pipes._BUFSIZE)
                 part_digest = sha1sum.hexdigest()
-                debug('Part sha1sum:' + str(part_digest))
-                debug('Expected sum:' + str(part.hexdigest))
+                print_debug("PART NUMBER:" + str(image_parts.index(part)) + "/"+ str(part_count))
+                print_debug('Part sha1sum:' + str(part_digest))
+                print_debug('Expected sum:' + str(part.hexdigest))
                 if part_digest != part.hexdigest:
                     raise ValueError('Input part file may be corrupt '
                                      '(expected digest: {0}, actual: {1})'.format(part.hexdigest, part_digest))
+    except IOError:
+        # HACK
+        if not debug:
+            return
+        raise
     finally:
-        debug('Closing write end of pipe after writing')
+        if part_file:
+            part_file.close()
+        print_debug('Concatentate done')
+        print_debug('Closing write end of pipe after writing')
         outfile.close()
 
 
@@ -370,13 +411,15 @@ def _write_file_to_pipe(outfile, inputfile):
             else:
                 break
     finally:
-        debug('Done, closing write end of pipe after writing')
+        print_debug('Done, closing write end of pipe after writing')
         inputfile.close()
         outfile.close()
 
 
-def debug(msg, *args):
+def print_debug(msg, *args):
     if show_debug:
         msg += " ".join(str(x) for x in args)
         print >> sys.stderr, msg
+
+
 
