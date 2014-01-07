@@ -24,7 +24,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 class BundlePart(object):
-    def __init__(self, filename, hexdigest, digest_algorithm, size):
+    def __init__(self, filename, hexdigest, digest_algorithm, size=None):
         self.digest_algorithm = digest_algorithm
         self.filename = filename
         self.hexdigest = hexdigest

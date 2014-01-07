@@ -321,6 +321,7 @@ class BundleImage(BaseCommand, FileTransferProgressBarMixin):
         manifest.image_digest = digest
         manifest.image_digest_algorithm = 'SHA1'  # shouldn't be hardcoded here
         manifest.image_size = self.args['image_size']
+        manifest.bundled_image_size = sum(part.size for part in partinfo)
         manifest.enc_key = self.args['enc_key']
         manifest.enc_iv = self.args['enc_iv']
         manifest.enc_algorithm = 'AES-128-CBC'  # shouldn't be hardcoded here

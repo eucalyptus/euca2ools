@@ -28,19 +28,22 @@ import os.path
 from euca2ools.bundle.pipes.core import create_unbundle_by_manifest_pipeline, create_unbundle_by_inputfile_pipeline
 from euca2ools.bundle.manifest import BundleManifest
 import os
+import argparse
 import traceback
 from requestbuilder import Arg
 from requestbuilder.command import BaseCommand
 from requestbuilder.exceptions import ArgumentError
 from requestbuilder.util import set_userregion
-#from requestbuilder.mixins import FileTransferProgressBarMixin
+from requestbuilder.mixins import FileTransferProgressBarMixin
+
+"""
 try:
     from progressbar import ProgressBar, Bar, Percentage, ETA
 except:
     pass
+"""
 
-
-class Unbundle(BaseCommand):
+class Unbundle(BaseCommand, FileTransferProgressBarMixin):
     DESCRIPTION = ('Recreate an image from its bundled parts\n\nThe key used '
                    'to unbundle the image must match the certificate that was '
                    'used to bundle it.')
@@ -51,7 +54,7 @@ class Unbundle(BaseCommand):
                 help='''file containing the private key to decrypt the bundle
                 with.  This must match the certificate used when bundling the
                 image.'''),
-            Arg('-c', '--checksum', metavar='CHECKSUM',
+            Arg('-c', '--checksum', metavar='CHECKSUM',default=None,
                 help='''Bundled Image checksum, used to verify image
                 resulting from this unbundle operation'''),
             Arg('-d', '--destination', metavar='DIR', default='.',
@@ -62,7 +65,8 @@ class Unbundle(BaseCommand):
                 current directory)'''),
             Arg('--region', dest='userregion', metavar='USER@REGION',
                 help='''use encryption keys specified for a user and/or region
-                in configuration files''')]
+                in configuration files'''),
+            Arg('--progressbar-label', help=argparse.SUPPRESS)]
 
     # noinspection PyExceptionInherit
     def configure(self):
@@ -114,13 +118,15 @@ class Unbundle(BaseCommand):
             raise ArgumentError("Source '{0}' is not Directory".format(self.args['destination']))
 
 
-
     def main(self):
         manifest = BundleManifest.read_from_file(self.manifest_path, self.private_key_path)
         dest_file = open(self.dest_dir + "/" + manifest.image_name, 'w')
         try:
-            widgets = [Percentage(), Bar(), ETA()]
-            pbar = ProgressBar(widgets=widgets, maxval=manifest.image_size)
+            label = self.args.get('progressbar_label', 'UnBundling image')
+            pbar = self.get_progressbar(label=label,
+                                        maxval=manifest.image_size)
+            #widgets = [Percentage(), Bar(), ETA()]
+            #pbar = ProgressBar(widgets=widgets, maxval=manifest.image_size)
         except NameError:
             pbar = None
         try:

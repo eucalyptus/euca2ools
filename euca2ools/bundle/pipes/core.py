@@ -192,7 +192,7 @@ def create_unbundle_by_manifest_pipeline(outfile, manifest, source_dir, progress
                                     source_dir=source_dir)
 
 
-def create_unbundle_by_inputfile_pipeline(inputfile, outfile, enc_key, enc_iv, progressbar=None):
+def create_unbundle_stream_pipeline(inputfile, outfile, enc_key, enc_iv, progressbar=None):
     """
     Creates a pipeline to perform the unbundle operation on bundled input read in from 'inputfile'. The resulting
     unbundled image is written to 'outfile'.
