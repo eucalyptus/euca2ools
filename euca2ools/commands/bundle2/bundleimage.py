@@ -41,6 +41,7 @@ from euca2ools.bundle.pipes.core import (create_bundle_pipeline,
 from euca2ools.bundle.pipes.fittings import (create_bundle_part_writer,
                                              create_mpconn_aggregator)
 ## TODO:  euca2oold.bundle.util.open_pipe_fileobjs should probably be moved
+import euca2ools.bundle.manifest
 import euca2ools.bundle.util
 from euca2ools.commands import Euca2ools
 from euca2ools.commands.argtypes import (delimited_list, filesize,
@@ -175,7 +176,7 @@ class BundleImage(BaseCommand, FileTransferProgressBarMixin):
                 raise ArgumentError("argument -B/--block-device-mappings: not "
                                     "compatible with image type 'ramdisk'")
 
-        if '/' in self.args.get('prefix', ''):
+        if '/' in (self.args.get('prefix') or ''):
             raise ArgumentError(
                 "argument --prefix: value must not contain '/'")
         if self.args['image'] == '-':
