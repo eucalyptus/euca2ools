@@ -27,8 +27,12 @@
 import os
 import subprocess
 import threading
+import traceback
+from StringIO import StringIO
 from multiprocessing import Process
 from subprocess import check_output
+
+show_debug = False
 
 
 def close_all_fds(except_fds=None):
@@ -43,7 +47,7 @@ def close_all_fds(except_fds=None):
                 except_filenos.append(except_fd.fileno())
             else:
                 raise ValueError('{0} must be an int or have a fileno method'
-                                 .format(repr(except_fd)))
+                .format(repr(except_fd)))
 
     fileno_ranges = []
     next_range_min = 0
@@ -69,52 +73,103 @@ def open_pipe_fileobjs():
     pipe_r, pipe_w = os.pipe()
     return os.fdopen(pipe_r), os.fdopen(pipe_w, 'w')
 
+
 def waitpid_in_thread(pid):
     """
     Start a thread that calls os.waitpid on a particular PID to prevent
     zombie processes from hanging around after they have finished.
     """
+    try:
+        #Check to see if pid exists
+        os.kill(pid, 0)
+    except OSError:
+        return
+    else:
+        pid_thread = threading.Thread(target=check_and_waitpid, args=(pid, 0))
+        pid_thread.daemon = True
+        pid_thread.start()
 
-    pid_thread = threading.Thread(target=os.waitpid, args=(pid, 0))
-    pid_thread.daemon = True
-    pid_thread.start()
 
 def spawn_thread(func, **kwargs):
     t = threading.Thread(target=func, kwargs=kwargs)
     t.start()
     return t
 
+
 def spawn_process(func, **kwargs):
-    p = Process(target=func, kwargs=kwargs)
+    p = Process(target=process_wrapper, args=[func], kwargs=kwargs)
     p.start()
     return p
 
-def find_and_close_open_files(exclude_files=[]):
-    procs = []
+
+def process_wrapper(func, **kwargs):
+    if hasattr(func, '__name__'):
+        name = func.__name__
+    else:
+        name = 'unknown func'
+    print_debug('Attempting to run:' + str(name) + ', with kwargs:' + str(kwargs))
+    try:
+        func(**kwargs)
+    except Exception, e:
+        tb = get_traceback()
+        msg = 'Error in wrapped process:' + str(name) + ":" + str(e) + "\n" + str(tb)
+        print >> os.sys.stderr, msg
+        traceback.print_exc()
+        os._exit(1)
+    os._exit(os.EX_OK)
+
+
+def check_and_waitpid(pid, status):
+    try:
+        #Check if pid is still alive?
+        os.kill(pid, 0)
+    except OSError:
+        return
+    else:
+        try:
+            os.waitpid(pid, status)
+        except OSError:
+            pass
+
+
+def find_and_close_open_files(exclude_files=None):
+    exclude_files = exclude_files or []
     fdlist = []
     for f in exclude_files:
         fdlist.append(f.fileno())
-    pid = os.getpid()
-    #debug(str(pid) + ', fdlist:' + ",".join(str(x) for x in fdlist))
-    proc_output = check_output(
-        [ "lsof", '-w', '-Ff', "-p", str( pid ) ] )
-    for fd in filter( lambda s: s and s[ 0 ] == 'f' and s[1: ].isdigit(), proc_output.split( '\n' ) ):
-        procs.append(int(fd.lstrip('f')))
-    #debug(str(len(procs)) + " procs for pid before:" +str(pid)+" = " + ",".join(str(x) for x in procs))
-    for fd in procs:
+    for fd in get_open_files():
         if fd > 3 and fdlist and not fd in fdlist:
-            #debug('Closing fd:' +str(fd))
             try:
                 os.close(fd)
-            except Exception as e:
+            except:
                 pass
-                #debug(str(pid) + ", Couldn't close fd:" + str(fd) + ", err:" + str(e))
-    procs = []
-    proc_output = check_output(
-        [ "lsof", '-w', '-Ff', "-p", str( pid ) ] )
-    for fd in filter( lambda s: s and s[ 0 ] == 'f' and s[1: ].isdigit(), proc_output.split( '\n' ) ):
-        procs.append(int(fd.lstrip('f')))
-    #debug(str(len(procs)) + " procs for pid after" +str(pid)+" = " + ",".join(str(x) for x in procs))
-    return procs
+                #print_debug(str(pid) + ", Couldn't close fd:" + str(fd))
 
 
+def get_open_files():
+    fd_list = []
+    pid = os.getpid()
+    lsof_output = check_output(["lsof", '-w', '-Ff', "-p", str(pid)])
+    for fd in filter(lambda x: x and x[0] == 'f' and x[1:].isdigit(), lsof_output.split('\n')):
+        fd_list.append(int(fd.lstrip('f')))
+    return fd_list
+
+
+def get_traceback():
+    """
+    Returns a string buffer with traceback, to be used for debug/info purposes.
+    """
+    try:
+        out = StringIO()
+        traceback.print_exception(*os.sys.exc_info(), file=out)
+        out.seek(0)
+        buf = out.read()
+    except Exception, e:
+        buf = "Could not get traceback" + str(e)
+    return str(buf)
+
+
+def print_debug(msg, *args):
+    if show_debug:
+        msg += " ".join(str(x) for x in args)
+        print >> os.sys.stderr, msg

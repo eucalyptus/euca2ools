@@ -25,7 +25,7 @@
 
 from euca2ools.commands import Euca2ools
 import os.path
-from euca2ools.bundle.pipes.core import create_unbundle_by_manifest_pipeline, create_unbundle_by_inputfile_pipeline
+from euca2ools.bundle.pipes.fittings import create_unbundle_by_manifest_pipeline, create_unbundle_stream_pipeline
 from euca2ools.bundle.manifest import BundleManifest
 import os
 import argparse
@@ -36,12 +36,6 @@ from requestbuilder.exceptions import ArgumentError
 from requestbuilder.util import set_userregion
 from requestbuilder.mixins import FileTransferProgressBarMixin
 
-"""
-try:
-    from progressbar import ProgressBar, Bar, Percentage, ETA
-except:
-    pass
-"""
 
 class Unbundle(BaseCommand, FileTransferProgressBarMixin):
     DESCRIPTION = ('Recreate an image from its bundled parts\n\nThe key used '
@@ -54,7 +48,7 @@ class Unbundle(BaseCommand, FileTransferProgressBarMixin):
                 help='''file containing the private key to decrypt the bundle
                 with.  This must match the certificate used when bundling the
                 image.'''),
-            Arg('-c', '--checksum', metavar='CHECKSUM',default=None,
+            Arg('-c', '--checksum', metavar='CHECKSUM', default=None,
                 help='''Bundled Image checksum, used to verify image
                 resulting from this unbundle operation'''),
             Arg('-d', '--destination', metavar='DIR', default='.',
@@ -104,18 +98,21 @@ class Unbundle(BaseCommand, FileTransferProgressBarMixin):
         self.private_key_path = self.args.get('privatekey')
 
         #Get optional source directory...
-        self.source_dir = os.path.expanduser(os.path.abspath(self.args['source']))
-        if not os.path.exists(self.source_dir):
-            raise ArgumentError("Source directory '{0}' does not exist".format(self.args['source']))
-        if not os.path.isdir(self.source_dir):
-            raise ArgumentError("Source '{0}' is not Directory".format(self.args['source']))
+        self.source_dir = self.args['source']
+        print 'source dir:', self.source_dir
+        if not (self.source_dir == "-"):
+            self.source_dir = os.path.expanduser(os.path.abspath(self.source_dir))
+            if not os.path.exists(self.source_dir):
+                raise ArgumentError("Source directory '{0}' does not exist".format(self.args['source']))
+            if not os.path.isdir(self.source_dir):
+                raise ArgumentError("Source '{0}' is not Directory".format(self.args['source']))
 
         #Get optional destination directory...
         self.dest_dir = os.path.expanduser(os.path.abspath(self.args['destination']))
-        if not os.path.exists(self.source_dir):
-            raise ArgumentError("Source directory '{0}' does not exist".format(self.args['destination']))
-        if not os.path.isdir(self.source_dir):
-            raise ArgumentError("Source '{0}' is not Directory".format(self.args['destination']))
+        if not os.path.exists(self.dest_dir):
+            raise ArgumentError("Destination directory '{0}' does not exist".format(self.args['destination']))
+        if not os.path.isdir(self.dest_dir):
+            raise ArgumentError("Destination '{0}' is not Directory".format(self.args['destination']))
 
 
     def main(self):
@@ -125,14 +122,16 @@ class Unbundle(BaseCommand, FileTransferProgressBarMixin):
             label = self.args.get('progressbar_label', 'UnBundling image')
             pbar = self.get_progressbar(label=label,
                                         maxval=manifest.image_size)
-            #widgets = [Percentage(), Bar(), ETA()]
-            #pbar = ProgressBar(widgets=widgets, maxval=manifest.image_size)
         except NameError:
             pbar = None
         try:
-            mpq = create_unbundle_by_manifest_pipeline(dest_file, manifest, self.source_dir, pbar)
-            #written_digest = mpq.get()
-            written_digest = mpq.strip()
+            if self.source_dir == '-':
+                written_digest = create_unbundle_stream_pipeline(os.fdopen(os.dup(os.sys.stdin.fileno())), dest_file,
+                                                      enc_key=manifest.enc_key,
+                                                      enc_iv=manifest.enc_iv, progressbar=pbar)
+            else:
+                written_digest = create_unbundle_by_manifest_pipeline(dest_file, manifest, self.source_dir, pbar)
+            written_digest = written_digest.strip()
             print "Expected digest:" + str(manifest.image_digest)
             print "  Actual digest:" + str(written_digest)
             if dest_file:
@@ -145,7 +144,7 @@ class Unbundle(BaseCommand, FileTransferProgressBarMixin):
             if dest_file:
                 try:
                     os.remove(dest_file.name)
-                except:
+                except OSError:
                     print "Could not remove failed destination file."
             raise
         finally:
