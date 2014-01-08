@@ -99,7 +99,6 @@ class Unbundle(BaseCommand, FileTransferProgressBarMixin):
 
         #Get optional source directory...
         self.source_dir = self.args['source']
-        print 'source dir:', self.source_dir
         if not (self.source_dir == "-"):
             self.source_dir = os.path.expanduser(os.path.abspath(self.source_dir))
             if not os.path.exists(self.source_dir):
@@ -108,16 +107,23 @@ class Unbundle(BaseCommand, FileTransferProgressBarMixin):
                 raise ArgumentError("Source '{0}' is not Directory".format(self.args['source']))
 
         #Get optional destination directory...
-        self.dest_dir = os.path.expanduser(os.path.abspath(self.args['destination']))
-        if not os.path.exists(self.dest_dir):
-            raise ArgumentError("Destination directory '{0}' does not exist".format(self.args['destination']))
-        if not os.path.isdir(self.dest_dir):
-            raise ArgumentError("Destination '{0}' is not Directory".format(self.args['destination']))
+        self.dest_dir = self.args['destination']
+        if not (self.dest_dir == "-"):
+            self.dest_dir = os.path.expanduser(os.path.abspath(self.args['destination']))
+            if not os.path.exists(self.dest_dir):
+                raise ArgumentError("Destination directory '{0}' does not exist".format(self.args['destination']))
+            if not os.path.isdir(self.dest_dir):
+                raise ArgumentError("Destination '{0}' is not Directory".format(self.args['destination']))
 
 
     def main(self):
         manifest = BundleManifest.read_from_file(self.manifest_path, self.private_key_path)
-        dest_file = open(self.dest_dir + "/" + manifest.image_name, 'w')
+        dest_file_name = None
+        if self.dest_dir == "-":
+            dest_file = os.fdopen(os.dup(os.sys.stdout.fileno()), 'w')
+        else:
+            dest_file = open(self.dest_dir + "/" + manifest.image_name, 'w')
+            dest_file_name = dest_file.name
         try:
             label = self.args.get('progressbar_label', 'UnBundling image')
             pbar = self.get_progressbar(label=label,
@@ -132,13 +138,13 @@ class Unbundle(BaseCommand, FileTransferProgressBarMixin):
             else:
                 written_digest = create_unbundle_by_manifest_pipeline(dest_file, manifest, self.source_dir, pbar)
             written_digest = written_digest.strip()
-            print "Expected digest:" + str(manifest.image_digest)
-            print "  Actual digest:" + str(written_digest)
             if dest_file:
                 dest_file.close()
             if written_digest != manifest.image_digest:
-                raise ValueError('extracted image appears to be corrupt '
+                raise ValueError('Digest mismatch. Extracted image appears to be corrupt '
                                  '(expected digest: {0}, actual: {1})'.format(manifest.image_digest, written_digest))
+            self.log.debug("\nExpected digest:" + str(manifest.image_digest) + "\n" +
+                           "  Actual digest:" + str(written_digest))
         except Exception:
             traceback.print_exc()
             if dest_file:
@@ -149,11 +155,12 @@ class Unbundle(BaseCommand, FileTransferProgressBarMixin):
             raise
         finally:
             dest_file.close()
-        return dest_file.name
+        return dest_file_name
 
 
     def print_result(self, result):
-        print 'Wrote', result
+        if result:
+            print 'Wrote', result
 
 
 if __name__ == '__main__':

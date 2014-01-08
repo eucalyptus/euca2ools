@@ -199,7 +199,7 @@ def _copy_with_progressbar(infile, outfile, progressbar=None):
         if progressbar:
             progressbar.finish()
         infile.close()
-        outfile.close()
+        #outfile.close()
 
 
 def _get_ssl_subprocess(enc_key, enc_iv, decrypt=True):
