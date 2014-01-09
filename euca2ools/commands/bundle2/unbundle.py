@@ -60,6 +60,8 @@ class Unbundle(BaseCommand, FileTransferProgressBarMixin):
             Arg('--region', dest='userregion', metavar='USER@REGION',
                 help='''use encryption keys specified for a user and/or region
                 in configuration files'''),
+            Arg('--maxbytes', dest='maxbytes', metavar='MAX BYTES', default=0,
+                help='''The Maximum bytes allowed to be written to the destination.'''),
             Arg('--progressbar-label', help=argparse.SUPPRESS)]
 
     # noinspection PyExceptionInherit
@@ -139,12 +141,19 @@ class Unbundle(BaseCommand, FileTransferProgressBarMixin):
         try:
             if self.source_dir == '-':
                 #Unbundle stdin stream...
-                written_digest = create_unbundle_stream_pipeline(os.fdopen(os.dup(os.sys.stdin.fileno())), dest_file,
-                                                      enc_key=manifest.enc_key,
-                                                      enc_iv=manifest.enc_iv, progressbar=pbar)
+                written_digest = create_unbundle_stream_pipeline(os.fdopen(os.dup(os.sys.stdin.fileno())),
+                                                                dest_file,
+                                                                enc_key=manifest.enc_key,
+                                                                enc_iv=manifest.enc_iv,
+                                                                progressbar=pbar,
+                                                                maxbytes=int(self.args['maxbytes']))
             else:
                 #Unbundle parts in a local directory
-                written_digest = create_unbundle_by_manifest_pipeline(dest_file, manifest, self.source_dir, pbar)
+                written_digest = create_unbundle_by_manifest_pipeline(dest_file,
+                                                                      manifest,
+                                                                      self.source_dir,
+                                                                      pbar,
+                                                                      maxbytes=int(self.args['maxbytes']))
             written_digest = written_digest.strip()
             if dest_file:
                 dest_file.close()

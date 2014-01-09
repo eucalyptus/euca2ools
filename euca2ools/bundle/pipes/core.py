@@ -106,7 +106,7 @@ def create_bundle_pipeline(infile, outfile, enc_key, enc_iv, tarinfo,
     return digest_result_r
 
 
-def create_unbundle_pipeline(outfile, enc_key, enc_iv, progressbar, writer_func, debug=False, **writerkwargs):
+def create_unbundle_pipeline(outfile, enc_key, enc_iv, progressbar, maxbytes, writer_func, debug=False, **writerkwargs):
     """
     Creates a pipeline to perform the unbundle operation on the input provided by 'writer_func(writerkwargs)'.
     The resulting unbundled image will be written to 'outfile'.
@@ -116,59 +116,77 @@ def create_unbundle_pipeline(outfile, enc_key, enc_iv, progressbar, writer_func,
     :param enc_iv: the encyrption initialization vector used to bundle the image
     :param writer_func: the function used to feed the pipe the bundled input to be unbundled
     :param progressbar: the progressbar obj to be updated during the unbundle pipe's work flow
+    :param maxbytes: integer number of bytes that can be written to the outfile
     :param writerkwargs: the keyword arguements used when calling writer_func. ie: writer_func(writerkwargs)
     :returns multiprocessing.Queue: Queue contains the checksum (sha1) for the unbundled image
     """
-    pids = []
     print_debug('Starting test_unbundle_pipe_line...')
     print_debug("Main pid. My pid: " + str(os.getpid()) + ", my parent pid:" + str(os.getppid()))
+
+    pids = []
+    openssl, gzip, sha1, tar, start_writer = [None]*5
+
     #Create the sub processes
     # infile -> openssl
-    openssl = _get_ssl_subprocess(enc_key, enc_iv, decrypt=True)
+    try:
+        openssl = _get_ssl_subprocess(enc_key, enc_iv, decrypt=True)
 
-    # openssl -> gzip
-    gzip = _get_gzip_subprocess(openssl.stdout, decompress=True)
+        # openssl -> gzip
+        gzip = _get_gzip_subprocess(openssl.stdout, decompress=True)
 
-    #Create pipe file objs to handle i/o...
-    sha1_io_r, sha1_io_w = euca2ools.bundle.util.open_pipe_fileobjs()
-    sha1_checksum_r, sha1_checksum_w = euca2ools.bundle.util.open_pipe_fileobjs()
+        #Create pipe file objs to handle i/o...
+        sha1_io_r, sha1_io_w = euca2ools.bundle.util.open_pipe_fileobjs()
+        sha1_checksum_r, sha1_checksum_w = euca2ools.bundle.util.open_pipe_fileobjs()
 
-    # gzip -> sha1sum
-    sha1 = spawn_process(_calc_sha1_for_pipe, infile=gzip.stdout, outfile=sha1_io_w,
-                         digest_out_pipe_w=sha1_checksum_w, debug=debug)
-    pids.append(sha1.pid)
+        # gzip -> sha1sum
+        sha1 = spawn_process(_calc_sha1_for_pipe, infile=gzip.stdout, outfile=sha1_io_w,
+                             digest_out_pipe_w=sha1_checksum_w, debug=debug)
+        pids.append(sha1.pid)
 
-    # sha1sum -> tar
-    progress_r, progress_w = euca2ools.bundle.util.open_pipe_fileobjs()
-    tar = spawn_process(_do_tar_extract, infile=sha1_io_r, outfile=progress_w, debug=debug)
-    pids.append(tar.pid)
+        # sha1sum -> tar
+        progress_r, progress_w = euca2ools.bundle.util.open_pipe_fileobjs()
+        tar = spawn_process(_do_tar_extract, infile=sha1_io_r, outfile=progress_w, debug=debug)
+        pids.append(tar.pid)
 
-    #start the writer method to feed the pipeline something to unbundle
-    writerkwargs['outfile'] = openssl.stdin
-    start_writer = spawn_process(writer_func, **writerkwargs)
-    pids.append(start_writer.pid)
+        #start the writer method to feed the pipeline something to unbundle
+        writerkwargs['outfile'] = openssl.stdin
+        start_writer = spawn_process(writer_func, **writerkwargs)
+        pids.append(start_writer.pid)
 
-    # Make sure something calls wait() on every child process
-    for pid in pids:
-        euca2ools.bundle.util.waitpid_in_thread(pid)
+        # Make sure something calls wait() on every child process
+        for pid in pids:
+            euca2ools.bundle.util.waitpid_in_thread(pid)
 
-    openssl.stdin.close()
-    progress_w.close()
+        openssl.stdin.close()
+        progress_w.close()
 
-    # tar -> final output and update progressbar
-    _copy_with_progressbar(infile=progress_r, outfile=outfile, progressbar=progressbar)
-    sha1_checksum_w.close()
-    sha1_checksum = sha1_checksum_r.read()
-    print_debug('Unbundle pipeline done!!!')
+        # tar -> final output and update progressbar
+        _copy_with_progressbar(infile=progress_r, outfile=outfile, progressbar=progressbar, maxbytes=maxbytes)
+        sha1_checksum_w.close()
+        sha1_checksum = sha1_checksum_r.read()
+        print_debug('Unbundle pipeline done!!!')
 
-    for t in [sha1, tar, start_writer]:
-        t.join()
+
+        for t in [sha1, tar, start_writer]:
+            t.join()
+    except:
+        if openssl:
+            openssl.terminate()
+        if gzip:
+            gzip.terminate()
+        if sha1:
+            sha1.terminate()
+        if tar:
+            tar.terminate()
+        if start_writer:
+            start_writer.terminate()
+        raise
 
     # Return final digest/checksum the caller can use for evaluating the resulting unbundled image
     return sha1_checksum
 
 
-def _copy_with_progressbar(infile, outfile, progressbar=None):
+def _copy_with_progressbar(infile, outfile, progressbar=None, maxbytes=0):
     """
     Synchronously copy data from infile to outfile, updating a progress bar
     with the total number of bytes copied along the way if one was provided,
@@ -187,9 +205,12 @@ def _copy_with_progressbar(infile, outfile, progressbar=None):
         while not infile.closed:
             chunk = infile.read(euca2ools.bundle.pipes._BUFSIZE)
             if chunk:
-                bytes_written += len(chunk)
+                if maxbytes and ((bytes_written + len(chunk)) > maxbytes):
+                    raise RuntimeError('Amount to be written:{0} will exceed max.\
+                                        Written bytes: {1}/{2}'.format(len(chunk), bytes_written, maxbytes))
                 outfile.write(chunk)
                 outfile.flush()
+                bytes_written += len(chunk)
                 if progressbar:
                     progressbar.update(bytes_written)
 

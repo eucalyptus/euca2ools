@@ -126,7 +126,7 @@ def _aggregate_mpconn_items(in_mpconn, result_mpconn, out_mpconn=None,
             out_mpconn.close()
 
 
-def create_unbundle_by_manifest_pipeline(outfile, manifest, source_dir, progressbar=None, debug=False):
+def create_unbundle_by_manifest_pipeline(outfile, manifest, source_dir, progressbar=None, debug=False, maxbytes=0):
     """
     Creates a pipeline to perform the unbundle operation on parts specified in 'manifest'. Parts located in
     the local 'source_dir' are processed through the unbundle pipe and the resulting unbundled image is written
@@ -144,13 +144,14 @@ def create_unbundle_by_manifest_pipeline(outfile, manifest, source_dir, progress
                                     enc_key,
                                     enc_iv,
                                     progressbar,
+                                    maxbytes,
                                     _concatenate_parts_to_file_for_pipe,
                                     debug=debug,
                                     image_parts=manifest.image_parts,
                                     source_dir=source_dir)
 
 
-def create_unbundle_stream_pipeline(inputfile, outfile, enc_key, enc_iv, progressbar=None, debug=False):
+def create_unbundle_stream_pipeline(inputfile, outfile, enc_key, enc_iv, progressbar=None, debug=False, maxbytes=0):
     """
     Creates a pipeline to perform the unbundle operation on bundled input read in from 'inputfile'. The resulting
     unbundled image is written to 'outfile'.
@@ -166,6 +167,7 @@ def create_unbundle_stream_pipeline(inputfile, outfile, enc_key, enc_iv, progres
                                     enc_key,
                                     enc_iv,
                                     progressbar,
+                                    maxbytes,
                                     _write_inputfile_to_pipe,
                                     debug=debug,
                                     inputfile=inputfile)
