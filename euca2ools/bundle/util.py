@@ -110,6 +110,8 @@ def process_wrapper(func, **kwargs):
     print_debug('Attempting to run:' + str(name) + ', with kwargs:' + str(kwargs))
     try:
         func(**kwargs)
+    except KeyboardInterrupt:
+        pass
     except Exception, e:
         tb = get_traceback()
         msg = 'Error in wrapped process:' + str(name) + ":" + str(e) + "\n" + str(tb)

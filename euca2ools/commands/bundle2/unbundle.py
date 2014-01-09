@@ -145,6 +145,11 @@ class Unbundle(BaseCommand, FileTransferProgressBarMixin):
                                  '(expected digest: {0}, actual: {1})'.format(manifest.image_digest, written_digest))
             self.log.debug("\nExpected digest:" + str(manifest.image_digest) + "\n" +
                            "  Actual digest:" + str(written_digest))
+        except KeyboardInterrupt:
+            print 'Caught keyboard interrupt'
+            if dest_file:
+                    os.remove(dest_file.name)
+            return
         except Exception:
             traceback.print_exc()
             if dest_file:
