@@ -53,10 +53,10 @@ class Unbundle(BaseCommand, FileTransferProgressBarMixin):
                 resulting from this unbundle operation'''),
             Arg('-d', '--destination', metavar='DIR', default='.',
                 help='''where to place the unbundled image (default: current
-                directory)'''),
+                directory). If "-" is provided stdout will be used.'''),
             Arg('-s', '--source', metavar='DIR', default='.',
                 help='''directory containing the bundled image parts (default:
-                current directory)'''),
+                current directory). If "-" is provided stdin will be used.'''),
             Arg('--region', dest='userregion', metavar='USER@REGION',
                 help='''use encryption keys specified for a user and/or region
                 in configuration files'''),
@@ -118,28 +118,37 @@ class Unbundle(BaseCommand, FileTransferProgressBarMixin):
 
     def main(self):
         manifest = BundleManifest.read_from_file(self.manifest_path, self.private_key_path)
-        dest_file_name = None
+        #Setup the destination fileobj...
         if self.dest_dir == "-":
+            #Write to stdout
             dest_file = os.fdopen(os.dup(os.sys.stdout.fileno()), 'w')
+            dest_file_name = None
         else:
+            #write to local file path
             dest_file = open(self.dest_dir + "/" + manifest.image_name, 'w')
             dest_file_name = dest_file.name
+
+        #setup progress bar...
         try:
             label = self.args.get('progressbar_label', 'UnBundling image')
             pbar = self.get_progressbar(label=label,
                                         maxval=manifest.image_size)
         except NameError:
             pbar = None
+
         try:
             if self.source_dir == '-':
+                #Unbundle stdin stream...
                 written_digest = create_unbundle_stream_pipeline(os.fdopen(os.dup(os.sys.stdin.fileno())), dest_file,
                                                       enc_key=manifest.enc_key,
                                                       enc_iv=manifest.enc_iv, progressbar=pbar)
             else:
+                #Unbundle parts in a local directory
                 written_digest = create_unbundle_by_manifest_pipeline(dest_file, manifest, self.source_dir, pbar)
             written_digest = written_digest.strip()
             if dest_file:
                 dest_file.close()
+            #Verify the Checksum return from the unbundle operation matches what we expected in the manifest
             if written_digest != manifest.image_digest:
                 raise ValueError('Digest mismatch. Extracted image appears to be corrupt '
                                  '(expected digest: {0}, actual: {1})'.format(manifest.image_digest, written_digest))

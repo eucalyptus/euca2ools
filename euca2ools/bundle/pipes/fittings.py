@@ -200,7 +200,7 @@ def _concatenate_parts_to_file_for_pipe(outfile, image_parts, source_dir, debug=
                 print_debug('Part sha1sum:' + str(part_digest))
                 print_debug('Expected sum:' + str(part.hexdigest))
                 if part_digest != part.hexdigest:
-                    raise ValueError('Input part file may be corrupt '
+                    raise ValueError('Input part file may be corrupt:{0} '.format(part.filename),
                                      '(expected digest: {0}, actual: {1})'.format(part.hexdigest, part_digest))
     except IOError as ioe:
         # HACK
