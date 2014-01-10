@@ -126,7 +126,7 @@ def _aggregate_mpconn_items(in_mpconn, result_mpconn, out_mpconn=None,
             out_mpconn.close()
 
 
-def create_unbundle_by_manifest_pipeline(outfile, manifest, source_dir, progressbar=None, debug=False, maxbytes=0):
+def create_unbundle_by_local_manifest_pipeline(outfile, manifest, source_dir, progressbar=None, debug=False, maxbytes=0):
     """
     Creates a pipeline to perform the unbundle operation on parts specified in 'manifest'. Parts located in
     the local 'source_dir' are processed through the unbundle pipe and the resulting unbundled image is written
@@ -149,6 +149,20 @@ def create_unbundle_by_manifest_pipeline(outfile, manifest, source_dir, progress
                                     debug=debug,
                                     image_parts=manifest.image_parts,
                                     source_dir=source_dir)
+
+def create_unbundle_by_remote_manifest_pipeline(outfile, bucket, manifest, walrus_requst, progressbar, debug=False, maxbytes=0):
+    enc_key = manifest.enc_key
+    enc_iv = manifest.enc_iv
+    return create_unbundle_pipeline(outfile,
+                                    enc_key,
+                                    enc_iv,
+                                    progressbar,
+                                    maxbytes,
+                                    _write_remote_parts_to_pipe,
+                                    debug=debug,
+                                    image_parts=manifest.image_parts,
+                                    bucket=bucket,
+                                    walrus_requestbuilder=walrus_requst)
 
 
 def create_unbundle_stream_pipeline(inputfile, outfile, enc_key, enc_iv, progressbar=None, debug=False, maxbytes=0):
@@ -181,7 +195,7 @@ def _concatenate_parts_to_file_for_pipe(outfile, image_parts, source_dir, debug=
     :param image_parts: list of euca2ools.manifest.part objs
     :param source_dir: local path to parts contained in image_parts
     """
-    print_debug("My pid: " + str(os.getpid()) + ", my parent pid:" + str(os.getppid()))
+    print_debug("_concatenate_parts_to_file_for_pipe pid: " + str(os.getpid()) + ", parent pid:" + str(os.getppid()))
     find_and_close_open_files([outfile])
     part_count = len(image_parts)
     part_file = None
@@ -245,3 +259,43 @@ def _write_inputfile_to_pipe(inputfile, outfile, debug=False):
         print_debug('Done, closing write end of pipe after writing')
         inputfile.close()
         outfile.close()
+
+def _write_remote_parts_to_pipe(outfile, bucket, image_parts, walrus_requestbuilder, debug=False):
+    #chunk_size = 16384
+    chunk_size = euca2ools.bundle.pipes._BUFSIZE
+    print_debug("_write_remote_parts_to_pipe pid: " + str(os.getpid()) + ", parent pid:" + str(os.getppid()))
+    find_and_close_open_files([outfile])
+    part_count = len(image_parts)
+    part_file = None
+    try:
+        for part in image_parts:
+            print_debug("Downloading Part:" + str(part.filename))
+            sha1sum = hashlib.sha1()
+            part_file_path = os.path.join(bucket,part.filename)
+            walrus_requestbuilder.path = part_file_path
+            response = walrus_requestbuilder.send()
+            for chunk in response.iter_content(chunk_size=chunk_size):
+                sha1sum.update(chunk)
+                outfile.write(chunk)
+                outfile.flush()
+            part_digest = sha1sum.hexdigest()
+            print_debug("PART NUMBER:" + str(image_parts.index(part)) + "/" + str(part_count))
+            print_debug('Part sha1sum:' + str(part_digest))
+            print_debug('Expected sum:' + str(part.hexdigest))
+            if part_digest != part.hexdigest:
+                raise ValueError('Input part file may be corrupt:{0} '.format(part.filename),
+                                 '(expected digest: {0}, actual: {1})'.format(part.hexdigest, part_digest))
+    except IOError as ioe:
+        # HACK
+        print_debug('Error in _concatenate_parts_to_file_for_pipe.' + str(ioe))
+        if not debug:
+            return
+        raise ioe
+    finally:
+        if part_file:
+            part_file.close()
+        print_debug('Concatentate done')
+        print_debug('Closing write end of pipe after writing')
+        outfile.close()
+
+
