@@ -42,18 +42,17 @@ from requestbuilder.util import set_userregion
 from requestbuilder.mixins import FileTransferProgressBarMixin
 
 
-
 class Unbundle(WalrusRequest, FileTransferProgressBarMixin):
     DESCRIPTION = ('Recreate an image from its bundled parts\n\nThe key used '
                    'to unbundle the image must match the certificate that was '
                    'used to bundle it.')
     SUITE = Euca2ools
     ARGS = [MutuallyExclusiveArgList(
-                Arg('-m', '--manifest', dest='manifest', metavar='FILE',
-                    help='''use a local manifest file to figure out what to
+        Arg('-m', '--manifest', dest='manifest', metavar='FILE',
+            help='''use a local manifest file to figure out what to
                     download'''),
-                Arg('-p', '--prefix', metavar='PREFIX',
-                    help='''download the bundle that begins with a specific
+        Arg('-p', '--prefix', metavar='PREFIX',
+            help='''download the bundle that begins with a specific
                     prefix (e.g. "fry" for "fry.manifest.xml")''')),
             MutuallyExclusiveArgList(
                 Arg('-b', '--bucket', metavar='BUCKET',
@@ -86,7 +85,6 @@ class Unbundle(WalrusRequest, FileTransferProgressBarMixin):
         set_userregion(self.config, self.args.get('userregion'))
         set_userregion(self.config, os.getenv('EUCA_REGION'))
 
-
         #Get Mandatory manifest...
         if self.args.get('manifest'):
             self.manifest_path = os.path.expanduser(os.path.abspath(self.args['manifest']))
@@ -96,7 +94,6 @@ class Unbundle(WalrusRequest, FileTransferProgressBarMixin):
                 raise ArgumentError("Manifest '{0}' is not a file".format(self.args['manifest']))
         else:
             self.manifest_path = None
-
 
         #Get the mandatory private key...
         if not self.args.get('privatekey'):
@@ -138,7 +135,7 @@ class Unbundle(WalrusRequest, FileTransferProgressBarMixin):
 
     def _get_manifest(self):
         if self.manifest_path:
-            return(BundleManifest.read_from_file(self.manifest_path, self.private_key_path))
+            return BundleManifest.read_from_file(self.manifest_path, self.private_key_path)
         else:
             bucket = self.args.get('bucket')
             prefix = self.args.get('prefix')
@@ -150,7 +147,7 @@ class Unbundle(WalrusRequest, FileTransferProgressBarMixin):
 
             #todo write/read manifest into pipe when converting to xml obj instead
             manifest_f = StringIO()
-            self._download_to_file_obj( path=self.path, outfile=manifest_f)
+            self._download_to_file_obj(path=self.path, outfile=manifest_f)
             manifest_f.seek(0)
             xml = lxml.objectify.parse(manifest_f).getroot()
             manifest = BundleManifest._parse_manifest_xml(xml, self.private_key_path)
@@ -170,7 +167,7 @@ class Unbundle(WalrusRequest, FileTransferProgressBarMixin):
                 outfile.flush()
                 bytes_written += len(chunk)
         finally:
-            self.log.debug('Downloaded bytes:{0} file:{1}'.format( bytes_written,path))
+            self.log.debug('Downloaded bytes:{0} file:{1}'.format(bytes_written, path))
 
 
     def main(self):
@@ -197,37 +194,36 @@ class Unbundle(WalrusRequest, FileTransferProgressBarMixin):
 
         try:
             if self.source_dir == '-':
-                #Unbundle stdin stream...
+                #Unbundle from stdin stream...
                 written_digest = fittings.create_unbundle_stream_pipeline(os.fdopen(os.dup(os.sys.stdin.fileno())),
-                                                                dest_file,
-                                                                enc_key=manifest.enc_key,
-                                                                enc_iv=manifest.enc_iv,
-                                                                progressbar=pbar,
-                                                                debug= debug,
-                                                                maxbytes=int(self.args['maxbytes']))
+                                                                          dest_file,
+                                                                          enc_key=manifest.enc_key,
+                                                                          enc_iv=manifest.enc_iv,
+                                                                          progressbar=pbar,
+                                                                          debug=debug,
+                                                                          maxbytes=int(self.args['maxbytes']))
             elif self.manifest_path:
                 #Unbundle parts in a local directory
                 written_digest = fittings.create_unbundle_by_local_manifest_pipeline(dest_file,
-                                                                      manifest,
-                                                                      self.source_dir,
-                                                                      pbar,
-                                                                      debug=debug,
-                                                                      maxbytes=int(self.args['maxbytes']))
+                                                                                     manifest,
+                                                                                     self.source_dir,
+                                                                                     pbar,
+                                                                                     debug=debug,
+                                                                                     maxbytes=int(
+                                                                                         self.args['maxbytes']))
             else:
-                #Unbundle a remote bundle
+                #Unbundle remote parts via Walrus request
                 written_digest = fittings.create_unbundle_by_remote_manifest_pipeline(dest_file,
                                                                                       self.args.get('bucket'),
                                                                                       manifest,
                                                                                       self,
                                                                                       pbar,
                                                                                       debug=debug,
-                                                                                      maxbytes=0
-                                                                                      )
-
+                                                                                      maxbytes=0)
             written_digest = written_digest.strip()
             if dest_file:
                 dest_file.close()
-            #Verify the Checksum return from the unbundle operation matches what we expected in the manifest
+                #Verify the Checksum return from the unbundle operation matches what we expected in the manifest
             if written_digest != manifest.image_digest:
                 raise ValueError('Digest mismatch. Extracted image appears to be corrupt '
                                  '(expected digest: {0}, actual: {1})'.format(manifest.image_digest, written_digest))
@@ -236,7 +232,7 @@ class Unbundle(WalrusRequest, FileTransferProgressBarMixin):
         except KeyboardInterrupt:
             print 'Caught keyboard interrupt'
             if dest_file:
-                    os.remove(dest_file.name)
+                os.remove(dest_file.name)
             return
         except Exception:
             traceback.print_exc()
@@ -249,7 +245,6 @@ class Unbundle(WalrusRequest, FileTransferProgressBarMixin):
         finally:
             dest_file.close()
         return dest_file_name
-
 
     def print_result(self, result):
         if result:

@@ -25,10 +25,12 @@
 
 from euca2ools.commands.walrus.getobject import GetObject
 from euca2ools.commands.walrus.listbucket import ListBucket
+from euca2ools.commands.walrus import WalrusRequest
 import os
 from requestbuilder.exceptions import ClientError, ServerError
 import requests
 from requests.exceptions import Timeout, ConnectionError
+
 from urlparse import urljoin
 from xml.dom import minidom
 

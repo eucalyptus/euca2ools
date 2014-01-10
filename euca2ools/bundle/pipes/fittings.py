@@ -126,7 +126,8 @@ def _aggregate_mpconn_items(in_mpconn, result_mpconn, out_mpconn=None,
             out_mpconn.close()
 
 
-def create_unbundle_by_local_manifest_pipeline(outfile, manifest, source_dir, progressbar=None, debug=False, maxbytes=0):
+def create_unbundle_by_local_manifest_pipeline(outfile, manifest, source_dir, progressbar=None, debug=False,
+                                               maxbytes=0):
     """
     Creates a pipeline to perform the unbundle operation on parts specified in 'manifest'. Parts located in
     the local 'source_dir' are processed through the unbundle pipe and the resulting unbundled image is written
@@ -150,7 +151,9 @@ def create_unbundle_by_local_manifest_pipeline(outfile, manifest, source_dir, pr
                                     image_parts=manifest.image_parts,
                                     source_dir=source_dir)
 
-def create_unbundle_by_remote_manifest_pipeline(outfile, bucket, manifest, walrus_requst, progressbar, debug=False, maxbytes=0):
+
+def create_unbundle_by_remote_manifest_pipeline(outfile, bucket, manifest, walrus_requst, progressbar, debug=False,
+                                                maxbytes=0):
     enc_key = manifest.enc_key
     enc_iv = manifest.enc_iv
     return create_unbundle_pipeline(outfile,
@@ -260,6 +263,7 @@ def _write_inputfile_to_pipe(inputfile, outfile, debug=False):
         inputfile.close()
         outfile.close()
 
+
 def _write_remote_parts_to_pipe(outfile, bucket, image_parts, walrus_requestbuilder, debug=False):
     #chunk_size = 16384
     chunk_size = euca2ools.bundle.pipes._BUFSIZE
@@ -271,7 +275,7 @@ def _write_remote_parts_to_pipe(outfile, bucket, image_parts, walrus_requestbuil
         for part in image_parts:
             print_debug("Downloading Part:" + str(part.filename))
             sha1sum = hashlib.sha1()
-            part_file_path = os.path.join(bucket,part.filename)
+            part_file_path = os.path.join(bucket, part.filename)
             walrus_requestbuilder.path = part_file_path
             response = walrus_requestbuilder.send()
             for chunk in response.iter_content(chunk_size=chunk_size):
@@ -297,5 +301,3 @@ def _write_remote_parts_to_pipe(outfile, bucket, image_parts, walrus_requestbuil
         print_debug('Concatentate done')
         print_debug('Closing write end of pipe after writing')
         outfile.close()
-
-
