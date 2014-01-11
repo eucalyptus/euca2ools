@@ -29,12 +29,12 @@ from euca2ools.commands.walrus import WalrusRequest
 from euca2ools.commands.bundle.helpers import get_manifest_keys
 import euca2ools.bundle.pipes
 from euca2ools.bundle.pipes import fittings
+from euca2ools.bundle.util import open_pipe_fileobjs, spawn_process, find_and_close_open_files, waitpid_in_thread
 from euca2ools.bundle.manifest import BundleManifest
 import os
 import lxml.objectify
 import argparse
 import traceback
-from StringIO import StringIO
 from requestbuilder import Arg, MutuallyExclusiveArgList
 from requestbuilder.command import BaseCommand
 from requestbuilder.exceptions import ArgumentError
@@ -135,39 +135,47 @@ class Unbundle(WalrusRequest, FileTransferProgressBarMixin):
 
     def _get_manifest(self):
         if self.manifest_path:
-            return BundleManifest.read_from_file(self.manifest_path, self.private_key_path)
+            #Manifest is local...
+            manifest = BundleManifest.read_from_file(self.manifest_path, self.private_key_path)
         else:
+            #Manifest is remote...
             bucket = self.args.get('bucket')
             prefix = self.args.get('prefix')
             manifest_keys = get_manifest_keys(bucket, prefix, service=self.service,
                                               config=self.config)
             if len(manifest_keys) > 1:
-                raise RuntimeError('Found multiple manifests:{0}'.format(",".join(str(m) for m in manifest_keys)))
+                raise RuntimeError('Multiple manifests found:{0}'.format(",".join(str(m) for m in manifest_keys)))
             self.path = os.path.join(bucket, manifest_keys.pop())
-
-            #todo write/read manifest into pipe when converting to xml obj instead
-            manifest_f = StringIO()
-            self._download_to_file_obj(path=self.path, outfile=manifest_f)
-            manifest_f.seek(0)
-            xml = lxml.objectify.parse(manifest_f).getroot()
+            manifest_r, manifest_w = open_pipe_fileobjs()
+            download_manifest = spawn_process(self._download_to_file_obj,
+                                              path=self.path,
+                                              outfile=manifest_w,
+                                              close_open_files=True)
+            waitpid_in_thread(download_manifest.pid)
+            manifest_w.close()
+            xml = lxml.objectify.parse(manifest_r).getroot()
             manifest = BundleManifest._parse_manifest_xml(xml, self.private_key_path)
-            manifest_f.close()
-            self.log.debug('Got Manifest for image:' + str(manifest.image_name))
-            return manifest
+            manifest_r.close()
+        self.log.debug('Returning Manifest for image:' + str(manifest.image_name))
+        return manifest
 
-    def _download_to_file_obj(self, path, outfile):
-        #chunk_size = 16384
+
+    def _download_to_file_obj(self, path, outfile, close_open_files=False):
         chunk_size = euca2ools.bundle.pipes._BUFSIZE
+        if close_open_files:
+            find_and_close_open_files([outfile])
         try:
             self.path = path
             response = self.send()
             bytes_written = 0
             for chunk in response.iter_content(chunk_size=chunk_size):
                 outfile.write(chunk)
-                outfile.flush()
                 bytes_written += len(chunk)
+            outfile.flush()
         finally:
             self.log.debug('Downloaded bytes:{0} file:{1}'.format(bytes_written, path))
+            if close_open_files:
+                outfile.close()
 
 
     def main(self):
