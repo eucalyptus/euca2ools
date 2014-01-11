@@ -188,7 +188,7 @@ class Unbundle(WalrusRequest, FileTransferProgressBarMixin):
             dest_file = os.fdopen(os.dup(os.sys.stdout.fileno()), 'w')
             dest_file_name = None
         else:
-            #write to local file path
+            #write to local file path...
             dest_file = open(self.dest_dir + "/" + manifest.image_name, 'w')
             dest_file_name = dest_file.name
 
