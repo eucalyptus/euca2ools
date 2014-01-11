@@ -42,30 +42,30 @@ class UnbundleStream(BaseCommand, FileTransferProgressBarMixin):
                    'used to bundle it.')
     SUITE = Euca2ools
     ARGS = [
-            Arg('-s', '--source', metavar='FILE', required=True,
-                help='''Source File. Use '-' to represent <stdin>'''),
-            Arg('-k', '--privatekey', metavar='FILE', required=True,
-                help='''file containing the private key to decrypt the bundle
+        Arg('-s', '--source', metavar='FILE', required=True,
+            help='''Source File. Use '-' to represent <stdin>'''),
+        Arg('-k', '--privatekey', metavar='FILE', required=True,
+            help='''file containing the private key to decrypt the bundle
                 with.  This must match the certificate used when bundling the
                 image.'''),
 
-            Arg('-m', '--manifest', dest='manifest', metavar='FILE',
-                help='''Use a local manifest file to derive info about
+        Arg('-m', '--manifest', dest='manifest', metavar='FILE',
+            help='''Use a local manifest file to derive info about
                 source stream'''),
-            Arg('-e','--enc-key', dest='enc_key', #type=(lambda s: int(s, 16)),
-                help='''Key used to decrypt bundled image'''),  # a hex string
-            Arg('-v','--enc-iv',dest='enc_iv', #type=(lambda s: int(s, 16)),
-                help='''Initialization vector used to decrypt bundled image'''),  # a hex string
-            Arg('-c', '--checksum', metavar='CHECKSUM', default=None,
-                help='''Bundled Image checksum, used to verify image
+        Arg('-e', '--enc-key', dest='enc_key',
+            help='''Key used to decrypt bundled image'''),
+        Arg('-v', '--enc-iv', dest='enc_iv',
+            help='''Initialization vector used to decrypt bundled image'''),
+        Arg('-c', '--checksum', metavar='CHECKSUM', default=None,
+            help='''Bundled Image checksum, used to verify image
                 resulting from this unbundle operation'''),
-            Arg('-d', '--destination', metavar='DIR', default='.',
-                help='''The filepath to write unbundled image to.
+        Arg('-d', '--destination', metavar='DIR', default='.',
+            help='''The filepath to write unbundled image to.
                 If "-" is provided stdout will be used.'''),
-            Arg('--maxbytes', dest='maxbytes', metavar='MAX BYTES', default=0,
-                help='''The Maximum bytes allowed to be written to the
+        Arg('--maxbytes', dest='maxbytes', metavar='MAX BYTES', default=0,
+            help='''The Maximum bytes allowed to be written to the
                 destination.'''),
-            Arg('--progressbar-label', help=argparse.SUPPRESS)]
+        Arg('--progressbar-label', help=argparse.SUPPRESS)]
 
     # noinspection PyExceptionInherit
     def configure(self):
@@ -123,7 +123,6 @@ class UnbundleStream(BaseCommand, FileTransferProgressBarMixin):
             elif os.path.exists(self.dest_file_path) and not os.path.isfile(self.dest_file_path):
                 raise ArgumentError("Destination '{0}' is not a file".format(self.args['destination']))
 
-
     def main(self):
         debug = self.args.get('debug')
         source_file = None
@@ -151,17 +150,19 @@ class UnbundleStream(BaseCommand, FileTransferProgressBarMixin):
             else:
                 source_file = open(self.source_file_path)
 
-            #setup progress bar...
+            #setup progress bar, don't create a progress bar if writing to stdout or input size is unknown...
             pbar = None
-            if self.manifest:
-                file_size = self.manifest.image_size
-            else:
-                file_size = os.fstat(dest_file.fileno()).st_size
-            try:
-                if file_size:
-                    label = self.args.get('progressbar_label', 'UnBundling image')
-                    pbar = self.get_progressbar(label=label, maxval=file_size)
-            except NameError: pass
+            if dest_file_name:
+                if self.manifest:
+                    file_size = self.manifest.image_size
+                else:
+                    file_size = os.fstat(dest_file.fileno()).st_size
+                try:
+                    if file_size:
+                        label = self.args.get('progressbar_label', 'UnBundling image')
+                        pbar = self.get_progressbar(label=label, maxval=file_size)
+                except NameError:
+                    pass
 
             #Perform unbundle stream pipline...
             written_digest = fittings.create_unbundle_stream_pipeline(source_file,
@@ -177,7 +178,7 @@ class UnbundleStream(BaseCommand, FileTransferProgressBarMixin):
                 #Verify the Checksum return from the unbundle operation matches what we expected in the manifest
             if self.args.get('checksum'):
                 checksum = self.args.get('checksum').strip()
-                if written_digest !=  checksum:
+                if written_digest != checksum:
                     raise ValueError('Digest mismatch. Extracted image appears to be corrupt '
                                      '(expected digest: {0}, actual: {1})'.format(checksum, written_digest))
                 self.log.debug("\nExpected digest:" + str(checksum) + "\n" +
