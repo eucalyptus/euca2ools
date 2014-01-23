@@ -121,7 +121,9 @@ def process_wrapper(func, **kwargs):
 
 def monitor_pid(pid, name):
     for x in xrange(0,10):
-        print >> os.sys.stderr, 'Does process ' + str(name) + ':(' + str(pid) + ') exist? ' + str(pid_exists(pid))
+        print >> os.sys.stderr, \
+            'Does process ' + str(name) + ':(' + str(pid) + ') exist? '\
+            + str(pid_exists(pid))
         time.sleep(5)
 
 def pid_exists(pid):

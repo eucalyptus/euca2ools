@@ -191,13 +191,16 @@ class DownloadBundle(WalrusRequest, FileTransferProgressBarMixin):
     def _download_and_unbundle(self, bucket, manifest, outfile, debug=False):
         unbundle_r, unbundle_w = open_pipe_fileobjs()
         #setup progress bar...
-        try:
-            label = self.args.get('progressbar_label', 'Download -> UnBundling')
-            pbar = self.get_progressbar(label=label,
-                                        maxval=manifest.image_size)
-        except NameError:
-            pbar = None
-            #Create the download process and unbundle pipeline...
+        pbar = None
+        if self.args.get('show_progress'):
+            try:
+                if self.args.get('show_progress'):
+                    label = self.args.get('progressbar_label', 'Download -> UnBundling')
+                    pbar = self.get_progressbar(label=label,
+                                                maxval=manifest.image_size)
+            except NameError:
+                pass
+        #Create the download process and unbundle pipeline...
         try:
             writer = spawn_process(self._download_parts,
                                    bucket=bucket,
@@ -214,7 +217,6 @@ class DownloadBundle(WalrusRequest, FileTransferProgressBarMixin):
                                               progressbar=pbar,
                                               debug=self.args.get('debug'),
                                               maxbytes=int(self.args['maxbytes']))
-
             digest = digest.strip()
             #Verify the Checksum return from the unbundle operation matches the manifest
             if digest != manifest.image_digest:
@@ -289,7 +291,8 @@ class DownloadBundle(WalrusRequest, FileTransferProgressBarMixin):
         #If a destination file was provided, download and unbundle to that file...
         if self.args.get('unbundle'):
             if directory == '-':
-                fileobj = os.fdopen(os.dup(os.sys.stdin.fileno()))
+                fileobj = os.fdopen(os.dup(os.sys.stdout.fileno()), 'w')
+                self.args['show_progress'] = False
             else:
                 file_path = str(directory).rstrip('/') + "/" + manifest.image_name
                 fileobj = open(file_path, 'w')
