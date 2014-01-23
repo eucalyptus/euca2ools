@@ -249,23 +249,6 @@ class DownloadBundle(WalrusRequest, FileTransferProgressBarMixin):
         try:
             for part in parts:
                 self.log.debug('Downloading part:' + str(part.filename))
-
-                #sha1sum = hashlib.sha1()
-                #part_file_path = os.path.join(bucket, part.filename)
-                #self.path = part_file_path
-                #response = self.send()
-                #for chunk in response.iter_content(chunk_size=chunk_size):
-                #    sha1sum.update(chunk)
-                #    fileobj.write(chunk)
-                #    fileobj.flush()
-                #part_digest = sha1sum.hexdigest()
-                #self.log.debug("PART NUMBER:" + str(parts.index(part)) + "/" + str(len(parts)))
-                #self.log.debug('Part sha1sum:' + str(part_digest))
-                #self.log.debug('Expected sum:' + str(part.hexdigest))
-                #if part_digest != part.hexdigest:
-                #    raise ValueError('Input part file may be corrupt:{0} '.format(part.filename),
-                #                     '(expected digest: {0}, actual: {1})'.format(part.hexdigest, part_digest))
-
                 part_digest = download_files(bucket=bucket,
                                              keys=[part.filename],
                                              opath=directory,
