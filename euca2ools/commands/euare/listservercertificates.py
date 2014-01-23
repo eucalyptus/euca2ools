@@ -50,4 +50,4 @@ class ListServerCertificates(EuareRequest):
 
     def print_result(self, result):
         for cert in result.get('ServerCertificateMetadataList', []):
-            print cert['ServerCertificateMetadata']['Arn']
+            print cert['Arn']
