@@ -83,7 +83,8 @@ class GetObject(WalrusRequest, FileTransferProgressBarMixin):
         pbar = None
         if show_progress:
                 label_template = build_progressbar_label_template(self.args['paths'])
-        if self.args.get('opath') and self.args.get('opath').endswith('/'):
+        if self.args.get('opath') and ( os.path.isdir(self.args.get('opath')) or \
+                self.args.get('opath').endswith('/')):
             opath = self.args['opath']
             if not os.path.isdir(opath):
                 # Ends with '/' and does not exist -> create it

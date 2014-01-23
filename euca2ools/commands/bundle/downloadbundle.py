@@ -321,6 +321,7 @@ class DownloadBundle(WalrusRequest, FileTransferProgressBarMixin):
             if self.args.get('show_progress'):
                 print "Bundle downloaded and unbundled to '{0}'".format(file_path)
         else:
+            self.log.debug('Writing parts to a directory...')
             #If a directory was provided download the bundled parts to that directory...
             if not os.path.isdir(directory):
                 raise ArgumentError(
@@ -330,8 +331,8 @@ class DownloadBundle(WalrusRequest, FileTransferProgressBarMixin):
                                  parts=manifest.image_parts,
                                  directory=directory,
                                  fileobj=None)
-            if self.args.get('show_progress'):
-                print "Bundle downloaded to dir '{0}'".format(directory)
+
+            print "Bundle downloaded to dir '{0}'".format(directory)
 
 if __name__ == '__main__':
     DownloadBundle.run()

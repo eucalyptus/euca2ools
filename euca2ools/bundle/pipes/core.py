@@ -152,7 +152,7 @@ def create_unbundle_pipeline(infile, outfile, enc_key, enc_iv, progressbar, maxb
                              digest_out_pipe_w=sha1_checksum_w, debug=debug)
 
         gzip.stdout.close()
-        
+
         euca2ools.bundle.util.waitpid_in_thread(sha1.pid, 'sha1', debug=debug)
         sha1_io_w.close()
 
