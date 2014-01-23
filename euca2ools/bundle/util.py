@@ -31,7 +31,6 @@ import traceback
 import time
 from StringIO import StringIO
 from multiprocessing import Process
-from subprocess import check_output
 
 show_debug = False
 
