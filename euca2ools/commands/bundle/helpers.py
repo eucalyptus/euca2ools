@@ -80,16 +80,17 @@ def get_manifest_keys(bucket, prefix=None, **kwargs):
     return manifests
 
 
-def download_files(bucket, keys, directory, **kwargs):
-    """Download manifests from a Walrus bucket to a local directory.
-    :param bucket: The bucket to download manifests from.
+def download_files(bucket, keys, **kwargs):
+    """Download files from a Walrus bucket to a local directory.
+    :param bucket: The bucket to download files from.
     :param keys: keys of the files to download.
-    :param directory: location to put downloaded manifests.
+    :param directory: location to put downloaded files
+    :param fileobj: a fileobj to write the concatenated parts to
     :param kwargs: (optional) extra arguments passed to GetObject.
     """
     paths = [os.path.join(bucket, key) for key in keys]
-    kwargs.update(paths=paths, opath=directory)
-    GetObject(**kwargs).main()
+    kwargs.update(paths=paths)
+    return GetObject(**kwargs).main()
 
 
 def check_metadata():

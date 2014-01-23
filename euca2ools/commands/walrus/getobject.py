@@ -24,65 +24,91 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 from euca2ools.commands.walrus import WalrusRequest
+import euca2ools.bundle.pipes
 from euca2ools.util import build_progressbar_label_template
+import argparse
+import hashlib
 import os.path
-from requestbuilder import Arg
+from requestbuilder import Arg, MutuallyExclusiveArgList
 from requestbuilder.mixins import FileTransferProgressBarMixin
 
 
 class GetObject(WalrusRequest, FileTransferProgressBarMixin):
     DESCRIPTION = 'Retrieve objects from the server'
-    ARGS = [Arg('paths', metavar='BUCKET/KEY', nargs='+', route_to=None),
-            Arg('-o', dest='opath', metavar='PATH', default='.', route_to=None,
-                help='''where to download to.  If this names an existing
-                directory or ends in '/' all objects will be downloaded
-                separately to files in that directory.  Otherwise, all
-                downloads will be written to a file with this name.  Note that
-                outputting multiple objects to a file will result in their
-                concatenation.  (default: current directory)''')]
+    ARGS = [Arg('--paths', metavar='BUCKET/KEY', nargs='+', route_to=None),
+            Arg('--show_progress', dest='show_progress', metavar='BOOLEAN',
+                default=True, route_to=None, help=argparse.SUPPRESS),
+            MutuallyExclusiveArgList(
+                Arg('-o', dest='opath', metavar='PATH', route_to=None,
+                    help='''where to download to.  If this names an existing
+                    directory or ends in '/' all objects will be downloaded
+                    separately to files in that directory.  Otherwise, all
+                    downloads will be written to a file with this name.  Note that
+                    outputting multiple objects to a file will result in their
+                    concatenation.  (default: current directory)'''),
+                Arg('--fileobj', metavar='FILEOBJ', route_to=None,
+                    help=argparse.SUPPRESS))]
 
-    def main(self):
-        opath = self.args['opath']
-        label_template = build_progressbar_label_template(self.args['paths'])
-        if opath.endswith('/') and not os.path.isdir(opath):
-            # Ends with '/' and does not exist -> create it
-            os.mkdir(opath)
-        if os.path.isdir(opath):
-            # Download one per directory
-            for index, path in enumerate(self.args['paths'], 1):
-                ofile_name = os.path.join(opath, path.rsplit('/', 1)[-1])
-                self.path = path
-                response = self.send()
+
+    def _download_to_fileobj(self, path, outfile, progress_bar=None, chunk_size=None):
+        chunk_size = chunk_size or euca2ools.bundle.pipes._BUFSIZE
+        bytes_written = 0
+        try:
+            self.path = path
+            response = self.send()
+            sha1digest = hashlib.sha1()
+            if progress_bar:
                 if 'Content-Length' in response.headers:
                     maxval = int(response.headers['Content-Length'])
                 else:
                     maxval = None
-                label = label_template.format(index=index, fname=path)
-                pbar = self.get_progressbar(label=label, maxval=maxval)
-                pbar.start()
+                progress_bar.maxval = maxval
+                progress_bar.start()
+            for chunk in response.iter_content(chunk_size=chunk_size):
+                outfile.write(chunk)
+                bytes_written += len(chunk)
+                sha1digest.update(chunk)
+                if progress_bar:
+                    progress_bar.update(bytes_written)
+            outfile.flush()
+            if progress_bar:
+                    progress_bar.finish()
+        finally:
+            self.log.debug('Downloaded bytes:{0} file:{1}'.format(bytes_written, path))
+        return sha1digest.hexdigest()
+
+    def main(self):
+        sha1_dict = {}
+        show_progress = self.args.get('show_progress')
+        pbar = None
+        if show_progress:
+                label_template = build_progressbar_label_template(self.args['paths'])
+        if self.args.get('opath') and self.args.get('opath').endswith('/'):
+            opath = self.args['opath']
+            if not os.path.isdir(opath):
+                # Ends with '/' and does not exist -> create it
+                os.mkdir(opath)
+            # Download one per directory
+            for index, path in enumerate(self.args['paths'], 1):
+                ofile_name = os.path.join(opath, path.rsplit('/', 1)[-1])
+                if show_progress:
+                    label = label_template.format(index=index, fname=path)
+                    pbar = self.get_progressbar(label=label)
                 with open(ofile_name, 'w') as ofile:
-                    for chunk in response.iter_content(chunk_size=16384):
-                        ofile.write(chunk)
-                        pbar.update(ofile.tell())
-                    ofile.flush()
-                    pbar.finish()
+                    sha1sum = self._download_to_fileobj(path=path, outfile=ofile, progress_bar=pbar)
+                    sha1_dict[path] = sha1sum
         else:
             # Download everything to one file
-            with open(opath, 'w') as ofile:
+            ofile = self.args.get('fileobj') or open(self.args.get('opath'), 'w')
+            try:
                 for index, path in enumerate(self.args['paths'], 1):
-                    self.path = path
-                    response = self.send()
-                    bytes_written = 0
-                    if 'Content-Length' in response.headers:
-                        maxval = int(response.headers['Content-Length'])
-                    else:
-                        maxval = None
-                    label = label_template.format(index=index, fname=path)
-                    pbar = self.get_progressbar(label=label, maxval=maxval)
-                    pbar.start()
-                    for chunk in response.iter_content(chunk_size=16384):
-                        ofile.write(chunk)
-                        bytes_written += len(chunk)
-                        pbar.update(bytes_written)
-                    pbar.finish()
-                ofile.flush()
+                    if show_progress:
+                        label = label_template.format(index=index, fname=path)
+                        pbar = self.get_progressbar(label=label)
+                    sha1sum = self._download_to_fileobj(path=path, outfile=ofile, progress_bar=pbar)
+                    sha1_dict[path] = sha1sum
+            finally:
+                #only close the file if it was opened within this method...
+                if self.args.get('opath') and ofile:
+                    ofile.close()
+        return sha1_dict

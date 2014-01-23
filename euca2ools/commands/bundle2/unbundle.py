@@ -24,15 +24,13 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 from euca2ools.commands import Euca2ools
-from euca2ools.commands.walrus import WalrusRequest
-
-from euca2ools.commands.bundle.helpers import get_manifest_keys
 import euca2ools.bundle.pipes
-from euca2ools.bundle.pipes import fittings
-from euca2ools.bundle.util import open_pipe_fileobjs, spawn_process, find_and_close_open_files, waitpid_in_thread
+from euca2ools.bundle.pipes.core import create_unbundle_pipeline
+from euca2ools.bundle.util import open_pipe_fileobjs, spawn_process, close_all_fds, \
+    waitpid_in_thread
 from euca2ools.bundle.manifest import BundleManifest
 import os
-import lxml.objectify
+import hashlib
 import argparse
 import traceback
 from requestbuilder import Arg, MutuallyExclusiveArgList
@@ -42,31 +40,21 @@ from requestbuilder.util import set_userregion
 from requestbuilder.mixins import FileTransferProgressBarMixin
 
 
-class Unbundle(WalrusRequest, FileTransferProgressBarMixin):
+class Unbundle(BaseCommand, FileTransferProgressBarMixin):
     DESCRIPTION = ('Recreate an image from its bundled parts\n\nThe key used '
                    'to unbundle the image must match the certificate that was '
                    'used to bundle it.')
     SUITE = Euca2ools
-    ARGS = [MutuallyExclusiveArgList(
-        Arg('-m', '--manifest', dest='manifest', metavar='FILE',
-            help='''use a local manifest file to figure out what to
-                    download'''),
-        Arg('-p', '--prefix', metavar='PREFIX',
-            help='''download the bundle that begins with a specific
-                    prefix (e.g. "fry" for "fry.manifest.xml")''')),
-            MutuallyExclusiveArgList(
-                Arg('-b', '--bucket', metavar='BUCKET',
-                    help='bucket to download the bucket from (required)'),
-                Arg('-s', '--source', metavar='DIR', default='.',
-                    help='''directory containing the bundled image parts (default:
-                    current directory). If "-" is provided stdin will be used.''')),
+    ARGS = [Arg('-m', '--manifest', dest='manifest', metavar='FILE', required=True,
+                help='''use a local manifest file to figure out what to
+                download'''),
+            Arg('-s', '--source', metavar='DIR', default='.', required=True,
+                help='''directory containing the bundled image parts (default:
+                current directory). If "-" is provided stdin will be used.'''),
             Arg('-k', '--privatekey', metavar='FILE', required=True,
                 help='''file containing the private key to decrypt the bundle
                 with.  This must match the certificate used when bundling the
                 image.'''),
-            Arg('-c', '--checksum', metavar='CHECKSUM', default=None,
-                help='''Bundled Image checksum, used to verify image
-                resulting from this unbundle operation'''),
             Arg('-d', '--destination', metavar='DIR', default='.',
                 help='''where to place the unbundled image (default: current
                 directory). If "-" is provided stdout will be used.'''),
@@ -85,16 +73,6 @@ class Unbundle(WalrusRequest, FileTransferProgressBarMixin):
         set_userregion(self.config, self.args.get('userregion'))
         set_userregion(self.config, os.getenv('EUCA_REGION'))
 
-        #Get Mandatory manifest...
-        if self.args.get('manifest'):
-            self.manifest_path = os.path.expanduser(os.path.abspath(self.args['manifest']))
-            if not os.path.exists(self.manifest_path):
-                raise ArgumentError("Manifest '{0}' does not exist".format(self.args['manifest']))
-            if not os.path.isfile(self.manifest_path):
-                raise ArgumentError("Manifest '{0}' is not a file".format(self.args['manifest']))
-        else:
-            self.manifest_path = None
-
         #Get the mandatory private key...
         if not self.args.get('privatekey'):
             config_privatekey = self.config.get_user_option('private-key')
@@ -110,87 +88,127 @@ class Unbundle(WalrusRequest, FileTransferProgressBarMixin):
         self.args['privatekey'] = os.path.expanduser(os.path.expandvars(
             self.args['privatekey']))
         if not os.path.exists(self.args['privatekey']):
-            raise ArgumentError("private key file '{0}' does not exist".format(self.args['privatekey']))
+            raise ArgumentError("private key file '{0}' does not exist"
+                                .format(self.args['privatekey']))
         if not os.path.isfile(self.args['privatekey']):
-            raise ArgumentError("private key file '{0}' is not a file".format(self.args['privatekey']))
-        self.private_key_path = self.args.get('privatekey')
+            raise ArgumentError("private key file '{0}' is not a file"
+                                .format(self.args['privatekey']))
 
         #Get optional source directory...
-        self.source_dir = self.args['source']
-        if not (self.source_dir == "-"):
-            self.source_dir = os.path.expanduser(os.path.abspath(self.source_dir))
-            if not os.path.exists(self.source_dir):
-                raise ArgumentError("Source directory '{0}' does not exist".format(self.args['source']))
-            if not os.path.isdir(self.source_dir):
-                raise ArgumentError("Source '{0}' is not Directory".format(self.args['source']))
+        source = self.args['source']
+        if source != "-":
+            source = os.path.expanduser(os.path.abspath(source))
+            if not os.path.exists(source):
+                raise ArgumentError("Source directory '{0}' does not exist"
+                                    .format(self.args['source']))
+            if not os.path.isdir(source):
+                raise ArgumentError("Source '{0}' is not Directory"
+                                    .format(self.args['source']))
+        self.args['source'] = source
 
         #Get optional destination directory...
-        self.dest_dir = self.args['destination']
-        if not (self.dest_dir == "-"):
-            self.dest_dir = os.path.expanduser(os.path.abspath(self.args['destination']))
-            if not os.path.exists(self.dest_dir):
-                raise ArgumentError("Destination directory '{0}' does not exist".format(self.args['destination']))
-            if not os.path.isdir(self.dest_dir):
-                raise ArgumentError("Destination '{0}' is not Directory".format(self.args['destination']))
+        dest_dir = self.args['destination']
+        if not (dest_dir == "-"):
+            dest_dir = os.path.expanduser(os.path.abspath(dest_dir))
+            if not os.path.exists(dest_dir):
+                raise ArgumentError("Destination directory '{0}' does not exist"
+                                    .format(dest_dir))
+            if not os.path.isdir(dest_dir):
+                raise ArgumentError("Destination '{0}' is not Directory"
+                                    .format(dest_dir))
+        self.args['destination'] = dest_dir
 
-    def _get_manifest(self):
-        if self.manifest_path:
-            #Manifest is local...
-            manifest = BundleManifest.read_from_file(self.manifest_path, self.private_key_path)
-        else:
-            #Manifest is remote...
-            bucket = self.args.get('bucket')
-            prefix = self.args.get('prefix')
-            manifest_keys = get_manifest_keys(bucket, prefix, service=self.service,
-                                              config=self.config)
-            if len(manifest_keys) > 1:
-                raise RuntimeError('Multiple manifests found:{0}'.format(",".join(str(m) for m in manifest_keys)))
-            self.path = os.path.join(bucket, manifest_keys.pop())
-            manifest_r, manifest_w = open_pipe_fileobjs()
-            download_manifest = spawn_process(self._download_to_file_obj,
-                                              path=self.path,
-                                              outfile=manifest_w,
-                                              close_open_files=True)
-            waitpid_in_thread(download_manifest.pid)
-            manifest_w.close()
-            xml = lxml.objectify.parse(manifest_r).getroot()
-            manifest = BundleManifest._parse_manifest_xml(xml, self.private_key_path)
-            manifest_r.close()
-        self.log.debug('Returning Manifest for image:' + str(manifest.image_name))
-        return manifest
+        #Get Mandatory manifest...
+        if not isinstance(self.args.get('manifest'), BundleManifest):
+            manifest_path = os.path.expanduser(os.path.abspath(
+                self.args['manifest']))
+            if not os.path.exists(manifest_path):
+                raise ArgumentError("Manifest '{0}' does not exist"
+                                    .format(self.args['manifest']))
+            if not os.path.isfile(manifest_path):
+                raise ArgumentError("Manifest '{0}' is not a file"
+                                    .format(self.args['manifest']))
+                #Read manifest into BundleManifest obj...
+            self.args['manifest'] = (BundleManifest.
+                                     read_from_file(manifest_path,
+                                                    self.args['privatekey']))
 
+    def _concatenate_parts_to_file_for_pipe(self,
+                                            outfile,
+                                            image_parts,
+                                            source_dir,
+                                            debug=False):
+        """
+        Concatenate a list of 'image_parts' files found in 'source_dir' into
+        pipeline fed by 'outfile'.Parts are checked against checksum contained in part
+        obj against calculated checksums as they are read/written.
 
-    def _download_to_file_obj(self, path, outfile, close_open_files=False):
-        chunk_size = euca2ools.bundle.pipes._BUFSIZE
-        if close_open_files:
-            find_and_close_open_files([outfile])
+        :param outfile: file obj used to output concatenated parts to
+        :param image_parts: list of euca2ools.manifest.part objs
+        :param source_dir: local path to parts contained in image_parts
+         :param debug: boolean used in exception handling
+        """
+        self.log.debug("_concatenate_parts_to_file_for_pipe pid: " + str(os.getpid()) +
+                       ", parent pid:" + str(os.getppid()))
+        close_all_fds([outfile])
+        part_count = len(image_parts)
+        part_file = None
         try:
-            self.path = path
-            response = self.send()
-            bytes_written = 0
-            for chunk in response.iter_content(chunk_size=chunk_size):
-                outfile.write(chunk)
-                bytes_written += len(chunk)
-            outfile.flush()
+            for part in image_parts:
+                self.log.debug("Concatenating Part:" + str(part.filename))
+                sha1sum = hashlib.sha1()
+                part_file_path = source_dir + "/" + part.filename
+                with open(part_file_path) as part_file:
+                    data = part_file.read(euca2ools.bundle.pipes._BUFSIZE)
+                    while data:
+                        sha1sum.update(data)
+                        outfile.write(data)
+                        outfile.flush()
+                        data = part_file.read(euca2ools.bundle.pipes._BUFSIZE)
+                    part_digest = sha1sum.hexdigest()
+                    self.log.debug(
+                        "PART NUMBER:" + str(image_parts.index(part) + 1) + "/" +
+                        str(part_count))
+                    self.log.debug('Part sha1sum:' + str(part_digest))
+                    self.log.debug('Expected sum:' + str(part.hexdigest))
+                    if part_digest != part.hexdigest:
+                        raise ValueError('Input part file may be corrupt:{0} '
+                                         .format(part.filename),
+                                         '(expected digest: {0}, actual: {1})'
+                                         .format(part.hexdigest, part_digest))
+        except IOError as ioe:
+            # HACK
+            self.log.debug('Error in _concatenate_parts_to_file_for_pipe.' + str(ioe))
+            if not debug:
+                return
+            raise ioe
         finally:
-            self.log.debug('Downloaded bytes:{0} file:{1}'.format(bytes_written, path))
-            if close_open_files:
-                outfile.close()
-
+            if part_file:
+                part_file.close()
+            self.log.debug('Concatentate done')
+            self.log.debug('Closing write end of pipe after writing')
+            outfile.close()
 
     def main(self):
-        manifest = self._get_manifest()
-        debug = self.args.get('debug')
+        dest_dir = self.args.get('destination')
+        manifest = self.args.get('manifest')
 
         #Setup the destination fileobj...
-        if self.dest_dir == "-":
+        if dest_dir == "-":
             #Write to stdout
             dest_file = os.fdopen(os.dup(os.sys.stdout.fileno()), 'w')
             dest_file_name = None
         else:
             #write to local file path...
-            dest_file = open(self.dest_dir + "/" + manifest.image_name, 'w')
+            dest_file = open(dest_dir + "/" + manifest.image_name, 'w')
             dest_file_name = dest_file.name
+            #check for avail space if the resulting image size is known
+            if manifest:
+                d_stat = os.statvfs(dest_file_name)
+                avail_space = d_stat.f_frsize * d_stat.f_favail
+                if manifest.image_size > avail_space:
+                    raise ValueError('Image size:{0} exceeds destination free space:{1}'
+                                     .format(manifest.image_size, avail_space))
 
         #setup progress bar...
         try:
@@ -201,42 +219,33 @@ class Unbundle(WalrusRequest, FileTransferProgressBarMixin):
             pbar = None
 
         try:
-            if self.source_dir == '-':
-                #Unbundle from stdin stream...
-                written_digest = fittings.create_unbundle_stream_pipeline(os.fdopen(os.dup(os.sys.stdin.fileno())),
-                                                                          dest_file,
-                                                                          enc_key=manifest.enc_key,
-                                                                          enc_iv=manifest.enc_iv,
-                                                                          progressbar=pbar,
-                                                                          debug=debug,
-                                                                          maxbytes=int(self.args['maxbytes']))
-            elif self.manifest_path:
-                #Unbundle parts in a local directory
-                written_digest = fittings.create_unbundle_by_local_manifest_pipeline(dest_file,
-                                                                                     manifest,
-                                                                                     self.source_dir,
-                                                                                     pbar,
-                                                                                     debug=debug,
-                                                                                     maxbytes=int(
-                                                                                         self.args['maxbytes']))
-            else:
-                #Unbundle remote parts via Walrus request
-                written_digest = fittings.create_unbundle_by_remote_manifest_pipeline(dest_file,
-                                                                                      self.args.get('bucket'),
-                                                                                      manifest,
-                                                                                      self,
-                                                                                      pbar,
-                                                                                      debug=debug,
-                                                                                      maxbytes=0)
-            written_digest = written_digest.strip()
+            #Start the unbundle...
+            unbundle_r, unbundle_w = open_pipe_fileobjs()
+            writer = spawn_process(self._concatenate_parts_to_file_for_pipe,
+                                   outfile=unbundle_w,
+                                   image_parts=manifest.image_parts,
+                                   source_dir=self.args.get('source'),
+                                   debug=self.args.get('debug'))
+            unbundle_w.close()
+            waitpid_in_thread(writer.pid)
+            digest = create_unbundle_pipeline(infile=unbundle_r,
+                                              outfile=dest_file,
+                                              enc_key=manifest.enc_key,
+                                              enc_iv=manifest.enc_iv,
+                                              progressbar=pbar,
+                                              debug=self.args.get('debug'),
+                                              maxbytes=int(self.args['maxbytes']))
+
+            digest = digest.strip()
             if dest_file:
                 dest_file.close()
-                #Verify the Checksum return from the unbundle operation matches what we expected in the manifest
-            if written_digest != manifest.image_digest:
+            #Verify the Checksum return from the unbundle operation matches the manifest
+            if digest != manifest.image_digest:
                 raise ValueError('Digest mismatch. Extracted image appears to be corrupt '
-                                 '(expected digest: {0}, actual: {1})'.format(manifest.image_digest, written_digest))
+                                 '(expected digest: {0}, actual: {1})'
+                                 .format(manifest.image_digest, digest))
             self.log.debug("\nExpected digest:" + str(manifest.image_digest) + "\n" +
-                           "  Actual digest:" + str(written_digest))
+                           "  Actual digest:" + str(digest))
         except KeyboardInterrupt:
             print 'Caught keyboard interrupt'
             if dest_file:

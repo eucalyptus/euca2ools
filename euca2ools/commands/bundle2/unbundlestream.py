@@ -24,11 +24,13 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 from euca2ools.commands import Euca2ools
-from euca2ools.bundle.pipes import fittings
-from euca2ools.bundle.manifest import BundleManifest
+import euca2ools.bundle.pipes
+from euca2ools.bundle.pipes.core import create_unbundle_pipeline
+from euca2ools.bundle.util import open_pipe_fileobjs, spawn_process, \
+    close_all_fds, waitpid_in_thread
+from shutil import copyfileobj
 import os
 import argparse
-import traceback
 from requestbuilder import Arg, MutuallyExclusiveArgList
 from requestbuilder.command import BaseCommand
 from requestbuilder.exceptions import ArgumentError
@@ -42,30 +44,22 @@ class UnbundleStream(BaseCommand, FileTransferProgressBarMixin):
                    'used to bundle it.')
     SUITE = Euca2ools
     ARGS = [
-        Arg('-s', '--source', metavar='FILE', required=True,
-            help='''Source File. Use '-' to represent <stdin>'''),
+        Arg('-s', '--source', metavar='INFILE', default=None,
+            help=argparse.SUPPRESS),
+        Arg('-d', '--destination', metavar='OUTFILE', required=True,
+            help='Destination path to write file to. Use "-" to write to <stdout>'),
         Arg('-k', '--privatekey', metavar='FILE', required=True,
             help='''file containing the private key to decrypt the bundle
                 with.  This must match the certificate used when bundling the
                 image.'''),
-
-        Arg('-m', '--manifest', dest='manifest', metavar='FILE',
-            help='''Use a local manifest file to derive info about
-                source stream'''),
-        Arg('-e', '--enc-key', dest='enc_key',
+        Arg('-e', '--enc-key', dest='enc_key', required=True,
             help='''Key used to decrypt bundled image'''),
-        Arg('-v', '--enc-iv', dest='enc_iv',
+        Arg('-v', '--enc-iv', dest='enc_iv', required=True,
             help='''Initialization vector used to decrypt bundled image'''),
-        Arg('-c', '--checksum', metavar='CHECKSUM', default=None,
-            help='''Bundled Image checksum, used to verify image
-                resulting from this unbundle operation'''),
-        Arg('-d', '--destination', metavar='DIR', default='.',
-            help='''The filepath to write unbundled image to.
-                If "-" is provided stdout will be used.'''),
         Arg('--maxbytes', dest='maxbytes', metavar='MAX BYTES', default=0,
             help='''The Maximum bytes allowed to be written to the
                 destination.'''),
-        Arg('--progressbar-label', help=argparse.SUPPRESS)]
+        Arg('--progressbar', dest='progressbar', help=argparse.SUPPRESS)]
 
     # noinspection PyExceptionInherit
     def configure(self):
@@ -89,124 +83,99 @@ class UnbundleStream(BaseCommand, FileTransferProgressBarMixin):
         self.args['privatekey'] = os.path.expanduser(os.path.expandvars(
             self.args['privatekey']))
         if not os.path.exists(self.args['privatekey']):
-            raise ArgumentError("private key file '{0}' does not exist".format(self.args['privatekey']))
+            raise ArgumentError("private key file '{0}' does not exist"
+            .format(self.args['privatekey']))
         if not os.path.isfile(self.args['privatekey']):
-            raise ArgumentError("private key file '{0}' is not a file".format(self.args['privatekey']))
-        self.private_key_path = self.args.get('privatekey')
+            raise ArgumentError("private key file '{0}' is not a file"
+            .format(self.args['privatekey']))
 
-        #Get Manifest if path provided...
-        if self.args.get('manifest'):
-            self.manifest_path = os.path.expanduser(os.path.abspath(self.args['manifest']))
-            if not os.path.exists(self.manifest_path):
-                raise ArgumentError("Manifest '{0}' does not exist".format(self.args['manifest']))
-            if not os.path.isfile(self.manifest_path):
-                raise ArgumentError("Manifest '{0}' is not a file".format(self.args['manifest']))
-            self.manifest = BundleManifest.read_from_file(self.manifest_path, self.private_key_path)
-        else:
-            self.manifest = None
+        #Get optional destination directory...
+        dest_dir = self.args['destination']
+        if not isinstance(dest_dir, file) and not (dest_dir == "-"):
+            dest_dir = os.path.expanduser(os.path.abspath(dest_dir))
+            if not os.path.exists(dest_dir):
+                raise ArgumentError("Destination directory '{0}' does not exist"
+                .format(dest_dir))
+            if not os.path.isdir(dest_dir):
+                raise ArgumentError("Destination '{0}' is not Directory"
+                .format(dest_dir))
+        self.args['destination'] = dest_dir
 
-        #Get source file path..
-        self.source_file_path = self.args['source']
-        if not (self.source_file_path == "-"):
-            self.source_file_path = os.path.expanduser(os.path.abspath(self.source_file_path))
-            if not os.path.exists(self.source_dir):
-                raise ArgumentError("Source file path '{0}' does not exist".format(self.args['source']))
-            if not os.path.isfile(self.source_dir):
-                raise ArgumentError("Source '{0}' is not a file".format(self.args['source']))
-
-        #Get optional destination file path...
-        self.dest_file_path = self.args['destination']
-        if not (self.dest_file_path == "-"):
-            self.dest_file_path = os.path.expanduser(os.path.abspath(self.args['destination']))
-            if not os.path.exists(os.path.dirname(self.dest_file_path)):
-                os.makedirs(self.dest_file_path, mode=0700)
-            elif os.path.exists(self.dest_file_path) and not os.path.isfile(self.dest_file_path):
-                raise ArgumentError("Destination '{0}' is not a file".format(self.args['destination']))
-
-    def main(self):
-        debug = self.args.get('debug')
-        source_file = None
-        dest_file = None
-        enc_key = self.args.get('enc_key') or (self.manifest.enc_key if hasattr(self.manifest, 'enc_key') else None)
-        enc_iv = self.args.get('enc_iv') or (self.manifest.enc_iv if hasattr(self.manifest, 'enc_iv') else None)
-        if not enc_iv or not enc_key:
-            raise ValueError('Encryption key and iv must be provided. '
-                             'enc_iv:{0}, enc_key:{1})'.format(str(enc_key), str(enc_iv)))
-
+    def _write_inputfile_to_pipe(self, infile, outfile, debug=False):
+        """
+        Intended for reading from file 'infile' and writing to pipe via 'outfile'.
+        :param outfile: file obj used for writing infile to
+        :param infile: file obj used for reading input from to feed pipe at 'outfile'
+        """
+        self.log.debug('Starting _write_file_to_pipe...')
+        self.log.debug('write_file_to_pipe using input file:' + str(infile))
+        self.log.debug('write_file_to_pipe using output file:' + str(outfile))
+        close_all_fds([infile, outfile])
         try:
-            #Setup the destination fileobj...
-            if self.dest_file_path == "-":
-                #Write to stdout
-                dest_file = os.fdopen(os.dup(os.sys.stdout.fileno()), 'w')
-                dest_file_name = None
-            else:
-                #write to local file path
-                dest_file = open(self.dest_file_path, 'w')
-                dest_file_name = dest_file.name
-
-            #Setup the source fileobj...
-            if self.source_file_path == "-":
-                source_file = os.fdopen(os.dup(os.sys.stdin.fileno()))
-            else:
-                source_file = open(self.source_file_path)
-
-            #setup progress bar, don't create a progress bar if writing to stdout or input size is unknown...
-            pbar = None
-            if dest_file_name:
-                if self.manifest:
-                    file_size = self.manifest.image_size
-                else:
-                    file_size = os.fstat(dest_file.fileno()).st_size
-                try:
-                    if file_size:
-                        label = self.args.get('progressbar_label', 'UnBundling image')
-                        pbar = self.get_progressbar(label=label, maxval=file_size)
-                except NameError:
-                    pass
-
-            #Perform unbundle stream pipline...
-            written_digest = fittings.create_unbundle_stream_pipeline(source_file,
-                                                                      dest_file,
-                                                                      enc_key=enc_key.strip(),
-                                                                      enc_iv=enc_iv.strip(),
-                                                                      progressbar=pbar,
-                                                                      debug=debug,
-                                                                      maxbytes=int(self.args['maxbytes']))
-            written_digest = written_digest.strip()
-            if dest_file:
-                dest_file.close()
-                #Verify the Checksum return from the unbundle operation matches what we expected in the manifest
-            if self.args.get('checksum'):
-                checksum = self.args.get('checksum').strip()
-                if written_digest != checksum:
-                    raise ValueError('Digest mismatch. Extracted image appears to be corrupt '
-                                     '(expected digest: {0}, actual: {1})'.format(checksum, written_digest))
-                self.log.debug("\nExpected digest:" + str(checksum) + "\n" +
-                               "  Actual digest:" + str(written_digest))
-        except KeyboardInterrupt:
-            print 'Caught keyboard interrupt'
-            if dest_file:
-                os.remove(dest_file.name)
-            return
-        except Exception:
-            traceback.print_exc()
-            if dest_file:
-                try:
-                    os.remove(dest_file.name)
-                except OSError:
-                    print "Could not remove failed destination file."
-                dest_file = None
+            copyfileobj(infile, outfile, length=euca2ools.bundle.pipes._BUFSIZE)
+        except IOError as ioe:
+            # HACK
+            self.log.debug('IO Error in write_file_to_pipe:' + str(ioe))
+            if not debug:
+                return
             raise
         finally:
-            if dest_file:
-                dest_file.close()
-            if source_file:
-                source_file.close()
-        return dest_file_name
+            self.log.debug('Done, closing write end of pipe after writing')
+            infile.close()
+            outfile.close()
+
+    def main(self):
+        pbar = self.args.get('progressbar', None)
+
+        #todo Should this only write to fileobj or stdout, and not a local path?
+        #Setup the destination fileobj...
+        if isinstance(self.args.get('destination'), file):
+            #Use provided file obj...
+            dest_file = self.args.get('destination')
+        elif self.args.get('destination') == '-':
+            #Use stdout...
+            dest_file = os.fdopen(os.dup(os.sys.stdout.fileno()), 'w')
+        else:
+            #Open file at path provided...
+            dest_file = open(self.args.get('destination'), 'w')
+
+        #Start the unbundle...
+        try:
+            if self.args.get('source'):
+                #Let caller feed pipe from file obj provided...
+                digest = create_unbundle_pipeline(infile=self.args.get('source'),
+                                                  outfile=dest_file,
+                                                  enc_key=self.args.get('enc_key'),
+                                                  enc_iv=self.args.get('enc_iv'),
+                                                  progressbar=pbar,
+                                                  debug=self.args.get('debug'),
+                                                  maxbytes=int(self.args['maxbytes']))
+            else:
+                #Unbundle from stdin stream...
+                unbundle_r, unbundle_w = open_pipe_fileobjs()
+                writer = spawn_process(self._write_inputfile_to_pipe,
+                                       infile=os.fdopen(os.dup(os.sys.stdin.fileno())),
+                                       outfile=unbundle_w,
+                                       debug=self.args.get('debug'))
+                unbundle_w.close()
+                waitpid_in_thread(writer.pid)
+                digest = create_unbundle_pipeline(infile=unbundle_r,
+                                                  outfile=dest_file,
+                                                  enc_key=self.args.get('enc_key'),
+                                                  enc_iv=self.args.get('enc_iv'),
+                                                  progressbar=pbar,
+                                                  debug=self.args.get('debug'),
+                                                  maxbytes=int(self.args['maxbytes']))
+            digest = digest.strip()
+            self.log.debug('Digest for unbundled image:' + str(digest))
+        except KeyboardInterrupt:
+            print 'Caught keyboard interrupt'
+            return
+        return digest
 
     def print_result(self, result):
-        if result:
-            print 'Wrote', result
+        if result and self.args.get('debug'):
+            print 'Finished unbundle stream. ', result
 
 
 if __name__ == '__main__':

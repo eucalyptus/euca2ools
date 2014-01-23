@@ -28,6 +28,7 @@ import os
 import subprocess
 import threading
 import traceback
+import time
 from StringIO import StringIO
 from multiprocessing import Process
 from subprocess import check_output
@@ -74,27 +75,19 @@ def open_pipe_fileobjs():
     return os.fdopen(pipe_r), os.fdopen(pipe_w, 'w')
 
 
-def waitpid_in_thread(pid):
+def waitpid_in_thread(pid, pname='unknown name', debug=False):
     """
     Start a thread that calls os.waitpid on a particular PID to prevent
     zombie processes from hanging around after they have finished.
     """
-    try:
-        #Check to see if pid exists
-        os.kill(pid, 0)
-    except OSError:
-        return
-    else:
+    if pid_exists(pid):
+        if debug:
+            monitor_thread = threading.Thread(target=monitor_pid, args=(pid, pname))
+            monitor_thread.daemon = True
+            monitor_thread.start()
         pid_thread = threading.Thread(target=check_and_waitpid, args=(pid, 0))
         pid_thread.daemon = True
         pid_thread.start()
-
-
-def spawn_thread(func, **kwargs):
-    t = threading.Thread(target=func, kwargs=kwargs)
-    t.start()
-    return t
-
 
 def spawn_process(func, **kwargs):
     p = Process(target=process_wrapper, args=[func], kwargs=kwargs)
@@ -113,62 +106,42 @@ def process_wrapper(func, **kwargs):
     except KeyboardInterrupt:
         pass
     except Exception, e:
-        tb = get_traceback()
+        try:
+            out = StringIO()
+            traceback.print_exception(*os.sys.exc_info(), file=out)
+            out.seek(0)
+            tb = out.read()
+        except Exception, e:
+            tb = "Could not get traceback" + str(e)
         msg = 'Error in wrapped process:' + str(name) + ":" + str(e) + "\n" + str(tb)
         print >> os.sys.stderr, msg
-        traceback.print_exc()
+        return
         os._exit(1)
     os._exit(os.EX_OK)
 
+def monitor_pid(pid, name):
+    for x in xrange(0,10):
+        print >> os.sys.stderr, 'Does process ' + str(name) + ':(' + str(pid) + ') exist? ' + str(pid_exists(pid))
+        time.sleep(5)
+
+def pid_exists(pid):
+    try:
+        #Check to see if pid exists
+        os.kill(pid, 0)
+        return True
+    except OSError, ose:
+        if ose.errno == os.errno.ESRCH:
+            return False
+        else:
+            raise ose
+
 
 def check_and_waitpid(pid, status):
-    try:
-        #Check if pid is still alive?
-        os.kill(pid, 0)
-    except OSError:
-        return
-    else:
+    if pid_exists(pid):
         try:
             os.waitpid(pid, status)
         except OSError:
             pass
-
-
-def find_and_close_open_files(exclude_files=None):
-    exclude_files = exclude_files or []
-    fdlist = []
-    for f in exclude_files:
-        fdlist.append(f.fileno())
-    for fd in get_open_files():
-        if fd > 3 and fdlist and not fd in fdlist:
-            try:
-                os.close(fd)
-            except:
-                pass
-                #print_debug(str(pid) + ", Couldn't close fd:" + str(fd))
-
-
-def get_open_files():
-    fd_list = []
-    pid = os.getpid()
-    lsof_output = check_output(["lsof", '-w', '-Ff', "-p", str(pid)])
-    for fd in filter(lambda x: x and x[0] == 'f' and x[1:].isdigit(), lsof_output.split('\n')):
-        fd_list.append(int(fd.lstrip('f')))
-    return fd_list
-
-
-def get_traceback():
-    """
-    Returns a string buffer with traceback, to be used for debug/info purposes.
-    """
-    try:
-        out = StringIO()
-        traceback.print_exception(*os.sys.exc_info(), file=out)
-        out.seek(0)
-        buf = out.read()
-    except Exception, e:
-        buf = "Could not get traceback" + str(e)
-    return str(buf)
 
 
 def print_debug(msg, *args):
