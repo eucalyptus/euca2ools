@@ -24,11 +24,8 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 from euca2ools.commands import Euca2ools
-import euca2ools.bundle.pipes
 from euca2ools.bundle.pipes.core import create_unbundle_pipeline
-from euca2ools.bundle.util import open_pipe_fileobjs, spawn_process, \
-    close_all_fds, waitpid_in_thread
-from shutil import copyfileobj
+from euca2ools.bundle.manifest import BundleManifest
 import os
 import argparse
 from requestbuilder import Arg, MutuallyExclusiveArgList
@@ -48,13 +45,16 @@ class UnbundleStream(BaseCommand, FileTransferProgressBarMixin):
             help=argparse.SUPPRESS),
         Arg('-d', '--destination', metavar='OUTFILE', required=True,
             help='Destination path to write file to. Use "-" to write to <stdout>'),
-        Arg('-k', '--privatekey', metavar='FILE', required=True,
+        Arg('-k', '--privatekey', metavar='FILE',
             help='''file containing the private key to decrypt the bundle
                 with.  This must match the certificate used when bundling the
                 image.'''),
-        Arg('-e', '--enc-key', dest='enc_key', required=True,
+        Arg('-m', '--manifest', dest='manifest', metavar='FILE',
+            help='''Optional local manfiest path. Used to derivce encryption key
+            and initialization vector for input stream'''),
+        Arg('-e', '--enc-key', dest='enc_key',
             help='''Key used to decrypt bundled image'''),
-        Arg('-v', '--enc-iv', dest='enc_iv', required=True,
+        Arg('-v', '--enc-iv', dest='enc_iv',
             help='''Initialization vector used to decrypt bundled image'''),
         Arg('--maxbytes', dest='maxbytes', metavar='MAX BYTES', default=0,
             help='''The Maximum bytes allowed to be written to the
@@ -68,80 +68,82 @@ class UnbundleStream(BaseCommand, FileTransferProgressBarMixin):
         set_userregion(self.config, self.args.get('userregion'))
         set_userregion(self.config, os.getenv('EUCA_REGION'))
 
-        #Get the mandatory private key...
-        if not self.args.get('privatekey'):
-            config_privatekey = self.config.get_user_option('private-key')
-            if self.args.get('userregion'):
-                self.args['privatekey'] = config_privatekey
-            elif 'EC2_PRIVATE_KEY' in os.environ:
-                self.args['privatekey'] = os.getenv('EC2_PRIVATE_KEY')
-            elif config_privatekey:
-                self.args['privatekey'] = config_privatekey
-            else:
-                raise ArgumentError(
-                    'missing private key; please supply one with -k')
-        self.args['privatekey'] = os.path.expanduser(os.path.expandvars(
-            self.args['privatekey']))
-        if not os.path.exists(self.args['privatekey']):
-            raise ArgumentError("private key file '{0}' does not exist"
-            .format(self.args['privatekey']))
-        if not os.path.isfile(self.args['privatekey']):
-            raise ArgumentError("private key file '{0}' is not a file"
-            .format(self.args['privatekey']))
-
         #Get optional destination directory...
-        dest_dir = self.args['destination']
-        if not isinstance(dest_dir, file) and not (dest_dir == "-"):
-            dest_dir = os.path.expanduser(os.path.abspath(dest_dir))
-            if not os.path.exists(dest_dir):
-                raise ArgumentError("Destination directory '{0}' does not exist"
-                .format(dest_dir))
-            if not os.path.isdir(dest_dir):
-                raise ArgumentError("Destination '{0}' is not Directory"
-                .format(dest_dir))
-        self.args['destination'] = dest_dir
+        dest_file = self.args['destination']
+        if not isinstance(dest_file, file) and not (dest_file == "-"):
+            dest_file = os.path.expanduser(os.path.abspath(dest_file))
+            self.args['destination'] = dest_file
 
-    def _write_inputfile_to_pipe(self, infile, outfile, debug=False):
-        """
-        Intended for reading from file 'infile' and writing to pipe via 'outfile'.
-        :param outfile: file obj used for writing infile to
-        :param infile: file obj used for reading input from to feed pipe at 'outfile'
-        """
-        self.log.debug('Starting _write_file_to_pipe...')
-        self.log.debug('write_file_to_pipe using input file:' + str(infile))
-        self.log.debug('write_file_to_pipe using output file:' + str(outfile))
-        close_all_fds([infile, outfile])
-        try:
-            copyfileobj(infile, outfile, length=euca2ools.bundle.pipes._BUFSIZE)
-        except IOError as ioe:
-            # HACK
-            self.log.debug('IO Error in write_file_to_pipe:' + str(ioe))
-            if not debug:
-                return
-            raise
-        finally:
-            self.log.debug('Done, closing write end of pipe after writing')
-            infile.close()
-            outfile.close()
+        #Get Mandatory manifest...
+        manifest = self.args.get('manifest', None)
+        if manifest:
+            if not isinstance(manifest, BundleManifest):
+                #Read manifest file into manifest obj...
+                manifest_path = os.path.expanduser(os.path.abspath(
+                    self.args['manifest']))
+                if not os.path.exists(manifest_path):
+                    raise ArgumentError("Manifest '{0}' does not exist"
+                                        .format(self.args['manifest']))
+                if not os.path.isfile(manifest_path):
+                    raise ArgumentError("Manifest '{0}' is not a file"
+                                        .format(self.args['manifest']))
+                    #Read manifest into BundleManifest obj...
+                #Get the mandatory private key...
+                if not self.args.get('privatekey'):
+                    config_privatekey = self.config.get_user_option('private-key')
+                    if self.args.get('userregion'):
+                        self.args['privatekey'] = config_privatekey
+                    elif 'EC2_PRIVATE_KEY' in os.environ:
+                        self.args['privatekey'] = os.getenv('EC2_PRIVATE_KEY')
+                    elif config_privatekey:
+                        self.args['privatekey'] = config_privatekey
+                    else:
+                        raise ArgumentError(
+                            'missing private key needed to read manifest;'
+                            ' please supply one with -k')
+                self.args['privatekey'] = os.path.expanduser(os.path.expandvars(
+                    self.args['privatekey']))
+                if not os.path.exists(self.args['privatekey']):
+                    raise ArgumentError("private key file '{0}' does not exist"
+                    .format(self.args['privatekey']))
+                if not os.path.isfile(self.args['privatekey']):
+                    raise ArgumentError("private key file '{0}' is not a file"
+                    .format(self.args['privatekey']))
+                manifest = (BundleManifest.read_from_file(manifest_path,
+                                                          self.args['privatekey']))
+                self.args['manifest'] = manifest
+            if not self.args.get('enc_key') and manifest:
+                self.args['enc_key'] = manifest.enc_key
+            if not self.args.get('enc_iv') and manifest:
+                self.args['enc_iv'] = manifest.enc_iv
+
+        if not self.args.get('enc_key') or not self.args.get('enc_iv'):
+            raise ArgumentError('Encryption key (-e) and initialization vector (-v) are'
+                                ' required if manifest (-m) is not provided')
 
     def main(self):
         pbar = self.args.get('progressbar', None)
-
+        manifest = self.args.get('manifest')
         #todo Should this only write to fileobj or stdout, and not a local path?
         #Setup the destination fileobj...
         if isinstance(self.args.get('destination'), file):
             #Use provided file obj...
             dest_file = self.args.get('destination')
+            dest_file_name = dest_file.name
         elif self.args.get('destination') == '-':
             #Use stdout...
+            dest_file_name = '<stdout>'
             dest_file = os.fdopen(os.dup(os.sys.stdout.fileno()), 'w')
         else:
             #Open file at path provided...
+            dest_file_name = self.args.get('destination')
             dest_file = open(self.args.get('destination'), 'w')
 
         #Start the unbundle...
         try:
             if self.args.get('source'):
+                if not isinstance(self.args.get('source'), file):
+                    raise ArgumentError('Source argument must be of type file object')
                 #Let caller feed pipe from file obj provided...
                 digest = create_unbundle_pipeline(infile=self.args.get('source'),
                                                   outfile=dest_file,
@@ -152,14 +154,8 @@ class UnbundleStream(BaseCommand, FileTransferProgressBarMixin):
                                                   maxbytes=int(self.args['maxbytes']))
             else:
                 #Unbundle from stdin stream...
-                unbundle_r, unbundle_w = open_pipe_fileobjs()
-                writer = spawn_process(self._write_inputfile_to_pipe,
-                                       infile=os.fdopen(os.dup(os.sys.stdin.fileno())),
-                                       outfile=unbundle_w,
-                                       debug=self.args.get('debug'))
-                unbundle_w.close()
-                waitpid_in_thread(writer.pid)
-                digest = create_unbundle_pipeline(infile=unbundle_r,
+                infile = os.fdopen(os.dup(os.sys.stdin.fileno()))
+                digest = create_unbundle_pipeline(infile=infile,#unbundle_r,
                                                   outfile=dest_file,
                                                   enc_key=self.args.get('enc_key'),
                                                   enc_iv=self.args.get('enc_iv'),
@@ -167,6 +163,16 @@ class UnbundleStream(BaseCommand, FileTransferProgressBarMixin):
                                                   debug=self.args.get('debug'),
                                                   maxbytes=int(self.args['maxbytes']))
             digest = digest.strip()
+            if manifest:
+                #Verify the Checksum return from the unbundle operation matches the manifest
+                if digest != manifest.image_digest:
+                    raise ValueError('Digest mismatch. Extracted image appears to be corrupt '
+                                     '(expected digest: {0}, actual: {1})'
+                                     .format(manifest.image_digest, digest))
+                self.log.debug("\nExpected digest:" + str(manifest.image_digest) + "\n" +
+                               "  Actual digest:" + str(digest))
+
+            self.log.debug('Wrote stream to destination:' + dest_file_name)
             self.log.debug('Digest for unbundled image:' + str(digest))
         except KeyboardInterrupt:
             print 'Caught keyboard interrupt'
