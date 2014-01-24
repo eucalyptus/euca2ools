@@ -71,6 +71,9 @@ class InstallImage(EuStoreRequest, FileTransferProgressBarMixin):
                 images with hypervisor-specific kernels'''),
             Arg('--virtualization-type', choices=('paravirtual', 'hvm'),
                 help='''Virtualization type to register image with'''),
+            Arg('--separate-buckets', action='store_true',
+                help='''store kernel, ramdisk, and machine images in separate
+                buckets (BUCKET-kernel, BUCKET-ramdisk)'''),
             Arg('-k', '--kernel-type', dest='kernel_type',
                 choices=('xen', 'kvm', 'universal'), help=argparse.SUPPRESS),
             Arg('-d', '--directory', dest='directory', metavar='DIR',
@@ -406,6 +409,7 @@ class InstallImage(EuStoreRequest, FileTransferProgressBarMixin):
 
     def bundle_and_upload_image(self, image, image_type, workdir,
                                 kernel_id=None, ramdisk_id=None):
+        unique_bucket = self.args['bucket']
         if image_type == 'machine':
             image_type_args = {'kernel': kernel_id,
                                'ramdisk': ramdisk_id}
@@ -413,9 +417,13 @@ class InstallImage(EuStoreRequest, FileTransferProgressBarMixin):
         elif image_type == 'kernel':
             image_type_args = {'kernel': 'true'}
             progressbar_label = 'Bundling kernel   '
+            if self.args.get('separate_buckets'):
+                unique_bucket = ''.join([self.args['bucket'], '-kernel'])
         elif image_type == 'ramdisk':
             image_type_args = {'ramdisk': 'true'}
             progressbar_label = 'Bundling ramdisk  '
+            if self.args.get('separate_buckets'):
+                unique_bucket = ''.join([self.args['bucket'], '-ramdisk'])
         else:
             raise ValueError("unrecognized image type: '{0}'"
                              .format(image_type))
@@ -433,7 +441,7 @@ class InstallImage(EuStoreRequest, FileTransferProgressBarMixin):
         if self.args.get('show_progress', False):
             print '-- Uploading {0} image --'.format(image_type)
         cmd = UploadBundle(config=self.config, service=self.__walrus,
-                           bucket=self.args['bucket'], manifest=manifest_path,
+                           bucket=unique_bucket, manifest=manifest_path,
                            acl='aws-exec-read',
                            show_progress=self.args.get('show_progress', False))
         manifest_loc = cmd.main()
