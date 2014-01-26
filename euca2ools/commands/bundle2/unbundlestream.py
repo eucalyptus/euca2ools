@@ -141,20 +141,15 @@ class UnbundleStream(BaseCommand, FileTransferProgressBarMixin):
 
         #Start the unbundle...
         try:
-            if self.args.get('source'):
-                if not isinstance(self.args.get('source'), file):
-                    raise ArgumentError('Source argument must be of type file object')
-                #Let caller feed pipe from file obj provided...
-                digest = create_unbundle_pipeline(infile=self.args.get('source'),
-                                                  outfile=dest_file,
-                                                  enc_key=self.args.get('enc_key'),
-                                                  enc_iv=self.args.get('enc_iv'),
-                                                  progressbar=pbar,
-                                                  debug=self.args.get('debug'),
-                                                  maxbytes=int(self.args['maxbytes']))
+            if self.args.get('source') and not self.args.get('source') == "-":
+                if isinstance(self.args.get('source'), file):
+                    infile = self.args.get('source')
+                else:
+                    infile = open(self.args.get('source'))
             else:
                 #Unbundle from stdin stream...
                 infile = os.fdopen(os.dup(os.sys.stdin.fileno()))
+            with infile:
                 digest = create_unbundle_pipeline(infile=infile,#unbundle_r,
                                                   outfile=dest_file,
                                                   enc_key=self.args.get('enc_key'),
@@ -162,7 +157,7 @@ class UnbundleStream(BaseCommand, FileTransferProgressBarMixin):
                                                   progressbar=pbar,
                                                   debug=self.args.get('debug'),
                                                   maxbytes=int(self.args['maxbytes']))
-            digest = digest.strip()
+                digest = digest.strip()
             if manifest:
                 #Verify the Checksum return from the unbundle operation matches the manifest
                 if digest != manifest.image_digest:

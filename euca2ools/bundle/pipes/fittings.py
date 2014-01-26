@@ -23,17 +23,11 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-
+import euca2ools.bundle.pipes
+import euca2ools.bundle.util
 import hashlib
 import itertools
 import multiprocessing
-import os
-from shutil import copyfileobj
-
-import euca2ools.bundle.pipes
-import euca2ools.bundle.util
-from euca2ools.bundle.pipes.core import create_unbundle_pipeline
-from euca2ools.bundle.util import print_debug, find_and_close_open_files
 
 
 def create_bundle_part_writer(infile, part_prefix, part_size, debug=False):

@@ -48,7 +48,7 @@ class Unbundle(BaseCommand, FileTransferProgressBarMixin):
     ARGS = [Arg('-m', '--manifest', dest='manifest', metavar='FILE', required=True,
                 help='''use a local manifest file to figure out what to
                 download'''),
-            Arg('-s', '--source', metavar='DIR', default='.', required=True,
+            Arg('-s', '--source', metavar='DIR', default='.',
                 help='''directory containing the bundled image parts (default:
                 current directory). If "-" is provided stdin will be used.'''),
             Arg('-k', '--privatekey', metavar='FILE', required=True,
@@ -228,6 +228,8 @@ class Unbundle(BaseCommand, FileTransferProgressBarMixin):
                                    debug=self.args.get('debug'))
             unbundle_w.close()
             waitpid_in_thread(writer.pid)
+            self.log.debug('Using enc key:' + str(manifest.enc_key))
+            self.log.debug('using enc iv:' + str(manifest.enc_iv))
             digest = create_unbundle_pipeline(infile=unbundle_r,
                                               outfile=dest_file,
                                               enc_key=manifest.enc_key,

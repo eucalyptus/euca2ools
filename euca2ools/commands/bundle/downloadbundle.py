@@ -206,8 +206,7 @@ class DownloadBundle(WalrusRequest, FileTransferProgressBarMixin):
                                    bucket=bucket,
                                    parts=manifest.image_parts,
                                    fileobj=unbundle_w,
-                                   show_progress=False,
-                                   close_fds=True)
+                                   show_progress=False)
             unbundle_w.close()
             waitpid_in_thread(writer.pid)
             digest = create_unbundle_pipeline(infile=unbundle_r,
@@ -242,9 +241,7 @@ class DownloadBundle(WalrusRequest, FileTransferProgressBarMixin):
                         directory=None,
                         fileobj=None,
                         show_progress=True,
-                        close_fds=False,
-                        debug=False,
-                        **kwargs):
+                        debug=False):
         chunk_size = euca2ools.bundle.pipes._BUFSIZE
         if (not directory and not fileobj) or (directory and fileobj):
             raise ValueError('Must specify either directory or fileobj argument')

@@ -35,7 +35,7 @@ from euca2ools.bundle.util import spawn_process, close_all_fds, print_debug, pid
 
 
 def _create_tarball_from_stream(infile, outfile, tarinfo, debug=False):
-    close_all_fds(except_fds=(infile, outfile))
+    close_all_fds(except_fds=[infile, outfile])
     tarball = tarfile.open(mode='w|', fileobj=outfile,
                            bufsize=euca2ools.bundle.pipes._BUFSIZE)
     try:
@@ -53,6 +53,7 @@ def _create_tarball_from_stream(infile, outfile, tarinfo, debug=False):
 
 def create_bundle_pipeline(infile, outfile, enc_key, enc_iv, tarinfo,
                            debug=False):
+    pids = []
 
     # infile -> tar
     tar_out_r, tar_out_w = euca2ools.bundle.util.open_pipe_fileobjs()
@@ -60,18 +61,19 @@ def create_bundle_pipeline(infile, outfile, enc_key, enc_iv, tarinfo,
                                     args=(infile, tar_out_w, tarinfo),
                                     kwargs={'debug': debug})
     tar_p.start()
-    euca2ools.bundle.util.waitpid_in_thread(tar_p.pid)
+    pids.append(tar_p.pid)
     infile.close()
     tar_out_w.close()
 
     # tar -> sha1sum
     digest_out_r, digest_out_w = euca2ools.bundle.util.open_pipe_fileobjs()
-    digest_result_r, digest_result_w = multiprocessing.Pipe(duplex=False)
-    digest_p = spawn_process(target=_calc_sha1_for_pipe,
-                             infile=tar_out_r,
-                             outfile=digest_out_w,
-                             digest_out_pipe_w=digest_result_w)
-    euca2ools.bundle.util.waitpid_in_thread(digest_p.pid)
+    digest_result_r, digest_result_w = euca2ools.bundle.util.open_pipe_fileobjs()
+    #digest_result_r, digest_result_w = multiprocessing.Pipe(duplex=False)
+    digest_p = multiprocessing.Process(
+        target=_calc_sha1_for_pipe,
+        args=(tar_out_r, digest_out_w, digest_result_w))
+    digest_p.start()
+    pids.append(digest_p.pid)
     digest_out_w.close()
     digest_result_w.close()
 
@@ -85,7 +87,7 @@ def create_bundle_pipeline(infile, outfile, enc_key, enc_iv, tarinfo,
                                 stdout=subprocess.PIPE, close_fds=True,
                                 bufsize=-1)
     digest_out_r.close()
-    euca2ools.bundle.util.waitpid_in_thread(gzip.pid)
+    pids.append(gzip.pid)
 
     # gzip -> openssl
     openssl = subprocess.Popen(['openssl', 'enc', '-e', '-aes-128-cbc',
@@ -93,7 +95,11 @@ def create_bundle_pipeline(infile, outfile, enc_key, enc_iv, tarinfo,
                                stdin=gzip.stdout, stdout=outfile,
                                close_fds=True, bufsize=-1)
     gzip.stdout.close()
-    euca2ools.bundle.util.waitpid_in_thread(openssl.pid)
+    pids.append(openssl.pid)
+
+    # Make sure something calls wait() on every child process
+    for pid in pids:
+        euca2ools.bundle.util.waitpid_in_thread(pid)
 
     # Return the connection the caller can use to obtain the final digest
     return digest_result_r
@@ -142,10 +148,10 @@ def create_unbundle_pipeline(infile, outfile, enc_key, enc_iv, progressbar, maxb
         # gzip -> sha1sum
         sha1 = spawn_process(_calc_sha1_for_pipe, infile=gzip.stdout, outfile=sha1_io_w,
                              digest_out_pipe_w=sha1_checksum_w, debug=debug)
-
         euca2ools.bundle.util.waitpid_in_thread(sha1.pid, 'sha1', debug=debug)
         gzip.stdout.close()
         sha1_io_w.close()
+
 
         # sha1sum -> tar
         progress_r, progress_w = euca2ools.bundle.util.open_pipe_fileobjs()
@@ -153,10 +159,10 @@ def create_unbundle_pipeline(infile, outfile, enc_key, enc_iv, progressbar, maxb
                             debug=debug)
         euca2ools.bundle.util.waitpid_in_thread(tar.pid,'tar', debug=debug)
         progress_w.close()
-        progress_w.close()
+
 
         # tar -> final output and update progressbar
-        _copy_with_progressbar(infile=progress_r, outfile=outfile,
+        copy_with_progressbar(infile=progress_r, outfile=outfile,
                                progressbar=progressbar, maxbytes=maxbytes)
         sha1_checksum_w.close()
         sha1_checksum = sha1_checksum_r.read()
@@ -179,7 +185,7 @@ def create_unbundle_pipeline(infile, outfile, enc_key, enc_iv, progressbar, maxb
     return sha1_checksum
 
 
-def _copy_with_progressbar(infile, outfile, progressbar=None, maxbytes=0):
+def copy_with_progressbar(infile, outfile, progressbar=None, maxbytes=0):
     """
     Synchronously copy data from infile to outfile, updating a progress bar
     with the total number of bytes copied along the way if one was provided,
@@ -267,7 +273,7 @@ def _do_tar_extract(infile, outfile, debug=False):
     :param debug: boolean used in exception handling
     """
     print_debug('do_tar_extract...')
-    print_debug("My pid: " + str(os.getpid()) + ", my parent pid:" + str(os.getppid()))
+    print_debug('do_tar_extract infile:' + str(infile))
     close_all_fds([infile, outfile])
     tarball = tarfile.open(mode='r|', fileobj=infile)
     try:
