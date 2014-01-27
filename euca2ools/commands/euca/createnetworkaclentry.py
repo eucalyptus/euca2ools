@@ -24,30 +24,34 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 from euca2ools.commands.euca import EucalyptusRequest
-from requestbuilder import Arg
+from requestbuilder import Arg, MutuallyExclusiveArgList
 
 
 class CreateNetworkAclEntry(EucalyptusRequest):
     DESCRIPTION = 'Creates a network acl rule'
     ARGS = [Arg('NetworkAclId', metavar='ACLID',
                 help='acl id to create rule in (required)'),
-            Arg('-r', '--rule-number', dest='RuleNumber', required=True,
-                help='rule number for the acl entry'),
-            Arg('-p', '--protocol', dest='Protocol',
-                choices=['tcp', 'udp', 'icmp', '-1'], default='-1',
+            Arg('-n', '--rule-number', dest='RuleNumber', required=True,
+                help='rule number for the acl entry (required)'),
+            Arg('-p', '--protocol', dest='Protocol', default='-1',
                 help='ip protocol number for the rule'),
-            Arg('-a', '--rule-action', dest='RuleAction',
-                choices=['allow', 'deny'], default='deny',
-                help='allow or deny action'),
-            Arg('-c', '--cidr-block', dest='CidrBlock', default='0.0.0.0/0',
-                help='cidr range e.g. 1.1.1.0/24'),
-            Arg('-e', '--egress',
-                choices=['true', 'false'], default='false',
+            MutuallyExclusiveArgList(True,
+                Arg('-a', '--allow', dest='RuleAction', help='allow action'),
+                Arg('-d', '--deny', dest='RuleAction', help='deny action')),
+            Arg('-r', '--cidr-block', dest='CidrBlock',
+                help='cidr range e.g. 1.1.1.0/24 (required)')),
+            Arg('-e', '--egress', action='store_true',
                 help='egress rule'),
-            Arg('-f', '--from-port', dest='PortRange.From', default='0',
-                help='start of port range for tcp, udp'),
-            Arg('-t', '--to-port', dest='PortRange.To', default='65535',
-                help='end of port range for tcp, udp')]
+            Arg('-p', '--port-range', dest='portRange', metavar='RANGE',
+                route_to=None, help='''range of ports (specified as "from-to")
+                or a single port number (required for tcp and udp)'''),
 
     def print_result(self, result):
-        print self.tabify(('ACLID', self.args['NetworkAclId'], result['return']))
+        print self.tabify((
+            'ENTRY',
+            self.args.get('egress'),
+            self.args.get('ruleNumber'),
+            self.args.get('ruleAction'),
+            self.args.get('cidrBlock'),
+            self.args.get('protocol'),
+            self.args.get('portRange')))

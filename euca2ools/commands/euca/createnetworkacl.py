@@ -43,12 +43,9 @@ class CreateNetworkAcl(EucalyptusRequest):
             self.print_entry(entry, acl.get('networkAclId'))
 
     def print_entry(self, entry, acl_id):
-        direction = 'ingress'
-        if entry.get('egress'):
-            direction = 'egress'
-
         print self.tabify((
-            'ENTRY', direction,
+            'ENTRY',
+            entry.get('egress'),
             entry.get('ruleNumber'),
             entry.get('ruleAction'),
             entry.get('cidrBlock'),
