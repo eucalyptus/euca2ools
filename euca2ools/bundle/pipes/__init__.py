@@ -28,5 +28,5 @@ from euca2ools.bundle.pipes.core import (create_bundle_pipeline,
                                          create_unbundle_pipeline)
 
 
-#_BUFSIZE = 8192
-_BUFSIZE = 8192*2
+_BUFSIZE = 8192
+
