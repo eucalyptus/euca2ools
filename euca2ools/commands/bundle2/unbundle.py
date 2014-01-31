@@ -25,10 +25,10 @@
 
 from euca2ools.commands import Euca2ools
 import euca2ools.bundle.pipes
-from euca2ools.bundle.pipes.core import create_unbundle_pipeline
-from euca2ools.bundle.util import open_pipe_fileobjs, spawn_process, close_all_fds, \
-    waitpid_in_thread
+from euca2ools.bundle.util import open_pipe_fileobjs, spawn_process
+from euca2ools.bundle.util import close_all_fds, waitpid_in_thread
 from euca2ools.bundle.manifest import BundleManifest
+from euca2ools.commands.bundle2.unbundlestream import UnbundleStream
 import os
 import hashlib
 import argparse
@@ -45,7 +45,8 @@ class Unbundle(BaseCommand, FileTransferProgressBarMixin):
                    'to unbundle the image must match the certificate that was '
                    'used to bundle it.')
     SUITE = Euca2ools
-    ARGS = [Arg('-m', '--manifest', dest='manifest', metavar='FILE', required=True,
+    ARGS = [Arg('-m', '--manifest', dest='manifest', metavar='FILE',
+                required=True,
                 help='''use a local manifest file to figure out what to
                 download'''),
             Arg('-s', '--source', metavar='DIR', default='.',
@@ -58,9 +59,6 @@ class Unbundle(BaseCommand, FileTransferProgressBarMixin):
             Arg('-d', '--destination', metavar='DIR', default='.',
                 help='''where to place the unbundled image (default: current
                 directory). If "-" is provided stdout will be used.'''),
-            #Arg('--region', dest='userregion', metavar='USER@REGION',
-            #    help='''use encryption keys specified for a user and/or region
-            #    in configuration files'''),
             Arg('--maxbytes', dest='maxbytes', metavar='MAX BYTES', default=0,
                 help='''The Maximum bytes allowed to be written to the
                 destination.'''),
@@ -69,7 +67,6 @@ class Unbundle(BaseCommand, FileTransferProgressBarMixin):
     # noinspection PyExceptionInherit
     def configure(self):
         BaseCommand.configure(self)
-        #self.configure()
         set_userregion(self.config, self.args.get('userregion'))
         set_userregion(self.config, os.getenv('EUCA_REGION'))
 
@@ -111,8 +108,8 @@ class Unbundle(BaseCommand, FileTransferProgressBarMixin):
         if not (dest_dir == "-"):
             dest_dir = os.path.expanduser(os.path.abspath(dest_dir))
             if not os.path.exists(dest_dir):
-                raise ArgumentError("Destination directory '{0}' does not exist"
-                                    .format(dest_dir))
+                raise ArgumentError("Destination directory '{0}' does"
+                                    " not exist".format(dest_dir))
             if not os.path.isdir(dest_dir):
                 raise ArgumentError("Destination '{0}' is not Directory"
                                     .format(dest_dir))
@@ -133,23 +130,23 @@ class Unbundle(BaseCommand, FileTransferProgressBarMixin):
                                      read_from_file(manifest_path,
                                                     self.args['privatekey']))
 
+        self.args['maxbytes'] = int(self.args.get('maxbytes', 0))
+
     def _concatenate_parts_to_file_for_pipe(self,
                                             outfile,
                                             image_parts,
                                             source_dir,
                                             debug=False):
         """
-        Concatenate a list of 'image_parts' files found in 'source_dir' into
-        pipeline fed by 'outfile'.Parts are checked against checksum contained in part
-        obj against calculated checksums as they are read/written.
+        Concatenate a list of 'image_parts' (files) found in 'source_dir' into
+        pipeline fed by 'outfile'. Parts are checked against checksum contained
+        in part obj against calculated checksums as they are read/written.
 
         :param outfile: file obj used to output concatenated parts to
         :param image_parts: list of euca2ools.manifest.part objs
         :param source_dir: local path to parts contained in image_parts
-         :param debug: boolean used in exception handling
+        :param debug: boolean used in exception handling
         """
-        self.log.debug("_concatenate_parts_to_file_for_pipe pid: " + str(os.getpid()) +
-                       ", parent pid:" + str(os.getppid()))
         close_all_fds([outfile])
         part_count = len(image_parts)
         part_file = None
@@ -167,8 +164,8 @@ class Unbundle(BaseCommand, FileTransferProgressBarMixin):
                         data = part_file.read(euca2ools.bundle.pipes._BUFSIZE)
                     part_digest = sha1sum.hexdigest()
                     self.log.debug(
-                        "PART NUMBER:" + str(image_parts.index(part) + 1) + "/" +
-                        str(part_count))
+                        "PART NUMBER:" + str(image_parts.index(part) + 1) +
+                        "/" + str(part_count))
                     self.log.debug('Part sha1sum:' + str(part_digest))
                     self.log.debug('Expected sum:' + str(part.hexdigest))
                     if part_digest != part.hexdigest:
@@ -178,7 +175,8 @@ class Unbundle(BaseCommand, FileTransferProgressBarMixin):
                                          .format(part.hexdigest, part_digest))
         except IOError as ioe:
             # HACK
-            self.log.debug('Error in _concatenate_parts_to_file_for_pipe.' + str(ioe))
+            self.log.debug('Error in _concatenate_parts_to_file_for_pipe.' +
+                           str(ioe))
             if not debug:
                 return
             raise ioe
@@ -207,7 +205,8 @@ class Unbundle(BaseCommand, FileTransferProgressBarMixin):
                 d_stat = os.statvfs(dest_file_name)
                 avail_space = d_stat.f_frsize * d_stat.f_favail
                 if manifest.image_size > avail_space:
-                    raise ValueError('Image size:{0} exceeds destination free space:{1}'
+                    raise ValueError('Image size:{0} exceeds destination free '
+                                     'space:{1}'
                                      .format(manifest.image_size, avail_space))
 
         #setup progress bar...
@@ -230,24 +229,24 @@ class Unbundle(BaseCommand, FileTransferProgressBarMixin):
             waitpid_in_thread(writer.pid)
             self.log.debug('Using enc key:' + str(manifest.enc_key))
             self.log.debug('using enc iv:' + str(manifest.enc_iv))
-            digest = create_unbundle_pipeline(infile=unbundle_r,
-                                              outfile=dest_file,
-                                              enc_key=manifest.enc_key,
-                                              enc_iv=manifest.enc_iv,
-                                              progressbar=pbar,
-                                              debug=self.args.get('debug'),
-                                              maxbytes=int(self.args['maxbytes']))
-
+            digest = UnbundleStream(source=unbundle_r,
+                                    destination=dest_file,
+                                    enc_key=manifest.enc_key,
+                                    enc_iv=manifest.enc_iv,
+                                    progressbar=pbar,
+                                    maxbytes=self.args.get('maxbytes'),
+                                    config=self.config).main()
             digest = digest.strip()
             if dest_file:
                 dest_file.close()
-            #Verify the Checksum return from the unbundle operation matches the manifest
+            #Verify the Checksum matches the manifest
             if digest != manifest.image_digest:
-                raise ValueError('Digest mismatch. Extracted image appears to be corrupt '
-                                 '(expected digest: {0}, actual: {1})'
+                raise ValueError('Digest mismatch. Extracted image appears '
+                                 'to be corrupt (expected digest: {0}, '
+                                 'actual: {1})'
                                  .format(manifest.image_digest, digest))
-            self.log.debug("\nExpected digest:" + str(manifest.image_digest) + "\n" +
-                           "  Actual digest:" + str(digest))
+            self.log.debug("\nExpected digest:{0}\n  Actual digest:{1}"
+                           .format(str(manifest.image_digest), str(digest)))
         except KeyboardInterrupt:
             print 'Caught keyboard interrupt'
             if dest_file:
@@ -267,7 +266,7 @@ class Unbundle(BaseCommand, FileTransferProgressBarMixin):
 
     def print_result(self, result):
         if result:
-            print 'Wrote', result
+            print 'Wrote ', result
 
 
 if __name__ == '__main__':

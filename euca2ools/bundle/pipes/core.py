@@ -31,7 +31,8 @@ import shutil
 import subprocess
 import tarfile
 import euca2ools.bundle.util
-from euca2ools.bundle.util import spawn_process, close_all_fds, print_debug, pid_exists
+from euca2ools.bundle.util import spawn_process, close_all_fds, pid_exists
+
 
 
 def _create_tarball_from_stream(infile, outfile, tarinfo, debug=False):
@@ -67,8 +68,7 @@ def create_bundle_pipeline(infile, outfile, enc_key, enc_iv, tarinfo,
 
     # tar -> sha1sum
     digest_out_r, digest_out_w = euca2ools.bundle.util.open_pipe_fileobjs()
-    digest_result_r, digest_result_w = euca2ools.bundle.util.open_pipe_fileobjs()
-    #digest_result_r, digest_result_w = multiprocessing.Pipe(duplex=False)
+    digest_result_r, digest_result_w = multiprocessing.Pipe(duplex=False)
     digest_p = multiprocessing.Process(
         target=_calc_sha1_for_pipe,
         args=(tar_out_r, digest_out_w, digest_result_w))
@@ -105,28 +105,33 @@ def create_bundle_pipeline(infile, outfile, enc_key, enc_iv, tarinfo,
     return digest_result_r
 
 
-def create_unbundle_pipeline(infile, outfile, enc_key, enc_iv, progressbar, maxbytes,
+def create_unbundle_pipeline(infile,
+                             outfile,
+                             enc_key,
+                             enc_iv,
+                             progressbar,
+                             maxbytes,
                              debug=False):
     """
-    Creates a pipeline to perform the unbundle operation on the input in infile.
+    Creates a pipeline to perform the unbundle operation on infile input.
     The resulting unbundled image will be written to 'outfile'.
 
     :param outfile: file  obj to write unbundled image to
     :param enc_key: the encryption key used to bundle the image
-    :param enc_iv: the encyrption initialization vector used to bundle the image
-    :param progressbar: the progressbar obj to be updated during the unbundle operation
+    :param enc_iv: the encyrption initialization vector used in the bundle
+    :param progressbar: the progressbar obj to be updated during the unbundle
     :param maxbytes: integer number of bytes that can be written to the outfile
     :returns sha1 digest of written image (String)
     """
-    print_debug('Starting test_unbundle_pipe_line...')
     openssl, gzip, sha1, tar = None, None, None, None
+    pids = []
     try:
         # infile -> openssl
         openssl = subprocess.Popen(['openssl', 'enc', '-d', '-aes-128-cbc',
                                     '-K', enc_key, '-iv', enc_iv],
                                    stdin=infile, stdout=subprocess.PIPE,
                                    close_fds=True, bufsize=-1)
-        euca2ools.bundle.util.waitpid_in_thread(openssl.pid, 'openssl', debug=debug)
+        pids.append(openssl.pid)
         infile.close()
 
         # openssl -> gzip
@@ -138,38 +143,41 @@ def create_unbundle_pipeline(infile, outfile, enc_key, enc_iv, progressbar, maxb
             gzip = subprocess.Popen(['gzip', '-c', '-d'], stdin=openssl.stdout,
                                     stdout=subprocess.PIPE, close_fds=True,
                                     bufsize=-1)
-        euca2ools.bundle.util.waitpid_in_thread(gzip.pid, 'gzip', debug=debug)
+        pids.append(gzip.pid)
         openssl.stdout.close()
 
         #Create pipe file objs to handle i/o...
         sha1_io_r, sha1_io_w = euca2ools.bundle.util.open_pipe_fileobjs()
-        sha1_checksum_r, sha1_checksum_w = euca2ools.bundle.util.open_pipe_fileobjs()
+        sha1_checksum_r, sha1_checksum_w = multiprocessing.Pipe(duplex=False)
 
         # gzip -> sha1sum
-        sha1 = spawn_process(_calc_sha1_for_pipe, infile=gzip.stdout, outfile=sha1_io_w,
-                             digest_out_pipe_w=sha1_checksum_w, debug=debug)
-        euca2ools.bundle.util.waitpid_in_thread(sha1.pid, 'sha1', debug=debug)
+        sha1 = spawn_process(_calc_sha1_for_pipe,
+                             infile=gzip.stdout,
+                             outfile=sha1_io_w,
+                             digest_out_pipe_w=sha1_checksum_w,
+                             debug=debug)
+        pids.append(sha1.pid)
         gzip.stdout.close()
         sha1_io_w.close()
 
-
         # sha1sum -> tar
         progress_r, progress_w = euca2ools.bundle.util.open_pipe_fileobjs()
-        tar = spawn_process(_do_tar_extract, infile=sha1_io_r, outfile=progress_w,
+        tar = spawn_process(_do_tar_extract,
+                            infile=sha1_io_r,
+                            outfile=progress_w,
                             debug=debug)
-        euca2ools.bundle.util.waitpid_in_thread(tar.pid,'tar', debug=debug)
+        pids.append(tar.pid)
         progress_w.close()
-
 
         # tar -> final output and update progressbar
         copy_with_progressbar(infile=progress_r, outfile=outfile,
-                               progressbar=progressbar, maxbytes=maxbytes)
+                              progressbar=progressbar, maxbytes=maxbytes)
         sha1_checksum_w.close()
-        sha1_checksum = sha1_checksum_r.read()
-        print_debug('Unbundle pipeline done!!!')
-
+        sha1_checksum = sha1_checksum_r.recv()
     finally:
-        print_debug('Ending unbundle pipeline...')
+        # Make sure something calls wait() on every child process
+        for pid in pids:
+            euca2ools.bundle.util.waitpid_in_thread(pid)
         for mp in [sha1, tar]:
             if mp:
                 mp.join()
@@ -206,10 +214,11 @@ def copy_with_progressbar(infile, outfile, progressbar=None, maxbytes=0):
             chunk = infile.read(euca2ools.bundle.pipes._BUFSIZE)
             if chunk:
                 if maxbytes and ((bytes_written + len(chunk)) > maxbytes):
-                    raise RuntimeError('Amount to be written:{0} will exceed max.\
-                                        Written bytes: {1}/{2}'.format(len(chunk),
-                                                                       bytes_written,
-                                                                       maxbytes))
+                    raise RuntimeError('Amount to be written:{0} will exceed '
+                                       'max. Written bytes: {1}/{2}'
+                                       .format(len(chunk),
+                                               bytes_written,
+                                               maxbytes))
                 outfile.write(chunk)
                 outfile.flush()
                 bytes_written += len(chunk)
@@ -234,8 +243,6 @@ def _calc_sha1_for_pipe(infile, outfile, digest_out_pipe_w, debug=False):
     :param digest_out_pipe_w: fileobj to write digest to
     :param debug: boolean used in exception handling
     """
-    print_debug("_calc_sha1_for_pipe...")
-    print_debug("My pid: " + str(os.getpid()) + ", my parent pid:" + str(os.getppid()))
     close_all_fds([infile, outfile, digest_out_pipe_w])
     total = 0
     digest = hashlib.sha1()
@@ -248,13 +255,8 @@ def _calc_sha1_for_pipe(infile, outfile, digest_out_pipe_w, debug=False):
                 outfile.write(chunk)
                 outfile.flush()
             else:
-                print_debug('Done with sha1. Input file ', infile.fileno())
                 break
-        print_debug("_calc_sha1_for_pipe digest returning: ", digest.hexdigest())
-        digest_out_pipe_w.write(digest.hexdigest())
-        digest_out_pipe_w.flush()
-        digest_out_pipe_w.close()
-        print_debug('Digest sent to pipe')
+        digest_out_pipe_w.send(digest.hexdigest())
     except IOError:
         # HACK
         if not debug:
@@ -263,6 +265,7 @@ def _calc_sha1_for_pipe(infile, outfile, digest_out_pipe_w, debug=False):
     finally:
         infile.close()
         outfile.close()
+        digest_out_pipe_w.close()
 
 
 def _do_tar_extract(infile, outfile, debug=False):
@@ -272,8 +275,6 @@ def _do_tar_extract(infile, outfile, debug=False):
     :param outfile: file obj destination for tar output
     :param debug: boolean used in exception handling
     """
-    print_debug('do_tar_extract...')
-    print_debug('do_tar_extract infile:' + str(infile))
     close_all_fds([infile, outfile])
     tarball = tarfile.open(mode='r|', fileobj=infile)
     try:

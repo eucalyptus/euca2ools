@@ -28,11 +28,7 @@ import os
 import subprocess
 import threading
 import traceback
-import time
-from StringIO import StringIO
 from multiprocessing import Process
-
-show_debug = False
 
 
 def close_all_fds(except_fds=None):
@@ -47,8 +43,8 @@ def close_all_fds(except_fds=None):
                 except_filenos.append(except_fd.fileno())
             else:
                 raise ValueError('{0} must be an int or have a fileno method'
-                .format(repr(except_fd)))
-
+                                 .format(repr(except_fd)))
+            
     fileno_ranges = []
     next_range_min = 0
     for except_fileno in sorted(except_filenos):
@@ -74,19 +70,16 @@ def open_pipe_fileobjs():
     return os.fdopen(pipe_r), os.fdopen(pipe_w, 'w')
 
 
-def waitpid_in_thread(pid, pname='unknown name', debug=False):
+def waitpid_in_thread(pid):
     """
     Start a thread that calls os.waitpid on a particular PID to prevent
     zombie processes from hanging around after they have finished.
     """
     if pid_exists(pid):
-        if debug:
-            monitor_thread = threading.Thread(target=monitor_pid, args=(pid, pname))
-            monitor_thread.daemon = True
-            monitor_thread.start()
         pid_thread = threading.Thread(target=check_and_waitpid, args=(pid, 0))
         pid_thread.daemon = True
         pid_thread.start()
+
 
 def spawn_process(func, **kwargs):
     p = Process(target=process_wrapper, args=[func], kwargs=kwargs)
@@ -95,35 +88,18 @@ def spawn_process(func, **kwargs):
 
 
 def process_wrapper(func, **kwargs):
-    if hasattr(func, '__name__'):
-        name = func.__name__
-    else:
-        name = 'unknown func'
-    print_debug('Attempting to run:' + str(name) + ', with kwargs:' + str(kwargs))
+    name = getattr(func, '__name__', 'unknown')
     try:
         func(**kwargs)
     except KeyboardInterrupt:
         pass
     except Exception, e:
-        try:
-            out = StringIO()
-            traceback.print_exception(*os.sys.exc_info(), file=out)
-            out.seek(0)
-            tb = out.read()
-        except Exception, e:
-            tb = "Could not get traceback" + str(e)
-        msg = 'Error in wrapped process:' + str(name) + ":" + str(e) + "\n" + str(tb)
+        traceback.print_exc()
+        msg = 'Error in wrapped process "{0}":{1}'.format(str(name), str(e))
         print >> os.sys.stderr, msg
         return
-        os._exit(1)
     os._exit(os.EX_OK)
 
-def monitor_pid(pid, name):
-    for x in xrange(0,10):
-        print >> os.sys.stderr, \
-            'Does process ' + str(name) + ':(' + str(pid) + ') exist? '\
-            + str(pid_exists(pid))
-        time.sleep(5)
 
 def pid_exists(pid):
     try:
@@ -132,6 +108,7 @@ def pid_exists(pid):
         return True
     except OSError, ose:
         if ose.errno == os.errno.ESRCH:
+            #Pid was not found
             return False
         else:
             raise ose
@@ -143,9 +120,3 @@ def check_and_waitpid(pid, status):
             os.waitpid(pid, status)
         except OSError:
             pass
-
-
-def print_debug(msg, *args):
-    if show_debug:
-        msg += " ".join(str(x) for x in args)
-        print >> os.sys.stderr, msg

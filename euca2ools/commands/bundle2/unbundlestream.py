@@ -22,12 +22,11 @@
 # THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-from euca2ools.commands import Euca2ools
-from euca2ools.bundle.pipes.core import create_unbundle_pipeline
-from euca2ools.bundle.manifest import BundleManifest
 import os
 import argparse
+from euca2ools.bundle.pipes.core import create_unbundle_pipeline
+from euca2ools.bundle.manifest import BundleManifest
+from euca2ools.commands import Euca2ools
 from requestbuilder import Arg, MutuallyExclusiveArgList
 from requestbuilder.command import BaseCommand
 from requestbuilder.exceptions import ArgumentError
@@ -36,22 +35,22 @@ from requestbuilder.mixins import FileTransferProgressBarMixin
 
 
 class UnbundleStream(BaseCommand, FileTransferProgressBarMixin):
-    DESCRIPTION = ('Recreate an image from a source bundle stream\n\nThe key used '
-                   'to unbundle the image must match the certificate that was '
-                   'used to bundle it.')
+    DESCRIPTION = ('Recreate an image from a source bundle stream\n\n'
+                   'The key used to unbundle the image must match the '
+                   'certificate that was used to bundle it.')
     SUITE = Euca2ools
     ARGS = [
         Arg('-s', '--source', metavar='INFILE', default=None,
             help=argparse.SUPPRESS),
         Arg('-d', '--destination', metavar='OUTFILE', required=True,
-            help='Destination path to write file to. Use "-" to write to <stdout>'),
+            help='Destination path to write to. Use "-" to write to <stdout>'),
         Arg('-k', '--privatekey', metavar='FILE',
             help='''file containing the private key to decrypt the bundle
                 with.  This must match the certificate used when bundling the
                 image.'''),
         Arg('-m', '--manifest', dest='manifest', metavar='FILE',
-            help='''Optional local manfiest path. Used to derivce encryption key
-            and initialization vector for input stream'''),
+            help='''Optional local manfiest path. Used to derivce encryption
+            key and initialization vector for input stream'''),
         Arg('-e', '--enc-key', dest='enc_key',
             help='''Key used to decrypt bundled image'''),
         Arg('-v', '--enc-iv', dest='enc_iv',
@@ -90,7 +89,8 @@ class UnbundleStream(BaseCommand, FileTransferProgressBarMixin):
                     #Read manifest into BundleManifest obj...
                 #Get the mandatory private key...
                 if not self.args.get('privatekey'):
-                    config_privatekey = self.config.get_user_option('private-key')
+                    config_privatekey = \
+                        self.config.get_user_option('private-key')
                     if self.args.get('userregion'):
                         self.args['privatekey'] = config_privatekey
                     elif 'EC2_PRIVATE_KEY' in os.environ:
@@ -101,16 +101,18 @@ class UnbundleStream(BaseCommand, FileTransferProgressBarMixin):
                         raise ArgumentError(
                             'missing private key needed to read manifest;'
                             ' please supply one with -k')
-                self.args['privatekey'] = os.path.expanduser(os.path.expandvars(
-                    self.args['privatekey']))
+                privatekey = self.args['privatekey']
+                self.args['privatekey'] = (os.path.expanduser(
+                                           os.path.expandvars(privatekey)))
                 if not os.path.exists(self.args['privatekey']):
                     raise ArgumentError("private key file '{0}' does not exist"
-                    .format(self.args['privatekey']))
+                                        .format(self.args['privatekey']))
                 if not os.path.isfile(self.args['privatekey']):
                     raise ArgumentError("private key file '{0}' is not a file"
-                    .format(self.args['privatekey']))
-                manifest = (BundleManifest.read_from_file(manifest_path,
-                                                          self.args['privatekey']))
+                                        .format(self.args['privatekey']))
+                manifest = (BundleManifest.
+                            read_from_file(manifest_path,
+                                           self.args['privatekey']))
                 self.args['manifest'] = manifest
             if not self.args.get('enc_key') and manifest:
                 self.args['enc_key'] = manifest.enc_key
@@ -118,13 +120,18 @@ class UnbundleStream(BaseCommand, FileTransferProgressBarMixin):
                 self.args['enc_iv'] = manifest.enc_iv
 
         if not self.args.get('enc_key') or not self.args.get('enc_iv'):
-            raise ArgumentError('Encryption key (-e) and initialization vector (-v) are'
-                                ' required if manifest (-m) is not provided')
+            raise ArgumentError('Encryption key (-e) and initialization vector'
+                                ' (-v) are required if manifest (-m) is not'
+                                ' provided')
 
     def main(self):
         pbar = self.args.get('progressbar', None)
         manifest = self.args.get('manifest')
-        #todo Should this only write to fileobj or stdout, and not a local path?
+        enc_key = self.args.get('enc_key')
+        enc_iv = self.args.get('enc_iv')
+        debug = self.args.get('debug')
+        maxbytes = self.args.get('maxbytes')
+        #todo Should this only write to fileobj, stdout, and not a local path?
         #Setup the destination fileobj...
         if isinstance(self.args.get('destination'), file):
             #Use provided file obj...
@@ -152,11 +159,11 @@ class UnbundleStream(BaseCommand, FileTransferProgressBarMixin):
             with infile:
                 digest = create_unbundle_pipeline(infile=infile,
                                                   outfile=dest_file,
-                                                  enc_key=self.args.get('enc_key'),
-                                                  enc_iv=self.args.get('enc_iv'),
+                                                  enc_key=enc_key,
+                                                  enc_iv=enc_iv,
                                                   progressbar=pbar,
-                                                  debug=self.args.get('debug'),
-                                                  maxbytes=int(self.args['maxbytes']))
+                                                  debug=debug,
+                                                  maxbytes=maxbytes)
                 digest = digest.strip()
             if manifest:
                 #Verify the resulting unbundled Checksum matches the manifest
@@ -165,9 +172,8 @@ class UnbundleStream(BaseCommand, FileTransferProgressBarMixin):
                                      'Extracted image appears to be corrupt '
                                      '(expected digest: {0}, actual: {1})'
                                      .format(manifest.image_digest, digest))
-                self.log.debug("\nExpected digest:" + str(manifest.image_digest) + "\n" +
-                               "  Actual digest:" + str(digest))
-
+                self.log.debug("\nExpected digest:{0}\n  Actual digest:{1}"
+                               .format(manifest.image_digest, digest))
             self.log.debug('Wrote stream to destination:' + dest_file_name)
             self.log.debug('Digest for unbundled image:' + str(digest))
         except KeyboardInterrupt:
