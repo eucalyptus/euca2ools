@@ -29,8 +29,8 @@ from requestbuilder.exceptions import ArgumentError
 from requestbuilder.mixins import FileTransferProgressBarMixin
 from euca2ools.bundle.manifest import BundleManifest
 from euca2ools.bundle.util import open_pipe_fileobjs, spawn_process
+from euca2ools.bundle.util import waitpid_in_thread
 from euca2ools.commands.walrus import WalrusRequest
-from euca2ools.commands.walrus.checkbucket import CheckBucket
 from euca2ools.commands.bundle.downloadbundle import DownloadBundle
 from euca2ools.commands.bundle2.unbundlestream import UnbundleStream
 
@@ -126,17 +126,15 @@ class DownloadUnbundle(WalrusRequest, FileTransferProgressBarMixin):
         bucket = self.args.get('bucket').split('/', 1)[0]
         manifest = self.args.get('manifest', None)
         self.log.debug('bucket:{0} directory:{1}'.format(bucket, dest_dir))
-        #CheckBucket(bucket=bucket, service=self.service,
-        #            config=self.config).main()
         #Created download bundle obj...
         downloadbundle_r, downloadbundle_w = open_pipe_fileobjs()
-        kwargs = {'directory':downloadbundle_w,
-                  'show_progress':False,
-                  'manifest':self.args.get('manifest',None),
-                  'bucket':self.args.get('bucket'),
-                  'prefix':self.args.get('prefix'),
-                  'service':self.service,
-                  'config':self.config,}
+        kwargs = {'directory': downloadbundle_w,
+                  'show_progress': False,
+                  'manifest': self.args.get('manifest', None),
+                  'bucket': self.args.get('bucket'),
+                  'prefix': self.args.get('prefix'),
+                  'service': self.service,
+                  'config': self.config}
         downloadbundle = DownloadBundle(**kwargs)
         downloadbundle.args['directory'] = downloadbundle_w
         #If a local manifest wasn't provided attempt to read in a remote
@@ -175,6 +173,7 @@ class DownloadUnbundle(WalrusRequest, FileTransferProgressBarMixin):
                                  downloadbundle_obj=downloadbundle,
                                  outfile=downloadbundle_w)
         downloadbundle_w.close()
+        waitpid_in_thread(download.pid)
 
         digest = UnbundleStream(source=downloadbundle_r,
                                 destination=dest_file,

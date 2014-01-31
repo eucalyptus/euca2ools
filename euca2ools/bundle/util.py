@@ -44,7 +44,7 @@ def close_all_fds(except_fds=None):
             else:
                 raise ValueError('{0} must be an int or have a fileno method'
                                  .format(repr(except_fd)))
-            
+
     fileno_ranges = []
     next_range_min = 0
     for except_fileno in sorted(except_filenos):
