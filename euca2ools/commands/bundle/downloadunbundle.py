@@ -51,7 +51,7 @@ class DownloadUnbundle(WalrusRequest, FileTransferProgressBarMixin):
             Arg('--maxbytes', default=0,
                 help='''The Maximum bytes allowed to be written when
                 using 'destination'.'''),
-            Arg('-k', '--privatekey', required=True,
+            Arg('-k', '--privatekey',
                 help='''File containing the private key to decrypt the bundle
                 with.  This must match the certificate used when bundling the
                 image.''')]

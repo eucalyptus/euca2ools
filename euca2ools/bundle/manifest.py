@@ -63,7 +63,7 @@ class BundleManifest(object):
             return cls.read_from_fileobj(manifest_fileobj, privkey_filename)
 
     @classmethod
-    def read_from_fileobj(cls, manifest_fileobj, privkey_filename):
+    def read_from_fileobj(cls, manifest_fileobj, privkey_filename=None):
         xml = lxml.objectify.parse(manifest_fileobj).getroot()
         manifest = cls()
         mconfig = xml.machine_configuration
@@ -89,19 +89,20 @@ class BundleManifest(object):
         manifest.image_size = int(xml.image.size.text.strip())
         manifest.bundled_image_size = int(xml.image.bundled_size.text.strip())
         ## TODO:  test this
-        try:
-            manifest.enc_key = _decrypt_hex(
-                xml.image.user_encrypted_key.text.strip(), privkey_filename)
-        except ValueError:
-            manifest.enc_key = _decrypt_hex(
-                xml.image.ec2_encrypted_key.text.strip(), privkey_filename)
-        manifest.enc_algorithm = xml.image.user_encrypted_key.get('algorithm')
-        try:
-            manifest.enc_iv = _decrypt_hex(
-                xml.image.user_encrypted_iv.text.strip(), privkey_filename)
-        except ValueError:
-            manifest.enc_iv = _decrypt_hex(
-                xml.image.ec2_encrypted_iv.text.strip(), privkey_filename)
+        if privkey_filename is not None:
+            try:
+                manifest.enc_key = _decrypt_hex(
+                    xml.image.user_encrypted_key.text.strip(), privkey_filename)
+            except ValueError:
+                manifest.enc_key = _decrypt_hex(
+                    xml.image.ec2_encrypted_key.text.strip(), privkey_filename)
+            manifest.enc_algorithm = xml.image.user_encrypted_key.get('algorithm')
+            try:
+                manifest.enc_iv = _decrypt_hex(
+                    xml.image.user_encrypted_iv.text.strip(), privkey_filename)
+            except ValueError:
+                manifest.enc_iv = _decrypt_hex(
+                    xml.image.ec2_encrypted_iv.text.strip(), privkey_filename)
 
         manifest.image_parts = [None] * int(xml.image.parts.get('count'))
         for xml_part in xml.image.parts.iter(tag='part'):

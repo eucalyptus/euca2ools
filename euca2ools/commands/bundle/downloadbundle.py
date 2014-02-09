@@ -25,14 +25,11 @@
 
 
 import os
+from io import StringIO
 from requestbuilder import Arg, MutuallyExclusiveArgList
 from requestbuilder.exceptions import ArgumentError
 from requestbuilder.mixins import FileTransferProgressBarMixin
-from euca2ools.commands import Euca2ools
-from euca2ools.commands.walrus.getobject import GetObject
 from euca2ools.bundle.manifest import BundleManifest
-from euca2ools.bundle.util import open_pipe_fileobjs, spawn_process
-from euca2ools.bundle.util import close_all_fds, waitpid_in_thread
 import euca2ools.bundle.pipes
 from euca2ools.bundle.pipes.core import create_unbundle_pipeline
 from euca2ools.commands.bundle.helpers import download_files, get_manifest_keys
@@ -55,11 +52,7 @@ class DownloadBundle(WalrusRequest, FileTransferProgressBarMixin):
                     help='''Download the bundle that begins with a specific
                     prefix (e.g. "fry" for "fry.manifest.xml")''')),
             Arg('-d', '--directory', default=".",
-                help='''The directory to download the parts to.'''),
-            Arg('-k', '--privatekey', required=True,
-                help='''File containing the private key to decrypt the bundle
-                with.  This must match the certificate used when bundling the
-                image.''')]
+                help='''The directory to download the parts to.''')]
 
     # noinspection PyExceptionInherit
     def configure(self):
@@ -99,7 +92,7 @@ class DownloadBundle(WalrusRequest, FileTransferProgressBarMixin):
         self.args['directory'] = dest_dir
 
 
-    def _get_manifest_obj(self):
+    def _get_manifest_obj(self, private_key=None):
         if self.args.get('manifest'):
             if isinstance(self.args.get('manifest'), BundleManifest):
                 return self.args.get('manifest')
@@ -114,8 +107,8 @@ class DownloadBundle(WalrusRequest, FileTransferProgressBarMixin):
                     raise ArgumentError("Manifest '{0}' is not a file"
                                         .format(manifest))
                 #Read manifest into BundleManifest obj...
-                manifest = (BundleManifest.
-                            read_from_file(manifest, self.args['privatekey']))
+                manifest = BundleManifest.read_from_file(
+                    manifest, private_key)
         else:
             #Read in remote manifest via multi-process...
             bucket = self.args.get('bucket')
@@ -140,16 +133,15 @@ class DownloadBundle(WalrusRequest, FileTransferProgressBarMixin):
                                    .format(",".join(str(m)
                                            for m in manifest_keys)))
             #Read the manifest into an obj...
-            manifest_r, manifest_w = open_pipe_fileobjs()
+            manifest_fileobj = StringIO()
             manifest_key = manifest_keys.pop()
             try:
-                download_manifest = (
-                    spawn_process(self._download_file_to_fileobj,
-                                  bucket=bucket,
-                                  key=manifest_key,
-                                  fileobj=manifest_w))
-                waitpid_in_thread(download_manifest.pid)
-                manifest_w.close()
+                download_files(bucket=bucket,
+                               keys=[manifest_key],
+                               fileobj=manifest_fileobj,
+                               opath=None,
+                               service=self.service,
+                               config=self.config)
             except AWSError as err:
                 if err.code != 'NoSuchEntity':
                     raise
@@ -157,24 +149,11 @@ class DownloadBundle(WalrusRequest, FileTransferProgressBarMixin):
                     "cannot find manifest file(s) {0} in bucket '{1}'."
                     .format(",".join(manifest_keys), bucket))
             #Read manifest info from pipe...
-            manifest = (BundleManifest.
-                        read_from_fileobj(manifest_r,
-                                          self.args.get('privatekey')))
+            manifest = BundleManifest.read_from_fileobj(
+                manifest_fileobj,private_key=private_key)
         self.log.debug('Returning Manifest for image:{0}'
                        .format(str(manifest.image_name)))
         return manifest
-
-    def _download_file_to_fileobj(self, bucket, key, fileobj, closefds=True):
-        try:
-            download_files(bucket=bucket,
-                           keys=[key],
-                           fileobj=fileobj,
-                           opath=None,
-                           service=self.service,
-                           config=self.config)
-        finally:
-            if closefds and fileobj:
-                fileobj.close()
 
     def _download_parts(self,
                         bucket,
@@ -183,7 +162,6 @@ class DownloadBundle(WalrusRequest, FileTransferProgressBarMixin):
                         fileobj=None,
                         show_progress=True,
                         debug=False):
-        chunk_size = euca2ools.bundle.pipes._BUFSIZE
         if (not directory and not fileobj) or (directory and fileobj):
             raise ValueError('Must specify either directory'
                              ' or fileobj argument')

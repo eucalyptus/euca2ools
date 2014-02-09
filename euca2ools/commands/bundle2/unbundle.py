@@ -52,7 +52,7 @@ class Unbundle(BaseCommand, FileTransferProgressBarMixin):
             Arg('-s', '--source', metavar='DIR', default='.',
                 help='''directory containing the bundled image parts (default:
                 current directory). If "-" is provided stdin will be used.'''),
-            Arg('-k', '--privatekey', metavar='FILE', required=True,
+            Arg('-k', '--privatekey', metavar='FILE',
                 help='''file containing the private key to decrypt the bundle
                 with.  This must match the certificate used when bundling the
                 image.'''),
