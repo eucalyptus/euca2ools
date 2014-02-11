@@ -35,7 +35,7 @@ from euca2ools.commands.bundle.downloadbundle import DownloadBundle
 from euca2ools.commands.bundle2.unbundlestream import UnbundleStream
 
 
-class DownloadUnbundle(WalrusRequest, FileTransferProgressBarMixin):
+class DownloadAndUnbundle(WalrusRequest, FileTransferProgressBarMixin):
     DESCRIPTION = ('Download and unbundle a bundled image from the cloud\n')
     ARGS = [Arg('-b', '--bucket', required=True,
                 help='''Bucket to download the bucket from (required)'''),
@@ -198,4 +198,4 @@ class DownloadUnbundle(WalrusRequest, FileTransferProgressBarMixin):
             print "Bundle downloaded to '{0}'".format(result)
 
 if __name__ == '__main__':
-    DownloadUnbundle.run()
+    DownloadAndUnbundle.run()
