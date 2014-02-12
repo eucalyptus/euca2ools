@@ -51,13 +51,14 @@ class BundleManifest(object):
         self.image_digest = None
         self.image_digest_algorithm = None
         self.image_size = None
+        self.bundled_image_size = None
         self.enc_key = None
         self.enc_iv = None
         self.enc_algorithm = None
         self.image_parts = []
 
     @classmethod
-    def read_from_file(cls, manifest_filename, privkey_filename):
+    def read_from_file(cls, manifest_filename, privkey_filename=None):
         with open(manifest_filename) as manifest_file:
             xml = lxml.objectify.parse(manifest_file).getroot()
         manifest = cls()
@@ -84,19 +85,22 @@ class BundleManifest(object):
         manifest.image_size = int(xml.image.size.text.strip())
         manifest.bundled_image_size = int(xml.image.bundled_size.text.strip())
         ## TODO:  test this
-        try:
-            manifest.enc_key = _decrypt_hex(
-                xml.image.user_encrypted_key.text.strip(), privkey_filename)
-        except ValueError:
-            manifest.enc_key = _decrypt_hex(
-                xml.image.ec2_encrypted_key.text.strip(), privkey_filename)
-        manifest.enc_algorithm = xml.image.user_encrypted_key.get('algorithm')
-        try:
-            manifest.enc_iv = _decrypt_hex(
-                xml.image.user_encrypted_iv.text.strip(), privkey_filename)
-        except ValueError:
-            manifest.enc_iv = _decrypt_hex(
-                xml.image.ec2_encrypted_iv.text.strip(), privkey_filename)
+        if privkey_filename is not None:
+            try:
+                manifest.enc_key = _decrypt_hex(
+                    xml.image.user_encrypted_key.text.strip(),
+                    privkey_filename)
+            except ValueError:
+                manifest.enc_key = _decrypt_hex(
+                    xml.image.ec2_encrypted_key.text.strip(), privkey_filename)
+            manifest.enc_algorithm = xml.image.user_encrypted_key.get(
+                'algorithm')
+            try:
+                manifest.enc_iv = _decrypt_hex(
+                    xml.image.user_encrypted_iv.text.strip(), privkey_filename)
+            except ValueError:
+                manifest.enc_iv = _decrypt_hex(
+                    xml.image.ec2_encrypted_iv.text.strip(), privkey_filename)
 
         manifest.image_parts = [None] * int(xml.image.parts.get('count'))
         for xml_part in xml.image.parts.iter(tag='part'):
@@ -111,6 +115,10 @@ class BundleManifest(object):
 
     def dump_to_str(self, privkey_filename, user_cert_filename,
                     ec2_cert_filename, pretty_print=False):
+        if self.enc_key is None:
+            raise ValueError('enc_key must not be None')
+        if self.enc_iv is None:
+            raise ValueError('enc_iv must not be None')
         ec2_fp = euca2ools.bundle.util.get_cert_fingerprint(ec2_cert_filename)
         user_fp = euca2ools.bundle.util.get_cert_fingerprint(user_cert_filename)
         self.log.info('creating manifest for EC2 service with fingerprint %s',
@@ -232,13 +240,11 @@ class BundleManifest(object):
         return lxml.etree.tostring(xml, pretty_print=pretty_print).strip()
 
     def dump_to_file(self, manifest_file, privkey_filename,
-                     user_cert_filename, ec2_cert_filename):
+                     user_cert_filename, ec2_cert_filename,
+                     pretty_print=False):
         manifest_file.write(self.dump_to_str(
-            privkey_filename, user_cert_filename, ec2_cert_filename))
-
-    @property
-    def bundled_image_size(self):
-        return sum(part.size for part in self.image_parts)
+            privkey_filename, user_cert_filename, ec2_cert_filename,
+            pretty_print=pretty_print))
 
 
 def _decrypt_hex(hex_encrypted_key, privkey_filename):
