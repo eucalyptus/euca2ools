@@ -26,6 +26,7 @@
 from euca2ools.commands.euca import EucalyptusRequest
 from requestbuilder import Arg, MutuallyExclusiveArgList
 from requestbuilder.exceptions import ArgumentError
+import socket
 import sys
 
 
@@ -123,30 +124,15 @@ class ModifySecurityGroupRequest(EucalyptusRequest):
                 # Be extra helpful in the event of this common typo
                 raise ArgumentError('argument -p/--port-range: multi-port '
                                     'range must be separated by "-", not ":"')
-            if self.args['port_range'].startswith('-'):
-                ports = self.args['port_range'][1:].split('-')
-                ports[0] = '-' + ports[0]
-            else:
-                ports = self.args['port_range'].split('-')
-            if len(ports) == 2:
-                try:
-                    from_port = int(ports[0])
-                    to_port = int(ports[1])
-                except ValueError:
-                    raise ArgumentError('argument -p/--port-range: multi-port '
-                                        'value must be comprised of integers')
-            elif len(ports) == 1:
-                try:
-                    from_port = to_port = int(ports[0])
-                except ValueError:
-                    raise ArgumentError('argument -p/--port-range: single '
-                                        'port value must be an integer')
-            else:
-                raise ArgumentError('argument -p/--port-range: value must '
-                                    'have format "1" or "1-2"')
+            from_port, to_port = _get_port_range(self.args['port_range'],
+                                                 protocol)
             if from_port < -1 or to_port < -1:
                 raise ArgumentError('argument -p/--port-range: port number(s) '
                                     'must be at least -1')
+            if from_port == -1:
+                from_port = 1
+            if to_port == -1:
+                to_port = 65535
         else:
             # Shouldn't get here since argparse should only allow the values we
             # handle
@@ -212,3 +198,28 @@ class ModifySecurityGroupRequest(EucalyptusRequest):
         if port_range:
             self.args['port_range'] = port_range
         sys.argv = saved_sys_argv
+
+
+def _get_port_range(port_range, protocol):
+    # Try for an integer
+    try:
+        return (int(port_range), int(port_range))
+    except ValueError:
+        pass
+    # Try for an integer range
+    if port_range.count('-') == 1:
+        ports = port_range.split('-')
+        try:
+            return (int(ports[0]), int(ports[1]))
+        except ValueError:
+            pass
+    # Try for a service name
+    try:
+        port = socket.getservbyname(port_range, protocol)
+        return (port, port)
+    except socket.error:
+        pass
+    # That's all, folks!
+    raise ArgumentError("argument -p/--port-range: '{0}' is neither a port "
+                        "number, range of port numbers, nor a recognized "
+                        "service name".format(port_range))
