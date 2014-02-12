@@ -35,23 +35,6 @@ import tarfile
 import euca2ools.bundle.util
 
 
-def _create_tarball_from_stream(infile, outfile, tarinfo, debug=False):
-    euca2ools.bundle.util.close_all_fds(except_fds=(infile, outfile))
-    tarball = tarfile.open(mode='w|', fileobj=outfile,
-                           bufsize=euca2ools.bundle.pipes._BUFSIZE)
-    try:
-        tarball.addfile(tarinfo, fileobj=infile)
-    except IOError:
-        # HACK
-        if not debug:
-            return
-        raise
-    finally:
-        infile.close()
-        tarball.close()
-        outfile.close()
-
-
 def create_bundle_pipeline(infile, outfile, enc_key, enc_iv, tarinfo,
                            debug=False):
     pids = []
@@ -226,3 +209,20 @@ def _calc_sha1_for_pipe(infile, outfile, result_mpconn):
     result_mpconn.close()
     infile.close()
     outfile.close()
+
+
+def _create_tarball_from_stream(infile, outfile, tarinfo, debug=False):
+    euca2ools.bundle.util.close_all_fds(except_fds=(infile, outfile))
+    tarball = tarfile.open(mode='w|', fileobj=outfile,
+                           bufsize=euca2ools.bundle.pipes._BUFSIZE)
+    try:
+        tarball.addfile(tarinfo, fileobj=infile)
+    except IOError:
+        # HACK
+        if not debug:
+            return
+        raise
+    finally:
+        infile.close()
+        tarball.close()
+        outfile.close()

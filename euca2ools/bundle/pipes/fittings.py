@@ -33,12 +33,22 @@ import euca2ools.bundle.pipes
 import euca2ools.bundle.util
 
 
-def create_bundle_part_writer(infile, part_prefix, part_size, debug=False):
+def create_bundle_part_deleter(in_mpconn, out_mpconn=None):
+    del_p = multiprocessing.Process(target=_delete_part_files,
+                                    args=(in_mpconn,),
+                                    kwargs={'out_mpconn': out_mpconn})
+    del_p.start()
+    euca2ools.bundle.util.waitpid_in_thread(del_p.pid)
+
+
+def create_bundle_part_writer(infile, part_prefix, part_size,
+                              part_write_sem=None, debug=False):
     partinfo_result_r, partinfo_result_w = multiprocessing.Pipe(duplex=False)
 
     writer_p = multiprocessing.Process(
-        target=_write_parts, kwargs={'debug': debug},
-        args=(infile, part_prefix, part_size, partinfo_result_w))
+        target=_write_parts,
+        args=(infile, part_prefix, part_size, partinfo_result_w),
+        kwargs={'part_write_sem': part_write_sem, 'debug': debug})
     writer_p.start()
     partinfo_result_w.close()
     infile.close()
@@ -57,39 +67,20 @@ def create_mpconn_aggregator(in_mpconn, out_mpconn=None, debug=False):
     return result_mpconn_r
 
 
-def _write_parts(infile, part_prefix, part_size, partinfo_mpconn, debug=False):
-    euca2ools.bundle.util.close_all_fds(except_fds=(infile, partinfo_mpconn))
-    for part_no in itertools.count():
-        part_fname = '{0}.part.{1:02}'.format(part_prefix, part_no)
-        part_digest = hashlib.sha1()
-        with open(part_fname, 'w') as part:
-            bytes_written = 0
-            bytes_to_write = part_size
-            while bytes_to_write > 0:
-                try:
-                    chunk = infile.read(
-                        min(bytes_to_write,
-                            euca2ools.bundle.pipes._BUFSIZE))
-                except ValueError:  # I/O error on closed file
-                    # HACK
-                    if not debug:
-                        partinfo_mpconn.close()
-                        return
-                    raise
-                if chunk:
-                    part.write(chunk)
-                    part_digest.update(chunk)
-                    bytes_to_write -= len(chunk)
-                    bytes_written += len(chunk)
-                else:
-                    break
-            partinfo = euca2ools.bundle.BundlePart(
-                part_fname, part_digest.hexdigest(), 'SHA1', bytes_written)
-            partinfo_mpconn.send(partinfo)
-        if bytes_written < part_size:
-            # That's the last part
-            infile.close()
-            partinfo_mpconn.close()
+def _delete_part_files(in_mpconn, out_mpconn=None):
+    euca2ools.bundle.util.close_all_fds(except_fds=(in_mpconn, out_mpconn))
+    try:
+        while True:
+            part = in_mpconn.recv()
+            os.unlink(part.filename)
+            if out_mpconn is not None:
+                out_mpconn.send(part)
+    except EOFError:
+        return
+    finally:
+        in_mpconn.close()
+        if out_mpconn is not None:
+            out_mpconn.close()
 
 
 def _aggregate_mpconn_items(in_mpconn, result_mpconn, out_mpconn=None,
@@ -121,3 +112,53 @@ def _aggregate_mpconn_items(in_mpconn, result_mpconn, out_mpconn=None,
         in_mpconn.close()
         if out_mpconn is not None:
             out_mpconn.close()
+
+
+def _write_parts(infile, part_prefix, part_size, partinfo_mpconn,
+                 part_write_sem=None, debug=False):
+    except_fds = [infile, partinfo_mpconn]
+    if part_write_sem is not None:
+        # HACK:  If we don't figure out what file descriptor the semaphore is
+        # using then close_all_fds will end up closing it, breaking everything.
+        try:
+            except_fds.append(int(part_write_sem._semlock.handle))
+        except AttributeError:
+            part_write_sem = None
+        except ValueError:
+            part_write_sem = None
+    #euca2ools.bundle.util.close_all_fds(except_fds=(infile, partinfo_mpconn))
+    euca2ools.bundle.util.close_all_fds(except_fds=except_fds)
+    for part_no in itertools.count():
+        if part_write_sem is not None:
+            part_write_sem.acquire()
+        part_fname = '{0}.part.{1:02}'.format(part_prefix, part_no)
+        part_digest = hashlib.sha1()
+        with open(part_fname, 'w') as part:
+            bytes_written = 0
+            bytes_to_write = part_size
+            while bytes_to_write > 0:
+                try:
+                    chunk = infile.read(
+                        min(bytes_to_write,
+                            euca2ools.bundle.pipes._BUFSIZE))
+                except ValueError:  # I/O error on closed file
+                    # HACK
+                    if not debug:
+                        partinfo_mpconn.close()
+                        return
+                    raise
+                if chunk:
+                    part.write(chunk)
+                    part_digest.update(chunk)
+                    bytes_to_write -= len(chunk)
+                    bytes_written += len(chunk)
+                else:
+                    break
+            partinfo = euca2ools.bundle.BundlePart(
+                part_fname, part_digest.hexdigest(), 'SHA1', bytes_written)
+            partinfo_mpconn.send(partinfo)
+        if bytes_written < part_size:
+            # That's the last part
+            infile.close()
+            partinfo_mpconn.close()
+            return

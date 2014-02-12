@@ -24,8 +24,4 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-from euca2ools.bundle.pipes.core import (create_bundle_pipeline,
-                                         create_unbundle_pipeline)
-
-
 _BUFSIZE = 8192

@@ -1,6 +1,6 @@
 #!/usr/bin/python -tt
 
-import euca2ools.commands.bundle.uploadbundle
+import euca2ools.commands.bundle2.uploadbundle
 
 if __name__ == '__main__':
-    euca2ools.commands.bundle.uploadbundle.UploadBundle.run()
+    euca2ools.commands.bundle2.uploadbundle.UploadBundle.run()

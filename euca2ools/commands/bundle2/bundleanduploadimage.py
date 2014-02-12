@@ -23,6 +23,8 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import argparse
+import multiprocessing
 import os.path
 import tarfile
 
@@ -31,24 +33,27 @@ from requestbuilder.command import BaseCommand
 from requestbuilder.mixins import FileTransferProgressBarMixin
 from requestbuilder.util import set_userregion
 
-import euca2ools.bundle.manifest
-from euca2ools.bundle.pipes.core import (create_bundle_pipeline,
-                                         copy_with_progressbar)
-from euca2ools.bundle.pipes.fittings import (create_bundle_part_writer,
+from euca2ools.bundle.pipes.core import create_bundle_pipeline
+from euca2ools.bundle.pipes.fittings import (create_bundle_part_deleter,
+                                             create_bundle_part_writer,
                                              create_mpconn_aggregator)
+import euca2ools.bundle.manifest
 import euca2ools.bundle.util
-from euca2ools.commands import Euca2ools
-from euca2ools.commands.bundle2.mixins import BundleCreatingMixin
+from euca2ools.commands.bundle2.mixins import (BundleCreatingMixin,
+                                               BundleUploadingMixin)
+from euca2ools.commands.walrus import WalrusRequest
 from euca2ools.util import mkdtemp_for_large_files
 
 
-class BundleImage(BaseCommand, BundleCreatingMixin,
-                  FileTransferProgressBarMixin):
-    SUITE = Euca2ools
-    DESCRIPTION = 'Prepare an image for use in the cloud'
-    ARGS = [Arg('--region', dest='userregion', metavar='USER@REGION',
-                help='''user and/or region to use for obtaining keys and
-                account info''')]
+class BundleAndUploadImage(WalrusRequest, BundleCreatingMixin,
+                           BundleUploadingMixin,
+                           FileTransferProgressBarMixin):
+    DESCRIPTION = 'Prepare and upload an image for use in the cloud'
+    ARGS = [Arg('--preserve-bundle', action='store_true',
+                help='do not delete the bundle as it is being uploaded'),
+            Arg('--max-pending-parts', type=int, default=2,
+                help='''pause the bundling process when more than this number
+                of parts are waiting to be uploaded (default: 2)''')]
 
     # noinspection PyExceptionInherit
     def configure(self):
@@ -76,76 +81,97 @@ class BundleImage(BaseCommand, BundleCreatingMixin,
             path_prefix = os.path.join(tempdir, self.args['prefix'])
         self.log.debug('bundle path prefix: %s', path_prefix)
 
-        # First create the bundle
-        digest, partinfo = self.create_bundle(path_prefix)
+        key_prefix = self.get_bundle_key_prefix()
+        self.ensure_dest_bucket_exists()
 
-        # All done; now build the manifest and write it to disk
+        # First create the bundle and upload it to the server
+        digest, partinfo = self.create_and_upload_bundle(path_prefix,
+                                                         key_prefix)
+
+        # All done; now build the manifest, write it to disk, and upload it.
         manifest = self.build_manifest(digest, partinfo)
         manifest_filename = '{0}.manifest.xml'.format(path_prefix)
         with open(manifest_filename, 'w') as manifest_file:
             manifest.dump_to_file(manifest_file, self.args['privatekey'],
                                   self.args['cert'], self.args['ec2cert'])
+        manifest_dest = key_prefix + os.path.basename(manifest_filename)
+        self.upload_bundle_file(manifest_filename, manifest_dest,
+                                show_progress=self.args.get('show_progress'))
+        if not self.args.get('preserve_bundle', False):
+            os.remove(manifest_filename)
 
         # Then we just inform the caller of all the files we wrote.
         # Manifests are returned in a tuple for future expansion, where we
         # bundle for more than one region at a time.
-        return (part.filename for part in partinfo), (manifest_filename,)
+        return {'parts': tuple({'filename': part.filename,
+                                'key': (key_prefix +
+                                        os.path.basename(part.filename))}
+                               for part in manifest.image_parts),
+                'manifests': ({'filename': manifest_filename,
+                               'key': manifest_dest},)}
 
     def print_result(self, result):
-        for manifest_filename in result[1]:
-            print 'Wrote manifest', manifest_filename
+        if self.debug:
+            for part in result['parts']:
+                print 'Uploaded', part['key']
+        if result['manifests'][0]['key'] is not None:
+            print 'Uploaded', result['manifests'][0]['key']
 
-    def create_bundle(self, path_prefix):
+    def create_and_upload_bundle(self, path_prefix, key_prefix):
+        part_write_sem = multiprocessing.Semaphore(
+            max(1, self.args['max_pending_parts']))
+
         # Fill out all the relevant info needed for a tarball
         tarinfo = tarfile.TarInfo(self.args['prefix'])
         tarinfo.size = self.args['image_size']
 
-        # The pipeline begins with self.args['image'] feeding a bundling pipe
-        # segment through a progress meter, which has to happen on the main
-        # thread, so we add that to the pipeline last.
-
-        # meter --(bytes)--> bundler
-        bundle_in_r, bundle_in_w = euca2ools.bundle.util.open_pipe_fileobjs()
+        # disk --(bytes)-> bundler
         partwriter_in_r, partwriter_in_w = \
             euca2ools.bundle.util.open_pipe_fileobjs()
         digest_result_mpconn = create_bundle_pipeline(
-            bundle_in_r, partwriter_in_w, self.args['enc_key'],
+            self.args['image'], partwriter_in_w, self.args['enc_key'],
             self.args['enc_iv'], tarinfo, debug=self.debug)
-        bundle_in_r.close()
         partwriter_in_w.close()
 
         # bundler --(bytes)-> part writer
         bundle_partinfo_mpconn = create_bundle_part_writer(
             partwriter_in_r, path_prefix, self.args['part_size'],
-            debug=self.debug)
+            part_write_sem=part_write_sem, debug=self.debug)
         partwriter_in_r.close()
 
-        # part writer --(part info)-> part info aggregator
+        # part writer --(part info)-> part uploader
+        # This must be driven on the main thread since it has a progress bar,
+        # so for now we'll just set up its output pipe so we can attach it to
+        # the remainder of the pipeline.
+        uploaded_partinfo_mpconn_r, uploaded_partinfo_mpconn_w = \
+            multiprocessing.Pipe(duplex=False)
+
+        # part uploader --(part info)-> part deleter
+        if not self.args.get('preserve_bundle', False):
+            deleted_partinfo_mpconn_r, deleted_partinfo_mpconn_w = \
+                multiprocessing.Pipe(duplex=False)
+            create_bundle_part_deleter(uploaded_partinfo_mpconn_r,
+                                       out_mpconn=deleted_partinfo_mpconn_w)
+            uploaded_partinfo_mpconn_r.close()
+            deleted_partinfo_mpconn_w.close()
+        else:
+            # Bypass this stage
+            deleted_partinfo_mpconn_r = uploaded_partinfo_mpconn_r
+
+        # part deleter --(part info)-> part info aggregator
         # (needed for building the manifest)
         bundle_partinfo_aggregate_mpconn = create_mpconn_aggregator(
-            bundle_partinfo_mpconn, debug=self.debug)
-        bundle_partinfo_mpconn.close()
+            deleted_partinfo_mpconn_r, debug=self.debug)
+        deleted_partinfo_mpconn_r.close()
 
-        # disk --(bytes)-> bundler
-        # (synchronous)
-        label = self.args.get('progressbar_label') or 'Bundling image'
-        pbar = self.get_progressbar(label=label, maxval=self.args['image_size'])
-        with self.args['image'] as image:
-            try:
-                read_size = copy_with_progressbar(image, bundle_in_w,
-                                                  progressbar=pbar)
-            except ValueError:
-                self.log.debug('error from copy_with_progressbar',
-                               exc_info=True)
-                raise RuntimeError('corrupt bundle: input size was larger '
-                                   'than expected image size of {0}'
-                                   .format(self.args['image_size']))
-        bundle_in_w.close()
-        if read_size != self.args['image_size']:
-            raise RuntimeError('corrupt bundle: input size did not match '
-                               'expected image size  (expected size: {0}, '
-                               'read: {1})'
-                               .format(self.args['image_size'], read_size))
+        # Now drive the pipeline by uploading parts.
+        if self.args.get('show_progress', False):
+            print 'Bundling first image part...'
+        self.upload_bundle_parts(
+            bundle_partinfo_mpconn, key_prefix,
+            partinfo_out_mpconn=uploaded_partinfo_mpconn_w,
+            part_write_sem=part_write_sem,
+            show_progress=self.args.get('show_progress'))
 
         # All done; now grab info about the bundle we just created
         try:
@@ -158,7 +184,7 @@ class BundleImage(BaseCommand, BundleCreatingMixin,
         finally:
             digest_result_mpconn.close()
             bundle_partinfo_aggregate_mpconn.close()
-        self.log.info('%i bundle parts written to %s', len(partinfo),
-                      os.path.dirname(path_prefix))
+        self.log.info('%i bundle parts uploaded to %s', len(partinfo),
+                      self.args['bucket'])
         self.log.debug('bundle digest: %s', digest)
         return digest, partinfo
