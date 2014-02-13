@@ -55,10 +55,10 @@ import zlib
 class InstallImage(EuStoreRequest, FileTransferProgressBarMixin):
     DESCRIPTION = 'Download an image from EuStore and add it to your cloud'
     ARGS = [MutuallyExclusiveArgList(True,
-                Arg('-i', '--image-name', metavar='EUIMAGE',
-                    help='name of the image to download and install'),
-                Arg('-t', '--tarball', metavar='FILE',
-                    help='tarball to install the image from')),
+            Arg('-i', '--image-name', metavar='EUIMAGE',
+                help='name of the image to download and install'),
+            Arg('-t', '--tarball', metavar='FILE',
+                help='tarball to install the image from')),
             Arg('-b', '--bucket', required=True,
                 help='bucket to store the images in (required)'),
             Arg('-s', '--description', metavar='DESC',
@@ -72,6 +72,8 @@ class InstallImage(EuStoreRequest, FileTransferProgressBarMixin):
             Arg('--separate-buckets', action='store_true',
                 help='''store kernel, ramdisk, and machine images in separate
                 buckets (BUCKET-kernel, BUCKET-ramdisk)'''),
+            Arg('--virtualization-type', choices=('paravirtual', 'hvm'),
+                help='''Virtualization type to register image with'''),
             Arg('-k', '--kernel-type', dest='kernel_type',
                 choices=('xen', 'kvm', 'universal'), help=argparse.SUPPRESS),
             Arg('-d', '--directory', dest='directory', metavar='DIR',
@@ -190,7 +192,7 @@ class InstallImage(EuStoreRequest, FileTransferProgressBarMixin):
                           "the 'eucalyptus' account")
 
     def main(self):
-        if not self.args.get('kernel') or not self.args.get('ramdisk'):
+        if (self.args.get('kernel') and self.args.get('ramdisk')) and self.args.get('virtualization_type') != "hvm":
             self.ensure_kernel_reg_privs()
 
         if self.args.get('directory'):
@@ -235,6 +237,8 @@ class InstallImage(EuStoreRequest, FileTransferProgressBarMixin):
                 self.log.debug('image catalog data specify single-kernel; '
                                "setting hypervisor to 'universal'")
                 self.args['hypervisor'] = 'universal'
+            if self.args.get('virtualization_type') is None:
+                self.args['virtualization_type'] = image.get('virtualization_type')
             if not self.args.get('hypervisor'):
                 raise RuntimeError("image '{0}' uses hypervisor-specific "
                                    "kernels; please specify a hypervisor with "
@@ -297,7 +301,7 @@ class InstallImage(EuStoreRequest, FileTransferProgressBarMixin):
             commonprefix = os.path.commonprefix(filenames)
             kernel_id = self.args.get('kernel')
             ramdisk_id = self.args.get('ramdisk')
-            if self.args['hypervisor'] == 'universal':
+            if self.args['hypervisor'] == 'universal' or self.args['virtualization_type'] == 'hvm':
                 hv_prefix = commonprefix
             else:
                 hv_type_dir = self.args['hypervisor'] + '-kernel'
@@ -342,9 +346,9 @@ class InstallImage(EuStoreRequest, FileTransferProgressBarMixin):
                         ramdisk_id = response.get('imageId')
                         if self.args['show_progress']:
                             print 'Registered ramdisk image', ramdisk_id
-            if kernel_id is None:
+            if kernel_id is None and self.args['virtualization_type'] != 'hvm':
                 raise RuntimeError('failed to find a useful kernel image')
-            if ramdisk_id is None:
+            if ramdisk_id is None and self.args['virtualization_type'] != 'hvm':
                 raise RuntimeError('failed to find a useful ramdisk image')
             # Now that we have kernel and ramdisk image IDs, deal with the
             # machine image
@@ -358,7 +362,7 @@ class InstallImage(EuStoreRequest, FileTransferProgressBarMixin):
                     # This can happen when use of --ramdisk prevents us from
                     # pruning it later.
                     continue
-                if machine_id is None and member.name.endswith('.img'):
+                if machine_id is None and (member.name.endswith('.img') or member.name.endswith('.raw')):
                     bundled_images.append(member.name)
                     machine_image = self.extract_without_path(
                         tarball, member, workdir, 'Extracting image  ')
@@ -369,7 +373,8 @@ class InstallImage(EuStoreRequest, FileTransferProgressBarMixin):
                         config=self.config, service=self.__eucalyptus,
                         ImageLocation=manifest_loc, Name=image_name,
                         Description=self.args.get('description'),
-                        Architecture=self.args.get('architecture'))
+                        Architecture=self.args.get('architecture'),
+                        VirtualizationType=self.args.get('virtualization_type'))
                     response = req.main()
                     machine_id = response.get('imageId')
                     if self.args['show_progress']:
