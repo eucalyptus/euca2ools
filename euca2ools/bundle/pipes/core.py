@@ -173,7 +173,6 @@ def create_unbundle_pipeline(infile,
         copy_with_progressbar(infile=progress_r, outfile=outfile,
                               progressbar=progressbar, maxbytes=maxbytes)
         sha1_checksum_w.close()
-        sha1_checksum = sha1_checksum_r.recv()
     finally:
         # Make sure something calls wait() on every child process
         for pid in pids:
@@ -190,7 +189,7 @@ def create_unbundle_pipeline(infile,
                     pass
                 else:
                     raise ose
-    return sha1_checksum
+    return sha1_checksum_r
 
 
 def copy_with_progressbar(infile, outfile, progressbar=None, maxbytes=0):

@@ -157,14 +157,14 @@ class UnbundleStream(BaseCommand, FileTransferProgressBarMixin):
                 #Unbundle from stdin stream...
                 infile = os.fdopen(os.dup(os.sys.stdin.fileno()))
             with infile:
-                digest = create_unbundle_pipeline(infile=infile,
+                sha1pipe = create_unbundle_pipeline(infile=infile,
                                                   outfile=dest_file,
                                                   enc_key=enc_key,
                                                   enc_iv=enc_iv,
                                                   progressbar=pbar,
                                                   debug=debug,
                                                   maxbytes=maxbytes)
-                digest = digest.strip()
+                digest = sha1pipe.recv()
             if manifest:
                 #Verify the resulting unbundled Checksum matches the manifest
                 if digest != manifest.image_digest:
