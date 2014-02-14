@@ -109,8 +109,6 @@ def create_unbundle_pipeline(infile,
                              outfile,
                              enc_key,
                              enc_iv,
-                             progressbar,
-                             maxbytes,
                              debug=False):
     """
     Creates a pipeline to perform the unbundle operation on infile input.
@@ -161,34 +159,34 @@ def create_unbundle_pipeline(infile,
         sha1_io_w.close()
 
         # sha1sum -> tar
-        progress_r, progress_w = euca2ools.bundle.util.open_pipe_fileobjs()
+        #progress_r, progress_w = euca2ools.bundle.util.open_pipe_fileobjs()
         tar = spawn_process(_do_tar_extract,
                             infile=sha1_io_r,
-                            outfile=progress_w,
+                            outfile=outfile,
                             debug=debug)
         pids.append(tar.pid)
-        progress_w.close()
+        #progress_w.close()
 
         # tar -> final output and update progressbar
-        copy_with_progressbar(infile=progress_r, outfile=outfile,
-                              progressbar=progressbar, maxbytes=maxbytes)
+        #copy_with_progressbar(infile=progress_r, outfile=outfile,
+        #                      progressbar=progressbar, maxbytes=maxbytes)
         sha1_checksum_w.close()
     finally:
         # Make sure something calls wait() on every child process
         for pid in pids:
             euca2ools.bundle.util.waitpid_in_thread(pid)
-        for mp in [sha1, tar]:
-            if mp:
-                mp.join()
-        for p in [openssl, gzip, sha1, tar]:
-            try:
-                if p and pid_exists(p.pid):
-                    p.terminate()
-            except OSError, ose:
-                if ose.errno == os.errno.ESRCH:
-                    pass
-                else:
-                    raise ose
+        #for mp in [sha1, tar]:
+        #    if mp:
+        #        mp.join()
+        #for p in [openssl, gzip, sha1, tar]:
+        #    try:
+        #        if p and pid_exists(p.pid):
+        #            p.terminate()
+        #    except OSError, ose:
+        #        if ose.errno == os.errno.ESRCH:
+        #            pass
+        #        else:
+        #            raise ose
     return sha1_checksum_r
 
 

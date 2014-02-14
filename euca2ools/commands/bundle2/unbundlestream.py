@@ -25,6 +25,8 @@
 import os
 import argparse
 from euca2ools.bundle.pipes.core import create_unbundle_pipeline
+from euca2ools.bundle.pipes.core import copy_with_progressbar
+from euca2ools.bundle.util import open_pipe_fileobjs
 from euca2ools.bundle.manifest import BundleManifest
 from euca2ools.commands import Euca2ools
 from requestbuilder import Arg, MutuallyExclusiveArgList
@@ -135,14 +137,19 @@ class UnbundleStream(BaseCommand, FileTransferProgressBarMixin):
         #Setup the destination fileobj...
         if isinstance(self.args.get('destination'), file):
             #Use provided file obj...
+            self.log.debug('Writing image to provided fileobj')
             dest_file = self.args.get('destination')
-            dest_file_name = dest_file.name
+            dest_file_name = str(dest_file.name)
+            self.log.debug('Writing image to provided fileobj:'
+                           + dest_file_name)
         elif self.args.get('destination') == '-':
             #Use stdout...
+            self.log.debug('Writing image to stdout')
             dest_file_name = '<stdout>'
             dest_file = os.fdopen(os.dup(os.sys.stdout.fileno()), 'w')
         else:
             #Open file at path provided...
+            self.log.debug('Writing image to ')
             dest_file_name = self.args.get('destination')
             dest_file = open(self.args.get('destination'), 'w')
 
@@ -150,21 +157,38 @@ class UnbundleStream(BaseCommand, FileTransferProgressBarMixin):
         try:
             if self.args.get('source') and not self.args.get('source') == "-":
                 if isinstance(self.args.get('source'), file):
+                    self.log.debug('Reading from provided fileobj')
                     infile = self.args.get('source')
                 else:
+                    self.log.debug('Reading from file at path:'
+                                    + str(self.args.get('source')))
                     infile = open(self.args.get('source'))
             else:
                 #Unbundle from stdin stream...
+                self.log.debug('Reading from stdin')
                 infile = os.fdopen(os.dup(os.sys.stdin.fileno()))
-            with infile:
+            try:
+                progress_r, progress_w = open_pipe_fileobjs()
                 sha1pipe = create_unbundle_pipeline(infile=infile,
-                                                  outfile=dest_file,
+                                                  outfile=progress_w,
                                                   enc_key=enc_key,
                                                   enc_iv=enc_iv,
-                                                  progressbar=pbar,
-                                                  debug=debug,
-                                                  maxbytes=maxbytes)
-                digest = sha1pipe.recv()
+                                                  debug=debug)
+                print 'pipeline created...'
+                progress_w.close()
+                copy_with_progressbar(infile=progress_r,
+                                      outfile=dest_file,
+                                      progressbar=pbar,
+                                      maxbytes=maxbytes)
+                progress_r.close()
+            finally:
+                if infile:
+                    infile.close()
+                if progress_r:
+                    progress_r.close()
+                if progress_w:
+                    progress_w.close()
+            digest = sha1pipe.recv()
             if manifest:
                 #Verify the resulting unbundled Checksum matches the manifest
                 if digest != manifest.image_digest:

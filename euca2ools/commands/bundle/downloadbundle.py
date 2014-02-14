@@ -25,7 +25,7 @@
 
 
 import os
-from io import StringIO
+from io import BytesIO
 from requestbuilder import Arg, MutuallyExclusiveArgList
 from requestbuilder.exceptions import ArgumentError
 from requestbuilder.mixins import FileTransferProgressBarMixin
@@ -133,7 +133,7 @@ class DownloadBundle(WalrusRequest, FileTransferProgressBarMixin):
                                    .format(",".join(str(m)
                                            for m in manifest_keys)))
             #Read the manifest into an obj...
-            manifest_fileobj = StringIO()
+            manifest_fileobj = BytesIO()
             manifest_key = manifest_keys.pop()
             try:
                 download_files(bucket=bucket,
