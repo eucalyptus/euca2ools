@@ -174,7 +174,6 @@ class UnbundleStream(BaseCommand, FileTransferProgressBarMixin):
                                                   enc_key=enc_key,
                                                   enc_iv=enc_iv,
                                                   debug=debug)
-                print 'pipeline created...'
                 progress_w.close()
                 copy_with_progressbar(infile=progress_r,
                                       outfile=dest_file,

@@ -57,6 +57,7 @@ class DownloadBundle(WalrusRequest, FileTransferProgressBarMixin):
     # noinspection PyExceptionInherit
     def configure(self):
         #Get the mandatory private key...
+        '''
         if not self.args.get('privatekey'):
             config_privatekey = self.config.get_user_option('private-key')
             if self.args.get('userregion'):
@@ -76,7 +77,7 @@ class DownloadBundle(WalrusRequest, FileTransferProgressBarMixin):
         if not os.path.isfile(self.args['privatekey']):
             raise ArgumentError("private key file '{0}' is not a file"
                                 .format(self.args['privatekey']))
-
+        '''
         #Get optional destination directory...
         dest_dir = self.args['directory']
         if isinstance(dest_dir, basestring):
@@ -149,8 +150,9 @@ class DownloadBundle(WalrusRequest, FileTransferProgressBarMixin):
                     "cannot find manifest file(s) {0} in bucket '{1}'."
                     .format(",".join(manifest_keys), bucket))
             #Read manifest info from pipe...
+            manifest_fileobj.seek(0)
             manifest = BundleManifest.read_from_fileobj(
-                manifest_fileobj,private_key=private_key)
+                manifest_fileobj, privkey_filename=private_key)
         self.log.debug('Returning Manifest for image:{0}'
                        .format(str(manifest.image_name)))
         return manifest

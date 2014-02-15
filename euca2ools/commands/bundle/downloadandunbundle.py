@@ -139,7 +139,11 @@ class DownloadAndUnbundle(WalrusRequest, FileTransferProgressBarMixin):
         downloadbundle.args['directory'] = downloadbundle_w
         #If a local manifest wasn't provided attempt to read in a remote
         if not manifest:
-            manifest = downloadbundle._get_manifest_obj()
+            manifest = downloadbundle._get_manifest_obj(
+                private_key=self.args.get('privatekey'))
+        if not manifest.enc_key or not manifest.enc_iv:
+            raise ArgumentError(None,
+                                'key and/or iv not set or found in manifest')
         pbar = None
         if self.args.get('show_progress'):
             try:
@@ -169,20 +173,22 @@ class DownloadAndUnbundle(WalrusRequest, FileTransferProgressBarMixin):
                                      'space:{1}'
                                      .format(manifest.image_size, avail_space))
 
+        self.log.debug("Starting Download bundle in sub process "
+                       " to feed to to unbundlestream's pipeline...")
         download = spawn_process(self._downloadbundle_wrapper,
                                  downloadbundle_obj=downloadbundle,
                                  outfile=downloadbundle_w)
         downloadbundle_w.close()
-        waitpid_in_thread(download.pid)
 
-        digest = UnbundleStream(source=downloadbundle_r,
+        unbundlestream_obj = UnbundleStream(source=downloadbundle_r,
                                 destination=dest_file,
                                 enc_key=manifest.enc_key,
                                 enc_iv=manifest.enc_iv,
                                 progressbar=pbar,
                                 maxbytes=self.args.get('maxbytes'),
-                                config=self.config).main()
-
+                                config=self.config)
+        digest = unbundlestream_obj.main()
+        waitpid_in_thread(download.pid)
         digest = digest.strip()
         #Verify the Checksum from the unbundle operation matches manifest
         if digest != manifest.image_digest:
