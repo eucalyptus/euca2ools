@@ -57,27 +57,6 @@ class DownloadBundle(WalrusRequest, FileTransferProgressBarMixin):
     # noinspection PyExceptionInherit
     def configure(self):
         #Get the mandatory private key...
-        '''
-        if not self.args.get('privatekey'):
-            config_privatekey = self.config.get_user_option('private-key')
-            if self.args.get('userregion'):
-                self.args['privatekey'] = config_privatekey
-            elif 'EC2_PRIVATE_KEY' in os.environ:
-                self.args['privatekey'] = os.getenv('EC2_PRIVATE_KEY')
-            elif config_privatekey:
-                self.args['privatekey'] = config_privatekey
-            else:
-                raise ArgumentError(
-                    'missing private key; please supply one with -k')
-        self.args['privatekey'] = os.path.expanduser(os.path.expandvars(
-            self.args['privatekey']))
-        if not os.path.exists(self.args['privatekey']):
-            raise ArgumentError("private key file '{0}' does not exist"
-                                .format(self.args['privatekey']))
-        if not os.path.isfile(self.args['privatekey']):
-            raise ArgumentError("private key file '{0}' is not a file"
-                                .format(self.args['privatekey']))
-        '''
         #Get optional destination directory...
         dest_dir = self.args['directory']
         if isinstance(dest_dir, basestring):
@@ -153,6 +132,7 @@ class DownloadBundle(WalrusRequest, FileTransferProgressBarMixin):
             manifest_fileobj.seek(0)
             manifest = BundleManifest.read_from_fileobj(
                 manifest_fileobj, privkey_filename=private_key)
+            manifest.manifest_key = manifest_key
         self.log.debug('Returning Manifest for image:{0}'
                        .format(str(manifest.image_name)))
         return manifest
@@ -225,6 +205,15 @@ class DownloadBundle(WalrusRequest, FileTransferProgressBarMixin):
                         .format(directory))
                 self.args['show_progress'] = True
                 dest_path = directory
+                #Download the manifest if it has one
+                if hasattr(manifest, 'manifest_key') and manifest.manifest_key:
+                    download_files(bucket=bucket,
+                                   keys=[manifest.manifest_key],
+                                   opath=directory,
+                                   fileobj=fileobj,
+                                   service=self.service,
+                                   config=self.config,
+                                   show_progress=self.args.get('show_progress'))
         else:
             #Assume the directory arg is a file obj to write bundle to
             fileobj = directory
