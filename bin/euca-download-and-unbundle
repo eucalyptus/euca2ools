@@ -3,4 +3,4 @@
 import euca2ools.commands.bundle.downloadandunbundle
 
 if __name__ == '__main__':
-    euca2ools.commands.bundle.downloadandunbundle.DownloadUnbundle.run()
+    euca2ools.commands.bundle.downloadandunbundle.DownloadAndUnbundle.run()

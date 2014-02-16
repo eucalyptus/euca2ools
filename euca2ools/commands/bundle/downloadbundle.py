@@ -115,7 +115,8 @@ class DownloadBundle(WalrusRequest, FileTransferProgressBarMixin):
         :param prefix: Manifest prefix used to download bundle
         :param private_key: Local file path to key used to create the bundle.
         :dest_dir: Local dir path. If provided the downloaded manifest will
-                   be written to a file in this directory.
+                   be written to a file in this directory, otherwise it will
+                   not be written to a local file.
         :returns: BundleManifest obj
         '''
         self.log.debug('download to dest_dir:' + str(dest_dir))

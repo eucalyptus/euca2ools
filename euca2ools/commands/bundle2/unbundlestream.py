@@ -88,11 +88,10 @@ class UnbundleStream(BaseCommand, FileTransferProgressBarMixin):
                 if not os.path.isfile(manifest_path):
                     raise ArgumentError("Manifest '{0}' is not a file"
                                         .format(self.args['manifest']))
-                    #Read manifest into BundleManifest obj...
                 #Get the mandatory private key...
                 if not self.args.get('privatekey'):
-                    config_privatekey = \
-                        self.config.get_user_option('private-key')
+                    config_privatekey = self.config.get_user_option(
+                        'private-key')
                     if self.args.get('userregion'):
                         self.args['privatekey'] = config_privatekey
                     elif 'EC2_PRIVATE_KEY' in os.environ:
@@ -104,17 +103,18 @@ class UnbundleStream(BaseCommand, FileTransferProgressBarMixin):
                             'missing private key needed to read manifest;'
                             ' please supply one with -k')
                 privatekey = self.args['privatekey']
-                self.args['privatekey'] = (os.path.expanduser(
-                                           os.path.expandvars(privatekey)))
+                self.args['privatekey'] = os.path.expanduser(
+                    os.path.expandvars(privatekey))
                 if not os.path.exists(self.args['privatekey']):
                     raise ArgumentError("private key file '{0}' does not exist"
                                         .format(self.args['privatekey']))
                 if not os.path.isfile(self.args['privatekey']):
                     raise ArgumentError("private key file '{0}' is not a file"
                                         .format(self.args['privatekey']))
-                manifest = (BundleManifest.
-                            read_from_file(manifest_path,
-                                           self.args['privatekey']))
+                #Read manifest into BundleManifest obj...
+                manifest = BundleManifest.read_from_file(
+                    manifest_path,
+                    self.args['privatekey'])
                 self.args['manifest'] = manifest
             if not self.args.get('enc_key') and manifest:
                 self.args['enc_key'] = manifest.enc_key
@@ -133,7 +133,7 @@ class UnbundleStream(BaseCommand, FileTransferProgressBarMixin):
         enc_iv = self.args.get('enc_iv')
         debug = self.args.get('debug')
         maxbytes = self.args.get('maxbytes')
-        #todo Should this only write to fileobj, stdout, and not a local path?
+
         #Setup the destination fileobj...
         if isinstance(self.args.get('destination'), file):
             #Use provided file obj...
