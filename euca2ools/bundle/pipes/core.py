@@ -99,11 +99,12 @@ def create_unbundle_pipeline(infile,
     :param outfile: file  obj to write unbundled image to
     :param enc_key: the encryption key used to bundle the image
     :param enc_iv: the encyrption initialization vector used in the bundle
-    :param progressbar: the progressbar obj to be updated during the unbundle
-    :param maxbytes: integer number of bytes that can be written to the outfile
-    :returns sha1 digest of written image (String)
+    :returns multiprocess pipe to read sha1 digest of written image
     """
-    openssl, gzip, sha1, tar = None, None, None, None
+    openssl = None
+    gzip = None
+    sha1 = None
+    tar = None
     pids = []
     try:
         # infile -> openssl
@@ -141,34 +142,24 @@ def create_unbundle_pipeline(infile,
         sha1_io_w.close()
 
         # sha1sum -> tar
-        #progress_r, progress_w = euca2ools.bundle.util.open_pipe_fileobjs()
         tar = spawn_process(_do_tar_extract,
                             infile=sha1_io_r,
                             outfile=outfile,
                             debug=debug)
         pids.append(tar.pid)
-        #progress_w.close()
-
-        # tar -> final output and update progressbar
-        #copy_with_progressbar(infile=progress_r, outfile=outfile,
-        #                      progressbar=progressbar, maxbytes=maxbytes)
+        sha1_io_r.close()
         sha1_checksum_w.close()
+    except:
+        try:
+            sha1_checksum_r.close()
+        except:
+            pass
+        raise
+
     finally:
         # Make sure something calls wait() on every child process
         for pid in pids:
             euca2ools.bundle.util.waitpid_in_thread(pid)
-        #for mp in [sha1, tar]:
-        #    if mp:
-        #        mp.join()
-        #for p in [openssl, gzip, sha1, tar]:
-        #    try:
-        #        if p and pid_exists(p.pid):
-        #            p.terminate()
-        #    except OSError, ose:
-        #        if ose.errno == os.errno.ESRCH:
-        #            pass
-        #        else:
-        #            raise ose
     return sha1_checksum_r
 
 

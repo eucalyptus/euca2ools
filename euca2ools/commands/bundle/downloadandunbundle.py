@@ -83,6 +83,7 @@ class DownloadAndUnbundle(WalrusRequest, FileTransferProgressBarMixin):
         dest_dir = self.args['directory']
         if not (dest_dir == "-"):
             dest_dir = os.path.expanduser(os.path.abspath(dest_dir))
+            #todo should this create nonexisting destination directory?
             if not os.path.exists(dest_dir):
                 raise ArgumentError("Destination directory '{0}' "
                                     "does not exist"
@@ -112,6 +113,9 @@ class DownloadAndUnbundle(WalrusRequest, FileTransferProgressBarMixin):
                                                         ))
 
     def _downloadbundle_wrapper(self, downloadbundle_obj, outfile):
+        '''
+        Subprocess wrapper for downloadbundle.
+        '''
         try:
             downloadbundle_obj.main()
         except KeyboardInterrupt:
@@ -122,12 +126,17 @@ class DownloadAndUnbundle(WalrusRequest, FileTransferProgressBarMixin):
                 outfile.close()
 
     def main(self):
+        '''
+        Connects downloadbundle and unbundlestream in pipeline to write
+        output to the provided destination/directory.
+        '''
         dest_dir = self.args.get('directory')
         bucket = self.args.get('bucket').split('/', 1)[0]
         manifest = self.args.get('manifest', None)
         self.log.debug('bucket:{0} directory:{1}'.format(bucket, dest_dir))
         #Created download bundle obj...
         downloadbundle_r, downloadbundle_w = open_pipe_fileobjs()
+        #downloadbundle uses directory arg as destination to write to
         kwargs = {'directory': downloadbundle_w,
                   'show_progress': False,
                   'manifest': self.args.get('manifest', None),
@@ -136,10 +145,13 @@ class DownloadAndUnbundle(WalrusRequest, FileTransferProgressBarMixin):
                   'service': self.service,
                   'config': self.config}
         downloadbundle = DownloadBundle(**kwargs)
-        downloadbundle.args['directory'] = downloadbundle_w
         #If a local manifest wasn't provided attempt to read in a remote
         if not manifest:
-            manifest = downloadbundle._get_manifest_obj()
+            manifest = downloadbundle._get_manifest_obj(
+                private_key=self.args.get('privatekey'))
+        if not manifest.enc_key or not manifest.enc_iv:
+            raise ArgumentError(None,
+                                'key and/or iv not set or found in manifest')
         pbar = None
         if self.args.get('show_progress'):
             try:
@@ -168,22 +180,28 @@ class DownloadAndUnbundle(WalrusRequest, FileTransferProgressBarMixin):
                     raise ValueError('Image size:{0} exceeds destination free '
                                      'space:{1}'
                                      .format(manifest.image_size, avail_space))
+        with dest_file:
+            self.log.debug("Starting Download bundle in sub process "
+                           " to feed to to unbundlestream's pipeline...")
+            download = spawn_process(self._downloadbundle_wrapper,
+                                     downloadbundle_obj=downloadbundle,
+                                     outfile=downloadbundle_w)
+            downloadbundle_w.close()
+            unbundle_obj = UnbundleStream(source=downloadbundle_r,
+                                          destination=dest_file,
+                                          enc_key=manifest.enc_key,
+                                          enc_iv=manifest.enc_iv,
+                                          progressbar=pbar,
+                                          maxbytes=self.args.get('maxbytes'),
+                                          config=self.config)
+            digest = unbundle_obj.main()
+            waitpid_in_thread(download.pid)
+            if not digest:
+                raise ValueError('Failed to retrieve digest from '
+                                 'unbundle stream, digest:{0}'
+                                 .format(str(digest)))
+            digest = digest.strip()
 
-        download = spawn_process(self._downloadbundle_wrapper,
-                                 downloadbundle_obj=downloadbundle,
-                                 outfile=downloadbundle_w)
-        downloadbundle_w.close()
-        waitpid_in_thread(download.pid)
-
-        digest = UnbundleStream(source=downloadbundle_r,
-                                destination=dest_file,
-                                enc_key=manifest.enc_key,
-                                enc_iv=manifest.enc_iv,
-                                progressbar=pbar,
-                                maxbytes=self.args.get('maxbytes'),
-                                config=self.config).main()
-
-        digest = digest.strip()
         #Verify the Checksum from the unbundle operation matches manifest
         if digest != manifest.image_digest:
             raise ValueError('Extracted image appears to be corrupt '
