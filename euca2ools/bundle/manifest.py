@@ -60,7 +60,11 @@ class BundleManifest(object):
     @classmethod
     def read_from_file(cls, manifest_filename, privkey_filename=None):
         with open(manifest_filename) as manifest_file:
-            xml = lxml.objectify.parse(manifest_file).getroot()
+            return cls.read_from_fileobj(manifest_fileobj, privkey_filename)
+
+    @classmethod
+    def read_from_fileobj(cls, manifest_fileobj, privkey_filename=None):
+        xml = lxml.objectify.parse(manifest_fileobj).getroot()
         manifest = cls()
         mconfig = xml.machine_configuration
         manifest.image_arch = mconfig.architecture.text.strip()
