@@ -27,16 +27,10 @@ from euca2ools.commands.euca import EucalyptusRequest
 from requestbuilder import Arg
 
 
-class DeleteSecurityGroup(EucalyptusRequest):
-    DESCRIPTION = 'Delete a security group'
-    ARGS = [Arg('group', metavar='GROUP', route_to=None,
-                help='name or ID of the security group to delete (required)')]
-
-    def preprocess(self):
-        if self.args['group'].startswith('sg-'):
-            self.params['GroupId'] = self.args['group']
-        else:
-            self.params['GroupName'] = self.args['group']
+class DeleteSubnet(EucalyptusRequest):
+    DESCRIPTION = 'Delete subnet'
+    ARGS = [Arg('SubnetId', metavar='SUBNET',
+                help='subnet id to delete (required)')]
 
     def print_result(self, result):
-        print self.tabify(('RETURN', result.get('return')))
+        print self.tabify(('SUBNET', self.args['SubnetId']))

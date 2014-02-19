@@ -27,16 +27,15 @@ from euca2ools.commands.euca import EucalyptusRequest
 from requestbuilder import Arg
 
 
-class CreateSecurityGroup(EucalyptusRequest):
-    DESCRIPTION = 'Create a new security group'
-    ARGS = [Arg('GroupName', metavar='GROUP',
-                help='name of the new group (required)'),
-            Arg('-d', '--description', dest='GroupDescription', metavar='DESC',
-                required=True, help='description of the new group (required)'),
-            Arg('-c', '--vpc', dest='VpcId', metavar='VPC',
-                help='[VPC only] ID of the VPC to create the group in')]
+class DeleteNetworkAclEntry(EucalyptusRequest):
+    DESCRIPTION = 'Delete a network acl rule'
+    ARGS = [Arg('NetworkAclId', metavar='ACLID',
+                help='acl id to delete rule in (required)'),
+            Arg('-e', '--egress',
+                choices=['true', 'false'], default='false',
+                help='egress rule'),
+            Arg('-r', '--rule-number', dest='RuleNumber', required=True,
+                help='rule number for the acl entry')]
 
     def print_result(self, result):
-        print self.tabify(('GROUP', result.get('groupId'),
-                           self.args['GroupName'],
-                           self.args['GroupDescription']))
+        print self.tabify(('ACLID', self.args['NetworkAclId'], result['return']))
