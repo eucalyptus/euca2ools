@@ -74,13 +74,13 @@ Ubuntu 12.04
 ------------
 
 Dependency packages:
- - gcc
- - libxml2
- - libxml2-dev
- - libxslt1-dev
- - libxslt1.1
- - python
+ - openssl
  - python-dev
- - python-libxml2
- - python-libxslt1
+ - python-lxml
+ - python-requests
+ - python-setuptools
+ - python-six
  - python-support
+
+python-requestbuilder is not available in Ubuntu 12.04, and must be built
+from source or backported from Ubuntu 14.04.
