@@ -255,7 +255,7 @@ class VolumeSync(object):
             cmd.extend(['--exclude', exclude])
         for include in self.includes:
             cmd.extend(['--include', include])
-        cmd.extend(glob.glob(os.path.join(self.volume, '*')))
+        cmd.extend([os.path.join(self.volume, p) for p in os.listdir(self.volume)])
         cmd.append(self.mpoint + os.path.sep)
 
         try:
