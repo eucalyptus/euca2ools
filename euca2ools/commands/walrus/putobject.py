@@ -23,39 +23,37 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.walrus import WalrusRequest
-from euca2ools.util import build_progressbar_label_template
-import mimetypes
+import hashlib
 import os.path
-from requestbuilder import Arg
-from requestbuilder.exceptions import ArgumentError, ClientError
-from requestbuilder.mixins import FileTransferProgressBarMixin
 import socket
+import sys
 import threading
 import time
 
+from requestbuilder import Arg
+from requestbuilder.exceptions import ArgumentError, ClientError
+from requestbuilder.mixins import FileTransferProgressBarMixin
+
+from euca2ools.commands.walrus import WalrusRequest
+from euca2ools.util import build_progressbar_label_template
+
 
 class PutObject(WalrusRequest, FileTransferProgressBarMixin):
-    DESCRIPTION = ('Upload objects to the server\n\nNote that uploading a '
+    DESCRIPTION = ('Upload an object to the server\n\nNote that uploading a '
                    'large file to a region other than the one the bucket is '
                    'may result in "Broken pipe" errors or other connection '
                    'problems that this program cannot detect.')
-    ARGS = [Arg('sources', metavar='FILE', nargs='+', route_to=None,
-                help='file(s) to upload'),
-            Arg('dest', metavar='BUCKET/PREFIX', route_to=None,
-                help='bucket name and optional prefix for key names'),
-            Arg('-T', dest='literal_dest', action='store_true', route_to=None,
-                help='''treat the destination as the full bucket and key name
-                for the uploaded object instead of a bucket and prefix.  This
-                only works when uploading a single file.'''),
+    ARGS = [Arg('source', metavar='FILE', route_to=None,
+                help='file to upload (required)'),
+            Arg('dest', metavar='BUCKET/KEY', route_to=None,
+                help='bucket and key name to upload the object to (required)'),
             Arg('--acl', choices=('private', 'public-read',
                 'public-read-write', 'authenticated-read', 'bucket-owner-read',
                 'bucket-owner-full-control', 'aws-exec-read'), route_to=None),
-            Arg('--guess-mime-type', action='store_true', route_to=None,
-                help='''automatically select MIME types for the files being
-                uploaded'''),
+            Arg('--mime-type', route_to=None,
+                help='MIME type for the file being uploaded'),
             Arg('--retry', dest='retries', action='store_const', const=5,
-                default=1, route_to=None,
+                default=0, route_to=None,
                 help='retry interrupted uploads up to 5 times')]
     METHOD = 'PUT'
 
@@ -67,81 +65,152 @@ class PutObject(WalrusRequest, FileTransferProgressBarMixin):
     # noinspection PyExceptionInherit
     def configure(self):
         WalrusRequest.configure(self)
-        if (self.args.get('literal_dest', False) and
-            len(self.args['sources']) != 1):
-            # Can't explicitly specify dest file names when we're uploading
-            # more than one thing
-            raise ArgumentError('argument -T: only allowed with one file')
-        if self.args['dest'].startswith('/'):
-            raise ArgumentError('destination must begin with a bucket name')
+        if self.args['source'] == '-':
+            if self.args.get('size') is None:
+                raise ArgumentError(
+                    "argument --size is required when uploading stdin")
+            source = _FileObjectExtent(sys.stdin, self.args['size'])
+        elif isinstance(self.args['source'], basestring):
+            source = _FileObjectExtent.from_filename(self.args['source'])
+        else:
+            if self.args.get('size') is None:
+                raise ArgumentError(
+                    "argument --size is required when uploading stdin")
+            source = _FileObjectExtent(sys.stdin, self.args['size'])
+        self.args['source'] = source
+        bucket, _, key = self.args['dest'].partition('/')
+        if not bucket:
+            raise ArgumentError('destination bucket name must be non-empty')
+        if not key:
+            raise ArgumentError('destination key name must be non-empty')
 
     # noinspection PyExceptionInherit
     def main(self):
-        sources = list(self.args['sources'])
-        label_template = build_progressbar_label_template(sources)
-        for index, source_filename in enumerate(sources, 1):
-            if self.args.get('literal_dest', False):
-                (bucket, __, keyname) = self.args['dest'].partition('/')
-                if not keyname:
-                    raise ArgumentError('destination must contain a key name')
-            else:
-                (bucket, __, prefix) = self.args['dest'].partition('/')
-                keyname = prefix + os.path.basename(source_filename)
-            self.path = bucket + '/' + keyname
-            self.headers['Content-Length'] = os.path.getsize(source_filename)
-            self.headers.pop('Content-Type', None)
-            if self.args.get('acl'):
-                self.headers['x-amz-acl'] = self.args['acl']
-            if self.args.get('guess_mime_type', False):
-                mtype = mimetypes.guess_type(source_filename)
-                if mtype:
-                    self.headers['Content-Type'] = mtype
+        source = self.args['source']
+        self.path = self.args['dest']
+        self.headers['Content-Length'] = source.size
+        if self.args.get('acl'):
+            self.headers['x-amz-acl'] = self.args['acl']
+        if self.args.get('mime_type'):
+            self.headers['Content-Type'] = self.args['mime_type']
 
-            self.log.info('uploading %s to %s', source_filename, self.path)
-            with self._lock:
-                self.last_upload_error = None
-            with open(source_filename) as source:
-                upload_thread = threading.Thread(target=self.try_send,
-                    args=(source,),
-                    kwargs={'retries_left': self.args['retries']})
-                # The upload thread is daemonic so ^C will kill the program
-                # more cleanly.
-                upload_thread.daemon = True
-                upload_thread.start()
-                label = label_template.format(index=index,
-                    fname=os.path.basename(source_filename))
-                pbar = self.get_progressbar(label=label,
-                    maxval=os.path.getsize(source_filename))
-                pbar.start()
-                while upload_thread.is_alive():
-                    pbar.update(source.tell())
-                    time.sleep(0.01)
-                pbar.finish()
-                upload_thread.join()
-            with self._lock:
-                if self.last_upload_error is not None:
-                    # pylint: disable=E0702
-                    raise self.last_upload_error
-                    # pylint: enable=E0702
+        # We do the upload in another thread so the main thread can show a
+        # progress bar.
+        upload_thread = threading.Thread(
+            target=self.try_send, args=(source,),
+            kwargs={'retries_left': self.args['retries']})
+        # The upload thread is daemonic so ^C will kill the program more
+        # cleanly.
+        upload_thread.daemon = True
+        upload_thread.start()
+        pbar = self.get_progressbar(label=source.filename,
+                                    maxval=source.size)
+        pbar.start()
+        while upload_thread.is_alive():
+            pbar.update(source.tell())
+            time.sleep(0.05)
+        pbar.finish()
+        upload_thread.join()
+        source.close()
+        with self._lock:
+            if self.last_upload_error is not None:
+                # pylint: disable=E0702
+                raise self.last_upload_error
+                # pylint: enable=E0702
 
     def try_send(self, source, retries_left=0):
         self.body = source
+        if retries_left > 0 and not source.can_rewind:
+            self.log.warn('source cannot rewind, so requested retries will '
+                          'not be attempted')
+            retries_left = 0
         try:
-            self.send()
+            response = self.send()
+            our_md5 = source.read_hexdigest
+            their_md5 = response.headers['ETag'].lower().strip('"')
+            if their_md5 != our_md5:
+                self.log.error('corrupt upload (our MD5: %s, their MD5: %s',
+                               our_md5, their_md5)
+                raise ClientError('upload was corrupted during transit')
         except ClientError as err:
             if len(err.args) > 0 and isinstance(err.args[0], socket.error):
                 self.log.warn('socket error')
                 if retries_left > 0:
                     self.log.info('retrying upload (%i retries remaining)',
                                   retries_left)
-                    self.log.debug('re-seeking body to beginning of file')
-                    source.seek(0)
+                    source.rewind()
                     return self.try_send(source, retries_left - 1)
-                else:
-                    with self._lock:
-                        self.last_upload_error = err
-                    raise
+            with self._lock:
+                self.last_upload_error = err
+            raise
         except Exception as err:
             with self._lock:
                 self.last_upload_error = err
             raise
+
+
+class _FileObjectExtent(object):
+    # By rights this class should be iterable, but if we do that then requests
+    # will attempt to use chunked transfer-encoding, which S3 does not
+    # support.
+
+    def __init__(self, fileobj, size, filename=None):
+        self.closed = False
+        self.filename = filename
+        self.fileobj = fileobj
+        self.size = size
+        self.__bytes_read = 0
+        self.__md5 = hashlib.md5()
+        if hasattr(self.fileobj, 'tell'):
+            self.__initial_pos = self.fileobj.tell()
+        else:
+            self.__initial_pos = None
+
+    @classmethod
+    def from_filename(cls, filename):
+        return cls(open(filename), os.path.getsize(filename),
+                   filename=filename)
+
+    @property
+    def can_rewind(self):
+        return hasattr(self.fileobj, 'seek') and self.__initial_pos is not None
+
+    def close(self):
+        self.fileobj.close()
+        self.closed = True
+
+    def next(self):
+        remaining = self.size - self.__bytes_read
+        if remaining <= 0:
+            raise StopIteration()
+        chunk = self.fileobj.next()  # might raise StopIteration, which is good
+        chunk = chunk[:remaining]  # throw away data that are off the end
+        self.__bytes_read += len(chunk)
+        self.__md5.update(chunk)
+        return chunk
+
+    def read(self, size=-1):
+        remaining = self.size - self.__bytes_read
+        if size < 0:
+            chunk_len = remaining
+        else:
+            chunk_len = min(remaining, size)
+        chunk = self.fileobj.read(chunk_len)
+        self.__bytes_read += len(chunk)
+        self.__md5.update(chunk)
+        return chunk
+
+    @property
+    def read_hexdigest(self):
+        return self.__md5.hexdigest()
+
+    def rewind(self):
+        if not hasattr(self.fileobj, 'seek'):
+            raise TypeError('file object is not seekable')
+        assert self.__initial_pos is not None
+        self.fileobj.seek(self.__initial_pos)
+        self.__bytes_read = 0
+        self.__md5 = hashlib.md5()
+
+    def tell(self):
+        return self.__bytes_read
