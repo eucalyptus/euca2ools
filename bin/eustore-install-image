@@ -1,6 +1,0 @@
-#!/usr/bin/python -tt
-
-import euca2ools.commands.eustore.installimage
-
-if __name__ == '__main__':
-    euca2ools.commands.eustore.installimage.InstallImage.run()
