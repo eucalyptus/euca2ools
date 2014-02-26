@@ -23,11 +23,13 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import euca2ools.bundle.pipes
-import euca2ools.bundle.util
 import hashlib
 import itertools
 import multiprocessing
+import os
+
+import euca2ools.bundle.pipes
+import euca2ools.bundle.util
 
 
 def create_bundle_part_deleter(in_mpconn, out_mpconn=None):
