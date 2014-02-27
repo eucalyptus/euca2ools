@@ -201,6 +201,7 @@ def copy_with_progressbar(infile, outfile, progressbar=None, maxbytes=0):
         if progressbar:
             progressbar.finish()
         infile.close()
+    return bytes_written
 
 
 def _calc_sha1_for_pipe(infile, outfile, digest_out_pipe_w, debug=False):
