@@ -27,6 +27,7 @@ import hashlib
 import itertools
 import multiprocessing
 import os
+import sys
 
 import euca2ools.bundle.pipes
 import euca2ools.bundle.util
