@@ -147,12 +147,12 @@ class DownloadBundle(WalrusRequest, FileTransferProgressBarMixin):
         manifest_key = manifest_keys.pop()
         #Write to a local file if dest_dir was provided...
         if dest_dir:
-            dest_dir = dest_dir.rstrip('/') + "/"
             #Download paths to individual files under provided directory...
             if not os.path.isdir(dest_dir):
                 self.log.debug('Creating dir at: {0}'.format(dest_dir))
                 os.mkdir(dest_dir)
-            local_file_path = os.path.join(manifest_key.rsplit('/', 1)[-1])
+            local_file_path = os.path.join(dest_dir,
+                                           os.path.basename(manifest_key))
             self.log.debug('Writing manifest to "{0}"'.format(local_file_path))
             manifest_fileobj = open(local_file_path, 'w+')
         else:
