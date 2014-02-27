@@ -116,16 +116,21 @@ def _aggregate_mpconn_items(in_mpconn, result_mpconn, out_mpconn=None,
 def _write_parts(infile, part_prefix, part_size, partinfo_mpconn,
                  part_write_sem=None, debug=False):
     except_fds = [infile, partinfo_mpconn]
-    if part_write_sem is not None:
-        # HACK:  If we don't figure out what file descriptor the semaphore is
-        # using then close_all_fds will end up closing it, breaking everything.
+    if part_write_sem is not None and sys.platform == 'darwin':
+        # When I ran close_all_fds on OS X and excluded only the FDs
+        # listed above, all attempts to use the semaphore resulted in
+        # complaints about bad file descriptors.  The following code
+        # is a horrible hack that I stumbled upon while attempting
+        # to figure out what FD number I needed to avoid closing to
+        # preserve the semaphore.  It is probably incorrect and reliant
+        # on implementation details, so I am happy to take a patch that
+        # manages to deal with this problem in a more reasonable way.
         try:
             except_fds.append(int(part_write_sem._semlock.handle))
         except AttributeError:
             part_write_sem = None
         except ValueError:
             part_write_sem = None
-    #euca2ools.bundle.util.close_all_fds(except_fds=(infile, partinfo_mpconn))
     euca2ools.bundle.util.close_all_fds(except_fds=except_fds)
     for part_no in itertools.count():
         if part_write_sem is not None:
