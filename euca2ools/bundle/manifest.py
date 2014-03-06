@@ -59,7 +59,7 @@ class BundleManifest(object):
 
     @classmethod
     def read_from_file(cls, manifest_filename, privkey_filename=None):
-        with open(manifest_filename) as manifest_file:
+        with open(manifest_filename) as manifest_fileobj:
             return cls.read_from_fileobj(manifest_fileobj, privkey_filename)
 
     @classmethod
