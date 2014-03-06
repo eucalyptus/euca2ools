@@ -166,6 +166,9 @@ class _FileObjectExtent(object):
         else:
             self.__initial_pos = None
 
+    def __len__(self):
+        return self.size
+
     @classmethod
     def from_filename(cls, filename):
         return cls(open(filename), os.path.getsize(filename),

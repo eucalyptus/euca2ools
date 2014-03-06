@@ -89,7 +89,7 @@ class UploadBundle(WalrusRequest, BundleUploadingMixin,
                                 'key': (key_prefix +
                                         os.path.basename(part.filename))}
                                for part in manifest.image_parts),
-                'manifests': ({'filename': manifest_filename,
+                'manifests': ({'filename': self.args['manifest'],
                                'key': manifest_dest},)}
 
     def print_result(self, result):
