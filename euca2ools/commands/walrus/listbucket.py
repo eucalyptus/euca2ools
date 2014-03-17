@@ -37,7 +37,7 @@ class ListBucket(WalrusRequest, TabifyingMixin):
     DESCRIPTION = 'List keys in one or more buckets'
     ARGS = [Arg('paths', metavar='BUCKET[/KEY]', nargs='+', route_to=None),
             Arg('--max-keys-per-request', dest='max-keys', type=int,
-                help=argparse.SUPPRESS)]
+                default=argparse.SUPPRESS, help=argparse.SUPPRESS)]
 
     # noinspection PyExceptionInherit
     def configure(self):
