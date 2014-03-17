@@ -1,4 +1,4 @@
-# Copyright 2013 Eucalyptus Systems, Inc.
+# Copyright 2013-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -26,25 +26,22 @@
 import string
 import urlparse
 
-from euca2ools.commands import Euca2ools
-from euca2ools.exceptions import AWSError
 from requestbuilder import Arg, MutuallyExclusiveArgList
 import requestbuilder.auth
 import requestbuilder.request
 import requestbuilder.service
 
+from euca2ools.commands import Euca2ools
+from euca2ools.exceptions import AWSError
+
 
 class Walrus(requestbuilder.service.BaseService):
     NAME = 's3'
     DESCRIPTION = 'Object storage service'
-    AUTH_CLASS = requestbuilder.auth.S3RestAuth
     REGION_ENVVAR = 'EUCA_REGION'
     URL_ENVVAR = 'S3_URL'
 
     ARGS = [MutuallyExclusiveArgList(
-                Arg('--region', dest='userregion', metavar='USER@REGION',
-                    help='''name of the region and/or user in config files to
-                    use to connect to the service'''),
                 Arg('-U', '--url', metavar='URL',
                     help='storage service endpoint URL'))]
 
@@ -55,6 +52,7 @@ class Walrus(requestbuilder.service.BaseService):
 class WalrusRequest(requestbuilder.request.BaseRequest):
     SUITE = Euca2ools
     SERVICE_CLASS = Walrus
+    AUTH_CLASS = requestbuilder.auth.S3RestAuth
 
     def __init__(self, **kwargs):
         requestbuilder.request.BaseRequest.__init__(self, **kwargs)
@@ -78,6 +76,7 @@ class WalrusRequest(requestbuilder.request.BaseRequest):
                 self.log.debug('redirecting to %s (%i redirects remaining)',
                                new_url, self.redirects_left)
                 self.service.endpoint = new_url
+                # TODO:  change region_name if possible
                 if isinstance(self.body, file):
                     self.log.debug('re-seeking body to beginning of file')
                     # pylint: disable=E1101

@@ -1,4 +1,4 @@
-# Copyright 2013 Eucalyptus Systems, Inc.
+# Copyright 2013-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -31,7 +31,6 @@ import tarfile
 from requestbuilder import Arg
 from requestbuilder.command import BaseCommand
 from requestbuilder.mixins import FileTransferProgressBarMixin
-from requestbuilder.util import set_userregion
 
 from euca2ools.bundle.pipes.core import create_bundle_pipeline
 from euca2ools.bundle.pipes.fittings import (create_bundle_part_deleter,
@@ -57,9 +56,7 @@ class BundleAndUploadImage(WalrusRequest, BundleCreatingMixin,
 
     # noinspection PyExceptionInherit
     def configure(self):
-        BaseCommand.configure(self)
-        set_userregion(self.config, self.args.get('userregion'))
-        set_userregion(self.config, os.getenv('EUCA_REGION'))
+        WalrusRequest.configure(self)
 
         self.configure_bundle_creds()
         self.configure_bundle_properties()

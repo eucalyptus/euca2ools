@@ -36,11 +36,12 @@ import traceback
 from requestbuilder import Arg, MutuallyExclusiveArgList
 from requestbuilder.command import BaseCommand
 from requestbuilder.exceptions import ArgumentError
-from requestbuilder.util import set_userregion
-from requestbuilder.mixins import FileTransferProgressBarMixin
+from requestbuilder.mixins import (FileTransferProgressBarMixin,
+                                   RegionConfigurableMixin)
 
 
-class Unbundle(BaseCommand, FileTransferProgressBarMixin):
+class Unbundle(BaseCommand, FileTransferProgressBarMixin,
+               RegionConfigurableMixin):
     DESCRIPTION = ('Recreate an image from its bundled parts\n\nThe key used '
                    'to unbundle the image must match the certificate that was '
                    'used to bundle it.')
@@ -67,8 +68,7 @@ class Unbundle(BaseCommand, FileTransferProgressBarMixin):
     # noinspection PyExceptionInherit
     def configure(self):
         BaseCommand.configure(self)
-        set_userregion(self.config, self.args.get('userregion'))
-        set_userregion(self.config, os.getenv('EUCA_REGION'))
+        self.update_config_view()
 
         #Get the mandatory private key...
         if not self.args.get('privatekey'):

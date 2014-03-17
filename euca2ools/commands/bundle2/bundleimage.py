@@ -1,4 +1,4 @@
-# Copyright 2013 Eucalyptus Systems, Inc.
+# Copyright 2013-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -28,8 +28,8 @@ import tarfile
 
 from requestbuilder import Arg
 from requestbuilder.command import BaseCommand
-from requestbuilder.mixins import FileTransferProgressBarMixin
-from requestbuilder.util import set_userregion
+from requestbuilder.mixins import (FileTransferProgressBarMixin,
+                                   RegionConfigurableMixin)
 
 import euca2ools.bundle.manifest
 from euca2ools.bundle.pipes.core import (create_bundle_pipeline,
@@ -46,15 +46,12 @@ class BundleImage(BaseCommand, BundleCreatingMixin,
                   FileTransferProgressBarMixin):
     SUITE = Euca2ools
     DESCRIPTION = 'Prepare an image for use in the cloud'
-    ARGS = [Arg('--region', dest='userregion', metavar='USER@REGION',
-                help='''user and/or region to use for obtaining keys and
-                account info''')]
+    REGION_ENVVAR = 'EUCA_REGION'
 
     # noinspection PyExceptionInherit
     def configure(self):
         BaseCommand.configure(self)
-        set_userregion(self.config, self.args.get('userregion'))
-        set_userregion(self.config, os.getenv('EUCA_REGION'))
+        self.update_config_view()
 
         self.configure_bundle_creds()
         self.configure_bundle_properties()

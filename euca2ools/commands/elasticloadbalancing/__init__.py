@@ -1,4 +1,4 @@
-# Copyright 2013 Eucalyptus Systems, Inc.
+# Copyright 2013-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -25,7 +25,7 @@
 
 from euca2ools.commands import Euca2ools
 from euca2ools.exceptions import AWSError
-from requestbuilder import Arg, MutuallyExclusiveArgList
+from requestbuilder import Arg
 import requestbuilder.auth
 import requestbuilder.service
 import requestbuilder.request
@@ -35,16 +35,11 @@ class ELB(requestbuilder.service.BaseService):
     NAME = 'elasticloadbalancing'
     DESCRIPTION = 'Load balancing service'
     API_VERSION = '2012-06-01'
-    AUTH_CLASS = requestbuilder.auth.QuerySigV2Auth
     REGION_ENVVAR = 'EUCA_REGION'
     URL_ENVVAR = 'AWS_ELB_URL'
 
-    ARGS = [MutuallyExclusiveArgList(
-                Arg('--region', dest='userregion', metavar='USER@REGION',
-                    help='''name of the region and/or user in config files to
-                    use to connect to the service'''),
-                Arg('-U', '--url', metavar='URL',
-                    help='load balancing service endpoint URL'))]
+    ARGS = [Arg('-U', '--url', metavar='URL',
+                help='load balancing service endpoint URL')]
 
     def handle_http_error(self, response):
         raise AWSError(response)
@@ -53,6 +48,7 @@ class ELB(requestbuilder.service.BaseService):
 class ELBRequest(requestbuilder.request.AWSQueryRequest):
     SUITE = Euca2ools
     SERVICE_CLASS = ELB
+    AUTH_CLASS = requestbuilder.auth.QuerySigV2Auth
     METHOD = 'POST'
 
     def parse_response(self, response):

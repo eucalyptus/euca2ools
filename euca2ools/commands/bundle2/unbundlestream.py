@@ -32,11 +32,12 @@ from euca2ools.commands import Euca2ools
 from requestbuilder import Arg, MutuallyExclusiveArgList
 from requestbuilder.command import BaseCommand
 from requestbuilder.exceptions import ArgumentError
-from requestbuilder.util import set_userregion
-from requestbuilder.mixins import FileTransferProgressBarMixin
+from requestbuilder.mixins import (FileTransferProgressBarMixin,
+                                   RegionConfigurableMixin)
 
 
-class UnbundleStream(BaseCommand, FileTransferProgressBarMixin):
+class UnbundleStream(BaseCommand, FileTransferProgressBarMixin,
+                     RegionConfigurableMixin):
     DESCRIPTION = ('Recreate an image from a source bundle stream\n\n'
                    'The key used to unbundle the image must match the '
                    'certificate that was used to bundle it.')
@@ -65,9 +66,7 @@ class UnbundleStream(BaseCommand, FileTransferProgressBarMixin):
     # noinspection PyExceptionInherit
     def configure(self):
         BaseCommand.configure(self)
-        #self.configure()
-        set_userregion(self.config, self.args.get('userregion'))
-        set_userregion(self.config, os.getenv('EUCA_REGION'))
+        self.update_config_view()
 
         #Get optional destination directory...
         dest_file = self.args['destination']

@@ -1,4 +1,4 @@
-# Copyright 2009-2013 Eucalyptus Systems, Inc.
+# Copyright 2009-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -28,177 +28,26 @@ from euca2ools.commands import Euca2ools
 from euca2ools.exceptions import AWSError
 from operator import itemgetter
 import os.path
-from requestbuilder import Arg, MutuallyExclusiveArgList, AUTH, SERVICE
+from requestbuilder import Arg
 from requestbuilder.auth import QuerySigV2Auth
 from requestbuilder.exceptions import AuthError
 from requestbuilder.mixins import TabifyingMixin
 from requestbuilder.request import AWSQueryRequest
 from requestbuilder.service import BaseService
-from requestbuilder.util import set_userregion
 import shlex
 from string import Template
 import sys
-
-
-class EC2CompatibleQuerySigV2Auth(QuerySigV2Auth):
-    # -a and -s are deprecated; remove them in 3.2
-    ARGS = [Arg('-a', '--access-key', metavar='KEY_ID',
-                dest='deprecated_key_id', help=argparse.SUPPRESS),
-            Arg('-s', metavar='KEY', dest='deprecated_sec_key',
-                help=argparse.SUPPRESS)]
-
-    def preprocess_arg_objs(self, arg_objs):
-        # If something else defines '-a' or '-s' args, resolve conflicts with
-        # this class's old-style auth args by capitalizing this class's args.
-        #
-        # This behavior is deprecated and will be removed in version 3.2 along
-        # with the -a and -s arguments themselves.
-        a_arg_objs = _find_args_by_parg(arg_objs, '-a')
-        s_arg_objs = _find_args_by_parg(arg_objs, '-s')
-        if len(a_arg_objs) > 1 or len(s_arg_objs) > 1:
-            for arg_obj in a_arg_objs:
-                if arg_obj.kwargs.get('dest') == 'deprecated_key_id':
-                    # Capitalize the "-a"
-                    arg_obj.pargs = tuple('-A' if parg == '-a' else parg
-                                          for parg in arg_obj.pargs)
-            for arg_obj in s_arg_objs:
-                if arg_obj.kwargs.get('dest') == 'deprecated_sec_key':
-                    # Remove it since regular -S already covers this case
-                    arg_objs.remove(arg_obj)
-
-    def configure(self):
-        # Old-style CLI args
-        # Deprecated; should be removed in 3.2
-        if self.args.get('deprecated_key_id'):
-            # Use it and complain
-            self.args['key_id'] = self.args['deprecated_key_id']
-            if _find_args_by_parg(self.ARGS, '-a'):
-                msg = ('argument -a/--access-key is deprecated; use '
-                       '-I/--access-key-id instead')
-            else:
-                msg = ('argument -A/--access-key is deprecated; use '
-                       '-I/--access-key-id instead')
-            self.log.warn(msg)
-            print >> sys.stderr, 'warning:', msg
-        if self.args.get('deprecated_sec_key'):
-            # Use it and complain
-            self.args['secret_key'] = self.args['deprecated_sec_key']
-            msg = 'argument -s is deprecated; use -S/--secret-key instead'
-            self.log.warn(msg)
-            print >> sys.stderr, 'warning:', msg
-        # Shell-style config file given at the CLI
-        # Deprecated; should be removed in 3.2
-        if os.path.isfile(self.args.get('shell_configfile', '')):
-            # We already complained about this in the service
-            config = _parse_shell_configfile(self.args['shell_configfile'])
-            if 'EC2_ACCESS_KEY' in config and not self.args.get('key_id'):
-                self.args['key_id'] = config['EC2_ACCESS_KEY']
-            if 'EC2_SECRET_KEY' in config and not self.args.get('secret_key'):
-                self.args['secret_key'] = config['EC2_SECRET_KEY']
-        # Environment (for compatibility with AWS tools)
-        if 'AWS_ACCESS_KEY' in os.environ and not self.args.get('key_id'):
-            self.args['key_id'] = os.getenv('AWS_ACCESS_KEY')
-        if 'AWS_SECRET_KEY' in os.environ and not self.args.get('secret_key'):
-            self.args['secret_key'] = os.getenv('AWS_SECRET_KEY')
-        if 'EC2_ACCESS_KEY' in os.environ and not self.args.get('key_id'):
-            self.args['key_id'] = os.getenv('EC2_ACCESS_KEY')
-        if 'EC2_SECRET_KEY' in os.environ and not self.args.get('secret_key'):
-            self.args['secret_key'] = os.getenv('EC2_SECRET_KEY')
-        # --region
-        self.configure_from_configfile(only_if_explicit=True)
-        # AWS credential file (location given in the environment)
-        self.configure_from_aws_credential_file()
-        # Regular config file
-        self.configure_from_configfile()
-        # User, systemwide shell-style config files
-        # Deprecated; should be removed in 3.2
-        for configfile_name in ('~/.eucarc', '~/.eucarc/eucarc'):
-            configfile_name = os.path.expandvars(configfile_name)
-            configfile_name = os.path.expanduser(configfile_name)
-            if os.path.isfile(configfile_name):
-                config = _parse_shell_configfile(configfile_name)
-                if 'EC2_ACCESS_KEY' in config and not self.args.get('key_id'):
-                    self.args['key_id'] = config['EC2_ACCESS_KEY']
-                if ('EC2_SECRET_KEY' in config and
-                    not self.args.get('secret_key')):
-                    #
-                    self.args['secret_key'] = config['EC2_SECRET_KEY']
-
-        # That's it; make sure we have everything we need
-        if not self.args.get('key_id'):
-            raise AuthError('missing access key ID; please supply one with -I')
-        if not self.args.get('secret_key'):
-            raise AuthError('missing secret key; please supply one with -S')
 
 
 class Eucalyptus(BaseService):
     NAME = 'ec2'
     DESCRIPTION = 'Eucalyptus compute cloud service'
     API_VERSION = '2013-02-01'
-    AUTH_CLASS = EC2CompatibleQuerySigV2Auth
     REGION_ENVVAR = 'EUCA_REGION'
     URL_ENVVAR = 'EC2_URL'
 
-    ARGS = [Arg('--config', dest='shell_configfile', metavar='CFGFILE',
-                default='', route_to=(SERVICE, AUTH), help=argparse.SUPPRESS),
-            MutuallyExclusiveArgList(
-                Arg('--region', dest='userregion', metavar='USER@REGION',
-                    help='''name of the region and/or user in config files to
-                    use to connect to the service'''),
-                Arg('-U', '--url', metavar='URL',
-                    help='compute service endpoint URL'))]
-
-    def configure(self):
-        # self.args gets highest precedence for self.endpoint and user/region
-        self.process_url(self.args.get('url'))
-        set_userregion(self.config, self.args.get('userregion'))
-        # Shell-style config file given at the CLI
-        # Deprecated; should be removed in 3.2
-        if os.path.isfile(self.args.get('shell_configfile', '')):
-            msg = 'argument --config is deprecated'
-            self.log.warn(msg)
-            print >> sys.stderr, 'warning:', msg
-            config = _parse_shell_configfile(self.args['shell_configfile'])
-            self.process_url(config.get(self.URL_ENVVAR))
-            if self.URL_ENVVAR in config:
-                self.process_url(config[self.URL_ENVVAR])
-        # Environment
-        set_userregion(self.config, os.getenv(self.REGION_ENVVAR))
-        self.process_url(os.getenv(self.URL_ENVVAR))
-        # Regular config file
-        self.process_url(self.config.get_region_option(self.NAME + '-url'))
-        # User, systemwide shell-style config files
-        # Deprecated; should be removed in 3.2
-        for configfile_name in ('~/.eucarc', '~/.eucarc/eucarc'):
-            configfile_name = os.path.expandvars(configfile_name)
-            configfile_name = os.path.expanduser(configfile_name)
-            if os.path.isfile(configfile_name):
-                config = _parse_shell_configfile(configfile_name)
-                if self.URL_ENVVAR in config:
-                    self.process_url(config[self.URL_ENVVAR])
-
-        # Configure request timeouts and retry handlers
-        if self.max_retries is None:
-            config_max_retries = self.config.get_global_option('max-retries')
-            if config_max_retries is not None:
-                self.max_retries = int(config_max_retries)
-            else:
-                self.max_retries = self.MAX_RETRIES
-        if self.timeout is None:
-            config_timeout = self.config.get_global_option('timeout')
-            if config_timeout is not None:
-                self.timeout = float(config_timeout)
-            else:
-                self.timeout = self.TIMEOUT
-
-        # SSL cert verification is opt-in
-        self.session_args['verify'] = self.config.get_region_option_bool(
-            'verify-ssl', default=False)
-
-        # Ensure everything is okay and finish up
-        self.validate_config()
-        if self.auth is not None:
-            self.auth.configure()
+    ARGS = [Arg('-U', '--url', metavar='URL',
+                help='compute service endpoint URL')]
 
     def handle_http_error(self, response):
         raise AWSError(response)
@@ -207,6 +56,7 @@ class Eucalyptus(BaseService):
 class EucalyptusRequest(AWSQueryRequest, TabifyingMixin):
     SUITE = Euca2ools
     SERVICE_CLASS = Eucalyptus
+    AUTH_CLASS = QuerySigV2Auth
     METHOD = 'POST'
 
     def __init__(self, **kwargs):
@@ -395,45 +245,3 @@ class _ResourceTypeMap(object):
         return iter(set(self._prefix_type_map.values()))
 
 RESOURCE_TYPE_MAP = _ResourceTypeMap()
-
-
-def _find_args_by_parg(arglike, parg):
-    if isinstance(arglike, Arg):
-        if parg in arglike.pargs:
-            return [arglike]
-        else:
-            return []
-    elif isinstance(arglike, list):
-        matches = []
-        for arg in arglike:
-            matches.extend(_find_args_by_parg(arg, parg))
-        return matches
-    else:
-        raise TypeError('Unsearchable type ' + arglike.__class__.__name__)
-
-
-def _parse_shell_configfile(configfile_name):
-    # Should be able to drop this in 3.2
-    def sourcehook(filename):
-        filename = filename.strip('"\'')
-        filename = Template(filename).safe_substitute(config)
-        filename = os.path.expandvars(filename)
-        filename = os.path.expanduser(filename)
-        return filename, open(filename)
-
-    config = {}
-    configfile_name = os.path.expandvars(configfile_name)
-    configfile_name = os.path.expanduser(configfile_name)
-    with open(configfile_name) as configfile:
-        ## TODO:  deal with $BASH_SOURCE
-        lexer = shlex.shlex(configfile)
-        lexer.whitespace_split = True
-        lexer.source = 'source'
-        lexer.sourcehook = sourcehook
-        for token in lexer:
-            if '=' in token:
-                (key, val) = token.split('=', 1)
-                val = val.strip('"\'')
-                if not config.get(key):
-                    config[key] = Template(val).safe_substitute(config)
-    return config

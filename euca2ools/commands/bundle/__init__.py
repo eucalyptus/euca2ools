@@ -1,4 +1,4 @@
-# Copyright 2013 Eucalyptus Systems, Inc.
+# Copyright 2013-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -31,12 +31,14 @@ from euca2ools.commands.argtypes import (delimited_list, filesize,
 from requestbuilder import Arg
 from requestbuilder.command import BaseCommand
 from requestbuilder.exceptions import ArgumentError
-from requestbuilder.mixins import FileTransferProgressBarMixin
-from requestbuilder.util import set_userregion
+from requestbuilder.mixins import (FileTransferProgressBarMixin,
+                                   RegionConfigurableMixin)
 
 
-class BundleCreator(BaseCommand, FileTransferProgressBarMixin):
+class BundleCreator(BaseCommand, FileTransferProgressBarMixin,
+                    RegionConfigurableMixin):
     SUITE = Euca2ools
+    REGION_ENVVAR = 'EUCA_REGION'
     ARGS = [Arg('-r', '--arch', choices=('i386', 'x86_64', 'armhf'),
                 required=True,
                 help="the image's processor architecture (required)"),
@@ -47,9 +49,6 @@ class BundleCreator(BaseCommand, FileTransferProgressBarMixin):
                 private key will also be required to unbundle the image in
                 the future.'''),
             Arg('-u', '--user', metavar='ACCOUNT', help='your account ID'),
-            Arg('--region', dest='userregion', metavar='USER@REGION',
-                help='''use encryption keys and the account ID specified for
-                a user and/or region in configuration files'''),
             Arg('--ec2cert', metavar='FILE', help='''file containing the
                 cloud's X.509 certificate'''),
             Arg('--kernel', metavar='IMAGE', help='''ID of the kernel image to
@@ -74,8 +73,8 @@ class BundleCreator(BaseCommand, FileTransferProgressBarMixin):
     # noinspection PyExceptionInherit
     def configure(self):
         BaseCommand.configure(self)
-        set_userregion(self.config, self.args.get('userregion'))
-        set_userregion(self.config, os.getenv('EUCA_REGION'))
+
+        self.update_config_view()
 
         # Get creds
         add_bundle_creds(self.args, self.config)
