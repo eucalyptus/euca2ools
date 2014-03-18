@@ -75,7 +75,7 @@ class PutObject(WalrusRequest, FileTransferProgressBarMixin):
         else:
             if self.args.get('size') is None:
                 raise ArgumentError(
-                    "argument --size is required when uploading stdin")
+                    "argument --size is required when uploading a file object")
             source = _FileObjectExtent(sys.stdin, self.args['size'])
         self.args['source'] = source
         bucket, _, key = self.args['dest'].partition('/')
