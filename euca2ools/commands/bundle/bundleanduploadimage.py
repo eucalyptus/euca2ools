@@ -56,6 +56,8 @@ class BundleAndUploadImage(WalrusRequest, BundleCreatingMixin,
 
     # noinspection PyExceptionInherit
     def configure(self):
+        self.configure_bundle_upload_auth()
+
         WalrusRequest.configure(self)
 
         self.configure_bundle_creds()
@@ -162,8 +164,6 @@ class BundleAndUploadImage(WalrusRequest, BundleCreatingMixin,
         deleted_partinfo_mpconn_r.close()
 
         # Now drive the pipeline by uploading parts.
-        if self.args.get('show_progress', False):
-            print 'Bundling first image part...'
         self.upload_bundle_parts(
             bundle_partinfo_mpconn, key_prefix,
             partinfo_out_mpconn=uploaded_partinfo_mpconn_w,

@@ -49,6 +49,10 @@ class UploadBundle(WalrusRequest, BundleUploadingMixin,
             Arg('--skipmanifest', action='store_true',
                 help='do not upload the manifest')]
 
+    def configure(self):
+        self.configure_bundle_upload_auth()
+        WalrusRequest.configure(self)
+
     def main(self):
         key_prefix = self.get_bundle_key_prefix()
         self.ensure_dest_bucket_exists()

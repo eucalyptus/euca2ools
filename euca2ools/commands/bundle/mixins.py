@@ -24,19 +24,22 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import argparse
+import base64
 import os.path
 import random
 import sys
 
-from requestbuilder import Arg
+from requestbuilder import Arg, MutuallyExclusiveArgList
 from requestbuilder.exceptions import ArgumentError
 
 import euca2ools.bundle.manifest
 import euca2ools.bundle.util
-from euca2ools.commands.argtypes import (delimited_list, filesize,
+from euca2ools.commands.argtypes import (b64encoded_file_contents,
+                                         delimited_list, filesize,
                                          manifest_block_device_mappings)
 from euca2ools.commands.walrus.checkbucket import CheckBucket
 from euca2ools.commands.walrus.createbucket import CreateBucket
+from euca2ools.commands.walrus.postobject import PostObject
 from euca2ools.commands.walrus.putobject import PutObject
 from euca2ools.exceptions import AWSError
 
@@ -286,11 +289,32 @@ class BundleUploadingMixin(object):
                 choices=('public-read', 'aws-exec-read', 'ec2-bundle-read'),
                 help='''canned ACL policy to apply to the bundle (default:
                 aws-exec-read)'''),
+            MutuallyExclusiveArgList(
+                Arg('--upload-policy', dest='upload_policy', metavar='POLICY',
+                    type=base64.b64encode,
+                    help='upload policy to use for authorization'),
+                Arg('--upload-policy-file', dest='upload_policy',
+                    metavar='FILE', type=b64encoded_file_contents,
+                    help=('file containing an upload policy to use for '
+                    'authorization'))),
+            Arg('--upload-policy-signature', metavar='SIGNATURE',
+                help=('signature for the upload policy (required when an '
+                'upload policy is used)')),
             Arg('--location', help='''location constraint of the destination
                 bucket (default: inferred from s3-location-constraint in
                 configuration, or otherwise none)'''),
             Arg('--retry', dest='retries', action='store_const', const=5,
                 default=0, help='retry failed uploads up to 5 times')]
+
+    def configure_bundle_upload_auth(self):
+        if self.args.get('upload_policy'):
+            if not self.args.get('key_id'):
+                raise ArgumentError('-I/--access-key-id is required when '
+                                    'using an upload policy')
+            if not self.args.get('upload_policy_signature'):
+                raise ArgumentError('--upload-policy-signature is required '
+                                    'when using an upload policy')
+            self.auth = None
 
     def get_bundle_key_prefix(self):
         (bucket, _, prefix) = self.args['bucket'].partition('/')
@@ -319,12 +343,26 @@ class BundleUploadingMixin(object):
         # many policies are in play here that it isn't worth trying to be
         # proactive about it.
 
-    def upload_bundle_file(self, source, dest, **putobj_kwargs):
-        req = PutObject(source=source, dest=dest,
-                        acl=self.args.get('acl') or 'aws-exec-read',
-                        retries=self.args.get('retries') or 0,
-                        service=self.service, config=self.config,
-                        **putobj_kwargs)
+    def upload_bundle_file(self, source, dest, show_progress=False,
+                           **putobj_kwargs):
+        if self.args.get('upload_policy'):
+            if show_progress:
+                # PostObject does not yet support show_progress
+                print source, 'uploading...'
+            req = PostObject(source=source, dest=dest,
+                             acl=self.args.get('acl') or 'aws-exec-read',
+                             Policy=self.args['upload_policy'],
+                             Signature=self.args['upload_policy_signature'],
+                             AWSAccessKeyId=self.args['key_id'],
+                             service=self.service, config=self.config,
+                             **putobj_kwargs)
+        else:
+            req = PutObject(source=source, dest=dest,
+                            acl=self.args.get('acl') or 'aws-exec-read',
+                            retries=self.args.get('retries') or 0,
+                            show_progress=show_progress,
+                            service=self.service, config=self.config,
+                            **putobj_kwargs)
         req.main()
 
     def upload_bundle_parts(self, partinfo_in_mpconn, key_prefix,
