@@ -1,4 +1,4 @@
-# Copyright 2009-2013 Eucalyptus Systems, Inc.
+# Copyright 2009-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -24,15 +24,17 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import os
+
 from requestbuilder import Arg, MutuallyExclusiveArgList
 from requestbuilder.exceptions import ArgumentError
 from requestbuilder.mixins import FileTransferProgressBarMixin
+
 from euca2ools.bundle.manifest import BundleManifest
 from euca2ools.bundle.util import open_pipe_fileobjs, spawn_process
 from euca2ools.bundle.util import waitpid_in_thread
 from euca2ools.commands.walrus import WalrusRequest
 from euca2ools.commands.bundle.downloadbundle import DownloadBundle
-from euca2ools.commands.bundle2.unbundlestream import UnbundleStream
+from euca2ools.commands.bundle.unbundlestream import UnbundleStream
 
 
 class DownloadAndUnbundle(WalrusRequest, FileTransferProgressBarMixin):

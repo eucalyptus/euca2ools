@@ -1,4 +1,4 @@
-# Copyright 2009-2013 Eucalyptus Systems, Inc.
+# Copyright 2009-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -24,16 +24,18 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-import os
 from io import BytesIO
+import os
+
 from requestbuilder import Arg, MutuallyExclusiveArgList
 from requestbuilder.exceptions import ArgumentError
 from requestbuilder.mixins import FileTransferProgressBarMixin
+
 from euca2ools.bundle.manifest import BundleManifest
 from euca2ools.commands.bundle.helpers import get_manifest_keys
 from euca2ools.commands.walrus import WalrusRequest
-from euca2ools.commands.walrus.getobject import GetObject
 from euca2ools.commands.walrus.checkbucket import CheckBucket
+from euca2ools.commands.walrus.getobject import GetObject
 from euca2ools.exceptions import AWSError
 
 

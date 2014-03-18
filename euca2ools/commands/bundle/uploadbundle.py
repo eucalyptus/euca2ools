@@ -1,4 +1,4 @@
-# Copyright 2009-2013 Eucalyptus Systems, Inc.
+# Copyright 2009-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -23,98 +23,87 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.walrus import WalrusRequest
-from euca2ools.commands.walrus.checkbucket import CheckBucket
-from euca2ools.commands.walrus.createbucket import CreateBucket
-from euca2ools.commands.walrus.putobject import PutObject
-from euca2ools.exceptions import AWSError
-import lxml.etree
-import lxml.objectify
+import multiprocessing
 import os.path
+
 from requestbuilder import Arg
 from requestbuilder.mixins import FileTransferProgressBarMixin
 
+from euca2ools.bundle.manifest import BundleManifest
+from euca2ools.commands.bundle.mixins import BundleUploadingMixin
+from euca2ools.commands.walrus import WalrusRequest
+from euca2ools.commands.walrus.putobject import PutObject
 
-class UploadBundle(WalrusRequest, FileTransferProgressBarMixin):
+
+class UploadBundle(WalrusRequest, BundleUploadingMixin,
+                   FileTransferProgressBarMixin):
     DESCRIPTION = 'Upload a bundle prepared by euca-bundle-image to the cloud'
-    ARGS = [Arg('-b', '--bucket', metavar='BUCKET[/PREFIX]', required=True,
-                help='bucket to upload the bundle to (required)'),
-            Arg('-m', '--manifest', metavar='FILE', required=True,
+    ARGS = [Arg('-m', '--manifest', metavar='FILE', required=True,
                 help='manifest for the bundle to upload (required)'),
-            Arg('--acl', default='aws-exec-read',
-                choices=('public-read', 'aws-exec-read', 'ec2-bundle-read'),
-                help='''canned ACL policy to apply to the bundle (default:
-                aws-exec-read)'''),
             Arg('-d', '--directory', metavar='DIR',
                 help='''directory that contains the bundle parts (default:
                 directory that contains the manifest)'''),
+            ## TODO:  make this work
             Arg('--part', metavar='INT', type=int, default=0, help='''begin
                 uploading with a specific part number (default: 0)'''),
-            Arg('--location', help='''location constraint of the destination
-                bucket (default: inferred from s3-location-constraint in
-                configuration, or otherwise none)'''),
-            Arg('--retry', dest='retries', action='store_const', const=5,
-                default=1, help='retry failed uploads up to 5 times'),
             Arg('--skipmanifest', action='store_true',
                 help='do not upload the manifest')]
 
     def main(self):
-        (bucket, __, prefix) = self.args['bucket'].partition('/')
-        if prefix and not prefix.endswith('/'):
-            prefix += '/'
-        full_prefix = bucket + '/' + prefix
+        key_prefix = self.get_bundle_key_prefix()
+        self.ensure_dest_bucket_exists()
 
-        # First make sure the bucket exists
-        try:
-            req = CheckBucket(bucket=bucket, service=self.service,
-                              config=self.config)
-            req.main()
-        except AWSError as err:
-            if err.status_code == 404:
-                # No such bucket
-                self.log.info("creating bucket '%s'", bucket)
-                req = CreateBucket(bucket=bucket,
-                                   location=self.args.get('location'),
-                                   config=self.config, service=self.service)
-                req.main()
-            else:
-                raise
-        # At this point we know we can at least see the bucket, but it's still
-        # possible that we can't write to it with the desired key names.  So
-        # many policies are in play here that it isn't worth trying to be
-        # proactive about it.
-
-        with open(self.args['manifest']) as manifest_file:
-            # noinspection PyUnresolvedReferences
-            manifest = lxml.objectify.parse(manifest_file).getroot()
-
-        # Now we actually upload stuff
+        manifest = BundleManifest.read_from_file(self.args['manifest'])
         part_dir = (self.args.get('directory') or
                     os.path.dirname(self.args['manifest']))
-        parts = {}
-        for part in manifest.image.parts.part:
-            parts[int(part.get('index'))] = part.filename.text
-        part_paths = [os.path.join(part_dir, path) for (index, path) in
-                      sorted(parts.items())
-                      if index >= self.args.get('part', 0)]
-        req = PutObject(sources=part_paths, dest=full_prefix,
-                        acl=self.args['acl'],
-                        retries=self.args.get('retries', 1),
-                        show_progress=self.args.get('show_progress', False),
-                        config=self.config, service=self.service)
+        for part in manifest.image_parts:
+            part.filename = os.path.join(part_dir, part.filename)
+            if not os.path.isfile(part.filename):
+                raise ValueError("no such part: '{0}'".format(part.filename))
 
-        req.main()
-        if not self.args.get('skipmanifest', False):
-            req = PutObject(sources=[self.args['manifest']],
-                            dest=full_prefix,
-                            acl=self.args['acl'],
-                            retries=self.args.get('retries', 1),
-                            show_progress=self.args.get('show_progress',
-                                                        False),
-                            config=self.config, service=self.service)
+        # manifest -> upload
+        part_out_r, part_out_w = multiprocessing.Pipe(duplex=False)
+        part_gen = multiprocessing.Process(target=_generate_bundle_parts,
+                                           args=(manifest, part_out_w))
+        part_gen.start()
+        part_out_w.close()
+
+        # Drive the upload process by feeding in part info
+        self.upload_bundle_parts(part_out_r, key_prefix,
+                                 show_progress=self.args.get('show_progress'))
+        part_gen.join()
+
+        # (conditionally) upload the manifest
+        if not self.args.get('skip_manifest'):
+            manifest_dest = (key_prefix +
+                             os.path.basename(self.args['manifest']))
+            req = PutObject(source=self.args['manifest'], dest=manifest_dest,
+                            acl=self.args.get('acl') or 'aws-exec-read',
+                            retries=self.args.get('retries') or 0,
+                            service=self.service, config=self.config)
             req.main()
-        manifest_loc = full_prefix + os.path.basename(self.args['manifest'])
-        return manifest_loc
+        else:
+            manifest_dest = None
 
-    def print_result(self, manifest_loc):
-        print 'Uploaded', manifest_loc
+        return {'parts': tuple({'filename': part.filename,
+                                'key': (key_prefix +
+                                        os.path.basename(part.filename))}
+                               for part in manifest.image_parts),
+                'manifests': ({'filename': self.args['manifest'],
+                               'key': manifest_dest},)}
+
+    def print_result(self, result):
+        if self.debug:
+            for part in result['parts']:
+                print 'Uploaded', part['key']
+        if result['manifests'][0]['key'] is not None:
+            print 'Uploaded', result['manifests'][0]['key']
+
+
+def _generate_bundle_parts(manifest, out_mpconn):
+    try:
+        for part in manifest.image_parts:
+            assert os.path.isfile(part.filename)
+            out_mpconn.send(part)
+    finally:
+        out_mpconn.close()

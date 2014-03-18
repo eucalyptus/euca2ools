@@ -1,6 +1,6 @@
 #!/usr/bin/python -tt
 
-import euca2ools.commands.bundle2.unbundlestream
+import euca2ools.commands.bundle.unbundlestream
 
 if __name__ == '__main__':
-    euca2ools.commands.bundle2.unbundlestream.UnbundleStream.run()
+    euca2ools.commands.bundle.unbundlestream.UnbundleStream.run()
