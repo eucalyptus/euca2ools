@@ -43,7 +43,8 @@ from euca2ools.util import mkdtemp_for_large_files
 
 
 class BundleImage(BaseCommand, BundleCreatingMixin,
-                  FileTransferProgressBarMixin):
+                  FileTransferProgressBarMixin,
+                  RegionConfigurableMixin):
     SUITE = Euca2ools
     DESCRIPTION = 'Prepare an image for use in the cloud'
     REGION_ENVVAR = 'EUCA_REGION'
