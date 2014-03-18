@@ -1,6 +1,0 @@
-#!/usr/bin/python -tt
-
-import euca2ools.nc.commands.bundleandupload
-
-if __name__ == '__main__':
-    euca2ools.nc.commands.bundleandupload.BundleAndUpload.run()
