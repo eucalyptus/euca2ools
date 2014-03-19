@@ -51,15 +51,12 @@ class BundleImage(BaseCommand, BundleCreatingMixin,
 
     # noinspection PyExceptionInherit
     def configure(self):
-        BaseCommand.configure(self)
         self.update_config_view()
+
+        BaseCommand.configure(self)
 
         self.configure_bundle_creds()
         self.configure_bundle_properties()
-        self.log.debug('certificate: %s', self.args['cert'])
-        self.log.debug('private key: %s', self.args['privatekey'])
-        self.log.debug('cloud certificate: %s', self.args['ec2cert'])
-        self.log.debug('account ID: %s', self.args['user'])
         self.configure_bundle_output()
         self.generate_encryption_keys()
 
