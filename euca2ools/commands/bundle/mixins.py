@@ -323,6 +323,12 @@ class BundleUploadingMixin(object):
         return bucket + '/' + prefix
 
     def ensure_dest_bucket_exists(self):
+        if self.args.get('upload_policy'):
+            # We won't have creds to sign our own requests
+            self.log.info('using an upload policy; not verifying bucket '
+                          'existence')
+            return
+
         bucket = self.args['bucket'].split('/', 1)[0]
         try:
             req = CheckBucket(bucket=bucket, service=self.service,
