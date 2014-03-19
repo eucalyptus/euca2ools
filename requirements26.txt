@@ -1,0 +1,5 @@
+argparse
+lxml
+requestbuilder>=0.2.0-pre1
+requests
+six

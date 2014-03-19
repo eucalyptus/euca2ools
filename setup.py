@@ -30,9 +30,19 @@ from distutils.command.sdist import sdist
 import glob
 import os.path
 import re
+import sys
+
 from setuptools import find_packages, setup
 
 from euca2ools import __version__
+
+
+requirements = ['lxml',
+                'requestbuilder>=0.2.0-pre1',
+                'requests',
+                'six']
+if sys.version_info < (2, 7):
+    requirements.append('argparse')
 
 
 # Cheap hack:  install symlinks separately from regular files.
@@ -117,15 +127,11 @@ setup(name="euca2ools",
                    glob.glob('bin/euca-*'),
                    glob.glob('bin/eulb-*'),
                    glob.glob('bin/euscale-*'),
-                   glob.glob('bin/eustore-*'),
                    glob.glob('bin/euwatch-*')),
                   []),
       data_files=[('share/man/man1', glob.glob('man/*.1'))],
       packages=find_packages(),
-      install_requires=['lxml',
-                        'requestbuilder',
-                        'requests',
-                        'six'],
+      install_requires=requirements,
       license='BSD (Simplified)',
       platforms='Posix; MacOS X',
       classifiers=['Development Status :: 4 - Beta',

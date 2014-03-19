@@ -25,5 +25,8 @@ the source code.
 Euca2ools are distributed under a 2-clause BSD license, a copy of which
 is included in the file called COPYING.
 
-To obtain the latest source code for euca2ools, visit the project's
-GitHub page:  https://github.com/eucalyptus/euca2ools
+For a copy of the latest version of euca2ools, visit
+http://downloads.eucalyptus.com/software/euca2ools/.
+
+For a copy of the project's git repository, visit its GitHub page at
+http://github.com/eucalyptus/euca2ools/.
