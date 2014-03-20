@@ -24,9 +24,9 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import os.path
+import sys
 import tarfile
 
-from requestbuilder import Arg
 from requestbuilder.command import BaseCommand
 from requestbuilder.mixins import (FileTransferProgressBarMixin,
                                    RegionConfigurableMixin)
@@ -47,10 +47,16 @@ class BundleImage(BaseCommand, BundleCreatingMixin,
                   RegionConfigurableMixin):
     SUITE = Euca2ools
     DESCRIPTION = 'Prepare an image for use in the cloud'
-    REGION_ENVVAR = 'EUCA_REGION'
+    REGION_ENVVAR = 'AWS_DEFAULT_REGION'
 
     # noinspection PyExceptionInherit
     def configure(self):
+        if os.getenv('EUCA_REGION') and not os.getenv(self.REGION_ENVVAR):
+            msg = ('EUCA_REGION environment variable is deprecated; use {0} '
+                   'instead').format(self.REGION_ENVVAR)
+            self.log.warn(msg)
+            print >> sys.stderr, msg
+            os.environ[self.REGION_ENVVAR] = os.getenv('EUCA_REGION')
         self.update_config_view()
 
         BaseCommand.configure(self)

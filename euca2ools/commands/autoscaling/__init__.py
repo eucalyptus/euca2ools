@@ -23,23 +23,36 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands import Euca2ools
-from euca2ools.exceptions import AWSError
+import os
+import sys
+
 from requestbuilder import Arg
 import requestbuilder.auth
 import requestbuilder.service
 import requestbuilder.request
+
+from euca2ools.commands import Euca2ools
+from euca2ools.exceptions import AWSError
 
 
 class AutoScaling(requestbuilder.service.BaseService):
     NAME = 'autoscaling'
     DESCRIPTION = 'Auto-scaling service'
     API_VERSION = '2011-01-01'
-    REGION_ENVVAR = 'EUCA_REGION'
+    REGION_ENVVAR = 'AWS_DEFAULT_REGION'
     URL_ENVVAR = 'AWS_AUTO_SCALING_URL'
 
     ARGS = [Arg('-U', '--url', metavar='URL',
                 help='auto-scaling service endpoint URL')]
+
+    def configure(self):
+        if os.getenv('EUCA_REGION') and not os.getenv(self.REGION_ENVVAR):
+            msg = ('EUCA_REGION environment variable is deprecated; use {0} '
+                   'instead').format(self.REGION_ENVVAR)
+            self.log.warn(msg)
+            print >> sys.stderr, msg
+            os.environ[self.REGION_ENVVAR] = os.getenv('EUCA_REGION')
+        requestbuilder.service.BaseService.configure(self)
 
     def handle_http_error(self, response):
         raise AWSError(response)

@@ -24,30 +24,41 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import argparse
-from euca2ools.commands import Euca2ools
-from euca2ools.exceptions import AWSError
 from operator import itemgetter
 import os.path
+import shlex
+from string import Template
+import sys
+
 from requestbuilder import Arg
 from requestbuilder.auth import QuerySigV2Auth
 from requestbuilder.exceptions import AuthError
 from requestbuilder.mixins import TabifyingMixin
 from requestbuilder.request import AWSQueryRequest
 from requestbuilder.service import BaseService
-import shlex
-from string import Template
-import sys
+
+from euca2ools.commands import Euca2ools
+from euca2ools.exceptions import AWSError
 
 
 class Eucalyptus(BaseService):
     NAME = 'ec2'
     DESCRIPTION = 'Eucalyptus compute cloud service'
     API_VERSION = '2013-02-01'
-    REGION_ENVVAR = 'EUCA_REGION'
+    REGION_ENVVAR = 'AWS_DEFAULT_REGION'
     URL_ENVVAR = 'EC2_URL'
 
     ARGS = [Arg('-U', '--url', metavar='URL',
                 help='compute service endpoint URL')]
+
+    def configure(self):
+        if os.getenv('EUCA_REGION') and not os.getenv(self.REGION_ENVVAR):
+            msg = ('EUCA_REGION environment variable is deprecated; use {0} '
+                   'instead').format(self.REGION_ENVVAR)
+            self.log.warn(msg)
+            print >> sys.stderr, msg
+            os.environ[self.REGION_ENVVAR] = os.getenv('EUCA_REGION')
+        BaseService.configure(self)
 
     def handle_http_error(self, response):
         raise AWSError(response)

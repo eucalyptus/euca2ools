@@ -23,10 +23,12 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import os
 import string
+import sys
 import urlparse
 
-from requestbuilder import Arg, MutuallyExclusiveArgList
+from requestbuilder import Arg
 import requestbuilder.auth
 import requestbuilder.request
 import requestbuilder.service
@@ -38,12 +40,20 @@ from euca2ools.exceptions import AWSError
 class Walrus(requestbuilder.service.BaseService):
     NAME = 's3'
     DESCRIPTION = 'Object storage service'
-    REGION_ENVVAR = 'EUCA_REGION'
+    REGION_ENVVAR = 'AWS_DEFAULT_REGION'
     URL_ENVVAR = 'S3_URL'
 
-    ARGS = [MutuallyExclusiveArgList(
-                Arg('-U', '--url', metavar='URL',
-                    help='storage service endpoint URL'))]
+    ARGS = Arg('-U', '--url', metavar='URL',
+               help='storage service endpoint URL')
+
+    def configure(self):
+        if os.getenv('EUCA_REGION') and not os.getenv(self.REGION_ENVVAR):
+            msg = ('EUCA_REGION environment variable is deprecated; use {0} '
+                   'instead').format(self.REGION_ENVVAR)
+            self.log.warn(msg)
+            print >> sys.stderr, msg
+            os.environ[self.REGION_ENVVAR] = os.getenv('EUCA_REGION')
+        requestbuilder.service.BaseService.configure(self)
 
     def handle_http_error(self, response):
         raise AWSError(response)
