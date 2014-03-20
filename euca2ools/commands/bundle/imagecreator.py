@@ -25,7 +25,6 @@
 
 from euca2ools.util import sanitize_path
 from euca2ools.util import mkdtemp_for_large_files as mkdtemp
-import glob
 import os
 import sys
 import platform
@@ -255,7 +254,8 @@ class VolumeSync(object):
             cmd.extend(['--exclude', exclude])
         for include in self.includes:
             cmd.extend(['--include', include])
-        cmd.extend(glob.glob(os.path.join(self.volume, '*')))
+        cmd.extend([os.path.join(self.volume, path)
+                    for path in os.listdir(self.volume)])
         cmd.append(self.mpoint + os.path.sep)
 
         try:

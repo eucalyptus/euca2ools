@@ -25,12 +25,15 @@
 
 import base64
 from datetime import datetime, timedelta
-from euca2ools.commands.euca import EucalyptusRequest
 import hashlib
 import hmac
 import json
+import time
+
 from requestbuilder import Arg
 from requestbuilder.exceptions import ArgumentError
+
+from euca2ools.commands.euca import EucalyptusRequest
 
 
 class BundleInstance(EucalyptusRequest):
@@ -72,7 +75,8 @@ class BundleInstance(EucalyptusRequest):
                                  {'bucket': self.args.get('Storage.S3.Bucket')},
                                  ['starts-with', '$key',
                                   self.args.get('Storage.S3.Prefix')]],
-                  'expiration': expire_time.isoformat()}
+                  'expiration': time.strftime('%Y-%m-%dT%H:%M:%SZ',
+                                              expire_time.timetuple())}
         policy_json = json.dumps(policy)
         self.log.info('generated default policy: %s', policy_json)
         self.params['Storage.S3.UploadPolicy'] = base64.b64encode(policy_json)
