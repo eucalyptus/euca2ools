@@ -54,15 +54,6 @@ class EuareRequest(requestbuilder.request.AWSQueryRequest):
     AUTH_CLASS = requestbuilder.auth.QuerySigV2Auth
     METHOD = 'POST'
 
-    def configure(self):
-        requestbuilder.request.AWSQueryRequest.configure(self)
-        if self.args.get('deprecated_delegate'):
-            # Use it and complain
-            self.params['DelegateAccount'] = self.args['deprecated_delegate']
-            msg = 'argument --delegate is deprecated; use --as-account instead'
-            self.log.warn(msg)
-            print >> sys.stderr, 'warning:', msg
-
     def parse_response(self, response):
         response_dict = requestbuilder.request.AWSQueryRequest.parse_response(
             self, response)
@@ -76,8 +67,6 @@ class EuareRequest(requestbuilder.request.AWSQueryRequest):
         else:
             return response_dict
 
-AS_ACCOUNT = [Arg('--as-account', dest='DelegateAccount', metavar='ACCOUNT',
-                  help='''[Eucalyptus cloud admin only] run this command as
-                  the administrator of another account'''),
-              Arg('--delegate', dest='deprecated_delegate', route_to=None,
-                  help=argparse.SUPPRESS)]
+AS_ACCOUNT = Arg('--as-account', dest='DelegateAccount', metavar='ACCOUNT',
+                 help='''[Eucalyptus cloud admin only] run this command as
+                 the administrator of another account''')
