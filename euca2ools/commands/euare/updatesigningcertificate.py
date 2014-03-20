@@ -1,4 +1,4 @@
-# Copyright 2009-2013 Eucalyptus Systems, Inc.
+# Copyright 2009-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -35,6 +35,7 @@ class UpdateSigningCertificate(EuareRequest):
                         current user)'''),
             Arg('-c', '--certificate-id', dest='CertificateId', metavar='CERT',
                 required=True, help='ID of the signing certificate to update'),
-            Arg('-s', '--status', dest='Status', choices=('Active', 'Inactive'),
-                required=True, help='status to assign to the certificate'),
+            Arg('-s', '--status', dest='Status', required=True,
+                choices=('Active', 'Inactive'),
+                help='status to assign to the certificate'),
             AS_ACCOUNT]

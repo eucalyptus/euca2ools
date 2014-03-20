@@ -113,21 +113,24 @@ class RunInstances(EucalyptusRequest):
                     IP addresses to an instance's network interface''')),
             Arg('-a', '--network-interface', dest='NetworkInterface',
                 metavar='INTERFACE', action='append', type=vpc_interface,
-                help='''[VPC only] add a network interface to the new
-                instance.  If the interface already exists, supply its ID and
-                a numeric index for it, separated by ":", in the form
-                "eni-NNNNNNNN:INDEX".  To create a new interface, supply a
-                numeric index and subnet ID for it, along with (in order) an
-                optional description, a primary private IP address, a list of
-                security group IDs to associate with the interface, whether to
-                delete the interface upon instance termination ("true" or
-                "false"), a number of secondary private IP addresses to create
-                automatically, and a list of secondary private IP addresses to
-                assign to the interface, separated by ":", in the form
-                ":INDEX:SUBNET:[DESCRIPTION]:[PRIV_IP]:[GROUP1,GROUP2,...]:[true
-                |false]:[SEC_IP_COUNT|:SEC_IP1,SEC_IP2,...]".  You cannot
-                specify both of the latter two.  This option may be used
-                multiple times.  Each adds another network interface.'''),
+                help=('[VPC only] add a network interface to the new '
+                      'instance.  If the interface already exists, supply its '
+                      'ID and a numeric index for it, separated by ":", in '
+                      'the form "eni-NNNNNNNN:INDEX".  To create a new '
+                      'interface, supply a numeric index and subnet ID for '
+                      'it, along with (in order) an optional description, a '
+                      'primary private IP address, a list of security group '
+                      'IDs to associate with the interface, whether to delete '
+                      'the interface upon instance termination ("true" or '
+                      '"false"), a number of secondary private IP addresses '
+                      'to create automatically, and a list of secondary '
+                      'private IP addresses to assign to the interface, '
+                      'separated by ":", in the form ":INDEX:SUBNET:'
+                      '[DESCRIPTION]:[PRIV_IP]:[GROUP1,GROUP2,...]:[true|'
+                      'false]:[SEC_IP_COUNT|:SEC_IP1,SEC_IP2,...]".  You '
+                      'cannot specify both of the latter two.  This option '
+                      'may be used multiple times.  Each adds another network '
+                      'interface.')),
             Arg('-p', '--iam-profile', metavar='IPROFILE', route_to=None,
                 help='''name or ARN of the IAM instance profile to associate
                 with the new instance(s)'''),

@@ -1,4 +1,4 @@
-# Copyright 2009-2013 Eucalyptus Systems, Inc.
+# Copyright 2009-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -79,7 +79,8 @@ class DescribeInstances(EucalyptusRequest):
                Filter('kernel-id', help='kernel image ID'),
                Filter('key-name',
                       help='key pair name provided at instance launch time'),
-               Filter('launch-index', help='launch index within a reservation'),
+               Filter('launch-index',
+                      help='launch index within a reservation'),
                Filter('launch-time', help='instance launch time'),
                Filter('monitoring-state', choices=('enabled', 'disabled'),
                       help='monitoring state ("enabled" or "disabled")'),

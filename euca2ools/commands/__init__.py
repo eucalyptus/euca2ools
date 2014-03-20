@@ -1,4 +1,4 @@
-# Copyright 2009-2012 Eucalyptus Systems, Inc.
+# Copyright 2009-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -76,12 +76,14 @@ class Euca2ools(object):
             tokens = []
             impl = platform.python_implementation()
             if impl == 'PyPy':
+                # pylint: disable=E1101
                 impl_version = '{0}.{1}.{2}'.format(
                     sys.pypy_version_info.major,
                     sys.pypy_version_info.minor,
                     sys.pypy_version_info.micro)
                 if sys.pypy_version_info.releaselevel != 'final':
                     impl_version += sys.pypy_version_info.releaselevel
+                # pylint: enable=E1101
             else:
                 # I'm guessing for non-CPython implementations; feel free to
                 # submit patches or the needed implementation-specific API

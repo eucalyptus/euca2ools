@@ -46,7 +46,8 @@ class DeleteUser(EuareRequest):
     ARGS = [Arg('-u', '--user-name', dest='UserName', metavar='USER',
                 required=True, help='name of the user to delete (required)'),
             Arg('-r', '--recursive', action='store_true', route_to=None,
-                help='remove all IAM resources associated with the user first'),
+                help='''remove all IAM resources associated with the user
+                        first'''),
             Arg('-R', '--recursive-euca', dest='IsRecursive',
                 action='store_const', const='true', help=argparse.SUPPRESS),
             Arg('-p', '--pretend', action='store_true', route_to=None,
@@ -100,7 +101,7 @@ class DeleteUser(EuareRequest):
             groups = []
             has_login_profile = False
         if self.args['pretend']:
-            return {'keys': keys,          'policies': policies,
+            return {'keys': keys, 'policies': policies,
                     'certificates': certs, 'groups': groups,
                     'has_login_profile': has_login_profile}
         else:

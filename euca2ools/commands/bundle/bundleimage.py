@@ -24,7 +24,6 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import os.path
-import sys
 import tarfile
 
 from requestbuilder.command import BaseCommand
@@ -39,7 +38,7 @@ from euca2ools.bundle.pipes.fittings import (create_bundle_part_writer,
 import euca2ools.bundle.util
 from euca2ools.commands import Euca2ools
 from euca2ools.commands.bundle.mixins import BundleCreatingMixin
-from euca2ools.util import mkdtemp_for_large_files
+from euca2ools.util import mkdtemp_for_large_files, substitute_euca_region
 
 
 class BundleImage(BaseCommand, BundleCreatingMixin,
@@ -51,12 +50,7 @@ class BundleImage(BaseCommand, BundleCreatingMixin,
 
     # noinspection PyExceptionInherit
     def configure(self):
-        if os.getenv('EUCA_REGION') and not os.getenv(self.REGION_ENVVAR):
-            msg = ('EUCA_REGION environment variable is deprecated; use {0} '
-                   'instead').format(self.REGION_ENVVAR)
-            self.log.warn(msg)
-            print >> sys.stderr, msg
-            os.environ[self.REGION_ENVVAR] = os.getenv('EUCA_REGION')
+        substitute_euca_region(self)
         self.update_config_view()
 
         BaseCommand.configure(self)
@@ -123,14 +117,15 @@ class BundleImage(BaseCommand, BundleCreatingMixin,
 
         # part writer --(part info)-> part info aggregator
         # (needed for building the manifest)
-        bundle_partinfo_aggregate_mpconn = create_mpconn_aggregator(
+        bundle_partinfo_aggr_mpconn = create_mpconn_aggregator(
             bundle_partinfo_mpconn, debug=self.debug)
         bundle_partinfo_mpconn.close()
 
         # disk --(bytes)-> bundler
         # (synchronous)
         label = self.args.get('progressbar_label') or 'Bundling image'
-        pbar = self.get_progressbar(label=label, maxval=self.args['image_size'])
+        pbar = self.get_progressbar(label=label,
+                                    maxval=self.args['image_size'])
         with self.args['image'] as image:
             try:
                 read_size = copy_with_progressbar(image, bundle_in_w,
@@ -151,14 +146,14 @@ class BundleImage(BaseCommand, BundleCreatingMixin,
         # All done; now grab info about the bundle we just created
         try:
             digest = digest_result_mpconn.recv()
-            partinfo = bundle_partinfo_aggregate_mpconn.recv()
+            partinfo = bundle_partinfo_aggr_mpconn.recv()
         except EOFError:
             self.log.debug('EOFError from reading bundle info', exc_info=True)
             raise RuntimeError(
                 'corrupt bundle: bundle process was interrupted')
         finally:
             digest_result_mpconn.close()
-            bundle_partinfo_aggregate_mpconn.close()
+            bundle_partinfo_aggr_mpconn.close()
         self.log.info('%i bundle parts written to %s', len(partinfo),
                       os.path.dirname(path_prefix))
         self.log.debug('bundle digest: %s', digest)

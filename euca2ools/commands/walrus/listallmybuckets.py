@@ -1,4 +1,4 @@
-# Copyright 2013 Eucalyptus Systems, Inc.
+# Copyright 2013-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -48,8 +48,8 @@ class ListAllMyBuckets(WalrusRequest, TabifyingMixin):
         self.path = ''
 
     def parse_response(self, response):
-        response_dict = self.log_and_parse_response(response,
-                parse_listdelimited_aws_xml, list_tags=('Buckets',))
+        response_dict = self.log_and_parse_response(
+            response, parse_listdelimited_aws_xml, list_tags=('Buckets',))
         return response_dict['ListAllMyBucketsResult']
 
     def print_result(self, result):

@@ -1,4 +1,4 @@
-# Copyright 2009-2013 Eucalyptus Systems, Inc.
+# Copyright 2009-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -73,8 +73,8 @@ class ListAccountPolicies(EuareRequest):
                     self.print_policy(policy_name)
 
     def print_policy(self, policy_name):
-        req = GetAccountPolicy(service=self.service,
-            AccountName=self.args['AccountName'], PolicyName=policy_name,
-            pretty_print=self.args['pretty_print'])
+        req = GetAccountPolicy(
+            service=self.service, AccountName=self.args['AccountName'],
+            PolicyName=policy_name, pretty_print=self.args['pretty_print'])
         response = req.main()
         req.print_result(response)

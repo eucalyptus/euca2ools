@@ -1,4 +1,4 @@
-# Copyright 2013 Eucalyptus Systems, Inc.
+# Copyright 2013-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -70,7 +70,7 @@ class ModifySnapshotAttribute(EucalyptusRequest):
                 raise ArgumentError('argument -r/--remove may only be used '
                                     'with -c/--create-volume-permission')
 
-    def print_result(self, result):
+    def print_result(self, _):
         if self.args.get('create_volume_permission'):
             for add in self.params['CreateVolumePermission'].get('Add', []):
                 for (entity_type, entity_name) in add.items():

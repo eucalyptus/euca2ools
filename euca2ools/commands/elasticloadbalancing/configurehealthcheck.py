@@ -1,4 +1,4 @@
-# Copyright 2013 Eucalyptus Systems, Inc.
+# Copyright 2013-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -56,7 +56,7 @@ class ConfigureHealthCheck(ELBRequest, TabifyingMixin):
     def configure(self):
         ELBRequest.configure(self)
         target = self.args['HealthCheck.Target']
-        protocol, __, rest = target.partition(':')
+        protocol, _, rest = target.partition(':')
         if not rest:
             raise ArgumentError('argument -t/--target: must have form '
                                 'PROTOCOL:PORT[/PATH]')

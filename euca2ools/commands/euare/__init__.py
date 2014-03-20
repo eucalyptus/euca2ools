@@ -34,6 +34,7 @@ import requestbuilder.service
 
 from euca2ools.commands import Euca2ools
 from euca2ools.exceptions import AWSError
+from euca2ools.util import strip_response_metadata, substitute_euca_region
 
 
 class Euare(requestbuilder.service.BaseService):
@@ -47,12 +48,7 @@ class Euare(requestbuilder.service.BaseService):
                 help='identity service endpoint URL')]
 
     def configure(self):
-        if os.getenv('EUCA_REGION') and not os.getenv(self.REGION_ENVVAR):
-            msg = ('EUCA_REGION environment variable is deprecated; use {0} '
-                   'instead').format(self.REGION_ENVVAR)
-            self.log.warn(msg)
-            print >> sys.stderr, msg
-            os.environ[self.REGION_ENVVAR] = os.getenv('EUCA_REGION')
+        substitute_euca_region(self)
         requestbuilder.service.BaseService.configure(self)
 
     def handle_http_error(self, response):
@@ -71,12 +67,7 @@ class EuareRequest(requestbuilder.request.AWSQueryRequest):
         # EUARE responses enclose their useful data inside FooResponse
         # elements.  If that's all we have after stripping out ResponseMetadata
         # then just return its contents.
-        useful_keys = list(filter(lambda x: x != 'ResponseMetadata',
-                                  response_dict.keys()))
-        if len(useful_keys) == 1:
-            return response_dict[useful_keys[0]] or {}
-        else:
-            return response_dict
+        return strip_response_metadata(response_dict)
 
 AS_ACCOUNT = Arg('--as-account', dest='DelegateAccount', metavar='ACCOUNT',
                  help='''[Eucalyptus cloud admin only] run this command as

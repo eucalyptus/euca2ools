@@ -1,4 +1,4 @@
-# Copyright 2013 Eucalyptus Systems, Inc.
+# Copyright 2013-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -35,7 +35,6 @@ from requestbuilder.exceptions import ArgumentError, ClientError
 from requestbuilder.mixins import FileTransferProgressBarMixin
 
 from euca2ools.commands.walrus import WalrusRequest
-from euca2ools.util import build_progressbar_label_template
 
 
 class PutObject(WalrusRequest, FileTransferProgressBarMixin):

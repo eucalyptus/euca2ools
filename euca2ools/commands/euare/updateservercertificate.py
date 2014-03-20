@@ -1,4 +1,4 @@
-# Copyright 2009-2013 Eucalyptus Systems, Inc.
+# Copyright 2009-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -29,8 +29,8 @@ from requestbuilder import Arg
 
 class UpdateServerCertificate(EuareRequest):
     DESCRIPTION = 'Change the name and/or path of a server certificate'
-    ARGS = [Arg('-s', '--server-certificate-name', dest='ServerCertificateName',
-                metavar='CERT', required=True,
+    ARGS = [Arg('-s', '--server-certificate-name',
+                dest='ServerCertificateName', metavar='CERT', required=True,
                 help='name of the server certificate to update'),
             Arg('-n', '--new-server-certificate-name',
                 dest='NewServerCertificateName', metavar='CERT',

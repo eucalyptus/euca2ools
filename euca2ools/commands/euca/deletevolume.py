@@ -1,4 +1,4 @@
-# Copyright 2009-2013 Eucalyptus Systems, Inc.
+# Copyright 2009-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -32,5 +32,5 @@ class DeleteVolume(EucalyptusRequest):
     ARGS = [Arg('VolumeId', metavar='VOLUME',
                 help='ID of the volume to delete (required)')]
 
-    def print_result(self, result):
+    def print_result(self, _):
         print self.tabify(('VOLUME', self.args['VolumeId']))

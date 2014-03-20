@@ -1,4 +1,4 @@
-# Copyright 2009-2013 Eucalyptus Systems, Inc.
+# Copyright 2009-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -35,5 +35,6 @@ class MonitorInstances(EucalyptusRequest):
 
     def print_result(self, result):
         for instance in result.get('instancesSet', []):
-            print self.tabify((instance.get('instanceId'), 'monitoring-' +
-                instance.get('monitoring', {}).get('state')))
+            mon_state = 'monitoring-{0}'.format(
+                instance.get('monitoring', {}).get('state'))
+            print self.tabify((instance.get('instanceId'), mon_state))

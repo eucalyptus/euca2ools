@@ -1,4 +1,4 @@
-# Copyright 2013 Eucalyptus Systems, Inc.
+# Copyright 2013-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -44,7 +44,6 @@ class DescribeInstanceTypes(EucalyptusRequest, TabifyingMixin):
         if self.args.get('by_zone', False):
             self.params['Availability'] = True
 
-
     def print_result(self, result):
         vmtype_names = []  # Keep an ordered list to deal with py2.6's lack
                            # of OrderedDict
@@ -71,7 +70,6 @@ class DescribeInstanceTypes(EucalyptusRequest, TabifyingMixin):
                         'available': available,
                         'max': max_}
 
-
         if self.args.get('by_zone'):
             for zone, zone_vmtypes in sorted(zones.iteritems()):
                 print self.tabify(('AVAILABILITYZONE', zone))
@@ -90,7 +88,7 @@ class DescribeInstanceTypes(EucalyptusRequest, TabifyingMixin):
                   'total': 'Total',
                   'used_pct': 'Used %'}
         field_lengths = dict((field, len(header)) for field, header
-                              in fields.iteritems())
+                             in fields.iteritems())
         vmtype_infos = []
         for vmtype_name in vmtype_names:
             total = int(vmtypes[vmtype_name].get('max', 0))

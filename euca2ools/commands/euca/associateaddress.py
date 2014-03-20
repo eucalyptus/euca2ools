@@ -1,4 +1,4 @@
-# Copyright 2009-2013 Eucalyptus Systems, Inc.
+# Copyright 2009-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -54,12 +54,12 @@ class AssociateAddress(EucalyptusRequest):
     def configure(self):
         EucalyptusRequest.configure(self)
         if (self.args.get('PublicIp') is not None and
-            self.args.get('AllocationId') is not None):
+                self.args.get('AllocationId') is not None):
             # Can't be both EC2 and VPC
             raise ArgumentError(
                 'argument -a/--allocation-id: not allowed with an IP address')
         if (self.args.get('PublicIp') is None and
-            self.args.get('AllocationId') is None):
+                self.args.get('AllocationId') is None):
             # ...but we still have to be one of them
             raise ArgumentError(
                 'argument -a/--allocation-id or an IP address is required')

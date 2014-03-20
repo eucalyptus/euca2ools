@@ -74,3 +74,20 @@ def prompt_for_password():
     else:
         print >> sys.stderr, 'error: passwords do not match'
         return prompt_for_password()
+
+
+def strip_response_metadata(response_dict):
+    useful_keys = [key for key in response_dict if key != 'ResponseMetadata']
+    if len(useful_keys) == 1:
+        return response_dict[useful_keys[0]] or {}
+    else:
+        return response_dict
+
+
+def substitute_euca_region(obj):
+    if os.getenv('EUCA_REGION') and not os.getenv(obj.REGION_ENVVAR):
+        msg = ('EUCA_REGION environment variable is deprecated; use {0} '
+               'instead').format(obj.REGION_ENVVAR)
+        obj.log.warn(msg)
+        print >> sys.stderr, msg
+        os.environ[obj.REGION_ENVVAR] = os.getenv('EUCA_REGION')

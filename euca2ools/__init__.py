@@ -35,9 +35,10 @@ if '__file__' in globals():
     try:
         repo_path = os.path.join(os.path.dirname(__file__), '..')
         # noinspection PyUnresolvedReferences
-        git = subprocess.Popen(['git', 'describe'], stdout=subprocess.PIPE,
-                               stderr=subprocess.PIPE,
-                               env={'GIT_DIR': os.path.join(repo_path, '.git')})
+        git = subprocess.Popen(
+            ['git', 'describe'], stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            env={'GIT_DIR': os.path.join(repo_path, '.git')})
         git.wait()
         git.stderr.read()
         if git.returncode == 0:

@@ -1,4 +1,4 @@
-# Copyright 2009-2013 Eucalyptus Systems, Inc.
+# Copyright 2009-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -30,7 +30,8 @@ from requestbuilder import Arg
 class GetLoginProfile(EuareRequest):
     DESCRIPTION = 'Verify that a user has a password'
     ARGS = [Arg('-u', '--user-name', dest='UserName', metavar='USER',
-                required=True, help='user whose password to verify (required)'),
+                required=True,
+                help='user whose password to verify (required)'),
             Arg('--verbose', action='store_true', route_to=None,
                 help="print extra info about the user's password"),
             AS_ACCOUNT]

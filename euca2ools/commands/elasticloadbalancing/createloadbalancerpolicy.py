@@ -1,4 +1,4 @@
-# Copyright 2013 Eucalyptus Systems, Inc.
+# Copyright 2013-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -31,7 +31,7 @@ from requestbuilder import Arg
 def attribute(attr_as_str):
     attr = {}
     for pair in attr_as_str.split(','):
-        key, __, val = pair.partition('=')
+        key, _, val = pair.partition('=')
         if key.strip() == 'name':
             attr['AttributeName'] = val.strip()
         elif key.strip() == 'value':

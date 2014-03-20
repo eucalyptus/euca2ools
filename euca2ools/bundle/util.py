@@ -1,4 +1,4 @@
-# Copyright 2013 Eucalyptus Systems, Inc.
+# Copyright 2013-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -23,12 +23,12 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-
+from multiprocessing import Process
 import os
 import subprocess
+import sys
 import threading
 import traceback
-from multiprocessing import Process
 
 
 def close_all_fds(except_fds=None):
@@ -82,9 +82,9 @@ def waitpid_in_thread(pid):
 
 
 def spawn_process(func, **kwargs):
-    p = Process(target=process_wrapper, args=[func], kwargs=kwargs)
-    p.start()
-    return p
+    proc = Process(target=process_wrapper, args=[func], kwargs=kwargs)
+    proc.start()
+    return proc
 
 
 def process_wrapper(func, **kwargs):
@@ -93,12 +93,15 @@ def process_wrapper(func, **kwargs):
         func(**kwargs)
     except KeyboardInterrupt:
         pass
-    except Exception, e:
+    except Exception as exc:
         traceback.print_exc()
-        msg = 'Error in wrapped process "{0}":{1}'.format(str(name), str(e))
-        print >> os.sys.stderr, msg
+        msg = 'Error in wrapped process "{0}":{1}'.format(str(name), str(exc))
+        print >> sys.stderr, msg
         return
+    # pylint: disable=W0212
+    # os._exit is actually public
     os._exit(os.EX_OK)
+    # pylint: enable=W0212
 
 
 def pid_exists(pid):
@@ -106,7 +109,7 @@ def pid_exists(pid):
         #Check to see if pid exists
         os.kill(pid, 0)
         return True
-    except OSError, ose:
+    except OSError as ose:
         if ose.errno == os.errno.ESRCH:
             #Pid was not found
             return False

@@ -185,7 +185,7 @@ def vpc_interface(iface_as_str):
                                             'Primary': 'true'})
     if bits[5]:
         # SecurityGroupId.n
-        groups = filter(None, bits[5].split(','))
+        groups = [bit for bit in bits[5].split(',') if bit]
         if not all(group.startswith('sg-') for group in groups):
             raise argparse.ArgumentTypeError(
                 'sixth element of network interface definition "{0}" must '
@@ -248,7 +248,7 @@ def binary_tag_def(tag_str):
     """
     if '=' in tag_str:
         (key, val) = tag_str.split('=', 1)
-        return {'Key': key,     'Value': val or EMPTY}
+        return {'Key': key, 'Value': val or EMPTY}
     else:
         return {'Key': tag_str, 'Value': EMPTY}
 

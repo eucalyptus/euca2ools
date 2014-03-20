@@ -83,15 +83,14 @@ class DownloadAndUnbundle(WalrusRequest, FileTransferProgressBarMixin):
 
         #Get optional destination directory...
         dest_dir = self.args['directory']
-        if not (dest_dir == "-"):
+        if dest_dir != "-":
             dest_dir = os.path.expanduser(os.path.abspath(dest_dir))
             #todo should this create nonexisting destination directory?
             if not os.path.exists(dest_dir):
-                raise ArgumentError("Destination directory '{0}' "
-                                    "does not exist"
-                                    .format(dest_dir))
+                raise ArgumentError("destination directory '{0}' "
+                                    "does not exist".format(dest_dir))
             if not os.path.isdir(dest_dir):
-                raise ArgumentError("Destination '{0}' is not Directory"
+                raise ArgumentError("destination '{0}' is not a directory"
                                     .format(dest_dir))
         else:
             self.args['show_progress'] = False
@@ -103,10 +102,10 @@ class DownloadAndUnbundle(WalrusRequest, FileTransferProgressBarMixin):
                 manifest = os.path.expanduser(os.path.abspath(
                     self.args['manifest']))
                 if not os.path.exists(manifest):
-                    raise ArgumentError("Manifest '{0}' does not exist"
+                    raise ArgumentError("manifest '{0}' does not exist"
                                         .format(self.args['manifest']))
                 if not os.path.isfile(manifest):
-                    raise ArgumentError("Manifest '{0}' is not a file"
+                    raise ArgumentError("manifest '{0}' is not a file"
                                         .format(self.args['manifest']))
                 #Read manifest into BundleManifest obj...
                 self.args['manifest'] = (BundleManifest.

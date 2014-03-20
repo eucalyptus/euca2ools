@@ -1,4 +1,4 @@
-# Copyright 2013 Eucalyptus Systems, Inc.
+# Copyright 2013-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -79,7 +79,7 @@ class GetObject(WalrusRequest, FileTransferProgressBarMixin):
                     progress_bar.update(bytes_written)
             outfile.flush()
             if progress_bar:
-                    progress_bar.finish()
+                progress_bar.finish()
         finally:
             self.log.debug('Downloaded bytes:{0} file:{1}'
                            .format(bytes_written, path))
@@ -93,7 +93,7 @@ class GetObject(WalrusRequest, FileTransferProgressBarMixin):
         self.log.debug('GOT SHOW PROGRESS: ' + str(show_progress))
         label = None
         if show_progress:
-                label_template = build_progressbar_label_template(paths)
+            label_template = build_progressbar_label_template(paths)
         if (opath) and (os.path.isdir(opath) or opath.endswith('/')):
             #Download paths to individual files under provided directory...
             if not os.path.isdir(opath):

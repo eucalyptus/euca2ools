@@ -1,4 +1,4 @@
-# Copyright 2009-2013 Eucalyptus Systems, Inc.
+# Copyright 2009-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -30,7 +30,8 @@ from requestbuilder import Arg, MutuallyExclusiveArgList
 class PutGroupPolicy(EuareRequest):
     DESCRIPTION = 'Attach a policy to a group'
     ARGS = [Arg('-g', '--group-name', dest='GroupName', metavar='GROUP',
-                required=True, help='group to attach the policy to (required)'),
+                required=True,
+                help='group to attach the policy to (required)'),
             Arg('-p', '--policy-name', dest='PolicyName', metavar='POLICY',
                 required=True, help='name of the policy (required)'),
             MutuallyExclusiveArgList(True,

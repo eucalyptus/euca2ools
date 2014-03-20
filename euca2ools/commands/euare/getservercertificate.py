@@ -1,4 +1,4 @@
-# Copyright 2009-2013 Eucalyptus Systems, Inc.
+# Copyright 2009-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -29,9 +29,10 @@ from requestbuilder import Arg
 
 class GetServerCertificate(EuareRequest):
     DESCRIPTION = 'Show the ARN and GUID of a server certificate'
-    ARGS = [Arg('-s', '--server-certificate-name', dest='ServerCertificateName',
-                metavar='CERT', required=True, help='''name of the server
-                certificate to retrieve info about (required)'''),
+    ARGS = [Arg('-s', '--server-certificate-name',
+                dest='ServerCertificateName', metavar='CERT', required=True,
+                help='''name of the server certificate to retrieve info about
+                        (required)'''),
             AS_ACCOUNT]
 
     def print_result(self, result):

@@ -1,4 +1,4 @@
-# Copyright 2012-2013 Eucalyptus Systems, Inc.
+# Copyright 2012-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -70,7 +70,7 @@ class ModifySecurityGroupRequest(EucalyptusRequest):
         EucalyptusRequest.configure(self)
 
         if (self.args['group'].startswith('sg-') and
-                    len(self.args['group']) == 11):
+                len(self.args['group']) == 11):
             # The check could probably be a little better, but meh.  Fix if
             # needed.
             self.params['GroupId'] = self.args['group']
@@ -82,7 +82,7 @@ class ModifySecurityGroupRequest(EucalyptusRequest):
 
         target_group = self.args.get('target_group')
         if (target_group is not None and target_group.startswith('sg-') and
-            len(target_group) == 11):
+                len(target_group) == 11):
             # Same note as above
             self.params['IpPermissions.1.Groups.1.GroupId'] = target_group
         else:
@@ -150,7 +150,7 @@ class ModifySecurityGroupRequest(EucalyptusRequest):
             raise ArgumentError('argument -u is required when -o names a '
                                 'security group by name')
 
-    def print_result(self, result):
+    def print_result(self, _):
         print self.tabify(['GROUP', self.args.get('group')])
         perm_str = ['PERMISSION', self.args.get('group'), 'ALLOWS',
                     self.params.get('IpPermissions.1.IpProtocol'),

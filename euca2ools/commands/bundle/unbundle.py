@@ -28,7 +28,7 @@ import hashlib
 import os
 import traceback
 
-from requestbuilder import Arg, MutuallyExclusiveArgList
+from requestbuilder import Arg
 from requestbuilder.command import BaseCommand
 from requestbuilder.exceptions import ArgumentError
 from requestbuilder.mixins import (FileTransferProgressBarMixin,
@@ -36,9 +36,9 @@ from requestbuilder.mixins import (FileTransferProgressBarMixin,
 
 from euca2ools.commands import Euca2ools
 import euca2ools.bundle.pipes
+from euca2ools.bundle.manifest import BundleManifest
 from euca2ools.bundle.util import open_pipe_fileobjs, spawn_process
 from euca2ools.bundle.util import close_all_fds, waitpid_in_thread
-from euca2ools.bundle.manifest import BundleManifest
 from euca2ools.commands.bundle.unbundlestream import UnbundleStream
 
 
@@ -98,22 +98,22 @@ class Unbundle(BaseCommand, FileTransferProgressBarMixin,
         if source != "-":
             source = os.path.expanduser(os.path.abspath(source))
             if not os.path.exists(source):
-                raise ArgumentError("Source directory '{0}' does not exist"
+                raise ArgumentError("source directory '{0}' does not exist"
                                     .format(self.args['source']))
             if not os.path.isdir(source):
-                raise ArgumentError("Source '{0}' is not Directory"
+                raise ArgumentError("source '{0}' is not a directory"
                                     .format(self.args['source']))
         self.args['source'] = source
 
         #Get optional destination directory...
         dest_dir = self.args['destination']
-        if not (dest_dir == "-"):
+        if dest_dir != "-":
             dest_dir = os.path.expanduser(os.path.abspath(dest_dir))
             if not os.path.exists(dest_dir):
-                raise ArgumentError("Destination directory '{0}' does"
+                raise ArgumentError("destination directory '{0}' does"
                                     " not exist".format(dest_dir))
             if not os.path.isdir(dest_dir):
-                raise ArgumentError("Destination '{0}' is not Directory"
+                raise ArgumentError("destination '{0}' is not a directory"
                                     .format(dest_dir))
         self.args['destination'] = dest_dir
 

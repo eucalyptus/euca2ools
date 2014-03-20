@@ -35,6 +35,7 @@ import requestbuilder.service
 
 from euca2ools.commands import Euca2ools
 from euca2ools.exceptions import AWSError
+from euca2ools.util import substitute_euca_region
 
 
 class Walrus(requestbuilder.service.BaseService):
@@ -47,12 +48,7 @@ class Walrus(requestbuilder.service.BaseService):
                help='storage service endpoint URL')
 
     def configure(self):
-        if os.getenv('EUCA_REGION') and not os.getenv(self.REGION_ENVVAR):
-            msg = ('EUCA_REGION environment variable is deprecated; use {0} '
-                   'instead').format(self.REGION_ENVVAR)
-            self.log.warn(msg)
-            print >> sys.stderr, msg
-            os.environ[self.REGION_ENVVAR] = os.getenv('EUCA_REGION')
+        substitute_euca_region(self)
         requestbuilder.service.BaseService.configure(self)
 
     def handle_http_error(self, response):
@@ -136,7 +132,7 @@ def validate_dns_bucket_name(bucket):
                               'bucket name').format(label[-1]))
     if len(labels) == 4:
         try:
-            map(int, bucket.split('.'))
+            [int(chunk) for chunk in bucket.split('.')]
         except ValueError:
             # This is actually the case we want
             pass

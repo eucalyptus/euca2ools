@@ -1,4 +1,4 @@
-# Copyright 2009-2013 Eucalyptus Systems, Inc.
+# Copyright 2009-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -71,8 +71,9 @@ class BundleInstance(EucalyptusRequest):
         delta = timedelta(hours=self.args['expires'])
         expire_time = (datetime.utcnow() + delta).replace(microsecond=0)
 
-        policy = {'conditions': [{'acl':    'ec2-bundle-read'},
-                                 {'bucket': self.args.get('Storage.S3.Bucket')},
+        policy = {'conditions': [{'acl': 'ec2-bundle-read'},
+                                 {'bucket': self.args.get(
+                                    'Storage.S3.Bucket')},
                                  ['starts-with', '$key',
                                   self.args.get('Storage.S3.Prefix')]],
                   'expiration': time.strftime('%Y-%m-%dT%H:%M:%SZ',

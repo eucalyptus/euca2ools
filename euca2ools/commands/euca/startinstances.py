@@ -1,4 +1,4 @@
-# Copyright 2009-2013 Eucalyptus Systems, Inc.
+# Copyright 2009-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -37,4 +37,4 @@ class StartInstances(EucalyptusRequest):
         for instance in result.get('instancesSet', []):
             print self.tabify(('INSTANCE', instance.get('instanceId'),
                                instance.get('previousState', {}).get('name'),
-                               instance.get('currentState',  {}).get('name')))
+                               instance.get('currentState', {}).get('name')))

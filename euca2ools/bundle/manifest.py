@@ -1,4 +1,4 @@
-# Copyright 2013 Eucalyptus Systems, Inc.
+# Copyright 2013-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -124,7 +124,6 @@ class BundleManifest(object):
         if self.enc_iv is None:
             raise ValueError('enc_iv must not be None')
         ec2_fp = euca2ools.bundle.util.get_cert_fingerprint(ec2_cert_filename)
-        user_fp = euca2ools.bundle.util.get_cert_fingerprint(user_cert_filename)
         self.log.info('creating manifest for EC2 service with fingerprint %s',
                       ec2_fp)
         self.log.debug('EC2 certificate:  %s', ec2_cert_filename)

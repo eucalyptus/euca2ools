@@ -1,4 +1,4 @@
-# Copyright 2013 Eucalyptus Systems, Inc.
+# Copyright 2013-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -32,9 +32,10 @@ import xml.etree.ElementTree as ET
 class CreateBucket(WalrusRequest):
     DESCRIPTION = 'Create a new bucket'
     ARGS = [Arg('bucket', route_to=None, help='name of the new bucket'),
-            Arg('--location', route_to=None, help='''location constraint to
-                configure the bucket with (default: inferred from
-                s3-location-constraint in configuration, or otherwise none)''')]
+            Arg('--location', route_to=None,
+                help='''location constraint to configure the bucket with
+                (default: inferred from s3-location-constraint in
+                configuration, or otherwise none)''')]
 
     def configure(self):
         WalrusRequest.configure(self)

@@ -33,6 +33,7 @@ import requestbuilder.request
 
 from euca2ools.commands import Euca2ools
 from euca2ools.exceptions import AWSError
+from euca2ools.util import strip_response_metadata, substitute_euca_region
 
 
 class ELB(requestbuilder.service.BaseService):
@@ -46,12 +47,7 @@ class ELB(requestbuilder.service.BaseService):
                 help='load balancing service endpoint URL')]
 
     def configure(self):
-        if os.getenv('EUCA_REGION') and not os.getenv(self.REGION_ENVVAR):
-            msg = ('EUCA_REGION environment variable is deprecated; use {0} '
-                   'instead').format(self.REGION_ENVVAR)
-            self.log.warn(msg)
-            print >> sys.stderr, msg
-            os.environ[self.REGION_ENVVAR] = os.getenv('EUCA_REGION')
+        substitute_euca_region(self)
         requestbuilder.service.BaseService.configure(self)
 
     def handle_http_error(self, response):
@@ -67,9 +63,4 @@ class ELBRequest(requestbuilder.request.AWSQueryRequest):
     def parse_response(self, response):
         response_dict = requestbuilder.request.AWSQueryRequest.parse_response(
             self, response)
-        useful_keys = list(filter(lambda x: x != 'ResponseMetadata',
-                                  response_dict.keys()))
-        if len(useful_keys) == 1:
-            return response_dict[useful_keys[0]] or {}
-        else:
-            return response_dict
+        return strip_response_metadata(response_dict)

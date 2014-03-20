@@ -29,8 +29,8 @@ from requestbuilder import Arg, MutuallyExclusiveArgList
 
 class UploadServerCertificate(EuareRequest):
     DESCRIPTION = 'Upload a server certificate'
-    ARGS = [Arg('-s', '--server-certificate-name', dest='ServerCertificateName',
-                metavar='CERTNAME', required=True,
+    ARGS = [Arg('-s', '--server-certificate-name', metavar='CERTNAME',
+                dest='ServerCertificateName', required=True,
                 help='name to give the new server certificate (required)'),
             MutuallyExclusiveArgList(True,
                 Arg('-c', '--certificate-body', dest='CertificateBody',
@@ -46,9 +46,9 @@ class UploadServerCertificate(EuareRequest):
                     help='file containing the PEM-encoded private key')),
             MutuallyExclusiveArgList(True,
                 Arg('--certificate-chain', dest='CertificateChain',
-                    metavar='CHAIN', help='''PEM-encoded certificate chain. This
-                    is typically the PEM-encoded certificates of the chain,
-                    concatenated together.'''),
+                    metavar='CHAIN', help='''PEM-encoded certificate chain.
+                    This is typically the PEM-encoded certificates of the
+                    chain, concatenated together.'''),
                 Arg('--certificate-chain-file', dest='CertificateChain',
                     metavar='FILE', help='''file containing the PEM-encoded
                     certificate chain. This is typically the PEM-encoded

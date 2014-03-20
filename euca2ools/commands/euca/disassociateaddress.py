@@ -1,4 +1,4 @@
-# Copyright 2009-2013 Eucalyptus Systems, Inc.
+# Copyright 2009-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -50,6 +50,6 @@ class DisassociateAddress(EucalyptusRequest):
             raise ArgumentError(
                 'argument -a/--association-id or an IP address is required')
 
-    def print_result(self, result):
+    def print_result(self, _):
         target = self.args.get('PublicIp') or self.args.get('AssociationId')
         print self.tabify(('ADDRESS', target))

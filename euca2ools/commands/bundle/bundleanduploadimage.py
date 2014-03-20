@@ -23,13 +23,11 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import argparse
 import multiprocessing
 import os.path
 import tarfile
 
 from requestbuilder import Arg
-from requestbuilder.command import BaseCommand
 from requestbuilder.mixins import FileTransferProgressBarMixin
 
 from euca2ools.bundle.pipes.core import create_bundle_pipeline

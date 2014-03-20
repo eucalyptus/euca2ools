@@ -1,4 +1,4 @@
-# Copyright 2009-2013 Eucalyptus Systems, Inc.
+# Copyright 2009-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -47,7 +47,7 @@ class RegisterImage(EucalyptusRequest):
                 help='ID of the ramdisk to associate with the new image'),
             Arg('--root-device-name', dest='RootDeviceName', metavar='DEVICE',
                 help='root device name (default: /dev/sda1)'),
-                # ^ default is added by main()
+            # ^ default is added by main()
             Arg('-s', '--snapshot', route_to=None,
                 help='snapshot to use for the root device'),
             Arg('-b', '--block-device-mapping', metavar='DEVICE=MAPPED',
@@ -70,10 +70,10 @@ class RegisterImage(EucalyptusRequest):
             # instance-store image
             if self.args.get('RootDeviceName'):
                 raise ArgumentError('argument --root-device-name: not allowed '
-                    'with argument MANIFEST')
+                                    'with argument MANIFEST')
             if self.args.get('snapshot'):
                 raise ArgumentError('argument --snapshot: not allowed with '
-                    'argument MANIFEST')
+                                    'argument MANIFEST')
         else:
             # Try for an EBS image
             if not self.params.get('RootDeviceName'):
@@ -82,12 +82,13 @@ class RegisterImage(EucalyptusRequest):
             # Look for a mapping for the root device
             for mapping in self.args['BlockDeviceMapping']:
                 if mapping.get('DeviceName') == self.args['RootDeviceName']:
-                    if (snapshot and
-                        snapshot != mapping.get('Ebs', {}).get('SnapshotId')):
+                    if (snapshot != mapping.get('Ebs', {}).get('SnapshotId')
+                            and snapshot):
                         # The mapping's snapshot differs or doesn't exist
-                        raise ArgumentError('snapshot ID supplied with '
-                            '--snapshot conflicts with block device mapping '
-                            'for root device ' + mapping['DeviceName'])
+                        raise ArgumentError(
+                            'snapshot ID supplied with --snapshot conflicts '
+                            'with block device mapping for root device {0}'
+                            .format(mapping['DeviceName']))
                     else:
                         # No need to apply --snapshot since the mapping is
                         # already there
@@ -98,8 +99,9 @@ class RegisterImage(EucalyptusRequest):
                             {'DeviceName': self.args['RootDeviceName'],
                              'Ebs': {'SnapshotId': snapshot}})
                 else:
-                    raise ArgumentError('either a manifest location or a root '
-                        'device snapshot mapping must be specified')
+                    raise ArgumentError(
+                        'either a manifest location or a root device snapshot '
+                        'mapping must be specified')
 
     def print_result(self, result):
         print self.tabify(('IMAGE', result.get('imageId')))

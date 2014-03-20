@@ -70,7 +70,7 @@ class UnbundleStream(BaseCommand, FileTransferProgressBarMixin,
 
         #Get optional destination directory...
         dest_file = self.args['destination']
-        if not isinstance(dest_file, file) and not (dest_file == "-"):
+        if not isinstance(dest_file, file) and dest_file != "-":
             dest_file = os.path.expanduser(os.path.abspath(dest_file))
             self.args['destination'] = dest_file
 
@@ -159,8 +159,8 @@ class UnbundleStream(BaseCommand, FileTransferProgressBarMixin,
                     self.log.debug('Reading from provided fileobj')
                     infile = self.args.get('source')
                 else:
-                    self.log.debug('Reading from file at path:'
-                                    + str(self.args.get('source')))
+                    self.log.debug('Reading from file at path %s',
+                                   str(self.args.get('source')))
                     infile = open(self.args.get('source'))
             else:
                 #Unbundle from stdin stream...
@@ -168,16 +168,12 @@ class UnbundleStream(BaseCommand, FileTransferProgressBarMixin,
                 infile = os.fdopen(os.dup(os.sys.stdin.fileno()))
             try:
                 progress_r, progress_w = open_pipe_fileobjs()
-                sha1pipe = create_unbundle_pipeline(infile=infile,
-                                                  outfile=progress_w,
-                                                  enc_key=enc_key,
-                                                  enc_iv=enc_iv,
-                                                  debug=debug)
+                sha1pipe = create_unbundle_pipeline(
+                    infile=infile, outfile=progress_w, enc_key=enc_key,
+                    enc_iv=enc_iv, debug=debug)
                 progress_w.close()
-                copy_with_progressbar(infile=progress_r,
-                                      outfile=dest_file,
-                                      progressbar=pbar,
-                                      maxbytes=maxbytes)
+                copy_with_progressbar(infile=progress_r, outfile=dest_file,
+                                      progressbar=pbar, maxbytes=maxbytes)
                 progress_r.close()
             finally:
                 if infile:

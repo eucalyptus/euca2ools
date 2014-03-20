@@ -1,4 +1,4 @@
-# Copyright 2009-2013 Eucalyptus Systems, Inc.
+# Copyright 2009-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -30,16 +30,16 @@ import sys
 
 
 CHAR_ESCAPES = {
-        u'\x00': u'^@',    u'\x0c': u'^L',    u'\x17': u'^W',
-        u'\x01': u'^A',    u'\x0e': u'^N',    u'\x18': u'^X',
-        u'\x02': u'^B',    u'\x0f': u'^O',    u'\x19': u'^Y',
-        u'\x03': u'^C',    u'\x10': u'^P',    u'\x1a': u'^Z',
-        u'\x04': u'^D',    u'\x11': u'^Q',    u'\x1b': u'^[',
-        u'\x05': u'^E',    u'\x12': u'^R',    u'\x1c': u'^\\',
-        u'\x06': u'^F',    u'\x13': u'^S',    u'\x1d': u'^]',
-        u'\x07': u'^G',    u'\x14': u'^T',    u'\x1e': u'^^',
-        u'\x08': u'^H',    u'\x15': u'^U',    u'\x1f': u'^_',
-        u'\x0b': u'^K',    u'\x16': u'^V',    u'\x7f': u'^?',
+    u'\x00': u'^@', u'\x0c': u'^L', u'\x17': u'^W',
+    u'\x01': u'^A', u'\x0e': u'^N', u'\x18': u'^X',
+    u'\x02': u'^B', u'\x0f': u'^O', u'\x19': u'^Y',
+    u'\x03': u'^C', u'\x10': u'^P', u'\x1a': u'^Z',
+    u'\x04': u'^D', u'\x11': u'^Q', u'\x1b': u'^[',
+    u'\x05': u'^E', u'\x12': u'^R', u'\x1c': u'^\\',
+    u'\x06': u'^F', u'\x13': u'^S', u'\x1d': u'^]',
+    u'\x07': u'^G', u'\x14': u'^T', u'\x1e': u'^^',
+    u'\x08': u'^H', u'\x15': u'^U', u'\x1f': u'^_',
+    u'\x0b': u'^K', u'\x16': u'^V', u'\x7f': u'^?',
 }
 
 

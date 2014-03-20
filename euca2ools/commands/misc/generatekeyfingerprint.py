@@ -34,8 +34,8 @@ from euca2ools.commands import Euca2ools
 
 class GenerateKeyFingerprint(BaseCommand):
     DESCRIPTION = ('Show the fingerprint of a private key as it would appear '
-                   'in the output of euca-describe-keypairs.\n\nNote that this '
-                   "will differ from the key's SSH key fingerprint.")
+                   'in the output of euca-describe-keypairs.\n\nNote that '
+                   "this will differ from the key's SSH key fingerprint.")
     SUITE = Euca2ools
     ARGS = [Arg('privkey_filename', metavar='FILE',
                 help='file containing the private key (required)')]

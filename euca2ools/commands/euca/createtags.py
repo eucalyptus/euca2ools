@@ -1,4 +1,4 @@
-# Copyright 2009-2013 Eucalyptus Systems, Inc.
+# Copyright 2009-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -38,7 +38,7 @@ class CreateTags(EucalyptusRequest):
                 by an "=" character.  If no value is given the tag's value is
                 set to an empty string.  (at least 1 required)''')]
 
-    def print_result(self, result):
+    def print_result(self, _):
         for resource_id in self.args['ResourceId']:
             for tag in self.args['Tag']:
                 lc_resource_tag = {'key': tag['Key'], 'value': tag['Value']}

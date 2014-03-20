@@ -61,20 +61,19 @@ class DownloadBundle(WalrusRequest, FileTransferProgressBarMixin):
         #Get optional destination directory...
         dest_dir = self.args['directory']
         if isinstance(dest_dir, basestring):
-            if not (dest_dir == "-"):
+            if dest_dir != "-":
                 dest_dir = os.path.expanduser(os.path.abspath(dest_dir))
                 if not os.path.exists(dest_dir):
-                    raise ArgumentError("Destination directory '{0}' "
-                                        "does not exist"
-                                        .format(dest_dir))
+                    raise ArgumentError("destination directory '{0}' "
+                                        "does not exist".format(dest_dir))
                 if not os.path.isdir(dest_dir):
-                    raise ArgumentError("Destination '{0}' is not Directory"
+                    raise ArgumentError("destination '{0}' is not a directory"
                                         .format(dest_dir))
         self.args['directory'] = dest_dir
 
     def _get_manifest_obj(self, private_key=None, dest_dir=None):
         '''
-        Attempts to return a BundleManifest obj based upon the provided
+        Attempt to return a BundleManifest obj based upon the provided
         DownloadBundle 'manifest' argument. If the arg is not a BundleManifest
         an attempt is made to retrieve the manifest from either a;
         local file path, remote bucket/prefix, or fileobj, whichever arg type

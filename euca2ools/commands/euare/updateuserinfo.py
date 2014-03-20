@@ -1,4 +1,4 @@
-# Copyright 2009-2013 Eucalyptus Systems, Inc.
+# Copyright 2009-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -32,7 +32,8 @@ class UpdateUserInfo(EuareRequest):
     ARGS = [Arg('-u', '--user-name', dest='UserName', metavar='USER',
                 help='user to update (default: current user)'),
             Arg('-k', '--info-key', dest='InfoKey', metavar='KEY',
-                required=True, help='name of the info field to set (required)'),
+                required=True,
+                help='name of the info field to set (required)'),
             Arg('-i', '--info-value', dest='InfoValue', metavar='VALUE',
                 help='value to set the info field to (omit to delete it)'),
             AS_ACCOUNT]

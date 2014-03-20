@@ -1,4 +1,4 @@
-# Copyright 2009-2013 Eucalyptus Systems, Inc.
+# Copyright 2009-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -35,5 +35,5 @@ class DeregisterImage(EucalyptusRequest):
     ARGS = [Arg('ImageId', metavar='IMAGE',
                 help='ID of the image to de-register (required)')]
 
-    def print_result(self, result):
+    def print_result(self, _):
         print self.tabify(('IMAGE', self.args['ImageId']))

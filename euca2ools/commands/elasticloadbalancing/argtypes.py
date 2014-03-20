@@ -1,4 +1,4 @@
-# Copyright 2013 Eucalyptus Systems, Inc.
+# Copyright 2013-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -43,7 +43,8 @@ def listener(listener_str):
                        'instance-protocol', 'cert-id')))
     if len(extra_keys) > 0:
         raise argparse.ArgumentTypeError(
-            "listener '{0}': invalid element(s): {1}".format(listener_str,
+            "listener '{0}': invalid element(s): {1}".format(
+                listener_str,
                 ', '.join("'{0}'".format(key) for key in extra_keys)))
 
     listener_dict = {}

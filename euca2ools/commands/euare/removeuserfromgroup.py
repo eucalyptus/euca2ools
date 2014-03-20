@@ -1,4 +1,4 @@
-# Copyright 2009-2013 Eucalyptus Systems, Inc.
+# Copyright 2009-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -33,7 +33,8 @@ class RemoveUserFromGroup(EuareRequest):
                 action='append', route_to=None, required=True,
                 help='user to remove from the group (required)'),
             Arg('-g', '--group-name', dest='GroupName', metavar='GROUP',
-                required=True, help='group to remove the user from (required)'),
+                required=True,
+                help='group to remove the user from (required)'),
             AS_ACCOUNT]
 
     def main(self):

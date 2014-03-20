@@ -1,4 +1,4 @@
-# Copyright 2013 Eucalyptus Systems, Inc.
+# Copyright 2013-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -71,9 +71,9 @@ class DescribeInstanceStatus(EucalyptusRequest):
     def print_result(self, result):
         for sset in result.get('instanceStatusSet') or []:
             if (self.args.get('hide_healthy', False) and
-                sset.get('systemStatus', {}).get('status') == 'ok' and
-                sset.get('instanceStatus', {}).get('status') == 'ok'):
-                    continue
+                    sset.get('systemStatus', {}).get('status') == 'ok' and
+                    sset.get('instanceStatus', {}).get('status') == 'ok'):
+                continue
             print self.tabify((
                 'INSTANCE', sset.get('instanceId'),
                 sset.get('availabilityZone'),

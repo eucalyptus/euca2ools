@@ -1,4 +1,4 @@
-# Copyright 2013 Eucalyptus Systems, Inc.
+# Copyright 2013-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -64,7 +64,7 @@ class ListBucket(WalrusRequest, TabifyingMixin):
             return self.path, {'marker': response['Contents'][-1]['Key']}
 
     def prepare_for_page(self, page):
-        bucket, __, prefix = page[0].partition('/')
+        bucket, _, prefix = page[0].partition('/')
         markers = page[1]
         self.path = bucket
         if prefix:

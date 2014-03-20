@@ -1,4 +1,4 @@
-# Copyright 2009-2013 Eucalyptus Systems, Inc.
+# Copyright 2009-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -31,7 +31,8 @@ from requestbuilder.mixins import TabifyingMixin
 class CreateAccount(EuareRequest, TabifyingMixin):
     DESCRIPTION = '[Eucalyptus cloud admin only] Create a new account'
     ARGS = [Arg('-a', '--account-name', dest='AccountName', metavar='ACCOUNT',
-                required=True, help='name of the account to create (required)')]
+                required=True,
+                help='name of the account to create (required)')]
 
     def print_result(self, result):
         print self.tabify((result.get('Account', {}).get('AccountName'),

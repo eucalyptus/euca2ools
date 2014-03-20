@@ -23,15 +23,14 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-
 import hashlib
 import multiprocessing
-import os
 import shutil
 import subprocess
 import tarfile
+
 import euca2ools.bundle.util
-from euca2ools.bundle.util import spawn_process, close_all_fds, pid_exists
+from euca2ools.bundle.util import spawn_process, close_all_fds
 
 
 def create_bundle_pipeline(infile, outfile, enc_key, enc_iv, tarinfo,
@@ -87,13 +86,9 @@ def create_bundle_pipeline(infile, outfile, enc_key, enc_iv, tarinfo,
     return digest_result_r
 
 
-def create_unbundle_pipeline(infile,
-                             outfile,
-                             enc_key,
-                             enc_iv,
-                             debug=False):
+def create_unbundle_pipeline(infile, outfile, enc_key, enc_iv, debug=False):
     """
-    Creates a pipeline to perform the unbundle operation on infile input.
+    Create a pipeline to perform the unbundle operation on infile input.
     The resulting unbundled image will be written to 'outfile'.
 
     :param outfile: file  obj to write unbundled image to
@@ -155,7 +150,6 @@ def create_unbundle_pipeline(infile,
         except:
             pass
         raise
-
     finally:
         # Make sure something calls wait() on every child process
         for pid in pids:

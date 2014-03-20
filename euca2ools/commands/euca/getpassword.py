@@ -1,4 +1,4 @@
-# Copyright 2009-2013 Eucalyptus Systems, Inc.
+# Copyright 2009-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -46,6 +46,6 @@ class GetPassword(GetPasswordData):
             raise AttributeError('no password data found for this instance')
         cmd = subprocess.Popen(['openssl', 'rsautl', '-decrypt', '-inkey',
                                 self.args['priv_launch_key']],
-                                stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-        stdout, __ = cmd.communicate(base64.b64decode(pwdata))
+                               stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+        stdout, _ = cmd.communicate(base64.b64decode(pwdata))
         print stdout

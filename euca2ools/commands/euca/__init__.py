@@ -39,6 +39,7 @@ from requestbuilder.service import BaseService
 
 from euca2ools.commands import Euca2ools
 from euca2ools.exceptions import AWSError
+from euca2ools.util import substitute_euca_region
 
 
 class Eucalyptus(BaseService):
@@ -52,12 +53,7 @@ class Eucalyptus(BaseService):
                 help='compute service endpoint URL')]
 
     def configure(self):
-        if os.getenv('EUCA_REGION') and not os.getenv(self.REGION_ENVVAR):
-            msg = ('EUCA_REGION environment variable is deprecated; use {0} '
-                   'instead').format(self.REGION_ENVVAR)
-            self.log.warn(msg)
-            print >> sys.stderr, msg
-            os.environ[self.REGION_ENVVAR] = os.getenv('EUCA_REGION')
+        substitute_euca_region(self)
         BaseService.configure(self)
 
     def handle_http_error(self, response):
@@ -169,7 +165,7 @@ class EucalyptusRequest(AWSQueryRequest, TabifyingMixin):
             # in the response, so we have to look it up elsewhere.
             for privaddress in privaddresses:
                 if (privaddress.get('association', {}).get('publicIp') ==
-                    association.get('publicIp')):
+                        association.get('publicIp')):
                     # Found a match
                     break
             else:
@@ -205,9 +201,9 @@ class EucalyptusRequest(AWSQueryRequest, TabifyingMixin):
 
     def print_snapshot(self, snap):
         print self.tabify(['SNAPSHOT', snap.get('snapshotId'),
-                           snap.get('volumeId'),  snap.get('status'),
+                           snap.get('volumeId'), snap.get('status'),
                            snap.get('startTime'), snap.get('progress'),
-                           snap.get('ownerId'),   snap.get('volumeSize'),
+                           snap.get('ownerId'), snap.get('volumeSize'),
                            snap.get('description')])
         for tag in snap.get('tagSet', []):
             self.print_resource_tag(tag, snap.get('snapshotId'))
@@ -218,7 +214,7 @@ class EucalyptusRequest(AWSQueryRequest, TabifyingMixin):
                            task.get('storage', {}).get('S3', {}).get('bucket'),
                            task.get('storage', {}).get('S3', {}).get('prefix'),
                            task.get('startTime'), task.get('updateTime'),
-                           task.get('state'),     task.get('progress')])
+                           task.get('state'), task.get('progress')])
 
 
 class _ResourceTypeMap(object):

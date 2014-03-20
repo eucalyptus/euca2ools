@@ -1,4 +1,4 @@
-# Copyright 2009-2013 Eucalyptus Systems, Inc.
+# Copyright 2009-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -75,14 +75,14 @@ class ModifyImageAttribute(EucalyptusRequest):
                 raise ArgumentError('argument -r/--remove may only be used '
                                     'with -l/--launch-permission')
 
-    def print_result(self, result):
+    def print_result(self, _):
         if self.args.get('Description.Value'):
             print self.tabify(('description', self.args['ImageId'],
                                None, self.args['Description.Value']))
         if self.args.get('ProductCode'):
             for code in self.args['ProductCode']:
                 print self.tabify(('productcodes', self.args['ImageId'],
-                                   'productCode',  code))
+                                   'productCode', code))
         if self.args.get('launch_permission'):
             for add in self.params['LaunchPermission'].get('Add', []):
                 for (entity_type, entity_name) in add.items():
