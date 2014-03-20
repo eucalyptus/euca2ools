@@ -35,7 +35,7 @@ from euca2ools.commands.euare import EuareRequest, AS_ACCOUNT
 class CreateRole(EuareRequest):
     DESCRIPTION = 'Create a new role'
     ARGS = [Arg('-r', '--role', dest='RoleName', required=True,
-                help='name of the new role'),
+                help='name of the new role (required)'),
             Arg('-p', '--path', dest='Path',
                 help='path for the new role (default: "/")'),
             MutuallyExclusiveArgList(True,
