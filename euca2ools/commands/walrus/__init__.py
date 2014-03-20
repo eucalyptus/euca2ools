@@ -44,8 +44,8 @@ class Walrus(requestbuilder.service.BaseService):
     REGION_ENVVAR = 'AWS_DEFAULT_REGION'
     URL_ENVVAR = 'S3_URL'
 
-    ARGS = Arg('-U', '--url', metavar='URL',
-               help='storage service endpoint URL')
+    ARGS = [Arg('-U', '--url', metavar='URL',
+                help='storage service endpoint URL')]
 
     def configure(self):
         substitute_euca_region(self)
