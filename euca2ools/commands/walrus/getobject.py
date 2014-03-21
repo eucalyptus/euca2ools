@@ -23,109 +23,90 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.walrus import WalrusRequest
-import euca2ools.bundle.pipes
-from euca2ools.util import build_progressbar_label_template
-import argparse
 import hashlib
 import os.path
-from requestbuilder import Arg, MutuallyExclusiveArgList
+import sys
+
+from requestbuilder import Arg
+from requestbuilder.exceptions import ArgumentError
 from requestbuilder.mixins import FileTransferProgressBarMixin
+
+from euca2ools.commands.walrus import WalrusRequest
+import euca2ools.bundle.pipes
 
 
 class GetObject(WalrusRequest, FileTransferProgressBarMixin):
     DESCRIPTION = 'Retrieve objects from the server'
-    ARGS = [Arg('--paths', metavar='BUCKET/KEY', nargs='+', route_to=None),
-            Arg('--show_progress', dest='show_progress', metavar='BOOLEAN',
-                default=True, route_to=None, help=argparse.SUPPRESS),
-            MutuallyExclusiveArgList(
-                Arg('-o', dest='opath', metavar='PATH', route_to=None,
-                    help='''where to download to.  If this names an existing
-                    directory or ends in '/' all objects will be downloaded
-                    separately to files in that directory.  Otherwise, all
-                    downloads will be written to a file with this name. Note
-                    that outputting multiple objects to a file will result in
-                    their concatenation.  (default: current directory)'''),
-                Arg('--fileobj', metavar='FILEOBJ', route_to=None,
-                    help=argparse.SUPPRESS))]
+    ARGS = [Arg('source', metavar='BUCKET/KEY', route_to=None,
+                help='the object to download (required)'),
+            Arg('-o', dest='dest', metavar='PATH', route_to=None,
+                default='.', help='''where to download to.  If this names a
+                directory the object will be written to a file inside of that
+                directory.  If this is is "-" the object will be written to
+                stdout.  Otherwise it will be written to a file with the name
+                given.  (default:  current directory)''')]
 
-    def _download_to_fileobj(self,
-                             path,
-                             outfile,
-                             show_progress=True,
-                             pbar_label=None,
-                             chunk_size=None):
-        chunk_size = chunk_size or euca2ools.bundle.pipes._BUFSIZE
-        bytes_written = 0
-        progress_bar = None
-        try:
-            self.path = path
-            response = self.send()
-            sha1digest = hashlib.sha1()
-            if show_progress:
-                if 'Content-Length' in response.headers:
-                    maxval = int(response.headers['Content-Length'])
-                else:
-                    maxval = None
-                progress_bar_label = pbar_label or str(path)
-                progress_bar = self.get_progressbar(label=progress_bar_label,
-                                                    maxval=maxval)
-                progress_bar.start()
-            for chunk in response.iter_content(chunk_size=chunk_size):
-                outfile.write(chunk)
-                bytes_written += len(chunk)
-                sha1digest.update(chunk)
-                if progress_bar:
-                    progress_bar.update(bytes_written)
-            outfile.flush()
-            if progress_bar:
-                progress_bar.finish()
-        finally:
-            self.log.debug('Downloaded bytes:{0} file:{1}'
-                           .format(bytes_written, path))
-        return sha1digest.hexdigest()
+    def configure(self):
+        WalrusRequest.configure(self)
+
+        bucket, _, key = self.args['source'].partition('/')
+        if not bucket:
+            raise ArgumentError('source must contain a bucket name')
+        if not key:
+            raise ArgumentError('source must contain a key name')
+
+        if isinstance(self.args['dest'], basestring):
+            # If it is not a string we assume it is a file-like object
+            if self.args['dest'] == '-':
+                self.args['dest'] = sys.stdout
+            elif os.path.isdir(self.args['dest']):
+                basename = os.path.basename(key)
+                if not basename:
+                    raise ArgumentError("specify a complete file path with -o "
+                                        "to download objects that end in '/'")
+                dest_path = os.path.join(self.args['dest'], basename)
+                self.args['dest'] = open(dest_path, 'w')
+            else:
+                self.args['dest'] = open(self.args['dest'], 'w')
 
     def main(self):
-        sha1_dict = {}
-        opath = self.args['opath']
-        paths = self.args['paths']
-        show_progress = self.args.get('show_progress')
-        self.log.debug('GOT SHOW PROGRESS: ' + str(show_progress))
-        label = None
-        if show_progress:
-            label_template = build_progressbar_label_template(paths)
-        if (opath) and (os.path.isdir(opath) or opath.endswith('/')):
-            #Download paths to individual files under provided directory...
-            if not os.path.isdir(opath):
-                # Ends with '/' and does not exist -> create it
-                os.mkdir(opath)
-            # Download one per directory
-            for index, path in enumerate(paths, 1):
-                ofile_name = os.path.join(opath, path.rsplit('/', 1)[-1])
-                if show_progress:
-                    label = label_template.format(index=index, fname=path)
-                with open(ofile_name, 'w') as ofile:
-                    sha1sum = (self._download_to_fileobj(
-                               path=path,
-                               outfile=ofile,
-                               show_progress=show_progress,
-                               pbar_label=label))
-                    sha1_dict[path] = sha1sum
+        # Note that this method does not close self.args['dest']
+        self.path = self.args['source']
+        bytes_written = 0
+        md5_digest = hashlib.md5()
+        sha_digest = hashlib.sha1()
+        response = self.send()
+        content_length = response.headers.get('Content-Length')
+        if content_length:
+            pbar = self.get_progressbar(label=self.args['source'],
+                                        maxval=int(content_length))
         else:
-            # Download everything to one file
-            ofile = self.args.get('fileobj') or open(opath, 'w')
-            try:
-                for index, path in enumerate(paths, 1):
-                    if show_progress:
-                        label = label_template.format(index=index, fname=path)
-                    sha1sum = (self._download_to_fileobj(
-                               path=path,
-                               outfile=ofile,
-                               show_progress=show_progress,
-                               pbar_label=label))
-                    sha1_dict[path] = sha1sum
-            finally:
-                #only close the file if it was opened within this method...
-                if opath and ofile:
-                    ofile.close()
-        return sha1_dict
+            pbar = self.get_progressbar(label=self.args['source'])
+        pbar.start()
+        for chunk in response.iter_content(chunk_size=euca2ools.BUFSIZE):
+            self.args['dest'].write(chunk)
+            bytes_written += len(chunk)
+            md5_digest.update(chunk)
+            sha_digest.update(chunk)
+            if pbar is not None:
+                pbar.update(bytes_written)
+        self.args['dest'].flush()
+        pbar.finish()
+
+        # Integrity checks
+        if content_length and bytes_written != int(content_length):
+            raise RuntimeError('downloaded file appears to be corrupt '
+                               '(expected size: {0}, actual: {1})'
+                               .format(content_length, bytes_written))
+        etag = response.headers.get('ETag', '').lower().strip('"')
+        if (len(etag) == 32 and
+                all(char in '0123456789abcdef' for char in etag)):
+            # It looks like an MD5 hash
+            if md5_digest.hexdigest() != etag:
+                raise RuntimeError('downloaded file appears to be corrupt '
+                                   '(expected digest: {0}, actual: {1})'
+                                   .format(etag, md5_digest.hexdigest()))
+
+        return {self.args['source']: {'md5': md5_digest.hexdigest(),
+                                      'sha1': sha_digest.hexdigest(),
+                                      'size': bytes_written}}
