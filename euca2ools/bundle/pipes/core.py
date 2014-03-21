@@ -1,4 +1,4 @@
-# Copyright 2013 Eucalyptus Systems, Inc.
+# Copyright 2013-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -175,7 +175,7 @@ def copy_with_progressbar(infile, outfile, progressbar=None, maxbytes=0):
         progressbar.start()
     try:
         while not infile.closed:
-            chunk = infile.read(euca2ools.bundle.pipes._BUFSIZE)
+            chunk = infile.read(euca2ools.BUFSIZE)
             if chunk:
                 if maxbytes and ((bytes_written + len(chunk)) > maxbytes):
                     raise RuntimeError('Amount to be written:{0} will exceed '
@@ -212,7 +212,7 @@ def _calc_sha1_for_pipe(infile, outfile, digest_out_pipe_w, debug=False):
     digest = hashlib.sha1()
     try:
         while True:
-            chunk = infile.read(euca2ools.bundle.pipes._BUFSIZE)
+            chunk = infile.read(euca2ools.BUFSIZE)
             if chunk:
                 digest.update(chunk)
                 outfile.write(chunk)
@@ -234,7 +234,7 @@ def _calc_sha1_for_pipe(infile, outfile, digest_out_pipe_w, debug=False):
 def _create_tarball_from_stream(infile, outfile, tarinfo, debug=False):
     close_all_fds(except_fds=[infile, outfile])
     tarball = tarfile.open(mode='w|', fileobj=outfile,
-                           bufsize=euca2ools.bundle.pipes._BUFSIZE)
+                           bufsize=euca2ools.BUFSIZE)
     try:
         tarball.addfile(tarinfo, fileobj=infile)
     except IOError:

@@ -158,12 +158,12 @@ class Unbundle(BaseCommand, FileTransferProgressBarMixin,
                 sha1sum = hashlib.sha1()
                 part_file_path = source_dir + "/" + part.filename
                 with open(part_file_path) as part_file:
-                    data = part_file.read(euca2ools.bundle.pipes._BUFSIZE)
+                    data = part_file.read(euca2ools.BUFSIZE)
                     while data:
                         sha1sum.update(data)
                         outfile.write(data)
                         outfile.flush()
-                        data = part_file.read(euca2ools.bundle.pipes._BUFSIZE)
+                        data = part_file.read(euca2ools.BUFSIZE)
                     part_digest = sha1sum.hexdigest()
                     self.log.debug(
                         "PART NUMBER:" + str(image_parts.index(part) + 1) +

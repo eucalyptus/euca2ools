@@ -143,9 +143,7 @@ def _write_parts(infile, part_prefix, part_size, partinfo_mpconn,
             bytes_to_write = part_size
             while bytes_to_write > 0:
                 try:
-                    chunk = infile.read(
-                        min(bytes_to_write,
-                            euca2ools.bundle.pipes._BUFSIZE))
+                    chunk = infile.read(min(bytes_to_write, euca2ools.BUFSIZE))
                 except ValueError:  # I/O error on closed file
                     # HACK
                     if not debug:

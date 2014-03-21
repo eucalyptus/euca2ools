@@ -29,6 +29,8 @@ import subprocess
 
 __version__ = '3.1.0-pre1'
 
+BUFSIZE = 8192
+
 
 if '__file__' in globals():
     # Check if this is a git repo; maybe we can get more precise version info
