@@ -26,6 +26,12 @@
 from requestbuilder import Arg
 
 from euca2ools.commands.euare import EuareRequest, AS_ACCOUNT
+from euca2ools.commands.euare.deleterolepolicy import DeleteRolePolicy
+from euca2ools.commands.euare.listinstanceprofilesforrole import \
+    ListInstanceProfilesForRole
+from euca2ools.commands.euare.listrolepolicies import ListRolePolicies
+from euca2ools.commands.euare.removerolefrominstanceprofile import \
+    RemoveRoleFromInstanceProfile
 
 
 class DeleteRole(EuareRequest):
@@ -43,17 +49,55 @@ class DeleteRole(EuareRequest):
     def main(self):
         if self.args.get('recursive') or self.args.get('pretend'):
             # Figure out what we have to delete
-            pass  ## TODO
+            req = ListInstanceProfilesForRole(
+                config=self.config, service=self.service,
+                RoleName=self.args['RoleName'],
+                DelegateAccount=self.args.get('DelegateAccount'))
+            response = req.send()
+            instance_profiles = []
+            for profile in response.get('InstanceProfiles') or []:
+                instance_profiles.append(
+                    {'arn': profile.get('Arn'),
+                     'name': profile.get('InstanceProfileName')})
+
+            req = ListRolePolicies(
+                config=self.config, service=self.service,
+                RoleName=self.args['RoleName'],
+                DelegateAccount=self.args.get('DelegateAccount'))
+            response = req.send()
+            policies = []
+            for policy in response.get('PolicyNames') or []:
+                policies.append(policy)
         else:
             # Just in case
-            pass  ## TODO:  fill in empty lists for the stuff to delete
+            instance_profiles = []
+            policies = []
         if self.args.get('pretend'):
-            return {}  ## TODO:  return a dict with stuff
+            return {'instance_profiles': instance_profiles,
+                    'policies': policies}
         else:
             if self.args.get('recursive'):
-                pass  ## TODO
+                for profile in instance_profiles:
+                    req = RemoveRoleFromInstanceProfile(
+                        config=self.config, service=self.service,
+                        RoleName=self.args['RoleName'],
+                        InstanceProfileName=profile['name'],
+                        DelegateAccount=self.args.get('DelegateAccount'))
+                    req.send()
+                for policy in policies:
+                    req = DeleteRolePolicy(
+                        config=self.config, service=self.service,
+                        RoleName=self.args['RoleName'],
+                        PolicyName=policy,
+                        DelegateAccount=self.args.get('DelegateAccount'))
+                    req.send()
         return self.send()
 
     def print_result(self, result):
         if self.args.get('pretend'):
-            print result  ## TODO:  print the stuff in the dict
+            print 'instance profiles'
+            for profile in result['instance_profiles']:
+                print '\t' + profile['arn']
+            print 'policies'
+            for policy in result['policies']:
+                print '\t' + policy
