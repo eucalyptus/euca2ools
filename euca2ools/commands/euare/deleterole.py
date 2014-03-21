@@ -30,8 +30,8 @@ from euca2ools.commands.euare import EuareRequest, AS_ACCOUNT
 
 class DeleteRole(EuareRequest):
     DESCRIPTION = 'Delete a role'
-    ARGS = [Arg('-r', '--role', dest='RoleName', required=True,
-                help='name of the role to delete (required)'),
+    ARGS = [Arg('-r', '--role-name', dest='RoleName', metavar='ROLE',
+                required=True, help='name of the role to delete (required)'),
             Arg('-c', '--recursive', action='store_true', route_to=None,
                 help='''remove all IAM resources associated with the role
                 first'''),
