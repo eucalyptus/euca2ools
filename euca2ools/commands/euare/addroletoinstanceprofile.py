@@ -32,6 +32,6 @@ class AddRoleToInstanceProfile(EuareRequest):
     ARGS = [Arg('-r', '--role-name', dest='RoleName', required=True,
                 help='role to add (required)'),
             Arg('-s', '--instance-profile-name', dest='InstanceProfileName',
-                required=True,
+                metavar='IPROFILE', required=True,
                 help='instance profile to add the role to (required)'),
             AS_ACCOUNT]
