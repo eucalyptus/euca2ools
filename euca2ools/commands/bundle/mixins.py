@@ -27,6 +27,7 @@ import argparse
 import base64
 import os.path
 import random
+import tempfile
 import sys
 
 from requestbuilder import Arg, MutuallyExclusiveArgList
@@ -39,6 +40,7 @@ from euca2ools.commands.argtypes import (b64encoded_file_contents,
                                          manifest_block_device_mappings)
 from euca2ools.commands.walrus.checkbucket import CheckBucket
 from euca2ools.commands.walrus.createbucket import CreateBucket
+from euca2ools.commands.walrus.getobject import GetObject
 from euca2ools.commands.walrus.postobject import PostObject
 from euca2ools.commands.walrus.putobject import PutObject
 from euca2ools.exceptions import AWSError
@@ -391,6 +393,72 @@ class BundleUploadingMixin(object):
             partinfo_in_mpconn.close()
             if partinfo_out_mpconn is not None:
                 partinfo_out_mpconn.close()
+
+
+class BundleDownloadingMixin(object):
+    # When fetching the manifest from the server there are two ways to get
+    # its path:
+    #  -m:  BUCKET[/PREFIX]/MANIFEST
+    #  -p:  BUCKET[/PREFIX]/PREFIX.manifest.xml  (the PREFIXes are different)
+    #
+    # In all cases, after we obtain the manifest (whether it is local or not)
+    # we choose key names for parts based on the file names in the manifest:
+    #  BUCKET[/PREFIX]/PART
+
+    ARGS = [Arg('-b', '--bucket', metavar='BUCKET[/PREFIX]', required=True,
+                route_to=None, help='''the bucket that contains the bundle,
+                with an optional path prefix (required)'''),
+            MutuallyExclusiveArgList(True,
+                Arg('-m', '--manifest', dest='manifest', route_to=None,
+                    help='''the manifest's complete file name, not including
+                    any path that may be specified using -b'''),
+                Arg('-p', '--prefix', dest='manifest', route_to=None,
+                    type=(lambda x: x + '.manifest.xml'),
+                    help='''the portion of the manifest's file name that
+                    precedes ".manifest.xml"'''),
+                Arg('--local-manifest', dest='local_manifest', metavar='FILE',
+                    route_to=None,
+                    help='''location of a manifest on disk to use instead of
+                    downloading the manifest from the server'''))]
+
+    def fetch_manifest(self, s3_service, privkey_filename=None):
+        if self.args.get('local_manifest'):
+            _assert_is_file(self.args['local_manifest'])
+            return euca2ools.bundle.manifest.BundleManifest.read_from_file(
+                self.args['local_manifest'], privkey_filename=privkey_filename)
+
+        # It's on the server, so do things the hard way
+        manifest_s3path = self.get_manifest_s3path()
+        with tempfile.TemporaryFile() as manifest_tempfile:
+            self.log.info('reading manifest from %s', manifest_s3path)
+            req = GetObject(config=self.config, service=s3_service,
+                            source=manifest_s3path, dest=manifest_tempfile)
+            try:
+                req.main()
+            except AWSError as err:
+                if err.status_code == 404:
+                    self.log.debug('failed to fetch manifest', exc_info=True)
+                    raise ValueError("manifest '{0}' does not exist on the "
+                                     "server".format(manifest_s3path))
+                raise
+            manifest_tempfile.flush()
+            manifest_tempfile.seek(0)
+            return euca2ools.bundle.manifest.BundleManifest.read_from_fileobj(
+                manifest_tempfile, privkey_filename=privkey_filename)
+
+    def get_manifest_s3path(self):
+        if self.args.get('manifest'):
+            return '/'.join((self.args['bucket'], self.args['manifest']))
+        else:
+            # With a local manifest we can't divine the manifest's key name is
+            return None
+
+    def map_bundle_parts_to_s3paths(self, manifest):
+        parts = []
+        for part in manifest.image_parts:
+            parts.append((part,
+                          '/'.join((self.args['bucket'], part.filename))))
+        return parts
 
 
 def _assert_is_file(filename, filetype):
