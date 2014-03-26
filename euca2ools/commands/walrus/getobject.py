@@ -95,6 +95,9 @@ class GetObject(WalrusRequest, FileTransferProgressBarMixin):
 
         # Integrity checks
         if content_length and bytes_written != int(content_length):
+            self.log.error('rejecting download due to Content-Length size '
+                           'mismatch (expected: %i, actual: %i)',
+                           content_length, bytes_written)
             raise RuntimeError('downloaded file appears to be corrupt '
                                '(expected size: {0}, actual: {1})'
                                .format(content_length, bytes_written))
@@ -103,8 +106,11 @@ class GetObject(WalrusRequest, FileTransferProgressBarMixin):
                 all(char in '0123456789abcdef' for char in etag)):
             # It looks like an MD5 hash
             if md5_digest.hexdigest() != etag:
+                self.log.error('rejecting download due to ETag MD5 mismatch '
+                               '(expected: %s, actual: %s)',
+                               etag, md5_digest.hexdigest())
                 raise RuntimeError('downloaded file appears to be corrupt '
-                                   '(expected digest: {0}, actual: {1})'
+                                   '(expected MD5: {0}, actual: {1})'
                                    .format(etag, md5_digest.hexdigest()))
 
         return {self.args['source']: {'md5': md5_digest.hexdigest(),
