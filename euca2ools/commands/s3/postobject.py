@@ -31,7 +31,7 @@ from requestbuilder import Arg, MutuallyExclusiveArgList
 from requestbuilder.exceptions import ArgumentError
 
 from euca2ools.commands.argtypes import b64encoded_file_contents
-from euca2ools.commands.walrus import WalrusRequest
+from euca2ools.commands.s3 import WalrusRequest
 
 
 class PostObject(WalrusRequest):

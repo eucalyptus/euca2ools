@@ -23,19 +23,35 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.walrus import (WalrusRequest,
-                                       validate_generic_bucket_name)
+from euca2ools.commands.s3 import (WalrusRequest,
+                                   validate_generic_bucket_name)
 from requestbuilder import Arg
+import xml.etree.ElementTree as ET
 
 
-class DeleteBucket(WalrusRequest):
-    DESCRIPTION = 'Delete a bucket'
-    ARGS = [Arg('bucket', route_to=None, help='name of the bucket to delete')]
+class CreateBucket(WalrusRequest):
+    DESCRIPTION = 'Create a new bucket'
+    ARGS = [Arg('bucket', route_to=None, help='name of the new bucket'),
+            Arg('--location', route_to=None,
+                help='''location constraint to configure the bucket with
+                (default: inferred from s3-location-constraint in
+                configuration, or otherwise none)''')]
 
     def configure(self):
         WalrusRequest.configure(self)
         validate_generic_bucket_name(self.args['bucket'])
 
     def preprocess(self):
-        self.method = 'DELETE'
+        self.method = 'PUT'
         self.path = self.args['bucket']
+        cb_config = ET.Element('CreateBucketConfiguration')
+        cb_config.set('xmlns', 'http://doc.s3.amazonaws.com/2006-03-01')
+        lconstraint = (self.args['location'] or
+                       self.config.get_region_option('s3-location-constraint'))
+        if lconstraint:
+            cb_lconstraint = ET.SubElement(cb_config, 'LocationConstraint')
+            cb_lconstraint.text = lconstraint
+        if len(cb_config.getchildren()):
+            cb_xml = ET.tostring(cb_config)
+            self.log.debug('bucket configuration: %s', cb_xml)
+            self.body = cb_xml

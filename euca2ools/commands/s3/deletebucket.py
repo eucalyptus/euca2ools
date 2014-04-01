@@ -23,22 +23,19 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.walrus import WalrusRequest
+from euca2ools.commands.s3 import (WalrusRequest,
+                                   validate_generic_bucket_name)
 from requestbuilder import Arg
-from requestbuilder.exceptions import ArgumentError
 
 
-class DeleteObject(WalrusRequest):
-    DESCRIPTION = 'Delete an object from the server'
-    ARGS = [Arg('path', metavar='BUCKET/KEY', route_to=None)]
-    METHOD = 'DELETE'
+class DeleteBucket(WalrusRequest):
+    DESCRIPTION = 'Delete a bucket'
+    ARGS = [Arg('bucket', route_to=None, help='name of the bucket to delete')]
 
-    # noinspection PyExceptionInherit
     def configure(self):
         WalrusRequest.configure(self)
-        if '/' not in self.args['path']:
-            raise ArgumentError("path '{0}' must include a key name"
-                                .format(self.args['path']))
+        validate_generic_bucket_name(self.args['bucket'])
 
     def preprocess(self):
-        self.path = self.args['path']
+        self.method = 'DELETE'
+        self.path = self.args['bucket']

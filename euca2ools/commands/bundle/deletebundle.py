@@ -26,9 +26,9 @@
 from requestbuilder import Arg
 
 from euca2ools.commands.bundle.mixins import BundleDownloadingMixin
-from euca2ools.commands.walrus import WalrusRequest
-from euca2ools.commands.walrus.deletebucket import DeleteBucket
-from euca2ools.commands.walrus.deleteobject import DeleteObject
+from euca2ools.commands.s3 import WalrusRequest
+from euca2ools.commands.s3.deletebucket import DeleteBucket
+from euca2ools.commands.s3.deleteobject import DeleteObject
 
 
 class DeleteBundle(WalrusRequest, BundleDownloadingMixin):

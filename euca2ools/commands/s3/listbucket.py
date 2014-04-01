@@ -24,8 +24,8 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import argparse
-from euca2ools.commands.walrus import (WalrusRequest,
-                                       validate_generic_bucket_name)
+from euca2ools.commands.s3 import (WalrusRequest,
+                                   validate_generic_bucket_name)
 from requestbuilder import Arg
 from requestbuilder.exceptions import ArgumentError
 from requestbuilder.mixins import TabifyingMixin

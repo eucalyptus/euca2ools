@@ -23,35 +23,22 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.walrus import (WalrusRequest,
-                                       validate_generic_bucket_name)
+from euca2ools.commands.s3 import WalrusRequest
 from requestbuilder import Arg
-import xml.etree.ElementTree as ET
+from requestbuilder.exceptions import ArgumentError
 
 
-class CreateBucket(WalrusRequest):
-    DESCRIPTION = 'Create a new bucket'
-    ARGS = [Arg('bucket', route_to=None, help='name of the new bucket'),
-            Arg('--location', route_to=None,
-                help='''location constraint to configure the bucket with
-                (default: inferred from s3-location-constraint in
-                configuration, or otherwise none)''')]
+class DeleteObject(WalrusRequest):
+    DESCRIPTION = 'Delete an object from the server'
+    ARGS = [Arg('path', metavar='BUCKET/KEY', route_to=None)]
+    METHOD = 'DELETE'
 
+    # noinspection PyExceptionInherit
     def configure(self):
         WalrusRequest.configure(self)
-        validate_generic_bucket_name(self.args['bucket'])
+        if '/' not in self.args['path']:
+            raise ArgumentError("path '{0}' must include a key name"
+                                .format(self.args['path']))
 
     def preprocess(self):
-        self.method = 'PUT'
-        self.path = self.args['bucket']
-        cb_config = ET.Element('CreateBucketConfiguration')
-        cb_config.set('xmlns', 'http://doc.s3.amazonaws.com/2006-03-01')
-        lconstraint = (self.args['location'] or
-                       self.config.get_region_option('s3-location-constraint'))
-        if lconstraint:
-            cb_lconstraint = ET.SubElement(cb_config, 'LocationConstraint')
-            cb_lconstraint.text = lconstraint
-        if len(cb_config.getchildren()):
-            cb_xml = ET.tostring(cb_config)
-            self.log.debug('bucket configuration: %s', cb_xml)
-            self.body = cb_xml
+        self.path = self.args['path']

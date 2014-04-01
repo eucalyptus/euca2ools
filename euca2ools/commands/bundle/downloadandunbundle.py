@@ -33,10 +33,10 @@ from requestbuilder.mixins import FileTransferProgressBarMixin
 
 from euca2ools.bundle.util import open_pipe_fileobjs
 from euca2ools.bundle.util import waitpid_in_thread
-from euca2ools.commands.bundle.mixins import BundleDownloadingMixin
-from euca2ools.commands.walrus import WalrusRequest
 from euca2ools.commands.bundle.downloadbundle import DownloadBundle
+from euca2ools.commands.bundle.mixins import BundleDownloadingMixin
 from euca2ools.commands.bundle.unbundlestream import UnbundleStream
+from euca2ools.commands.s3 import WalrusRequest
 
 
 class DownloadAndUnbundle(WalrusRequest, FileTransferProgressBarMixin,

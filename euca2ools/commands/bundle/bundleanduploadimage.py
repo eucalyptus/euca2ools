@@ -38,7 +38,7 @@ import euca2ools.bundle.manifest
 import euca2ools.bundle.util
 from euca2ools.commands.bundle.mixins import (BundleCreatingMixin,
                                               BundleUploadingMixin)
-from euca2ools.commands.walrus import WalrusRequest
+from euca2ools.commands.s3 import WalrusRequest
 from euca2ools.util import mkdtemp_for_large_files
 
 

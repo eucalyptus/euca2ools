@@ -31,7 +31,7 @@ from requestbuilder import Arg
 from requestbuilder.exceptions import ArgumentError
 from requestbuilder.mixins import FileTransferProgressBarMixin
 
-from euca2ools.commands.walrus import WalrusRequest
+from euca2ools.commands.s3 import WalrusRequest
 import euca2ools.bundle.pipes
 
 

@@ -23,9 +23,9 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.walrus.getobject import GetObject
-from euca2ools.commands.walrus.listbucket import ListBucket
-from euca2ools.commands.walrus import WalrusRequest
+from euca2ools.commands.s3.getobject import GetObject
+from euca2ools.commands.s3.listbucket import ListBucket
+from euca2ools.commands.s3 import WalrusRequest
 import os
 from requestbuilder.exceptions import ClientError, ServerError
 import requests

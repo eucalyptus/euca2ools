@@ -38,11 +38,11 @@ import euca2ools.bundle.util
 from euca2ools.commands.argtypes import (b64encoded_file_contents,
                                          delimited_list, filesize,
                                          manifest_block_device_mappings)
-from euca2ools.commands.walrus.checkbucket import CheckBucket
-from euca2ools.commands.walrus.createbucket import CreateBucket
-from euca2ools.commands.walrus.getobject import GetObject
-from euca2ools.commands.walrus.postobject import PostObject
-from euca2ools.commands.walrus.putobject import PutObject
+from euca2ools.commands.s3.checkbucket import CheckBucket
+from euca2ools.commands.s3.createbucket import CreateBucket
+from euca2ools.commands.s3.getobject import GetObject
+from euca2ools.commands.s3.postobject import PostObject
+from euca2ools.commands.s3.putobject import PutObject
 from euca2ools.exceptions import AWSError
 
 

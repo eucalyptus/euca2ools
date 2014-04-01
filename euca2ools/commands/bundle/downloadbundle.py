@@ -32,7 +32,7 @@ from requestbuilder.exceptions import ArgumentError
 from requestbuilder.mixins import FileTransferProgressBarMixin
 
 from euca2ools.commands.bundle.mixins import BundleDownloadingMixin
-from euca2ools.commands.walrus import WalrusRequest
+from euca2ools.commands.s3 import WalrusRequest
 
 
 class DownloadBundle(WalrusRequest, FileTransferProgressBarMixin,
