@@ -23,7 +23,8 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import dateutil.parser
+import datetime
+
 from requestbuilder import Arg, Filter
 
 from euca2ools.commands.ec2 import EC2Request
@@ -103,9 +104,14 @@ def get_retirement_date(status_set):
         if event_start is not None:
             if retirement_date is None:
                 retirement_date = event_start
-            elif (dateutil.parser.parse(event.get(event_start)) <
-                  dateutil.parser.parse(retirement_date)):
-                retirement_date = event_start
+            else:
+                date_format = '%Y-%m-%dT%H:%M:%S.%fZ'
+                event_start_datetime = datetime.datetime.strptime(
+                    event.get(event_start), date_format)
+                retirement_datetime = datetime.datetime.strptime(
+                    retirement_date, date_format)
+                if event_start_datetime < retirement_datetime:
+                    retirement_date = event_start
     return retirement_date
 
 
