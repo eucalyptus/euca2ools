@@ -53,7 +53,7 @@ class DeleteInstanceProfile(EuareRequest):
                 config=self.config, service=self.service,
                 InstanceProfileName=self.args['InstanceProfileName'],
                 DelegateAccount=self.args.get('DelegateAccount'))
-            response = req.send()
+            response = req.main()
             roles = []
             for role in response.get('InstanceProfile', {}).get('Roles') or []:
                 roles.append({'arn': role.get('Arn'),
@@ -71,7 +71,7 @@ class DeleteInstanceProfile(EuareRequest):
                         RoleName=role['name'],
                         InstanceProfileName=self.args['InstanceProfileName'],
                         DelegateAccount=self.args.get('DelegateAccount'))
-                    req.send()
+                    req.main()
         return self.send()
 
     def print_result(self, result):

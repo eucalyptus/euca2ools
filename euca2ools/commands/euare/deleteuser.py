@@ -112,34 +112,34 @@ class DeleteUser(EuareRequest):
                         UserName=self.args['UserName'],
                         AccessKeyId=key['AccessKeyId'],
                         DelegateAccount=self.params['DelegateAccount'])
-                    req.send()
+                    req.main()
                 for policy in policies:
                     req = DeleteUserPolicy(
                         config=self.config, service=self.service,
                         UserName=self.args['UserName'],
                         PolicyName=policy,
                         DelegateAccount=self.params['DelegateAccount'])
-                    req.send()
+                    req.main()
                 for cert in certs:
                     req = DeleteSigningCertificate(
                         config=self.config, service=self.service,
                         UserName=self.args['UserName'],
                         CertificateId=cert['CertificateId'],
                         DelegateAccount=self.params['DelegateAccount'])
-                    req.send()
+                    req.main()
                 for group in groups:
                     req = RemoveUserFromGroup(
                         config=self.config, service=self.service,
                         user_names=[self.args['UserName']],
                         GroupName=group['GroupName'],
                         DelegateAccount=self.params['DelegateAccount'])
-                    req.send()
+                    req.main()
                 if has_login_profile:
                     req = DeleteLoginProfile(
                         config=self.config, service=self.service,
                         UserName=self.args['UserName'],
                         DelegateAccount=self.params['DelegateAccount'])
-                    req.send()
+                    req.main()
             return self.send()
 
     def print_result(self, result):

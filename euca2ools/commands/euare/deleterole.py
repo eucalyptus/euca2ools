@@ -53,7 +53,7 @@ class DeleteRole(EuareRequest):
                 config=self.config, service=self.service,
                 RoleName=self.args['RoleName'],
                 DelegateAccount=self.args.get('DelegateAccount'))
-            response = req.send()
+            response = req.main()
             instance_profiles = []
             for profile in response.get('InstanceProfiles') or []:
                 instance_profiles.append(
@@ -64,7 +64,7 @@ class DeleteRole(EuareRequest):
                 config=self.config, service=self.service,
                 RoleName=self.args['RoleName'],
                 DelegateAccount=self.args.get('DelegateAccount'))
-            response = req.send()
+            response = req.main()
             policies = []
             for policy in response.get('PolicyNames') or []:
                 policies.append(policy)
@@ -83,14 +83,14 @@ class DeleteRole(EuareRequest):
                         RoleName=self.args['RoleName'],
                         InstanceProfileName=profile['name'],
                         DelegateAccount=self.args.get('DelegateAccount'))
-                    req.send()
+                    req.main()
                 for policy in policies:
                     req = DeleteRolePolicy(
                         config=self.config, service=self.service,
                         RoleName=self.args['RoleName'],
                         PolicyName=policy,
                         DelegateAccount=self.args.get('DelegateAccount'))
-                    req.send()
+                    req.main()
         return self.send()
 
     def print_result(self, result):
