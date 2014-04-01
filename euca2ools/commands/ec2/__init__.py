@@ -42,9 +42,9 @@ from euca2ools.exceptions import AWSError
 from euca2ools.util import substitute_euca_region
 
 
-class Eucalyptus(BaseService):
+class EC2(BaseService):
     NAME = 'ec2'
-    DESCRIPTION = 'Eucalyptus compute cloud service'
+    DESCRIPTION = 'Elastic compute cloud service'
     API_VERSION = '2013-02-01'
     REGION_ENVVAR = 'AWS_DEFAULT_REGION'
     URL_ENVVAR = 'EC2_URL'
@@ -60,9 +60,9 @@ class Eucalyptus(BaseService):
         raise AWSError(response)
 
 
-class EucalyptusRequest(AWSQueryRequest, TabifyingMixin):
+class EC2Request(AWSQueryRequest, TabifyingMixin):
     SUITE = Euca2ools
-    SERVICE_CLASS = Eucalyptus
+    SERVICE_CLASS = EC2
     AUTH_CLASS = QuerySigV2Auth
     METHOD = 'POST'
 

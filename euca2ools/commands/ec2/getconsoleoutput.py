@@ -24,7 +24,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import base64
-from euca2ools.commands.ec2 import EucalyptusRequest
+from euca2ools.commands.ec2 import EC2Request
 from requestbuilder import Arg
 import sys
 
@@ -43,7 +43,7 @@ CHAR_ESCAPES = {
 }
 
 
-class GetConsoleOutput(EucalyptusRequest):
+class GetConsoleOutput(EC2Request):
     DESCRIPTION = 'Retrieve console output for the specified instance'
     ARGS = [Arg('InstanceId', metavar='INSTANCE', help='''ID of the instance to
                 obtain console output from (required)'''),

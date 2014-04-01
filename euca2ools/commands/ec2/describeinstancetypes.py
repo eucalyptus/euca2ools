@@ -23,12 +23,12 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.ec2 import EucalyptusRequest
+from euca2ools.commands.ec2 import EC2Request
 from requestbuilder import Arg
 from requestbuilder.mixins import TabifyingMixin
 
 
-class DescribeInstanceTypes(EucalyptusRequest, TabifyingMixin):
+class DescribeInstanceTypes(EC2Request, TabifyingMixin):
     DESCRIPTION = '[Eucalyptus only] Show information about instance types'
     ARGS = [Arg('InstanceType', metavar='INSTANCETYPE', nargs='*',
                 help='limit results to specific instance types'),
@@ -40,7 +40,7 @@ class DescribeInstanceTypes(EucalyptusRequest, TabifyingMixin):
     LIST_TAGS = ['instanceTypeDetails', 'availability']
 
     def configure(self):
-        EucalyptusRequest.configure(self)
+        EC2Request.configure(self)
         if self.args.get('by_zone', False):
             self.params['Availability'] = True
 

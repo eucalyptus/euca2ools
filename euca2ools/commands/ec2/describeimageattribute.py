@@ -25,10 +25,10 @@
 
 from requestbuilder import Arg, MutuallyExclusiveArgList
 
-from euca2ools.commands.ec2 import EucalyptusRequest
+from euca2ools.commands.ec2 import EC2Request
 
 
-class DescribeImageAttribute(EucalyptusRequest):
+class DescribeImageAttribute(EC2Request):
     DESCRIPTION = 'Show information about an attribute of an image'
     ARGS = [Arg('ImageId', metavar='IMAGE', help='image to describe'),
             MutuallyExclusiveArgList(

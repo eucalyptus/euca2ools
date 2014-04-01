@@ -24,11 +24,11 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 from euca2ools.commands.argtypes import ec2_block_device_mapping
-from euca2ools.commands.ec2 import EucalyptusRequest
+from euca2ools.commands.ec2 import EC2Request
 from requestbuilder import Arg
 
 
-class CreateImage(EucalyptusRequest):
+class CreateImage(EC2Request):
     DESCRIPTION = 'Create an EBS image from a running or stopped EBS instance'
     ARGS = [Arg('InstanceId', metavar='INSTANCE',
                 help='instance from which to create the image (required)'),

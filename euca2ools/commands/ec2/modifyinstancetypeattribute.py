@@ -23,13 +23,13 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.ec2 import EucalyptusRequest
+from euca2ools.commands.ec2 import EC2Request
 from requestbuilder import Arg
 from requestbuilder.exceptions import ArgumentError
 from requestbuilder.mixins import TabifyingMixin
 
 
-class ModifyInstanceTypeAttribute(EucalyptusRequest, TabifyingMixin):
+class ModifyInstanceTypeAttribute(EC2Request, TabifyingMixin):
     DESCRIPTION = '[Eucalyptus cloud admin only] Modify an instance type'
     ARGS = [Arg('Name', metavar='INSTANCETYPE',
                 help='name of the instance type to modify (required)'),
@@ -44,7 +44,7 @@ class ModifyInstanceTypeAttribute(EucalyptusRequest, TabifyingMixin):
 
     # noinspection PyExceptionInherit
     def configure(self):
-        EucalyptusRequest.configure(self)
+        EC2Request.configure(self)
         if (self.args.get('Reset') and
             any(self.args.get(attr) is not None for attr in ('Cpu', 'Disk',
                                                              'Memory'))):

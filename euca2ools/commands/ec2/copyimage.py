@@ -23,11 +23,11 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.ec2 import EucalyptusRequest
+from euca2ools.commands.ec2 import EC2Request
 from requestbuilder import Arg
 
 
-class CopyImage(EucalyptusRequest):
+class CopyImage(EC2Request):
     DESCRIPTION = ('Copy an image from another region\n\nRun this command '
                    'against the destination region, not the source region.')
     ARGS = [Arg('-r', '--source-region', dest='SourceRegion', metavar='REGION',

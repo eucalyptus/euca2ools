@@ -23,11 +23,11 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.ec2 import EucalyptusRequest
+from euca2ools.commands.ec2 import EC2Request
 from requestbuilder import Arg
 
 
-class ConfirmProductInstance(EucalyptusRequest):
+class ConfirmProductInstance(EC2Request):
     DESCRIPTION = 'Verify if a product code is associated with an instance'
     ARGS = [Arg('ProductCode', metavar='CODE',
                 help='product code to confirm (required)'),

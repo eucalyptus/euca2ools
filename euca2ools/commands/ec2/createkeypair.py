@@ -23,12 +23,12 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.ec2 import EucalyptusRequest
+from euca2ools.commands.ec2 import EC2Request
 import os
 from requestbuilder import Arg
 
 
-class CreateKeyPair(EucalyptusRequest):
+class CreateKeyPair(EC2Request):
     DESCRIPTION = 'Create a new SSH key pair for use with instances'
     ARGS = [Arg('KeyName', metavar='KEYPAIR',
                 help='name of the new key pair (required)'),

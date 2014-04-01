@@ -23,12 +23,12 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.ec2 import EucalyptusRequest
+from euca2ools.commands.ec2 import EC2Request
 from requestbuilder import Arg
 from requestbuilder.exceptions import ArgumentError
 
 
-class DisassociateAddress(EucalyptusRequest):
+class DisassociateAddress(EC2Request):
     DESCRIPTION = 'Disassociate an elastic IP address from an instance'
     ARGS = [Arg('PublicIp', metavar='ADDRESS', nargs='?', help='''[Non-VPC
                 only] elastic IP address to disassociate (required)'''),
@@ -38,7 +38,7 @@ class DisassociateAddress(EucalyptusRequest):
 
     # noinspection PyExceptionInherit
     def configure(self):
-        EucalyptusRequest.configure(self)
+        EC2Request.configure(self)
         if self.args.get('PublicIp'):
             if self.args.get('AssociationId'):
                 raise ArgumentError('argument -a/--association-id: not '

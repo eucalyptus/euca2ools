@@ -23,11 +23,11 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.ec2 import EucalyptusRequest
+from euca2ools.commands.ec2 import EC2Request
 from requestbuilder import Arg
 
 
-class GetPasswordData(EucalyptusRequest):
+class GetPasswordData(EC2Request):
     DESCRIPTION = ('Retrieve the encrypted administrator password for an '
                    'instance running Windows.  The encrypted password may be '
                    'decrypted using the private key of the key pair given '

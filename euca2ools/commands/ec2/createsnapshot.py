@@ -23,11 +23,11 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.ec2 import EucalyptusRequest
+from euca2ools.commands.ec2 import EC2Request
 from requestbuilder import Arg
 
 
-class CreateSnapshot(EucalyptusRequest):
+class CreateSnapshot(EC2Request):
     DESCRIPTION = 'Create a snapshot of a volume'
     ARGS = [Arg('VolumeId', metavar='VOLUME',
                 help='volume to create a snapshot of (required)'),

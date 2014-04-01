@@ -26,13 +26,13 @@
 import base64
 from euca2ools.commands.argtypes import (ec2_block_device_mapping,
                                          vpc_interface)
-from euca2ools.commands.ec2 import EucalyptusRequest
+from euca2ools.commands.ec2 import EC2Request
 import os.path
 from requestbuilder import Arg, MutuallyExclusiveArgList
 from requestbuilder.exceptions import ArgumentError
 
 
-class RunInstances(EucalyptusRequest):
+class RunInstances(EC2Request):
     DESCRIPTION = 'Launch instances of a machine image'
     ARGS = [Arg('ImageId', metavar='IMAGE',
                 help='ID of the image to instantiate (required)'),
@@ -143,7 +143,7 @@ class RunInstances(EucalyptusRequest):
 
     # noinspection PyExceptionInherit
     def configure(self):
-        EucalyptusRequest.configure(self)
+        EC2Request.configure(self)
         if self.args.get('user_data'):
             if os.path.isfile(self.args['user_data']):
                 raise ArgumentError(

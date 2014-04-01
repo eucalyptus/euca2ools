@@ -23,11 +23,11 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.ec2 import EucalyptusRequest
+from euca2ools.commands.ec2 import EC2Request
 from requestbuilder import Arg
 
 
-class MonitorInstances(EucalyptusRequest):
+class MonitorInstances(EC2Request):
     DESCRIPTION = 'Enable monitoring for one or more instances'
     ARGS = [Arg('InstanceId', metavar='INSTANCE', nargs='+', help='''ID(s) of
                 the instance(s) to begin monitoring (at least 1 required)''')]

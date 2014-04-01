@@ -23,11 +23,11 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.ec2 import EucalyptusRequest
+from euca2ools.commands.ec2 import EC2Request
 from requestbuilder import Arg
 
 
-class DetachVolume(EucalyptusRequest):
+class DetachVolume(EC2Request):
     DESCRIPTION = 'Detach a volume from an instance'
     ARGS = [Arg('VolumeId', metavar='VOLUME',
                 help='ID of the volume to detach (required)'),

@@ -23,14 +23,14 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.ec2 import EucalyptusRequest
+from euca2ools.commands.ec2 import EC2Request
 from requestbuilder import Arg, MutuallyExclusiveArgList
 from requestbuilder.exceptions import ArgumentError
 import socket
 import sys
 
 
-class ModifySecurityGroupRequest(EucalyptusRequest):
+class ModifySecurityGroupRequest(EC2Request):
     """
     The basis for security group-editing commands
     """
@@ -67,7 +67,7 @@ class ModifySecurityGroupRequest(EucalyptusRequest):
 
     # noinspection PyExceptionInherit
     def configure(self):
-        EucalyptusRequest.configure(self)
+        EC2Request.configure(self)
 
         if (self.args['group'].startswith('sg-') and
                 len(self.args['group']) == 11):
@@ -192,7 +192,7 @@ class ModifySecurityGroupRequest(EucalyptusRequest):
                           parse_neg_one_value('--icmp-type-code'))
         port_range = (parse_neg_one_value('-p') or
                       parse_neg_one_value('--port-range'))
-        EucalyptusRequest.process_cli_args(self)
+        EC2Request.process_cli_args(self)
         if icmp_type_code:
             self.args['icmp_type_code'] = icmp_type_code
         if port_range:

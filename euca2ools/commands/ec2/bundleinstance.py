@@ -33,10 +33,10 @@ import time
 from requestbuilder import Arg
 from requestbuilder.exceptions import ArgumentError
 
-from euca2ools.commands.ec2 import EucalyptusRequest
+from euca2ools.commands.ec2 import EC2Request
 
 
-class BundleInstance(EucalyptusRequest):
+class BundleInstance(EC2Request):
     DESCRIPTION = 'Bundle an S3-backed Windows instance'
     ARGS = [Arg('InstanceId', metavar='INSTANCE',
                 help='ID of the instance to bundle (required)'),
@@ -90,7 +90,7 @@ class BundleInstance(EucalyptusRequest):
 
     # noinspection PyExceptionInherit
     def configure(self):
-        EucalyptusRequest.configure(self)
+        EC2Request.configure(self)
         if not self.args.get('Storage.S3.UploadPolicy'):
             if not self.args.get('owner_sak'):
                 raise ArgumentError('argument -w/--owner-sak is required when '

@@ -27,10 +27,10 @@ import base64
 
 from requestbuilder import Arg, MutuallyExclusiveArgList
 
-from euca2ools.commands.ec2 import EucalyptusRequest
+from euca2ools.commands.ec2 import EC2Request
 
 
-class DescribeInstanceAttribute(EucalyptusRequest):
+class DescribeInstanceAttribute(EC2Request):
     DESCRIPTION = ("Show one of an instance's attributes.\n\n"
                    "Note that exactly one attribute may be shown at a time.")
     ARGS = [Arg('InstanceId', metavar='INSTANCE',

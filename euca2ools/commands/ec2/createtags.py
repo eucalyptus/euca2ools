@@ -24,11 +24,11 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 from euca2ools.commands.argtypes import binary_tag_def
-from euca2ools.commands.ec2 import EucalyptusRequest
+from euca2ools.commands.ec2 import EC2Request
 from requestbuilder import Arg
 
 
-class CreateTags(EucalyptusRequest):
+class CreateTags(EC2Request):
     DESCRIPTION = 'Add or overwrite tags for one or more resources'
     ARGS = [Arg('ResourceId', metavar='RESOURCE', nargs='+',
                 help='ID(s) of the resource(s) to tag (at least 1 required)'),

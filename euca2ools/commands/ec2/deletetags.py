@@ -24,11 +24,11 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 from euca2ools.commands.argtypes import ternary_tag_def
-from euca2ools.commands.ec2 import EucalyptusRequest
+from euca2ools.commands.ec2 import EC2Request
 from requestbuilder import Arg
 
 
-class DeleteTags(EucalyptusRequest):
+class DeleteTags(EC2Request):
     DESCRIPTION = 'Delete tags from one or more resources'
     ARGS = [Arg('ResourceId', metavar='RESOURCE', nargs='+', help='''ID(s) of
                 the resource(s) to un-tag (at least 1 required)'''),

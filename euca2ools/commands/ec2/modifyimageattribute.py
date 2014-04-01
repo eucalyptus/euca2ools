@@ -26,10 +26,10 @@
 from requestbuilder import Arg, MutuallyExclusiveArgList
 from requestbuilder.exceptions import ArgumentError
 
-from euca2ools.commands.ec2 import EucalyptusRequest
+from euca2ools.commands.ec2 import EC2Request
 
 
-class ModifyImageAttribute(EucalyptusRequest):
+class ModifyImageAttribute(EC2Request):
     DESCRIPTION = 'Modify an attribute of an image'
     ARGS = [Arg('ImageId', metavar='IMAGE', help='image to modify'),
             MutuallyExclusiveArgList(

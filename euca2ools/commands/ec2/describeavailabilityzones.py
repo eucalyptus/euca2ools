@@ -23,11 +23,11 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.ec2 import EucalyptusRequest
+from euca2ools.commands.ec2 import EC2Request
 from requestbuilder import Arg, Filter
 
 
-class DescribeAvailabilityZones(EucalyptusRequest):
+class DescribeAvailabilityZones(EC2Request):
     DESCRIPTION = 'Display availability zones within the current region'
     ARGS = [Arg('ZoneName', metavar='ZONE', nargs='*',
                 help='limit results to specific availability zones')]

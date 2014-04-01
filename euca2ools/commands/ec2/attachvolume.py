@@ -23,11 +23,11 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.ec2 import EucalyptusRequest
+from euca2ools.commands.ec2 import EC2Request
 from requestbuilder import Arg
 
 
-class AttachVolume(EucalyptusRequest):
+class AttachVolume(EC2Request):
     DESCRIPTION = 'Attach an EBS volume to an instance'
     ARGS = [Arg('-i', '--instance', dest='InstanceId', metavar='INSTANCE',
                 required=True,

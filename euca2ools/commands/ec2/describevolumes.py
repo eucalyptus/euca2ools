@@ -23,11 +23,11 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.ec2 import EucalyptusRequest
+from euca2ools.commands.ec2 import EC2Request
 from requestbuilder import Arg, Filter, GenericTagFilter
 
 
-class DescribeVolumes(EucalyptusRequest):
+class DescribeVolumes(EC2Request):
     DESCRIPTION = 'Display information about volumes'
     ARGS = [Arg('VolumeId', metavar='VOLUME', nargs='*',
                 help='limit results to specific volumes')]

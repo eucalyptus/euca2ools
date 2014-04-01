@@ -24,10 +24,10 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 from requestbuilder import Arg
-from euca2ools.commands.ec2 import EucalyptusRequest
+from euca2ools.commands.ec2 import EC2Request
 
 
-class ResetImageAttribute(EucalyptusRequest):
+class ResetImageAttribute(EC2Request):
     DESCRIPTION = 'Reset an attribute of an image to its default value'
     ARGS = [Arg('ImageId', metavar='IMAGE',
             help='ID of the image whose attribute should be reset (required)'),

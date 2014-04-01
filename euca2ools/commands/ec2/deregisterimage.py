@@ -23,11 +23,11 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.ec2 import EucalyptusRequest
+from euca2ools.commands.ec2 import EC2Request
 from requestbuilder import Arg
 
 
-class DeregisterImage(EucalyptusRequest):
+class DeregisterImage(EC2Request):
     DESCRIPTION = ('De-register an image.  After you de-register an image it '
                    'cannot be used to launch new instances.\n\nNote that in '
                    'Eucalyptus 3 you may need to run this twice to completely '

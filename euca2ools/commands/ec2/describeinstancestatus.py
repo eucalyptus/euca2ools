@@ -26,10 +26,10 @@
 import dateutil.parser
 from requestbuilder import Arg, Filter
 
-from euca2ools.commands.ec2 import EucalyptusRequest
+from euca2ools.commands.ec2 import EC2Request
 
 
-class DescribeInstanceStatus(EucalyptusRequest):
+class DescribeInstanceStatus(EC2Request):
     DESCRIPTION = 'Show information about instance status and scheduled events'
     ARGS = [Arg('InstanceId', metavar='INSTANCE', nargs='*',
                 help='limit results to specific instances'),

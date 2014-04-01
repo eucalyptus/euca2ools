@@ -23,12 +23,12 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.ec2 import EucalyptusRequest
+from euca2ools.commands.ec2 import EC2Request
 from requestbuilder import Arg
 from requestbuilder.exceptions import ArgumentError
 
 
-class CreateVolume(EucalyptusRequest):
+class CreateVolume(EC2Request):
     DESCRIPTION = 'Create a new volume'
     ARGS = [Arg('-z', '--availability-zone', dest='AvailabilityZone',
                 metavar='ZONE', required=True, help='''availability zone in
@@ -44,7 +44,7 @@ class CreateVolume(EucalyptusRequest):
 
     # noinspection PyExceptionInherit
     def configure(self):
-        EucalyptusRequest.configure(self)
+        EC2Request.configure(self)
         if not self.args.get('Size') and not self.args.get('SnapshotId'):
             raise ArgumentError('-s/--size or --snapshot must be specified')
         if self.args.get('Iops') and not self.args.get('VolumeType'):

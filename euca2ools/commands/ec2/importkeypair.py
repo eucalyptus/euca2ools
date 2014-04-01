@@ -24,11 +24,11 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 from euca2ools.commands.argtypes import b64encoded_file_contents
-from euca2ools.commands.ec2 import EucalyptusRequest
+from euca2ools.commands.ec2 import EC2Request
 from requestbuilder import Arg
 
 
-class ImportKeyPair(EucalyptusRequest):
+class ImportKeyPair(EC2Request):
     DESCRIPTION = 'Import a public RSA key as a new key pair'
     ARGS = [Arg('KeyName', metavar='KEYPAIR',
                 help='name for the new key pair (required)'),

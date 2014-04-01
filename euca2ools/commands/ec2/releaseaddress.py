@@ -23,12 +23,12 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.ec2 import EucalyptusRequest
+from euca2ools.commands.ec2 import EC2Request
 from requestbuilder import Arg
 from requestbuilder.exceptions import ArgumentError
 
 
-class ReleaseAddress(EucalyptusRequest):
+class ReleaseAddress(EC2Request):
     DESCRIPTION = 'Release an elastic IP address'
     ARGS = [Arg('PublicIp', metavar='ADDRESS', nargs='?',
                 help='[Non-VPC only] address to release (required)'),
@@ -38,7 +38,7 @@ class ReleaseAddress(EucalyptusRequest):
 
     # noinspection PyExceptionInherit
     def configure(self):
-        EucalyptusRequest.configure(self)
+        EC2Request.configure(self)
         if (self.args.get('PublicIp') is not None and
                 self.args.get('AllocationId') is not None):
             # Can't be both EC2 and VPC

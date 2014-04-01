@@ -23,12 +23,12 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.ec2 import EucalyptusRequest
+from euca2ools.commands.ec2 import EC2Request
 from requestbuilder import Arg, Filter, GenericTagFilter
 from requestbuilder.exceptions import ArgumentError
 
 
-class DescribeSnapshots(EucalyptusRequest):
+class DescribeSnapshots(EC2Request):
     DESCRIPTION = ('Show information about snapshots\n\nBy default, only '
                    'snapshots your account owns and snapshots for which your '
                    'account has explicit restore permissions are shown.')
@@ -60,7 +60,7 @@ class DescribeSnapshots(EucalyptusRequest):
 
     # noinspection PyExceptionInherit
     def configure(self):
-        EucalyptusRequest.configure(self)
+        EC2Request.configure(self)
         if self.args.get('all'):
             if self.args.get('Owner'):
                 raise ArgumentError('argument -a/--all: not allowed with '

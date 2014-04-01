@@ -23,11 +23,11 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.ec2 import EucalyptusRequest
+from euca2ools.commands.ec2 import EC2Request
 from requestbuilder import Arg, Filter
 
 
-class DescribeSecurityGroups(EucalyptusRequest):
+class DescribeSecurityGroups(EC2Request):
     DESCRIPTION = ('Show information about security groups\n\nNote that '
                    'filters are matched on literal strings only, so '
                    '"--filter ip-permission.from-port=22" will *not* match a '

@@ -26,10 +26,10 @@
 from requestbuilder import Arg, MutuallyExclusiveArgList
 from requestbuilder.exceptions import ArgumentError
 
-from euca2ools.commands.ec2 import EucalyptusRequest
+from euca2ools.commands.ec2 import EC2Request
 
 
-class AssociateAddress(EucalyptusRequest):
+class AssociateAddress(EC2Request):
     DESCRIPTION = 'Associate an elastic IP address with a running instance'
     ARGS = [Arg('PublicIp', metavar='ADDRESS', nargs='?', help='''[Non-VPC
                 only] IP address to associate (required)'''),
@@ -54,7 +54,7 @@ class AssociateAddress(EucalyptusRequest):
 
     # noinspection PyExceptionInherit
     def configure(self):
-        EucalyptusRequest.configure(self)
+        EC2Request.configure(self)
         if (self.args.get('PublicIp') is not None and
                 self.args.get('AllocationId') is not None):
             # Can't be both EC2 and VPC

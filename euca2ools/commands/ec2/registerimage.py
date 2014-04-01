@@ -24,12 +24,12 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 from euca2ools.commands.argtypes import ec2_block_device_mapping
-from euca2ools.commands.ec2 import EucalyptusRequest
+from euca2ools.commands.ec2 import EC2Request
 from requestbuilder import Arg
 from requestbuilder.exceptions import ArgumentError
 
 
-class RegisterImage(EucalyptusRequest):
+class RegisterImage(EC2Request):
     DESCRIPTION = 'Register a new image'
     ARGS = [Arg('ImageLocation', metavar='MANIFEST', nargs='?',
                 help='''location of the image manifest in S3 storage
