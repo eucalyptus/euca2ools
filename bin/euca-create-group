@@ -1,6 +1,6 @@
 #!/usr/bin/python -tt
 
-import euca2ools.commands.euca.createsecuritygroup
+import euca2ools.commands.ec2.createsecuritygroup
 
 if __name__ == '__main__':
-    euca2ools.commands.euca.createsecuritygroup.CreateSecurityGroup.run()
+    euca2ools.commands.ec2.createsecuritygroup.CreateSecurityGroup.run()

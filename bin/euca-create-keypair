@@ -1,6 +1,6 @@
 #!/usr/bin/python -tt
 
-import euca2ools.commands.euca.createkeypair
+import euca2ools.commands.ec2.createkeypair
 
 if __name__ == '__main__':
-    euca2ools.commands.euca.createkeypair.CreateKeyPair.run()
+    euca2ools.commands.ec2.createkeypair.CreateKeyPair.run()

@@ -1,6 +1,6 @@
 #!/usr/bin/python -tt
 
-import euca2ools.commands.euca.describeregions
+import euca2ools.commands.ec2.describeregions
 
 if __name__ == '__main__':
-    euca2ools.commands.euca.describeregions.DescribeRegions.run()
+    euca2ools.commands.ec2.describeregions.DescribeRegions.run()

@@ -1,6 +1,6 @@
 #!/usr/bin/python -tt
 
-import euca2ools.commands.euca.createtags
+import euca2ools.commands.ec2.createtags
 
 if __name__ == '__main__':
-    cmd = euca2ools.commands.euca.createtags.CreateTags.run()
+    cmd = euca2ools.commands.ec2.createtags.CreateTags.run()

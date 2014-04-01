@@ -1,6 +1,6 @@
 #!/usr/bin/python -tt
 
-import euca2ools.commands.euca.deletesnapshot
+import euca2ools.commands.ec2.deletesnapshot
 
 if __name__ == '__main__':
-    euca2ools.commands.euca.deletesnapshot.DeleteSnapshot.run()
+    euca2ools.commands.ec2.deletesnapshot.DeleteSnapshot.run()

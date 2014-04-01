@@ -1,6 +1,6 @@
 #!/usr/bin/python -tt
 
-import euca2ools.commands.euca.createsnapshot
+import euca2ools.commands.ec2.createsnapshot
 
 if __name__ == '__main__':
-    euca2ools.commands.euca.createsnapshot.CreateSnapshot.run()
+    euca2ools.commands.ec2.createsnapshot.CreateSnapshot.run()

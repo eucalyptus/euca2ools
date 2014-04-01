@@ -1,6 +1,6 @@
 #!/usr/bin/python -tt
 
-import euca2ools.commands.euca.describeinstanceattribute
+import euca2ools.commands.ec2.describeinstanceattribute
 
 if __name__ == '__main__':
-    euca2ools.commands.euca.describeinstanceattribute.DescribeInstanceAttribute.run()
+    euca2ools.commands.ec2.describeinstanceattribute.DescribeInstanceAttribute.run()

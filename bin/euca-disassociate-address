@@ -1,6 +1,6 @@
 #!/usr/bin/python -tt
 
-import euca2ools.commands.euca.disassociateaddress
+import euca2ools.commands.ec2.disassociateaddress
 
 if __name__ == '__main__':
-    euca2ools.commands.euca.disassociateaddress.DisassociateAddress.run()
+    euca2ools.commands.ec2.disassociateaddress.DisassociateAddress.run()

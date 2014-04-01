@@ -1,6 +1,6 @@
 #!/usr/bin/python -tt
 
-import euca2ools.commands.euca.stopinstances
+import euca2ools.commands.ec2.stopinstances
 
 if __name__ == '__main__':
-    euca2ools.commands.euca.stopinstances.StopInstances.run()
+    euca2ools.commands.ec2.stopinstances.StopInstances.run()

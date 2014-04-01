@@ -1,6 +1,6 @@
 #!/usr/bin/python -tt
 
-import euca2ools.commands.euca.resetimageattribute
+import euca2ools.commands.ec2.resetimageattribute
 
 if __name__ == '__main__':
-    euca2ools.commands.euca.resetimageattribute.ResetImageAttribute.run()
+    euca2ools.commands.ec2.resetimageattribute.ResetImageAttribute.run()

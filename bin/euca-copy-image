@@ -1,6 +1,6 @@
 #!/usr/bin/python -tt
 
-import euca2ools.commands.euca.copyimage
+import euca2ools.commands.ec2.copyimage
 
 if __name__ == '__main__':
-    euca2ools.commands.euca.copyimage.CopyImage.run()
+    euca2ools.commands.ec2.copyimage.CopyImage.run()

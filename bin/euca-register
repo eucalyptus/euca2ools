@@ -1,6 +1,6 @@
 #!/usr/bin/python -tt
 
-import euca2ools.commands.euca.registerimage
+import euca2ools.commands.ec2.registerimage
 
 if __name__ == '__main__':
-    euca2ools.commands.euca.registerimage.RegisterImage.run()
+    euca2ools.commands.ec2.registerimage.RegisterImage.run()

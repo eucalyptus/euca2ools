@@ -1,6 +1,6 @@
 #!/usr/bin/python -tt
 
-import euca2ools.commands.euca.deletevolume
+import euca2ools.commands.ec2.deletevolume
 
 if __name__ == '__main__':
-    euca2ools.commands.euca.deletevolume.DeleteVolume.run()
+    euca2ools.commands.ec2.deletevolume.DeleteVolume.run()

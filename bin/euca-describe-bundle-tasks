@@ -1,6 +1,6 @@
 #!/usr/bin/python -tt
 
-import euca2ools.commands.euca.describebundletasks
+import euca2ools.commands.ec2.describebundletasks
 
 if __name__ == '__main__':
-    euca2ools.commands.euca.describebundletasks.DescribeBundleTasks.run()
+    euca2ools.commands.ec2.describebundletasks.DescribeBundleTasks.run()

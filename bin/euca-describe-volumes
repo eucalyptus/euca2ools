@@ -1,7 +1,7 @@
 #!/usr/bin/python -tt
 
-import euca2ools.commands.euca.describevolumes
+import euca2ools.commands.ec2.describevolumes
 
 if __name__ == '__main__':
-    euca2ools.commands.euca.describevolumes.DescribeVolumes.run()
+    euca2ools.commands.ec2.describevolumes.DescribeVolumes.run()
 

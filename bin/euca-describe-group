@@ -1,6 +1,6 @@
 #!/usr/bin/python -tt
 
-import euca2ools.commands.euca.describesecuritygroups
+import euca2ools.commands.ec2.describesecuritygroups
 
 if __name__ == '__main__':
-    euca2ools.commands.euca.describesecuritygroups.DescribeSecurityGroups.run()
+    euca2ools.commands.ec2.describesecuritygroups.DescribeSecurityGroups.run()

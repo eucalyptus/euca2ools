@@ -1,6 +1,6 @@
 #!/usr/bin/python -tt
 
-import euca2ools.commands.euca.authorize
+import euca2ools.commands.ec2.authorize
 
 if __name__ == '__main__':
-    euca2ools.commands.euca.authorize.Authorize.run()
+    euca2ools.commands.ec2.authorize.Authorize.run()

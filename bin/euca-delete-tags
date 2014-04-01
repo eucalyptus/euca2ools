@@ -1,6 +1,6 @@
 #!/usr/bin/python -tt
 
-import euca2ools.commands.euca.deletetags
+import euca2ools.commands.ec2.deletetags
 
 if __name__ == '__main__':
-    euca2ools.commands.euca.deletetags.DeleteTags.run()
+    euca2ools.commands.ec2.deletetags.DeleteTags.run()

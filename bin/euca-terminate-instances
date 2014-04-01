@@ -1,6 +1,6 @@
 #!/usr/bin/python -tt
 
-import euca2ools.commands.euca.terminateinstances
+import euca2ools.commands.ec2.terminateinstances
 
 if __name__ == '__main__':
-    euca2ools.commands.euca.terminateinstances.TerminateInstances.run()
+    euca2ools.commands.ec2.terminateinstances.TerminateInstances.run()
