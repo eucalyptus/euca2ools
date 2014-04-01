@@ -1,6 +1,6 @@
 #!/usr/bin/python -tt
 
-import euca2ools.commands.euare.updateassumerolepolicy
+import euca2ools.commands.iam.updateassumerolepolicy
 
 if __name__ == '__main__':
-    euca2ools.commands.euare.updateassumerolepolicy.UpdateAssumeRolePolicy.run()
+    euca2ools.commands.iam.updateassumerolepolicy.UpdateAssumeRolePolicy.run()

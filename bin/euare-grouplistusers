@@ -1,6 +1,6 @@
 #!/usr/bin/python -tt
 
-import euca2ools.commands.euare.getgroup
+import euca2ools.commands.iam.getgroup
 
 if __name__ == '__main__':
-    euca2ools.commands.euare.getgroup.GetGroup.run()
+    euca2ools.commands.iam.getgroup.GetGroup.run()

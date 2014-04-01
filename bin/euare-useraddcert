@@ -1,6 +1,6 @@
 #!/usr/bin/python -tt
 
-import euca2ools.commands.euare.uploadsigningcertificate
+import euca2ools.commands.iam.uploadsigningcertificate
 
 if __name__ == '__main__':
-    euca2ools.commands.euare.uploadsigningcertificate.UploadSigningCertificate.run()
+    euca2ools.commands.iam.uploadsigningcertificate.UploadSigningCertificate.run()

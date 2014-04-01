@@ -1,6 +1,6 @@
 #!/usr/bin/python -tt
 
-import euca2ools.commands.euare.createaccount
+import euca2ools.commands.iam.createaccount
 
 if __name__ == '__main__':
-    euca2ools.commands.euare.createaccount.CreateAccount.run()
+    euca2ools.commands.iam.createaccount.CreateAccount.run()

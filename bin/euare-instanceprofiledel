@@ -1,6 +1,6 @@
 #!/usr/bin/python -tt
 
-import euca2ools.commands.euare.deleteinstanceprofile
+import euca2ools.commands.iam.deleteinstanceprofile
 
 if __name__ == '__main__':
-    euca2ools.commands.euare.deleteinstanceprofile.DeleteInstanceProfile.run()
+    euca2ools.commands.iam.deleteinstanceprofile.DeleteInstanceProfile.run()

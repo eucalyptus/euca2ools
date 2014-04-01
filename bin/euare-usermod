@@ -1,6 +1,6 @@
 #!/usr/bin/python -tt
 
-import euca2ools.commands.euare.updateuser
+import euca2ools.commands.iam.updateuser
 
 if __name__ == '__main__':
-    euca2ools.commands.euare.updateuser.UpdateUser.run()
+    euca2ools.commands.iam.updateuser.UpdateUser.run()

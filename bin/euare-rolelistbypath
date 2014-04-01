@@ -1,6 +1,6 @@
 #!/usr/bin/python -tt
 
-import euca2ools.commands.euare.listroles
+import euca2ools.commands.iam.listroles
 
 if __name__ == '__main__':
-    euca2ools.commands.euare.listroles.ListRoles.run()
+    euca2ools.commands.iam.listroles.ListRoles.run()

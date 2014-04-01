@@ -1,6 +1,6 @@
 #!/usr/bin/python -tt
 
-import euca2ools.commands.euare.listusers
+import euca2ools.commands.iam.listusers
 
 if __name__ == '__main__':
-    euca2ools.commands.euare.listusers.ListUsers.run()
+    euca2ools.commands.iam.listusers.ListUsers.run()

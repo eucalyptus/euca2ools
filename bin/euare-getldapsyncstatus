@@ -1,6 +1,6 @@
 #!/usr/bin/python -tt
 
-import euca2ools.commands.euare.getldapsyncstatus
+import euca2ools.commands.iam.getldapsyncstatus
 
 if __name__ == '__main__':
-    euca2ools.commands.euare.getldapsyncstatus.GetLdapSyncStatus.run()
+    euca2ools.commands.iam.getldapsyncstatus.GetLdapSyncStatus.run()

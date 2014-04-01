@@ -1,6 +1,6 @@
 #!/usr/bin/python -tt
 
-import euca2ools.commands.euare.removerolefrominstanceprofile
+import euca2ools.commands.iam.removerolefrominstanceprofile
 
 if __name__ == '__main__':
-    euca2ools.commands.euare.removerolefrominstanceprofile.RemoveRoleFromInstanceProfile.run()
+    euca2ools.commands.iam.removerolefrominstanceprofile.RemoveRoleFromInstanceProfile.run()

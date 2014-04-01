@@ -1,6 +1,6 @@
 #!/usr/bin/python -tt
 
-import euca2ools.commands.euare.deleterolepolicy
+import euca2ools.commands.iam.deleterolepolicy
 
 if __name__ == '__main__':
-    euca2ools.commands.euare.deleterolepolicy.DeleteRolePolicy.run()
+    euca2ools.commands.iam.deleterolepolicy.DeleteRolePolicy.run()

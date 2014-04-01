@@ -1,6 +1,6 @@
 #!/usr/bin/python -tt
 
-import euca2ools.commands.euare.updateaccesskey
+import euca2ools.commands.iam.updateaccesskey
 
 if __name__ == '__main__':
-    euca2ools.commands.euare.updateaccesskey.UpdateAccessKey.run()
+    euca2ools.commands.iam.updateaccesskey.UpdateAccessKey.run()

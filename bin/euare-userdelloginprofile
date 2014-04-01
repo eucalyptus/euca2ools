@@ -1,6 +1,6 @@
 #!/usr/bin/python -tt
 
-import euca2ools.commands.euare.deleteloginprofile
+import euca2ools.commands.iam.deleteloginprofile
 
 if __name__ == '__main__':
-    euca2ools.commands.euare.deleteloginprofile.DeleteLoginProfile.run()
+    euca2ools.commands.iam.deleteloginprofile.DeleteLoginProfile.run()

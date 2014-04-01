@@ -1,6 +1,6 @@
 #!/usr/bin/python -tt
 
-import euca2ools.commands.euare.deleteaccount
+import euca2ools.commands.iam.deleteaccount
 
 if __name__ == '__main__':
-    euca2ools.commands.euare.deleteaccount.DeleteAccount.run()
+    euca2ools.commands.iam.deleteaccount.DeleteAccount.run()

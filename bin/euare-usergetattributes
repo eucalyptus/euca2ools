@@ -1,6 +1,6 @@
 #!/usr/bin/python -tt
 
-import euca2ools.commands.euare.getuser
+import euca2ools.commands.iam.getuser
 
 if __name__ == '__main__':
-    euca2ools.commands.euare.getuser.GetUser.run()
+    euca2ools.commands.iam.getuser.GetUser.run()

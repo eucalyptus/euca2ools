@@ -1,6 +1,6 @@
 #!/usr/bin/python -tt
 
-import euca2ools.commands.euare.deleterole
+import euca2ools.commands.iam.deleterole
 
 if __name__ == '__main__':
-    euca2ools.commands.euare.deleterole.DeleteRole.run()
+    euca2ools.commands.iam.deleterole.DeleteRole.run()

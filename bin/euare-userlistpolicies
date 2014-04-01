@@ -1,6 +1,6 @@
 #!/usr/bin/python -tt
 
-import euca2ools.commands.euare.listuserpolicies
+import euca2ools.commands.iam.listuserpolicies
 
 if __name__ == '__main__':
-    euca2ools.commands.euare.listuserpolicies.ListUserPolicies.run()
+    euca2ools.commands.iam.listuserpolicies.ListUserPolicies.run()

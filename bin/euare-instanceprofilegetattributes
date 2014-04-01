@@ -1,6 +1,6 @@
 #!/usr/bin/python -tt
 
-import euca2ools.commands.euare.getinstanceprofile
+import euca2ools.commands.iam.getinstanceprofile
 
 if __name__ == '__main__':
-    euca2ools.commands.euare.getinstanceprofile.GetInstanceProfile.run()
+    euca2ools.commands.iam.getinstanceprofile.GetInstanceProfile.run()

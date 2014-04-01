@@ -1,6 +1,6 @@
 #!/usr/bin/python -tt
 
-import euca2ools.commands.euare.getuserpolicy
+import euca2ools.commands.iam.getuserpolicy
 
 if __name__ == '__main__':
-    euca2ools.commands.euare.getuserpolicy.GetUserPolicy.run()
+    euca2ools.commands.iam.getuserpolicy.GetUserPolicy.run()

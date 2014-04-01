@@ -1,6 +1,6 @@
 #!/usr/bin/python -tt
 
-import euca2ools.commands.euare.enablemfadevice
+import euca2ools.commands.iam.enablemfadevice
 
 if __name__ == '__main__':
-    euca2ools.commands.euare.enablemfadevice.EnableMFADevice.run()
+    euca2ools.commands.iam.enablemfadevice.EnableMFADevice.run()

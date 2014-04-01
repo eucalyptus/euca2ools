@@ -1,6 +1,6 @@
 #!/usr/bin/python -tt
 
-import euca2ools.commands.euare.putgrouppolicy
+import euca2ools.commands.iam.putgrouppolicy
 
 if __name__ == '__main__':
-    euca2ools.commands.euare.putgrouppolicy.PutGroupPolicy.run()
+    euca2ools.commands.iam.putgrouppolicy.PutGroupPolicy.run()
