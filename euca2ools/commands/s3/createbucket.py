@@ -23,13 +23,14 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.s3 import (WalrusRequest,
-                                   validate_generic_bucket_name)
-from requestbuilder import Arg
 import xml.etree.ElementTree as ET
 
+from requestbuilder import Arg
 
-class CreateBucket(WalrusRequest):
+from euca2ools.commands.s3 import S3Request, validate_generic_bucket_name
+
+
+class CreateBucket(S3Request):
     DESCRIPTION = 'Create a new bucket'
     ARGS = [Arg('bucket', route_to=None, help='name of the new bucket'),
             Arg('--location', route_to=None,
@@ -38,7 +39,7 @@ class CreateBucket(WalrusRequest):
                 configuration, or otherwise none)''')]
 
     def configure(self):
-        WalrusRequest.configure(self)
+        S3Request.configure(self)
         validate_generic_bucket_name(self.args['bucket'])
 
     def preprocess(self):

@@ -32,10 +32,10 @@ from requestbuilder.exceptions import ArgumentError
 from requestbuilder.mixins import FileTransferProgressBarMixin
 
 from euca2ools.commands.bundle.mixins import BundleDownloadingMixin
-from euca2ools.commands.s3 import WalrusRequest
+from euca2ools.commands.s3 import S3Request
 
 
-class DownloadBundle(WalrusRequest, FileTransferProgressBarMixin,
+class DownloadBundle(S3Request, FileTransferProgressBarMixin,
                      BundleDownloadingMixin):
     DESCRIPTION = ('Download a bundled image from the cloud\n\nYou must run '
                    'euca-unbundle-image on the bundle you download to obtain '
@@ -46,7 +46,7 @@ class DownloadBundle(WalrusRequest, FileTransferProgressBarMixin,
 
     # noinspection PyExceptionInherit
     def configure(self):
-        WalrusRequest.configure(self)
+        S3Request.configure(self)
         if self.args['dest'] == '-':
             self.args['dest'] = sys.stdout
             self.args['show_progress'] = False

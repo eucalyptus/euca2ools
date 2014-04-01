@@ -23,13 +23,13 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.s3 import WalrusRequest
+from euca2ools.commands.s3 import S3Request
 from requestbuilder import Arg
 from requestbuilder.mixins import TabifyingMixin
 from requestbuilder.xmlparse import parse_listdelimited_aws_xml
 
 
-class ListAllMyBuckets(WalrusRequest, TabifyingMixin):
+class ListAllMyBuckets(S3Request, TabifyingMixin):
     DESCRIPTION = 'List all buckets owned by your account'
     ARGS = [Arg('-l', dest='long_output', action='store_true', route_to=None,
                 help='''list in long format, with creation dates and owner
@@ -39,7 +39,7 @@ class ListAllMyBuckets(WalrusRequest, TabifyingMixin):
                 (-l) output.  This option turns on the -l option.''')]
 
     def configure(self):
-        WalrusRequest.configure(self)
+        S3Request.configure(self)
         if self.args['numeric_output']:
             self.args['long_output'] = True
 

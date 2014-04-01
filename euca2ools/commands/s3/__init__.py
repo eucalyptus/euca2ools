@@ -38,7 +38,7 @@ from euca2ools.exceptions import AWSError
 from euca2ools.util import substitute_euca_region
 
 
-class Walrus(requestbuilder.service.BaseService):
+class S3(requestbuilder.service.BaseService):
     NAME = 's3'
     DESCRIPTION = 'Object storage service'
     REGION_ENVVAR = 'AWS_DEFAULT_REGION'
@@ -55,9 +55,9 @@ class Walrus(requestbuilder.service.BaseService):
         raise AWSError(response)
 
 
-class WalrusRequest(requestbuilder.request.BaseRequest):
+class S3Request(requestbuilder.request.BaseRequest):
     SUITE = Euca2ools
-    SERVICE_CLASS = Walrus
+    SERVICE_CLASS = S3
     AUTH_CLASS = requestbuilder.auth.S3RestAuth
 
     def __init__(self, **kwargs):

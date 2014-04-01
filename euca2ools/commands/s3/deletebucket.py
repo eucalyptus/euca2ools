@@ -23,17 +23,17 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.s3 import (WalrusRequest,
+from euca2ools.commands.s3 import (S3Request,
                                    validate_generic_bucket_name)
 from requestbuilder import Arg
 
 
-class DeleteBucket(WalrusRequest):
+class DeleteBucket(S3Request):
     DESCRIPTION = 'Delete a bucket'
     ARGS = [Arg('bucket', route_to=None, help='name of the bucket to delete')]
 
     def configure(self):
-        WalrusRequest.configure(self)
+        S3Request.configure(self)
         validate_generic_bucket_name(self.args['bucket'])
 
     def preprocess(self):

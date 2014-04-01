@@ -38,11 +38,11 @@ import euca2ools.bundle.manifest
 import euca2ools.bundle.util
 from euca2ools.commands.bundle.mixins import (BundleCreatingMixin,
                                               BundleUploadingMixin)
-from euca2ools.commands.s3 import WalrusRequest
+from euca2ools.commands.s3 import S3Request
 from euca2ools.util import mkdtemp_for_large_files
 
 
-class BundleAndUploadImage(WalrusRequest, BundleCreatingMixin,
+class BundleAndUploadImage(S3Request, BundleCreatingMixin,
                            BundleUploadingMixin,
                            FileTransferProgressBarMixin):
     DESCRIPTION = 'Prepare and upload an image for use in the cloud'
@@ -56,7 +56,7 @@ class BundleAndUploadImage(WalrusRequest, BundleCreatingMixin,
     def configure(self):
         self.configure_bundle_upload_auth()
 
-        WalrusRequest.configure(self)
+        S3Request.configure(self)
 
         self.configure_bundle_creds()
         self.configure_bundle_properties()

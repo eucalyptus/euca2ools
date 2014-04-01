@@ -36,10 +36,10 @@ from euca2ools.bundle.util import waitpid_in_thread
 from euca2ools.commands.bundle.downloadbundle import DownloadBundle
 from euca2ools.commands.bundle.mixins import BundleDownloadingMixin
 from euca2ools.commands.bundle.unbundlestream import UnbundleStream
-from euca2ools.commands.s3 import WalrusRequest
+from euca2ools.commands.s3 import S3Request
 
 
-class DownloadAndUnbundle(WalrusRequest, FileTransferProgressBarMixin,
+class DownloadAndUnbundle(S3Request, FileTransferProgressBarMixin,
                           BundleDownloadingMixin):
     DESCRIPTION = ('Download and unbundle a bundled image from the cloud\n\n '
                    'The key used to unbundle the image must match a '
@@ -54,7 +54,7 @@ class DownloadAndUnbundle(WalrusRequest, FileTransferProgressBarMixin,
 
     # noinspection PyExceptionInherit
     def configure(self):
-        WalrusRequest.configure(self)
+        S3Request.configure(self)
 
         # The private key could be the user's or the cloud's.  In the config
         # this is a user-level option.

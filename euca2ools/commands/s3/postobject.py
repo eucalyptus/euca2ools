@@ -31,10 +31,10 @@ from requestbuilder import Arg, MutuallyExclusiveArgList
 from requestbuilder.exceptions import ArgumentError
 
 from euca2ools.commands.argtypes import b64encoded_file_contents
-from euca2ools.commands.s3 import WalrusRequest
+from euca2ools.commands.s3 import S3Request
 
 
-class PostObject(WalrusRequest):
+class PostObject(S3Request):
     DESCRIPTION = ('Upload an object to the server using an upload policy\n\n'
                    'Note that uploading a large file to a region other than '
                    'the one the bucket is may result in "Broken pipe" errors '
@@ -71,7 +71,7 @@ class PostObject(WalrusRequest):
 
     # noinspection PyExceptionInherit
     def configure(self):
-        WalrusRequest.configure(self)
+        S3Request.configure(self)
 
         if self.args['source'] == '-':
             self.files['file'] = sys.stdin

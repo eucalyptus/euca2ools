@@ -31,11 +31,11 @@ from requestbuilder.mixins import FileTransferProgressBarMixin
 
 from euca2ools.bundle.manifest import BundleManifest
 from euca2ools.commands.bundle.mixins import BundleUploadingMixin
-from euca2ools.commands.s3 import WalrusRequest
+from euca2ools.commands.s3 import S3Request
 from euca2ools.commands.s3.putobject import PutObject
 
 
-class UploadBundle(WalrusRequest, BundleUploadingMixin,
+class UploadBundle(S3Request, BundleUploadingMixin,
                    FileTransferProgressBarMixin):
     DESCRIPTION = 'Upload a bundle prepared by euca-bundle-image to the cloud'
     ARGS = [Arg('-m', '--manifest', metavar='FILE', required=True,
@@ -51,7 +51,7 @@ class UploadBundle(WalrusRequest, BundleUploadingMixin,
 
     def configure(self):
         self.configure_bundle_upload_auth()
-        WalrusRequest.configure(self)
+        S3Request.configure(self)
 
     def main(self):
         key_prefix = self.get_bundle_key_prefix()

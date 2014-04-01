@@ -31,11 +31,11 @@ from requestbuilder import Arg
 from requestbuilder.exceptions import ArgumentError
 from requestbuilder.mixins import FileTransferProgressBarMixin
 
-from euca2ools.commands.s3 import WalrusRequest
+from euca2ools.commands.s3 import S3Request
 import euca2ools.bundle.pipes
 
 
-class GetObject(WalrusRequest, FileTransferProgressBarMixin):
+class GetObject(S3Request, FileTransferProgressBarMixin):
     DESCRIPTION = 'Retrieve objects from the server'
     ARGS = [Arg('source', metavar='BUCKET/KEY', route_to=None,
                 help='the object to download (required)'),
@@ -47,7 +47,7 @@ class GetObject(WalrusRequest, FileTransferProgressBarMixin):
                 given.  (default:  current directory)''')]
 
     def configure(self):
-        WalrusRequest.configure(self)
+        S3Request.configure(self)
 
         bucket, _, key = self.args['source'].partition('/')
         if not bucket:

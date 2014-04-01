@@ -23,11 +23,11 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.s3 import WalrusRequest
+from euca2ools.commands.s3 import S3Request
 from requestbuilder import Arg
 
 
-class CheckBucket(WalrusRequest):
+class CheckBucket(S3Request):
     DESCRIPTION = 'Return successfully if a bucket exists'
     ARGS = [Arg('bucket', route_to=None, help='name of the bucket to check')]
 

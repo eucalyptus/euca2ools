@@ -26,12 +26,12 @@
 from requestbuilder import Arg
 
 from euca2ools.commands.bundle.mixins import BundleDownloadingMixin
-from euca2ools.commands.s3 import WalrusRequest
+from euca2ools.commands.s3 import S3Request
 from euca2ools.commands.s3.deletebucket import DeleteBucket
 from euca2ools.commands.s3.deleteobject import DeleteObject
 
 
-class DeleteBundle(WalrusRequest, BundleDownloadingMixin):
+class DeleteBundle(S3Request, BundleDownloadingMixin):
     DESCRIPTION = 'Delete a previously-uploaded bundle'
     ARGS = [Arg('--clear', dest='clear', action='store_true',
                 help='attempt to delete the bucket as well')]

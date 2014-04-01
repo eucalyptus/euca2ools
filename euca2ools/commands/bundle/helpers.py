@@ -25,7 +25,7 @@
 
 from euca2ools.commands.s3.getobject import GetObject
 from euca2ools.commands.s3.listbucket import ListBucket
-from euca2ools.commands.s3 import WalrusRequest
+from euca2ools.commands.s3 import S3Request
 import os
 from requestbuilder.exceptions import ClientError, ServerError
 import requests

@@ -34,10 +34,10 @@ from requestbuilder import Arg
 from requestbuilder.exceptions import ArgumentError, ClientError
 from requestbuilder.mixins import FileTransferProgressBarMixin
 
-from euca2ools.commands.s3 import WalrusRequest
+from euca2ools.commands.s3 import S3Request
 
 
-class PutObject(WalrusRequest, FileTransferProgressBarMixin):
+class PutObject(S3Request, FileTransferProgressBarMixin):
     DESCRIPTION = ('Upload an object to the server\n\nNote that uploading a '
                    'large file to a region other than the one the bucket is '
                    'may result in "Broken pipe" errors or other connection '
@@ -57,13 +57,13 @@ class PutObject(WalrusRequest, FileTransferProgressBarMixin):
     METHOD = 'PUT'
 
     def __init__(self, **kwargs):
-        WalrusRequest.__init__(self, **kwargs)
+        S3Request.__init__(self, **kwargs)
         self.last_upload_error = None
         self._lock = threading.Lock()
 
     # noinspection PyExceptionInherit
     def configure(self):
-        WalrusRequest.configure(self)
+        S3Request.configure(self)
         if self.args['source'] == '-':
             if self.args.get('size') is None:
                 raise ArgumentError(

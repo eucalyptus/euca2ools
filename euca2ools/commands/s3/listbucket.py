@@ -24,16 +24,17 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import argparse
-from euca2ools.commands.s3 import (WalrusRequest,
-                                   validate_generic_bucket_name)
+
 from requestbuilder import Arg
 from requestbuilder.exceptions import ArgumentError
 from requestbuilder.mixins import TabifyingMixin
 from requestbuilder.response import PaginatedResponse
 from requestbuilder.xmlparse import parse_aws_xml
 
+from euca2ools.commands.s3 import S3Request, validate_generic_bucket_name
 
-class ListBucket(WalrusRequest, TabifyingMixin):
+
+class ListBucket(S3Request, TabifyingMixin):
     DESCRIPTION = 'List keys in one or more buckets'
     ARGS = [Arg('paths', metavar='BUCKET[/KEY]', nargs='+', route_to=None),
             Arg('--max-keys-per-request', dest='max-keys', type=int,
@@ -41,7 +42,7 @@ class ListBucket(WalrusRequest, TabifyingMixin):
 
     # noinspection PyExceptionInherit
     def configure(self):
-        WalrusRequest.configure(self)
+        S3Request.configure(self)
         for path in self.args['paths']:
             if path.startswith('/'):
                 raise ArgumentError((
