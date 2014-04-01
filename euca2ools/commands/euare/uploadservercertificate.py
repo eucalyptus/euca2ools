@@ -1,4 +1,4 @@
-# Copyright 2009-2011 Eucalyptus Systems, Inc.
+# Copyright 2009-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -23,8 +23,9 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.euare import EuareRequest, AS_ACCOUNT
 from requestbuilder import Arg, MutuallyExclusiveArgList
+
+from euca2ools.commands.euare import EuareRequest, AS_ACCOUNT
 
 
 class UploadServerCertificate(EuareRequest):
@@ -32,19 +33,21 @@ class UploadServerCertificate(EuareRequest):
     ARGS = [Arg('-s', '--server-certificate-name', metavar='CERTNAME',
                 dest='ServerCertificateName', required=True,
                 help='name to give the new server certificate (required)'),
-            MutuallyExclusiveArgList(True,
+            MutuallyExclusiveArgList(
                 Arg('-c', '--certificate-body', dest='CertificateBody',
                     metavar='CERT', help='PEM-encoded certificate'),
                 Arg('--certificate-file', dest='CertificateBody',
                     metavar='FILE', type=open,
-                    help='file containing the PEM-encoded certificate')),
-            MutuallyExclusiveArgList(True,
+                    help='file containing the PEM-encoded certificate'))
+            .required(),
+            MutuallyExclusiveArgList(
                 Arg('--private-key', dest='PrivateKey', metavar='KEY',
                     help='PEM-encoded private key'),
                 Arg('--private-key-file', dest='PrivateKey', metavar='FILE',
                     type=open,
-                    help='file containing the PEM-encoded private key')),
-            MutuallyExclusiveArgList(True,
+                    help='file containing the PEM-encoded private key'))
+            .required(),
+            MutuallyExclusiveArgList(
                 Arg('--certificate-chain', dest='CertificateChain',
                     metavar='CHAIN', help='''PEM-encoded certificate chain.
                     This is typically the PEM-encoded certificates of the
@@ -52,7 +55,8 @@ class UploadServerCertificate(EuareRequest):
                 Arg('--certificate-chain-file', dest='CertificateChain',
                     metavar='FILE', help='''file containing the PEM-encoded
                     certificate chain. This is typically the PEM-encoded
-                    certificates of the chain, concatenated together.''')),
+                    certificates of the chain, concatenated together.'''))
+            .required(),
             Arg('-p', '--path', dest='Path',
                 help='path for the new server certificate (default: "/")'),
             AS_ACCOUNT]

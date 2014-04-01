@@ -23,11 +23,12 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+from requestbuilder import Arg, MutuallyExclusiveArgList
+from requestbuilder.mixins import TabifyingMixin
+
 from euca2ools.commands.argtypes import delimited_list
 from euca2ools.commands.elasticloadbalancing import ELBRequest
 from euca2ools.commands.elasticloadbalancing.argtypes import listener
-from requestbuilder import Arg, MutuallyExclusiveArgList
-from requestbuilder.mixins import TabifyingMixin
 
 
 class CreateLoadBalancer(ELBRequest, TabifyingMixin):
@@ -35,7 +36,7 @@ class CreateLoadBalancer(ELBRequest, TabifyingMixin):
                    'created, instances must be registered with it separately.')
     ARGS = [Arg('LoadBalancerName', metavar='ELB',
                 help='name of the new load balancer (required)'),
-            MutuallyExclusiveArgList(True,
+            MutuallyExclusiveArgList(
                 Arg('-s', '--subnets', metavar='SUBNET1,SUBNET2,...',
                     dest='Subnets.member', type=delimited_list(','),
                     help='''[VPC only] subnets the load balancer should run in
@@ -43,7 +44,8 @@ class CreateLoadBalancer(ELBRequest, TabifyingMixin):
                 Arg('-z', '--availability-zones', metavar='ZONE1,ZONE2,...',
                     dest='AvailabilityZones.member', type=delimited_list(','),
                     help='''[Non-VPC only] availability zones the load balancer
-                    should run in (required)''')),
+                    should run in (required)'''))
+            .required(),
             Arg('-l', '--listener', dest='Listeners.member', action='append',
                 metavar=('"lb-port=PORT, protocol={HTTP,HTTPS,SSL,TCP}, '
                          'instance-port=PORT, instance-protocol={HTTP,HTTPS,'

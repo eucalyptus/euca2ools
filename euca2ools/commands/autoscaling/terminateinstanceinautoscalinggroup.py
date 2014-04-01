@@ -24,9 +24,11 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import argparse
-from euca2ools.commands.autoscaling import AutoScalingRequest
+
 from requestbuilder import Arg, MutuallyExclusiveArgList
 from requestbuilder.mixins import TabifyingMixin
+
+from euca2ools.commands.autoscaling import AutoScalingRequest
 
 
 class TerminateInstanceInAutoScalingGroup(AutoScalingRequest,
@@ -34,7 +36,7 @@ class TerminateInstanceInAutoScalingGroup(AutoScalingRequest,
     DESCRIPTION = "Manually terminate an auto-scaling instance"
     ARGS = [Arg('InstanceId', metavar='INSTANCE',
                 help='ID of the instance to terminate (required)'),
-            MutuallyExclusiveArgList(True,
+            MutuallyExclusiveArgList(
                 Arg('-d', '--decrement-desired-capacity', action='store_const',
                     dest='ShouldDecrementDesiredCapacity', const='true',
                     help='''also reduce the desired capacity of the
@@ -44,7 +46,8 @@ class TerminateInstanceInAutoScalingGroup(AutoScalingRequest,
                     action='store_const', const='false',
                     help='''leave the auto-scaling group's desired capacity
                     as-is.  A new instance may be launched to compensate for
-                    the one being terminated.''')),
+                    the one being terminated.'''))
+            .required(),
             Arg('--show-long', action='store_true', route_to=None,
                 help='show extra info about the instance being terminated'),
             Arg('-f', '--force', action='store_true', route_to=None,

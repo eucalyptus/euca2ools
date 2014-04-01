@@ -297,11 +297,11 @@ class BundleUploadingMixin(object):
                     help='upload policy to use for authorization'),
                 Arg('--upload-policy-file', dest='upload_policy',
                     metavar='FILE', type=b64encoded_file_contents,
-                    help=('file containing an upload policy to use for '
-                    'authorization'))),
+                    help='''file containing an upload policy to use for
+                    authorization''')),
             Arg('--upload-policy-signature', metavar='SIGNATURE',
-                help=('signature for the upload policy (required when an '
-                'upload policy is used)')),
+                help='''signature for the upload policy (required when an
+                'upload policy is used)'''),
             Arg('--location', help='''location constraint of the destination
                 bucket (default: inferred from s3-location-constraint in
                 configuration, or otherwise none)'''),
@@ -408,7 +408,7 @@ class BundleDownloadingMixin(object):
     ARGS = [Arg('-b', '--bucket', metavar='BUCKET[/PREFIX]', required=True,
                 route_to=None, help='''the bucket that contains the bundle,
                 with an optional path prefix (required)'''),
-            MutuallyExclusiveArgList(True,
+            MutuallyExclusiveArgList(
                 Arg('-m', '--manifest', dest='manifest', route_to=None,
                     help='''the manifest's complete file name, not including
                     any path that may be specified using -b'''),
@@ -418,7 +418,8 @@ class BundleDownloadingMixin(object):
                     precedes ".manifest.xml"'''),
                 Arg('--local-manifest', dest='local_manifest', metavar='FILE',
                     route_to=None, help='''use a manifest on disk and ignore
-                    any that appear on the server'''))]
+                    any that appear on the server'''))
+            .required()]
 
     def fetch_manifest(self, s3_service, privkey_filename=None):
         if self.args.get('local_manifest'):

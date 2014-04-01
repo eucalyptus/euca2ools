@@ -1,4 +1,4 @@
-# Copyright 2009-2013 Eucalyptus Systems, Inc.
+# Copyright 2009-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -23,14 +23,15 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.euca import EucalyptusRequest
 from requestbuilder import Arg, MutuallyExclusiveArgList
+
+from euca2ools.commands.euca import EucalyptusRequest
 
 
 class DescribeImageAttribute(EucalyptusRequest):
     DESCRIPTION = 'Show information about an attribute of an image'
     ARGS = [Arg('ImageId', metavar='IMAGE', help='image to describe'),
-            MutuallyExclusiveArgList(True,
+            MutuallyExclusiveArgList(
                 Arg('-l', '--launch-permission', dest='Attribute',
                     action='store_const', const='launchPermission',
                     help='display launch permissions'),
@@ -45,7 +46,8 @@ class DescribeImageAttribute(EucalyptusRequest):
                 Arg('--ramdisk', dest='Attribute', action='store_const',
                     const='ramdisk', help='show associated ramdisk image ID'),
                 Arg('--description', dest='Attribute', action='store_const',
-                    const='description', help="show the image's description"))]
+                    const='description', help="show the image's description"))
+            .required()]
     LIST_TAGS = ['blockDeviceMapping', 'launchPermission', 'productCodes']
 
     def print_result(self, result):

@@ -23,15 +23,16 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.euca import EucalyptusRequest
 from requestbuilder import Arg, MutuallyExclusiveArgList
 from requestbuilder.exceptions import ArgumentError
+
+from euca2ools.commands.euca import EucalyptusRequest
 
 
 class ModifyImageAttribute(EucalyptusRequest):
     DESCRIPTION = 'Modify an attribute of an image'
     ARGS = [Arg('ImageId', metavar='IMAGE', help='image to modify'),
-            MutuallyExclusiveArgList(True,
+            MutuallyExclusiveArgList(
                 Arg('--description', dest='Description.Value', metavar='DESC',
                     help="change the image's description"),
                 Arg('-p', '--product-code', dest='ProductCode', metavar='CODE',
@@ -39,7 +40,8 @@ class ModifyImageAttribute(EucalyptusRequest):
                     instance-store image'''),
                 Arg('-l', '--launch-permission', action='store_true',
                     route_to=None,
-                    help='grant/revoke launch permissions with -a/-r')),
+                    help='grant/revoke launch permissions with -a/-r'))
+            .required(),
             Arg('-a', '--add', metavar='ENTITY', action='append', default=[],
                 route_to=None, help='''account to grant launch permission, or
                 "all" for all accounts'''),

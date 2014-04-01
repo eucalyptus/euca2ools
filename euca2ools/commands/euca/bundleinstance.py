@@ -71,11 +71,11 @@ class BundleInstance(EucalyptusRequest):
         delta = timedelta(hours=self.args['expires'])
         expire_time = (datetime.utcnow() + delta).replace(microsecond=0)
 
-        policy = {'conditions': [{'acl': 'ec2-bundle-read'},
-                                 {'bucket': self.args.get(
-                                    'Storage.S3.Bucket')},
-                                 ['starts-with', '$key',
-                                  self.args.get('Storage.S3.Prefix')]],
+        conditions = [{'acl': 'ec2-bundle-read'},
+                      {'bucket': self.args.get('Storage.S3.Bucket')},
+                      ['starts-with', '$key',
+                       self.args.get('Storage.S3.Prefix')]]
+        policy = {'conditions': conditions,
                   'expiration': time.strftime('%Y-%m-%dT%H:%M:%SZ',
                                               expire_time.timetuple())}
         policy_json = json.dumps(policy)

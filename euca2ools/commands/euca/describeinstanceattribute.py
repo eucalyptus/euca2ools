@@ -24,8 +24,10 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import base64
-from euca2ools.commands.euca import EucalyptusRequest
+
 from requestbuilder import Arg, MutuallyExclusiveArgList
+
+from euca2ools.commands.euca import EucalyptusRequest
 
 
 class DescribeInstanceAttribute(EucalyptusRequest):
@@ -33,7 +35,7 @@ class DescribeInstanceAttribute(EucalyptusRequest):
                    "Note that exactly one attribute may be shown at a time.")
     ARGS = [Arg('InstanceId', metavar='INSTANCE',
                 help='ID of the instance to show info for (required)'),
-            MutuallyExclusiveArgList(True,
+            MutuallyExclusiveArgList(
                 Arg('-b', '--block-device-mapping', dest='Attribute',
                     action='store_const', const='blockDeviceMapping',
                     help='show block device mappings'),
@@ -72,7 +74,8 @@ class DescribeInstanceAttribute(EucalyptusRequest):
                     help='''[VPC only] show whether source/destination checking
                     is enabled for the instance'''),
                 Arg('--user-data', dest='Attribute', action='store_const',
-                    const='userData', help="show the instance's user-data"))]
+                    const='userData', help="show the instance's user-data"))
+            .required()]
     LIST_TAGS = ['blockDeviceMapping', 'groupSet', 'productCodes']
 
     def print_result(self, result):
@@ -87,14 +90,14 @@ class DescribeInstanceAttribute(EucalyptusRequest):
             # able to identify.  If you figure out what they are, please send
             # a patch.
         elif self.args['Attribute'] == 'groupSet':
-            ## TODO:  test this in the wild (I don't have a VPC to work with)
+            # TODO:  test this in the wild (I don't have a VPC to work with)
             groups = (group.get('groupId') or group.get('groupName')
                       for group in result.get('groupSet', []))
             print self.tabify(('groupSet', result.get('instanceId'),
                                ', '.join(groups)))
         elif self.args['Attribute'] == 'productCodes':
-            ## TODO:  test this in the wild (I don't have anything I can test
-            ##        it with)
+            # TODO:  test this in the wild (I don't have anything I can test
+            #        it with)
             codes = (code.get('productCode') for code in
                      result.get('productCodes', []))
             print self.tabify(('productCodes', result.get('instanceId'),

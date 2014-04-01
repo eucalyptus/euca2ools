@@ -34,10 +34,11 @@ class PutRolePolicy(EuareRequest):
                 required=True, help='role to attach the policy to (required)'),
             Arg('-p', '--policy-name', dest='PolicyName', metavar='POLICY',
                 required=True, help='name of the policy (required)'),
-            MutuallyExclusiveArgList(True,
+            MutuallyExclusiveArgList(
                 Arg('-o', '--policy-content', dest='PolicyDocument',
                     metavar='POLICY_CONTENT', help='the policy to attach'),
                 Arg('-f', '--policy-document', dest='PolicyDocument',
                     metavar='FILE', type=open,
-                    help='file containing the policy to attach')),
+                    help='file containing the policy to attach'))
+            .required(),
             AS_ACCOUNT]

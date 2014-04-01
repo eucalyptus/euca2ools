@@ -23,24 +23,26 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.euca import EucalyptusRequest
 from requestbuilder import Arg, MutuallyExclusiveArgList
 from requestbuilder.exceptions import ArgumentError
+
+from euca2ools.commands.euca import EucalyptusRequest
 
 
 class AssociateAddress(EucalyptusRequest):
     DESCRIPTION = 'Associate an elastic IP address with a running instance'
-    ARGS = [MutuallyExclusiveArgList(True,
+    ARGS = [Arg('PublicIp', metavar='ADDRESS', nargs='?', help='''[Non-VPC
+                only] IP address to associate (required)'''),
+            Arg('-a', '--allocation-id', dest='AllocationId', metavar='ALLOC',
+                help='[VPC only] VPC allocation ID (required)'),
+            MutuallyExclusiveArgList(
                 Arg('-i', '--instance-id', dest='InstanceId',
                     metavar='INSTANCE', help='''ID of the instance to associate
                     the address with'''),
                 Arg('-n', '--network-interface', dest='NetworkInterfaceId',
                     metavar='INTERFACE', help='''[VPC only] network interface
-                    to associate the address with''')),
-            Arg('PublicIp', metavar='ADDRESS', nargs='?', help='''[Non-VPC
-                only] IP address to associate (required)'''),
-            Arg('-a', '--allocation-id', dest='AllocationId', metavar='ALLOC',
-                help='[VPC only] VPC allocation ID (required)'),
+                    to associate the address with'''))
+            .required(),
             Arg('-p', '--private-ip-address', dest='PrivateIpAddress',
                 metavar='ADDRESS', help='''[VPC only] the private address to
                 associate with the address being associated in the VPC

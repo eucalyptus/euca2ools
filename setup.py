@@ -29,7 +29,6 @@ from distutils.command.install_scripts import install_scripts
 from distutils.command.sdist import sdist
 import glob
 import os.path
-import re
 import sys
 
 from setuptools import find_packages, setup
@@ -37,12 +36,12 @@ from setuptools import find_packages, setup
 from euca2ools import __version__
 
 
-requirements = ['lxml',
+REQUIREMENTS = ['lxml',
                 'requestbuilder>=0.2.0-pre1',
                 'requests',
                 'six']
 if sys.version_info < (2, 7):
-    requirements.append('argparse')
+    REQUIREMENTS.append('argparse')
 
 
 # Cheap hack:  install symlinks separately from regular files.
@@ -67,8 +66,9 @@ class install_scripts_and_symlinks(install_scripts):
         # Replicate symlinks if they don't exist
         for script in self.distribution.scripts:
             if os.path.islink(script):
-                target  = os.readlink(script)
-                newlink = os.path.join(self.install_dir, os.path.basename(script))
+                target = os.readlink(script)
+                newlink = os.path.join(self.install_dir,
+                                       os.path.basename(script))
                 if not os.path.exists(newlink):
                     os.symlink(target, newlink)
 
@@ -131,7 +131,7 @@ setup(name="euca2ools",
                   []),
       data_files=[('share/man/man1', glob.glob('man/*.1'))],
       packages=find_packages(),
-      install_requires=requirements,
+      install_requires=REQUIREMENTS,
       license='BSD (Simplified)',
       platforms='Posix; MacOS X',
       classifiers=['Development Status :: 4 - Beta',

@@ -35,23 +35,24 @@ class UpdateAssumeRolePolicy(EuareRequest):
     DESCRIPTION = 'Update the policy that grants an entity to assume a role'
     ARGS = [Arg('-r', '--role-name', dest='RoleName', metavar='ROLE',
                 required=True, help='role to update (required)'),
-            MutuallyExclusiveArgList(True,
+            MutuallyExclusiveArgList(
                 Arg('-f', dest='PolicyDocument', metavar='FILE',
                     type=file_contents,
                     help='file containing the policy for the new role'),
                 Arg('-s', '--service', route_to=None, help='''service to allow
-                    access to the role (e.g. ec2.amazonaws.com)''')),
+                    access to the role (e.g. ec2.amazonaws.com)'''))
+            .required(),
             Arg('-o', dest='verbose', action='store_true',
                 help="also print the role's new policy"),
             AS_ACCOUNT]
 
     def preprocess(self):
         if self.args.get('service'):
+            statement = {'Effect': 'Allow',
+                         'Principal': {'Service': [self.args['service']]},
+                         'Action': ['sts:AssumeRole']}
             policy = {'Version': '2008-10-17',
-                      'Statement': [{'Effect': 'Allow',
-                                     'Principal':
-                                         {'Service': [self.args['service']]},
-                                     'Action': ['sts:AssumeRole']}]}
+                      'Statement': [statement]}
             self.params['PolicyDocument'] = json.dumps(policy)
 
     def print_result(self, _):

@@ -47,7 +47,7 @@ class ModifyInstanceTypeAttribute(EucalyptusRequest, TabifyingMixin):
         EucalyptusRequest.configure(self)
         if (self.args.get('Reset') and
             any(self.args.get(attr) is not None for attr in ('Cpu', 'Disk',
-                                                            'Memory'))):
+                                                             'Memory'))):
             # Basically, reset is mutually exclusive with everything else.
             raise ArgumentError('argument --reset may not be used with '
                                 'instance type attributes')

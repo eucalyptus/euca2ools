@@ -38,23 +38,24 @@ class CreateRole(EuareRequest):
                 required=True, help='name of the new role (required)'),
             Arg('-p', '--path', dest='Path',
                 help='path for the new role (default: "/")'),
-            MutuallyExclusiveArgList(True,
+            MutuallyExclusiveArgList(
                 Arg('-f', dest='AssumeRolePolicyDocument', metavar='FILE',
                     type=file_contents,
                     help='file containing the policy for the new role'),
                 Arg('-s', '--service', route_to=None, help='''service to allow
-                    access to the role (e.g. ec2.amazonaws.com)''')),
+                    access to the role (e.g. ec2.amazonaws.com)'''))
+            .required(),
             Arg('-v', '--verbose', action='store_true', route_to=None,
                 help="print the new role's ARN, GUID, and policy"),
             AS_ACCOUNT]
 
     def preprocess(self):
         if self.args.get('service'):
+            statement = {'Effect': 'Allow',
+                         'Principal': {'Service': [self.args['service']]},
+                         'Action': ['sts:AssumeRole']}
             policy = {'Version': '2008-10-17',
-                      'Statement': [{'Effect': 'Allow',
-                                     'Principal':
-                                         {'Service': [self.args['service']]},
-                                     'Action': ['sts:AssumeRole']}]}
+                      'Statement': [statement]}
             self.params['AssumeRolePolicyDocument'] = json.dumps(policy)
 
     def print_result(self, result):
