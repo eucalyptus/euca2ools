@@ -23,12 +23,12 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.iam import EuareRequest, AS_ACCOUNT
+from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT
 from requestbuilder import Arg
 from requestbuilder.response import PaginatedResponse
 
 
-class ListGroups(EuareRequest):
+class ListGroups(IAMRequest):
     DESCRIPTION = "List your account's groups"
     ARGS = [Arg('-p', '--path-prefix', dest='PathPrefix', metavar='PATH',
                 help='''restrict results to groups whose paths begin with a

@@ -26,10 +26,10 @@
 from requestbuilder import Arg
 from requestbuilder.response import PaginatedResponse
 
-from euca2ools.commands.iam import EuareRequest, AS_ACCOUNT
+from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT
 
 
-class ListInstanceProfilesForRole(EuareRequest):
+class ListInstanceProfilesForRole(IAMRequest):
     DESCRIPTION = 'List all instance profiles that use a role'
     ARGS = [Arg('-r', '--role-name', dest='RoleName', metavar='ROLE',
                 required=True, help='role to list membership for (required)'),

@@ -25,12 +25,12 @@
 
 from requestbuilder import Arg
 
-from euca2ools.commands.iam import EuareRequest, AS_ACCOUNT
+from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT
 from euca2ools.commands.iam.addroletoinstanceprofile import \
     AddRoleToInstanceProfile
 
 
-class CreateInstanceProfile(EuareRequest):
+class CreateInstanceProfile(IAMRequest):
     DESCRIPTION = 'Create a new instance profile'
     ARGS = [Arg('-s', '--instance-profile-name', dest='InstanceProfileName',
                 metavar='IPROFILE', required=True,

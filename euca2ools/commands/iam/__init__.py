@@ -37,9 +37,9 @@ from euca2ools.exceptions import AWSError
 from euca2ools.util import strip_response_metadata, substitute_euca_region
 
 
-class Euare(requestbuilder.service.BaseService):
+class IAM(requestbuilder.service.BaseService):
     NAME = 'iam'
-    DESCRIPTION = 'Eucalyptus User, Authorization and Reporting Environment'
+    DESCRIPTION = 'Identity and access management service'
     API_VERSION = '2010-05-08'
     REGION_ENVVAR = 'AWS_DEFAULT_REGION'
     URL_ENVVAR = 'EUARE_URL'
@@ -55,9 +55,9 @@ class Euare(requestbuilder.service.BaseService):
         raise AWSError(response)
 
 
-class EuareRequest(requestbuilder.request.AWSQueryRequest):
+class IAMRequest(requestbuilder.request.AWSQueryRequest):
     SUITE = Euca2ools
-    SERVICE_CLASS = Euare
+    SERVICE_CLASS = IAM
     AUTH_CLASS = requestbuilder.auth.QuerySigV2Auth
     METHOD = 'POST'
 

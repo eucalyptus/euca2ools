@@ -24,7 +24,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import argparse
-from euca2ools.commands.iam import EuareRequest, AS_ACCOUNT
+from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT
 from euca2ools.commands.iam.deletegrouppolicy import DeleteGroupPolicy
 from euca2ools.commands.iam.getgroup import GetGroup
 from euca2ools.commands.iam.listgrouppolicies import ListGroupPolicies
@@ -32,7 +32,7 @@ from euca2ools.commands.iam.removeuserfromgroup import RemoveUserFromGroup
 from requestbuilder import Arg
 
 
-class DeleteGroup(EuareRequest):
+class DeleteGroup(IAMRequest):
     DESCRIPTION = 'Delete a group'
     ARGS = [Arg('-g', '--group-name', dest='GroupName', metavar='GROUP',
                 required=True, help='name of the group to delete (required)'),

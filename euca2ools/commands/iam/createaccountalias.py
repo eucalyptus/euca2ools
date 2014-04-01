@@ -23,11 +23,11 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.iam import EuareRequest, AS_ACCOUNT
+from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT
 from requestbuilder import Arg
 
 
-class CreateAccountAlias(EuareRequest):
+class CreateAccountAlias(IAMRequest):
     DESCRIPTION = 'Create an alias for an account, a.k.a. an account name'
     ARGS = [Arg('-a', '--account-alias', dest='AccountAlias', metavar='ALIAS',
                 required=True, help='name of the alias to create (required)'),

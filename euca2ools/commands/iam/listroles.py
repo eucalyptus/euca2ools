@@ -26,10 +26,10 @@
 from requestbuilder import Arg
 from requestbuilder.response import PaginatedResponse
 
-from euca2ools.commands.iam import EuareRequest, AS_ACCOUNT
+from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT
 
 
-class ListRoles(EuareRequest):
+class ListRoles(IAMRequest):
     DESCRIPTION = "List your account's roles"
     ARGS = [Arg('-p', '--path-prefix', dest='PathPrefix', metavar='PREFIX',
                 help='limit results to roles who begin with a given path'),

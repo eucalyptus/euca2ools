@@ -27,12 +27,12 @@ import json
 
 from requestbuilder import Arg
 
-from euca2ools.commands.iam import EuareRequest, AS_ACCOUNT
+from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT
 from euca2ools.commands.iam.putgrouppolicy import PutGroupPolicy
 from euca2ools.util import build_iam_policy
 
 
-class AddGroupPolicy(EuareRequest):
+class AddGroupPolicy(IAMRequest):
     DESCRIPTION = ('Add a new policy to a group. To add more complex policies '
                    'than this tool supports, see euare-groupuploadpolicy.')
     ARGS = [Arg('-g', '--group-name', metavar='GROUP', required=True,

@@ -27,12 +27,12 @@ import json
 
 from requestbuilder import Arg
 
-from euca2ools.commands.iam import EuareRequest, AS_ACCOUNT
+from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT
 from euca2ools.commands.iam.putrolepolicy import PutRolePolicy
 from euca2ools.util import build_iam_policy
 
 
-class AddRolePolicy(EuareRequest):
+class AddRolePolicy(IAMRequest):
     DESCRIPTION = ('Add a new policy to a role.  To add more complex policies '
                    'than this tool supports, see euare-roleuploadpolicy.')
     ARGS = [Arg('-r', '--role-name', metavar='ROLE', required=True,

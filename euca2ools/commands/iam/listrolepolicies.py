@@ -26,11 +26,11 @@
 from requestbuilder import Arg
 from requestbuilder.response import PaginatedResponse
 
-from euca2ools.commands.iam import EuareRequest, AS_ACCOUNT
+from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT
 from euca2ools.commands.iam.getrolepolicy import GetRolePolicy
 
 
-class ListRolePolicies(EuareRequest):
+class ListRolePolicies(IAMRequest):
     DESCRIPTION = ('List one specific policy or all policies attached to a '
                    'role.  If no policies are attached to the role, the '
                    'action still succeeds.')

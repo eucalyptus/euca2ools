@@ -23,13 +23,13 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.iam import EuareRequest, AS_ACCOUNT
+from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT
 from euca2ools.commands.iam.addusertogroup import AddUserToGroup
 from euca2ools.commands.iam.createaccesskey import CreateAccessKey
 from requestbuilder import Arg
 
 
-class CreateUser(EuareRequest):
+class CreateUser(IAMRequest):
     DESCRIPTION = ('Create a new user and optionally add the user to a group '
                    'or generate an access key for the user')
     ARGS = [Arg('-u', '--user-name', dest='UserName', required=True,

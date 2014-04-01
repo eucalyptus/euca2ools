@@ -25,10 +25,10 @@
 
 from requestbuilder import Arg, MutuallyExclusiveArgList
 
-from euca2ools.commands.iam import EuareRequest, AS_ACCOUNT
+from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT
 
 
-class UploadServerCertificate(EuareRequest):
+class UploadServerCertificate(IAMRequest):
     DESCRIPTION = 'Upload a server certificate'
     ARGS = [Arg('-s', '--server-certificate-name', metavar='CERTNAME',
                 dest='ServerCertificateName', required=True,

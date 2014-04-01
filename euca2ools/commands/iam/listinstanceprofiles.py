@@ -26,10 +26,10 @@
 from requestbuilder import Arg
 from requestbuilder.response import PaginatedResponse
 
-from euca2ools.commands.iam import EuareRequest, AS_ACCOUNT
+from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT
 
 
-class ListInstanceProfiles(EuareRequest):
+class ListInstanceProfiles(IAMRequest):
     DESCRIPTION = "List your account's instance profiles"
     ARGS = [Arg('-p', '--path-prefix', dest='PathPrefix', metavar='PREFIX',
                 help='''limit results to instance profiles that begin with a

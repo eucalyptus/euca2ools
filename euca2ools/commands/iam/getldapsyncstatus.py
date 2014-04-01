@@ -23,11 +23,11 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.iam import EuareRequest
+from euca2ools.commands.iam import IAMRequest
 from requestbuilder.mixins import TabifyingMixin
 
 
-class GetLdapSyncStatus(EuareRequest, TabifyingMixin):
+class GetLdapSyncStatus(IAMRequest, TabifyingMixin):
     DESCRIPTION = ("[Eucalyptus cloud admin only] Show the status of the "
                    "cloud's LDAP synchronization")
 

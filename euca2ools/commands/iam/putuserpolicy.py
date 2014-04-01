@@ -25,10 +25,10 @@
 
 from requestbuilder import Arg, MutuallyExclusiveArgList
 
-from euca2ools.commands.iam import EuareRequest, AS_ACCOUNT
+from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT
 
 
-class PutUserPolicy(EuareRequest):
+class PutUserPolicy(IAMRequest):
     DESCRIPTION = 'Attach a policy to a user'
     ARGS = [Arg('-u', '--user-name', dest='UserName', metavar='USER',
                 required=True, help='user to attach the policy to (required)'),

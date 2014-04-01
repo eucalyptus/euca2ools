@@ -23,11 +23,11 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.iam import EuareRequest, AS_ACCOUNT
+from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT
 from requestbuilder import Arg
 
 
-class DeleteGroupPolicy(EuareRequest):
+class DeleteGroupPolicy(IAMRequest):
     DESCRIPTION = 'Remove a policy from a group'
     ARGS = [Arg('-g', '--group-name', dest='GroupName', metavar='GROUP',
                 required=True,

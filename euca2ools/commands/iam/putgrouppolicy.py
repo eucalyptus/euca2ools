@@ -25,10 +25,10 @@
 
 from requestbuilder import Arg, MutuallyExclusiveArgList
 
-from euca2ools.commands.iam import EuareRequest, AS_ACCOUNT
+from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT
 
 
-class PutGroupPolicy(EuareRequest):
+class PutGroupPolicy(IAMRequest):
     DESCRIPTION = 'Attach a policy to a group'
     ARGS = [Arg('-g', '--group-name', dest='GroupName', metavar='GROUP',
                 required=True,

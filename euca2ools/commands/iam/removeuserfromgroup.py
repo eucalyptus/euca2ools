@@ -23,11 +23,11 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.iam import EuareRequest, AS_ACCOUNT
+from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT
 from requestbuilder import Arg
 
 
-class RemoveUserFromGroup(EuareRequest):
+class RemoveUserFromGroup(IAMRequest):
     DESCRIPTION = 'Remove a user from a group'
     ARGS = [Arg('-u', '--user-name', dest='user_names', metavar='USER',
                 action='append', route_to=None, required=True,

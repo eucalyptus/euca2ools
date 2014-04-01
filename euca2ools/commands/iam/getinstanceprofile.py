@@ -25,10 +25,10 @@
 
 from requestbuilder import Arg
 
-from euca2ools.commands.iam import EuareRequest, AS_ACCOUNT
+from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT
 
 
-class GetInstanceProfile(EuareRequest):
+class GetInstanceProfile(IAMRequest):
     DESCRIPTION = "Display an instance profile's ARN and GUID"
     ARGS = [Arg('-s', '--instance-profile-name', dest='InstanceProfileName',
                 metavar='IPROFILE', required=True, help='''name of the

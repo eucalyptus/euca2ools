@@ -23,11 +23,11 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.iam import EuareRequest
+from euca2ools.commands.iam import IAMRequest
 from requestbuilder import Arg
 
 
-class DeleteAccountPolicy(EuareRequest):
+class DeleteAccountPolicy(IAMRequest):
     DESCRIPTION = ('[Eucalyptus cloud admin only] Remove a policy from an '
                    'account')
     ARGS = [Arg('-a', '--account-name', dest='AccountName', metavar='ACCOUNT',

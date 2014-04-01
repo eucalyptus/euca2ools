@@ -27,10 +27,10 @@ import urllib
 
 from requestbuilder import Arg
 
-from euca2ools.commands.iam import EuareRequest, AS_ACCOUNT
+from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT
 
 
-class GetRole(EuareRequest):
+class GetRole(IAMRequest):
     DESCRIPTION = "Display a role's ARN, GUID, and policy"
     ARGS = [Arg('-r', '--role-name', dest='RoleName', metavar='ROLE',
                 required=True,

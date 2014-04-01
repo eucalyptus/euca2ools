@@ -23,13 +23,13 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.iam import EuareRequest
+from euca2ools.commands.iam import IAMRequest
 from euca2ools.commands.iam.getaccountpolicy import GetAccountPolicy
 from requestbuilder import Arg
 from requestbuilder.response import PaginatedResponse
 
 
-class ListAccountPolicies(EuareRequest):
+class ListAccountPolicies(IAMRequest):
     DESCRIPTION = ('[Eucalyptus only] List one specific policy or all '
                    'policies attached to an account. If no policies are '
                    'attached to the account, the action still succeeds.')

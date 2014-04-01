@@ -23,11 +23,11 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.iam import EuareRequest, AS_ACCOUNT
+from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT
 from requestbuilder import Arg
 
 
-class UpdateSigningCertificate(EuareRequest):
+class UpdateSigningCertificate(IAMRequest):
     DESCRIPTION = ('Change the status of a signing certificate from Active to '
                    'Inactive, or vice versa')
     ARGS = [Arg('-u', '--user-name', dest='UserName', metavar='USER',

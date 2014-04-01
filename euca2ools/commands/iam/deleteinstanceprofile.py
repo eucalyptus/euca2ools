@@ -25,13 +25,13 @@
 
 from requestbuilder import Arg
 
-from euca2ools.commands.iam import EuareRequest, AS_ACCOUNT
+from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT
 from euca2ools.commands.iam.getinstanceprofile import GetInstanceProfile
 from euca2ools.commands.iam.removerolefrominstanceprofile import \
     RemoveRoleFromInstanceProfile
 
 
-class DeleteInstanceProfile(EuareRequest):
+class DeleteInstanceProfile(IAMRequest):
     DESCRIPTION = ('Delete an instance profile\n\nThis will break any running '
                    'instances that depend upon access to the deleted instance '
                    'profile.')

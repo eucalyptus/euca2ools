@@ -25,10 +25,10 @@
 
 from requestbuilder import Arg, MutuallyExclusiveArgList
 
-from euca2ools.commands.iam import EuareRequest, AS_ACCOUNT
+from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT
 
 
-class UploadSigningCertificate(EuareRequest):
+class UploadSigningCertificate(IAMRequest):
     DESCRIPTION = 'Upload a signing certificate'
     ARGS = [Arg('-u', '--user-name', dest='UserName', metavar='USER',
                 help='''user the signing certificate is for (default: current

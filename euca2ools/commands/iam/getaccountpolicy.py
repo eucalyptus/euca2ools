@@ -23,13 +23,13 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.iam import EuareRequest
+from euca2ools.commands.iam import IAMRequest
 import json
 from requestbuilder import Arg
 import urllib
 
 
-class GetAccountPolicy(EuareRequest):
+class GetAccountPolicy(IAMRequest):
     DESCRIPTION = "Display an account's policy"
     ARGS = [Arg('-a', '--account-name', dest='AccountName', metavar='ACCOUNT',
                 required=True,

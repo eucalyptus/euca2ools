@@ -23,13 +23,13 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.iam import EuareRequest, AS_ACCOUNT
+from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT
 from euca2ools.commands.iam.getuserpolicy import GetUserPolicy
 from requestbuilder import Arg
 from requestbuilder.response import PaginatedResponse
 
 
-class ListUserPolicies(EuareRequest):
+class ListUserPolicies(IAMRequest):
     DESCRIPTION = ('List one specific policy or all policies attached to a '
                    'user.  If no policies are attached to the user, the '
                    'action still succeeds.')

@@ -25,10 +25,10 @@
 
 from requestbuilder import Arg, MutuallyExclusiveArgList
 
-from euca2ools.commands.iam import EuareRequest
+from euca2ools.commands.iam import IAMRequest
 
 
-class PutAccountPolicy(EuareRequest):
+class PutAccountPolicy(IAMRequest):
     DESCRIPTION = '[Eucalyptus cloud admin only] Attach a policy to an account'
     ARGS = [Arg('-a', '--account-name', dest='AccountName', metavar='ACCOUNT',
                 required=True,

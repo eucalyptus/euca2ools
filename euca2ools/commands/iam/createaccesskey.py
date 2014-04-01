@@ -23,11 +23,11 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.iam import EuareRequest, AS_ACCOUNT
+from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT
 from requestbuilder import Arg
 
 
-class CreateAccessKey(EuareRequest):
+class CreateAccessKey(IAMRequest):
     DESCRIPTION = 'Create a new access key for a user'
     ARGS = [Arg('-u', '--user-name', dest='UserName', help='''user the new key
                 will belong to (default: calling user)'''),

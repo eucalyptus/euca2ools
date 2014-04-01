@@ -23,12 +23,12 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.iam import EuareRequest, AS_ACCOUNT
+from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT
 from euca2ools.util import prompt_for_password
 from requestbuilder import Arg
 
 
-class UpdateLoginProfile(EuareRequest):
+class UpdateLoginProfile(IAMRequest):
     DESCRIPTION = "Update a user's password"
     ARGS = [Arg('-u', '--user-name', dest='UserName', metavar='USER',
                 required=True,
@@ -39,7 +39,7 @@ class UpdateLoginProfile(EuareRequest):
             AS_ACCOUNT]
 
     def configure(self):
-        EuareRequest.configure(self)
+        IAMRequest.configure(self)
         if self.args['Password'] is None:
             self.log.info('no password supplied; prompting')
             self.params['Password'] = prompt_for_password()

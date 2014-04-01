@@ -23,12 +23,12 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.iam import EuareRequest, AS_ACCOUNT
+from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT
 from requestbuilder import Arg
 from requestbuilder.mixins import TabifyingMixin
 
 
-class GetUserInfo(EuareRequest, TabifyingMixin):
+class GetUserInfo(IAMRequest, TabifyingMixin):
     DESCRIPTION = '[Eucalyptus only] Display information about a user'
     ARGS = [Arg('-u', '--user-name', dest='UserName', metavar='USER',
                 help='''name of the user to display info for (default: current

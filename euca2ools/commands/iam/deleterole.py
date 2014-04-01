@@ -25,7 +25,7 @@
 
 from requestbuilder import Arg
 
-from euca2ools.commands.iam import EuareRequest, AS_ACCOUNT
+from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT
 from euca2ools.commands.iam.deleterolepolicy import DeleteRolePolicy
 from euca2ools.commands.iam.listinstanceprofilesforrole import \
     ListInstanceProfilesForRole
@@ -34,7 +34,7 @@ from euca2ools.commands.iam.removerolefrominstanceprofile import \
     RemoveRoleFromInstanceProfile
 
 
-class DeleteRole(EuareRequest):
+class DeleteRole(IAMRequest):
     DESCRIPTION = 'Delete a role'
     ARGS = [Arg('-r', '--role-name', dest='RoleName', metavar='ROLE',
                 required=True, help='name of the role to delete (required)'),

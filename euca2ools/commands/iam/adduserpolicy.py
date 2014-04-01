@@ -27,12 +27,12 @@ import json
 
 from requestbuilder import Arg
 
-from euca2ools.commands.iam import EuareRequest, AS_ACCOUNT
+from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT
 from euca2ools.commands.iam.putuserpolicy import PutUserPolicy
 from euca2ools.util import build_iam_policy
 
 
-class AddUserPolicy(EuareRequest):
+class AddUserPolicy(IAMRequest):
     DESCRIPTION = ('Add a new policy to a user. To add more complex policies '
                    'than this tool supports, see euare-useruploadpolicy.')
     ARGS = [Arg('-u', '--user-name', metavar='USER', required=True,

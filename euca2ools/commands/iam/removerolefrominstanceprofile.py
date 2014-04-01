@@ -25,10 +25,10 @@
 
 from requestbuilder import Arg
 
-from euca2ools.commands.iam import EuareRequest, AS_ACCOUNT
+from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT
 
 
-class RemoveRoleFromInstanceProfile(EuareRequest):
+class RemoveRoleFromInstanceProfile(IAMRequest):
     DESCRIPTION = 'Remove a role from an instance profile'
     ARGS = [Arg('-r', '--role-name', dest='RoleName', metavar='ROLE',
                 required=True, help='the role to remove (required)'),

@@ -24,7 +24,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import argparse
-from euca2ools.commands.iam import EuareRequest, AS_ACCOUNT
+from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT
 from euca2ools.commands.iam.deleteaccesskey import DeleteAccessKey
 from euca2ools.commands.iam.deleteloginprofile import DeleteLoginProfile
 from euca2ools.commands.iam.deletesigningcertificate import \
@@ -41,7 +41,7 @@ from euca2ools.exceptions import AWSError
 from requestbuilder import Arg
 
 
-class DeleteUser(EuareRequest):
+class DeleteUser(IAMRequest):
     DESCRIPTION = 'Delete a user'
     ARGS = [Arg('-u', '--user-name', dest='UserName', metavar='USER',
                 required=True, help='name of the user to delete (required)'),

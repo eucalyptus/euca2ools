@@ -23,11 +23,11 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.iam import EuareRequest, AS_ACCOUNT
+from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT
 from requestbuilder import Arg
 
 
-class UpdateServerCertificate(EuareRequest):
+class UpdateServerCertificate(IAMRequest):
     DESCRIPTION = 'Change the name and/or path of a server certificate'
     ARGS = [Arg('-s', '--server-certificate-name',
                 dest='ServerCertificateName', metavar='CERT', required=True,
