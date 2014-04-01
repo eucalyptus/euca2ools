@@ -33,7 +33,6 @@ from requestbuilder.mixins import FileTransferProgressBarMixin
 
 from euca2ools.commands.bundle.mixins import BundleDownloadingMixin
 from euca2ools.commands.walrus import WalrusRequest
-from euca2ools.commands.walrus.getobject import GetObject
 
 
 class DownloadBundle(WalrusRequest, FileTransferProgressBarMixin,
@@ -41,80 +40,40 @@ class DownloadBundle(WalrusRequest, FileTransferProgressBarMixin,
     DESCRIPTION = ('Download a bundled image from the cloud\n\nYou must run '
                    'euca-unbundle-image on the bundle you download to obtain '
                    'the original image.')
-    ARGS = [Arg('-d', '--directory', default=".",
+    ARGS = [Arg('-d', '--directory', dest='dest', metavar='DIR', default=".",
                 help='''the directory to download the bundle parts to, or "-"
                 to write the bundled image to stdout''')]
 
     # noinspection PyExceptionInherit
     def configure(self):
         WalrusRequest.configure(self)
-        if self.args['directory'] == '-':
-            self.args['directory'] = sys.stdout
-        elif isinstance(self.args['directory'], basestring):
-            if not os.path.exists(self.args['directory']):
+        if self.args['dest'] == '-':
+            self.args['dest'] = sys.stdout
+            self.args['show_progress'] = False
+        elif isinstance(self.args['dest'], basestring):
+            if not os.path.exists(self.args['dest']):
                 raise ArgumentError(
                     "argument -d/--directory: '{0}' does not exist"
-                    .format(self.args['directory']))
-            if not os.path.isdir(self.args['directory']):
+                    .format(self.args['dest']))
+            if not os.path.isdir(self.args['dest']):
                 raise ArgumentError(
                     "argument -d/--directory: '{0}' is not a directory"
-                    .format(self.args['directory']))
+                    .format(self.args['dest']))
         # Otherwise we assume it is a file object
 
     # noinspection PyExceptionInherit
     def main(self):
         manifest = self.fetch_manifest(self.service)
-        parts = self.map_bundle_parts_to_s3paths(manifest)
-        if isinstance(self.args['directory'], basestring):
-            # We're downloading to a directory, so download the manifest (if
-            # possible) and each of the parts to there.
-            manifest_s3path = self.get_manifest_s3path()
-            manifest_dest = os.path.join(self.args['directory'],
-                                         os.path.basename(manifest_s3path))
-            self.log.info('downloading manifest %s to %s',
-                          manifest_s3path, manifest_dest)
-            req = GetObject(
-                config=self.config, service=self.service,
-                source=manifest_s3path, dest=manifest_dest,
-                show_progress=self.args.get('show_progress', False))
-            req.main()
-            for part, part_s3path in parts:
-                part.filename = os.path.join(self.args['directory'],
-                                             os.path.basename(part_s3path))
-                self.log.info('downloading part %s to %s',
-                              part_s3path, part.filename)
-                req = GetObject(
-                    config=self.config, service=self.service,
-                    source=part_s3path, dest=part.filename,
-                    show_progress=self.args.get('show_progress', False))
-                response = req.main()
-                self.__check_part_sha1(part, part_s3path, response)
+        if isinstance(self.args['dest'], basestring):
+            manifest_dest = self.download_bundle_to_dir(
+                manifest, self.args['dest'], self.service)
         else:
-            # We're downloading to a file object, so skip the manifest and
-            # download all parts to that file object.
-            manifest_dest = None
-            for part, part_s3path in parts:
-                self.log.info('downloading part %s', part_s3path)
-                req = GetObject(
-                    config=self.config, service=self.service,
-                    source=part_s3path, dest=self.args['directory'],
-                    show_progress=self.args.get('show_progress', False))
-                response = req.main()
-                self.__check_part_sha1(part, part_s3path, response)
+            manifest_dest = self.download_bundle_to_fileobj(
+                manifest, self.args['dest'], self.service)
         return manifest, manifest_dest
 
     def print_result(self, result):
-        manifest, manifest_filename = result
-        if manifest_filename:
+        _, manifest_filename = result
+        if (manifest_filename and
+                self.args['dest'].fileno() != sys.stdout.fileno()):
             print 'Wrote manifest', manifest_filename
-            print >> sys.stderr, 'Wrote manifest', manifest_filename  ## XXX
-
-    def __check_part_sha1(self, part, part_s3path, response):
-        if response[part_s3path]['sha1'] != part.hexdigest:
-            self.log.error('rejecting download due to manifest SHA1 '
-                           'mismatch (expected: %s, actual: %s)',
-                           part.hexdigest, response[part_s3path]['sha1'])
-            raise RuntimeError('downloaded file {0} appears to be corrupt '
-                               '(expected SHA1: {0}, actual: {1}'
-                               .format(part.hexdigest,
-                                       response[part_s3path]['sha1']))

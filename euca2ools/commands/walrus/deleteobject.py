@@ -1,4 +1,4 @@
-# Copyright 2013 Eucalyptus Systems, Inc.
+# Copyright 2013-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -29,18 +29,16 @@ from requestbuilder.exceptions import ArgumentError
 
 
 class DeleteObject(WalrusRequest):
-    DESCRIPTION = 'Delete objects from the server'
-    ARGS = [Arg('paths', metavar='BUCKET/KEY', nargs='+', route_to=None)]
+    DESCRIPTION = 'Delete an object from the server'
+    ARGS = [Arg('path', metavar='BUCKET/KEY', route_to=None)]
+    METHOD = 'DELETE'
 
     # noinspection PyExceptionInherit
     def configure(self):
         WalrusRequest.configure(self)
-        for path in self.args['paths']:
-            if '/' not in path:
-                raise ArgumentError("path '{0}' must include a key name")
+        if '/' not in self.args['path']:
+            raise ArgumentError("path '{0}' must include a key name"
+                                .format(self.args['path']))
 
-    def main(self):
-        self.method = 'DELETE'
-        for path in self.args['paths']:
-            self.path = path
-            self.send()
+    def preprocess(self):
+        self.path = self.args['path']

@@ -417,13 +417,12 @@ class BundleDownloadingMixin(object):
                     help='''the portion of the manifest's file name that
                     precedes ".manifest.xml"'''),
                 Arg('--local-manifest', dest='local_manifest', metavar='FILE',
-                    route_to=None,
-                    help='''location of a manifest on disk to use instead of
-                    downloading the manifest from the server'''))]
+                    route_to=None, help='''use a manifest on disk and ignore
+                    any that appear on the server'''))]
 
     def fetch_manifest(self, s3_service, privkey_filename=None):
         if self.args.get('local_manifest'):
-            _assert_is_file(self.args['local_manifest'])
+            _assert_is_file(self.args['local_manifest'], 'manifest')
             return euca2ools.bundle.manifest.BundleManifest.read_from_file(
                 self.args['local_manifest'], privkey_filename=privkey_filename)
 
@@ -453,12 +452,64 @@ class BundleDownloadingMixin(object):
             # With a local manifest we can't divine the manifest's key name is
             return None
 
+    def download_bundle_to_dir(self, manifest, dest_dir, s3_service):
+        parts = self.map_bundle_parts_to_s3paths(manifest)
+        for part, part_s3path in parts:
+            part.filename = os.path.join(dest_dir,
+                                         os.path.basename(part_s3path))
+            self.log.info('downloading part %s to %s',
+                          part_s3path, part.filename)
+            req = GetObject(
+                config=self.config, service=s3_service,
+                source=part_s3path, dest=part.filename,
+                show_progress=self.args.get('show_progress', False))
+            response = req.main()
+            self.__check_part_sha1(part, part_s3path, response)
+
+        manifest_s3path = self.get_manifest_s3path()
+        if manifest_s3path:
+            # Can't download a manifest if we're using a local one
+            manifest_dest = os.path.join(dest_dir,
+                                         os.path.basename(manifest_s3path))
+            self.log.info('downloading manifest %s to %s',
+                          manifest_s3path, manifest_dest)
+            req = GetObject(
+                config=self.config, service=s3_service,
+                source=manifest_s3path, dest=manifest_dest,
+                show_progress=self.args.get('show_progress', False))
+            req.main()
+            return manifest_dest
+        return None
+
+    def download_bundle_to_fileobj(self, manifest, fileobj, s3_service):
+        # We can skip downloading the manifest since we're just writing all
+        # parts to a file object.
+        parts = self.map_bundle_parts_to_s3paths(manifest)
+        for part, part_s3path in parts:
+            self.log.info('downloading part %s', part_s3path)
+            req = GetObject(
+                config=self.config, service=s3_service,
+                source=part_s3path, dest=fileobj,
+                show_progress=self.args.get('show_progress', False))
+            response = req.main()
+            self.__check_part_sha1(part, part_s3path, response)
+
     def map_bundle_parts_to_s3paths(self, manifest):
         parts = []
         for part in manifest.image_parts:
             parts.append((part,
                           '/'.join((self.args['bucket'], part.filename))))
         return parts
+
+    def __check_part_sha1(self, part, part_s3path, response):
+        if response[part_s3path]['sha1'] != part.hexdigest:
+            self.log.error('rejecting download due to manifest SHA1 '
+                           'mismatch (expected: %s, actual: %s)',
+                           part.hexdigest, response[part_s3path]['sha1'])
+            raise RuntimeError('downloaded file {0} appears to be corrupt '
+                               '(expected SHA1: {0}, actual: {1}'
+                               .format(part.hexdigest,
+                                       response[part_s3path]['sha1']))
 
 
 def _assert_is_file(filename, filetype):

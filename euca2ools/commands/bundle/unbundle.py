@@ -23,10 +23,9 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import argparse
 import hashlib
 import os
-import traceback
+import multiprocessing
 
 from requestbuilder import Arg
 from requestbuilder.command import BaseCommand
@@ -37,42 +36,36 @@ from requestbuilder.mixins import (FileTransferProgressBarMixin,
 from euca2ools.commands import Euca2ools
 import euca2ools.bundle.pipes
 from euca2ools.bundle.manifest import BundleManifest
-from euca2ools.bundle.util import open_pipe_fileobjs, spawn_process
-from euca2ools.bundle.util import close_all_fds, waitpid_in_thread
+from euca2ools.bundle.util import (close_all_fds, open_pipe_fileobjs,
+                                   waitpid_in_thread)
 from euca2ools.commands.bundle.unbundlestream import UnbundleStream
 
 
 class Unbundle(BaseCommand, FileTransferProgressBarMixin,
                RegionConfigurableMixin):
     DESCRIPTION = ('Recreate an image from its bundled parts\n\nThe key used '
-                   'to unbundle the image must match the certificate that was '
+                   'to unbundle the image must match a certificate that was '
                    'used to bundle it.')
     SUITE = Euca2ools
-    ARGS = [Arg('-m', '--manifest', dest='manifest', metavar='FILE',
-                required=True,
-                help='''use a local manifest file to figure out what to
-                download'''),
+    ARGS = [Arg('-m', '--manifest', type=open, metavar='FILE',
+                required=True, help="the bundle's manifest file (required)"),
             Arg('-s', '--source', metavar='DIR', default='.',
                 help='''directory containing the bundled image parts (default:
-                current directory). If "-" is provided stdin will be used.'''),
-            Arg('-k', '--privatekey', metavar='FILE',
-                help='''file containing the private key to decrypt the bundle
-                with.  This must match the certificate used when bundling the
-                image.'''),
+                current directory)'''),
             Arg('-d', '--destination', metavar='DIR', default='.',
                 help='''where to place the unbundled image (default: current
-                directory). If "-" is provided stdout will be used.'''),
-            Arg('--maxbytes', dest='maxbytes', metavar='MAX BYTES', default=0,
-                help='''The Maximum bytes allowed to be written to the
-                destination.'''),
-            Arg('--progressbar-label', help=argparse.SUPPRESS)]
+                directory)'''),
+            Arg('-k', '--privatekey', metavar='FILE', help='''file containing
+                the private key to decrypt the bundle with.  This must match
+                a certificate used when bundling the image.''')]
 
     # noinspection PyExceptionInherit
     def configure(self):
         BaseCommand.configure(self)
         self.update_config_view()
 
-        #Get the mandatory private key...
+        # The private key could be the user's or the cloud's.  In the config
+        # this is a user-level option.
         if not self.args.get('privatekey'):
             config_privatekey = self.config.get_user_option('private-key')
             if self.args.get('userregion'):
@@ -92,184 +85,82 @@ class Unbundle(BaseCommand, FileTransferProgressBarMixin,
         if not os.path.isfile(self.args['privatekey']):
             raise ArgumentError("private key file '{0}' is not a file"
                                 .format(self.args['privatekey']))
+        self.log.debug('private key: %s', self.args['privatekey'])
 
-        #Get optional source directory...
-        source = self.args['source']
-        if source != "-":
-            source = os.path.expanduser(os.path.abspath(source))
-            if not os.path.exists(source):
-                raise ArgumentError("source directory '{0}' does not exist"
-                                    .format(self.args['source']))
-            if not os.path.isdir(source):
-                raise ArgumentError("source '{0}' is not a directory"
-                                    .format(self.args['source']))
-        self.args['source'] = source
+        if not os.path.exists(self.args.get('source', '.')):
+            raise ArgumentError("argument -s/--source: directory '{0}' does "
+                                "not exist".format(self.args['source']))
+        if not os.path.isdir(self.args.get('source', '.')):
+            raise ArgumentError("argument -s/--source: '{0}' is not a "
+                                "directory".format(self.args['source']))
+        if not os.path.exists(self.args.get('destination', '.')):
+            raise ArgumentError("argument -d/--destination: directory '{0}' "
+                                "does not exist"
+                                .format(self.args['destination']))
+        if not os.path.isdir(self.args.get('destination', '.')):
+            raise ArgumentError("argument -d/--destination: '{0}' is not a "
+                                "directory".format(self.args['destination']))
 
-        #Get optional destination directory...
-        dest_dir = self.args['destination']
-        if dest_dir != "-":
-            dest_dir = os.path.expanduser(os.path.abspath(dest_dir))
-            if not os.path.exists(dest_dir):
-                raise ArgumentError("destination directory '{0}' does"
-                                    " not exist".format(dest_dir))
-            if not os.path.isdir(dest_dir):
-                raise ArgumentError("destination '{0}' is not a directory"
-                                    .format(dest_dir))
-        self.args['destination'] = dest_dir
-
-        #Get Mandatory manifest...
-        if not isinstance(self.args.get('manifest'), BundleManifest):
-            manifest_path = os.path.expanduser(os.path.abspath(
-                self.args['manifest']))
-            if not os.path.exists(manifest_path):
-                raise ArgumentError("Manifest '{0}' does not exist"
-                                    .format(self.args['manifest']))
-            if not os.path.isfile(manifest_path):
-                raise ArgumentError("Manifest '{0}' is not a file"
-                                    .format(self.args['manifest']))
-                #Read manifest into BundleManifest obj...
-            self.args['manifest'] = (BundleManifest.
-                                     read_from_file(manifest_path,
-                                                    self.args['privatekey']))
-
-        self.args['maxbytes'] = int(self.args.get('maxbytes', 0))
-
-    def _concatenate_parts_to_file_for_pipe(self,
-                                            outfile,
-                                            image_parts,
-                                            source_dir,
-                                            debug=False):
-        """
-        Concatenate a list of 'image_parts' (files) found in 'source_dir' into
-        pipeline fed by 'outfile'. Parts are checked against checksum contained
-        in part obj against calculated checksums as they are read/written.
-
-        :param outfile: file obj used to output concatenated parts to
-        :param image_parts: list of euca2ools.manifest.part objs
-        :param source_dir: local path to parts contained in image_parts
-        :param debug: boolean used in exception handling
-        """
-        close_all_fds([outfile])
-        part_count = len(image_parts)
-        part_file = None
-        try:
-            for part in image_parts:
-                self.log.debug("Concatenating Part:" + str(part.filename))
-                sha1sum = hashlib.sha1()
-                part_file_path = source_dir + "/" + part.filename
-                with open(part_file_path) as part_file:
-                    data = part_file.read(euca2ools.BUFSIZE)
-                    while data:
-                        sha1sum.update(data)
-                        outfile.write(data)
+    def __read_bundle_parts(self, manifest, outfile):
+        close_all_fds(except_fds=[outfile])
+        for part in manifest.image_parts:
+            self.log.debug("opening part '%s' for reading", part.filename)
+            digest = hashlib.sha1()
+            with open(part.filename) as part_file:
+                while True:
+                    chunk = part_file.read(euca2ools.BUFSIZE)
+                    if chunk:
+                        digest.update(chunk)
+                        outfile.write(chunk)
                         outfile.flush()
-                        data = part_file.read(euca2ools.BUFSIZE)
-                    part_digest = sha1sum.hexdigest()
-                    self.log.debug(
-                        "PART NUMBER:" + str(image_parts.index(part) + 1) +
-                        "/" + str(part_count))
-                    self.log.debug('Part sha1sum:' + str(part_digest))
-                    self.log.debug('Expected sum:' + str(part.hexdigest))
-                    if part_digest != part.hexdigest:
-                        raise ValueError('Input part file may be corrupt:{0} '
-                                         .format(part.filename),
-                                         '(expected digest: {0}, actual: {1})'
-                                         .format(part.hexdigest, part_digest))
-        except IOError as ioe:
-            # HACK
-            self.log.debug('Error in _concatenate_parts_to_file_for_pipe.' +
-                           str(ioe))
-            if not debug:
-                return
-            raise ioe
-        finally:
-            if part_file:
-                part_file.close()
-            self.log.debug('Concatentate done')
-            self.log.debug('Closing write end of pipe after writing')
-            outfile.close()
+                    else:
+                        break
+                actual_hexdigest = digest.hexdigest()
+                if actual_hexdigest != part.hexdigest:
+                    self.log.error('rejecting unbundle due to part SHA1 '
+                                   'mismatch (expected: %s, actual: %s)',
+                                   part.hexdigest, actual_hexdigest)
+                    raise RuntimeError(
+                        "bundle part '{0}' appears to be corrupt (expected "
+                        "SHA1: {1}, actual: {2}"
+                        .format(part.filename, part.hexdigest,
+                                actual_hexdigest))
 
     def main(self):
-        dest_dir = self.args.get('destination')
-        manifest = self.args.get('manifest')
+        manifest = BundleManifest.read_from_fileobj(
+            self.args['manifest'], privkey_filename=self.args['privatekey'])
 
-        #Setup the destination fileobj...
-        if dest_dir == "-":
-            #Write to stdout
-            dest_file = os.fdopen(os.dup(os.sys.stdout.fileno()), 'w')
-            dest_file_name = None
-        else:
-            #write to local file path...
-            dest_file = open(dest_dir + "/" + manifest.image_name, 'w')
-            dest_file_name = dest_file.name
-            #check for avail space if the resulting image size is known
-            if manifest:
-                d_stat = os.statvfs(dest_file_name)
-                avail_space = d_stat.f_frsize * d_stat.f_favail
-                if manifest.image_size > avail_space:
-                    raise ValueError('Image size:{0} exceeds destination free '
-                                     'space:{1}'
-                                     .format(manifest.image_size, avail_space))
+        for part in manifest.image_parts:
+            part_path = os.path.join(self.args['source'], part.filename)
+            while part_path.startswith('./'):
+                part_path = part_path[2:]
+            if os.path.exists(part_path):
+                part.filename = part_path
+            else:
+                raise RuntimeError(
+                    "bundle part '{0}' does not exist; you may need to use "
+                    "-s to specify where to find the bundle's parts"
+                    .format(part_path))
 
-        #setup progress bar...
-        try:
-            label = self.args.get('progressbar_label', 'UnBundling image')
-            pbar = self.get_progressbar(label=label,
-                                        maxval=manifest.image_size)
-        except NameError:
-            pbar = None
+        part_reader_out_r, part_reader_out_w = open_pipe_fileobjs()
+        part_reader = multiprocessing.Process(
+            target=self.__read_bundle_parts,
+            args=(manifest, part_reader_out_w))
+        part_reader.start()
+        part_reader_out_w.close()
+        waitpid_in_thread(part_reader.pid)
 
-        try:
-            #Start the unbundle...
-            unbundle_r, unbundle_w = open_pipe_fileobjs()
-            writer = spawn_process(self._concatenate_parts_to_file_for_pipe,
-                                   outfile=unbundle_w,
-                                   image_parts=manifest.image_parts,
-                                   source_dir=self.args.get('source'),
-                                   debug=self.args.get('debug'))
-            unbundle_w.close()
-            waitpid_in_thread(writer.pid)
-            self.log.debug('Using enc key:' + str(manifest.enc_key))
-            self.log.debug('using enc iv:' + str(manifest.enc_iv))
-            digest = UnbundleStream(source=unbundle_r,
-                                    destination=dest_file,
-                                    enc_key=manifest.enc_key,
-                                    enc_iv=manifest.enc_iv,
-                                    progressbar=pbar,
-                                    maxbytes=self.args.get('maxbytes'),
-                                    config=self.config).main()
-            digest = digest.strip()
-            if dest_file:
-                dest_file.close()
-            #Verify the Checksum matches the manifest
-            if digest != manifest.image_digest:
-                raise ValueError('Digest mismatch. Extracted image appears '
-                                 'to be corrupt (expected digest: {0}, '
-                                 'actual: {1})'
-                                 .format(manifest.image_digest, digest))
-            self.log.debug("\nExpected digest:{0}\n  Actual digest:{1}"
-                           .format(str(manifest.image_digest), str(digest)))
-        except KeyboardInterrupt:
-            print 'Caught keyboard interrupt'
-            if dest_file:
-                os.remove(dest_file.name)
-            return
-        except Exception:
-            traceback.print_exc()
-            if dest_file:
-                try:
-                    os.remove(dest_file.name)
-                except OSError:
-                    print "Could not remove failed destination file."
-            raise
-        finally:
-            dest_file.close()
-        return dest_file_name
+        image_filename = os.path.join(self.args['destination'],
+                                      manifest.image_name)
+        with open(image_filename, 'w') as image:
+            unbundlestream = UnbundleStream(
+                config=self.config, source=part_reader_out_r, dest=image,
+                enc_key=manifest.enc_key, enc_iv=manifest.enc_iv,
+                image_size=manifest.image_size,
+                sha1_digest=manifest.image_digest,
+                show_progress=self.args.get('show_progress', False))
+            unbundlestream.main()
+        return image_filename
 
-    def print_result(self, result):
-        if result:
-            print 'Wrote ', result
-
-
-if __name__ == '__main__':
-    Unbundle.run()
+    def print_result(self, image_filename):
+        print 'Wrote', image_filename

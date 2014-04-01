@@ -23,44 +23,41 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import os
+import multiprocessing
+import os.path
+import sys
 
-from requestbuilder import Arg, MutuallyExclusiveArgList
+from requestbuilder import Arg
 from requestbuilder.exceptions import ArgumentError
 from requestbuilder.mixins import FileTransferProgressBarMixin
 
-from euca2ools.bundle.manifest import BundleManifest
-from euca2ools.bundle.util import open_pipe_fileobjs, spawn_process
+from euca2ools.bundle.util import open_pipe_fileobjs
 from euca2ools.bundle.util import waitpid_in_thread
+from euca2ools.commands.bundle.mixins import BundleDownloadingMixin
 from euca2ools.commands.walrus import WalrusRequest
 from euca2ools.commands.bundle.downloadbundle import DownloadBundle
 from euca2ools.commands.bundle.unbundlestream import UnbundleStream
 
 
-class DownloadAndUnbundle(WalrusRequest, FileTransferProgressBarMixin):
-    DESCRIPTION = ('Download and unbundle a bundled image from the cloud\n')
-    ARGS = [Arg('-b', '--bucket', required=True,
-                help='''Bucket to download the bucket from (required)'''),
-            MutuallyExclusiveArgList(
-                Arg('-m', '--manifest', dest='manifest',
-                    help='''Use a local manifest file to figure out what to
-                    download'''),
-                Arg('-p', '--prefix',
-                    help='''Download the bundle that begins with a specific
-                    prefix (e.g. "fry" for "fry.manifest.xml")''')),
-            Arg('-d', '--directory', default=".",
-                help='''The directory to download the bundle image to.'''),
-            Arg('--maxbytes', default=0,
-                help='''The Maximum bytes allowed to be written when
-                using 'destination'.'''),
+class DownloadAndUnbundle(WalrusRequest, FileTransferProgressBarMixin,
+                          BundleDownloadingMixin):
+    DESCRIPTION = ('Download and unbundle a bundled image from the cloud\n\n '
+                   'The key used to unbundle the image must match a '
+                   'certificate that was used to bundle it.')
+    ARGS = [Arg('-d', '--destination', dest='dest', metavar='(FILE | DIR)',
+                default=".", help='''where to place the unbundled image
+                (default: current directory)'''),
             Arg('-k', '--privatekey',
-                help='''File containing the private key to decrypt the bundle
-                with.  This must match the certificate used when bundling the
+                help='''file containing the private key to decrypt the bundle
+                with.  This must match a certificate used when bundling the
                 image.''')]
 
     # noinspection PyExceptionInherit
     def configure(self):
-        #Get the mandatory private key...
+        WalrusRequest.configure(self)
+
+        # The private key could be the user's or the cloud's.  In the config
+        # this is a user-level option.
         if not self.args.get('privatekey'):
             config_privatekey = self.config.get_user_option('private-key')
             if self.args.get('userregion'):
@@ -80,141 +77,51 @@ class DownloadAndUnbundle(WalrusRequest, FileTransferProgressBarMixin):
         if not os.path.isfile(self.args['privatekey']):
             raise ArgumentError("private key file '{0}' is not a file"
                                 .format(self.args['privatekey']))
+        self.log.debug('private key: %s', self.args['privatekey'])
 
-        #Get optional destination directory...
-        dest_dir = self.args['directory']
-        if dest_dir != "-":
-            dest_dir = os.path.expanduser(os.path.abspath(dest_dir))
-            #todo should this create nonexisting destination directory?
-            if not os.path.exists(dest_dir):
-                raise ArgumentError("destination directory '{0}' "
-                                    "does not exist".format(dest_dir))
-            if not os.path.isdir(dest_dir):
-                raise ArgumentError("destination '{0}' is not a directory"
-                                    .format(dest_dir))
-        else:
+    def __open_dest(self, manifest):
+        if self.args['dest'] == '-':
+            self.args['dest'] = sys.stdout
             self.args['show_progress'] = False
-        self.args['directory'] = dest_dir
-
-        #Get the manifest...
-        if self.args.get('manifest'):
-            if not isinstance(self.args.get('manifest'), BundleManifest):
-                manifest = os.path.expanduser(os.path.abspath(
-                    self.args['manifest']))
-                if not os.path.exists(manifest):
-                    raise ArgumentError("manifest '{0}' does not exist"
-                                        .format(self.args['manifest']))
-                if not os.path.isfile(manifest):
-                    raise ArgumentError("manifest '{0}' is not a file"
-                                        .format(self.args['manifest']))
-                #Read manifest into BundleManifest obj...
-                self.args['manifest'] = (BundleManifest.
-                                         read_from_file(manifest,
-                                                        self.args['privatekey']
-                                                        ))
-
-    def _downloadbundle_wrapper(self, downloadbundle_obj, outfile):
-        '''
-        Subprocess wrapper for downloadbundle.
-        '''
-        try:
-            downloadbundle_obj.main()
-        except KeyboardInterrupt:
-            print 'Caught keyboard interrupt'
-            return
-        finally:
-            if outfile:
-                outfile.close()
+        elif isinstance(self.args['dest'], basestring):
+            if os.path.isdir(self.args['dest']):
+                image_filename = os.path.join(self.args['dest'],
+                                              manifest.image_name)
+            else:
+                image_filename = self.args['dest']
+            self.args['dest'] = open(image_filename, 'w')
+            return image_filename
+        # Otherwise we assume it's a file object
 
     def main(self):
-        '''
-        Connects downloadbundle and unbundlestream in pipeline to write
-        output to the provided destination/directory.
-        '''
-        dest_dir = self.args.get('directory')
-        bucket = self.args.get('bucket').split('/', 1)[0]
-        manifest = self.args.get('manifest', None)
-        self.log.debug('bucket:{0} directory:{1}'.format(bucket, dest_dir))
-        #Created download bundle obj...
-        downloadbundle_r, downloadbundle_w = open_pipe_fileobjs()
-        #downloadbundle uses directory arg as destination to write to
-        kwargs = {'directory': downloadbundle_w,
-                  'show_progress': False,
-                  'manifest': self.args.get('manifest', None),
-                  'bucket': self.args.get('bucket'),
-                  'prefix': self.args.get('prefix'),
-                  'service': self.service,
-                  'config': self.config}
-        downloadbundle = DownloadBundle(**kwargs)
-        #If a local manifest wasn't provided attempt to read in a remote
-        if not manifest:
-            manifest = downloadbundle._get_manifest_obj(
-                private_key=self.args.get('privatekey'))
-        if not manifest.enc_key or not manifest.enc_iv:
-            raise ArgumentError(None,
-                                'key and/or iv not set or found in manifest')
-        pbar = None
-        if self.args.get('show_progress'):
-            try:
-                if self.args.get('show_progress'):
-                    label = self.args.get('progressbar_label',
-                                          'Download -> UnBundling')
-                    pbar = self.get_progressbar(label=label,
-                                                maxval=manifest.image_size)
-            except NameError:
-                pass
+        manifest = self.fetch_manifest(
+            self.service, privkey_filename=self.args['privatekey'])
+        download_out_r, download_out_w = open_pipe_fileobjs()
+        try:
+            self.__create_download_pipeline(download_out_w)
+        finally:
+            download_out_w.close()
+        image_filename = self.__open_dest(manifest)
+        unbundlestream = UnbundleStream(
+            config=self.config, source=download_out_r, dest=self.args['dest'],
+            enc_key=manifest.enc_key, enc_iv=manifest.enc_iv,
+            image_size=manifest.image_size, sha1_digest=manifest.image_digest,
+            show_progress=self.args.get('show_progress', False))
+        unbundlestream.main()
+        return image_filename
 
-        #Setup the destination fileobj...
-        if dest_dir == "-":
-            #Write to stdout
-            dest_file = os.fdopen(os.dup(os.sys.stdout.fileno()), 'w')
-            dest_file_name = None
-        else:
-            #write to local file path...
-            dest_file = open(dest_dir + "/" + manifest.image_name, 'w')
-            dest_file_name = dest_file.name
-            #check for avail space if the resulting image size is known
-            if manifest:
-                d_stat = os.statvfs(dest_file_name)
-                avail_space = d_stat.f_frsize * d_stat.f_favail
-                if manifest.image_size > avail_space:
-                    raise ValueError('Image size:{0} exceeds destination free '
-                                     'space:{1}'
-                                     .format(manifest.image_size, avail_space))
-        with dest_file:
-            self.log.debug("Starting Download bundle in sub process "
-                           " to feed to to unbundlestream's pipeline...")
-            download = spawn_process(self._downloadbundle_wrapper,
-                                     downloadbundle_obj=downloadbundle,
-                                     outfile=downloadbundle_w)
-            downloadbundle_w.close()
-            unbundle_obj = UnbundleStream(source=downloadbundle_r,
-                                          destination=dest_file,
-                                          enc_key=manifest.enc_key,
-                                          enc_iv=manifest.enc_iv,
-                                          progressbar=pbar,
-                                          maxbytes=self.args.get('maxbytes'),
-                                          config=self.config)
-            digest = unbundle_obj.main()
-            waitpid_in_thread(download.pid)
-            if not digest:
-                raise ValueError('Failed to retrieve digest from '
-                                 'unbundle stream, digest:{0}'
-                                 .format(str(digest)))
-            digest = digest.strip()
+    def __create_download_pipeline(self, outfile):
+        downloadbundle = DownloadBundle(
+            service=self.service, config=self.config, dest=outfile,
+            bucket=self.args['bucket'], manifest=self.args.get('manifest'),
+            local_manifest=self.args.get('local_manifest'),
+            show_progress=False)
+        downloadbundle_p = multiprocessing.Process(target=downloadbundle.main)
+        downloadbundle_p.start()
+        waitpid_in_thread(downloadbundle_p.pid)
+        outfile.close()
 
-        #Verify the Checksum from the unbundle operation matches manifest
-        if digest != manifest.image_digest:
-            raise ValueError('Extracted image appears to be corrupt '
-                             '(expected digest: {0}, actual: {1})'
-                             .format(manifest.image_digest, digest))
-        self.log.debug("\nExpected digest:{0}\n  Actual digest:{1}"
-                       .format(str(manifest.image_digest), str(digest)))
-        return dest_file_name
-
-    def print_result(self, result):
-        if result:
-            print "Bundle downloaded to '{0}'".format(result)
-
-if __name__ == '__main__':
-    DownloadAndUnbundle.run()
+    def print_result(self, image_filename):
+        if (image_filename and
+                self.args['dest'].fileno() != sys.stdout.fileno()):
+            print 'Wrote', image_filename

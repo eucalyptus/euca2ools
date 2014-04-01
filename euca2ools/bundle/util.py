@@ -75,51 +75,14 @@ def waitpid_in_thread(pid):
     Start a thread that calls os.waitpid on a particular PID to prevent
     zombie processes from hanging around after they have finished.
     """
-    if pid_exists(pid):
-        pid_thread = threading.Thread(target=check_and_waitpid, args=(pid, 0))
-        pid_thread.daemon = True
-        pid_thread.start()
+    pid_thread = threading.Thread(target=_wait_for_pid, args=(pid,))
+    pid_thread.daemon = True
+    pid_thread.start()
 
 
-def spawn_process(func, **kwargs):
-    proc = Process(target=process_wrapper, args=[func], kwargs=kwargs)
-    proc.start()
-    return proc
-
-
-def process_wrapper(func, **kwargs):
-    name = getattr(func, '__name__', 'unknown')
-    try:
-        func(**kwargs)
-    except KeyboardInterrupt:
-        pass
-    except Exception as exc:
-        traceback.print_exc()
-        msg = 'Error in wrapped process "{0}":{1}'.format(str(name), str(exc))
-        print >> sys.stderr, msg
-        return
-    # pylint: disable=W0212
-    # os._exit is actually public
-    os._exit(os.EX_OK)
-    # pylint: enable=W0212
-
-
-def pid_exists(pid):
-    try:
-        #Check to see if pid exists
-        os.kill(pid, 0)
-        return True
-    except OSError as ose:
-        if ose.errno == os.errno.ESRCH:
-            #Pid was not found
-            return False
-        else:
-            raise ose
-
-
-def check_and_waitpid(pid, status):
-    if pid_exists(pid):
+def _wait_for_pid(pid):
+    if pid:
         try:
-            os.waitpid(pid, status)
+            os.waitpid(pid, 0)
         except OSError:
             pass
