@@ -23,7 +23,7 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.euca import EucalyptusRequest, RESOURCE_TYPE_MAP
+from euca2ools.commands.euca import EucalyptusRequest
 from requestbuilder import Filter
 
 
@@ -31,8 +31,7 @@ class DescribeTags(EucalyptusRequest):
     DESCRIPTION = "List tags associated with your account's resources"
     FILTERS = [Filter('key'),
                Filter('resource-id'),
-               Filter('resource-type',
-                      choices=sorted(tuple(RESOURCE_TYPE_MAP))),
+               Filter('resource-type'),
                Filter('value')]
     LIST_TAGS = ['tagSet']
 

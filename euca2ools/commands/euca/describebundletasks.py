@@ -42,9 +42,7 @@ class DescribeBundleTasks(EucalyptusRequest):
                       help='bucket where the image will be stored'),
                Filter('s3-prefix', help='beginning of the bundle name'),
                Filter('start-time', help='task start time'),
-               Filter('state', help='task state',
-                      choices=('pending', 'waiting-for-shutdown', 'bundling',
-                               'storing', 'cancelling', 'complete', 'failed')),
+               Filter('state', help='task state'),
                Filter('update-time', help='most recent task update time')]
     LIST_TAGS = ['bundleInstanceTasksSet']
 

@@ -43,8 +43,7 @@ class DescribeImages(EucalyptusRequest):
                 metavar='ACCOUNT', action='append',
                 help='''describe images for which the specified account has
                 explicit launch permissions''')]
-    FILTERS = [Filter('architecture', choices=('i386', 'x86_64', 'armhf'),
-                      help='CPU architecture'),
+    FILTERS = [Filter('architecture', help='CPU architecture'),
                Filter('block-device-mapping.delete-on-termination',
                       help='''whether a volume is deleted upon instance
                       termination'''),
@@ -59,7 +58,7 @@ class DescribeImages(EucalyptusRequest):
                Filter('description', help='image description'),
                Filter('hypervisor', help='image\'s hypervisor type'),
                Filter('image-id'),
-               Filter('image-type', choices=('machine', 'kernel', 'ramdisk'),
+               Filter('image-type',
                       help='image type ("machine", "kernel", or "ramdisk")'),
                Filter('is-public', help='whether the image is public'),
                Filter('kernel-id'),
@@ -70,14 +69,13 @@ class DescribeImages(EucalyptusRequest):
                Filter('platform', help='"windows" for Windows images'),
                Filter('product-code',
                       help='product code associated with the image'),
-               Filter('product-code.type', choices=('devpay', 'marketplace'),
-                      help='type of product code associated with the image'),
+               Filter('product-code.type', help='''type of product code
+                      associated with the image ("devpay", "marketplace")'''),
                Filter('ramdisk-id'),
                Filter('root-device-name'),
-               Filter('root-device-type', choices=('ebs', 'instance-store'),
+               Filter('root-device-type',
                       help='root device type ("ebs" or "instance-store")'),
-               Filter('state', choices=('available', 'pending', 'failed'),
-                      help='''image state ("available", "pending", or
+               Filter('state', help='''image state ("available", "pending", or
                       "failed")'''),
                Filter('state-reason-code',
                       help='reason code for the most recent state change'),
@@ -88,7 +86,7 @@ class DescribeImages(EucalyptusRequest):
                       help='value of a tag assigned to the image'),
                GenericTagFilter('tag:KEY',
                                 help='specific tag key/value combination'),
-               Filter('virtualization-type', choices=('paravirtual', 'hvm'),
+               Filter('virtualization-type',
                       help='virtualization type ("paravirtual" or "hvm")')]
     LIST_TAGS = ['imagesSet', 'productCodes', 'blockDeviceMapping', 'tagSet']
 

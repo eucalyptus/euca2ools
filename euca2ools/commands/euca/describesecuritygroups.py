@@ -44,7 +44,6 @@ class DescribeSecurityGroups(EucalyptusRequest):
                Filter('ip-permission.group-name', help='''name of another group
                       granted permission by this group'''),
                Filter('ip-permission.protocol',
-                      choices=('tcp', 'udp', 'icmp', '6', '17', '1'),
                       help='IP protocol for the permission'),
                Filter('ip-permission.to-port',
                       help='end of TCP/UDP port range, or ICMP code'),
