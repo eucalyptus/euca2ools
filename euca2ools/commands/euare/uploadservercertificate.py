@@ -50,9 +50,10 @@ class UploadServerCertificate(EuareRequest):
                     is typically the PEM-encoded certificates of the chain,
                     concatenated together.'''),
                 Arg('--certificate-chain-file', dest='CertificateChain',
-                    metavar='FILE', help='''file containing the PEM-encoded
-                    certificate chain. This is typically the PEM-encoded
-                    certificates of the chain, concatenated together.''')),
+                    type=open, metavar='FILE', help='''file containing the
+                    PEM-encoded certificate chain.  This is typically the
+                    PEM-encoded certificates of the chain, concatenated
+                    together.''')),
             Arg('-p', '--path', dest='Path',
                 help='path for the new server certificate (default: "/")'),
             AS_ACCOUNT]
