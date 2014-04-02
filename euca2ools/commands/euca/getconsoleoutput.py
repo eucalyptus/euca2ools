@@ -55,7 +55,7 @@ class GetConsoleOutput(EucalyptusRequest):
         print result.get('instanceId', '')
         print result.get('timestamp', '')
         output = base64.b64decode(result.get('output') or '')
-        output = output.decode(sys.stdout.encoding, 'replace')
+        output = output.decode(sys.stdout.encoding or 'utf-8', 'replace')
         output = output.replace(u'\ufffd', u'?')
         if not self.args['raw_console_output']:
             # Escape control characters
