@@ -70,7 +70,7 @@ class DescribeImageAttribute(EC2Request):
             blockdev_str = '{0}: {1}'.format(blockdev.get('deviceName'),
                                              blockdev_src)
 
-            ## TODO:  figure out how to print mappings that create new volumes
+            # TODO:  figure out how to print mappings that create new volumes
             print self.tabify(('blockDeviceMapping', image_id,
                                'blockDeviceMap', blockdev_str))
         if result.get('kernel'):

@@ -149,9 +149,3 @@ class DescribeImages(EC2Request):
             self.print_blockdevice_mapping(mapping)
         for tag in image.get('tagSet', []):
             self.print_resource_tag(tag, image.get('imageId'))
-
-    def print_blockdevice_mapping(self, mapping):
-        print self.tabify(('BLOCKDEVICEMAPPING', mapping.get('deviceName'),
-                           mapping.get('ebs', {}).get('snapshotId'),
-                           mapping.get('ebs', {}).get('volumeSize'),
-                           mapping.get('ebs', {}).get('deleteOnTermination')))

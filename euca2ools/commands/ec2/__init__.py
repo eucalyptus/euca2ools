@@ -140,12 +140,27 @@ class EC2Request(AWSQueryRequest, TabifyingMixin):
             self.print_resource_tag(tag, instance.get('instanceId'))
 
     def print_blockdevice(self, blockdev):
+        # Block devices belong to instances
         print self.tabify(('BLOCKDEVICE', blockdev.get('deviceName'),
                            blockdev.get('ebs', {}).get('volumeId'),
                            blockdev.get('ebs', {}).get('attachTime'),
                            blockdev.get('ebs', {}).get('deleteOnTermination'),
                            blockdev.get('ebs', {}).get('volumeType'),
                            blockdev.get('ebs', {}).get('iops')))
+
+    def print_blockdevice_mapping(self, mapping):
+        # Block device mappings belong to images
+        if mapping.get('virtualName'):
+            print self.tabify(('BLOCKDEVICEMAPPING', 'EPHEMERAL',
+                               mapping.get('deviceName'),
+                               mapping.get('virtualName')))
+        else:
+            ebs = mapping.get('ebs') or {}
+            print self.tabify(('BLOCKDEVICEMAPPING', 'EBS',
+                               mapping.get('deviceName'),
+                               ebs.get('snapshotId'), ebs.get('volumeSize'),
+                               ebs.get('deleteOnTermination'),
+                               ebs.get('volumeType'), ebs.get('iops')))
 
     def print_interface(self, nic):
         nic_info = [nic.get(attr) for attr in (
