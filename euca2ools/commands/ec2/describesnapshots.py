@@ -48,7 +48,7 @@ class DescribeSnapshots(EC2Request):
                Filter('progress', help='snapshot progress, in percentage'),
                Filter('snapshot-id'),
                Filter('start-time', help='snapshot initiation time'),
-               Filter('status', choices=('pending', 'completed', 'error')),
+               Filter('status'),
                Filter('tag-key', help='key of a tag assigned to the snapshot'),
                Filter('tag-value',
                       help='value of a tag assigned to the snapshot'),

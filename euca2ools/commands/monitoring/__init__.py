@@ -96,4 +96,6 @@ class CloudWatchRequest(AWSQueryRequest, TabifyingMixin):
         bits.append(alarm.get('EvaluationPeriods'))
         bits.append(alarm.get('ComparisonOperator'))
         bits.append(alarm.get('Threshold'))
+        if self.args['show_long']:
+            bits.append('AlarmArn')
         print self.tabify(bits)

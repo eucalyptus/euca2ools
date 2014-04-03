@@ -31,8 +31,7 @@ class DescribeInstances(EC2Request):
     DESCRIPTION = 'Show information about instances'
     ARGS = [Arg('InstanceId', metavar='INSTANCE', nargs='*',
                 help='limit results to specific instances')]
-    FILTERS = [Filter('architecture', choices=('i386', 'x86_64', 'armhf'),
-                      help='CPU architecture'),
+    FILTERS = [Filter('architecture', help='CPU architecture'),
                Filter('association.allocation-id',
                       help='''[VPC only] allocation ID bound to a network
                       interface's elastic IP address'''),
@@ -69,7 +68,7 @@ class DescribeInstances(EC2Request):
                Filter('instance.group-id', help='security group ID'),
                Filter('instance.group-name', help='security group name'),
                Filter('instance-id'),
-               Filter('instance-lifecycle', choices=('spot',),
+               Filter('instance-lifecycle',
                       help='whether this is a spot instance'),
                Filter('instance-state-code', type=int,
                       help='numeric code identifying instance state'),
@@ -82,7 +81,7 @@ class DescribeInstances(EC2Request):
                Filter('launch-index',
                       help='launch index within a reservation'),
                Filter('launch-time', help='instance launch time'),
-               Filter('monitoring-state', choices=('enabled', 'disabled'),
+               Filter('monitoring-state',
                       help='monitoring state ("enabled" or "disabled")'),
                Filter('network-interface.addresses.association.ip-owner-id',
                       help='''[VPC only] ID of the owner of the private IP
@@ -91,9 +90,9 @@ class DescribeInstances(EC2Request):
                       help='''[VPC only] ID of the association of an elastic IP
                       address with a network interface'''),
                Filter('network-interface.addresses.primary',
-                      choices=('true', 'false'),
                       help='''[VPC only] whether the IP address of the VPC
-                      network interface is the primary private IP address'''),
+                      network interface is the primary private IP address
+                      ("true" or "false")'''),
                Filter('network-interface.addresses.private-ip-address',
                       help='''[VPC only] network interface's private IP
                       address'''),
@@ -107,15 +106,13 @@ class DescribeInstances(EC2Request):
                       help='''[VPC only] ID of a network interface's
                       attachment'''),
                Filter('network-interface.attachment.delete-on-termination',
-                      choices=('true', 'false'),
                       help='''[VPC only] whether a network interface attachment
-                      is deleted when an instance is terminated'''),
+                      is deleted when an instance is terminated ("true" or
+                      "false")'''),
                Filter('network-interface.attachment.instance-owner-id',
                       help='''[VPC only] ID of the instance to which a network
                       interface is attached'''),
                Filter('network-interface.attachment.status',
-                      choices=('attaching', 'attached', 'detaching',
-                               'detached'),
                       help="[VPC only] network interface's attachment status"),
                Filter('network-interface.availability-zone',
                       help="[VPC only] network interface's availability zone"),
@@ -139,9 +136,8 @@ class DescribeInstances(EC2Request):
                       help='''[VPC only] whether the network interface is
                       managed by the service'''),
                Filter('network-interface.source-destination-check',
-                      choices=('true', 'false'),
                       help='''[VPC only] whether source/destination checking is
-                      enabled for a network interface'''),
+                      enabled for a network interface ("true" or "false")'''),
                Filter('network-interface.status',
                       help="[VPC only] network interface's status"),
                Filter('network-interface.subnet-id',
@@ -154,7 +150,7 @@ class DescribeInstances(EC2Request):
                Filter('private-dns-name'),
                Filter('private-ip-address'),
                Filter('product-code'),
-               Filter('product-code.type', choices=('devpay', 'marketplace'),
+               Filter('product-code.type',
                       help='type of product code ("devpay" or "marketplace")'),
                Filter('ramdisk-id', help='ramdisk image ID'),
                Filter('reason',
@@ -164,7 +160,7 @@ class DescribeInstances(EC2Request):
                Filter('reservation-id'),
                Filter('root-device-name',
                       help='root device name (e.g. /dev/sda1)'),
-               Filter('root-device-type', choices=('ebs', 'instance-store'),
+               Filter('root-device-type',
                       help='root device type ("ebs" or "instance-store")'),
                Filter('spot-instance-request-id'),
                Filter('state-reason-code',
@@ -179,7 +175,7 @@ class DescribeInstances(EC2Request):
                       help='value of any tag assigned to the instance'),
                GenericTagFilter('tag:KEY',
                                 help='specific tag key/value combination'),
-               Filter('virtualization-type', choices=('paravirtual', 'hvm')),
+               Filter('virtualization-type'),
                Filter('vpc-id',
                       help='[VPC only] ID of the VPC the instance is in')]
     LIST_TAGS = ['reservationSet', 'instancesSet', 'groupSet', 'tagSet',

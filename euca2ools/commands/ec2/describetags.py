@@ -23,16 +23,16 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.ec2 import EC2Request, RESOURCE_TYPE_MAP
 from requestbuilder import Filter
+
+from euca2ools.commands.ec2 import EC2Request
 
 
 class DescribeTags(EC2Request):
     DESCRIPTION = "List tags associated with your account's resources"
     FILTERS = [Filter('key'),
                Filter('resource-id'),
-               Filter('resource-type',
-                      choices=sorted(tuple(RESOURCE_TYPE_MAP))),
+               Filter('resource-type'),
                Filter('value')]
     LIST_TAGS = ['tagSet']
 

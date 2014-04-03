@@ -25,7 +25,7 @@
 
 from euca2ools.commands.argtypes import delimited_list
 from euca2ools.commands.elasticloadbalancing import ELBRequest
-from requestbuilder import Arg
+from requestbuilder import Arg, EMPTY
 
 
 class SetLoadBalancerPoliciesForBackendServer(ELBRequest):
@@ -40,3 +40,7 @@ class SetLoadBalancerPoliciesForBackendServer(ELBRequest):
                 metavar='POLICY1,POLICY2,...', type=delimited_list(','),
                 required=True, help='''list of policies to associate with the
                 back end server (required)''')]
+
+    def preprocess(self):
+        if not self.args.get('PolicyNames.member'):
+            self.params['PolicyNames'] = EMPTY

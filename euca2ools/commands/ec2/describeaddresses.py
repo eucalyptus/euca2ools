@@ -34,8 +34,8 @@ class DescribeAddresses(EC2Request):
                 VPC allocation IDs''')]
     FILTERS = [Filter('allocation-id', help='[VPC only] allocation ID'),
                Filter('association-id', help='[VPC only] association ID'),
-               Filter('domain', choices=('standard', 'vpc'),
-                      help='whether the address is a standard or VPC address'),
+               Filter('domain', help='''whether the address is a standard
+                      ("standard") or VPC ("vpc") address'''),
                Filter('instance-id',
                       help='instance the address is associated with'),
                Filter('network-interface-id', help='''[VPC only] network

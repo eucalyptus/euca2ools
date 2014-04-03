@@ -64,6 +64,14 @@ class ConfigureHealthCheck(ELBRequest, TabifyingMixin):
             raise ArgumentError('argument -t/--target: path is required for '
                                 "protocol '{0}'".format(protocol))
 
+    def preprocess(self):
+        # Be nice and auto-capitalize known protocols for people
+        target = self.args['HealthCheck.Target']
+        protocol = target.split(':', 1)[0]
+        if protocol.lower() in ('http', 'https', 'ssl', 'tcp'):
+            self.params['HealthCheck.Target'] = target.replace(
+                protocol, protocol.upper(), 1)
+
     def print_result(self, result):
         check = result.get('HealthCheck', {})
         print self.tabify(('HEALTH_CHECK', check.get('Target'),
