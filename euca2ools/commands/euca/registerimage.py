@@ -81,7 +81,7 @@ class RegisterImage(EucalyptusRequest):
             snapshot = self.args.get('snapshot')
             # Look for a mapping for the root device
             for mapping in self.args['BlockDeviceMapping']:
-                if mapping.get('DeviceName') == self.args['RootDeviceName']:
+                if mapping.get('DeviceName') == self.params['RootDeviceName']:
                     if (snapshot and
                         snapshot != mapping.get('Ebs', {}).get('SnapshotId')):
                         # The mapping's snapshot differs or doesn't exist
@@ -95,7 +95,7 @@ class RegisterImage(EucalyptusRequest):
             else:
                 if snapshot:
                     self.params['BlockDeviceMapping'].append(
-                            {'DeviceName': self.args['RootDeviceName'],
+                            {'DeviceName': self.params['RootDeviceName'],
                              'Ebs': {'SnapshotId': snapshot}})
                 else:
                     raise ArgumentError('either a manifest location or a root '
