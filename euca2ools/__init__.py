@@ -27,7 +27,7 @@ import os.path
 import subprocess
 
 
-__version__ = '3.1.0-pre1'
+__version__ = '3.1.0-pre2'
 
 BUFSIZE = 8192
 
@@ -35,16 +35,16 @@ BUFSIZE = 8192
 if '__file__' in globals():
     # Check if this is a git repo; maybe we can get more precise version info
     try:
-        repo_path = os.path.join(os.path.dirname(__file__), '..')
+        REPO_PATH = os.path.join(os.path.dirname(__file__), '..')
         # noinspection PyUnresolvedReferences
-        git = subprocess.Popen(
+        GIT = subprocess.Popen(
             ['git', 'describe'], stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
-            env={'GIT_DIR': os.path.join(repo_path, '.git')})
-        git.wait()
-        git.stderr.read()
-        if git.returncode == 0:
-            __version__ = git.stdout.read().strip().lstrip('v')
+            env={'GIT_DIR': os.path.join(REPO_PATH, '.git')})
+        GIT.wait()
+        GIT.stderr.read()
+        if GIT.returncode == 0:
+            __version__ = GIT.stdout.read().strip().lstrip('v')
             if type(__version__).__name__ == 'bytes':
                 __version__ = __version__.decode()
     except:
