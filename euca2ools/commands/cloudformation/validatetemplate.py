@@ -24,23 +24,22 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 from euca2ools.commands.cloudformation import CloudFormationRequest
-from requestbuilder import Arg
+from requestbuilder import Arg, MutuallyExclusiveArgList
 
 
 class ValidateTemplate(CloudFormationRequest):
     DESCRIPTION = 'Validate a CloudFormation template'
-    ARGS = [Arg('--template-file', dest='TemplateBody',
+    ARGS = [MutuallyExclusiveArgList(
+                Arg('--template-file', dest='TemplateBody',
                 metavar='FILE', type=open,
                 help='file location containing JSON template'),
-            Arg('--template-url', dest='TemplateURL',
+                Arg('--template-url', dest='TemplateURL',
                 metavar='URL', type=open,
-                help='S3 url for JSON template')]
+                help='S3 url for JSON template')).required()]
     LIST_TAGS = ['Parameters', 'CapabilitiesReason', 'Capabilities']
 
     def print_result(self, result):
-        description = ["DESCRIPTION"]
-        description.append(result["Description"])
-        print self.tabify(description)
+        self.tabify(('DESCRIPTION', result.get('Description')))
         for tag in self.LIST_TAGS:
             if tag in result:
                 for result in result[tag]:

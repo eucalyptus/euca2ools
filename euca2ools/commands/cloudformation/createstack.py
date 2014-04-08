@@ -26,19 +26,20 @@
 from euca2ools.commands.cloudformation import CloudFormationRequest
 from euca2ools.commands.argtypes import delimited_list
 from euca2ools.commands.argtypes import binary_tag_def
-from requestbuilder import Arg
+from requestbuilder import Arg, MutuallyExclusiveArgList
 
 
 class CreateStack(CloudFormationRequest):
     DESCRIPTION = 'Create or update an alarm'
     ARGS = [Arg('StackName', metavar='STACK',
                 help='name of the stack (required)'),
-            Arg('--template-file', dest='TemplateBody',
+            MutuallyExclusiveArgList(
+                Arg('--template-file', dest='TemplateBody',
                 metavar='FILE', type=open,
                 help='file location containing JSON template'),
-            Arg('--template-url', dest='TemplateURL',
+                Arg('--template-url', dest='TemplateURL',
                 metavar='URL', type=open,
-                help='S3 url for JSON template'),
+                help='S3 url for JSON template')).required(),
             Arg('-d', '--disable-rollback', dest='DisableRollback',
                 help='Disable rollback on failure'),
             Arg('-n', '--notification-arns', dest='NotificationARNs',
