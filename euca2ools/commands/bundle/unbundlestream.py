@@ -89,7 +89,8 @@ class UnbundleStream(BaseCommand, FileTransferProgressBarMixin,
         actual_sha1 = unbundle_sha1_r.recv()
         unbundle_sha1_r.close()
 
-        expected_sha1 = self.args.get('sha1_digest', '').lower().strip('0x')
+        expected_sha1 = self.args.get('sha1_digest') or ''
+        expected_sha1 = expected_sha1.lower().strip('0x')
         expected_size = self.args.get('image_size')
         if expected_sha1 and expected_sha1 != actual_sha1:
             self.log.error('rejecting unbundle due to SHA1 mismatch '
