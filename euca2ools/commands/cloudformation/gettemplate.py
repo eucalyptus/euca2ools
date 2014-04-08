@@ -31,7 +31,8 @@ class GetTemplate(CloudFormationRequest):
     DESCRIPTION = 'DescribeStacks'
     LIST_TAGS = ['Stacks']
     ARGS = [Arg('StackName', metavar='STACK',
-                help='name of the stack (required)')]
+                help='name or ID of the stack, after stack deletion '
+                     'only the ID will work')]
 
     def print_result(self, result):
         print result['TemplateBody']

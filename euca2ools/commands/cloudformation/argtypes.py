@@ -23,21 +23,16 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.cloudformation import CloudFormationRequest
-from requestbuilder import Arg
 
+def parameter_def(param_str):
+    """
+    Parse a tag definition from the command line.  Return a dict that depends
+    on the format of the string given:
 
-class DescribeStacks(CloudFormationRequest):
-    DESCRIPTION = 'DescribeStacks'
-    LIST_TAGS = ['Stacks']
-    ARGS = [Arg('StackName', metavar='STACK', nargs="?",
-                help='limit results to a single stack'),
-            Arg('--show-long', action='store_true', route_to=None,
-                help="show all of the stacks' info")]
-
-    def print_result(self, result):
-        for stack in result['Stacks']:
-            self.print_stack(stack)
-            if self.args['show_long']:
-                print stack.get('StackId')
-                print stack.get('NotificationARNs')
+     - 'key=value': {'Key': key, 'Value': value}
+     - 'key=':      {'Key': key, 'Value': EMPTY}
+     - 'key':       {'Key': key, 'Value': EMPTY}
+    """
+    if '=' in param_str:
+        (key, val) = param_str.split('=', 1)
+        return {'ParameterKey': key, 'ParameterValue': val}

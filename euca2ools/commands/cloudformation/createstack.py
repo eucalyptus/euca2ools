@@ -26,6 +26,7 @@
 from euca2ools.commands.cloudformation import CloudFormationRequest
 from euca2ools.commands.argtypes import delimited_list
 from euca2ools.commands.argtypes import binary_tag_def
+from euca2ools.commands.cloudformation.argtypes import parameter_def
 from requestbuilder import Arg, MutuallyExclusiveArgList
 
 
@@ -45,17 +46,17 @@ class CreateStack(CloudFormationRequest):
             Arg('-n', '--notification-arns', dest='NotificationARNs',
                 metavar='VALUE', type=delimited_list, action='append',
                 help='''SNS arns to publish stack actions to'''),
-            Arg('-p', '--parameters', dest='Parameters', metavar='KEY[=VALUE]',
-                type=binary_tag_def, action='append',
+            Arg('-p', '--parameter', dest='Parameters.member',
+                metavar='KEY[=VALUE]', type=parameter_def, action='append',
                 help='''key/value of the parameters used to create the stack,
                 separated by an "=" character.'''),
-            Arg('-t', '--timeout', dest='TimeoutInMinutes',
-                help='Timeout for stack creation'),
-            Arg('--tag', dest='Tag', metavar='KEY[=VALUE]',
+            Arg('-t', '--timeout', dest='TimeoutInMinutes', type=int,
+                metavar='MINUTES', help='Timeout for stack creation'),
+            Arg('--tag', dest='Tags.member', metavar='KEY[=VALUE]',
                 type=binary_tag_def, action='append',
                 help='''key and optional value of the tag to create, separated
                 by an "=" character.  If no value is given the tag's value is
-                set to an empty string.  (at least 1 required)''')]
+                set to an empty string.''')]
 
     def print_result(self, result):
         print result.get('StackId')

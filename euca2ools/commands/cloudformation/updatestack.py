@@ -40,22 +40,10 @@ class UpdateStack(CloudFormationRequest):
                 Arg('--template-url', dest='TemplateURL',
                 metavar='URL', type=open,
                 help='S3 url for JSON template')).required(),
-            Arg('-d', '--disable-rollback', dest='DisableRollback',
-                help='Disable rollback on failure'),
-            Arg('-n', '--notification-arns', dest='NotificationARNs',
-                metavar='VALUE', type=delimited_list, action='append',
-                help='''SNS arns to publish stack actions to'''),
             Arg('-p', '--parameters', dest='Parameters', metavar='KEY[=VALUE]',
                 type=binary_tag_def, action='append',
                 help='''key/value of the parameters used to create the stack,
-                separated by an "=" character.'''),
-            Arg('-t', '--timeout', dest='TimeoutInMinutes',
-                help='Timeout for stack creation'),
-            Arg('--tag', dest='Tag', metavar='KEY[=VALUE]',
-                type=binary_tag_def, action='append',
-                help='''key and optional value of the tag to create, separated
-                by an "=" character.  If no value is given the tag's value is
-                set to an empty string.  (at least 1 required)''')]
+                separated by an "=" character.''')]
 
     def print_result(self, result):
         print result.get('StackId')
