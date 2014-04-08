@@ -26,6 +26,7 @@
 from euca2ools.commands.cloudformation import CloudFormationRequest
 from requestbuilder import Arg
 
+
 class CancelUpdateStack(CloudFormationRequest):
     DESCRIPTION = 'CancelUpdateStack'
     LIST_TAGS = ['Stacks']

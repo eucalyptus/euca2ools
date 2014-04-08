@@ -64,21 +64,22 @@ class CloudFormationRequest(AWSQueryRequest, TabifyingMixin):
 
     def print_stack(self, stack):
         stack_bits = ['STACK']
-        for attr in ('StackName', 'StackStatus', 'StackStatusReason', 'Description', 'Outputs',
-                     'CreationTime'):
+        for attr in ('StackName', 'StackStatus', 'StackStatusReason',
+                     'Description', 'Outputs', 'CreationTime'):
             stack_bits.append(stack.get(attr))
         print self.tabify(stack_bits)
 
     def print_stack_event(self, event):
         event_bits = ['EVENT']
-        for attr in ('StackName', 'EventId', 'ResourceType', 'LogicalResourceId', 'PhysicalResourceId',
+        for attr in ('StackName', 'EventId', 'ResourceType',
+                     'LogicalResourceId', 'PhysicalResourceId',
                      'Timestamp', 'ResourceStatus', 'ResourceStatusReason'):
             event_bits.append(event.get(attr))
         print self.tabify(event_bits)
 
     def print_resource(self, resource):
         resource_bits = ['RESOURCE']
-        for attr in ('LogicalResourceId', 'PhysicalResourceId', 'ResourceType', 'LastUpdatedTimestamp',
-                     'ResourceStatus'):
+        for attr in ('LogicalResourceId', 'PhysicalResourceId', 'ResourceType',
+                     'LastUpdatedTimestamp', 'ResourceStatus'):
             resource_bits.append(resource.get(attr))
         print self.tabify(resource_bits)

@@ -31,7 +31,8 @@ class DescribeStackResource(CloudFormationRequest):
     DESCRIPTION = 'DescribeStackResource'
     ARGS = [Arg('StackName', metavar='STACK',
                 help='name of the stack (required)'),
-            Arg('-l', '--logical-resource-id', metavar='RESOURCE', dest='LogicalResourceId', required=True,
+            Arg('-l', '--logical-resource-id', metavar='RESOURCE',
+                dest='LogicalResourceId', required=True,
                 help='logical resource ID for the resource (required)')]
 
     def print_result(self, result):
