@@ -31,8 +31,13 @@ class DescribeStacks(CloudFormationRequest):
     DESCRIPTION = 'DescribeStacks'
     LIST_TAGS = ['Stacks']
     ARGS = [Arg('StackName', metavar='STACK', nargs="?",
-                help='name of the stack (required)')]
+                help='name of the stack (required)'),
+            Arg('--show-long', action='store_true', route_to=None,
+                help="show all of the groups' info")]
 
     def print_result(self, result):
         for stack in result['Stacks']:
             self.print_stack(stack)
+            if self.args['show_long']:
+                print stack.get('StackId')
+                print stack.get('NotificationARNs')
