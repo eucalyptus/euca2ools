@@ -35,7 +35,7 @@ class UpdateStack(CloudFormationRequest):
                 help='name of the stack (required)'),
             Arg('--template-file', dest='TemplateBody',
                 metavar='FILE', type=open,
-                help='file containing the policy to attach'),
+                help='file containing the template to upload'),
             Arg('-d', '--disable-rollback', dest='DisableRollback',
                 help='Disable rollback on failure'),
             Arg('-n', '--notification-arns', dest='NotificationARNs',
