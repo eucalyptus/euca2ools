@@ -50,3 +50,6 @@ class UpdateStack(CloudFormationRequest):
                 help='''key and optional value of the tag to create, separated
                 by an "=" character.  If no value is given the tag's value is
                 set to an empty string.  (at least 1 required)''')]
+
+    def print_result(self, result):
+        print result.get('StackId')
