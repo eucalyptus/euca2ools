@@ -30,8 +30,14 @@ from requestbuilder import Arg
 class DescribeStackResources(CloudFormationRequest):
     DESCRIPTION = 'DescribeStackResources'
     LIST_TAGS = ['StackResources']
-    ARGS = [Arg('StackName', metavar='STACK',
-                help='name of the stack (required)')]
+    ARGS = [Arg('-n', '--name', dest='StackName', metavar='STACK',
+                help='name of the stack (required)'),
+            Arg('-l', '--logical-resource-id', metavar='RESOURCE',
+                dest='LogicalResourceId',
+                help='logical resource ID for the resource (required)'),
+            Arg('-p', '--physical-resource-id', metavar='RESOURCE',
+                dest='PhysicalResourceId',
+                help='physical resource ID for the resource (required)')]
 
     def print_result(self, result):
         for resource in result['StackResources']:
