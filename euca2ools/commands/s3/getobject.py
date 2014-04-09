@@ -69,9 +69,12 @@ class GetObject(S3Request, FileTransferProgressBarMixin):
             else:
                 self.args['dest'] = open(self.args['dest'], 'w')
 
+    def preprocess(self):
+        self.path = self.args['source']
+
     def main(self):
         # Note that this method does not close self.args['dest']
-        self.path = self.args['source']
+        self.preprocess()
         bytes_written = 0
         md5_digest = hashlib.md5()
         sha_digest = hashlib.sha1()

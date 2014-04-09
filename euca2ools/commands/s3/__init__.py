@@ -32,6 +32,7 @@ from requestbuilder import Arg
 import requestbuilder.auth
 import requestbuilder.request
 import requestbuilder.service
+import requests
 
 from euca2ools.commands import Euca2ools
 from euca2ools.exceptions import AWSError
@@ -54,6 +55,23 @@ class S3(requestbuilder.service.BaseService):
     def handle_http_error(self, response):
         raise AWSError(response)
 
+    def build_presigned_url(self, method='GET', path=None, params=None,
+                            auth=None, auth_args=None):
+        if path:
+            # We can't simply use urljoin because a path might start with '/'
+            # like it could for keys that start with that character.
+            if self.endpoint.endswith('/'):
+                url = self.endpoint + path
+            else:
+                url = self.endpoint + '/' + path
+        else:
+            url = self.endpoint
+        request = requests.Request(method=method, url=url, params=params)
+        if auth is not None:
+            auth.apply_to_request_params(request, self, **(auth_args or {}))
+        p_request = request.prepare()
+        return p_request.url
+
 
 class S3Request(requestbuilder.request.BaseRequest):
     SUITE = Euca2ools
@@ -63,6 +81,13 @@ class S3Request(requestbuilder.request.BaseRequest):
     def __init__(self, **kwargs):
         requestbuilder.request.BaseRequest.__init__(self, **kwargs)
         self.redirects_left = 3
+
+    def get_presigned_url(self, validity_timedelta):
+        self.preprocess()
+        return self.service.build_presigned_url(
+            method=self.method, path=self.path, params=self.params,
+            auth=self.auth,
+            auth_args={'validity_timedelta': validity_timedelta})
 
     def handle_server_error(self, err):
         if 300 <= err.status_code < 400 and 'Endpoint' in err.elements:

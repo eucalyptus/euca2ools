@@ -47,6 +47,8 @@ class PutObject(S3Request, FileTransferProgressBarMixin):
                 help='file to upload (required)'),
             Arg('dest', metavar='BUCKET/KEY', route_to=None,
                 help='bucket and key name to upload the object to (required)'),
+            Arg('--size', type=int, route_to=None, help='''the number of
+                bytes to upload (required when reading from stdin)'''),
             Arg('--acl', choices=('private', 'public-read',
                 'public-read-write', 'authenticated-read', 'bucket-owner-read',
                 'bucket-owner-full-control', 'aws-exec-read'), route_to=None),
@@ -85,15 +87,18 @@ class PutObject(S3Request, FileTransferProgressBarMixin):
         if not key:
             raise ArgumentError('destination key name must be non-empty')
 
-    # noinspection PyExceptionInherit
-    def main(self):
-        source = self.args['source']
+    def preprocess(self):
         self.path = self.args['dest']
-        self.headers['Content-Length'] = source.size
         if self.args.get('acl'):
             self.headers['x-amz-acl'] = self.args['acl']
         if self.args.get('mime_type'):
             self.headers['Content-Type'] = self.args['mime_type']
+
+    # noinspection PyExceptionInherit
+    def main(self):
+        self.preprocess()
+        source = self.args['source']
+        self.headers['Content-Length'] = source.size
 
         # We do the upload in another thread so the main thread can show a
         # progress bar.
