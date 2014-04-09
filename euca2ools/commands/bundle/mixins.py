@@ -195,7 +195,9 @@ class BundleCreatingMixin(object):
         elif isinstance(self.args['image'], basestring):
             if not self.args.get('prefix'):
                 self.args['prefix'] = os.path.basename(self.args['image'])
-            self.args['image_size'] = os.path.getsize(self.args['image'])
+            if not self.args.get('image_size'):
+                self.args['image_size'] = euca2ools.util.get_filesize(
+                    self.args['image'])
             self.args['image'] = open(self.args['image'])
         else:
             # Assume it is already a file object

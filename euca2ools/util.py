@@ -25,7 +25,8 @@
 
 import datetime
 import getpass
-import os
+import os.path
+import stat
 import sys
 import tempfile
 
@@ -102,3 +103,20 @@ def build_iam_policy(effect, resources, actions):
                      'Resource': resource}
         policy['Statement'].append(statement)
     return policy
+
+
+def get_filesize(filename):
+    mode = os.stat(filename).st_mode
+    if stat.S_ISBLK(mode):
+        # os.path.getsize doesn't work on block devices, but we can use lseek
+        # to figure it out
+        block_fd = os.open(filename, os.O_RDONLY)
+        try:
+            return os.lseek(block_fd, 0, os.SEEK_END)
+        finally:
+            os.close(block_fd)
+    elif any((stat.S_ISCHR(mode), stat.S_ISFIFO(mode), stat.S_ISSOCK(mode),
+              stat.S_ISDIR(mode))):
+        raise TypeError("'{0}' does not have a usable file size"
+                        .format(filename))
+    return os.path.getsize(filename)
