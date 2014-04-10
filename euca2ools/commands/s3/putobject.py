@@ -35,6 +35,7 @@ from requestbuilder.exceptions import ArgumentError, ClientError
 from requestbuilder.mixins import FileTransferProgressBarMixin
 
 from euca2ools.commands.s3 import S3Request
+import euca2ools.util
 
 
 class PutObject(S3Request, FileTransferProgressBarMixin):
@@ -70,7 +71,8 @@ class PutObject(S3Request, FileTransferProgressBarMixin):
                     "argument --size is required when uploading stdin")
             source = _FileObjectExtent(sys.stdin, self.args['size'])
         elif isinstance(self.args['source'], basestring):
-            source = _FileObjectExtent.from_filename(self.args['source'])
+            source = _FileObjectExtent.from_filename(
+                self.args['source'], size=self.args.get('size'))
         else:
             if self.args.get('size') is None:
                 raise ArgumentError(
@@ -169,9 +171,10 @@ class _FileObjectExtent(object):
         return self.size
 
     @classmethod
-    def from_filename(cls, filename):
-        return cls(open(filename), os.path.getsize(filename),
-                   filename=filename)
+    def from_filename(cls, filename, size=None):
+        if size is None:
+            size = euca2ools.util.get_filesize(filename)
+        return cls(open(filename), size, filename=filename)
 
     @property
     def can_rewind(self):
