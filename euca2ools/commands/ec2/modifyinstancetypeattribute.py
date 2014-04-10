@@ -1,4 +1,4 @@
-# Copyright 2013 Eucalyptus Systems, Inc.
+# Copyright 2013-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -23,10 +23,11 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.ec2 import EC2Request
 from requestbuilder import Arg
 from requestbuilder.exceptions import ArgumentError
 from requestbuilder.mixins import TabifyingMixin
+
+from euca2ools.commands.ec2 import EC2Request
 
 
 class ModifyInstanceTypeAttribute(EC2Request, TabifyingMixin):
@@ -35,9 +36,9 @@ class ModifyInstanceTypeAttribute(EC2Request, TabifyingMixin):
                 help='name of the instance type to modify (required)'),
             Arg('-c', '--cpus', dest='Cpu', metavar='COUNT', type=int,
                 help='number of virtual CPUs to allocate to each instance'),
-            Arg('-d', '--disk', dest='Disk', metavar='GB', type=int,
+            Arg('-d', '--disk', dest='Disk', metavar='GiB', type=int,
                 help='amount of instance storage to allow each instance'),
-            Arg('-m', '--memory', dest='Memory', metavar='MB', type=int,
+            Arg('-m', '--memory', dest='Memory', metavar='MiB', type=int,
                 help='amount of RAM to allocate to each instance'),
             Arg('--reset', dest='Reset', action='store_true',
                 help='reset the instance type to its default configuration')]

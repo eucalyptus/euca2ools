@@ -1,4 +1,4 @@
-# Copyright 2009-2013 Eucalyptus Systems, Inc.
+# Copyright 2009-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -23,9 +23,10 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+from requestbuilder import Arg
+
 from euca2ools.commands.argtypes import ec2_block_device_mapping
 from euca2ools.commands.ec2 import EC2Request
-from requestbuilder import Arg
 
 
 class CreateImage(EC2Request):
@@ -45,7 +46,7 @@ class CreateImage(EC2Request):
                 help='''define a block device mapping for the image, in the
                 form DEVICE=MAPPED, where "MAPPED" is "none", "ephemeral(0-3)",
                 or
-                "[SNAP_ID]:[SIZE]:[true|false]:[standard|VOLTYPE[:IOPS]]"''')]
+                "[SNAP_ID]:[GiB]:[true|false]:[standard|VOLTYPE[:IOPS]]"''')]
 
     def print_result(self, result):
         print self.tabify(('IMAGE', result.get('imageId')))

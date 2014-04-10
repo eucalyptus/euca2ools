@@ -23,9 +23,10 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.ec2 import EC2Request
 from requestbuilder import Arg
 from requestbuilder.mixins import TabifyingMixin
+
+from euca2ools.commands.ec2 import EC2Request
 
 
 class DescribeInstanceTypes(EC2Request, TabifyingMixin):
@@ -82,8 +83,8 @@ class DescribeInstanceTypes(EC2Request, TabifyingMixin):
         # Fields and column headers
         fields = {'name': 'Name',
                   'cpu': 'CPUs',
-                  'memory': 'Memory (MB)',
-                  'disk': 'Disk (GB)',
+                  'memory': 'Memory (MiB)',
+                  'disk': 'Disk (GiB)',
                   'used': 'Used',
                   'total': 'Total',
                   'used_pct': 'Used %'}

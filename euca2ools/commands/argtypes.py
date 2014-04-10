@@ -1,4 +1,4 @@
-# Copyright 2012-2013 Eucalyptus Systems, Inc.
+# Copyright 2012-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -25,8 +25,9 @@
 
 import argparse
 import base64
-from requestbuilder import EMPTY
 import sys
+
+from requestbuilder import EMPTY
 
 
 def manifest_block_device_mappings(mappings_as_str):
@@ -67,7 +68,7 @@ def ec2_block_device_mapping(map_as_str):
         if len(map_bits) != 5:
             raise argparse.ArgumentTypeError(
                 'EBS block device mapping "{0}" must have form '
-                'DEVICE=[SNAP-ID]:[SIZE]:[true|false]:[standard|TYPE[:IOPS]]'
+                'DEVICE=[SNAP-ID]:[GiB]:[true|false]:[standard|TYPE[:IOPS]]'
                 .format(map_as_str))
 
         map_dict['Ebs'] = {}

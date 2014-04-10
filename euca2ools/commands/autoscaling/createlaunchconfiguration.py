@@ -1,4 +1,4 @@
-# Copyright 2013 Eucalyptus Systems, Inc.
+# Copyright 2013-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -26,11 +26,12 @@
 import base64
 import os.path
 
+from requestbuilder import Arg, MutuallyExclusiveArgList
+from requestbuilder.exceptions import ArgumentError
+
 from euca2ools.commands.argtypes import (delimited_list,
                                          ec2_block_device_mapping)
 from euca2ools.commands.autoscaling import AutoScalingRequest
-from requestbuilder import Arg, MutuallyExclusiveArgList
-from requestbuilder.exceptions import ArgumentError
 
 
 class CreateLaunchConfiguration(AutoScalingRequest):
@@ -48,7 +49,7 @@ class CreateLaunchConfiguration(AutoScalingRequest):
                 type=delimited_list(',', item_type=ec2_block_device_mapping),
                 help='''a comma-separated list of block device mappings for the
                 image, in the form DEVICE=MAPPED, where "MAPPED" is "none",
-                "ephemeral(0-3)", or "[SNAP-ID]:[SIZE]:[true|false]'''),
+                "ephemeral(0-3)", or "[SNAP-ID]:[GiB]:[true|false]'''),
             Arg('--ebs-optimized', dest='EbsOptimized', action='store_const',
                 const='true',
                 help='whether the instance is optimized for EBS I/O'),

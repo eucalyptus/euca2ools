@@ -1,4 +1,4 @@
-# Copyright 2009-2013 Eucalyptus Systems, Inc.
+# Copyright 2009-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -24,12 +24,14 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import base64
+import os.path
+
+from requestbuilder import Arg, MutuallyExclusiveArgList
+from requestbuilder.exceptions import ArgumentError
+
 from euca2ools.commands.argtypes import (ec2_block_device_mapping,
                                          vpc_interface)
 from euca2ools.commands.ec2 import EC2Request
-import os.path
-from requestbuilder import Arg, MutuallyExclusiveArgList
-from requestbuilder.exceptions import ArgumentError
 
 
 class RunInstances(EC2Request):
@@ -75,7 +77,7 @@ class RunInstances(EC2Request):
                 help='''define a block device mapping for the instances, in the
                 form DEVICE=MAPPED, where "MAPPED" is "none", "ephemeral(0-3)",
                 or
-                "[SNAP-ID]:[SIZE]:[true|false]:[standard|VOLTYPE[:IOPS]]"'''),
+                "[SNAP-ID]:[GiB]:[true|false]:[standard|VOLTYPE[:IOPS]]"'''),
             Arg('-m', '--monitor', dest='Monitoring.Enabled',
                 action='store_const', const='true',
                 help='enable detailed monitoring for the instance(s)'),

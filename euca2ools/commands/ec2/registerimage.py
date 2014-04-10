@@ -23,10 +23,11 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.argtypes import ec2_block_device_mapping
-from euca2ools.commands.ec2 import EC2Request
 from requestbuilder import Arg
 from requestbuilder.exceptions import ArgumentError
+
+from euca2ools.commands.argtypes import ec2_block_device_mapping
+from euca2ools.commands.ec2 import EC2Request
 
 
 class RegisterImage(EC2Request):
@@ -56,7 +57,7 @@ class RegisterImage(EC2Request):
                 help='''define a block device mapping for the image, in the
                 form DEVICE=MAPPED, where "MAPPED" is "none", "ephemeral(0-3)",
                 or
-                "[SNAP-ID]:[SIZE]:[true|false]:[standard|VOLTYPE[:IOPS]]"'''),
+                "[SNAP-ID]:[GiB]:[true|false]:[standard|VOLTYPE[:IOPS]]"'''),
             Arg('--virtualization-type', dest='VirtualizationType',
                 choices=('paravirtual', 'hvm'),
                 help='[Privileged] virtualization type for the new image'),
