@@ -23,6 +23,7 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import argparse
 import hashlib
 import os.path
 import socket
@@ -56,7 +57,8 @@ class PutObject(S3Request, FileTransferProgressBarMixin):
                 help='MIME type for the file being uploaded'),
             Arg('--retry', dest='retries', action='store_const', const=5,
                 default=0, route_to=None,
-                help='retry interrupted uploads up to 5 times')]
+                help='retry interrupted uploads up to 5 times'),
+            Arg('--progressbar-label', help=argparse.SUPPRESS)]
     METHOD = 'PUT'
 
     def __init__(self, **kwargs):
@@ -79,7 +81,7 @@ class PutObject(S3Request, FileTransferProgressBarMixin):
             if self.args.get('size') is None:
                 raise ArgumentError(
                     "argument --size is required when uploading a file object")
-            source = _FileObjectExtent(sys.stdin, self.args['size'])
+            source = _FileObjectExtent(self.args['source'], self.args['size'])
         self.args['source'] = source
         bucket, _, key = self.args['dest'].partition('/')
         if not bucket:
@@ -104,13 +106,13 @@ class PutObject(S3Request, FileTransferProgressBarMixin):
         # progress bar.
         upload_thread = threading.Thread(
             target=self.try_send, args=(source,),
-            kwargs={'retries_left': self.args['retries']})
+            kwargs={'retries_left': self.args.get('retries') or 0})
         # The upload thread is daemonic so ^C will kill the program more
         # cleanly.
         upload_thread.daemon = True
         upload_thread.start()
-        pbar = self.get_progressbar(label=source.filename,
-                                    maxval=source.size)
+        pbar_label = self.args.get('progressbar_label') or source.filename
+        pbar = self.get_progressbar(label=pbar_label, maxval=source.size)
         pbar.start()
         while upload_thread.is_alive():
             pbar.update(source.tell())
