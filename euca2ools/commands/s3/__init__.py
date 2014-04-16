@@ -82,12 +82,12 @@ class S3Request(requestbuilder.request.BaseRequest):
         requestbuilder.request.BaseRequest.__init__(self, **kwargs)
         self.redirects_left = 3
 
-    def get_presigned_url(self, validity_timedelta):
+    def get_presigned_url(self, expiration_datetime):
         self.preprocess()
         return self.service.build_presigned_url(
             method=self.method, path=self.path, params=self.params,
             auth=self.auth,
-            auth_args={'validity_timedelta': validity_timedelta})
+            auth_args={'expiration_datetime': expiration_datetime})
 
     def handle_server_error(self, err):
         if 300 <= err.status_code < 400 and 'Endpoint' in err.elements:
