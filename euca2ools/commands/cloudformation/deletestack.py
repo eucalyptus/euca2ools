@@ -29,7 +29,7 @@ from requestbuilder import Arg
 
 
 class DeleteStack(CloudFormationRequest):
-    DESCRIPTION = 'Delete stack'
+    DESCRIPTION = 'Delete an existing stack'
     ARGS = [Arg('StackName', metavar='STACK',
                 help='name of the stack (required)'),
             Arg('--force', action='store_true', route_to=None,

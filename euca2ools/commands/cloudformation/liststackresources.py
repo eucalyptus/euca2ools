@@ -28,7 +28,7 @@ from requestbuilder import Arg
 
 
 class ListStackResources(CloudFormationRequest):
-    DESCRIPTION = 'ListStackResources'
+    DESCRIPTION = 'List all resources for a stack'
     LIST_TAGS = ['StackResourceSummaries']
     ARGS = [Arg('StackName', metavar='STACK',
                 help='name of the stack (required)')]

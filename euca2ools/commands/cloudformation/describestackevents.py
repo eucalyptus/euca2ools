@@ -28,7 +28,7 @@ from requestbuilder import Arg
 
 
 class DescribeStackEvents(CloudFormationRequest):
-    DESCRIPTION = 'DescribeStackEvents'
+    DESCRIPTION = 'Describe events that occurred in a stack'
     LIST_TAGS = ['StackEvents']
     ARGS = [Arg('StackName', metavar='STACK',
                 help='name of the stack (required)')]

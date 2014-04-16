@@ -27,7 +27,7 @@ from euca2ools.commands.cloudformation import CloudFormationRequest
 
 
 class ListStacks(CloudFormationRequest):
-    DESCRIPTION = 'ListStacks'
+    DESCRIPTION = 'List all running stacks'
     LIST_TAGS = ['StackSummaries']
 
     def print_result(self, result):

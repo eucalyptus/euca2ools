@@ -28,7 +28,7 @@ from requestbuilder import Arg
 
 
 class CancelUpdateStack(CloudFormationRequest):
-    DESCRIPTION = 'CancelUpdateStack'
+    DESCRIPTION = 'Cancel a stack update that is currently running'
     LIST_TAGS = ['Stacks']
     ARGS = [Arg('StackName', metavar='STACK',
                 help='name of the stack (required)')]

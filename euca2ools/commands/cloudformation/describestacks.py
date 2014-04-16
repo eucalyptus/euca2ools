@@ -28,7 +28,7 @@ from requestbuilder import Arg
 
 
 class DescribeStacks(CloudFormationRequest):
-    DESCRIPTION = 'DescribeStacks'
+    DESCRIPTION = 'Describe a single or multiple stacks'
     LIST_TAGS = ['Stacks']
     ARGS = [Arg('StackName', metavar='STACK', nargs="?",
                 help='limit results to a single stack'),

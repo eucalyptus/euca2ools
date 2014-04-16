@@ -31,7 +31,8 @@ from requestbuilder import Arg, MutuallyExclusiveArgList
 
 
 class CreateStack(CloudFormationRequest):
-    DESCRIPTION = 'Create or update an alarm'
+    DESCRIPTION = 'Create a new stack from a local template file' \
+                  'or a file stored in S3'
     ARGS = [Arg('StackName', metavar='STACK',
                 help='name of the stack (required)'),
             MutuallyExclusiveArgList(

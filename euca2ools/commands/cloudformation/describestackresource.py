@@ -28,7 +28,7 @@ from requestbuilder import Arg
 
 
 class DescribeStackResource(CloudFormationRequest):
-    DESCRIPTION = 'DescribeStackResource'
+    DESCRIPTION = 'List the resources a resource in an individual stack'
     ARGS = [Arg('StackName', metavar='STACK',
                 help='name of the stack (required)'),
             Arg('-l', '--logical-resource-id', metavar='RESOURCE',

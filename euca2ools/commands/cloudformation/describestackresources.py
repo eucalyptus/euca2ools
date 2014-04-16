@@ -28,10 +28,10 @@ from requestbuilder import Arg
 
 
 class DescribeStackResources(CloudFormationRequest):
-    DESCRIPTION = 'DescribeStackResources'
+    DESCRIPTION = 'List all resources for a stack or all stacks'
     LIST_TAGS = ['StackResources']
     ARGS = [Arg('-n', '--name', dest='StackName', metavar='STACK',
-                help='name of the stack (required)'),
+                help='name of the stack'),
             Arg('-l', '--logical-resource-id', metavar='RESOURCE',
                 dest='LogicalResourceId',
                 help='logical resource ID for the resource (required)'),

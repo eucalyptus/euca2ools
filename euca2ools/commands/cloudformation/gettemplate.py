@@ -28,7 +28,7 @@ from requestbuilder import Arg
 
 
 class GetTemplate(CloudFormationRequest):
-    DESCRIPTION = 'DescribeStacks'
+    DESCRIPTION = 'Print the template used to create a stack'
     LIST_TAGS = ['Stacks']
     ARGS = [Arg('StackName', metavar='STACK',
                 help='name or ID of the stack, after stack deletion '

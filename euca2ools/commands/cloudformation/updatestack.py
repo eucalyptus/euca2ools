@@ -30,7 +30,7 @@ from requestbuilder import Arg, MutuallyExclusiveArgList
 
 
 class UpdateStack(CloudFormationRequest):
-    DESCRIPTION = 'Update a stack'
+    DESCRIPTION = 'Update a stack with a new template'
     ARGS = [Arg('StackName', metavar='STACK',
                 help='name of the stack (required)'),
             MutuallyExclusiveArgList(
