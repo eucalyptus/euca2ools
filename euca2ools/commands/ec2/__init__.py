@@ -231,6 +231,61 @@ class EC2Request(AWSQueryRequest, TabifyingMixin):
                            task.get('startTime'), task.get('updateTime'),
                            task.get('state'), task.get('progress')])
 
+    def print_conversion_task(self, task):
+        task_bits = []
+        if task.get('importVolume'):
+            task_bits.extend(('TaskType', 'IMPORTVOLUME'))
+        if task.get('importInstance'):
+            task_bits.extend(('TaskType', 'IMPORTINSTANCE'))
+        if task.get('conversionTaskId'):
+            task_bits.append('TaskId'),
+            task_bits.append(task.get('conversionTaskId'))
+        if task.get('expirationTime'):
+            task_bits.append('ExpirationTime')
+            task_bits.append(task['expirationTime'])
+        if task.get('state'):
+            task_bits.append('Status')
+            task_bits.append(task['state'])
+        if task.get('statusMessage'):
+            task_bits.append('StatusMessage')
+            task_bits.append(task['statusMessage'])
+
+        if task.get('importVolume'):
+            print self.tabify(task_bits)
+            self.__print_import_disk(task['importVolume'])
+        if task.get('importInstance'):
+            if task['importInstance'].get('instanceId'):
+                task_bits.extend('InstanceID',
+                                 task['importInstance']['instanceId'])
+            print self.tabify(task_bits)
+            for volume in task['importInstance'].get('volumes') or []: 
+                self.__print_import_disk(volume)
+
+    def __print_import_disk(self, container):
+        disk_bits = ['DISKIMAGE']
+        image = container['image'] or {}
+        volume = container['volume'] or {}
+        if image.get('format'):
+            disk_bits.extend(('DiskImageFormat', image['format']))
+        if image.get('size'):
+            disk_bits.extend(('DiskImageSize', image['size']))
+        if volume.get('id'):
+            disk_bits.extend(('VolumeId', volume['id']))
+        if volume.get('size'):
+            disk_bits.extend(('VolumeSize', volume['size']))
+        if container.get('availabilityZone'):
+            disk_bits.extend(('AvailabilityZone',
+                              container['availabilityZone']))
+        if container.get('bytesConverted'):
+            disk_bits.extend(('ApproximateBytesConverted',
+                              container['bytesConverted']))
+        if container.get('status'):
+            # This is the status of the volume for an ImportInstance operation
+            disk_bits.extend(('Status', container.get('status')))
+        if container.get('statusMessage'):
+            disk_bits.extend(('StatusMessage', container.get('statusMessage')))
+        print self.tabify((disk_bits))
+
 
 class _ResourceTypeMap(object):
     _prefix_type_map = {
