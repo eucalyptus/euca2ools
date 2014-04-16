@@ -74,6 +74,62 @@ class S3(requestbuilder.service.BaseService):
         p_request = request.prepare()
         return p_request.url
 
+    def resolve_url_to_location(self, url):
+        """
+        Given a URL, try to return its associated region, bucket, and
+        key names based on this object's endpoint info as well as all
+        S3 endpoints given in the configuration.
+        """
+        parsed_url = six.moves.urllib_parse.urlparse(url)
+        if not parsed_url.scheme:
+            parsed_url = six.moves.urllib_parse.urlparse('http://' + url)
+        parsed_own_url = six.moves.urllib_parse.urlparse(self.endpoint)
+        bucket, key = self.__match_path(parsed_url, parsed_own_url)
+        if bucket:
+            return self.region_name, bucket, key
+        else:
+            # Try to look it up in the config
+            s3_urls = self.config.get_all_region_options('s3-url')
+            for section, conf_url in s3_urls.iteritems():
+                parsed_conf_url = six.moves.urllib_parse.urlparse(conf_url)
+                bucket, key = self.__match_path(parsed_url, parsed_conf_url)
+                if bucket:
+                    region = self.config.get_region_option('name',
+                                                           region=section)
+                    return region or section, bucket, key
+        raise ValueError("URL '{0}' matches no known object storage "
+                         "endpoints.  Supply one via the command line or "
+                         "configuration.".format(url))
+
+    def __match_path(self, given, service):
+        if given.netloc == service.netloc:
+            # path-style
+            service_path = service.path
+            if not service_path.endswith('/'):
+                service_path += '/'
+            cpath = given.path.split(service_path, 1)[1]
+            bucket, key = cpath.split('/', 1)
+            self.log.debug('URL path match:  %s://%s%s + %s://%s%s -> %s/%s',
+                           given.scheme, given.netloc, given.path,
+                           service.scheme, service.netloc, service.path,
+                           bucket, key)
+        elif given.netloc.endswith(service.netloc):
+            # vhost-style
+            bucket = given.netloc.rsplit('.' + service.netloc, 1)[0]
+            bucket = bucket.lstrip('/')
+            if given.path.startswith('/'):
+                key = given.path[1:]
+            else:
+                key = given.path
+            self.log.debug('URL vhost match:  %s://%s%s + %s://%s%s -> %s/%s',
+                           given.scheme, given.netloc, given.path,
+                           service.scheme, service.netloc, service.path,
+                           bucket, key)
+        else:
+            bucket = None
+            key = None
+        return bucket, key
+
 
 class S3Request(requestbuilder.request.BaseRequest):
     SUITE = Euca2ools
