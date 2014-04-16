@@ -55,7 +55,7 @@ class GetObject(S3Request, FileTransferProgressBarMixin):
         if not key:
             raise ArgumentError('source must contain a key name')
 
-        if isinstance(self.args['dest'], basestring):
+        if isinstance(self.args.get('dest'), basestring):
             # If it is not a string we assume it is a file-like object
             if self.args['dest'] == '-':
                 self.args['dest'] = sys.stdout
