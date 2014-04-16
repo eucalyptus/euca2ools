@@ -23,8 +23,9 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.cloudformation import CloudFormationRequest
 from requestbuilder import Arg
+
+from euca2ools.commands.cloudformation import CloudFormationRequest
 
 
 class GetTemplate(CloudFormationRequest):

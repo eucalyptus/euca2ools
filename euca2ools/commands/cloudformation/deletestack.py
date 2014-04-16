@@ -24,8 +24,10 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import argparse
-from euca2ools.commands.cloudformation import CloudFormationRequest
+
 from requestbuilder import Arg
+
+from euca2ools.commands.cloudformation import CloudFormationRequest
 
 
 class DeleteStack(CloudFormationRequest):

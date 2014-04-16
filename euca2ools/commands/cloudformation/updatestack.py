@@ -23,10 +23,10 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.cloudformation import CloudFormationRequest
-from euca2ools.commands.argtypes import delimited_list
-from euca2ools.commands.argtypes import binary_tag_def
 from requestbuilder import Arg, MutuallyExclusiveArgList
+
+from euca2ools.commands.cloudformation import CloudFormationRequest
+from euca2ools.commands.argtypes import binary_tag_def
 
 
 class UpdateStack(CloudFormationRequest):
