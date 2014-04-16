@@ -95,6 +95,18 @@ def substitute_euca_region(obj):
         os.environ[obj.REGION_ENVVAR] = os.getenv('EUCA_REGION')
 
 
+def magic(config, msg, suffix=None):
+    if not sys.stdout.isatty() or not sys.stderr.isatty():
+        return ''
+    try:
+        if config.convert_to_bool(config.get_global_option('magic'),
+                                  default=False):
+            return '\033[95m{0}\033[0m{1}'.format(msg, suffix or '')
+        return ''
+    except ValueError:
+        return ''
+
+
 def build_iam_policy(effect, resources, actions):
     policy = {'Statement': []}
     for resource in resources or []:

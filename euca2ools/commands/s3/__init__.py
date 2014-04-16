@@ -30,13 +30,15 @@ import urlparse
 
 from requestbuilder import Arg
 import requestbuilder.auth
+import requestbuilder.exceptions
 import requestbuilder.request
 import requestbuilder.service
 import requests
+import six
 
 from euca2ools.commands import Euca2ools
 from euca2ools.exceptions import AWSError
-from euca2ools.util import substitute_euca_region
+from euca2ools.util import magic, substitute_euca_region
 
 
 class S3(requestbuilder.service.BaseService):
@@ -46,7 +48,7 @@ class S3(requestbuilder.service.BaseService):
     URL_ENVVAR = 'S3_URL'
 
     ARGS = [Arg('-U', '--url', metavar='URL',
-                help='storage service endpoint URL')]
+                help='object storage service endpoint URL')]
 
     def configure(self):
         substitute_euca_region(self)
@@ -90,34 +92,28 @@ class S3Request(requestbuilder.request.BaseRequest):
             auth_args={'expiration_datetime': expiration_datetime})
 
     def handle_server_error(self, err):
-        if 300 <= err.status_code < 400 and 'Endpoint' in err.elements:
-            # When S3 does an inter-region redirect it doesn't supply the new
-            # location in the usual header, but rather supplies a new endpoint
-            # in the error's XML.  This forces us to handle it manually.
+        if err.status_code == 301:
             self.log.debug('-- response content --\n',
                            extra={'append': True})
             self.log.debug(self.response.text, extra={'append': True})
             self.log.debug('-- end of response content --')
-            self.log.info('result: redirect')
-            if self.redirects_left > 0:
-                self.redirects_left -= 1
-                parsed = list(urlparse.urlparse(self.service.endpoint))
-                parsed[1] = err.elements['Endpoint']
-                new_url = urlparse.urlunparse(parsed)
-                self.log.debug('redirecting to %s (%i redirects remaining)',
-                               new_url, self.redirects_left)
-                self.service.endpoint = new_url
-                # TODO:  change region_name if possible
-                if isinstance(self.body, file):
-                    self.log.debug('re-seeking body to beginning of file')
-                    # pylint: disable=E1101
-                    # noinspection PyUnresolvedReferences
-                    self.body.seek(0)
-                    # pylint: enable=E1101
-                return self.send()
+            self.log.error('result: inter-region redirect')
+            msg = 'Aborting due to inter-region redirect'
+            if 'Endpoint' in err.elements:
+                msg += ' to {0}'.format(err.elements['Endpoint'])
+            self.log.debug(msg, exc_info=True)
+
+            if 'Bucket' in err.elements:
+                bucket = '"{0}" '.format(err.elements['Bucket'])
             else:
-                self.log.warn('too many redirects; giving up')
-            raise
+                bucket = ''
+            parsed = six.moves.urllib_parse.urlparse(self.service.endpoint)
+            msg = ('Bucket {0}is not available from endpoint "{1}".  Ensure '
+                   "the object storage service URL matches the bucket's "
+                   'location.'.format(bucket, parsed.netloc))
+            msg = magic(self.config, 'Your princess is in another castle!',
+                        '  ') + msg
+            raise requestbuilder.exceptions.ClientError(msg)
         else:
             return requestbuilder.request.BaseRequest.handle_server_error(
                 self, err)
