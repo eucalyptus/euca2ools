@@ -29,12 +29,12 @@ from euca2ools.commands.cloudformation import CloudFormationRequest
 
 
 class DescribeStacks(CloudFormationRequest):
-    DESCRIPTION = 'Describe a single or multiple stacks'
-    LIST_TAGS = ['Stacks']
+    DESCRIPTION = 'Describe one or more stacks'
     ARGS = [Arg('StackName', metavar='STACK', nargs="?",
                 help='limit results to a single stack'),
             Arg('--show-long', action='store_true', route_to=None,
                 help="show all of the stacks' info")]
+    LIST_TAGS = ['Stacks']
 
     def print_result(self, result):
         for stack in result['Stacks']:

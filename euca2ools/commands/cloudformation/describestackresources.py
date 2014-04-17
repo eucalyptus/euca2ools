@@ -29,16 +29,16 @@ from euca2ools.commands.cloudformation import CloudFormationRequest
 
 
 class DescribeStackResources(CloudFormationRequest):
-    DESCRIPTION = 'List all resources for a stack or all stacks'
-    LIST_TAGS = ['StackResources']
+    DESCRIPTION = 'List all of the resources in one or more stacks'
     ARGS = [Arg('-n', '--name', dest='StackName', metavar='STACK',
-                help='name of the stack'),
+                help='limit results to a specific stack'),
             Arg('-l', '--logical-resource-id', metavar='RESOURCE',
                 dest='LogicalResourceId',
-                help='logical resource ID for the resource (required)'),
+                help='logical ID of the resource to describe (required)'),
             Arg('-p', '--physical-resource-id', metavar='RESOURCE',
                 dest='PhysicalResourceId',
-                help='physical resource ID for the resource (required)')]
+                help='physical ID of the resource to describe (required)')]
+    LIST_TAGS = ['StackResources']
 
     def print_result(self, result):
         for resource in result['StackResources']:

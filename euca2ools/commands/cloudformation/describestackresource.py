@@ -29,12 +29,12 @@ from euca2ools.commands.cloudformation import CloudFormationRequest
 
 
 class DescribeStackResource(CloudFormationRequest):
-    DESCRIPTION = 'List the resources a resource in an individual stack'
+    DESCRIPTION = 'Describe a resource from a particular stack'
     ARGS = [Arg('StackName', metavar='STACK',
                 help='name of the stack (required)'),
             Arg('-l', '--logical-resource-id', metavar='RESOURCE',
                 dest='LogicalResourceId', required=True,
-                help='logical resource ID for the resource (required)')]
+                help='logical ID of the resource to describe (required)')]
 
     def print_result(self, result):
         self.print_resource(result['StackResourceDetail'])

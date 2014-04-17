@@ -26,24 +26,24 @@
 from requestbuilder import Arg, MutuallyExclusiveArgList
 
 from euca2ools.commands.cloudformation import CloudFormationRequest
-from euca2ools.commands.argtypes import binary_tag_def
+from euca2ools.commands.cloudformation.argtypes import parameter_def
 
 
 class UpdateStack(CloudFormationRequest):
     DESCRIPTION = 'Update a stack with a new template'
     ARGS = [Arg('StackName', metavar='STACK',
-                help='name of the stack (required)'),
+                help='name of the stack to update (required)'),
             MutuallyExclusiveArgList(
                 Arg('--template-file', dest='TemplateBody',
-                metavar='FILE', type=open,
-                help='file location containing JSON template'),
-                Arg('--template-url', dest='TemplateURL',
-                metavar='URL', type=open,
-                help='S3 url for JSON template')).required(),
-            Arg('-p', '--parameters', dest='Parameters', metavar='KEY[=VALUE]',
-                type=binary_tag_def, action='append',
-                help='''key/value of the parameters used to create the stack,
-                separated by an "=" character.''')]
+                    metavar='FILE', type=open,
+                    help='file containing a new JSON template for the stack'),
+                Arg('--template-url', dest='TemplateURL', metavar='URL',
+                    help='URL pointing to a new JSON template for the stack'))
+            .required(),
+            Arg('-p', '--parameter', dest='Parameters.member',
+                metavar='KEY=VALUE', type=parameter_def, action='append',
+                help='''key and value of the parameters to use with the
+                stack's template, separated by an "=" character''')]
 
     def print_result(self, result):
         print result.get('StackId')

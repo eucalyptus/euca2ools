@@ -29,10 +29,10 @@ def parameter_def(param_str):
     Parse a tag definition from the command line.  Return a dict that depends
     on the format of the string given:
 
-     - 'key=value': {'Key': key, 'Value': value}
-     - 'key=':      {'Key': key, 'Value': EMPTY}
-     - 'key':       {'Key': key, 'Value': EMPTY}
+     - 'key=value': {'ParameterKey': key, 'ParameterValue': value}
     """
     if '=' in param_str:
-        (key, val) = param_str.split('=', 1)
+        key, val = param_str.split('=', 1)
         return {'ParameterKey': key, 'ParameterValue': val}
+    raise ValueError('parameter "{0}" must have form KEY=VALUE'
+                     .format(param_str))

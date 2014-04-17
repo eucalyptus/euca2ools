@@ -25,35 +25,33 @@
 
 from requestbuilder import Arg, MutuallyExclusiveArgList
 
+from euca2ools.commands.argtypes import binary_tag_def, delimited_list
 from euca2ools.commands.cloudformation import CloudFormationRequest
-from euca2ools.commands.argtypes import delimited_list
-from euca2ools.commands.argtypes import binary_tag_def
 from euca2ools.commands.cloudformation.argtypes import parameter_def
 
 
 class CreateStack(CloudFormationRequest):
-    DESCRIPTION = 'Create a new stack from a local template file' \
-                  'or a file stored in S3'
+    DESCRIPTION = 'Create a new stack'
     ARGS = [Arg('StackName', metavar='STACK',
-                help='name of the stack (required)'),
+                help='name of the new stack (required)'),
             MutuallyExclusiveArgList(
-                Arg('--template-file', dest='TemplateBody',
-                metavar='FILE', type=open,
-                help='file location containing JSON template'),
-                Arg('--template-url', dest='TemplateURL',
-                metavar='URL', type=open,
-                help='S3 url for JSON template')).required(),
+                Arg('--template-file', dest='TemplateBody', metavar='FILE',
+                    type=open,
+                    help="file containing the new stack's JSON template"),
+                Arg('--template-url', dest='TemplateURL', metavar='URL',
+                    help="URL pointing to the new stack's JSON template"))
+            .required(),
             Arg('-d', '--disable-rollback', dest='DisableRollback',
-                help='Disable rollback on failure'),
+                action='store_true', help='disable rollback on failure'),
             Arg('-n', '--notification-arns', dest='NotificationARNs',
-                metavar='VALUE', type=delimited_list, action='append',
-                help='''SNS arns to publish stack actions to'''),
+                metavar='ARN[,...]', type=delimited_list, action='append',
+                help='''SNS ARNs to publish stack actions to'''),
             Arg('-p', '--parameter', dest='Parameters.member',
-                metavar='KEY[=VALUE]', type=parameter_def, action='append',
-                help='''key/value of the parameters used to create the stack,
-                separated by an "=" character.'''),
+                metavar='KEY=VALUE', type=parameter_def, action='append',
+                help='''key and value of the parameters to use with the new
+                stack's template, separated by an "=" character'''),
             Arg('-t', '--timeout', dest='TimeoutInMinutes', type=int,
-                metavar='MINUTES', help='Timeout for stack creation'),
+                metavar='MINUTES', help='timeout for stack creation'),
             Arg('--tag', dest='Tags.member', metavar='KEY[=VALUE]',
                 type=binary_tag_def, action='append',
                 help='''key and optional value of the tag to create, separated

@@ -30,9 +30,9 @@ from euca2ools.commands.cloudformation import CloudFormationRequest
 
 class DescribeStackEvents(CloudFormationRequest):
     DESCRIPTION = 'Describe events that occurred in a stack'
-    LIST_TAGS = ['StackEvents']
     ARGS = [Arg('StackName', metavar='STACK',
-                help='name of the stack (required)')]
+                help='name of the stack to show events for (required)')]
+    LIST_TAGS = ['StackEvents']
 
     def print_result(self, result):
         for event in result['StackEvents']:

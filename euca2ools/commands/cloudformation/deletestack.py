@@ -31,8 +31,8 @@ from euca2ools.commands.cloudformation import CloudFormationRequest
 
 
 class DeleteStack(CloudFormationRequest):
-    DESCRIPTION = 'Delete an existing stack'
+    DESCRIPTION = 'Delete a stack'
     ARGS = [Arg('StackName', metavar='STACK',
-                help='name of the stack (required)'),
+                help='name of the stack to delete (required)'),
             Arg('--force', action='store_true', route_to=None,
                 help=argparse.SUPPRESS)]  # for compatibility

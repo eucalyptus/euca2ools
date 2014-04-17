@@ -29,14 +29,15 @@ from euca2ools.commands.cloudformation import CloudFormationRequest
 
 
 class ValidateTemplate(CloudFormationRequest):
-    DESCRIPTION = 'Validate a CloudFormation template'
+    DESCRIPTION = 'Validate a template'
     ARGS = [MutuallyExclusiveArgList(
                 Arg('--template-file', dest='TemplateBody',
-                metavar='FILE', type=open,
-                help='file location containing JSON template'),
+                    metavar='FILE', type=open,
+                    help='file location containing JSON template'),
                 Arg('--template-url', dest='TemplateURL',
-                metavar='URL', type=open,
-                help='S3 url for JSON template')).required()]
+                    metavar='URL', type=open,
+                    help='S3 url for JSON template'))
+            .required()]
     LIST_TAGS = ['Parameters', 'CapabilitiesReason', 'Capabilities']
 
     def print_result(self, result):

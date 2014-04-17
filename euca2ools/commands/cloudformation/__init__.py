@@ -42,7 +42,7 @@ class CloudFormation(requestbuilder.service.BaseService):
     URL_ENVVAR = 'AWS_CLOUDFORMATION_URL'
 
     ARGS = [Arg('-U', '--url', metavar='URL',
-                help='Deployment templating service endpoint URL')]
+                help='deployment templating service endpoint URL')]
 
     def configure(self):
         substitute_euca_region(self)

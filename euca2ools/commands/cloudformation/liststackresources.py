@@ -30,9 +30,9 @@ from euca2ools.commands.cloudformation import CloudFormationRequest
 
 class ListStackResources(CloudFormationRequest):
     DESCRIPTION = 'List all resources for a stack'
-    LIST_TAGS = ['StackResourceSummaries']
     ARGS = [Arg('StackName', metavar='STACK',
-                help='name of the stack (required)')]
+                help='name of the stack to list resources from (required)')]
+    LIST_TAGS = ['StackResourceSummaries']
 
     def print_result(self, result):
         for resource in result['StackResourceSummaries']:

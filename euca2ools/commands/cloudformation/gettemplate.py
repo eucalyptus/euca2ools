@@ -29,11 +29,10 @@ from euca2ools.commands.cloudformation import CloudFormationRequest
 
 
 class GetTemplate(CloudFormationRequest):
-    DESCRIPTION = 'Print the template used to create a stack'
+    DESCRIPTION = "Show a stack's template"
+    ARGS = [Arg('StackName', metavar='STACK', help='''name or ID of the
+                stack (names cannot be used for deleted stacks) (required)''')]
     LIST_TAGS = ['Stacks']
-    ARGS = [Arg('StackName', metavar='STACK',
-                help='name or ID of the stack, after stack deletion '
-                     'only the ID will work')]
 
     def print_result(self, result):
-        print result['TemplateBody']
+        print result.get('TemplateBody')
