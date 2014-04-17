@@ -23,6 +23,8 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import argparse
+
 
 def parameter_def(param_str):
     """
@@ -34,5 +36,5 @@ def parameter_def(param_str):
     if '=' in param_str:
         key, val = param_str.split('=', 1)
         return {'ParameterKey': key, 'ParameterValue': val}
-    raise ValueError('parameter "{0}" must have form KEY=VALUE'
-                     .format(param_str))
+    raise argparse.ArgumentTypeError('parameter "{0}" must have form KEY=VALUE'
+                                     .format(param_str))
