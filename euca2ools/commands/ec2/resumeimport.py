@@ -38,7 +38,7 @@ from requestbuilder.mixins import FileTransferProgressBarMixin
 from euca2ools.commands.ec2 import EC2Request
 from euca2ools.commands.ec2.describeconversiontasks import \
     DescribeConversionTasks
-from euca2ools.commands.s3 import S3
+from euca2ools.commands.ec2.mixins import S3AccessMixin
 from euca2ools.commands.s3.deleteobject import DeleteObject
 from euca2ools.commands.s3.headobject import HeadObject
 from euca2ools.commands.s3.getobject import GetObject
@@ -47,21 +47,12 @@ from euca2ools.exceptions import AWSError
 import euca2ools.util
 
 
-class ResumeImport(EC2Request, FileTransferProgressBarMixin):
+class ResumeImport(EC2Request, S3AccessMixin, FileTransferProgressBarMixin):
     DESCRIPTION = 'Perform the upload step of an import task'
-    ## TODO:  re-evaluate suppressed args once import-instance exists
     ARGS = [Arg('source', metavar='FILE',
                 help='file containing the disk image to import (required)'),
             Arg('-t', '--task', required=True,
                 help='the ID of the import task to resume (required)'),
-            Arg('--s3-url', metavar='URL',
-                help='object storage service endpoint URL'),
-            Arg('-o', '--owner-akid', metavar='KEY_ID',
-                help='''the access key to use for uploading (default: same as
-                that for the compute service)'''),
-            Arg('-w', '--owner-sak', metavar='KEY',
-                help='''the secret key to use for uploading (default: same as
-                that for the compute service)'''),
             Arg('-x', '--expires', metavar='DAYS', type=int, default=30,
                 help='''how long the import manifest should remain valid, in
                 days (default: 30 days)'''),
@@ -73,34 +64,16 @@ class ResumeImport(EC2Request, FileTransferProgressBarMixin):
             Arg('--dont-verify-format', action='store_true',
                 help=argparse.SUPPRESS),
             # This does no validation, but it does prevent taking action
-            Arg('--dry-run', action='store_true', help=argparse.SUPPRESS),
-            # Pass-throughs for S3 objects
-            Arg('--s3-service', help=argparse.SUPPRESS),
-            Arg('--s3-auth', help=argparse.SUPPRESS)]
+            Arg('--dry-run', action='store_true', help=argparse.SUPPRESS)]
 
     def configure(self):
         EC2Request.configure(self)
+        self.configure_s3_access()
         if not self.args.get('expires'):
             self.args['expires'] = 30
         if self.args['expires'] < 1:
             raise ArgumentError(
                 'argument -x/--expires: value must be positive')
-        if self.args.get('owner_akid') and not self.args.get('owner_sak'):
-            raise ArgumentError('argument -o/--owner-akid also requires '
-                                '-w/--owner-sak')
-        if self.args.get('owner_sak') and not self.args.get('owner_akid'):
-            raise ArgumentError('argument -w/--owner-sak also requires '
-                                '-o/--owner-akid')
-        if not self.args.get('s3_auth'):
-            if self.args.get('owner_sak') and self.args.get('owner_akid'):
-                self.args['s3_auth'] = GetObject.AUTH_CLASS.from_other(
-                    self.auth, key_id=self.args['owner_akid'],
-                    secret_key=self.args['owner_sak'])
-            else:
-                self.args['s3_auth'] = GetObject.AUTH_CLASS.from_other(
-                    self.auth)
-        if not self.args.get('s3_service'):
-            self.args['s3_service'] = S3.from_other(self.service)
 
     def main(self):
         if self.args.get('dry_run'):

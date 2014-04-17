@@ -36,13 +36,13 @@ from requestbuilder.mixins import FileTransferProgressBarMixin
 
 from euca2ools.commands.argtypes import filesize
 from euca2ools.commands.ec2 import EC2Request
+from euca2ools.commands.ec2.mixins import S3AccessMixin
 from euca2ools.commands.ec2.resumeimport import ResumeImport
-from euca2ools.commands.s3 import S3
 from euca2ools.commands.s3.getobject import GetObject
 import euca2ools.util
 
 
-class ImportInstance(EC2Request, FileTransferProgressBarMixin):
+class ImportInstance(EC2Request, S3AccessMixin, FileTransferProgressBarMixin):
     DESCRIPTION = 'Import an instance into the cloud'
     ARGS = [Arg('source', metavar='FILE', route_to=None,
                 help='file containing the disk image to import (required)'),
@@ -66,14 +66,6 @@ class ImportInstance(EC2Request, FileTransferProgressBarMixin):
                     help='''a pre-signed URL that points to the import
                     manifest to use'''))
             .required(),
-            Arg('--s3-url', metavar='URL', route_to=None,
-                help='object storage service endpoint URL'),
-            Arg('-o', '--owner-akid', metavar='KEY_ID', route_to=None,
-                help='''the access key to use for uploading (default: same as
-                that for the compute service)'''),
-            Arg('-w', '--owner-sak', metavar='KEY', route_to=None,
-                help='''the secret key to use for uploading (default: same as
-                that for the compute service)'''),
             Arg('--prefix', route_to=None, help='''a prefix to add to the
                 names of the volume parts as they are uploaded'''),
             Arg('-x', '--expires', metavar='DAYS', type=int, default=30,
@@ -125,13 +117,11 @@ class ImportInstance(EC2Request, FileTransferProgressBarMixin):
                 help=argparse.SUPPRESS),
             # This is not yet implemented
             Arg('--dont-verify-format', action='store_true', route_to=None,
-                help=argparse.SUPPRESS),
-            # Pass-throughs for S3 objects
-            Arg('--s3-service', help=argparse.SUPPRESS),
-            Arg('--s3-auth', help=argparse.SUPPRESS)]
+                help=argparse.SUPPRESS)]
 
     def configure(self):
         EC2Request.configure(self)
+        self.configure_s3_access()
 
         if (self.params['DiskImage.1.Image.Format'].upper() in
                 ('VMDK', 'VHD', 'RAW')):
@@ -155,22 +145,6 @@ class ImportInstance(EC2Request, FileTransferProgressBarMixin):
         if self.args['expires'] < 1:
             raise ArgumentError(
                 'argument -x/--expires: value must be positive')
-        if self.args.get('owner_akid') and not self.args.get('owner_sak'):
-            raise ArgumentError('argument -o/--owner-akid also requires '
-                                '-w/--owner-sak')
-        if self.args.get('owner_sak') and not self.args.get('owner_akid'):
-            raise ArgumentError('argument -w/--owner-sak also requires '
-                                '-o/--owner-akid')
-        if not self.args.get('s3_auth'):
-            if self.args.get('owner_sak') and self.args.get('owner_akid'):
-                self.args['s3_auth'] = GetObject.AUTH_CLASS.from_other(
-                    self.auth, key_id=self.args['owner_akid'],
-                    secret_key=self.args['owner_sak'])
-            else:
-                self.args['s3_auth'] = GetObject.AUTH_CLASS.from_other(
-                    self.auth)
-        if not self.args.get('s3_service'):
-            self.args['s3_service'] = S3.from_other(self.service)
 
     def main(self):
         if self.args.get('dry_run'):
