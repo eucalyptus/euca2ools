@@ -88,7 +88,6 @@ class BundleManifest(object):
         manifest.image_digest_algorithm = xml.image.digest.get('algorithm')
         manifest.image_size = int(xml.image.size.text.strip())
         manifest.bundled_image_size = int(xml.image.bundled_size.text.strip())
-        ## TODO:  test this
         if privkey_filename is not None:
             try:
                 manifest.enc_key = _decrypt_hex(

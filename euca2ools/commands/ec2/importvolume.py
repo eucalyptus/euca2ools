@@ -28,7 +28,6 @@ from __future__ import division
 import argparse
 import datetime
 import math
-import os.path
 import uuid
 
 from requestbuilder import Arg, MutuallyExclusiveArgList
@@ -75,14 +74,14 @@ class ImportVolume(EC2Request, FileTransferProgressBarMixin):
                 that for the compute service)'''),
             Arg('--prefix', route_to=None, help='''a prefix to add to the
                 names of the volume parts as they are uploaded'''),
-            Arg('-d', '--description', dest='Description',
-                help='a description for the import task (not the volume)'),
             Arg('-x', '--expires', metavar='DAYS', type=int, default=30,
                 route_to=None, help='''how long the import manifest should
                 remain valid, in days (default: 30 days)'''),
             Arg('--no-upload', action='store_true', route_to=None,
                 help='''start the import process, but do not actually upload
                 the volume (see euca-resume-import)'''),
+            Arg('-d', '--description', dest='Description',
+                help='a description for the import task (not the volume)'),
             # This is not yet implemented
             Arg('--ignore-region-affinity', action='store_true', route_to=None,
                 help=argparse.SUPPRESS),
