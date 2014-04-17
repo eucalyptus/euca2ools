@@ -1,0 +1,6 @@
+#!/usr/bin/python -tt
+
+import euca2ools.commands.cloudformation.deletestack
+
+if __name__ == '__main__':
+    euca2ools.commands.cloudformation.deletestack.DeleteStack.run()
