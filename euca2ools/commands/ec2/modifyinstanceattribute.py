@@ -1,4 +1,4 @@
-# Copyright 2009-2014 Eucalyptus Systems, Inc.
+# Copyright 2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -23,90 +23,71 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import base64
-import os.path
+import argparse
 
 from requestbuilder import Arg, MutuallyExclusiveArgList
-from requestbuilder.exceptions import ArgumentError
 
-from euca2ools.commands.argtypes import ec2_block_device_mapping
+from euca2ools.commands.argtypes import b64encoded_file_contents
 from euca2ools.commands.ec2 import EC2Request
+
+
+def _min_ec2_block_device_mapping(map_as_str):
+    try:
+        device, mapping = map_as_str.split('=')
+    except ValueError:
+        raise argparse.ArgumentTypeError(
+            'block device mapping "{0}" must have form DEVICE=::true or '
+            'DEVICE=::false'.format(map_as_str))
+    mapping_bits = mapping.split(':')
+    if (len(mapping_bits) != 3 or mapping_bits[0] or mapping_bits[1] or
+            mapping_bits[2] not in ('true', 'false')):
+        raise argparse.ArgumentTypeError(
+            'block device mapping "{0}" must be either {1}=::true or '
+            '{1}=::false'.format(map_as_str, device))
+    return {'DeviceName': device,
+            'Ebs': {'DeleteOnTermination': mapping_bits[2]}}
 
 
 class ModifyInstanceAttribute(EC2Request):
     DESCRIPTION = 'Modify an attribute of an instance'
-    ARGS = [Arg('InstanceId', metavar='INSTANCE', help='instance to modify'),
+    ARGS = [Arg('InstanceId', metavar='INSTANCE',
+                help='ID of the instance to modify (required)'),
             MutuallyExclusiveArgList(
-                Arg('-b', '--block-device-mapping', metavar='DEVICE=MAPPED',
-                    dest='BlockDeviceMapping', action='append',
-                    type=ec2_block_device_mapping, default=[],
-                    help='''define a block device mapping for the instances, in the
-                    form DEVICE=MAPPED, where "MAPPED" is "none", "ephemeral(0-3)",
-                    or
-                    "[SNAP-ID]:[GiB]:[true|false]:[standard|VOLTYPE[:IOPS]]"'''),
-                Arg('--disable-api-termination', dest='DisableApiTermination',
-                    action='store_true', route_to=None,
-                    help='prevent API users from terminating the instance(s)'),
+                Arg('-b', '--block-device-mapping', dest='BlockDeviceMapping',
+                    action='append', metavar='DEVICE=::(true|false)',
+                    type=_min_ec2_block_device_mapping, default=[],
+                    help='''change whether a volume attached to the instance
+                    will be deleted upon the instance's termination'''),
+                Arg('--disable-api-termination', choices=('true', 'false'),
+                    dest='DisableApiTermination.Value', help='''change whether
+                    or not the instance may be terminated'''),
+                Arg('--ebs-optimized', dest='EbsOptimized',
+                    choices=('true', 'false'), help='''change whether or not
+                    the instance should be optimized for EBS I/O'''),
+                Arg('-g', '--group-id', dest='GroupId', metavar='GROUP',
+                    action='append', default=[], help='''[VPC only] Change the
+                    security group(s) the instance is in'''),
                 Arg('--instance-initiated-shutdown-behavior',
-                    dest='InstanceInitiatedShutdownBehavior',
-                    choices=('stop', 'terminate'),
-                    help=('whether to "stop" (default) or terminate EBS instances '
-                          'when they shut down')),
-                Arg('--ebs-optimized', dest='EbsOptimized', action='store_const',
-                    const='true', help='optimize the new instance(s) for EBS I/O'),
-                Arg('-g', '--group', action='append', default=[], route_to=None,
-                    help='security group(s) in which to launch the instances'),
-                Arg('-t', '--instance-type', metavar='ENTITY', action='append', default=[],
-                    route_to=None, help='''the type of the instance'''),
-                Arg('--kernel', metavar='ENTITY', action='append',
-                    default=[], route_to=None, help='''the ID of the kernel'''),
-                Arg('--ramdisk', metavar='ENTITY', action='append',
-                    default=[], route_to=None, help='''the ID of the ramdisk'''),
-                Arg('-d', '--user-data', metavar='DATA', route_to=None,
-                    help='''user data to make available to instances in this
-                            reservation'''),
-                Arg('--user-data-force', metavar='DATA', route_to=None,
-                    help='''same as -d/--user-data, but without checking if a
-                    file by that name exists first'''),
-                Arg('-f', '--user-data-file', metavar='FILE', route_to=None,
-                    help='''file containing user data to make available to the
-                    instances in this reservation'''))
-    ]
-    # still missing: source-dest-check, sriov
-
-    # noinspection PyExceptionInherit
-    def configure(self):
-        EC2Request.configure(self)
-        if self.args.get('user_data'):
-            if os.path.isfile(self.args['user_data']):
-                raise ArgumentError(
-                    'argument -d/--user-data: to pass the contents of a file '
-                    'as user data, use -f/--user-data-file.  To pass the '
-                    "literal value '{0}' as user data even though it matches "
-                    'the name of a file, use --user-data-force.')
-            else:
-                self.params['UserData'] = base64.b64encode(
-                    self.args['user_data'])
-        elif self.args.get('user_data_force'):
-            self.params['UserData'] = base64.b64encode(
-                self.args['user_data_force'])
-        elif self.args.get('user_data_file'):
-            with open(self.args['user_data_file']) as user_data_file:
-                self.params['UserData'] = base64.b64encode(
-                    user_data_file.read())
-
-    # noinspection PyExceptionInherit
-    def preprocess(self):
-        for group in self.args['group']:
-            if group.startswith('sg-'):
-                self.params.setdefault('SecurityGroupId', [])
-                self.params['SecurityGroupId'].append(group)
-            else:
-                self.params.setdefault('SecurityGroup', [])
-                self.params['SecurityGroup'].append(group)
-        if self.args.get('disable_api_termination'):
-            self.params['DisableApiTermination.Value'].append(self.args.get('disable_api_termination'))
-
-
-    def print_result(self, _):
-        print "yay, it worked!"
+                    dest='InstanceInitiatedShutdownBehavior.Value',
+                    choices=('stop', 'terminate'), help='''whether to stop or
+                    terminate the EBS instance when it shuts down
+                    (instance-store instances are always terminated)'''),
+                Arg('-t', '--instance-type', metavar='INSTANCETYPE',
+                    help="change the instance's type"),
+                Arg('--kernel', dest='Kernel.Value', metavar='IMAGE',
+                    help="change the instance's kernel image"),
+                Arg('--ramdisk', dest='Ramdisk.Value', metavar='IMAGE',
+                    help="change the instance's ramdisk image"),
+                Arg('--source-dest-check', dest='SourceDestCheck.Value',
+                    choices=('true', 'false'), help='''change whether
+                    source/destination address checking is enabled'''),
+                Arg('--sriov', dest='SriovNetSupport.Value', metavar='simple',
+                    choices=('simple',), help='''enable enhanced networking for
+                    the instance and its descendants'''),
+                Arg('--user-data', dest='UserData.Value', metavar='DATA',
+                    help='''change the instance's user data (must be
+                    base64-encoded)'''),
+                Arg('--user-data-file', dest='UserData.Value', metavar='FILE',
+                    type=b64encoded_file_contents, help='''change the
+                    instance's user data to the contents of a file'''))
+            .required()]
