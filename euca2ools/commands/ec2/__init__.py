@@ -255,10 +255,10 @@ class EC2Request(AWSQueryRequest, TabifyingMixin):
             self.__print_import_disk(task['importVolume'])
         if task.get('importInstance'):
             if task['importInstance'].get('instanceId'):
-                task_bits.extend('InstanceID',
-                                 task['importInstance']['instanceId'])
+                task_bits.extend(('InstanceID',
+                                  task['importInstance']['instanceId']))
             print self.tabify(task_bits)
-            for volume in task['importInstance'].get('volumes') or []: 
+            for volume in task['importInstance'].get('volumes') or []:
                 self.__print_import_disk(volume)
 
     def __print_import_disk(self, container):
