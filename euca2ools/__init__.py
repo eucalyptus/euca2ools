@@ -27,7 +27,7 @@ import os.path
 import subprocess
 
 
-__version__ = '3.1.0-pre2'
+__version__ = '3.1.0-pre3'
 
 BUFSIZE = 8192
 

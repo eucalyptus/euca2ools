@@ -37,7 +37,7 @@ from euca2ools import __version__
 
 
 REQUIREMENTS = ['lxml',
-                'requestbuilder>=0.2.0-pre1',
+                'requestbuilder>=0.2.0-pre3',
                 'requests',
                 'six']
 if sys.version_info < (2, 7):
