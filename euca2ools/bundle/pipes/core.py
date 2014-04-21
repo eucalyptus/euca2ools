@@ -55,6 +55,7 @@ def create_bundle_pipeline(infile, outfile, enc_key, enc_iv, tarinfo,
         args=(tar_out_r, digest_out_w, digest_result_w))
     digest_p.start()
     pids.append(digest_p.pid)
+    tar_out_r.close()
     digest_out_w.close()
     digest_result_w.close()
 
