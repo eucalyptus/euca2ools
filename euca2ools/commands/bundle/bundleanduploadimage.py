@@ -158,11 +158,15 @@ class BundleAndUploadImage(S3Request, BundleCreatingMixin,
         deleted_partinfo_mpconn_r.close()
 
         # Now drive the pipeline by uploading parts.
-        self.upload_bundle_parts(
-            bundle_partinfo_mpconn, key_prefix,
-            partinfo_out_mpconn=uploaded_partinfo_mpconn_w,
-            part_write_sem=part_write_sem,
-            show_progress=self.args.get('show_progress'))
+        try:
+            self.upload_bundle_parts(
+                bundle_partinfo_mpconn, key_prefix,
+                partinfo_out_mpconn=uploaded_partinfo_mpconn_w,
+                part_write_sem=part_write_sem,
+                show_progress=self.args.get('show_progress'))
+        finally:
+            # Make sure the writer gets a chance to exit
+            part_write_sem.release()
 
         # All done; now grab info about the bundle we just created
         try:
