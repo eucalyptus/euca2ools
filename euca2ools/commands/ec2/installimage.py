@@ -1,147 +1,99 @@
-#!/usr/bin/env python
+# Copyright 2014 Eucalyptus Systems, Inc.
 #
-# Software License Agreement (BSD License)
+# Redistribution and use of this software in source and binary forms,
+# with or without modification, are permitted provided that the following
+# conditions are met:
 #
-# Copyright (c) 2014, Eucalyptus Systems, Inc.
-# All rights reserved.
+#   Redistributions of source code must retain the above copyright notice,
+#   this list of conditions and the following disclaimer.
 #
-# Redistribution and use of this software in source and binary forms, with or
-# without modification, are permitted provided that the following conditions
-# are met:
+#   Redistributions in binary form must reproduce the above copyright
+#   notice, this list of conditions and the following disclaimer in the
+#   documentation and/or other materials provided with the distribution.
 #
-#   Redistributions of source code must retain the above
-#   copyright notice, this list of conditions and the
-#   following disclaimer.
-#
-#   Redistributions in binary form must reproduce the above
-#   copyright notice, this list of conditions and the
-#   following disclaimer in the documentation and/or other
-#   materials provided with the distribution.
-#
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-# ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
-# LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-# POSSIBILITY OF SUCH DAMAGE.
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+# "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+# A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+# OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+# SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+# LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+# DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+# THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+from __future__ import division
 
 import argparse
-import os
-import subprocess
-import sys
 
-import euca2ools
-(major, minor, patch) = euca2ools.__version__.split('-')[0].split('.')
-if int(major) < 3 or (int(major) >= 3 and int(minor) < 1):
-    print >> sys.stderr, "euca2ools version 3.1.0 or newer required."
-    sys.exit(1)
+from requestbuilder import Arg
+from requestbuilder.auth import QuerySigV2Auth
+from requestbuilder.mixins import FileTransferProgressBarMixin, TabifyingMixin
+from euca2ools.commands.bundle.mixins import BundleCreatingMixin, \
+    BundleUploadingMixin
 
 
-class InstallImage(object):
-    @staticmethod
-    def _get_env():
-        return os.environ.copy()
+from euca2ools.commands.ec2 import EC2
+from euca2ools.commands.ec2.registerimage import RegisterImage
+from euca2ools.commands.s3 import S3Request
+from euca2ools.commands.bundle.bundleanduploadimage import BundleAndUploadImage
 
-    def _check_dependency(self, path):
-        env = self._get_env()
-        cmd = [path]
-        try:
-            with open(os.devnull, 'w') as nullfile:
-                subprocess.call(cmd, env=env, stdout=nullfile, stderr=nullfile)
-        except OSError:
-            print >> sys.stderr, "Error cannot find: " + path
-            sys.exit(1)
 
-    def _check_creds(self):
-        var_list = ["EC2_URL", "S3_URL"]
-        for var in var_list:
-            if not var in self._get_env():
-                print "Error: " + var + " environment variable not set."
-                sys.exit(1)
+class InstallImage(S3Request, BundleCreatingMixin, BundleUploadingMixin,
+                   FileTransferProgressBarMixin, TabifyingMixin):
+    DESCRIPTION = 'Bundle, upload and register an image into the cloud'
+    ARGS = [Arg('-n', '--name', route_to=None, help="Name of registered image",
+                required=True),
+            Arg('-v', '--virtualization-type', route_to=None,
+                help="Virtualziation type of image", default="hvm"),
+            Arg('--description', route_to=None, help="Description of image"),
+            Arg('--max-pending-parts', type=int, default=2,
+                help='''pause the bundling process when more than this number
+                of parts are waiting to be uploaded (default: 2)'''),
+            Arg('--platform', route_to=None, metavar='windows',
+                choices=('windows',),
+                help="[Privileged] the new image's platform (windows)"),
+            Arg('--ec2-url', route_to=None,
+                help="EC2 Endpoint to use for registering image"),
+            Arg('--ec2-auth', route_to=None, help=argparse.SUPPRESS),
+            Arg('--ec2-service', route_to=None, help=argparse.SUPPRESS)]
 
-    def install_image(self, image_file, bucket, name, virtualization_type,
-                      architecture):
-        ### Bundle and upload image
-        self._check_dependency("euca-bundle-and-upload-image")
-        self._check_dependency("euca-register")
-        install_cmd = "euca-bundle-and-upload-image " \
-                      "-b {0} -i {1} -r {2}".format(bucket, image_file,
-                                                    architecture)
-        print "Bundling and uploading image to bucket: " + bucket
-        bundle_output = subprocess.Popen(install_cmd, env=self._get_env(),
-                                         stdout=subprocess.PIPE,
-                                         stderr=subprocess.PIPE,
-                                         shell=True)
-        bundle_output.wait()
-        bundle_stdout = bundle_output.stdout.read()
-        bundle_stderr = bundle_output.stderr.read()
-        if bundle_output.returncode > 0:
-            print "Error: Unable to bundle and upload image.\n" \
-                  + bundle_stdout + bundle_stderr
-            sys.exit(1)
+    def configure(self):
+        S3Request.configure(self)
+        self.configure_bundle_upload_auth()
+        self.configure_bundle_creds()
+        self.configure_bundle_output()
+        self.configure_bundle_properties()
 
-        try:
-            manifest = bundle_stdout.split()[1]
-        except IndexError:
-            print "Error: Unable to retrieve uploaded image manifest."
-            sys.exit(1)
+        if not self.args.get("ec2_service"):
+            self.args["ec2_service"] = EC2.from_other(
+                self.service, url=self.args.get('ec2_url'))
 
-        register_cmd = "euca-register {0} --name {1} " \
-                       "--virtualization-type {2}".format(manifest,
-                                                          name,
-                                                          virtualization_type)
-        print "Registering image manifest: " + manifest
-        register_output = subprocess.Popen(register_cmd, env=self._get_env(),
-                                           stdout=subprocess.PIPE,
-                                           stderr=subprocess.PIPE,
-                                           shell=True)
-        register_output.wait()
-        register_stdout = register_output.stdout.read()
-        register_stderr = register_output.stderr.read()
-        if register_output.returncode > 0:
-            print "Error: Unable to register image.\n" + \
-                  register_stdout + register_stderr
-            sys.exit(1)
-        emi_id = register_stdout.split()[1]
-        print "Registered image: " + emi_id
+        if not self.args.get("ec2_auth"):
+            self.args["ec2_auth"] = QuerySigV2Auth.from_other(self.auth)
 
-    @staticmethod
-    def run():
-        description = '''
-        Image Installation Tool:
+    def main(self):
+        req = BundleAndUploadImage.from_other(
+            self, bucket=self.args["bucket"], image=self.args["image"],
+            arch=self.args["arch"], destination=self.args["destination"],
+            image_type=self.args["image_type"], prefix=self.args["prefix"],
+            image_size=self.args["image_size"],
+            max_pending_parts=self.args["max_pending_parts"],
+            part_size=self.args["part_size"],
+            show_progress=self.args["show_progress"])
+        ## Result of bundle and upload
+        result_bundle = req.main()
+        req = RegisterImage.from_other(
+            self, service=self.args["ec2_service"], Name=self.args["name"],
+            auth=self.args["ec2_auth"], Architecture=self.args["arch"],
+            ImageLocation=result_bundle['manifests'][0]["key"],
+            VirtualizationType=self.args["virtualization_type"],
+            Description=self.args["description"],
+            KernelId=self.args["kernel"], RamdiskId=self.args["ramdisk"],
+            Platform=self.args["platform"])
+        result_register = req.main()
+        return result_register
 
-        This tool provides an easy way to install a Eucalyptus Image.
-        Images can be downloaded from:
-        http://emis.eucalyptus.com/
-        '''
-        parser = argparse.ArgumentParser(formatter_class=
-                                         argparse.RawDescriptionHelpFormatter,
-                                         description=description)
-        parser.add_argument('-v', '--virtualization-type',
-                            metavar='{paravirtual,hvm}',
-                            help='Virtualization type of the image '
-                                 'to be registered. '
-                                 'Possible options are: hvm, paravirtual',
-                            default="hvm")
-        parser.add_argument('-i', '--image', metavar='IMAGE', required=True,
-                            help='Image file to upload, bundle, and register')
-
-        parser.add_argument("-b", "--bucket", metavar='BUCKET', required=True,
-                            help='Bucket to upload image to')
-        parser.add_argument("-n", "--name", metavar='NAME', required=True,
-                            help='Name of image to register')
-        parser.add_argument("-a", "--architecture",
-                            metavar='{i386,x86_64,armhf}', required=True,
-                            help='CPU architecture of the new image')
-
-        args = parser.parse_args()
-        install_tool = InstallImage()
-        install_tool.install_image(args.image, args.bucket,
-                                   args.name, args.virtualization_type,
-                                   args.architecture)
+    def print_result(self, result):
+        print "Registered image: " + result['imageId']
