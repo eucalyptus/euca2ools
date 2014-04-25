@@ -82,10 +82,9 @@ class InstallImage(S3Request, BundleCreatingMixin, BundleUploadingMixin,
             image_size=self.args["image_size"], cert=self.args["cert"],
             privatekey=self.args["privatekey"], ec2cert=self.args["ec2cert"],
             user=self.args["user"], productcodes=self.args["productcodes"],
-            image_size=self.args["image_size"], enc_key=self.args["enc_key"],
-            enc_iv=self.args["enc_iv"], batch=self.args["batch"],
+            enc_iv=self.args["enc_iv"], enc_key=self.args["enc_key"],
             max_pending_parts=self.args["max_pending_parts"],
-            part_size=self.args["part_size"],
+            part_size=self.args["part_size"], batch=self.args["batch"],
             show_progress=self.args["show_progress"])
         ## Result of bundle and upload
         result_bundle = req.main()
