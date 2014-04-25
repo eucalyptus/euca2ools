@@ -94,9 +94,8 @@ class InstallImage(S3Request, BundleCreatingMixin, BundleUploadingMixin,
         req = RegisterImage.from_other(
             self, service=self.args["ec2_service"], Name=self.args["name"],
             auth=self.args["ec2_auth"], Architecture=self.args["arch"],
-            ImageLocation=result_bundle['manifests'][0]["key"],
+            ImageLocation=image_location, Description=self.args["description"],
             VirtualizationType=self.args["virtualization_type"],
-            Description=self.args["description"],
             KernelId=self.args["kernel"], RamdiskId=self.args["ramdisk"],
             Platform=self.args["platform"])
         result_register = req.main()
