@@ -74,6 +74,7 @@ class InstallImage(S3Request, BundleCreatingMixin, BundleUploadingMixin,
             self.args["ec2_auth"] = QuerySigV2Auth.from_other(self.auth)
 
     def main(self):
+        print "Bundling and uploading: " + self.args["image"].name
         req = BundleAndUploadImage.from_other(
             self, bucket=self.args["bucket"], image=self.args["image"],
             arch=self.args["arch"], destination=self.args["destination"],
@@ -84,6 +85,9 @@ class InstallImage(S3Request, BundleCreatingMixin, BundleUploadingMixin,
             show_progress=self.args["show_progress"])
         ## Result of bundle and upload
         result_bundle = req.main()
+        image_location = result_bundle['manifests'][0]["key"]
+
+        print "Registering manifest: " + image_location
         req = RegisterImage.from_other(
             self, service=self.args["ec2_service"], Name=self.args["name"],
             auth=self.args["ec2_auth"], Architecture=self.args["arch"],
