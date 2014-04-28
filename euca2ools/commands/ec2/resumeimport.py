@@ -197,7 +197,7 @@ class ResumeImport(EC2Request, S3AccessMixin, FileTransferProgressBarMixin):
             put_req = PutObject.from_other(
                 self, service=self.args['s3_service'],
                 auth=self.args['s3_auth'], source=source, dest=part_s3path,
-                size=(part.end - part.start),
+                size=(part.end - part.start + 1),
                 show_progress=self.args.get('show_progress', False),
                 progressbar_label=part_pbar_label)
             return put_req.main()
