@@ -1,6 +1,6 @@
 #!/usr/bin/python -tt
 
-import euca2ools.commands.ec2.installimage
+import euca2ools.commands.bundle.installimage
 
 if __name__ == '__main__':
-    euca2ools.commands.ec2.installimage.InstallImage.run()
+    euca2ools.commands.bundle.installimage.InstallImage.run()
