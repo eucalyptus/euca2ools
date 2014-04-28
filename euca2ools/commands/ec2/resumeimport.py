@@ -173,8 +173,8 @@ class ResumeImport(EC2Request, S3AccessMixin, FileTransferProgressBarMixin):
             part = ImportImagePart()
             part.index = index
             part.start = part_start
-            part.end = min(part_start + part_size - 1,
-                           int(vol_container['image']['size']))
+            part.end = min(part_start + part_size,
+                           int(vol_container['image']['size'])) - 1
             part.key = '{0}/{1}.part.{2}'.format(
                 key_prefix, os.path.basename(self.args['source']), index)
             part_path = '/'.join((bucket, part.key))
