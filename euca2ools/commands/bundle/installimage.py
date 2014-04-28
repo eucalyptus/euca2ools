@@ -46,7 +46,7 @@ class InstallImage(S3Request, BundleCreatingMixin, BundleUploadingMixin,
     ARGS = [Arg('-n', '--name', route_to=None, help="Name of registered image",
                 required=True),
             Arg('-v', '--virtualization-type', route_to=None,
-                help="Virtualziation type of image", default="hvm"),
+                help="Virtualziation type of image", required=True),
             Arg('--description', route_to=None, help="Description of image"),
             Arg('--max-pending-parts', type=int, default=2,
                 help='''pause the bundling process when more than this number
