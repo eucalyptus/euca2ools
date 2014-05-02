@@ -3,4 +3,4 @@
 import euca2ools.commands.bundle.bundlevol
 
 if __name__ == '__main__':
-    euca2ools.commands.bundle.bundlevol.BundleVol.run()
+    euca2ools.commands.bundle.bundlevol.BundleVolume.run()
