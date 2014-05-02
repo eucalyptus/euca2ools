@@ -80,10 +80,10 @@ class S3(requestbuilder.service.BaseService):
         key names based on this object's endpoint info as well as all
         S3 endpoints given in the configuration.
         """
-        parsed_url = six.moves.urllib_parse.urlparse(url)
+        parsed_url = six.moves.urllib.parse.urlparse(url)
         if not parsed_url.scheme:
-            parsed_url = six.moves.urllib_parse.urlparse('http://' + url)
-        parsed_own_url = six.moves.urllib_parse.urlparse(self.endpoint)
+            parsed_url = six.moves.urllib.parse.urlparse('http://' + url)
+        parsed_own_url = six.moves.urllib.parse.urlparse(self.endpoint)
         bucket, key = self.__match_path(parsed_url, parsed_own_url)
         if bucket:
             return self.region_name, bucket, key
@@ -91,7 +91,7 @@ class S3(requestbuilder.service.BaseService):
             # Try to look it up in the config
             s3_urls = self.config.get_all_region_options('s3-url')
             for section, conf_url in s3_urls.iteritems():
-                parsed_conf_url = six.moves.urllib_parse.urlparse(conf_url)
+                parsed_conf_url = six.moves.urllib.parse.urlparse(conf_url)
                 bucket, key = self.__match_path(parsed_url, parsed_conf_url)
                 if bucket:
                     region = self.config.get_region_option('name',
@@ -163,7 +163,7 @@ class S3Request(requestbuilder.request.BaseRequest):
                 bucket = '"{0}" '.format(err.elements['Bucket'])
             else:
                 bucket = ''
-            parsed = six.moves.urllib_parse.urlparse(self.service.endpoint)
+            parsed = six.moves.urllib.parse.urlparse(self.service.endpoint)
             msg = ('Bucket {0}is not available from endpoint "{1}".  Ensure '
                    "the object storage service URL matches the bucket's "
                    'location.'.format(bucket, parsed.netloc))

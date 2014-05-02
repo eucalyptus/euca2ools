@@ -1,4 +1,4 @@
-# Copyright 2009-2013 Eucalyptus Systems, Inc.
+# Copyright 2009-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -39,7 +39,7 @@ from euca2ools import __version__
 REQUIREMENTS = ['lxml',
                 'requestbuilder>=0.2.0-pre3',
                 'requests',
-                'six']
+                'six>=1.4']
 if sys.version_info < (2, 7):
     REQUIREMENTS.append('argparse')
 

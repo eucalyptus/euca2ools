@@ -2,4 +2,4 @@ argparse
 lxml
 requestbuilder>=0.2.0-pre3
 requests
-six
+six>=1.4
