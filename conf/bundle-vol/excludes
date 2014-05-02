@@ -1,0 +1,22 @@
+# This file is passed to rsync's --exclude-from option.
+- *~
+- *.nfs*
+- *.pem
+- *.priv
+- *.sw
+- *.swo
+- *.swp
+- *.gpg
+- *.jks
+- *id_dsa*
+- *id_rsa*
+- .bash_history
+- .gnupg/**
+- .ssh/authorized_keys
+- .zsh_history
+- /dev/**
+- /etc/udev/rules.d/*-persistent-net.rules
+- /media/**
+- /mnt/**
+- /proc/**
+- /sys/**
