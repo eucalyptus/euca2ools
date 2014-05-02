@@ -38,6 +38,6 @@ class DescribeTags(EC2Request):
 
     def print_result(self, result):
         for tag in result.get('tagSet', []):
-            print self.tabify(['TAG', tag.get('resourceId'),
-                               tag.get('resourceType'), tag.get('key'),
+            print self.tabify(['TAG', tag.get('resourceType'),
+                               tag.get('resourceId'), tag.get('key'),
                                tag.get('value')])
