@@ -23,13 +23,20 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools import __version__
 import glob
 import os.path
 import platform
+import sys
+
 import requestbuilder
 import requests
-import sys
+
+from euca2ools import __version__
+
+
+DATADIR = '/usr/share/euca2ools'
+SYSCONFDIR = '/etc/euca2ools'
+USERCONFDIR = '~/.euca'
 
 
 class Euca2ools(object):
@@ -37,9 +44,9 @@ class Euca2ools(object):
     A class with attributes and methods that define the entire euca2ools suite
     """
 
-    CONFIG_PATHS = ('/etc/euca2ools/euca2ools.ini',
-                    '/etc/euca2ools/conf.d/*.ini',
-                    '~/.euca/*.ini')
+    CONFIG_PATHS = (os.path.join(SYSCONFDIR, 'euca2ools.ini'),
+                    os.path.join(SYSCONFDIR, 'conf.d', '*.ini'),
+                    os.path.join(USERCONFDIR, '*.ini'))
 
     def __init__(self):
         self.__user_agent = None

@@ -10,7 +10,7 @@ Requirements
 ------------
 
 Euca2ools currently work with python versions 2.6 and 2.7.  Work is
-ongoing to port the suite to version 3.3.
+ongoing to port the suite to version 3.
 
 You must also have the following python libraries installed.  All of
 them are available on PyPi:
@@ -20,17 +20,28 @@ them are available on PyPi:
  - setuptools (https://pypi.python.org/pypi/setuptools)
  - six (http://pythonhosted.org/six/)
 
-The bundle-related tools require several other executables as well:
+euca-get-password requires an openssl executable.
+
+All bundle commands require several executables as well:
+ - gzip or pigz
+ - openssl
+
+The euca-bundle-vol command only works on Linux.  It requires the
+utilities for creating and managing the filesystem to be bundled
+(e.g. mkfs and tune2fs) as well as these additional executables:
  - blkid
  - dd
  - gzip or pigz
+ - kpartx
+ - losetup
  - mkfs
  - mount
  - openssl
+ - parted
+ - rsync
+ - sgdisk
  - sync
  - umount
-
-Finally, euca-get-password requires openssl.
 
 For specific package names for these dependencies, check the
 distribution-specific sections below.
@@ -40,8 +51,8 @@ Installation
 
 To install from a source tarball:
 
-    $ tar xzf euca2ools-3.0.0.tar.gz
-    $ cd euca2ools-3.0.0
+    $ tar xzf euca2ools-3.1.0.tar.gz
+    $ cd euca2ools-3.1.0
     $ python setup.py install
 
 To install directly from git:
@@ -50,14 +61,14 @@ To install directly from git:
     $ cd euca2ools
     $ python setup.py install
 
-The euca2ools suite also ships with a default configuration file and
-certificates that you may find useful.  To use them we recommend
-copying them onto your system like so:
+The euca2ools suite also ships with configuration files and certificates
+that you may find useful.  To use them we recommend copying them onto
+your system like so:
 
-    # mkdir /etc/euca2ools
-    # cp conf/euca2ools.ini /etc/euca2ools/euca2ools.ini
-    # mkdir /usr/share/euca2ools
-    # cp -R certs /usr/share/euca2ools/certs
+    # mkdir -p /etc/euca2ools
+    # cp -R conf/* /etc/euca2ools
+    # mkdir -p /usr/share/euca2ools/certs
+    # cp -R certs/* /usr/share/euca2ools/certs
 
 For distribution-specific instructions, check the distribution-specific
 sections below.
@@ -83,4 +94,37 @@ Dependency packages:
  - python-support
 
 python-requestbuilder is not available in Ubuntu 12.04, and must be built
-from source or backported from Ubuntu 14.04.
+from source or backported from a later version.
+
+
+Notes for Distributors
+======================
+
+euca-bundle-vol
+---------------
+
+By default, euca-bundle-vol excludes temporary system files (e.g. /dev
+and *.nfs*), files with potentially sensitive data (e.g. *.gpg),
+and files with persistent data that should not appear in bundles
+(e.g. udev's *-persistent-net.rules).  Since these locations may vary
+by operating system, as a distributor you may wish to edit this list by
+patching conf/bundle-vol/excludes.  Not including this file at all will
+result in no files being excluded by default.  That may not be what your
+users expect.
+
+The --generate-fstab option generates a new fstab file based on a
+template, which may need to vary, depending on one's choice of cloud or
+operating system.  This template appears in conf/bundle-vol/fstab.
+
+On non-Linux platforms we recommend removing euca-bundle-vol altogether.
+
+Paths
+-----
+
+The paths euca2ools search by default are as follows:
+ - systemwide configuration:  /etc/euca2ools
+ - user configuration:  ~/.euca
+ - other data:  /usr/share/euca2ools
+
+To change these locations, patch euca2ools/commands/__init__.py and
+whatever stock configuration files you include.

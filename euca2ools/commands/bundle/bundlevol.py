@@ -40,15 +40,15 @@ from requestbuilder.mixins import FileTransferProgressBarMixin
 import requests
 
 import euca2ools
-from euca2ools.commands import Euca2ools
+from euca2ools.commands import Euca2ools, SYSCONFDIR
 from euca2ools.commands.argtypes import (delimited_list, filesize,
                                          manifest_block_device_mappings)
 from euca2ools.commands.bundle.bundleimage import BundleImage
 
 
 ALLOWED_FILESYSTEM_TYPES = ['btrfs', 'ext2', 'ext3', 'ext4', 'jfs', 'xfs']
-DEFAULT_EXCLUDES_FILE = '/etc/euca2ools/bundle-vol/excludes'
-FSTAB_TEMPLATE_FILE = '/etc/euca2ools/bundle-vol/fstab'
+EXCLUDES_FILE = os.path.join(SYSCONFDIR, 'bundle-vol', 'excludes')
+FSTAB_TEMPLATE_FILE = os.path.join(SYSCONFDIR, 'bundle-vol', 'fstab')
 
 
 ## TODO:  rename this module to bundlevolume.py
@@ -389,12 +389,8 @@ class BundleVolume(BaseCommand, FileTransferProgressBarMixin):
                                    fstype, device, mountpoint)
                     args.extend(['--exclude', os.path.join(mountpoint, '**')])
         # Add pre-defined exclusions
-        ## TODO:  stuff that file in setup.py
-        ## TODO:  decide whether that envvar is the right place for user conf
-        excludes_filename = os.getenv('EUCA_BUNDLE_VOL_EXCLUDES_FILE',
-                                      DEFAULT_EXCLUDES_FILE)
-        if not self.args.get('no_filter') and os.path.isfile(excludes_filename):
-            self.log.debug('adding path exclusions from %s', excludes_filename)
+        if not self.args.get('no_filter') and os.path.isfile(EXCLUDES_FILE):
+            self.log.debug('adding path exclusions from %s', EXCLUDES_FILE)
             args.extend(['--exclude-from', excludes_filename])
         return args
 
