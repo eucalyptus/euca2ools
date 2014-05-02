@@ -44,7 +44,7 @@ class CreateStack(CloudFormationRequest):
             Arg('-d', '--disable-rollback', dest='DisableRollback',
                 action='store_true', help='disable rollback on failure'),
             Arg('-n', '--notification-arns', dest='NotificationARNs',
-                metavar='ARN[,...]', type=delimited_list, action='append',
+                metavar='ARN[,...]', type=delimited_list(','), action='append',
                 help='''SNS ARNs to publish stack actions to'''),
             Arg('-p', '--parameter', dest='Parameters.member',
                 metavar='KEY=VALUE', type=parameter_def, action='append',
