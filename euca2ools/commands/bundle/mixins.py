@@ -46,6 +46,9 @@ from euca2ools.commands.s3.putobject import PutObject
 from euca2ools.exceptions import AWSError
 
 
+EC2_BUNDLE_SIZE_LIMIT = 10 * 2 ** 30  # 10 GiB
+
+
 class BundleCreatingMixin(object):
     ARGS = [Arg('-i', '--image', metavar='FILE', required=True,
                 help='file containing the image to bundle (required)'),
@@ -207,6 +210,10 @@ class BundleCreatingMixin(object):
             if not self.args.get('image_size'):
                 raise ArgumentError('argument --image-size is required when '
                                     'bundling a file object')
+        if self.args['image_size'] > EC2_BUNDLE_SIZE_LIMIT:
+            self.log.warn(
+                'image is incompatible with EC2 due to its size (%i > %i)',
+                self.args['image_size'], EC2_BUNDLE_SIZE_LIMIT)
 
     def configure_bundle_properties(self):
         if self.args.get('kernel') == 'true':

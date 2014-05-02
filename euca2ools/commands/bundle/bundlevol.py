@@ -46,7 +46,6 @@ from euca2ools.commands.argtypes import (delimited_list, filesize,
 from euca2ools.commands.bundle.bundleimage import BundleImage
 
 
-##IMAGE_MAX_SIZE_IN_MB = Bundle.EC2_IMAGE_SIZE_LIMIT / 1024 // 1024  ## TODO
 ALLOWED_FILESYSTEM_TYPES = ['btrfs', 'ext2', 'ext3', 'ext4', 'jfs', 'xfs']
 DEFAULT_EXCLUDES_FILE = '/etc/euca2ools/bundle-vol/excludes'
 FSTAB_TEMPLATE_FILE = '/etc/euca2ools/bundle-vol/fstab'
