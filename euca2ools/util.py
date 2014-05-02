@@ -60,14 +60,6 @@ def mkdtemp_for_large_files(suffix='', prefix='tmp', dir=None):
 # pylint: enable=W0622
 
 
-def sanitize_path(path):
-    """Make a fully expanded and absolute path for us to work with.
-    Returns a santized path string.
-    :param path: The path string to sanitize.
-    """
-    return os.path.abspath(os.path.expandvars(os.path.expanduser(path)))
-
-
 def prompt_for_password():
     pass1 = getpass.getpass(prompt='New password: ')
     pass2 = getpass.getpass(prompt='Retype new password: ')
