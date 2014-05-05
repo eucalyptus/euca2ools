@@ -42,13 +42,19 @@ class IAM(requestbuilder.service.BaseService):
     DESCRIPTION = 'Identity and access management service'
     API_VERSION = '2010-05-08'
     REGION_ENVVAR = 'AWS_DEFAULT_REGION'
-    URL_ENVVAR = 'EUARE_URL'
+    URL_ENVVAR = 'AWS_IAM_URL'
 
     ARGS = [Arg('-U', '--url', metavar='URL',
                 help='identity service endpoint URL')]
 
     def configure(self):
         substitute_euca_region(self)
+        if os.getenv('EUARE_URL') and not os.getenv(self.URL_ENVVAR):
+            msg = ('EUARE_URL environment variable is deprecated; use {0} '
+                   'instead').format(self.URL_ENVVAR)
+            self.log.warn(msg)
+            print >> sys.stderr, msg
+            os.environ[self.URL_ENVVAR] = os.getenv('EUARE_URL')
         requestbuilder.service.BaseService.configure(self)
 
     def handle_http_error(self, response):
