@@ -60,4 +60,5 @@ class S3AccessMixin(object):
                 self.args['s3_auth'] = S3Request.AUTH_CLASS.from_other(
                     self.auth)
         if not self.args.get('s3_service'):
-            self.args['s3_service'] = S3.from_other(self.service)
+            self.args['s3_service'] = S3.from_other(
+                self.service, url=self.args.get('s3_url'))
