@@ -26,9 +26,11 @@
 import argparse
 
 from requestbuilder import Arg
-from requestbuilder.exceptions import ArgumentError
+from requestbuilder.exceptions import ArgumentError, ServerError
 
 from euca2ools.commands.s3 import S3, S3Request
+from euca2ools.commands.s3.checkbucket import CheckBucket
+from euca2ools.commands.s3.createbucket import CreateBucket
 
 
 class S3AccessMixin(object):
@@ -62,3 +64,19 @@ class S3AccessMixin(object):
         if not self.args.get('s3_service'):
             self.args['s3_service'] = S3.from_other(
                 self.service, url=self.args.get('s3_url'))
+
+    def ensure_bucket_exists(self, bucket):
+        try:
+            # Ensure the bucket exists
+            req = CheckBucket.from_other(self, service=self.args['s3_service'],
+                                         auth=self.args['s3_auth'],
+                                         bucket=bucket)
+            req.main()
+        except ServerError as err:
+            if err.status_code == 404:
+                # No such bucket
+                self.log.info("creating bucket: '%s'", bucket)
+                req = CreateBucket.from_other(req, bucket=bucket)
+                req.main()
+            else:
+                raise

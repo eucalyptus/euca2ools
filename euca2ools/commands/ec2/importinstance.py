@@ -153,6 +153,8 @@ class ImportInstance(EC2Request, S3AccessMixin, FileTransferProgressBarMixin):
         if self.args.get('dry_run'):
             return
 
+        self.ensure_bucket_exists(self.args['bucket'])
+
         if not self.args.get('DiskImage.1.Image.ImportManifestUrl'):
             manifest_key = '{0}/{1}.manifest.xml'.format(uuid.uuid4(),
                                                          self.args['source'])
