@@ -128,11 +128,11 @@ class DescribeImages(EC2Request):
             self.print_image(image)
 
     def print_image(self, image):
-        if image.get('name'):
-            imagename = '/'.join((image.get('imageOwnerId', ''),
-                                  image['name']))
-        else:
+        if image.get('rootDeviceType') == 'instance-store':
             imagename = image.get('imageLocation')
+        else:
+            imagename = '/'.join((image.get('imageOwnerId', ''),
+                                  image.get('name')))
 
         print self.tabify((
             'IMAGE', image.get('imageId'), imagename,
