@@ -263,8 +263,8 @@ class EC2Request(AWSQueryRequest, TabifyingMixin):
 
     def __print_import_disk(self, container):
         disk_bits = ['DISKIMAGE']
-        image = container['image'] or {}
-        volume = container['volume'] or {}
+        image = container.get('image') or {}
+        volume = container.get('volume') or {}
         if image.get('format'):
             disk_bits.extend(('DiskImageFormat', image['format']))
         if image.get('size'):

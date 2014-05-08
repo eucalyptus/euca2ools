@@ -121,6 +121,7 @@ class ImportInstance(EC2Request, S3AccessMixin, FileTransferProgressBarMixin):
             # This is not yet implemented
             Arg('--dont-verify-format', action='store_true', route_to=None,
                 help=argparse.SUPPRESS)]
+    LIST_TAGS = ['volumes']
 
     def configure(self):
         EC2Request.configure(self)
