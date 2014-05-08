@@ -23,11 +23,12 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from requestbuilder import Arg
+from requestbuilder import Arg, MutuallyExclusiveArgList
 
 from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT
 from euca2ools.commands.iam.addroletoinstanceprofile import \
     AddRoleToInstanceProfile
+from euca2ools.commands.iam.createrole import CreateRole
 
 
 class CreateInstanceProfile(IAMRequest):
@@ -37,19 +38,33 @@ class CreateInstanceProfile(IAMRequest):
                 help='name of the new instance profile (required)'),
             Arg('-p', '--path', dest='Path',
                 help='path for the new instance profile (default: "/")'),
-            Arg('-r', '--add-role', dest='role', route_to=None,
-                help='also add a role to the new instance profile'),
+            MutuallyExclusiveArgList(
+                Arg('-r', '--add-role', dest='role', route_to=None,
+                    help='also add a role to the new instance profile'),
+                Arg('--create-role', dest='create_role', route_to=None,
+                    action='store_true', help='''also create a role with the
+                    same name and path and add it to the instance profile''')),
             Arg('-v', '--verbose', action='store_true', route_to=None,
                 help="print the new instance profile's ARN and GUID"),
             AS_ACCOUNT]
 
     def postprocess(self, _):
-        if self.args.get('role'):
+        role_name = None
+        if self.args.get('create_role'):
+            role_name = self.args['InstanceProfileName']
+            req = CreateRole.from_other(
+                self, RoleName=role_name, Path=self.args.get('path'),
+                service_='ec2.amazonaws.com',
+                DelegateAccount=self.args.get('DelegateAccount'))
+            req.main()
+        elif self.args.get('role'):
+            role_name = self.args['role']
+
+        if role_name:
             self.log.info('adding role %s to instance profile %s',
                           self.args['role'], self.args['InstanceProfileName'])
-            req = AddRoleToInstanceProfile(
-                config=self.config, service=self.service,
-                RoleName=self.args['role'],
+            req = AddRoleToInstanceProfile.from_other(
+                self, RoleName=role_name,
                 InstanceProfileName=self.args['InstanceProfileName'],
                 DelegateAccount=self.args.get('DelegateAccount'))
             req.main()

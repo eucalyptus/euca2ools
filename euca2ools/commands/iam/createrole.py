@@ -42,7 +42,7 @@ class CreateRole(IAMRequest):
                 Arg('-f', dest='AssumeRolePolicyDocument', metavar='FILE',
                     type=file_contents,
                     help='file containing the policy for the new role'),
-                Arg('-s', '--service', route_to=None, help='''service to allow
+                Arg('-s', '--service_', route_to=None, help='''service to allow
                     access to the role (e.g. ec2.amazonaws.com)'''))
             .required(),
             Arg('-v', '--verbose', action='store_true', route_to=None,
@@ -50,9 +50,9 @@ class CreateRole(IAMRequest):
             AS_ACCOUNT]
 
     def preprocess(self):
-        if self.args.get('service'):
+        if self.args.get('service_'):
             statement = {'Effect': 'Allow',
-                         'Principal': {'Service': [self.args['service']]},
+                         'Principal': {'Service': [self.args['service_']]},
                          'Action': ['sts:AssumeRole']}
             policy = {'Version': '2008-10-17',
                       'Statement': [statement]}
