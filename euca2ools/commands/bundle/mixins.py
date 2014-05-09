@@ -188,7 +188,7 @@ class BundleCreatingMixin(object):
             raise ArgumentError("argument -d/--destination: '{0}' is not a "
                                 "directory".format(self.args['destination']))
         if self.args['image'] == '-':
-            self.args['image'] = sys.stdin
+            self.args['image'] = os.fdopen(os.dup(sys.stdin.fileno()))
             if not self.args.get('prefix'):
                 raise ArgumentError(
                     'argument --prefix is required when bundling stdin')
