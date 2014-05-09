@@ -30,32 +30,33 @@ import argparse
 from requestbuilder import Arg
 from requestbuilder.auth import QuerySigV2Auth
 from requestbuilder.mixins import FileTransferProgressBarMixin, TabifyingMixin
-from euca2ools.commands.bundle.mixins import BundleCreatingMixin, \
-    BundleUploadingMixin
-
 
 from euca2ools.commands.ec2 import EC2
 from euca2ools.commands.ec2.registerimage import RegisterImage
 from euca2ools.commands.s3 import S3Request
 from euca2ools.commands.bundle.bundleanduploadimage import BundleAndUploadImage
+from euca2ools.commands.bundle.mixins import BundleCreatingMixin, \
+    BundleUploadingMixin
 
 
 class InstallImage(S3Request, BundleCreatingMixin, BundleUploadingMixin,
                    FileTransferProgressBarMixin, TabifyingMixin):
     DESCRIPTION = 'Bundle, upload and register an image into the cloud'
-    ARGS = [Arg('-n', '--name', route_to=None, help="Name of registered image",
-                required=True),
-            Arg('-v', '--virtualization-type', route_to=None,
-                help="Virtualziation type of image", required=True),
-            Arg('--description', route_to=None, help="Description of image"),
+    ARGS = [Arg('-n', '--name', route_to=None, required=True,
+                help='name of the new image (required)'),
+            Arg('--description', route_to=None,
+                help='description of the new image'),
             Arg('--max-pending-parts', type=int, default=2,
                 help='''pause the bundling process when more than this number
                 of parts are waiting to be uploaded (default: 2)'''),
+            Arg('--virtualization-type', dest='VirtualizationType',
+                choices=('paravirtual', 'hvm'),
+                help='[Privileged] virtualization type for the new image'),
             Arg('--platform', route_to=None, metavar='windows',
                 choices=('windows',),
                 help="[Privileged] the new image's platform (windows)"),
             Arg('--ec2-url', route_to=None,
-                help="EC2 Endpoint to use for registering image"),
+                help='compute service endpoint URL'),
             Arg('--ec2-auth', route_to=None, help=argparse.SUPPRESS),
             Arg('--ec2-service', route_to=None, help=argparse.SUPPRESS)]
 
@@ -74,31 +75,33 @@ class InstallImage(S3Request, BundleCreatingMixin, BundleUploadingMixin,
             self.args["ec2_auth"] = QuerySigV2Auth.from_other(self.auth)
 
     def main(self):
-        print "Bundling and uploading: " + self.args["image"].name
         req = BundleAndUploadImage.from_other(
-            self, bucket=self.args["bucket"], image=self.args["image"],
-            arch=self.args["arch"], destination=self.args["destination"],
-            image_type=self.args["image_type"], prefix=self.args["prefix"],
-            image_size=self.args["image_size"], cert=self.args["cert"],
-            privatekey=self.args["privatekey"], ec2cert=self.args["ec2cert"],
-            user=self.args["user"], productcodes=self.args["productcodes"],
-            enc_iv=self.args["enc_iv"], enc_key=self.args["enc_key"],
-            max_pending_parts=self.args["max_pending_parts"],
-            part_size=self.args["part_size"], batch=self.args["batch"],
-            show_progress=self.args["show_progress"])
+            self, image=self.args["image"], arch=self.args["arch"],
+            bucket=self.args["bucket"], prefix=self.args.get("prefix"),
+            destination=self.args.get("destination"),
+            image_type=self.args.get("image_type"),
+            image_size=self.args.get("image_size"), cert=self.args.get("cert"),
+            privatekey=self.args.get("privatekey"),
+            ec2cert=self.args.get("ec2cert"), user=self.args.get("user"),
+            productcodes=self.args.get("productcodes"),
+            enc_iv=self.args.get("enc_iv"), enc_key=self.args.get("enc_key"),
+            max_pending_parts=self.args.get("max_pending_parts"),
+            part_size=self.args.get("part_size"), batch=self.args.get("batch"),
+            show_progress=self.args.get("show_progress"))
         result_bundle = req.main()
         image_location = result_bundle['manifests'][0]["key"]
 
-        print "Registering manifest: " + image_location
         req = RegisterImage.from_other(
-            self, service=self.args["ec2_service"], Name=self.args["name"],
-            auth=self.args["ec2_auth"], Architecture=self.args["arch"],
-            ImageLocation=image_location, Description=self.args["description"],
-            VirtualizationType=self.args["virtualization_type"],
-            KernelId=self.args["kernel"], RamdiskId=self.args["ramdisk"],
-            Platform=self.args["platform"])
+            self, service=self.args["ec2_service"], auth=self.args["ec2_auth"],
+            Name=self.args["name"], Architecture=self.args["arch"],
+            ImageLocation=image_location,
+            Description=self.args.get("description"),
+            VirtualizationType=self.args.get("virtualization_type"),
+            KernelId=self.args.get("kernel"),
+            RamdiskId=self.args.get("ramdisk"),
+            Platform=self.args.get("platform"))
         result_register = req.main()
         return result_register
 
     def print_result(self, result):
-        print "Registered image: " + result['imageId']
+        print self.tabify(('IMAGE', result.get('imageId')))
