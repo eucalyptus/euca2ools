@@ -1,4 +1,4 @@
-# Copyright 2009-2013 Eucalyptus Systems, Inc.
+# Copyright 2013-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -23,18 +23,19 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.ec2 import EC2Request
 from requestbuilder import Arg
+
+from euca2ools.commands.ec2 import EC2Request
 
 
 class CreateVpc(EC2Request):
-    DESCRIPTION = 'Create VPC with a CIDR block'
+    DESCRIPTION = 'Create a new VPC'
     ARGS = [Arg('CidrBlock', metavar='CIDR',
-                help='cidr block for VPC (required)')]
+                help='Address CIDR block for the new VPC (required)'),
+            Arg('--tenancy', dest='instanceTenancy',
+                choices=('default', 'dedicated'),
+                help='the type of instance tenancy to use')]
 
     def print_result(self, result):
-        print self.tabify(('VPCID', result['vpc']['vpcId'],
-                          result['vpc']['state'], 
-                          result['vpc']['cidrBlock'],
-                          result['vpc']['dhcpOptionsId'],
-                          result['vpc']['instanceTenancy']))
+        vpc = result.get('vpc') or {}
+        self.print_vpc(result.get('vpc') or {})
