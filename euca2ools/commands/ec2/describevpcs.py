@@ -1,4 +1,4 @@
-# Copyright 2009-2013 Eucalyptus Systems, Inc.
+# Copyright 2013-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -23,45 +23,26 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.ec2 import EC2Request
 from requestbuilder import Arg, Filter, GenericTagFilter
-from requestbuilder.exceptions import ArgumentError
+
+from euca2ools.commands.ec2 import EC2Request
 
 
 class DescribeVpcs(EC2Request):
-    DESCRIPTION = 'Show information about vpcs'
+    DESCRIPTION = 'Show information about VPCs'
     ARGS = [Arg('VpcId', metavar='VPC', nargs='*',
-                help='limit results to specific vpcs'),
-            Arg('-a', '--all', action='store_true', route_to=None,
-                help='describe all vpcs')]
-    FILTERS = [Filter('cidr', 
-                      help='cidr block'),
-               Filter('state', choices=('pending', 'available'),
-                      help='state of the vpc'),
-               Filter('dhcp-options-id', 
-                      help='dhcp options id')]
-    LIST_TAGS = ['vpcSet']
-
-    def configure(self):
-        EC2Request.configure(self)
-        if self.args.get('all', False):
-            if self.args.get('VpcId'):
-                raise ArgumentError('argument -a/--all: not allowed with '
-                                    'a list of vpcs')
+                help='limit results to specific VPCs')]
+    FILTERS = [Filter('cidr', help="the VPC's CIDR address block"),
+               Filter('dhcp-options-id', help='ID of the set of DHCP options'),
+               Filter('isDefault', help='whether the VPC is a default VPC'),
+               Filter('state'),
+               Filter('tag-key', help='key of a tag assigned to the VPC'),
+               Filter('tag-value', help='value of a tag assigned to the VPC'),
+               GenericTagFilter('tag:KEY',
+                                help='specific tag key/value combination'),
+               Filter('vpc-id', help="the VPC's ID")]
+    LIST_TAGS = ['tagSet', 'vpcSet']
 
     def print_result(self, result):
-        vpcs = {}
-        for vpc in result.get('vpcSet', []):
-            vpcs.setdefault(vpc['vpcId'], vpc)
-
-        for vpc_id, vpc in sorted(vpcs.iteritems()):
-            self.print_vpcs(vpc)
-
-    def print_vpcs(self, vpc):
-        print self.tabify((
-            'VPC', vpc.get('vpcId'),
-            vpc.get('state'),
-            vpc.get('cidrBlock'),
-            vpc.get('dhcpOptionsId'),
-            vpc.get('instanceTenancy'),
-            vpc.get('isDefault')))
+        for vpc in result.get('vpcSet') or []:
+            self.print_vpc(vpc)

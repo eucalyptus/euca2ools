@@ -162,6 +162,13 @@ class EC2Request(AWSQueryRequest, TabifyingMixin):
                                ebs.get('deleteOnTermination'),
                                ebs.get('volumeType'), ebs.get('iops')))
 
+    def print_vpc(self, vpc):
+        print self.tabify(('VPC', vpc.get('vpcId'), vpc.get('state'),
+                           vpc.get('cidrBlock'), vpc.get('dhcpOptionsId'),
+                           vpc.get('instanceTenancy')))
+        for tag in vpc.get('tagSet', []):
+            self.print_resource_tag(tag, vpc.get('vpcId'))
+
     def print_interface(self, nic):
         nic_info = [nic.get(attr) for attr in (
             'networkInterfaceId', 'subnetId', 'vpcId', 'ownerId', 'status',
