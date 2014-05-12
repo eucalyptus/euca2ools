@@ -49,7 +49,7 @@ class InstallImage(S3Request, BundleCreatingMixin, BundleUploadingMixin,
             Arg('--max-pending-parts', type=int, default=2,
                 help='''pause the bundling process when more than this number
                 of parts are waiting to be uploaded (default: 2)'''),
-            Arg('--virtualization-type', dest='VirtualizationType',
+            Arg('--virtualization-type', route_to=None,
                 choices=('paravirtual', 'hvm'),
                 help='[Privileged] virtualization type for the new image'),
             Arg('--platform', route_to=None, metavar='windows',
