@@ -1,4 +1,4 @@
-# Copyright 2009-2013 Eucalyptus Systems, Inc.
+# Copyright 2013-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -23,21 +23,21 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.ec2 import EC2Request
 from requestbuilder import Arg
+
+from euca2ools.commands.ec2 import EC2Request
 
 
 class CreateSubnet(EC2Request):
-    DESCRIPTION = 'Create subnet in a VPC with a CIDR block'
+    DESCRIPTION = 'Create a new VPC subnet'
     ARGS = [Arg('-c', '--vpc', dest='VpcId', required=True,
-                help='vpc id to create subnet'),
-            Arg('-i', '--cidr', dest='CidrBlock', required=True,
-                help='cidr block for the subnet')]
+                help='ID of the VPC to create the new subnet in (required)'),
+            Arg('-i', '--cidr', dest='CidrBlock', metavar='CIDR',
+                required=True,
+                help='CIDR address block for the new subnet (required)'),
+            Arg('-z', '--availability-zone', dest='AvailabilityZone',
+                help='availability zone in which to create the new subnet')]
+    LIST_TAGS = ['tagSet']
 
     def print_result(self, result):
-        print self.tabify(('SUBNET',
-                          result['subnet']['subnetId'],
-                          result['subnet']['state'],
-                          result['subnet']['vpcId'],
-                          result['subnet']['availableIpAddressCount'],
-                          result['subnet']['availabilityZone']))
+        self.print_subnet(result.get('subnet') or {})

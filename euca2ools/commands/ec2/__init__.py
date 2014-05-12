@@ -166,8 +166,16 @@ class EC2Request(AWSQueryRequest, TabifyingMixin):
         print self.tabify(('VPC', vpc.get('vpcId'), vpc.get('state'),
                            vpc.get('cidrBlock'), vpc.get('dhcpOptionsId'),
                            vpc.get('instanceTenancy')))
-        for tag in vpc.get('tagSet', []):
+        for tag in vpc.get('tagSet') or []:
             self.print_resource_tag(tag, vpc.get('vpcId'))
+
+    def print_subnet(self, subnet):
+        print self.tabify(('SUBNET', subnet.get('subnetId'),
+                           subnet.get('state'), subnet.get('vpcId'),
+                           subnet.get('availableIpAddressCount'),
+                           subnet.get('availabilityZone')))
+        for tag in subnet.get('tagSet') or []:
+            self.print_resource_tag(tag, subnet.get('subnetId'))
 
     def print_interface(self, nic):
         nic_info = [nic.get(attr) for attr in (

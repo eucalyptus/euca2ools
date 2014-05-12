@@ -35,6 +35,7 @@ class CreateVpc(EC2Request):
             Arg('--tenancy', dest='instanceTenancy',
                 choices=('default', 'dedicated'),
                 help='the type of instance tenancy to use')]
+    LIST_TAGS = ['tagSet']
 
     def print_result(self, result):
         vpc = result.get('vpc') or {}
