@@ -1,4 +1,4 @@
-# Copyright 2009-2013 Eucalyptus Systems, Inc.
+# Copyright 2013-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -23,31 +23,16 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.ec2 import EC2Request
 from requestbuilder import Arg
+
+from euca2ools.commands.ec2 import EC2Request
 
 
 class CreateNetworkAcl(EC2Request):
-    DESCRIPTION = 'Create ACL for VPC'
-    ARGS = [Arg('VpcId', metavar='VPC',
-                help='vpc id to create acl (required)')]
-    LIST_TAGS = ['entrySet']
+    DESCRIPTION = 'Create a new VPC network ACL'
+    ARGS = [Arg('VpcId', metavar='VPC', help='''ID of the VPC in which
+                to create the new network ACL (required)''')]
+    LIST_TAGS = ['associationSet', 'entrySet', 'tagSet']
 
     def print_result(self, result):
-        acl = result.get('networkAcl')
-        print self.tabify((
-            'NETWORKACL', acl.get('networkAclId'),
-            acl.get('vpcId')))
-
-        for entry in acl.get('entrySet', []):
-            self.print_entry(entry, acl.get('networkAclId'))
-
-    def print_entry(self, entry, acl_id):
-        print self.tabify((
-            'ENTRY',
-            entry.get('egress'),
-            entry.get('ruleNumber'),
-            entry.get('ruleAction'),
-            entry.get('cidrBlock'),
-            entry.get('protocol'),
-            entry.get('portRange')))
+        self.print_network_acl(result.get('networkAcl') or {})

@@ -179,6 +179,32 @@ class EC2Request(AWSQueryRequest, TabifyingMixin):
         for tag in subnet.get('tagSet') or []:
             self.print_resource_tag(tag, subnet.get('subnetId'))
 
+    def print_network_acl(self, acl):
+        if acl.get('default').lower() == 'true':
+            default = 'default'
+        else:
+            default = ''
+        print self.tabify(('NETWORKACL', acl.get('networkAclId'),
+                           acl.get('vpcId'), default))
+        for entry in acl.get('entrySet') or []:
+            if entry.get('egress').lower() == 'true':
+                direction = 'egress'
+            else:
+                direction = 'ingress'
+            if entry.get('protocol') == '-1':
+                protocol = 'all'
+            else:
+                protocol = entry.get('protocol')
+            print self.tabify(('ENTRY', direction, entry.get('ruleNumber'),
+                               entry.get('ruleAction'), entry.get('cidrBlock'),
+                               protocol))
+        for assoc in acl.get('associationSet') or []:
+            print self.tabify(('ASSOCIATION',
+                               assoc.get('networkAclAssociationId'),
+                               assoc.get('subnetId')))
+        for tag in acl.get('tagSet') or []:
+            self.print_resource_tag(tag, acl.get('networkAclId'))
+
     def print_interface(self, nic):
         nic_info = [nic.get(attr) for attr in (
             'networkInterfaceId', 'subnetId', 'vpcId', 'ownerId', 'status',

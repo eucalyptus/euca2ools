@@ -1,4 +1,4 @@
-# Copyright 2009-2013 Eucalyptus Systems, Inc.
+# Copyright 2013-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -23,59 +23,52 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.ec2 import EC2Request
 from requestbuilder import Arg, Filter, GenericTagFilter
 from requestbuilder.exceptions import ArgumentError
 
+from euca2ools.commands.ec2 import EC2Request
+
 
 class DescribeNetworkAcls(EC2Request):
-    DESCRIPTION = 'Describe a network ACL'
-    ARGS = [Arg('NetworkAclId', metavar='ACL', nargs='*',
-                help='Id of acl to display'),
-            Arg('-a', '--all', action='store_true', route_to=None,
-                help='describe all acls')]
-    LIST_TAGS = ['networkAclSet', 'entrySet', 'associationSet']
+    DESCRIPTION = 'Describe one or more network ACLs'
+    ARGS = [Arg('NetworkAclId', metavar='NACL', nargs='*',
+                help='limit results to one or more network ACLs')]
+    FILTERS = [Filter('association.association-id',
+                      help='ID of an association ID for a network ACL'),
+               Filter('association.network-acl-id', help='''ID of the
+                      network ACL involved in an association'''),
+               Filter('association.subnet-id',
+                      help='ID of the subnet involved in an association'),
+               Filter('default', choices=('true', 'false'), help='''whether
+                      the network ACL is the default for its VPC'''),
+               Filter('entry.cidr', help='CIDR range for a network ACL entry'),
+               Filter('entry.egress', choices=('true', 'false'),
+                      help='whether an entry applies to egress traffic'),
+               Filter('entry.icmp.code', type=int,
+                      help='ICMP code for a network ACL entry'),
+               Filter('entry.icmp.type', type=int,
+                      help='ICMP type for a network ACL entry'),
+               Filter('entry.port-range.from', type=int,
+                      help='start of the port range for a network ACL entry'),
+               Filter('entry.port-range.to', type=int,
+                      help='end of the port range for a network ACL entry'),
+               Filter('entry.protocol',
+                      help='protocol for a network ACL entry'),
+               Filter('entry.rule-action', choices=('allow', 'deny'), help='''
+                      whether a network ACL entry allows or denies traffic'''),
+               Filter('entry.rule-number', type=int,
+                      help='rule number of a network ACL entry'),
+               Filter('network-acl-id'),
+               Filter('tag-key',
+                      help='key of a tag assigned to the network ACL'),
+               Filter('tag-value',
+                      help='value of a tag assigned to the network ACL'),
+               GenericTagFilter('tag:KEY',
+                                help='specific tag key/value combination'),
+               Filter('vpc-id', help="the VPC's ID")]
 
-    def configure(self):
-        EC2Request.configure(self)
-        if self.args.get('all', False):
-            if self.args.get('AclId'):
-                raise ArgumentError('argument -a/--all: not allowed with '
-                                    'a list of acls')
+    LIST_TAGS = ['associationSet', 'entrySet', 'networkAclSet', 'tagSet']
 
     def print_result(self, result):
-        acls = {}
-        for acl in result.get('networkAclSet', []):
-            acls.setdefault(acl['networkAclId'], acl)
-
-        for acl_id, acl in sorted(acls.iteritems()):
-            self.print_acls(acl)
-
-    def print_acls(self, acl):
-        print self.tabify((
-            'NETWORKACL', acl.get('networkAclId'),
-            acl.get('vpcId'),
-            acl.get('default')))
-        for entry in acl.get('entrySet', []):
-            self.print_entry(entry, acl.get('networkAclId'))
-        for assoc in acl.get('associationSet', []):
-            self.print_association(assoc, acl.get('networkAclId'))
-
-    def print_entry(self, entry, acl_id):
-        direction = 'ingress'
-        if entry.get('egress'):
-            direction = 'egress'
-
-        print self.tabify((
-            'ENTRY', direction,
-            entry.get('ruleNumber'),
-            entry.get('ruleAction'),
-            entry.get('cidrBlock'),
-            entry.get('protocol'),
-            entry.get('portRange')))
-
-    def print_association(self, assoc, acl_id):
-        print self.tabify((
-            'ASSOCIATION',
-            assoc.get('networkAclAssociationId'),
-            assoc.get('subnetId')))
+        for acl in result.get('networkAclSet') or []:
+            self.print_network_acl(acl)
