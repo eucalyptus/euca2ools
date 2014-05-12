@@ -173,7 +173,9 @@ class EC2Request(AWSQueryRequest, TabifyingMixin):
         print self.tabify(('SUBNET', subnet.get('subnetId'),
                            subnet.get('state'), subnet.get('vpcId'),
                            subnet.get('availableIpAddressCount'),
-                           subnet.get('availabilityZone')))
+                           subnet.get('availabilityZone'),
+                           subnet.get('defaultForAz'),
+                           subnet.get('mapPublicIpOnLaunch')))
         for tag in subnet.get('tagSet') or []:
             self.print_resource_tag(tag, subnet.get('subnetId'))
 

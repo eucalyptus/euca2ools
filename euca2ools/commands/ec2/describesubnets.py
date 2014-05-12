@@ -1,4 +1,4 @@
-# Copyright 2009-2013 Eucalyptus Systems, Inc.
+# Copyright 2013-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -23,41 +23,33 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.ec2 import EC2Request
 from requestbuilder import Arg, Filter, GenericTagFilter
 from requestbuilder.exceptions import ArgumentError
 
+from euca2ools.commands.ec2 import EC2Request
+
 
 class DescribeSubnets(EC2Request):
-    DESCRIPTION = 'Shows information about subnets.'
+    DESCRIPTION = 'Show information about one or more VPC subnets'
     ARGS = [Arg('SubnetId', metavar='SUBNET', nargs='*',
-                help='limit results to specific subnets'),
-            Arg('-a', '--all', action='store_true', route_to=None,
-                help='describe all subnets')]
-    LIST_TAGS = ['subnetSet']
-
-    def configure(self):
-        EC2Request.configure(self)
-        if self.args.get('all', False):
-            if self.args.get('SubnetId'):
-                raise ArgumentError('argument -a/--all: not allowed with '
-                                    'a list of subnets')
+                help='limit results to specific subnets')]
+    FILTERS = [Filter('availability-zone'),
+               Filter('available-ip-address-count',
+                      help='the number of unused IP addresses in the subnet'),
+               Filter('cidr-block', help="the subnet's CIDR address block"),
+               Filter('default-for-az', choices=('true', 'false'),
+                      help='''whether this is the default subnet for the
+                      availability zone'''),
+               Filter('state'),
+               Filter('subnet-id'),
+               Filter('tag-key', help='key of a tag assigned to the subnet'),
+               Filter('tag-value',
+                      help='value of a tag assigned to the subnet'),
+               GenericTagFilter('tag:KEY',
+                                help='specific tag key/value combination'),
+               Filter('vpc-id', help="the associated VPC's ID")]
+    LIST_TAGS = ['subnetSet', 'tagSet']
 
     def print_result(self, result):
-        subnets = {}
-        for subnet in result.get('subnetSet', []):
-            subnets.setdefault(subnet['subnetId'], subnet)
-
-        for subnet_id, subnet in sorted(subnets.iteritems()):
-            self.print_subnets(subnet)
-
-    def print_subnets(self, subnet):
-        print self.tabify((
-            'SUBNET', subnet.get('subnetId'),
-            subnet.get('state'),
-            subnet.get('vpcId'),
-            subnet.get('cidrBlock'),
-            subnet.get('availableIpAddressCount'),
-            subnet.get('availabilityZone'),
-            subnet.get('defaultForAz'),
-            subnet.get('mapPublicIpOnLaunch')))
+        for subnet in result.get('subnetSet') or []:
+            self.print_subnet(subnet)
