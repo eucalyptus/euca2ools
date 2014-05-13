@@ -1,4 +1,4 @@
-# Copyright 2009-2013 Eucalyptus Systems, Inc.
+# Copyright 2013-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -23,20 +23,19 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.ec2 import EC2Request
 from requestbuilder import Arg
+
+from euca2ools.commands.ec2 import EC2Request
 
 
 class AssociateRouteTable(EC2Request):
-    DESCRIPTION = 'Associate subnet with a route table'
-    ARGS = [Arg('RouteTableId', metavar='ROUTETABLE',
-                help='route table id to associate (required)'),
-            Arg('-s', dest='SubnetId', metavar='SUBNET',
-                help='subnet id to associate with (required)')]
+    DESCRIPTION = 'Associate a VPC route table with a subnet'
+    ARGS = [Arg('RouteTableId', metavar='RTABLE',
+                help='ID of the route table to associate (required)'),
+            Arg('-s', dest='SubnetId', metavar='SUBNET', required=True,
+                help='''ID of the subnet to associate the route table
+                with (required)''')]
 
     def print_result(self, result):
-        print self.tabify((
-            'ASSOCIATION', 
-            result.get('associationId'),
-            self.args['RouteTableId'],
-            self.args['SubnetId']))
+        print self.tabify(('ASSOCIATION', result.get('associationId'),
+                           self.args['RouteTableId'], self.args['SubnetId']))
