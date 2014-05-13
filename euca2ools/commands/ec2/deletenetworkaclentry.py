@@ -1,4 +1,4 @@
-# Copyright 2009-2013 Eucalyptus Systems, Inc.
+# Copyright 2013-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -23,19 +23,16 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.ec2 import EC2Request
 from requestbuilder import Arg
+
+from euca2ools.commands.ec2 import EC2Request
 
 
 class DeleteNetworkAclEntry(EC2Request):
     DESCRIPTION = 'Delete a network acl rule'
-    ARGS = [Arg('NetworkAclId', metavar='ACLID',
-                help='acl id to delete rule in (required)'),
-            Arg('-e', '--egress',
-                choices=['true', 'false'], default='false',
-                help='egress rule'),
-            Arg('-r', '--rule-number', dest='RuleNumber', required=True,
-                help='rule number for the acl entry')]
-
-    def print_result(self, result):
-        print self.tabify(('ACLID', self.args['NetworkAclId'], result['return']))
+    ARGS = [Arg('NetworkAclId', metavar='NACL', help='''ID of the
+                network ACL to delete an entry from (required)'''),
+            Arg('-n', '--rule-number', dest='RuleNumber', required=True,
+                type=int, help='number of the entry to delete (required)'),
+            Arg('--egress', dest='Egress', action='store_true', help='''delete
+                an egress entry (default: delete an ingress entry)''')]
