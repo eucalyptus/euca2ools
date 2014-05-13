@@ -26,13 +26,14 @@
 import argparse
 from operator import itemgetter
 import os.path
-import shlex
+import six
+import socket
 from string import Template
 import sys
 
 from requestbuilder import Arg
 from requestbuilder.auth import QuerySigV2Auth
-from requestbuilder.exceptions import AuthError
+from requestbuilder.exceptions import ArgumentError, AuthError
 from requestbuilder.mixins import TabifyingMixin
 from requestbuilder.request import AWSQueryRequest
 from requestbuilder.service import BaseService
@@ -162,6 +163,13 @@ class EC2Request(AWSQueryRequest, TabifyingMixin):
                                ebs.get('deleteOnTermination'),
                                ebs.get('volumeType'), ebs.get('iops')))
 
+    def print_attachment(self, attachment):
+        print self.tabify(['ATTACHMENT', attachment.get('volumeId'),
+                           attachment.get('instanceId'),
+                           attachment.get('device'),
+                           attachment.get('status'),
+                           attachment.get('attachTime')])
+
     def print_vpc(self, vpc):
         print self.tabify(('VPC', vpc.get('vpcId'), vpc.get('state'),
                            vpc.get('cidrBlock'), vpc.get('dhcpOptionsId'),
@@ -191,13 +199,21 @@ class EC2Request(AWSQueryRequest, TabifyingMixin):
                 direction = 'egress'
             else:
                 direction = 'ingress'
-            if entry.get('protocol') == '-1':
-                protocol = 'all'
+            protocol = entry.get('protocol')
+            port_map = {-1: 'all', 1: 'icmp', 6: 'tcp', 17: 'udp', 132: 'sctp'}
+            try:
+                protocol = port_map.get(int(protocol), int(protocol))
+            except ValueError:
+                pass
+            if 'icmpTypeCode' in entry:
+                from_port = entry.get('icmpTypeCode', {}).get('code')
+                to_port = entry.get('icmpTypeCode', {}).get('type')
             else:
-                protocol = entry.get('protocol')
+                from_port = entry.get('portRange', {}).get('from')
+                to_port = entry.get('portRange', {}).get('to')
             print self.tabify(('ENTRY', direction, entry.get('ruleNumber'),
                                entry.get('ruleAction'), entry.get('cidrBlock'),
-                               protocol))
+                               protocol, from_port, to_port))
         for assoc in acl.get('associationSet') or []:
             print self.tabify(('ASSOCIATION',
                                assoc.get('networkAclAssociationId'),
@@ -249,13 +265,6 @@ class EC2Request(AWSQueryRequest, TabifyingMixin):
             self.print_attachment(attachment)
         for tag in volume.get('tagSet', []):
             self.print_resource_tag(tag, volume.get('volumeId'))
-
-    def print_attachment(self, attachment):
-        print self.tabify(['ATTACHMENT', attachment.get('volumeId'),
-                           attachment.get('instanceId'),
-                           attachment.get('device'),
-                           attachment.get('status'),
-                           attachment.get('attachTime')])
 
     def print_snapshot(self, snap):
         print self.tabify(['SNAPSHOT', snap.get('snapshotId'),
@@ -329,6 +338,37 @@ class EC2Request(AWSQueryRequest, TabifyingMixin):
             disk_bits.extend(('StatusMessage', container.get('statusMessage')))
         print self.tabify((disk_bits))
 
+    def process_port_cli_args(self):
+        """
+        Security group and network ACL rule commands need to be able to
+        to parse "-1:-1" before argparse can see it because of Python
+        bug 9334, which causes argparse to treat it as a nonexistent
+        option name and not an option value.  This method wraps
+        process_cli_args in such a way that values beginning with "-1"
+        are preserved.
+        """
+        saved_sys_argv = list(sys.argv)
+
+        def parse_neg_one_value(opt_name):
+            if opt_name in sys.argv:
+                index = sys.argv.index(opt_name)
+                if (index < len(sys.argv) - 1 and
+                        sys.argv[index + 1].startswith('-1')):
+                    opt_val = sys.argv[index + 1]
+                    del sys.argv[index:index + 2]
+                    return opt_val
+
+        icmp_type_code = (parse_neg_one_value('-t') or
+                          parse_neg_one_value('--icmp-type-code'))
+        port_range = (parse_neg_one_value('-p') or
+                      parse_neg_one_value('--port-range'))
+        EC2Request.process_cli_args(self)
+        if icmp_type_code:
+            self.args['icmp_type_code'] = icmp_type_code
+        if port_range:
+            self.args['port_range'] = port_range
+        sys.argv = saved_sys_argv
+
 
 class _ResourceTypeMap(object):
     _prefix_type_map = {
@@ -365,3 +405,79 @@ class _ResourceTypeMap(object):
         return iter(set(self._prefix_type_map.values()))
 
 RESOURCE_TYPE_MAP = _ResourceTypeMap()
+
+
+def parse_ports(protocol, port_range=None, icmp_type_code=None):
+    # This function's error messages make assumptions about arguments'
+    # names, but currently all of its callers agree on them.  If that
+    # changes then please fix this.
+    from_port = None
+    to_port = None
+    if protocol in ('icmp', '1', 1):
+        if port_range:
+            raise ArgumentError('argument -p/--port-range: not compatible '
+                                'with protocol "{0}"'.format(protocol))
+        if not icmp_type_code:
+            icmp_type_code = '-1:-1'
+        types = icmp_type_code.split(':')
+        if len(types) == 2:
+            try:
+                from_port = int(types[0])
+                to_port = int(types[1])
+            except ValueError:
+                raise ArgumentError('argument -t/--icmp-type-code: value '
+                                    'must have format "1:2"')
+        else:
+            raise ArgumentError('argument -t/--icmp-type-code: value '
+                                'must have format "1:2"')
+        if from_port < -1 or to_port < -1:
+            raise ArgumentError('argument -t/--icmp-type-code: ICMP type, '
+                                'code must be at least -1')
+    elif protocol in ('tcp', '6', 6, 'udp', '13', 13, 'sctp', '132', 132):
+        if icmp_type_code:
+            raise ArgumentError('argument -t/--icmp-type-code: not compatible '
+                                'with protocol "{0}"'.format(protocol))
+        if not port_range:
+            raise ArgumentError('argument -p/--port-range is required '
+                                'for protocol "{0}"'.format(protocol))
+        if ':' in port_range:
+            # Be extra helpful in the event of this common typo
+            raise ArgumentError('argument -p/--port-range: multi-port '
+                                'range must be separated by "-", not ":"')
+        from_port, to_port = _parse_port_range(port_range, protocol)
+        if from_port < -1 or to_port < -1:
+            raise ArgumentError('argument -p/--port-range: port number(s) '
+                                'must be at least -1')
+        if from_port == -1:
+            from_port = 1
+        if to_port == -1:
+            to_port = 65535
+    # We allow other protocols through without parsing port numbers at all.
+    return from_port, to_port
+
+
+def _parse_port_range(port_range, protocol):
+    # Try for an integer
+    try:
+        return (int(port_range), int(port_range))
+    except ValueError:
+        pass
+    # Try for an integer range
+    if port_range.count('-') == 1:
+        ports = port_range.split('-')
+        try:
+            return (int(ports[0]), int(ports[1]))
+        except ValueError:
+            pass
+    # Try for a service name
+    if isinstance(protocol, six.string_types):
+        try:
+            # This is going to fail if protocol is a number.
+            port = socket.getservbyname(port_range, protocol)
+            return (port, port)
+        except socket.error:
+            pass
+    # That's all, folks!
+    raise ArgumentError("argument -p/--port-range: '{0}' is neither a port "
+                        "number, range of port numbers, nor a recognized "
+                        "service name".format(port_range))
