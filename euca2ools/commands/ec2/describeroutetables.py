@@ -1,4 +1,4 @@
-# Copyright 2009-2013 Eucalyptus Systems, Inc.
+# Copyright 2013-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -23,54 +23,68 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+from requestbuilder import Arg, Filter, GenericTagFilter
+
 from euca2ools.commands.ec2 import EC2Request
-from requestbuilder import Arg
 
 
 class DescribeRouteTables(EC2Request):
-    DESCRIPTION = 'Describe route tables'
-    ARGS = [Arg('RouteTableId', metavar='ROUTETABLE', nargs='*',
-                help='limit results to specific route tables'),
-            Arg('-a', '--all', action='store_true', route_to=None,
-                help='describe all route tables')]
-    LIST_TAGS = ['routeTableSet', 'routeSet', 'associationSet']
+    DESCRIPTION = 'Describe one or more VPC route tables'
+    API_VERSION = '2014-02-01'
+    ARGS = [Arg('RouteTableId', metavar='RTABLE', nargs='*',
+                help='limit results to specific route tables')]
+    FILTERS = [Filter('association.route-table-association-id',
+                      help='ID of an association for the route table'),
+               Filter('association.route-table-id',
+                      help='ID of a route table involved in an association'),
+               Filter('association.subnet-id',
+                      help='ID of a subnet involved in an association'),
+               Filter('association.main', choices=('true', 'false'),
+                      help='''whether the route table is the main route
+                      table for its VPC'''),
+               Filter('route-table-id'),
+               Filter('route.destination-cidr-block', help='''CIDR address
+                      block specified in one of the table's routes'''),
+               Filter('route.gateway-id', help='''ID of a gateway
+                      specified by a route in the table'''),
+               Filter('route.vpc-peering-connection-id',
+                      help='''ID of a VPC peering connection specified
+                      by a route in the table'''),
+               Filter('route.origin',
+                      help='which operation created a route in the table'),
+               Filter('route.state', help='''whether a route in the
+                      table has state "active" or "blackhole"'''),
+               Filter('tag-key',
+                      help='key of a tag assigned to the route table'),
+               Filter('tag-value',
+                      help='value of a tag assigned to the route table'),
+               GenericTagFilter('tag:KEY',
+                                help='specific tag key/value combination'),
+               Filter('vpc-id', help="the associated VPC's ID")]
+
+    LIST_TAGS = ['associationSet', 'propagatingVgwSet', 'routeTableSet',
+                 'routeSet', 'tagSet']
 
     def print_result(self, result):
-        tables = {}
-        for table in result.get('routeTableSet', []):
-            tables.setdefault(table['routeTableId'], table)
-
-        for rt_id, table in sorted(tables.iteritems()):
-            self.print_tables(table)
-
-    def print_tables(self, table):
-        print self.tabify((
-            'ROUTETABLE', table.get('routeTableId'),
-            table.get('vpcId')))
-        for entry in table.get('routeSet', []):
-            self.print_entry(entry, table.get('routeTableId'))
-        for assoc in table.get('associationSet', []):
-            self.print_association(assoc, table.get('routeTableId'))
-
-    def print_entry(self, entry, rt_id):
-        next_hop = 'local'
-        if entry.get('gatewayId'):
-            next_hop = entry.get('gatewayId')
-        elif entry.get('instanceId'):
-            next_hop = entry.get('instanceId')
-
-        print self.tabify((
-            'ROUTE',
-            next_hop,
-            entry.get('state'),
-            entry.get('destinationCidrBlock'),
-            entry.get('origin')))
-
-    def print_association(self, entry, rt_id):
-        main = ''
-        if entry.get('main'):
-            main = 'main'
-        print self.tabify((
-            'ASSOCIATION',
-            entry.get('routeTableAssociationId'),
-            main))
+        for table in result.get('routeTableSet') or []:
+            print self.tabify(('ROUTETABLE', table.get('routeTableId'),
+                               table.get('vpcId')))
+            for route in table.get('routeSet') or []:
+                target = (route.get('gatewayId') or route.get('instanceId') or
+                          route.get('networkInterfaceId') or
+                          route.get('vpcPeeringConnectionId'))
+                print self.tabify((
+                    'ROUTE', target, route.get('state'),
+                    route.get('destinationCidrBlock'), route.get('origin')))
+            for vgw in table.get('propagatingVgwSet') or []:
+                print self.tabify(('PROPAGATINGVGW', vgw.get('gatewayID')))
+            for assoc in table.get('associationSet') or []:
+                if (assoc.get('main') or '').lower() == 'true':
+                    main = 'main'
+                else:
+                    main = ''
+                print self.tabify(('ASSOCIATION',
+                                   assoc.get('routeTableAssociationId'),
+                                   assoc.get('subnetId'), main))
+            for tag in table.get('tagSet') or []:
+                self.print_resource_tag(tag, table.get('routeTableId'))
