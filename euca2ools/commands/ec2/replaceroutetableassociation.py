@@ -1,4 +1,4 @@
-# Copyright 2009-2013 Eucalyptus Systems, Inc.
+# Copyright 2013-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -23,18 +23,18 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.ec2 import EC2Request
 from requestbuilder import Arg
+
+from euca2ools.commands.ec2 import EC2Request
 
 
 class ReplaceRouteTableAssociation(EC2Request):
-    DESCRIPTION = 'Changes the route table associated with a subnet in a VPC'
-    ARGS = [Arg('AssociationId', metavar='ASSOCIATION',
-                help='route table association to be replaced (required)'),
-            Arg('RouteTableId', metavar='ROUTETABLE',
-                help='new route table to associate with subnet (required)')]
+    DESCRIPTION = 'Change the route table associated with a VPC subnet'
+    ARGS = [Arg('AssociationId', metavar='RTBASSOC', help='''ID of the
+                route table association to replace (required)'''),
+            Arg('-r', dest='RouteTableId', metavar='RTABLE', required=True,
+                help='route table to associate with the subnet (required)')]
 
     def print_result(self, result):
-        print self.tabify((
-            'ROUTETABLE', self.args['RouteTableId'],
-            result.get('newAssociationId')))
+        print self.tabify(('ASSOCIATION', result.get('newAssociationId'),
+                           self.args['RouteTableId']))
