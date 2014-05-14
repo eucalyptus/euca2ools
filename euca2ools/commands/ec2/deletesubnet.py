@@ -1,4 +1,4 @@
-# Copyright 2009-2013 Eucalyptus Systems, Inc.
+# Copyright 2013-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -23,14 +23,12 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.ec2 import EC2Request
 from requestbuilder import Arg
+
+from euca2ools.commands.ec2 import EC2Request
 
 
 class DeleteSubnet(EC2Request):
-    DESCRIPTION = 'Delete subnet'
+    DESCRIPTION = 'Delete a VPC subnet'
     ARGS = [Arg('SubnetId', metavar='SUBNET',
-                help='subnet id to delete (required)')]
-
-    def print_result(self, result):
-        print self.tabify(('SUBNET', self.args['SubnetId']))
+                help='ID of the subnet to delete (required)')]
