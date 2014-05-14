@@ -372,8 +372,12 @@ class EC2Request(AWSQueryRequest, TabifyingMixin):
 
 class _ResourceTypeMap(object):
     _prefix_type_map = {
+        'eipalloc': 'allocation-id',
+        'bun':    'bundle',  # technically a bundle *task*
+        'import': 'conversion-task',  # this is a guess
         'cgw':    'customer-gateway',
         'dopt':   'dhcp-options',
+        'export': 'export-task',  # this is a guess
         'aki':    'image',
         'ami':    'image',
         'ari':    'image',
@@ -383,6 +387,7 @@ class _ResourceTypeMap(object):
         'i':      'instance',
         'igw':    'internet-gateway',
         'acl':    'network-acl',
+        'eni':    'network-interface',
         'xxx':    'reserved-instances',  # reserved instance IDs are UUIDs
         'rtb':    'route-table',
         'sg':     'security-group',
@@ -391,6 +396,7 @@ class _ResourceTypeMap(object):
         'subnet': 'subnet',
         'vol':    'volume',
         'vpc':    'vpc',
+        'pcx':    'vpc-peering-connection',
         'vpn':    'vpn-connection',
         'vgw':    'vpn-gateway'}
 
