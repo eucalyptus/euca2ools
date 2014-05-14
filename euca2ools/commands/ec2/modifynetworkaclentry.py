@@ -30,8 +30,11 @@ from requestbuilder import Arg, MutuallyExclusiveArgList
 from euca2ools.commands.ec2 import EC2Request, parse_ports
 
 
-class CreateNetworkAclEntry(EC2Request):
-    DESCRIPTION = 'Create a network ACL entry'
+class _ModifyNetworkAclEntry(EC2Request):
+    DESCRIPTION = ('Modify a network ACL entry\n\nThis is not an '
+                   'actual EC2 request -- see euca-create-network-acl-'
+                   'entry(1) or euca-replace-network-acl-entry(1) for '
+                   'something usable.')
     ARGS = [Arg('NetworkAclId', metavar='NACL',
                 help='ID of the network ACL to add the entry to (required)'),
             Arg('-n', '--rule-number', dest='RuleNumber', metavar='INT',
@@ -106,3 +109,11 @@ class CreateNetworkAclEntry(EC2Request):
             protocol,
             self.params.get('Icmp.Type') or self.params.get('PortRange.From'),
             self.params.get('Icmp.Code') or self.params.get('PortRange.To')))
+
+
+class CreateNetworkAclEntry(_ModifyNetworkAclEntry):
+    DESCRIPTION = 'Create a new entry in a VPC network ACL'
+
+
+class ReplaceNetworkAclEntry(_ModifyNetworkAclEntry):
+    DESCRIPTION = 'Replace an entry in a VPC network ACL'
