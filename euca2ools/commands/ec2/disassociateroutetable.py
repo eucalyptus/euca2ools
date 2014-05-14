@@ -1,4 +1,4 @@
-# Copyright 2009-2013 Eucalyptus Systems, Inc.
+# Copyright 2013-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -23,16 +23,12 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.ec2 import EC2Request
 from requestbuilder import Arg
+
+from euca2ools.commands.ec2 import EC2Request
 
 
 class DisassociateRouteTable(EC2Request):
-    DESCRIPTION = 'Disassociate subnet from a route table'
-    ARGS = [Arg('AssociationId', metavar='ASSOCIATIONID',
-                help='association between route table and subnet (required)')]
-
-    def print_result(self, result):
-        print self.tabify((
-            'ROUTETABLE', self.args['AssociationId'],
-            result.get('return')))
+    DESCRIPTION = 'Disassociate a VPC subnet from a route table'
+    ARGS = [Arg('AssociationId', metavar='RTBASSOC', help='''ID of the
+                routing table association to remove (required)''')]
