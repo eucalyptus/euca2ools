@@ -1,4 +1,4 @@
-# Copyright 2009-2013 Eucalyptus Systems, Inc.
+# Copyright 2013-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -23,22 +23,33 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+from requestbuilder import Arg, MutuallyExclusiveArgList
+
 from euca2ools.commands.ec2 import EC2Request
-from requestbuilder import Arg
 
 
 class ReplaceRoute(EC2Request):
-    DESCRIPTION = 'Replace route in a route table within a VPC'
-    ARGS = [Arg('RouteTableId', metavar='ROUTETABLEID',
-                help='route table id to add route in (required)'),
-            Arg('-d', '--dest-cidr', dest='DestinationCidrBlock', required=True,
+    DESCRIPTION = 'Replace a route in a VPC route table'
+    API_VERSION = '2014-02-01'
+    ARGS = [Arg('RouteTableId', metavar='RTABLE',
+                help='ID of the route table to affect (required)'),
+            Arg('-r', '--cidr', dest='DestinationCidrBlock', metavar='CIDR',
+                required=True,
                 help='destination prefix for route lookup'),
-            Arg('-g', '--gateway-id', dest='GatewayId',
-                help='id of internet gateway attached to VPC'),
-            Arg('-i', '--instance-id', dest='InstanceId',
-                help='id of nat instance in the VPC'),
-            Arg('-n', '--network-if-id', dest='NetworkInterfaceId',
-                help='id of network interface')]
+            MutuallyExclusiveArgList(
+                Arg('-g', '--gateway-id', dest='GatewayId', metavar='GATEWAY',
+                    help='ID of an Internet gateway to target'),
+                Arg('-i', '--instance', dest='InstanceId', metavar='INSTANCE',
+                    help='ID of a NAT instance to target'),
+                Arg('-n', '--network-interface', dest='NetworkInterfaceId',
+                    help='ID of a network interface to target'),
+                Arg('-p', '--vpc-peering-connection', metavar='PEERCON',
+                    dest='VpcPeeringConnectionId',
+                    help='ID of a VPC peering connection to target'))
+            .required()]
 
     def print_result(self, result):
-        print self.tabify(('ROUTETABLE', self.args['RouteTableId'], result['return']))
+        target = (self.args.get('GatewayId') or self.args.get('InstanceId') or
+                  self.args.get('NetworkInterfaceId') or
+                  self.args.get('VpcPeeringConnectionId'))
+        print self.tabify(('ROUTE', target, self.args['DestinationCidrBlock']))
