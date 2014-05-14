@@ -1,4 +1,4 @@
-# Copyright 2009-2013 Eucalyptus Systems, Inc.
+# Copyright 2013-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -23,16 +23,14 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.ec2 import EC2Request
 from requestbuilder import Arg
+
+from euca2ools.commands.ec2 import EC2Request
 
 
 class DeleteRoute(EC2Request):
-    DESCRIPTION = 'Delete route in a route table within a VPC'
-    ARGS = [Arg('RouteTableId', metavar='ROUTETABLEID',
-                help='route table id to add route in (required)'),
-            Arg('-d', '--dest-cidr', dest='DestinationCidrBlock', required=True,
-                help='destination prefix for route lookup')]
-
-    def print_result(self, result):
-        print self.tabify(('ROUTETABLE', self.args['RouteTableId'], result['return']))
+    DESCRIPTION = 'Delete a route from a VPC route table'
+    ARGS = [Arg('RouteTableId', metavar='RTABLE',
+                help='ID of the table to remove the route from (required)'),
+            Arg('-r', '--cidr', dest='DestinationCidrBlock', required=True,
+                help='CIDR address block of the route to delete (required)')]
