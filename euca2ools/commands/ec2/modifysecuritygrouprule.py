@@ -32,7 +32,7 @@ from requestbuilder.exceptions import ArgumentError
 from euca2ools.commands.ec2 import EC2Request, parse_ports
 
 
-class ModifySecurityGroupRequest(EC2Request):
+class _ModifySecurityGroupRule(EC2Request):
     """
     The basis for security group-editing commands
     """
@@ -131,3 +131,25 @@ class ModifySecurityGroupRequest(EC2Request):
             perm_str.append(self.params.get(
                 'IpPermissions.1.IpRanges.1.CidrIp'))
         print self.tabify(perm_str)
+
+
+class AuthorizeSecurityGroupRule(_ModifySecurityGroupRule):
+    DESCRIPTION = 'Add a rule to a security group that allows traffic to pass'
+
+    @property
+    def action(self):
+        if self.args['egress']:
+            return 'AuthorizeSecurityGroupEgress'
+        else:
+            return 'AuthorizeSecurityGroupIngress'
+
+
+class RevokeSecurityGroupRule(_ModifySecurityGroupRule):
+    DESCRIPTION = 'Remove a rule from a security group'
+
+    @property
+    def action(self):
+        if self.args['egress']:
+            return 'RevokeSecurityGroupEgress'
+        else:
+            return 'RevokeSecurityGroupIngress'
