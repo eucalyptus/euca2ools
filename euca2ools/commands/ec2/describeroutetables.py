@@ -67,24 +67,4 @@ class DescribeRouteTables(EC2Request):
 
     def print_result(self, result):
         for table in result.get('routeTableSet') or []:
-            print self.tabify(('ROUTETABLE', table.get('routeTableId'),
-                               table.get('vpcId')))
-            for route in table.get('routeSet') or []:
-                target = (route.get('gatewayId') or route.get('instanceId') or
-                          route.get('networkInterfaceId') or
-                          route.get('vpcPeeringConnectionId'))
-                print self.tabify((
-                    'ROUTE', target, route.get('state'),
-                    route.get('destinationCidrBlock'), route.get('origin')))
-            for vgw in table.get('propagatingVgwSet') or []:
-                print self.tabify(('PROPAGATINGVGW', vgw.get('gatewayID')))
-            for assoc in table.get('associationSet') or []:
-                if (assoc.get('main') or '').lower() == 'true':
-                    main = 'main'
-                else:
-                    main = ''
-                print self.tabify(('ASSOCIATION',
-                                   assoc.get('routeTableAssociationId'),
-                                   assoc.get('subnetId'), main))
-            for tag in table.get('tagSet') or []:
-                self.print_resource_tag(tag, table.get('routeTableId'))
+            self.print_route_table(table)

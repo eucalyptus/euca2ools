@@ -1,4 +1,4 @@
-# Copyright 2009-2013 Eucalyptus Systems, Inc.
+# Copyright 2013-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -23,43 +23,17 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.ec2 import EC2Request
 from requestbuilder import Arg
+
+from euca2ools.commands.ec2 import EC2Request
 
 
 class CreateRouteTable(EC2Request):
-    DESCRIPTION = 'Create route table for VPC'
+    DESCRIPTION = 'Create a new VPC route table'
     ARGS = [Arg('VpcId', metavar='VPC',
-                help='vpc id to create route table (required)')]
-    LIST_TAGS = ['routeSet', 'associationSet']
+                help='ID of the VPC to create the route table in (required)')]
+    LIST_TAGS = ['associationSet', 'propagatingVgwSet', 'routeTableSet',
+                 'routeSet', 'tagSet']
 
     def print_result(self, result):
-        rt = result.get('routeTable')
-        print self.tabify((
-            'ROUTETABLE', rt.get('routeTableId'),
-            rt.get('vpcId')))
-
-        for entry in rt.get('routeSet', []):
-            self.print_entry(entry, rt.get('routeTableId'))
-        for entry in rt.get('associationSet', []):
-            self.print_assoc(entry, rt.get('routeTableId'))
-
-    def print_entry(self, entry, rt_id):
-        next_hop = 'local'
-        if entry.get('gatewayId'):
-            next_hop = entry.get('gatewayId')
-        elif entry.get('instanceId'):
-            next_hop = entry.get('instanceId')
-
-        print self.tabify((
-            'ROUTE',
-            next_hop,
-            entry.get('state'),
-            entry.get('destinationCidrBlock')))
-
-    def print_assoc(self, entry, rt_id):
-        print self.tabify((
-            'ASSOCIATION', rt_id,
-            entry.get('routeTableAssociationId'),
-            entry.get('subnetId'),
-            entry.get('main')))
+        self.print_route_table(result.get('routeTable') or {})
