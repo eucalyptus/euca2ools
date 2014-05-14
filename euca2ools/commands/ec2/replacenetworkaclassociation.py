@@ -1,4 +1,4 @@
-# Copyright 2009-2013 Eucalyptus Systems, Inc.
+# Copyright 2013-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -23,16 +23,19 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.ec2 import EC2Request
 from requestbuilder import Arg
+
+from euca2ools.commands.ec2 import EC2Request
 
 
 class ReplaceNetworkAclAssociation(EC2Request):
-    DESCRIPTION = 'Change network ACL subnet association'
-    ARGS = [Arg('-a', dest='NetworkAclId', metavar='ACLID',
-                help='new acl id to be associated (required)'),
-            Arg('AssociationId', required=True,
-                help='association id to be replaced')]
+    DESCRIPTION = 'Associate a new VPC network ACL with a subnet'
+    ARGS = [Arg('AssociationId', metavar='ACLASSOC', help='''ID of the
+                network ACL association to replace (required)'''),
+            Arg('-a', '--network-acl', dest='NetworkAclId', metavar='ACL',
+                required=True, help='''ID of the network ACL to
+                associate with the subnet (required)''')]
 
     def print_result(self, result):
-        print self.tabify(('ASSOCIATION', result.get('newAssociationId')))
+        print self.tabify(('ASSOCIATION', result.get('newAssociationId'),
+                           self.args['NetworkAclId']))
