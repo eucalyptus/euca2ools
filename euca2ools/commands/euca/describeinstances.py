@@ -154,7 +154,7 @@ class DescribeInstances(EucalyptusRequest):
                Filter('ramdisk-id', help='ramdisk image ID'),
                Filter('reason',
                       help="reason for the instance's current state"),
-               Filter('requestor-id',
+               Filter('requester-id',
                       help='ID of the entity that launched an instance'),
                Filter('reservation-id'),
                Filter('root-device-name',
