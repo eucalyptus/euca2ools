@@ -43,7 +43,7 @@ class UploadBundle(S3Request, BundleUploadingMixin,
             Arg('-d', '--directory', metavar='DIR',
                 help='''directory that contains the bundle parts (default:
                 directory that contains the manifest)'''),
-            ## TODO:  make this work
+            # TODO:  make this work
             Arg('--part', metavar='INT', type=int, default=0, help='''begin
                 uploading with a specific part number (default: 0)'''),
             Arg('--skipmanifest', action='store_true',

@@ -111,7 +111,7 @@ class BundleCreatingMixin(object):
             # Noop, for compatibility
             Arg('--batch', action='store_true', help=argparse.SUPPRESS)]
 
-    ### CONFIG METHODS ###
+    # CONFIG METHODS #
 
     def configure_bundle_creds(self):
         # User's X.509 certificate (user-level in config)
@@ -256,7 +256,7 @@ class BundleCreatingMixin(object):
         self.args['enc_key'] = '{0:0>32x}'.format(enc_key_i)
         self.args['enc_iv'] = '{0:0>32x}'.format(enc_iv_i)
 
-    ### MANIFEST GENERATION METHODS ###
+    # MANIFEST GENERATION METHODS #
 
     def build_manifest(self, digest, partinfo):
         manifest = euca2ools.bundle.manifest.BundleManifest(

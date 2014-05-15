@@ -46,8 +46,7 @@ class DescribeInstanceTypes(EC2Request, TabifyingMixin):
             self.params['Availability'] = True
 
     def print_result(self, result):
-        vmtype_names = []  # Keep an ordered list to deal with py2.6's lack
-                           # of OrderedDict
+        vmtype_names = []  # Use a list since py2.6 lacks OrderedDict
         vmtypes = {}  # vmtype -> info and total capacity
         zones = {}  # zone -> vmtype -> info and zone capacity
         for vmtype in result.get('instanceTypeDetails', []):

@@ -49,9 +49,10 @@ class PutObject(S3Request, FileTransferProgressBarMixin):
                 help='bucket and key name to upload the object to (required)'),
             Arg('--size', type=int, route_to=None, help='''the number of
                 bytes to upload (required when reading from stdin)'''),
-            Arg('--acl', choices=('private', 'public-read',
-                'public-read-write', 'authenticated-read', 'bucket-owner-read',
-                'bucket-owner-full-control', 'aws-exec-read'), route_to=None),
+            Arg('--acl', route_to=None, choices=(
+                'private', 'public-read', 'public-read-write',
+                'authenticated-read', 'bucket-owner-read',
+                'bucket-owner-full-control', 'aws-exec-read')),
             Arg('--mime-type', route_to=None,
                 help='MIME type for the file being uploaded'),
             Arg('--retry', dest='retries', action='store_const', const=5,

@@ -58,13 +58,13 @@ class PostObject(S3Request):
             Arg('-I', '--access-key-id', dest='AWSAccessKeyId', required=True,
                 metavar='KEY_ID', help='''ID of the access key that signed the
                 'upload policy (required)'''),
-            Arg('--acl', choices=('private', 'public-read',
-                'public-read-write', 'authenticated-read', 'bucket-owner-read',
+            Arg('--acl', default=argparse.SUPPRESS, choices=(
+                'private', 'public-read', 'public-read-write',
+                'authenticated-read', 'bucket-owner-read',
                 'bucket-owner-full-control', 'aws-exec-read',
-                'ec2-bundle-read'), default=argparse.SUPPRESS,
-                help='''the ACL the object should have once uploaded.  Take
-                care to ensure this satisfies any restrictions the upload
-                policy may contain.'''),
+                'ec2-bundle-read'), help='''the ACL the object should have
+                once uploaded.  Take care to ensure this satisfies any
+                restrictions the upload policy may contain.'''),
             Arg('--mime-type', dest='Content-Type', default=argparse.SUPPRESS,
                 help='MIME type for the file being uploaded')]
     METHOD = 'POST'

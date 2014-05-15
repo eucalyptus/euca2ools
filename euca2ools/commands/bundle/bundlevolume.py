@@ -64,9 +64,11 @@ class BundleVolume(BaseCommand, FileTransferProgressBarMixin):
             # beginning of configure() first we enforce that there instead.
             Arg('-r', '--arch', help="the image's architecture (required)",
                 choices=('i386', 'x86_64', 'armhf', 'ppc', 'ppc64')),
-            Arg('-e', '--exclude', metavar='PATH,...', type=delimited_list(','),
+            Arg('-e', '--exclude', metavar='PATH,...',
+                type=delimited_list(','),
                 help='comma-separated list of paths to exclude'),
-            Arg('-i', '--include', metavar='PATH,...', type=delimited_list(','),
+            Arg('-i', '--include', metavar='PATH,...',
+                type=delimited_list(','),
                 help='comma-separated list of paths to include'),
             Arg('-s', '--size', metavar='MiB', type=int, default=10240,
                 help='size of the image to create (default: 10240 MiB)'),
@@ -215,7 +217,7 @@ class BundleVolume(BaseCommand, FileTransferProgressBarMixin):
                                       image_size=image_size,
                                       image_type='machine', **bundle_args_dict)
 
-    ### INSTANCE METADATA ###
+    # INSTANCE METADATA #
 
     def __read_metadata_value(self, path):
         self.log.debug("reading metadata service value '%s'", path)
@@ -272,7 +274,7 @@ class BundleVolume(BaseCommand, FileTransferProgressBarMixin):
             raise ClientError('metadata service is absent or unresponsive; '
                               'use --no-inherit to proceed without it')
 
-    ### DISK MANAGEMENT ###
+    # DISK MANAGEMENT #
 
     def __create_disk_image(self, image, size_in_mb):
         subprocess.check_call(['dd', 'if=/dev/zero', 'of={0}'.format(image),
@@ -371,7 +373,7 @@ class BundleVolume(BaseCommand, FileTransferProgressBarMixin):
             cmd = ['losetup', '-d', device]
         subprocess.check_call(cmd)
 
-    ### FILE MANAGEMENT ###
+    # FILE MANAGEMENT #
 
     def __get_exclude_and_include_args(self):
         args = []
@@ -402,7 +404,7 @@ class BundleVolume(BaseCommand, FileTransferProgressBarMixin):
         rsync_opts = ['-rHlpogDtS']
         if self.args.get('show_progress'):
             rsync = subprocess.Popen(['rsync', '--version'],
-                                      stdout=subprocess.PIPE)
+                                     stdout=subprocess.PIPE)
             out, _ = rsync.communicate()
             rsync_version = (out.partition('version ')[2] or '\0').split()[0]
             if rsync_version >= '3.1.0':

@@ -35,8 +35,7 @@ class DescribeAutoScalingInstances(AutoScalingRequest, TabifyingMixin):
     ARGS = [Arg('InstanceIds.member', metavar='INSTANCE', nargs='*',
                 help='limit results to specific instances'),
             Arg('--show-long', action='store_true', route_to=None,
-                help=argparse.SUPPRESS)]  # doesn't actually do anything, but
-                                          # people will use it out of habit
+                help=argparse.SUPPRESS)]  # Often typed out of habit
     LIST_TAGS = ['AutoScalingInstances']
 
     def main(self):

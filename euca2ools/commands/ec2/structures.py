@@ -71,6 +71,7 @@ class ImportManifest(object):
             manifest.image_parts[part_index] = part_obj
         assert None not in manifest.image_parts, 'part missing from manifest'
         return manifest
+
     def dump_to_str(self, pretty_print=False):
         xml = lxml.objectify.Element('manifest')
 
