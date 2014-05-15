@@ -24,7 +24,6 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 from requestbuilder import Arg, Filter, GenericTagFilter
-from requestbuilder.exceptions import ArgumentError
 
 from euca2ools.commands.ec2 import EC2Request
 

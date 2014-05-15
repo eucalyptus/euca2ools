@@ -23,9 +23,6 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import socket
-import sys
-
 from requestbuilder import Arg, MutuallyExclusiveArgList
 from requestbuilder.exceptions import ArgumentError
 
@@ -93,7 +90,6 @@ class _ModifySecurityGroupRule(EC2Request):
                                     'IDs, not names')
             self.params['IpPermissions.1.Groups.1.GroupName'] = target_group
 
-        protocol = self.args.get('IpPermissions.1.IpProtocol')
         from_port, to_port = parse_ports(
             self.args.get('IpPermissions.1.IpProtocol'),
             self.args.get('port_range'), self.args.get('icmp_type_code'))

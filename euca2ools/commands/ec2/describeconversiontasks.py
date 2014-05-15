@@ -24,7 +24,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 from euca2ools.commands.ec2 import EC2Request
-from requestbuilder import Arg, Filter
+from requestbuilder import Arg
 
 
 class DescribeConversionTasks(EC2Request):

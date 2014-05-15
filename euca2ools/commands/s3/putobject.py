@@ -25,7 +25,6 @@
 
 import argparse
 import hashlib
-import os.path
 import socket
 import sys
 import threading

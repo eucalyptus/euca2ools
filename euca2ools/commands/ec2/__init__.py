@@ -224,16 +224,16 @@ class EC2Request(AWSQueryRequest, TabifyingMixin):
     def print_route_table(self, table):
         print self.tabify(('ROUTETABLE', table.get('routeTableId'),
                            table.get('vpcId')))
-        for route in table.get('routeSet') or []: 
+        for route in table.get('routeSet') or []:
             target = (route.get('gatewayId') or route.get('instanceId') or
                       route.get('networkInterfaceId') or
                       route.get('vpcPeeringConnectionId'))
             print self.tabify((
                 'ROUTE', target, route.get('state'),
                 route.get('destinationCidrBlock'), route.get('origin')))
-        for vgw in table.get('propagatingVgwSet') or []: 
+        for vgw in table.get('propagatingVgwSet') or []:
             print self.tabify(('PROPAGATINGVGW', vgw.get('gatewayID')))
-        for assoc in table.get('associationSet') or []: 
+        for assoc in table.get('associationSet') or []:
             if (assoc.get('main') or '').lower() == 'true':
                 main = 'main'
             else:
@@ -241,7 +241,7 @@ class EC2Request(AWSQueryRequest, TabifyingMixin):
             print self.tabify(('ASSOCIATION',
                                assoc.get('routeTableAssociationId'),
                                assoc.get('subnetId'), main))
-        for tag in table.get('tagSet') or []: 
+        for tag in table.get('tagSet') or []:
             self.print_resource_tag(tag, table.get('routeTableId'))
 
     def print_interface(self, nic):
@@ -313,7 +313,7 @@ class EC2Request(AWSQueryRequest, TabifyingMixin):
         if task.get('importInstance'):
             task_bits.extend(('TaskType', 'IMPORTINSTANCE'))
         if task.get('conversionTaskId'):
-            task_bits.append('TaskId'),
+            task_bits.append('TaskId')
             task_bits.append(task.get('conversionTaskId'))
         if task.get('expirationTime'):
             task_bits.append('ExpirationTime')

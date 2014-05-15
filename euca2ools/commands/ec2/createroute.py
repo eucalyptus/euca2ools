@@ -48,7 +48,7 @@ class CreateRoute(EC2Request):
                     help='ID of a VPC peering connection to target'))
             .required()]
 
-    def print_result(self, result):
+    def print_result(self, _):
         target = (self.args.get('GatewayId') or self.args.get('InstanceId') or
                   self.args.get('NetworkInterfaceId') or
                   self.args.get('VpcPeeringConnectionId'))

@@ -38,5 +38,4 @@ class CreateVpc(EC2Request):
     LIST_TAGS = ['tagSet']
 
     def print_result(self, result):
-        vpc = result.get('vpc') or {}
         self.print_vpc(result.get('vpc') or {})

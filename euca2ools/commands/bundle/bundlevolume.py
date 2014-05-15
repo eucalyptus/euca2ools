@@ -24,7 +24,6 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import argparse
-import io
 import os.path
 import pipes
 import shutil
@@ -51,7 +50,6 @@ EXCLUDES_FILE = os.path.join(SYSCONFDIR, 'bundle-vol', 'excludes')
 FSTAB_TEMPLATE_FILE = os.path.join(SYSCONFDIR, 'bundle-vol', 'fstab')
 
 
-## TODO:  rename this module to bundlevolume.py
 class BundleVolume(BaseCommand, FileTransferProgressBarMixin):
     SUITE = Euca2ools
     DESCRIPTION = ("Prepare this machine's filesystem for use in the cloud\n\n"
@@ -377,9 +375,9 @@ class BundleVolume(BaseCommand, FileTransferProgressBarMixin):
 
     def __get_exclude_and_include_args(self):
         args = []
-        for exclude in (self.args.get('exclude') or []):
+        for exclude in self.args.get('exclude') or []:
             args.extend(['--exclude', exclude])
-        for include in (self.args.get('include') or []):
+        for include in self.args.get('include') or []:
             args.extend(['--include', include])
         # Exclude remote filesystems
         if not self.args.get('all'):
@@ -391,7 +389,7 @@ class BundleVolume(BaseCommand, FileTransferProgressBarMixin):
         # Add pre-defined exclusions
         if not self.args.get('no_filter') and os.path.isfile(EXCLUDES_FILE):
             self.log.debug('adding path exclusions from %s', EXCLUDES_FILE)
-            args.extend(['--exclude-from', excludes_filename])
+            args.extend(['--exclude-from', EXCLUDES_FILE])
         return args
 
     def __copy_to_target_dir(self, dest, exclude_opts):

@@ -26,6 +26,7 @@
 import socket
 
 from requestbuilder import Arg, MutuallyExclusiveArgList
+from requestbuilder.exceptions import ArgumentError
 
 from euca2ools.commands.ec2 import EC2Request, parse_ports
 
@@ -91,7 +92,7 @@ class _ModifyNetworkAclEntry(EC2Request):
             self.params['PortRange.From'] = from_port
             self.params['PortRange.To'] = to_port
 
-    def print_result(self, result):
+    def print_result(self, _):
         if self.args.get('Egress'):
             direction = 'egress'
         else:
