@@ -41,7 +41,7 @@ class ValidateTemplate(CloudFormationRequest):
     LIST_TAGS = ['Parameters', 'CapabilitiesReason', 'Capabilities']
 
     def print_result(self, result):
-        self.tabify(('DESCRIPTION', result.get('Description')))
+        print self.tabify(('DESCRIPTION', result.get('Description')))
         for tag in self.LIST_TAGS:
             if tag in result:
                 for result in result[tag]:
