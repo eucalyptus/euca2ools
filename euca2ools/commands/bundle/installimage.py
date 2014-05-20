@@ -79,6 +79,7 @@ class InstallImage(S3Request, BundleCreatingMixin, BundleUploadingMixin,
             self, image=self.args["image"], arch=self.args["arch"],
             bucket=self.args["bucket"], prefix=self.args.get("prefix"),
             destination=self.args.get("destination"),
+            kernel=self.args.get("kernel"), ramdisk=self.args.get("ramdisk"),
             image_type=self.args.get("image_type"),
             image_size=self.args.get("image_size"), cert=self.args.get("cert"),
             privatekey=self.args.get("privatekey"),
@@ -97,8 +98,6 @@ class InstallImage(S3Request, BundleCreatingMixin, BundleUploadingMixin,
             ImageLocation=image_location,
             Description=self.args.get("description"),
             VirtualizationType=self.args.get("virtualization_type"),
-            KernelId=self.args.get("kernel"),
-            RamdiskId=self.args.get("ramdisk"),
             Platform=self.args.get("platform"))
         result_register = req.main()
         return result_register
