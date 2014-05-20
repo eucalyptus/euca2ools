@@ -299,12 +299,16 @@ class EC2Request(AWSQueryRequest, TabifyingMixin):
             self.print_resource_tag(tag, snap.get('snapshotId'))
 
     def print_bundle_task(self, task):
+        bucket = task.get('storage', {}).get('S3', {}).get('bucket')
+        prefix = task.get('storage', {}).get('S3', {}).get('prefix')
+        if bucket and prefix:
+            manifest = '{0}/{1}.manifest.xml'.format(bucket, prefix)
+        else:
+            manifest = None
         print self.tabify(['BUNDLE', task.get('bundleId'),
-                           task.get('instanceId'),
-                           task.get('storage', {}).get('S3', {}).get('bucket'),
-                           task.get('storage', {}).get('S3', {}).get('prefix'),
+                           task.get('instanceId'), bucket, prefix,
                            task.get('startTime'), task.get('updateTime'),
-                           task.get('state'), task.get('progress')])
+                           task.get('state'), task.get('progress'), manifest])
 
     def print_conversion_task(self, task):
         task_bits = []
