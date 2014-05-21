@@ -24,7 +24,7 @@ euca-get-password requires an openssl executable.
 
 All bundle commands require several executables as well:
  - gzip or pigz
- - openssl
+ - openssl >= 1
 
 The euca-bundle-vol command only works on Linux.  It requires the
 utilities for creating and managing the filesystem to be bundled
@@ -36,7 +36,7 @@ utilities for creating and managing the filesystem to be bundled
  - losetup
  - mkfs
  - mount
- - openssl
+ - openssl >= 1
  - parted
  - rsync
  - sgdisk
