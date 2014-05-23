@@ -1,4 +1,4 @@
-# Copyright 2009-2013 Eucalyptus Systems, Inc.
+# Copyright 2009-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -24,6 +24,9 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import argparse
+
+from requestbuilder import Arg
+
 from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT
 from euca2ools.commands.iam.deleteaccesskey import DeleteAccessKey
 from euca2ools.commands.iam.deleteloginprofile import DeleteLoginProfile
@@ -38,7 +41,6 @@ from euca2ools.commands.iam.listsigningcertificates import \
 from euca2ools.commands.iam.listuserpolicies import ListUserPolicies
 from euca2ools.commands.iam.removeuserfromgroup import RemoveUserFromGroup
 from euca2ools.exceptions import AWSError
-from requestbuilder import Arg
 
 
 class DeleteUser(IAMRequest):
@@ -58,29 +60,24 @@ class DeleteUser(IAMRequest):
     def main(self):
         if self.args['recursive'] or self.args['pretend']:
             # Figure out what we'd have to delete
-            req = ListAccessKeys(
-                config=self.config, service=self.service,
-                UserName=self.args['UserName'],
+            req = ListAccessKeys.from_other(
+                self, UserName=self.args['UserName'],
                 DelegateAccount=self.params['DelegateAccount'])
             keys = req.main().get('AccessKeyMetadata', [])
-            req = ListUserPolicies(
-                config=self.config, service=self.service,
-                UserName=self.args['UserName'],
+            req = ListUserPolicies.from_other(
+                self, UserName=self.args['UserName'],
                 DelegateAccount=self.params['DelegateAccount'])
             policies = req.main().get('PolicyNames', [])
-            req = ListSigningCertificates(
-                config=self.config, service=self.service,
-                UserName=self.args['UserName'],
+            req = ListSigningCertificates.from_other(
+                self, UserName=self.args['UserName'],
                 DelegateAccount=self.params['DelegateAccount'])
             certs = req.main().get('Certificates', [])
-            req = ListGroupsForUser(
-                config=self.config, service=self.service,
-                UserName=self.args['UserName'],
+            req = ListGroupsForUser.from_other(
+                self, UserName=self.args['UserName'],
                 DelegateAccount=self.params['DelegateAccount'])
             groups = req.main().get('Groups', [])
-            req = GetLoginProfile(
-                config=self.config, service=self.service,
-                UserName=self.args['UserName'],
+            req = GetLoginProfile.from_other(
+                self, UserName=self.args['UserName'],
                 DelegateAccount=self.params['DelegateAccount'])
             try:
                 # This will raise an exception if no login profile is found.
@@ -107,37 +104,32 @@ class DeleteUser(IAMRequest):
         else:
             if self.args['recursive']:
                 for key in keys:
-                    req = DeleteAccessKey(
-                        config=self.config, service=self.service,
-                        UserName=self.args['UserName'],
+                    req = DeleteAccessKey.from_other(
+                        self, UserName=self.args['UserName'],
                         AccessKeyId=key['AccessKeyId'],
                         DelegateAccount=self.params['DelegateAccount'])
                     req.main()
                 for policy in policies:
-                    req = DeleteUserPolicy(
-                        config=self.config, service=self.service,
-                        UserName=self.args['UserName'],
+                    req = DeleteUserPolicy.from_other(
+                        self, UserName=self.args['UserName'],
                         PolicyName=policy,
                         DelegateAccount=self.params['DelegateAccount'])
                     req.main()
                 for cert in certs:
-                    req = DeleteSigningCertificate(
-                        config=self.config, service=self.service,
-                        UserName=self.args['UserName'],
+                    req = DeleteSigningCertificate.from_other(
+                        self, UserName=self.args['UserName'],
                         CertificateId=cert['CertificateId'],
                         DelegateAccount=self.params['DelegateAccount'])
                     req.main()
                 for group in groups:
-                    req = RemoveUserFromGroup(
-                        config=self.config, service=self.service,
-                        user_names=[self.args['UserName']],
+                    req = RemoveUserFromGroup.from_other(
+                        self, user_names=[self.args['UserName']],
                         GroupName=group['GroupName'],
                         DelegateAccount=self.params['DelegateAccount'])
                     req.main()
                 if has_login_profile:
-                    req = DeleteLoginProfile(
-                        config=self.config, service=self.service,
-                        UserName=self.args['UserName'],
+                    req = DeleteLoginProfile.from_other(
+                        self, UserName=self.args['UserName'],
                         DelegateAccount=self.params['DelegateAccount'])
                     req.main()
             return self.send()

@@ -49,9 +49,8 @@ class DeleteInstanceProfile(IAMRequest):
     def main(self):
         if self.args.get('recursive') or self.args.get('pretend'):
             # Figure out what we have to delete
-            req = GetInstanceProfile(
-                config=self.config, service=self.service,
-                InstanceProfileName=self.args['InstanceProfileName'],
+            req = GetInstanceProfile.from_other(
+                self, InstanceProfileName=self.args['InstanceProfileName'],
                 DelegateAccount=self.args.get('DelegateAccount'))
             response = req.main()
             roles = []
@@ -66,9 +65,8 @@ class DeleteInstanceProfile(IAMRequest):
         else:
             if self.args.get('recursive'):
                 for role in roles:
-                    req = RemoveRoleFromInstanceProfile(
-                        config=self.config, service=self.service,
-                        RoleName=role['name'],
+                    req = RemoveRoleFromInstanceProfile.from_other(
+                        self, RoleName=role['name'],
                         InstanceProfileName=self.args['InstanceProfileName'],
                         DelegateAccount=self.args.get('DelegateAccount'))
                     req.main()

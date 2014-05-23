@@ -1,4 +1,4 @@
-# Copyright 2009-2013 Eucalyptus Systems, Inc.
+# Copyright 2009-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -23,10 +23,11 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT
-from euca2ools.commands.iam.getgrouppolicy import GetGroupPolicy
 from requestbuilder import Arg
 from requestbuilder.response import PaginatedResponse
+
+from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT
+from euca2ools.commands.iam.getgrouppolicy import GetGroupPolicy
 
 
 class ListGroupPolicies(IAMRequest):
@@ -74,9 +75,8 @@ class ListGroupPolicies(IAMRequest):
                     self.print_policy(policy_name)
 
     def print_policy(self, policy_name):
-        req = GetGroupPolicy(
-            config=self.config, service=self.service,
-            GroupName=self.args['GroupName'], PolicyName=policy_name,
+        req = GetGroupPolicy.from_other(
+            self, GroupName=self.args['GroupName'], PolicyName=policy_name,
             pretty_print=self.args['pretty_print'],
             DelegateAccount=self.params.get('DelegateAccount'))
         response = req.main()

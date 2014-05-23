@@ -55,9 +55,8 @@ class AddUserPolicy(IAMRequest):
         policy = build_iam_policy(self.args['effect'], self.args['resources'],
                                   self.args['actions'])
         policy_doc = json.dumps(policy)
-        req = PutUserPolicy(
-            config=self.config, service=self.service,
-            UserName=self.args['user_name'],
+        req = PutUserPolicy.from_other(
+            self, UserName=self.args['user_name'],
             PolicyName=self.args['policy_name'], PolicyDocument=policy_doc,
             DelegateAccount=self.params['DelegateAccount'])
         response = req.main()

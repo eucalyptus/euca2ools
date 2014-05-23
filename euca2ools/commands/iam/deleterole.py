@@ -49,9 +49,8 @@ class DeleteRole(IAMRequest):
     def main(self):
         if self.args.get('recursive') or self.args.get('pretend'):
             # Figure out what we have to delete
-            req = ListInstanceProfilesForRole(
-                config=self.config, service=self.service,
-                RoleName=self.args['RoleName'],
+            req = ListInstanceProfilesForRole.from_other(
+                self, RoleName=self.args['RoleName'],
                 DelegateAccount=self.args.get('DelegateAccount'))
             response = req.main()
             instance_profiles = []
@@ -60,9 +59,8 @@ class DeleteRole(IAMRequest):
                     {'arn': profile.get('Arn'),
                      'name': profile.get('InstanceProfileName')})
 
-            req = ListRolePolicies(
-                config=self.config, service=self.service,
-                RoleName=self.args['RoleName'],
+            req = ListRolePolicies.from_other(
+                self, RoleName=self.args['RoleName'],
                 DelegateAccount=self.args.get('DelegateAccount'))
             response = req.main()
             policies = []
@@ -78,16 +76,14 @@ class DeleteRole(IAMRequest):
         else:
             if self.args.get('recursive'):
                 for profile in instance_profiles:
-                    req = RemoveRoleFromInstanceProfile(
-                        config=self.config, service=self.service,
-                        RoleName=self.args['RoleName'],
+                    req = RemoveRoleFromInstanceProfile.from_other(
+                        self, RoleName=self.args['RoleName'],
                         InstanceProfileName=profile['name'],
                         DelegateAccount=self.args.get('DelegateAccount'))
                     req.main()
                 for policy in policies:
-                    req = DeleteRolePolicy(
-                        config=self.config, service=self.service,
-                        RoleName=self.args['RoleName'],
+                    req = DeleteRolePolicy.from_other(
+                        self, RoleName=self.args['RoleName'],
                         PolicyName=policy,
                         DelegateAccount=self.args.get('DelegateAccount'))
                     req.main()

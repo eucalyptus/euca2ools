@@ -1,4 +1,4 @@
-# Copyright 2009-2013 Eucalyptus Systems, Inc.
+# Copyright 2009-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -24,12 +24,14 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import argparse
+
+from requestbuilder import Arg
+
 from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT
 from euca2ools.commands.iam.deletegrouppolicy import DeleteGroupPolicy
 from euca2ools.commands.iam.getgroup import GetGroup
 from euca2ools.commands.iam.listgrouppolicies import ListGroupPolicies
 from euca2ools.commands.iam.removeuserfromgroup import RemoveUserFromGroup
-from requestbuilder import Arg
 
 
 class DeleteGroup(IAMRequest):
@@ -49,13 +51,12 @@ class DeleteGroup(IAMRequest):
     def main(self):
         if self.args['recursive'] or self.args['pretend']:
             # Figure out what we'd have to delete
-            req = GetGroup(config=self.config, service=self.service,
-                           GroupName=self.args['GroupName'],
-                           DelegateAccount=self.params['DelegateAccount'])
+            req = GetGroup.from_other(
+                self, GroupName=self.args['GroupName'],
+                DelegateAccount=self.params['DelegateAccount'])
             members = req.main().get('Users', [])
-            req = ListGroupPolicies(
-                config=self.config, service=self.service,
-                GroupName=self.args['GroupName'],
+            req = ListGroupPolicies.from_other(
+                self, GroupName=self.args['GroupName'],
                 DelegateAccount=self.params['DelegateAccount'])
             policies = req.main().get('PolicyNames', [])
         else:
@@ -68,16 +69,15 @@ class DeleteGroup(IAMRequest):
         else:
             if self.args['recursive']:
                 member_names = [member['UserName'] for member in members]
-                req = RemoveUserFromGroup(
-                    config=self.config, service=self.service,
-                    GroupName=self.args['GroupName'],
+                req = RemoveUserFromGroup.from_other(
+                    self, GroupName=self.args['GroupName'],
                     user_names=member_names,
                     DelegateAccount=self.params['DelegateAccount'])
                 req.main()
                 for policy in policies:
-                    req = DeleteGroupPolicy(
-                        config=self.config, service=self.service,
-                        GroupName=self.args['GroupName'], PolicyName=policy,
+                    req = DeleteGroupPolicy.from_other(
+                        self, GroupName=self.args['GroupName'],
+                        PolicyName=policy,
                         DelegateAccount=self.params['DelegateAccount'])
                     req.main()
             return self.send()

@@ -81,10 +81,10 @@ class UploadBundle(S3Request, BundleUploadingMixin,
         if not self.args.get('skip_manifest'):
             manifest_dest = (key_prefix +
                              os.path.basename(self.args['manifest']))
-            req = PutObject(source=self.args['manifest'], dest=manifest_dest,
-                            acl=self.args.get('acl') or 'aws-exec-read',
-                            retries=self.args.get('retries') or 0,
-                            service=self.service, config=self.config)
+            req = PutObject.from_other(
+                self, source=self.args['manifest'], dest=manifest_dest,
+                acl=self.args.get('acl') or 'aws-exec-read',
+                retries=self.args.get('retries') or 0)
             req.main()
         else:
             manifest_dest = None

@@ -342,16 +342,14 @@ class BundleUploadingMixin(object):
 
         bucket = self.args['bucket'].split('/', 1)[0]
         try:
-            req = CheckBucket(bucket=bucket, service=self.service,
-                              config=self.config)
+            req = CheckBucket.from_other(self, bucket=bucket)
             req.main()
         except AWSError as err:
             if err.status_code == 404:
                 # No such bucket
                 self.log.info("creating bucket '%s'", bucket)
-                req = CreateBucket(bucket=bucket,
-                                   location=self.args.get('location'),
-                                   config=self.config, service=self.service)
+                req = CreateBucket.from_other(
+                    self, bucket=bucket, location=self.args.get('location'))
                 req.main()
             else:
                 raise
@@ -366,20 +364,18 @@ class BundleUploadingMixin(object):
             if show_progress:
                 # PostObject does not yet support show_progress
                 print source, 'uploading...'
-            req = PostObject(source=source, dest=dest,
-                             acl=self.args.get('acl') or 'aws-exec-read',
-                             Policy=self.args['upload_policy'],
-                             Signature=self.args['upload_policy_signature'],
-                             AWSAccessKeyId=self.args['key_id'],
-                             service=self.service, config=self.config,
-                             **putobj_kwargs)
+            req = PostObject.from_other(
+                self, source=source, dest=dest,
+                acl=self.args.get('acl') or 'aws-exec-read',
+                Policy=self.args['upload_policy'],
+                Signature=self.args['upload_policy_signature'],
+                AWSAccessKeyId=self.args['key_id'], **putobj_kwargs)
         else:
-            req = PutObject(source=source, dest=dest,
-                            acl=self.args.get('acl') or 'aws-exec-read',
-                            retries=self.args.get('retries') or 0,
-                            show_progress=show_progress,
-                            service=self.service, config=self.config,
-                            **putobj_kwargs)
+            req = PutObject.from_other(
+                self, source=source, dest=dest,
+                acl=self.args.get('acl') or 'aws-exec-read',
+                retries=self.args.get('retries') or 0,
+                show_progress=show_progress, **putobj_kwargs)
         req.main()
 
     def upload_bundle_parts(self, partinfo_in_mpconn, key_prefix,
@@ -440,8 +436,9 @@ class BundleDownloadingMixin(object):
         manifest_s3path = self.get_manifest_s3path()
         with tempfile.TemporaryFile() as manifest_tempfile:
             self.log.info('reading manifest from %s', manifest_s3path)
-            req = GetObject(config=self.config, service=s3_service,
-                            source=manifest_s3path, dest=manifest_tempfile)
+            req = GetObject.from_other(
+                self, service=s3_service, source=manifest_s3path,
+                dest=manifest_tempfile)
             try:
                 req.main()
             except AWSError as err:
@@ -469,9 +466,9 @@ class BundleDownloadingMixin(object):
                                          os.path.basename(part_s3path))
             self.log.info('downloading part %s to %s',
                           part_s3path, part.filename)
-            req = GetObject(
-                config=self.config, service=s3_service,
-                source=part_s3path, dest=part.filename,
+            req = GetObject.from_other(
+                self, service=s3_service, source=part_s3path,
+                dest=part.filename,
                 show_progress=self.args.get('show_progress', False))
             response = req.main()
             self.__check_part_sha1(part, part_s3path, response)
@@ -483,9 +480,9 @@ class BundleDownloadingMixin(object):
                                          os.path.basename(manifest_s3path))
             self.log.info('downloading manifest %s to %s',
                           manifest_s3path, manifest_dest)
-            req = GetObject(
-                config=self.config, service=s3_service,
-                source=manifest_s3path, dest=manifest_dest,
+            req = GetObject.from_other(
+                self, service=s3_service, source=manifest_s3path,
+                dest=manifest_dest,
                 show_progress=self.args.get('show_progress', False))
             req.main()
             return manifest_dest
@@ -497,9 +494,9 @@ class BundleDownloadingMixin(object):
         parts = self.map_bundle_parts_to_s3paths(manifest)
         for part, part_s3path in parts:
             self.log.info('downloading part %s', part_s3path)
-            req = GetObject(
-                config=self.config, service=s3_service,
-                source=part_s3path, dest=fileobj,
+            req = GetObject.from_other(
+                self, service=s3_service, source=part_s3path,
+                dest=fileobj,
                 show_progress=self.args.get('show_progress', False))
             response = req.main()
             self.__check_part_sha1(part, part_s3path, response)

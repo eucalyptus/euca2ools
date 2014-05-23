@@ -153,8 +153,8 @@ class Unbundle(BaseCommand, FileTransferProgressBarMixin,
         image_filename = os.path.join(self.args['destination'],
                                       manifest.image_name)
         with open(image_filename, 'w') as image:
-            unbundlestream = UnbundleStream(
-                config=self.config, source=part_reader_out_r, dest=image,
+            unbundlestream = UnbundleStream.from_other(
+                self, source=part_reader_out_r, dest=image,
                 enc_key=manifest.enc_key, enc_iv=manifest.enc_iv,
                 image_size=manifest.image_size,
                 sha1_digest=manifest.image_digest,

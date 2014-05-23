@@ -77,9 +77,8 @@ class ListRolePolicies(IAMRequest):
         print 'IsTruncated: false'
 
     def print_policy(self, policy_name):
-        req = GetRolePolicy(
-            config=self.config, service=self.service,
-            RoleName=self.args['RoleName'], PolicyName=policy_name,
+        req = GetRolePolicy.from_other(
+            self, RoleName=self.args['RoleName'], PolicyName=policy_name,
             pretty_print=self.args['pretty_print'],
             DelegateAccount=self.params.get('DelegateAccount'))
         response = req.main()

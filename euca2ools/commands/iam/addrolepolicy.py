@@ -55,9 +55,8 @@ class AddRolePolicy(IAMRequest):
         policy = build_iam_policy(self.args['effect'], self.args['resources'],
                                   self.args['actions'])
         policy_doc = json.dumps(policy)
-        req = PutRolePolicy(
-            config=self.config, service=self.service,
-            RoleName=self.args['role_name'],
+        req = PutRolePolicy.from_other(
+            self, RoleName=self.args['role_name'],
             PolicyName=self.args['policy_name'],
             PolicyDocument=policy_doc,
             DelegateAccount=self.params['DelegateAccount'])

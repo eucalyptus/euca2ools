@@ -102,8 +102,8 @@ class DownloadAndUnbundle(S3Request, FileTransferProgressBarMixin,
         finally:
             download_out_w.close()
         image_filename = self.__open_dest(manifest)
-        unbundlestream = UnbundleStream(
-            config=self.config, source=download_out_r, dest=self.args['dest'],
+        unbundlestream = UnbundleStream.from_other(
+            self, source=download_out_r, dest=self.args['dest'],
             enc_key=manifest.enc_key, enc_iv=manifest.enc_iv,
             image_size=manifest.image_size, sha1_digest=manifest.image_digest,
             show_progress=self.args.get('show_progress', False))
@@ -111,9 +111,9 @@ class DownloadAndUnbundle(S3Request, FileTransferProgressBarMixin,
         return image_filename
 
     def __create_download_pipeline(self, outfile):
-        downloadbundle = DownloadBundle(
-            service=self.service, config=self.config, dest=outfile,
-            bucket=self.args['bucket'], manifest=self.args.get('manifest'),
+        downloadbundle = DownloadBundle.from_other(
+            self, dest=outfile, bucket=self.args['bucket'],
+            manifest=self.args.get('manifest'),
             local_manifest=self.args.get('local_manifest'),
             show_progress=False)
         downloadbundle_p = multiprocessing.Process(target=downloadbundle.main)

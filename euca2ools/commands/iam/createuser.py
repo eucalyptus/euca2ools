@@ -1,4 +1,4 @@
-# Copyright 2009-2012 Eucalyptus Systems, Inc.
+# Copyright 2009-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -23,10 +23,11 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+from requestbuilder import Arg
+
 from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT
 from euca2ools.commands.iam.addusertogroup import AddUserToGroup
 from euca2ools.commands.iam.createaccesskey import CreateAccessKey
-from requestbuilder import Arg
 
 
 class CreateUser(IAMRequest):
@@ -47,16 +48,14 @@ class CreateUser(IAMRequest):
 
     def postprocess(self, result):
         if self.args.get('group_name'):
-            obj = AddUserToGroup(
-                config=self.config, service=self.service,
-                UserName=self.args['UserName'],
+            obj = AddUserToGroup.from_other(
+                self, UserName=self.args['UserName'],
                 GroupName=self.args['group_name'],
                 DelegateAccount=self.params['DelegateAccount'])
             obj.main()
         if self.args.get('create_accesskey'):
-            obj = CreateAccessKey(
-                config=self.config, service=self.service,
-                UserName=self.args['UserName'],
+            obj = CreateAccessKey.from_other(
+                self, UserName=self.args['UserName'],
                 DelegateAccount=self.params['DelegateAccount'])
             key_result = obj.main()
             result.update(key_result)

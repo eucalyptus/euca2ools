@@ -55,9 +55,8 @@ class AddGroupPolicy(IAMRequest):
         policy = build_iam_policy(self.args['effect'], self.args['resources'],
                                   self.args['actions'])
         policy_doc = json.dumps(policy)
-        req = PutGroupPolicy(
-            config=self.config, service=self.service,
-            GroupName=self.args['group_name'],
+        req = PutGroupPolicy.from_other(
+            self, GroupName=self.args['group_name'],
             PolicyName=self.args['policy_name'],
             PolicyDocument=policy_doc,
             DelegateAccount=self.params['DelegateAccount'])
