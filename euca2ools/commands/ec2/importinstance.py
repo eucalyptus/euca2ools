@@ -25,6 +25,7 @@
 
 from __future__ import division
 
+import base64
 import argparse
 import datetime
 import math
@@ -89,12 +90,11 @@ class ImportInstance(EC2Request, S3AccessMixin, FileTransferProgressBarMixin):
                 metavar='BYTES', type=filesize,
                 help='size of the image (required for non-raw files'),
             MutuallyExclusiveArgList(
-                Arg('--user-data', metavar='DATA',
-                    dest='LaunchSpecification.UserData',
+                Arg('--user-data', metavar='DATA', route_to=None,
                     help='user data to supply to the instance'),
-                Arg('--user-data-file', metavar='FILE', type=open,
-                    dest='LaunchSpecification.UserData', help='''file
-                    containing user data to supply to the instance''')),
+                Arg('--user-data-file', metavar='FILE', route_to=None,
+                    help='''file containing user data to supply to the
+                    instance''')),
             Arg('--subnet', metavar='SUBNET',
                 dest='LaunchSpecification.SubnetId', help='''[VPC only] subnet
                 to create the instance's network interface in'''),
@@ -149,7 +149,14 @@ class ImportInstance(EC2Request, S3AccessMixin, FileTransferProgressBarMixin):
         if self.args['expires'] < 1:
             raise ArgumentError(
                 'argument -x/--expires: value must be positive')
-
+        if self.args.get('user_data'):
+            self.params['LaunchSpecification.UserData'] = base64.b64encode(
+                    self.args['user_data'])
+        elif self.args.get('user_data_file'):
+            with open(self.args['user_data_file']) as user_data_file:
+                self.params['LaunchSpecification.UserData'] = base64.b64encode(
+                    user_data_file.read())
+ 
     def main(self):
         if self.args.get('dry_run'):
             return
