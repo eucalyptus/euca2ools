@@ -38,5 +38,5 @@ class UpdateAccessKey(IAMRequest):
                 help='ID of the access key to update (required)'),
             Arg('-s', '--status', dest='Status', required=True,
                 choices=('Active', 'Inactive'),
-                help='status to assign to the access key'),
+                help='status to assign to the access key (required)'),
             AS_ACCOUNT]

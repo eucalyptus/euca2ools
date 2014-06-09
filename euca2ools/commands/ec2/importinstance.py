@@ -111,7 +111,7 @@ class ImportInstance(EC2Request, S3AccessMixin, FileTransferProgressBarMixin):
                 dest='LaunchSpecification.InstanceInitiatedShutdownBehavior',
                 choices=('stop', 'terminate'), help='''whether to "stop"
                 (default) or terminate the instance when it shuts down'''),
-            Arg('--key', dest='LaunchSpecification.KeyName',
+            Arg('--key', dest='LaunchSpecification.KeyName', metavar='KEYPAIR',
                 help='''[Eucalyptus only] name of the key pair to use when
                 running the instance'''),
             # This is not yet implemented
