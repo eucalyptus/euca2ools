@@ -26,6 +26,7 @@
 from __future__ import division
 
 import argparse
+import base64
 import datetime
 import math
 import uuid
@@ -34,7 +35,7 @@ from requestbuilder import Arg, MutuallyExclusiveArgList
 from requestbuilder.exceptions import ArgumentError
 from requestbuilder.mixins import FileTransferProgressBarMixin
 
-from euca2ools.commands.argtypes import filesize
+from euca2ools.commands.argtypes import b64encoded_file_contents, filesize
 from euca2ools.commands.ec2 import EC2Request
 from euca2ools.commands.ec2.mixins import S3AccessMixin
 from euca2ools.commands.ec2.resumeimport import ResumeImport
@@ -89,10 +90,11 @@ class ImportInstance(EC2Request, S3AccessMixin, FileTransferProgressBarMixin):
                 metavar='BYTES', type=filesize,
                 help='size of the image (required for non-raw files'),
             MutuallyExclusiveArgList(
-                Arg('--user-data', metavar='DATA',
+                Arg('--user-data', metavar='DATA', type=base64.b64encode,
                     dest='LaunchSpecification.UserData',
                     help='user data to supply to the instance'),
-                Arg('--user-data-file', metavar='FILE', type=open,
+                Arg('--user-data-file', metavar='FILE',
+                    type=b64encoded_file_contents,
                     dest='LaunchSpecification.UserData', help='''file
                     containing user data to supply to the instance''')),
             Arg('--subnet', metavar='SUBNET',
