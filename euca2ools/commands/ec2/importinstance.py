@@ -30,9 +30,10 @@ import base64
 import datetime
 import math
 import uuid
+import sys
 
 from requestbuilder import Arg, MutuallyExclusiveArgList
-from requestbuilder.exceptions import ArgumentError
+from requestbuilder.exceptions import ArgumentError, ServerError
 from requestbuilder.mixins import FileTransferProgressBarMixin
 
 from euca2ools.commands.argtypes import b64encoded_file_contents, filesize
@@ -157,7 +158,13 @@ class ImportInstance(EC2Request, S3AccessMixin, FileTransferProgressBarMixin):
             return
 
         if self.args.get('bucket'):
-            self.ensure_bucket_exists(self.args['bucket'])
+            try:
+                self.ensure_bucket_exists(self.args['bucket'])
+            except ServerError as err:
+                if err.status_code == 403:
+                    print "You don't have access to the bucket. Please check your credentials."
+                    sys.exit(1)
+
 
         if not self.args.get('DiskImage.1.Image.ImportManifestUrl'):
             manifest_key = '{0}/{1}.manifest.xml'.format(uuid.uuid4(),
