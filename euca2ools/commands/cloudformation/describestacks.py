@@ -42,5 +42,6 @@ class DescribeStacks(CloudFormationRequest):
             if self.args['show_long']:
                 print stack.get('StackId')
                 print stack.get('NotificationARNs')
-            for output in stack['Outputs']:
-                self.print_output(output)
+            if stack.get('Outputs'):
+                for output in stack.get('Outputs'):
+                    self.print_output(output)
