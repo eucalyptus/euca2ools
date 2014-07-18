@@ -64,6 +64,8 @@ class DescribeInstances(EC2Request):
                Filter('group-id', help='security group ID'),
                Filter('group-name', help='security group name'),
                Filter('hypervisor', help='hypervisor type'),
+               Filter('iam-instance-profile.arn',
+                      help="ARN of the instance's instance profile"),
                Filter('image-id', help='machine image ID'),
                Filter('instance.group-id', help='security group ID'),
                Filter('instance.group-name', help='security group name'),
