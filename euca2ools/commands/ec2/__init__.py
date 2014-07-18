@@ -129,6 +129,7 @@ class EC2Request(AWSQueryRequest, TabifyingMixin):
         instance_line.append(instance.get('placement', {}).get('tenancy'))
         instance_line.append(instance.get('ebsOptimized'))
         instance_line.append(instance.get('iamInstanceProfile', {}).get('arn'))
+        instance_line.append(instance.get('architecture'))
         print self.tabify(instance_line)
 
         for blockdev in instance.get('blockDeviceMapping', []):
