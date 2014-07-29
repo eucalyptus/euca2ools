@@ -23,21 +23,38 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import argparse
+
 from requestbuilder import Arg
+from requestbuilder.exceptions import ArgumentError
 
 from euca2ools.commands.ec2 import EC2Request
 
 
 class CreateSubnet(EC2Request):
     DESCRIPTION = 'Create a new VPC subnet'
-    ARGS = [Arg('-c', '--vpc', dest='VpcId', required=True,
+    # We also accept CidrBlock positionally because forgetting -i is common.
+    # https://eucalyptus.atlassian.net/browse/TOOLS-497
+    ARGS = [Arg('positional_cidr', nargs='?', route_to=None,
+                help=argparse.SUPPRESS),
+            Arg('-c', '--vpc', dest='VpcId', required=True,
                 help='ID of the VPC to create the new subnet in (required)'),
             Arg('-i', '--cidr', dest='CidrBlock', metavar='CIDR',
-                required=True,
                 help='CIDR address block for the new subnet (required)'),
             Arg('-z', '--availability-zone', dest='AvailabilityZone',
                 help='availability zone in which to create the new subnet')]
     LIST_TAGS = ['tagSet']
+
+    def configure(self):
+        EC2Request.configure(self)
+        if self.args.get('positional_cidr'):
+            if self.params.get('CidrBlock'):
+                # Shouldn't be supplied both positionally and optionally
+                raise ArgumentError('unrecognized arguments: {0}'.format(
+                    self.args['positional_cidr']))
+            self.params['CidrBlock'] = self.args['positional_cidr']
+        if not self.params.get('CidrBlock'):
+            raise ArgumentError('argument -i/--cidr is required')
 
     def print_result(self, result):
         self.print_subnet(result.get('subnet') or {})
