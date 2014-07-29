@@ -29,9 +29,9 @@ from requestbuilder import Arg
 
 class DeleteAccessKey(EuareRequest):
     DESCRIPTION = 'Delete an access key'
-    ARGS = [Arg('-u', '--user-name', dest='UserName', metavar='USER',
-                required=True, help='user whose key to delete (required)'),
-            Arg('-k', '--user-key-id', dest='AccessKeyId', metavar='KEY_ID',
+    ARGS = [Arg('-k', '--user-key-id', dest='AccessKeyId', metavar='KEY_ID',
                 required=True,
                 help='ID of the access key to delete (required)'),
+            Arg('-u', '--user-name', dest='UserName', metavar='USER',
+                help='user whose key to delete'),
             AS_ACCOUNT]

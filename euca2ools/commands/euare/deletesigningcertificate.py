@@ -29,10 +29,9 @@ from requestbuilder import Arg
 
 class DeleteSigningCertificate(EuareRequest):
     DESCRIPTION = 'Delete a signing certificate'
-    ARGS = [Arg('-u', '--user-name', dest='UserName', metavar='USER',
-                required=True,
-                help='user the signing certificate belongs to (required)'),
-            Arg('-c', '--certificate-id', dest='CertificateId', metavar='CERT',
+    ARGS = [Arg('-c', '--certificate-id', dest='CertificateId', metavar='CERT',
                 required=True,
                 help='ID of the signing certificate to delete (required)'),
+            Arg('-u', '--user-name', dest='UserName', metavar='USER',
+                help='user the signing certificate belongs to'),
             AS_ACCOUNT]
