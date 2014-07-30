@@ -1,4 +1,4 @@
-# Copyright 2009-2013 Eucalyptus Systems, Inc.
+# Copyright 2009-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -35,7 +35,9 @@ from requestbuilder.mixins import TabifyingMixin
 from requestbuilder.request import AWSQueryRequest
 from requestbuilder.service import BaseService
 from requestbuilder.util import set_userregion
+import socket
 import shlex
+import six
 from string import Template
 import sys
 
@@ -194,6 +196,9 @@ class Eucalyptus(BaseService):
         # SSL cert verification is opt-in
         self.session_args['verify'] = self.config.get_region_option_bool(
             'verify-ssl', default=False)
+
+        # requests only applies proxy config in code paths we don't use
+        self.session_args['proxies'] = _get_proxies()
 
         # Ensure everything is okay and finish up
         self.validate_config()
@@ -437,3 +442,14 @@ def _parse_shell_configfile(configfile_name):
                 if not config.get(key):
                     config[key] = Template(val).safe_substitute(config)
     return config
+
+
+def _get_proxies():
+    try:
+        bypass = six.moves.urllib.request.proxy_bypass()
+    except (TypeError, socket.gaierror):
+        # This blows up on my old OS X machine
+        bypass = False
+    if bypass:
+        return {}
+    return six.moves.urllib.request.getproxies()
