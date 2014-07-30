@@ -109,6 +109,14 @@ def ec2_block_device_mapping(map_as_str):
     return map_dict
 
 
+def flexible_bool(bool_str):
+    if bool_str.strip().lower() in ('0', 'f', 'false', 'n', 'no'):
+        return False
+    if bool_str.strip().lower() in ('1', 't', 'true', 'y', 'yes'):
+        return True
+    raise TypeError("'{0}' must be 'true' or 'false'".format(bool_str))
+
+
 def filesize(size):
     suffixes = 'kmgt'
     s_size = size.lower().rstrip('b')

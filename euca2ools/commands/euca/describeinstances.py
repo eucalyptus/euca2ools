@@ -46,7 +46,7 @@ class DescribeInstances(EucalyptusRequest):
                Filter('availability-zone'),
                Filter('block-device-mapping.attach-time',
                       help='volume attachment time'),
-               Filter('block-device-mapping.delete-on-termination', type=bool,
+               Filter('block-device-mapping.delete-on-termination',
                       help='''whether a volume is deleted upon instance
                       termination'''),
                Filter('block-device-mapping.device-name',
