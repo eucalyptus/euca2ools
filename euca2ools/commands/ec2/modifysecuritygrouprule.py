@@ -80,15 +80,15 @@ class _ModifySecurityGroupRule(EC2Request):
             self.params['GroupName'] = self.args['group']
 
         target_group = self.args.get('target_group')
-        if (target_group is not None and target_group.startswith('sg-') and
-                len(target_group) == 11):
-            # Same note as above
-            self.params['IpPermissions.1.Groups.1.GroupId'] = target_group
-        else:
-            if self.args['egress']:
-                raise ArgumentError('argument -o: egress rules must use group '
-                                    'IDs, not names')
-            self.params['IpPermissions.1.Groups.1.GroupName'] = target_group
+        if target_group is not None:
+            if target_group.startswith('sg-') and len(target_group) == 11:
+                # Same note as above
+                self.params['IpPermissions.1.Groups.1.GroupId'] = target_group
+            else:
+                if self.args['egress']:
+                    raise ArgumentError('argument -o: egress rules must use '
+                                        'group IDs, not names')
+                self.params['IpPermissions.1.Groups.1.GroupName'] = target_group
 
         from_port, to_port = parse_ports(
             self.args.get('IpPermissions.1.IpProtocol'),
