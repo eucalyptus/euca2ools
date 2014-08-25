@@ -27,7 +27,7 @@ from requestbuilder import Arg, MutuallyExclusiveArgList
 
 from euca2ools.commands.argtypes import binary_tag_def, delimited_list
 from euca2ools.commands.cloudformation import CloudFormationRequest
-from euca2ools.commands.cloudformation.argtypes import parameter_def
+from euca2ools.commands.cloudformation.argtypes import parameter_list
 
 
 class CreateStack(CloudFormationRequest):
@@ -46,8 +46,8 @@ class CreateStack(CloudFormationRequest):
             Arg('-n', '--notification-arns', dest='NotificationARNs',
                 metavar='ARN[,...]', type=delimited_list(','), action='append',
                 help='''SNS ARNs to publish stack actions to'''),
-            Arg('-p', '--parameter', dest='Parameters.member',
-                metavar='KEY=VALUE', type=parameter_def, action='append',
+            Arg('-p', '--parameter', dest='param_sets', route_to=None,
+                metavar='KEY=VALUE', type=parameter_list, action='append',
                 help='''key and value of the parameters to use with the new
                 stack's template, separated by an "=" character'''),
             Arg('-t', '--timeout', dest='TimeoutInMinutes', type=int,
@@ -57,6 +57,11 @@ class CreateStack(CloudFormationRequest):
                 help='''key and optional value of the tag to create, separated
                 by an "=" character.  If no value is given the tag's value is
                 set to an empty string.''')]
+
+    def configure(self):
+        CloudFormationRequest.configure(self)
+        stack_params = sum(self.args.get('param_sets') or [], [])
+        self.params['Parameters.member'] = stack_params
 
     def print_result(self, result):
         print result.get('StackId')

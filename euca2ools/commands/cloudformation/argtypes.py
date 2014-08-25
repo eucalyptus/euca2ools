@@ -25,16 +25,27 @@
 
 import argparse
 
+import requestbuilder
 
-def parameter_def(param_str):
+
+def parameter_list(param_list_str):
     """
-    Parse a tag definition from the command line.  Return a dict that depends
-    on the format of the string given:
+    Parse a semicolon-delimited list of tag definitions from the command
+    line.  Return a list with dicts that contain each parameter's key
+    and value as follows:
 
      - 'key=value': {'ParameterKey': key, 'ParameterValue': value}
     """
-    if '=' in param_str:
-        key, val = param_str.split('=', 1)
-        return {'ParameterKey': key, 'ParameterValue': val}
-    raise argparse.ArgumentTypeError('parameter "{0}" must have form KEY=VALUE'
-                                     .format(param_str))
+    params = []
+    for param_str in param_list_str.split(';'):
+        errmsg = 'parameter "{0}" must have form KEY=VALUE'.format(param_str)
+        if '=' in param_str:
+            key, val = param_str.split('=', 1)
+            if not key:
+                raise argparse.ArgumentTypeError(errmsg)
+            if not val:
+                val = requestbuilder.EMPTY
+            params.append({'ParameterKey': key, 'ParameterValue': val})
+        else:
+            raise argparse.ArgumentTypeError(errmsg)
+    return params

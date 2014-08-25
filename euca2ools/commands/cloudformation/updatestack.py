@@ -26,7 +26,7 @@
 from requestbuilder import Arg, MutuallyExclusiveArgList
 
 from euca2ools.commands.cloudformation import CloudFormationRequest
-from euca2ools.commands.cloudformation.argtypes import parameter_def
+from euca2ools.commands.cloudformation.argtypes import parameter_list
 
 
 class UpdateStack(CloudFormationRequest):
@@ -40,10 +40,15 @@ class UpdateStack(CloudFormationRequest):
                 Arg('--template-url', dest='TemplateURL', metavar='URL',
                     help='URL pointing to a new JSON template for the stack'))
             .required(),
-            Arg('-p', '--parameter', dest='Parameters.member',
-                metavar='KEY=VALUE', type=parameter_def, action='append',
+            Arg('-p', '--parameter', dest='param_sets', route_to=None,
+                metavar='KEY=VALUE', type=parameter_list, action='append',
                 help='''key and value of the parameters to use with the
                 stack's template, separated by an "=" character''')]
+
+    def configure(self):
+        CloudFormationRequest.configure(self)
+        stack_params = sum(self.args.get('param_sets') or [], [])
+        self.params['Parameters.member'] = stack_params
 
     def print_result(self, result):
         print result.get('StackId')
