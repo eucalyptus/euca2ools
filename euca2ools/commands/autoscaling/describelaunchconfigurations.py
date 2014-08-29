@@ -74,6 +74,7 @@ class DescribeLaunchConfigurations(AutoScalingRequest, TabifyingMixin):
             bits.append(config.get('IamInstanceProfile'))
             if self.args['show_long']:
                 bits.append(config.get('EbsOptimized'))
+                bits.append(config.get('AssociatePublicIpAddress'))
             print self.tabify(bits)
 
 
