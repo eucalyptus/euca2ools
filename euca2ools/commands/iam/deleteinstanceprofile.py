@@ -26,6 +26,7 @@
 from requestbuilder import Arg
 
 from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT
+from euca2ools.commands.iam.deleterole import DeleteRole
 from euca2ools.commands.iam.getinstanceprofile import GetInstanceProfile
 from euca2ools.commands.iam.removerolefrominstanceprofile import \
     RemoveRoleFromInstanceProfile
@@ -68,6 +69,18 @@ class DeleteInstanceProfile(IAMRequest):
                     req = RemoveRoleFromInstanceProfile.from_other(
                         self, RoleName=role['name'],
                         InstanceProfileName=self.args['InstanceProfileName'],
+                        DelegateAccount=self.args.get('DelegateAccount'))
+                    req.main()
+                    # This role could be attached to another instance
+                    # profile, which means that a truly-recursive delete
+                    # would need to also remove it from that instance
+                    # profile, delete all of the role's policies, and
+                    # so on.  The failure modes for this are rather nasty,
+                    # so we don't tell DeleteRole to delete recursively;
+                    # if the same role belongs to more than one instance
+                    # profile then DeleteRole will simply fail harmlessly.
+                    req = DeleteRole.from_other(
+                        self, RoleName=role['name'],
                         DelegateAccount=self.args.get('DelegateAccount'))
                     req.main()
         return self.send()
