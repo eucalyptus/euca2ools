@@ -181,6 +181,7 @@ class EC2Request(AWSQueryRequest, TabifyingMixin):
     def print_subnet(self, subnet):
         print self.tabify(('SUBNET', subnet.get('subnetId'),
                            subnet.get('state'), subnet.get('vpcId'),
+                           subnet.get('cidrBlock'),
                            subnet.get('availableIpAddressCount'),
                            subnet.get('availabilityZone'),
                            subnet.get('defaultForAz'),
