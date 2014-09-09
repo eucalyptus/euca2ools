@@ -47,22 +47,21 @@ class BundleInstance(EC2Request):
                 required=True,
                 help='beginning of the machine image bundle name (required)'),
             Arg('-o', '--owner-akid', '--user-access-key', metavar='KEY-ID',
-                dest='Storage.S3.AWSAccessKeyId', required=True,
-                help="bucket owner's access key ID (required)"),
+                dest='Storage.S3.AWSAccessKeyId', help='''bucket owner's access
+                key ID (required if not specified in configuration)'''),
             Arg('-c', '--policy', metavar='POLICY',
-                dest='Storage.S3.UploadPolicy',
-                help='''Base64-encoded upload policy that allows the server
-                        to upload a bundle on your behalf.  If unused, -w is
-                        required.'''),
+                dest='Storage.S3.UploadPolicy', help='''Base64-encoded upload
+                policy that allows the server to upload a bundle on your
+                behalf.  If unused, a secret key is required.'''),
             Arg('-s', '--policy-signature', metavar='SIGNATURE',
                 dest='Storage.S3.UploadPolicySignature',
                 help='''signature of the Base64-encoded upload policy.  If
-                        unused, -w is required.'''),
+                unused, a secret key is required.'''),
             Arg('-w', '--owner-sak', '--user-secret-key', metavar='KEY',
                 route_to=None,
-                help="""bucket owner's secret access key, used to sign upload
-                        policies.  This is required unless both -c and -s are
-                        used."""),
+                help='''bucket owner's secret access key, used to sign upload
+                policies.  This is required unless both -c and -s are used or
+                if a secret key is specified in a configuration file.'''),
             Arg('-x', '--expires', metavar='HOURS', type=int, default=24,
                 route_to=None,
                 help='generated upload policy expiration time (default: 24)')]
@@ -91,14 +90,33 @@ class BundleInstance(EC2Request):
     # noinspection PyExceptionInherit
     def configure(self):
         EC2Request.configure(self)
-        if not self.args.get('Storage.S3.UploadPolicy'):
+        if not self.params.get('Storage.S3.AWSAccessKeyId'):
+            config_key_id = self.config.get_user_option('key-id')
+            if config_key_id:
+                self.log.info('Using access key ID %s from configuration',
+                              config_key_id)
+                self.params['Storage.S3.AWSAccessKeyId'] = config_key_id
+            else:
+                raise ArgumentError('argument -o/--owner-akid is required')
+        if not self.params.get('Storage.S3.UploadPolicy'):
             if not self.args.get('owner_sak'):
-                raise ArgumentError('argument -w/--owner-sak is required when '
-                                    '-c/--policy is not used')
+                config_secret_key = self.config.get_user_option('secret-key')
+                if config_secret_key:
+                    self.log.info('Using secret key from configuration')
+                    self.args['owner_sak'] = config_secret_key
+                else:
+                    raise ArgumentError('argument -w/--owner-sak is required '
+                                        'when -c/--policy is not used')
         elif not self.args.get('Storage.S3.UploadPolicySignature'):
             if not self.args.get('owner_sak'):
-                raise ArgumentError('argument -w/--owner-sak is required when '
-                                    '-s/--policy-signature is not used')
+                config_secret_key = self.config.get_user_option('secret-key')
+                if config_secret_key:
+                    self.log.info('Using secret key from configuration')
+                    self.args['owner_sak'] = config_secret_key
+                else:
+                    raise ArgumentError('argument -w/--owner-sak is required '
+                                        'when -s/--policy-signature is not '
+                                        'used')
 
     def preprocess(self):
         if not self.args.get('Storage.S3.UploadPolicy'):
