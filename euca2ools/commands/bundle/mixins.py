@@ -364,12 +364,18 @@ class BundleUploadingMixin(object):
             if show_progress:
                 # PostObject does not yet support show_progress
                 print source, 'uploading...'
+            if self.args.get('security_token'):
+                postobj_kwargs = \
+                    {'x-amz-security-token': self.args['security_token']}
+            else:
+                postobj_kwargs = {}
+            postobj_kwargs.update(putobj_kwargs)
             req = PostObject.from_other(
                 self, source=source, dest=dest,
                 acl=self.args.get('acl') or 'aws-exec-read',
                 Policy=self.args['upload_policy'],
                 Signature=self.args['upload_policy_signature'],
-                AWSAccessKeyId=self.args['key_id'], **putobj_kwargs)
+                AWSAccessKeyId=self.args['key_id'], **postobj_kwargs)
         else:
             req = PutObject.from_other(
                 self, source=source, dest=dest,

@@ -57,7 +57,13 @@ class PostObject(S3Request):
                 help='signature for the upload policy (required)'),
             Arg('-I', '--access-key-id', dest='AWSAccessKeyId', required=True,
                 metavar='KEY_ID', help='''ID of the access key that signed the
-                'upload policy (required)'''),
+                upload policy (required)'''),
+            # --security-token is an extension meant for eucalyptus's back end
+            # to use for BundleInstance operations started by the web console.
+            # https://eucalyptus.atlassian.net/browse/EUCA-9911
+            # https://eucalyptus.atlassian.net/browse/TOOLS-511
+            Arg('--security-token', dest='x-amz-security-token',
+                default=argparse.SUPPRESS, help=argparse.SUPPRESS),
             Arg('--acl', default=argparse.SUPPRESS, choices=(
                 'private', 'public-read', 'public-read-write',
                 'authenticated-read', 'bucket-owner-read',
