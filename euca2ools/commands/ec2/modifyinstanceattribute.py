@@ -72,8 +72,8 @@ class ModifyInstanceAttribute(EC2Request):
                     choices=('stop', 'terminate'), help='''whether to stop or
                     terminate the EBS instance when it shuts down
                     (instance-store instances are always terminated)'''),
-                Arg('-t', '--instance-type', metavar='INSTANCETYPE',
-                    help="change the instance's type"),
+                Arg('-t', '--instance-type', dest='InstanceType.Value',
+                    metavar='INSTANCETYPE', help="change the instance's type"),
                 Arg('--kernel', dest='Kernel.Value', metavar='IMAGE',
                     help="change the instance's kernel image"),
                 Arg('--ramdisk', dest='Ramdisk.Value', metavar='IMAGE',
