@@ -53,7 +53,7 @@ class PostObject(S3Request):
                     type=b64encoded_file_contents, help='''file containing the
                     upload policy to use for authorization'''))
             .required(),
-            Arg('--policy-signature', dest='Signature',
+            Arg('--policy-signature', dest='Signature', required=True,
                 help='signature for the upload policy (required)'),
             Arg('-I', '--access-key-id', dest='AWSAccessKeyId', required=True,
                 metavar='KEY_ID', help='''ID of the access key that signed the
