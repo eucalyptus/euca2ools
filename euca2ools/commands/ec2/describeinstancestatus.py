@@ -87,7 +87,7 @@ class DescribeInstanceStatus(EC2Request):
                 print self.tabify((
                     'SYSTEMSTATUS', sstatus.get('name'),
                     sstatus.get('status'), sstatus.get('impairedSince')))
-            for istatus in sset.get('systemStatus', {}).get('details') or []:
+            for istatus in sset.get('instanceStatus', {}).get('details') or []:
                 print self.tabify((
                     'INSTANCESTATUS', istatus.get('name'),
                     istatus.get('status'), istatus.get('impairedSince')))
