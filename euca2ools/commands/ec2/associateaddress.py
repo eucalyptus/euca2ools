@@ -65,6 +65,9 @@ class AssociateAddress(EC2Request):
             # ...but we still have to be one of them
             raise ArgumentError(
                 'argument -a/--allocation-id or an IP address is required')
+        if (self.args.get('PublicIp') or '').startswith('eipalloc-'):
+            # Make allocation IDs work positionally for convenience
+            self.params['AllocationId'] = self.params.pop('PublicIp')
 
     def print_result(self, result):
         if self.args.get('AllocationId'):
