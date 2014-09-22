@@ -1,4 +1,4 @@
-# Copyright 2009-2012 Eucalyptus Systems, Inc.
+# Copyright 2009-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -30,7 +30,7 @@ from requestbuilder import Arg
 class CreateAccessKey(EuareRequest):
     DESCRIPTION = 'Create a new access key for a user'
     ARGS = [Arg('-u', '--user-name', dest='UserName', help='''user the new key
-                will belong to (default: calling user)'''),
+                will belong to (default: current user)'''),
             AS_ACCOUNT]
 
     def print_result(self, result):
