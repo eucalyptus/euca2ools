@@ -24,10 +24,10 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 from requestbuilder import Arg
-from euca2ools.commands.ec2 import EC2Request
+from euca2ools.commands.euca import EucalyptusRequest
 
 
-class ResetSnapshotAttribute(EC2Request):
+class ResetSnapshotAttribute(EucalyptusRequest):
     DESCRIPTION = 'Reset an attribute of a snapshot to its default value'
     ARGS = [Arg('SnapshotId', metavar='SNAPSHOT', help='''ID of the
                 snapshot whose attribute should be reset (required)'''),

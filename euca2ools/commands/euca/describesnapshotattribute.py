@@ -25,20 +25,19 @@
 
 from requestbuilder import Arg, MutuallyExclusiveArgList
 
-from euca2ools.commands.ec2 import EC2Request
+from euca2ools.commands.euca import EucalyptusRequest
 
 
-class DescribeSnapshotAttribute(EC2Request):
+class DescribeSnapshotAttribute(EucalyptusRequest):
     DESCRIPTION = 'Show information about an attribute of a snapshot'
     ARGS = [Arg('SnapshotId', metavar='SNAPSHOT', help='snapshot to describe'),
-            MutuallyExclusiveArgList(
+            MutuallyExclusiveArgList(True,
                 Arg('-c', '--create-volume-permission', dest='Attribute',
                     action='store_const', const='createVolumePermission',
                     help='display who can create volumes from the snapshot'),
                 Arg('-p', '--product-codes', dest='Attribute',
                     action='store_const', const='productCodes',
-                    help='list associated product codes'))
-            .required()]
+                    help='list associated product codes'))]
     LIST_TAGS = ['createVolumePermission', 'productCodes']
 
     def print_result(self, result):

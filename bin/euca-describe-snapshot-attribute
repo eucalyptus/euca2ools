@@ -1,6 +1,6 @@
 #!/usr/bin/python -tt
 
-import euca2ools.commands.ec2.describesnapshotattribute
+import euca2ools.commands.euca.describesnapshotattribute
 
 if __name__ == '__main__':
-    euca2ools.commands.ec2.describesnapshotattribute.DescribeSnapshotAttribute.run()
+    euca2ools.commands.euca.describesnapshotattribute.DescribeSnapshotAttribute.run()
