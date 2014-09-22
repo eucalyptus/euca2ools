@@ -278,6 +278,13 @@ class EC2Request(AWSQueryRequest, TabifyingMixin):
             print self.tabify(('PRIVATEIPADDRESS',
                                privaddress.get('privateIpAddress')))
 
+    def print_customer_gateway(self, cgw):
+        print self.tabify(('CUSTOMERGATEWAY', cgw.get('customerGatewayId'),
+                           cgw.get('state'), cgw.get('type'),
+                           cgw.get('ipAddress'), cgw.get('bgpAsn')))
+        for tag in cgw.get('tagSet', []):
+            self.print_resource_tag(tag, cgw.get('customerGatewayId'))
+
     def print_volume(self, volume):
         vol_bits = ['VOLUME']
         for attr in ('volumeId', 'size', 'snapshotId', 'availabilityZone',
