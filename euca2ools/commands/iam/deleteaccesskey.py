@@ -1,4 +1,4 @@
-# Copyright 2009-2013 Eucalyptus Systems, Inc.
+# Copyright 2009-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -33,5 +33,5 @@ class DeleteAccessKey(IAMRequest):
                 required=True,
                 help='ID of the access key to delete (required)'),
             Arg('-u', '--user-name', dest='UserName', metavar='USER',
-                help='user whose key to delete'),
+                help='user the key belongs to (default: current user)'),
             AS_ACCOUNT]

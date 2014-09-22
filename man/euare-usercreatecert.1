@@ -3,7 +3,7 @@
 .SH NAME
 euare-usercreatecert \- [Eucalyptus only] Create a new signing certificate
 .SH SYNOPSIS
-[?1034heuare\-usercreatecert \fB\-u\fR USER [\-\-out FILE] [\-\-keyout FILE]
+euare\-usercreatecert [\-u USER] [\-\-out FILE] [\-\-keyout FILE]
 [\-\-as\-account ACCOUNT] [\-U URL]
 [\-\-region USER@REGION] [\-I KEY_ID] [\-S KEY]
 [\-\-security\-token TOKEN] [\-\-debug] [\-\-debugger]
@@ -13,7 +13,8 @@ euare-usercreatecert \- [Eucalyptus only] Create a new signing certificate
 .SS "optional arguments:"
 .TP
 \fB\-u\fR USER, \fB\-\-user\-name\fR USER
-user to create the signing certificate for (required)
+user to create the signing certificate for (default:
+current user)
 .TP
 \fB\-\-out\fR FILE
 file to write the certificate to (default: stdout)

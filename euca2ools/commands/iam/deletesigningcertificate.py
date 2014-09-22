@@ -1,4 +1,4 @@
-# Copyright 2009-2013 Eucalyptus Systems, Inc.
+# Copyright 2009-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -33,5 +33,6 @@ class DeleteSigningCertificate(IAMRequest):
                 required=True,
                 help='ID of the signing certificate to delete (required)'),
             Arg('-u', '--user-name', dest='UserName', metavar='USER',
-                help='user the signing certificate belongs to'),
+                help='''user the signing certificate belongs to (default:
+                current user)'''),
             AS_ACCOUNT]

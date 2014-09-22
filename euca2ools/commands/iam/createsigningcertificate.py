@@ -1,4 +1,4 @@
-# Copyright 2009-2013 Eucalyptus Systems, Inc.
+# Copyright 2009-2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -31,8 +31,8 @@ from requestbuilder import Arg
 class CreateSigningCertificate(IAMRequest):
     DESCRIPTION = '[Eucalyptus only] Create a new signing certificate'
     ARGS = [Arg('-u', '--user-name', dest='UserName', metavar='USER',
-                required=True,
-                help='user to create the signing certificate for (required)'),
+                help='''user to create the signing certificate for (default:
+                current user)'''),
             Arg('--out', metavar='FILE', route_to=None,
                 help='file to write the certificate to (default: stdout)'),
             Arg('--keyout', metavar='FILE', route_to=None,

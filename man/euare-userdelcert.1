@@ -3,7 +3,7 @@
 .SH NAME
 euare-userdelcert \- Delete a signing certificate
 .SH SYNOPSIS
-[?1034heuare\-userdelcert \fB\-c\fR CERT [\-u USER] [\-\-as\-account ACCOUNT] [\-U URL]
+euare\-userdelcert \fB\-c\fR CERT [\-u USER] [\-\-as\-account ACCOUNT] [\-U URL]
 [\-\-region USER@REGION] [\-I KEY_ID] [\-S KEY]
 [\-\-security\-token TOKEN] [\-\-debug] [\-\-debugger]
 [\-\-version] [\-h]
@@ -15,7 +15,8 @@ Delete a signing certificate
 ID of the signing certificate to delete (required)
 .TP
 \fB\-u\fR USER, \fB\-\-user\-name\fR USER
-user the signing certificate belongs to
+user the signing certificate belongs to (default:
+current user)
 .TP
 \fB\-\-as\-account\fR ACCOUNT
 [Eucalyptus cloud admin only] run this command as the

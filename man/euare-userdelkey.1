@@ -3,7 +3,7 @@
 .SH NAME
 euare-userdelkey \- Delete an access key
 .SH SYNOPSIS
-[?1034heuare\-userdelkey \fB\-k\fR KEY_ID [\-u USER] [\-\-as\-account ACCOUNT] [\-U URL]
+euare\-userdelkey \fB\-k\fR KEY_ID [\-u USER] [\-\-as\-account ACCOUNT] [\-U URL]
 [\-\-region USER@REGION] [\-I KEY_ID] [\-S KEY]
 [\-\-security\-token TOKEN] [\-\-debug] [\-\-debugger]
 [\-\-version] [\-h]
@@ -15,7 +15,7 @@ Delete an access key
 ID of the access key to delete (required)
 .TP
 \fB\-u\fR USER, \fB\-\-user\-name\fR USER
-user whose key to delete
+user the key belongs to (default: current user)
 .TP
 \fB\-\-as\-account\fR ACCOUNT
 [Eucalyptus cloud admin only] run this command as the

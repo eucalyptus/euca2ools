@@ -1,12 +1,13 @@
 #!/bin/sh -e
 
-mkdir -p man
 export PYTHONPATH=".:$PYTHONPATH"
+export TERM="dumb"  # http://www.incenp.org/notes/2012/python-term-smm-fix.html
 
 py_version=$(python -c 'import sys; print ".".join(map(str, sys.version_info[:2]))')
 script_dir="build/scripts-$py_version"
 version="$($script_dir/euca-version 2>&1 | sed -e 's/^euca2ools *\([^(]*\).*/\1/' -e 's/ *$//')"
 
+mkdir -p man
 for exe in $@; do
     echo $exe
     description="$($script_dir/$exe --help 2>&1 | python -c 'import sys; print sys.stdin.read().split("\n\n")[1]')"
