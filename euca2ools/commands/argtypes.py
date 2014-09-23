@@ -115,7 +115,8 @@ def flexible_bool(bool_str):
         return False
     if bool_str.strip().lower() in ('1', 't', 'true', 'y', 'yes'):
         return True
-    raise TypeError("'{0}' must be 'true' or 'false'".format(bool_str))
+    raise argparse.ArgumentTypeError("'{0}' must be 'true' or 'false'"
+                                     .format(bool_str))
 
 
 def filesize(size):

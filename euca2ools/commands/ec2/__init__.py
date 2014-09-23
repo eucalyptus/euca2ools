@@ -250,7 +250,7 @@ class EC2Request(AWSQueryRequest, TabifyingMixin):
         nic_info = [nic.get(attr) for attr in (
             'networkInterfaceId', 'subnetId', 'vpcId', 'ownerId', 'status',
             'privateIpAddress', 'privateDnsName', 'sourceDestCheck')]
-        print self.tabify(['NIC'] + nic_info)
+        print self.tabify(['NETWORKINTERFACE'] + nic_info)
         if nic.get('attachment'):
             attachment_info = [nic['attachment'].get(attr) for attr in (
                 'attachmentID', 'deviceIndex', 'status', 'attachTime',

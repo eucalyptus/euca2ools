@@ -32,9 +32,9 @@ class AssociateRouteTable(EC2Request):
     DESCRIPTION = 'Associate a VPC route table with a subnet'
     ARGS = [Arg('RouteTableId', metavar='RTABLE',
                 help='ID of the route table to associate (required)'),
-            Arg('-s', dest='SubnetId', metavar='SUBNET', required=True,
-                help='''ID of the subnet to associate the route table
-                with (required)''')]
+            Arg('-s', '--subnet', dest='SubnetId', metavar='SUBNET',
+                required=True, help='''ID of the subnet to associate
+                the route table with (required)''')]
 
     def print_result(self, result):
         print self.tabify(('ASSOCIATION', result.get('associationId'),
