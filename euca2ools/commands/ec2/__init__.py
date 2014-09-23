@@ -255,7 +255,7 @@ class EC2Request(AWSQueryRequest, TabifyingMixin):
             attachment_info = [nic['attachment'].get(attr) for attr in (
                 'attachmentID', 'deviceIndex', 'status', 'attachTime',
                 'deleteOnTermination')]
-            print self.tabify(['NICATTACHMENT'] + attachment_info)
+            print self.tabify(['ATTACHMENT'] + attachment_info)
         privaddresses = nic.get('privateIpAddressesSet', [])
         if nic.get('association'):
             association = nic['association']
@@ -269,14 +269,19 @@ class EC2Request(AWSQueryRequest, TabifyingMixin):
                     break
             else:
                 privaddress = None
-            print self.tabify(('NICASSOCIATION', association.get('publicIp'),
+            print self.tabify(('ASSOCIATION', association.get('publicIp'),
                                association.get('ipOwnerId'), privaddress))
         for group in nic.get('groupSet', []):
             print self.tabify(('GROUP', group.get('groupId'),
                                group.get('groupName')))
         for privaddress in privaddresses:
+            if privaddress.get('primary').lower() == 'true':
+                primary = 'primary'
+            else:
+                primary = None
             print self.tabify(('PRIVATEIPADDRESS',
-                               privaddress.get('privateIpAddress')))
+                               privaddress.get('privateIpAddress'),
+                               privaddress.get('privateDnsName'), primary))
 
     def print_customer_gateway(self, cgw):
         print self.tabify(('CUSTOMERGATEWAY', cgw.get('customerGatewayId'),
