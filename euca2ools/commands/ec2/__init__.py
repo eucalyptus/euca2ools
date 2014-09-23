@@ -315,6 +315,16 @@ class EC2Request(AWSQueryRequest, TabifyingMixin):
         for tag in cgw.get('tagSet', []):
             self.print_resource_tag(tag, cgw.get('customerGatewayId'))
 
+    def print_vpn_gateway(self, vgw):
+        print self.tabify(('VPNGATEWAY', vgw.get('vpnGatewayId'),
+                           vgw.get('state'), vgw.get('availabilityZone'),
+                           vgw.get('type')))
+        for attachment in vgw.get('attachments'):
+            print self.tabify(('VGWATTACHMENT', attachment.get('vpcId'),
+                               attachment.get('state')))
+        for tag in vgw.get('tagSet', []):
+            self.print_resource_tag(tag, vgw.get('vpnGatewayId'))
+
     def print_dhcp_options(self, dopt):
         print self.tabify(('DHCPOPTIONS', dopt.get('dhcpOptionsId')))
         for option in dopt.get('dhcpConfigurationSet') or {}:
