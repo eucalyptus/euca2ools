@@ -30,7 +30,6 @@ from euca2ools.commands.ec2 import EC2Request
 
 class DescribeRouteTables(EC2Request):
     DESCRIPTION = 'Describe one or more VPC route tables'
-    API_VERSION = '2014-02-01'
     ARGS = [Arg('RouteTableId', metavar='RTABLE', nargs='*',
                 help='limit results to specific route tables')]
     FILTERS = [Filter('association.route-table-association-id',

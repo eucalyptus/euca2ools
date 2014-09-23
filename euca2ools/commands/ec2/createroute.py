@@ -30,7 +30,6 @@ from euca2ools.commands.ec2 import EC2Request
 
 class CreateRoute(EC2Request):
     DESCRIPTION = 'Add a route to a VPC route table'
-    API_VERSION = '2014-02-01'
     ARGS = [Arg('RouteTableId', metavar='RTABLE',
                 help='ID of the route table to add the route to (required)'),
             Arg('-r', '--cidr', dest='DestinationCidrBlock',
