@@ -178,6 +178,14 @@ class EC2Request(AWSQueryRequest, TabifyingMixin):
         for tag in vpc.get('tagSet') or []:
             self.print_resource_tag(tag, vpc.get('vpcId'))
 
+    def print_internet_gateway(self, igw):
+        print self.tabify(('INTERNETGATEWAY', igw.get('internetGatewayId')))
+        for attachment in igw.get('attachmentSet') or []:
+            print self.tabify(('ATTACHMENT', attachment.get('vpcId'),
+                               attachment.get('state')))
+        for tag in igw.get('tagSet') or []:
+            self.print_resource_tag(tag, igw.get('internetGatewayId'))
+
     def print_subnet(self, subnet):
         print self.tabify(('SUBNET', subnet.get('subnetId'),
                            subnet.get('state'), subnet.get('vpcId'),
