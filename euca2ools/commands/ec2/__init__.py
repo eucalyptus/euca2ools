@@ -285,6 +285,15 @@ class EC2Request(AWSQueryRequest, TabifyingMixin):
         for tag in cgw.get('tagSet', []):
             self.print_resource_tag(tag, cgw.get('customerGatewayId'))
 
+    def print_dhcp_options(self, dopt):
+        print self.tabify(('DHCPOPTIONS', dopt.get('dhcpOptionsId')))
+        for option in dopt.get('dhcpConfigurationSet') or {}:
+            values = [val_dict.get('value')
+                      for val_dict in option.get('valueSet')]
+            print self.tabify(('OPTION', option.get('key'), ','.join(values)))
+        for tag in dopt.get('tagSet', []):
+            self.print_resource_tag(tag, dopt.get('dhcpOptionsId'))
+
     def print_volume(self, volume):
         vol_bits = ['VOLUME']
         for attr in ('volumeId', 'size', 'snapshotId', 'availabilityZone',
