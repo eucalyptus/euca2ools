@@ -186,6 +186,23 @@ class EC2Request(AWSQueryRequest, TabifyingMixin):
         for tag in igw.get('tagSet') or []:
             self.print_resource_tag(tag, igw.get('internetGatewayId'))
 
+    def print_peering_connection(self, pcx):
+        status = pcx.get('status') or {}
+        print self.tabify(('VPCPEERINGCONNECTION',
+                           pcx.get('vpcPeeringConnectionId'),
+                           pcx.get('expirationTime'),
+                           '{0}: {1}'.format(status.get('code'),
+                                             status.get('message'))))
+        requester = pcx.get('requesterVpcInfo') or {}
+        print self.tabify(('REQUESTERVPCINFO', requester.get('vpcId'),
+                           requester.get('cidrBlock'),
+                           requester.get('ownerId')))
+        accepter = pcx.get('accepterVpcInfo') or {}
+        print self.tabify(('ACCEPTERVPCINFO', accepter.get('vpcId'),
+                           accepter.get('cidrBlock'), accepter.get('ownerId')))
+        for tag in pcx.get('tagSet') or []:
+            self.print_resource_tag(tag, pcx.get('vpcPeeringConnectionId'))
+
     def print_subnet(self, subnet):
         print self.tabify(('SUBNET', subnet.get('subnetId'),
                            subnet.get('state'), subnet.get('vpcId'),
