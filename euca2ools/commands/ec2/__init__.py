@@ -24,6 +24,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import argparse
+import io
 from operator import itemgetter
 import os.path
 import six
@@ -31,12 +32,14 @@ import socket
 from string import Template
 import sys
 
+import lxml.etree
 from requestbuilder import Arg
 from requestbuilder.auth import QuerySigV2Auth
-from requestbuilder.exceptions import ArgumentError, AuthError
+from requestbuilder.exceptions import ArgumentError, AuthError, ClientError
 from requestbuilder.mixins import TabifyingMixin
 from requestbuilder.request import AWSQueryRequest
 from requestbuilder.service import BaseService
+import requests.exceptions
 
 from euca2ools.commands import Euca2ools
 from euca2ools.exceptions import AWSError
@@ -324,6 +327,40 @@ class EC2Request(AWSQueryRequest, TabifyingMixin):
                                attachment.get('state')))
         for tag in vgw.get('tagSet', []):
             self.print_resource_tag(tag, vgw.get('vpnGatewayId'))
+
+    def print_vpn_connection(self, vpn, show_conn_info=False,
+                             stylesheet=None):
+        print self.tabify(('VPNCONNECTION', vpn.get('vpnConnectionId'),
+                           vpn.get('type'), vpn.get('customerGatewayId'),
+                           vpn.get('vpnGatewayId'), vpn.get('state')))
+        if show_conn_info and vpn.get('customerGatewayConfiguration'):
+            if stylesheet is None:
+                print vpn.get('customerGatewayConfiguration')
+            else:
+                if (stylesheet.startswith('http://') or
+                        stylesheet.startswith('https://')):
+                    self.log.info('fetching connection info stylesheet from %s',
+                                  stylesheet)
+                    response = requests.get(stylesheet)
+                    try:
+                        response.raise_for_status()
+                    except requests.exceptions.HTTPError as err:
+                        raise ClientError('failed to fetch stylesheet: {0}'
+                                          .format(str(err)))
+                    xslt_root = lxml.etree.XML(response.text)
+                else:
+                    if stylesheet.startswith('file://'):
+                        stylesheet = stylesheet[7:]
+                    self.log.info('using connection info stylesheet %s',
+                                  stylesheet)
+                    with open(stylesheet) as stylesheet_file:
+                        xslt_root = lxml.etree.parse(xslt_file)
+                transform = lxml.etree.XSLT(xslt_root)
+                conn_info_root = lxml.etree.parse(io.BytesIO(
+                    vpn.get('customerGatewayConfiguration')))
+                print transform(conn_info_root)
+        for tag in vpn.get('tagSet') or []:
+            self.print_resource_tag(tag, vpn.get('vpnConnectionId'))
 
     def print_dhcp_options(self, dopt):
         print self.tabify(('DHCPOPTIONS', dopt.get('dhcpOptionsId')))
