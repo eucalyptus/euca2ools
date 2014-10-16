@@ -481,7 +481,7 @@ def _get_all_mounts():
 
 
 def _get_filesystem_info(device):
-    blkid = subprocess.Popen(['blkid', '-d', '-o', 'export', device],
+    blkid = subprocess.Popen(['blkid', '-o', 'export', device],
                              stdout=subprocess.PIPE)
     fsinfo = {}
     for line in blkid.stdout:
@@ -493,6 +493,8 @@ def _get_filesystem_info(device):
         elif key == 'UUID':
             fsinfo['uuid'] = val
     blkid.wait()
+    if blkid.returncode != 0:
+        raise subprocess.CalledProcessError(blkid.returncode, 'blkid')
     return fsinfo
 
 
