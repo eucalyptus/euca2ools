@@ -24,6 +24,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import argparse
+import io
 from operator import itemgetter
 import os.path
 import six
@@ -31,12 +32,14 @@ import socket
 from string import Template
 import sys
 
+import lxml.etree
 from requestbuilder import Arg
 from requestbuilder.auth import QuerySigV2Auth
-from requestbuilder.exceptions import ArgumentError, AuthError
+from requestbuilder.exceptions import ArgumentError, AuthError, ClientError
 from requestbuilder.mixins import TabifyingMixin
 from requestbuilder.request import AWSQueryRequest
 from requestbuilder.service import BaseService
+import requests.exceptions
 
 from euca2ools.commands import Euca2ools
 from euca2ools.exceptions import AWSError
@@ -46,7 +49,7 @@ from euca2ools.util import substitute_euca_region
 class EC2(BaseService):
     NAME = 'ec2'
     DESCRIPTION = 'Elastic compute cloud service'
-    API_VERSION = '2013-02-01'
+    API_VERSION = '2014-06-15'
     REGION_ENVVAR = 'AWS_DEFAULT_REGION'
     URL_ENVVAR = 'EC2_URL'
 
@@ -178,6 +181,31 @@ class EC2Request(AWSQueryRequest, TabifyingMixin):
         for tag in vpc.get('tagSet') or []:
             self.print_resource_tag(tag, vpc.get('vpcId'))
 
+    def print_internet_gateway(self, igw):
+        print self.tabify(('INTERNETGATEWAY', igw.get('internetGatewayId')))
+        for attachment in igw.get('attachmentSet') or []:
+            print self.tabify(('ATTACHMENT', attachment.get('vpcId'),
+                               attachment.get('state')))
+        for tag in igw.get('tagSet') or []:
+            self.print_resource_tag(tag, igw.get('internetGatewayId'))
+
+    def print_peering_connection(self, pcx):
+        status = pcx.get('status') or {}
+        print self.tabify(('VPCPEERINGCONNECTION',
+                           pcx.get('vpcPeeringConnectionId'),
+                           pcx.get('expirationTime'),
+                           '{0}: {1}'.format(status.get('code'),
+                                             status.get('message'))))
+        requester = pcx.get('requesterVpcInfo') or {}
+        print self.tabify(('REQUESTERVPCINFO', requester.get('vpcId'),
+                           requester.get('cidrBlock'),
+                           requester.get('ownerId')))
+        accepter = pcx.get('accepterVpcInfo') or {}
+        print self.tabify(('ACCEPTERVPCINFO', accepter.get('vpcId'),
+                           accepter.get('cidrBlock'), accepter.get('ownerId')))
+        for tag in pcx.get('tagSet') or []:
+            self.print_resource_tag(tag, pcx.get('vpcPeeringConnectionId'))
+
     def print_subnet(self, subnet):
         print self.tabify(('SUBNET', subnet.get('subnetId'),
                            subnet.get('state'), subnet.get('vpcId'),
@@ -255,7 +283,7 @@ class EC2Request(AWSQueryRequest, TabifyingMixin):
             attachment_info = [nic['attachment'].get(attr) for attr in (
                 'attachmentID', 'deviceIndex', 'status', 'attachTime',
                 'deleteOnTermination')]
-            print self.tabify(['NICATTACHMENT'] + attachment_info)
+            print self.tabify(['ATTACHMENT'] + attachment_info)
         privaddresses = nic.get('privateIpAddressesSet', [])
         if nic.get('association'):
             association = nic['association']
@@ -269,14 +297,79 @@ class EC2Request(AWSQueryRequest, TabifyingMixin):
                     break
             else:
                 privaddress = None
-            print self.tabify(('NICASSOCIATION', association.get('publicIp'),
+            print self.tabify(('ASSOCIATION', association.get('publicIp'),
                                association.get('ipOwnerId'), privaddress))
         for group in nic.get('groupSet', []):
             print self.tabify(('GROUP', group.get('groupId'),
                                group.get('groupName')))
         for privaddress in privaddresses:
+            if privaddress.get('primary').lower() == 'true':
+                primary = 'primary'
+            else:
+                primary = None
             print self.tabify(('PRIVATEIPADDRESS',
-                               privaddress.get('privateIpAddress')))
+                               privaddress.get('privateIpAddress'),
+                               privaddress.get('privateDnsName'), primary))
+
+    def print_customer_gateway(self, cgw):
+        print self.tabify(('CUSTOMERGATEWAY', cgw.get('customerGatewayId'),
+                           cgw.get('state'), cgw.get('type'),
+                           cgw.get('ipAddress'), cgw.get('bgpAsn')))
+        for tag in cgw.get('tagSet', []):
+            self.print_resource_tag(tag, cgw.get('customerGatewayId'))
+
+    def print_vpn_gateway(self, vgw):
+        print self.tabify(('VPNGATEWAY', vgw.get('vpnGatewayId'),
+                           vgw.get('state'), vgw.get('availabilityZone'),
+                           vgw.get('type')))
+        for attachment in vgw.get('attachments'):
+            print self.tabify(('VGWATTACHMENT', attachment.get('vpcId'),
+                               attachment.get('state')))
+        for tag in vgw.get('tagSet', []):
+            self.print_resource_tag(tag, vgw.get('vpnGatewayId'))
+
+    def print_vpn_connection(self, vpn, show_conn_info=False,
+                             stylesheet=None):
+        print self.tabify(('VPNCONNECTION', vpn.get('vpnConnectionId'),
+                           vpn.get('type'), vpn.get('customerGatewayId'),
+                           vpn.get('vpnGatewayId'), vpn.get('state')))
+        if show_conn_info and vpn.get('customerGatewayConfiguration'):
+            if stylesheet is None:
+                print vpn.get('customerGatewayConfiguration')
+            else:
+                if (stylesheet.startswith('http://') or
+                        stylesheet.startswith('https://')):
+                    self.log.info('fetching connection info stylesheet from %s',
+                                  stylesheet)
+                    response = requests.get(stylesheet)
+                    try:
+                        response.raise_for_status()
+                    except requests.exceptions.HTTPError as err:
+                        raise ClientError('failed to fetch stylesheet: {0}'
+                                          .format(str(err)))
+                    xslt_root = lxml.etree.XML(response.text)
+                else:
+                    if stylesheet.startswith('file://'):
+                        stylesheet = stylesheet[7:]
+                    self.log.info('using connection info stylesheet %s',
+                                  stylesheet)
+                    with open(stylesheet) as stylesheet_file:
+                        xslt_root = lxml.etree.parse(xslt_file)
+                transform = lxml.etree.XSLT(xslt_root)
+                conn_info_root = lxml.etree.parse(io.BytesIO(
+                    vpn.get('customerGatewayConfiguration')))
+                print transform(conn_info_root)
+        for tag in vpn.get('tagSet') or []:
+            self.print_resource_tag(tag, vpn.get('vpnConnectionId'))
+
+    def print_dhcp_options(self, dopt):
+        print self.tabify(('DHCPOPTIONS', dopt.get('dhcpOptionsId')))
+        for option in dopt.get('dhcpConfigurationSet') or {}:
+            values = [val_dict.get('value')
+                      for val_dict in option.get('valueSet')]
+            print self.tabify(('OPTION', option.get('key'), ','.join(values)))
+        for tag in dopt.get('tagSet', []):
+            self.print_resource_tag(tag, dopt.get('dhcpOptionsId'))
 
     def print_volume(self, volume):
         vol_bits = ['VOLUME']
