@@ -137,6 +137,10 @@ class ImportInstance(EC2Request, S3AccessMixin, FileTransferProgressBarMixin):
             if self.params['DiskImage.1.Image.Format'] == 'RAW':
                 image_size = euca2ools.util.get_filesize(self.args['source'])
                 self.params['DiskImage.1.Image.Bytes'] = image_size
+            elif self.params['DiskImage.1.Image.Format'] == 'VMDK':
+                image_size = euca2ools.util.get_vmdk_image_size(
+                    self.args['source'])
+                self.params['DiskImage.1.Image.Bytes'] = image_size
             else:
                 raise ArgumentError(
                     'argument --image-size is required for {0} files'
