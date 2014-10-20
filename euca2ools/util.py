@@ -27,6 +27,7 @@ import datetime
 import getpass
 import os.path
 import stat
+import struct
 import sys
 import tempfile
 
@@ -124,3 +125,36 @@ def get_filesize(filename):
         raise TypeError("'{0}' does not have a usable file size"
                         .format(filename))
     return os.path.getsize(filename)
+
+
+def get_vmdk_image_size(filename):
+    if get_filesize(filename) < 1024:
+        raise ValueError('File {0} is to small to be a valid Stream'
+                         ' Optimized VMDK'.format(filename))
+    # see https://www.vmware.com/support/developer/vddk/vmdk_50_technote.pdf
+    # for header/footer format
+    with open(filename, 'rb') as f:
+        data = struct.unpack('<iiiqqqqiqqq?bbbbh433c', f.read(512))
+        if data[9] & 0xffffffffffffffff == 0:
+            # move to 1024 bytes from the end and read footer
+            f.seek(-1024, 2)
+            data = struct.unpack('<iiiqqqqiqqq?bbbbh433c', f.read(512))
+
+    # validate
+    if 1447904331 != data[0]:
+        raise ValueError('File {0} is not a Stream Optimized VMDK'
+                         .format(filename))
+    if data[2] & 0x10000 == 0:
+        raise ValueError('File {0} does not contain compressed parts'
+                         .format(filename))
+    if data[2] & 0x20000 == 0:
+        raise ValueError('File {0} does not have all data present'
+                         .format(filename))
+    if data[11]:
+        raise ValueError('File {0} marked with unclean shutdown'
+                         .format(filename))
+    if data[16] != 1:
+        raise ValueError('File {0} uses unsupported compression algorithm'
+                         .format(filename))
+
+    return 512 * data[3]
