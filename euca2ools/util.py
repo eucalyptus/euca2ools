@@ -133,12 +133,12 @@ def get_vmdk_image_size(filename):
                          ' Optimized VMDK'.format(filename))
     # see https://www.vmware.com/support/developer/vddk/vmdk_50_technote.pdf
     # for header/footer format
-    with open(filename, 'rb') as f:
-        data = struct.unpack('<iiiqqqqiqqq?bbbbh433c', f.read(512))
+    with open(filename, 'rb') as disk:
+        data = struct.unpack('<iiiqqqqiqqq?bbbbh433c', disk.read(512))
         if data[9] & 0xffffffffffffffff == 0:
             # move to 1024 bytes from the end and read footer
-            f.seek(-1024, 2)
-            data = struct.unpack('<iiiqqqqiqqq?bbbbh433c', f.read(512))
+            disk.seek(-1024, 2)
+            data = struct.unpack('<iiiqqqqiqqq?bbbbh433c', disk.read(512))
 
     # validate
     if 1447904331 != data[0]:

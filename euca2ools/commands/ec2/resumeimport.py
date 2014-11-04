@@ -97,8 +97,7 @@ class ResumeImport(EC2Request, S3AccessMixin, FileTransferProgressBarMixin):
             raise ArgumentError(
                 'file "{0}" is not the same size as the file the import '
                 'started with (expected: {1}, actual: {2})'
-                .format(self.args['source'],
-                        file_size_from_manifest,
+                .format(self.args['source'], file_size_from_manifest,
                         file_size))
 
         # Now we have a manifest; check to see what parts are already uploaded
