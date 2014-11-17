@@ -177,6 +177,12 @@ class BundleManifest(object):
         xml.image.name = self.image_name
         assert self.account_id is not None
         xml.image.user = self.account_id
+
+        # xml.image.type must appear immediately after xml.image.user
+        # for EC2 compatibility.
+        assert self.image_type is not None
+        xml.image.type = self.image_type
+
         assert self.image_digest is not None
         xml.image.digest = self.image_digest
         assert self.image_digest_algorithm is not None
@@ -186,9 +192,6 @@ class BundleManifest(object):
         xml.image.size = self.image_size
         assert self.bundled_image_size is not None
         xml.image.bundled_size = self.bundled_image_size
-        assert self.image_type is not None
-
-        xml.image.type = self.image_type
 
         # Bundle encryption keys (these are cloud-specific)
         assert self.enc_key is not None
