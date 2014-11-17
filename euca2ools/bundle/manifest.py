@@ -242,7 +242,8 @@ class BundleManifest(object):
         pretty_manifest = lxml.etree.tostring(xml, pretty_print=True).strip()
         self.log.debug('%s', pretty_manifest, extra={'append': True})
         self.log.debug('-- end of manifest content --')
-        return lxml.etree.tostring(xml, pretty_print=pretty_print).strip()
+        return lxml.etree.tostring(xml, xml_declaration=True,
+                                   pretty_print=pretty_print).strip()
 
     def dump_to_file(self, manifest_file, privkey_filename,
                      user_cert_filename, ec2_cert_filename,
