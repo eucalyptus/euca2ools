@@ -162,7 +162,8 @@ class BundleCreatingMixin(object):
                 self.args['user'] = os.getenv('EC2_USER_ID')
             elif config_account_id:
                 self.args['user'] = config_account_id
-        self.args['user'] = self.args['user'].replace('-', '')
+        if self.args.get('user'):
+            self.args['user'] = self.args['user'].replace('-', '')
 
         # Now validate everything
         if not self.args.get('cert'):
