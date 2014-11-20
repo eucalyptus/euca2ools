@@ -2,8 +2,7 @@ Euca2ools are command line tools used to interact with Amazon Web
 Services (AWS) as well as other services that are compatible with AWS,
 such as Eucalyptus.  They aim to use the same input as similar tools
 provided by AWS for each service individually along with several
-enhancements that make them easier to use against both AWS and
-Eucalyptus.
+enhancements that make them easier to use with multiple clouds at once.
 
 Euca2ools provide the functionality of AWS's REST-based and Query-based
 APIs for the following services:
@@ -17,13 +16,13 @@ APIs for the following services:
 The source code comes with man pages that provide basic documentation.
 Running a command with --help will also provide information on how to
 use that specific command.  For more detailed documentation, see the
-online euca2ools documentation:  http://www.eucalyptus.com/docs
+online euca2ools documentation at http://www.eucalyptus.com/docs.
 
 For installation instructions, consult the INSTALL file that accompanies
 the source code.
 
-Euca2ools are distributed under a 2-clause BSD license, a copy of which
-is included in the file called COPYING.
-
-To obtain the latest source code for euca2ools, visit the project's
-GitHub page:  https://github.com/eucalyptus/euca2ools
+To obtain the latest development source code for euca2ools, visit
+https://github.com/eucalyptus/euca2ools.  Pull requests are welcome
+and appreciated.  By submitting code to this project you agree that code
+will be licensed under the 2-clause BSD license.  A copy of this license
+is included in the COPYING file that accompanies the source code.
