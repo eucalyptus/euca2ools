@@ -167,3 +167,5 @@ def add_bundle_creds(args, config):
             args['user'] = os.getenv('EC2_USER_ID')
         elif config_account_id:
             args['user'] = config_account_id
+    if args.get('user'):
+        args['user'] = args['user'].replace('-', '')

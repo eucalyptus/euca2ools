@@ -203,7 +203,7 @@ class BundleImage(BundleCreator):
                                               pretty_print=True).strip()
         self.log.debug(pretty_manifest, extra={'append': True})
         self.log.debug('-- end of manifest content --')
-        return lxml.etree.tostring(manifest)
+        return lxml.etree.tostring(manifest, xml_declaration=True).strip()
 
 
 def public_encrypt(content, cert_filename):
