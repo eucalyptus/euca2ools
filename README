@@ -10,7 +10,7 @@ APIs for the following services:
 - Auto Scaling           (2011-01-01) (commands start with "euscale")
 - CloudFormation         (2010-05-15) (commands start with "euform")
 - CloudWatch             (2010-08-01) (commands start with "euwatch")
-- EC2                    (2013-02-01) (commands start with "euca")
+- EC2                    (2014-06-15) (commands start with "euca")
 - Elastic Load Balancing (2012-06-01) (commands start with "eulb")
 - IAM                    (2010-05-08) (commands start with "euare")
 
