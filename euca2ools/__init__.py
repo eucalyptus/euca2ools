@@ -29,7 +29,7 @@ import subprocess
 
 __version__ = '3.2.0-pre1'
 
-BUFSIZE = 8192
+BUFSIZE = 16 * 1024
 
 
 if '__file__' in globals():
