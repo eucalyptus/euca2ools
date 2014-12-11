@@ -158,3 +158,23 @@ def get_vmdk_image_size(filename):
                          .format(filename))
 
     return 512 * data[3]
+
+
+def check_dict_whitelist(dict_, err_context, whitelist=None):
+    if not isinstance(dict_, dict):
+        raise ValueError('{0} must be a dict'.format(err_context))
+    if whitelist:
+        differences = set(dict_.keys()) - set(whitelist)
+        if differences:
+            raise ValueError('unrecognized {0} argument(s): {1}'
+                             .format(err_context, ', '.join(differences)))
+
+
+def transform_dict(dict_, transform_dict):
+    transformed = {}
+    for key, val in dict_.iteritems():
+        if key in transform_dict:
+            transformed[transform_dict[key]] = val
+        else:
+            transformed[key] = val
+    return transformed

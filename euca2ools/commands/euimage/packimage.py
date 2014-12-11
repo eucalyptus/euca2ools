@@ -50,7 +50,7 @@ class PackImage(BaseCommand, FileTransferProgressBarMixin):
                 help='metadata for the image to pack (required)')]
 
     def main(self):
-        # Image packs contain three files: metadata for the pack itself,
+        # Image packs contain three files:  metadata for the pack itself,
         # the image's metadata, and the compressed image.  We compress the
         # image instead of the whole archive so we can use file seeking.
         image_md = ImageMetadata.from_file(self.args['md_filename'])
@@ -58,8 +58,7 @@ class PackImage(BaseCommand, FileTransferProgressBarMixin):
         with open(self.args['md_filename']) as image_md_file:
             digest = hashlib.sha256(image_md_file.read())
             pack_md.image_md_sha256sum = digest.hexdigest()
-        pack_filename = '{0}-{1}-{2}.{3}.euimage'.format(
-            image_md.name, image_md.version, image_md.release, image_md.arch)
+        pack_filename = '{0}.euimage'.format(image_md.get_nvra())
         pack = tarfile.open(name=pack_filename, mode='w')
         # Since we have to know the size of the compressed image ahead
         # of time in order to write tarinfo headers we have to spool
@@ -98,4 +97,8 @@ class PackImage(BaseCommand, FileTransferProgressBarMixin):
             tarinfo = pack.gettarinfo(fileobj=compressed_image,
                                       arcname=IMAGE_ARCNAME)
             pack.addfile(tarinfo, fileobj=compressed_image)
+        pack.close()
         return pack_filename
+
+    def print_result(self, pack_filename):
+        print 'Wrote', pack_filename

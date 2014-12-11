@@ -23,9 +23,10 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-
-import six
 import yaml
+
+from euca2ools.commands.euimage.profiles import build_image_profile
+from euca2ools.util import check_dict_whitelist
 
 
 class ImagePackMetadata(object):
@@ -39,8 +40,8 @@ class ImagePackMetadata(object):
     def from_fileobj(cls, fileobj):
         new_md = cls()
         metadata = yaml.safe_load(fileobj)
-        _check_dict_whitelist(metadata, 'pack', ['image', 'image_metadata',
-                                                 'version'])
+        check_dict_whitelist(metadata, 'pack', ['image', 'image_metadata',
+                                                'version'])
         if metadata.get('version'):
             if int(metadata['version']) != 1:
                 raise ValueError('pack has metadata version {0}; expected 1'
@@ -57,6 +58,7 @@ class ImagePackMetadata(object):
             raise ValueError(
                 'pack: image_metadata.sha256sum is missing or empty')
         new_md.image_md_sha256sum = image_md_info['sha256sum']
+        return new_md
 
     @classmethod
     def from_file(cls, filename):
@@ -85,15 +87,16 @@ class ImageMetadata(object):
         self.release = None
         self.epoch = 0
         self.arch = None
+        self.description = None
         self.profiles = {}
 
     @classmethod
     def from_fileobj(cls, fileobj):
         new_md = cls()
         metadata = yaml.safe_load(fileobj)
-        _check_dict_whitelist(metadata, 'image',
-                              ['name', 'version', 'release', 'arch',
-                               'profiles'])
+        check_dict_whitelist(metadata, 'image',
+                             ['name', 'version', 'release', 'arch',
+                              'description', 'profiles'])
         if not metadata.get('name'):
             raise ValueError('name is missing or empty')
         new_md.name = metadata['name']
@@ -115,8 +118,13 @@ class ImageMetadata(object):
                 raise ValueError('image "{0}": epoch must not be negative'
                                  .format(new_md.name))
         if not metadata.get('arch'):
-            raise ValueError('image "{0}": arch is missing or empty')
+            raise ValueError('image "{0}": arch is missing or empty'
+                             .format(new_md.name))
         new_md.arch = metadata['arch']
+        if not metadata.get('description'):
+            raise ValueError('image "{0}": description is missing or empty'
+                             .format(new_md.name))
+        new_md.description = metadata['description'].rstrip()
         profiles = metadata.get('profiles')
         if not profiles:
             raise ValueError('image "{0}" must have at least one profile '
@@ -135,102 +143,25 @@ class ImageMetadata(object):
         with open(filename) as fileobj:
             return cls.from_fileobj(fileobj)
 
+    def install_profile(self, profile_name, services, image_fileobj,
+                        image_size, args):
+        # Since different profiles can require different args to install
+        # correctly, we can't easily pick out the correct ones ahead
+        # of time.  For simplicity's sake, we just pass everything and
+        # let the profile grab what it needs.  Validation is the job of
+        # the profile, which will probably simply delegate that work to
+        # the commands it runs.
+        euimage_tags = {'euimage:name': self.name,
+                        'euimage:version': self.version,
+                        'euimage:release': self.release,
+                        'euimage:profile': profile_name}
+        if self.epoch:
+            euimage_tags['euimage:epoch'] = self.epoch
+        if profile_name not in self.profiles:
+            raise ValueError('no such profile: "{0}"'.format(profile_name))
+        return self.profiles[profile_name].install(
+            self, services, image_fileobj, image_size, args, tags=euimage_tags)
 
-def build_image_profile(profile_dict, arch):
-    """
-    This is a factory method that takes a dict with image profile
-    information and returns a profile object.  While it currently always
-    returns instance-store images, it is meant to handle multiple types
-    in the future.
-    """
-    if 'bundle' in profile_dict:
-        return InstanceStoreImageProfile(profile_dict, arch)
-
-
-class InstanceStoreImageProfile(object):
-    def __init__(self, profile_dict, arch):
-        _check_dict_whitelist(profile_dict, 'profile',
-                              ['bundle', 'register', 'tag'])
-        self.bundle_args = {}
-        self.register_args = {}
-        self.tag_args = {}
-
-        bundle_args = profile_dict.get('bundle') or {}
-        bundle_args.setdefault('arch', arch)
-        self.__load_bundle_args(bundle_args)
-        register_args = profile_dict.get('register') or {}
-        register_args.setdefault('arch', arch)
-        self.__load_register_args(register_args)
-        self.__load_tag_args(profile_dict.get('tag') or {})
-
-    def execute(self):
-        ## TODO
-        raise NotImplementedError()
-
-    def __load_bundle_args(self, args):
-        _check_dict_whitelist(args, 'bundle', ['arch'])
-        self.bundle_args.update(args)
-        if not self.bundle_args.get('arch'):
-            raise ValueError('register: arch is required')
-
-    def __load_register_args(self, args):
-        ## TODO:  copy the image-level description if none is supplied here
-        _check_dict_whitelist(args, 'register',
-                              ['arch', 'block-device-mappings', 'description',
-                               'platform', 'virtualization-type'])
-        self.register_args.update(_transform_dict(
-            args,
-            {'arch': 'Architecture',
-             'description': 'Description',
-             'platform': 'Platform',
-             'virtualization-type': 'VirtualizationType'}))
-        if not self.register_args.get('Architecture'):
-            raise ValueError('register: arch is required')
-        mappings = self.register_args.pop('block-device-mappings', None) or {}
-        if not isinstance(mappings, dict):
-            raise ValueError('register: block-device-mappings must be an '
-                             'associative array')
-        for device, mapping_info in mappings.iteritems():
-            mapping = {'DeviceName': device}
-            if mapping_info == 'none':
-                mapping['NoDevice'] = 'true'
-            elif (isinstance(mapping_info, six.string_types) and
-                  mapping_info.startswith('ephemeral')):
-                mapping['VirtualName'] = mapping_info
-            elif isinstance(mapping_info, dict):
-                mapping['Ebs'] = _transform_dict(
-                    mapping_info,
-                    {'snapshot-id': 'SnapshotId',
-                     'volume-size': 'VolumeSize',
-                     'delete-on-termination': 'DeleteOnTermination'})
-                if (not mapping['Ebs'].get('SnapshotId') and
-                        not mapping['Ebs'].get('VolumeSize')):
-                    raise ValueError('register: block device mapping {0} '
-                                     'requires a volume-size')
-            else:
-                raise ValueError('register: unreadable block device mapping')
-
-    def __load_tag_args(self, args):
-        _check_dict_whitelist(args, 'tag')
-        self.tag_args.update(args)
-
-
-def _check_dict_whitelist(dict_, err_context, whitelist=None):
-    if not isinstance(dict_, dict):
-        raise ValueError('{0} must be an associative array'
-                         .format(err_context))
-    if whitelist:
-        differences = set(dict_.keys()) - set(whitelist)
-        if differences:
-            raise ValueError('unrecognized {0} argument(s): {1}'
-                             .format(err_context, ', '.join(differences)))
-
-
-def _transform_dict(dict_, transform_dict):
-    transformed = {}
-    for key, val in dict_.iteritems():
-        if key in transform_dict:
-            transformed[transform_dict[key]] = val
-        else:
-            transformed[key] = val
-    return transformed
+    def get_nvra(self):
+        return '{0}-{1}-{2}.{3}'.format(self.name, self.version, self.release,
+                                        self.arch)
