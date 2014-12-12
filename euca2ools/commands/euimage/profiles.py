@@ -145,7 +145,10 @@ class InstanceStoreImageProfile(object):
             loglevel=services['ec2']['service'].log.level,
             auth=services['ec2']['auth'],
             ImageLocation=bundle_info['manifests'][0]['key'],
-            Name=image_md.get_nvra(), **register_args)
+            Name='{0}-{1}'.format(
+                image_md.get_nvra(),
+                datetime.datetime.utcnow().strftime('%F-%H-%m-%s')),
+            **register_args)
         register_response = req.main()
         image_id = register_response['imageId']
 
