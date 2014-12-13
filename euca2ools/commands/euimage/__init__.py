@@ -1,4 +1,4 @@
-# (C) Copyright 2014 Hewlett-Packard Development Company, L.P.
+# (C) Copyright 2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -22,7 +22,3 @@
 # THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-IMAGE_ARCNAME = 'image.xz'
-IMAGE_MD_ARCNAME = 'image-md.yml'
-PACK_MD_ARCNAME = 'pack-md.yml'

@@ -1,4 +1,4 @@
-# (C) Copyright 2014 Hewlett-Packard Development Company, L.P.
+# (C) Copyright 2014 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -23,6 +23,7 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import datetime
 import six
 
 from euca2ools.commands.bundle.bundleanduploadimage import BundleAndUploadImage
@@ -45,7 +46,7 @@ def build_image_profile(profile_dict, arch):
 class InstanceStoreImageProfile(object):
     def __init__(self, profile_dict, arch):
         check_dict_whitelist(profile_dict, 'profile',
-                             ['bundle', 'register', 'tag'])
+                             ['bundle', 'provides', 'register', 'tag'])
         self.bundle_args = {}
         self.register_args = {}
         self.tag_args = {}
