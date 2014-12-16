@@ -25,7 +25,7 @@
 
 import yaml
 
-from euca2ools.commands.euimage.profiles import build_image_profile
+from euca2ools.commands.euimage.pack.profiles import build_image_profile
 from euca2ools.util import check_dict_whitelist
 
 

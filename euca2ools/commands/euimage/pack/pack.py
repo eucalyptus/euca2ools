@@ -34,8 +34,8 @@ import tempfile
 
 import euca2ools
 from euca2ools.bundle.util import open_pipe_fileobjs
-from euca2ools.commands.euimage.metadata import (ImagePackMetadata,
-                                                 ImageMetadata)
+from euca2ools.commands.euimage.pack.metadata import (ImagePackMetadata,
+                                                      ImageMetadata)
 
 
 IMAGE_ARCNAME = 'image.xz'
