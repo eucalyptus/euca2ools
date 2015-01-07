@@ -86,6 +86,7 @@ class CloudFormationRequest(AWSQueryRequest, TabifyingMixin):
     def print_resource(self, resource):
         resource_bits = ['RESOURCE']
         for attr in ('LogicalResourceId', 'PhysicalResourceId', 'ResourceType',
-                     'LastUpdatedTimestamp', 'ResourceStatus'):
+                     'LastUpdatedTimestamp', 'ResourceStatus',
+                     'ResourceStatusReason'):
             resource_bits.append(resource.get(attr))
         print self.tabify(resource_bits)
