@@ -1,4 +1,4 @@
-# Copyright 2013 Eucalyptus Systems, Inc.
+# Copyright 2013, 2015 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -89,6 +89,11 @@ class DescribeAutoScalingGroups(AutoScalingRequest, TabifyingMixin):
                                                                   scale_group))
             for metric in group.get('EnabledMetrics', []):
                 lines.append(self._get_tabified_metric(metric))
+        for tag in result.get('Tags') or []:
+            lines.append(self.tabify(['TAG', tag.get('ResourceType'),
+                                      tag.get('ResourceId'), tag.get('Key'),
+                                      tag.get('Value'),
+                                      tag.get('PropagateAtLaunch')]))
         for line in lines:
             print line
 
