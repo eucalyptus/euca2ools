@@ -35,8 +35,7 @@ class ValidateTemplate(CloudFormationRequest):
                     metavar='FILE', type=open,
                     help='file location containing JSON template'),
                 Arg('--template-url', dest='TemplateURL',
-                    metavar='URL', type=open,
-                    help='S3 url for JSON template'))
+                    metavar='URL', help='S3 URL for JSON template'))
             .required()]
     LIST_TAGS = ['Parameters', 'CapabilitiesReason', 'Capabilities']
 
