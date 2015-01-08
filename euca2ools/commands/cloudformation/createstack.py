@@ -1,4 +1,4 @@
-# Copyright 2014 Eucalyptus Systems, Inc.
+# Copyright 2014-2015 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -43,9 +43,12 @@ class CreateStack(CloudFormationRequest):
             .required(),
             Arg('-d', '--disable-rollback', dest='DisableRollback',
                 action='store_true', help='disable rollback on failure'),
-            Arg('-n', '--notification-arns', dest='NotificationARNs',
+            Arg('-n', '--notification-arns', dest='NotificationARNs.member',
                 metavar='ARN[,...]', type=delimited_list(','), action='append',
                 help='''SNS ARNs to publish stack actions to'''),
+            Arg('--capabilities', dest='Capabilities.member.',
+                metavar='CAP[,...]', type=delimited_list(','),
+                help='capabilities needed to create the stack'),
             Arg('-p', '--parameter', dest='param_sets', route_to=None,
                 metavar='KEY=VALUE', type=parameter_list, action='append',
                 help='''key and value of the parameters to use with the new

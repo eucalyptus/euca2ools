@@ -200,16 +200,6 @@ class RunInstances(EC2Request):
             self.params.update({'MinCount': self.params['MaxCount'],
                                 'MaxCount': self.params['MinCount']})
 
-        for group in self.args['group']:
-            if group.startswith('sg-'):
-                if not self.params.get('SecurityGroupId'):
-                    self.params['SecurityGroupId'] = []
-                self.params['SecurityGroupId'].append(group)
-            else:
-                if not self.params.get('SecurityGroup'):
-                    self.params['SecurityGroup'] = []
-                self.params['SecurityGroup'].append(group)
-
         iprofile = self.args.get('iam_profile')
         if iprofile:
             if iprofile.startswith('arn:'):
@@ -217,28 +207,52 @@ class RunInstances(EC2Request):
             else:
                 self.params['IamInstanceProfile.Name'] = iprofile
 
-        # Assemble an interface out of the "friendly" split interface options
-        cli_iface = {}
-        if self.args.get('private_ip_address'):
-            cli_iface['PrivateIpAddresses'] = [
-                {'PrivateIpAddress': self.args['private_ip_address'],
-                 'Primary': 'true'}]
-        if self.args.get('secondary_private_ip_address'):
-            sec_ips = [{'PrivateIpAddress': addr} for addr in
-                       self.args['secondary_private_ip_address']]
-            if not cli_iface.get('PrivateIpAddresses'):
-                cli_iface['PrivateIpAddresses'] = []
-            cli_iface['PrivateIpAddresses'].extend(sec_ips)
-        if self.args.get('secondary_private_ip_address_count'):
-            sec_ip_count = self.args['secondary_private_ip_address_count']
-            cli_iface['SecondaryPrivateIpAddressCount'] = sec_ip_count
-        if self.args.get('subnet'):
-            cli_iface['SubnetId'] = self.args['subnet']
-        if cli_iface:
-            cli_iface['DeviceIndex'] = 0
-            if not self.params.get('NetworkInterface'):
-                self.params['NetworkInterface'] = []
-            self.params['NetworkInterface'].append(cli_iface)
+        if self.args.get('subnet') or self.args.get('NetworkInterface'):
+            # This is going into a VPC.
+            # We can't mix top-level and interface-level parameters, so
+            # build an interface out of all the network-related options
+            # to make the split-up, "friendlier" options work.
+            cli_iface = {}
+            for group in self.args['group']:
+                if not group.startswith('sg-'):
+                    raise ArgumentError('argument -g/--group: groups must be '
+                                        'specified by ID when using VPC')
+                cli_iface.setdefault('SecurityGroupId', [])
+                cli_iface['SecurityGroupId'].append(group)
+            if self.args.get('private_ip_address'):
+                cli_iface['PrivateIpAddresses'] = [
+                    {'PrivateIpAddress': self.args['private_ip_address'],
+                    'Primary': 'true'}]
+            if self.args.get('secondary_address'):
+                sec_ips = [{'PrivateIpAddress': addr} for addr in
+                           self.args['secondary_address']]
+                if not cli_iface.get('PrivateIpAddresses'):
+                    cli_iface['PrivateIpAddresses'] = []
+                cli_iface['PrivateIpAddresses'].extend(sec_ips)
+            if self.args.get('secondary_count'):
+                sec_ip_count = self.args['secondary_count']
+                cli_iface['SecondaryPrivateIpAddressCount'] = sec_ip_count
+            if self.args.get('subnet'):
+                cli_iface['SubnetId'] = self.args['subnet']
+            if cli_iface:
+                cli_iface['DeviceIndex'] = 0
+                if not self.params.get('NetworkInterface'):
+                    self.params['NetworkInterface'] = []
+                self.params['NetworkInterface'].append(cli_iface)
+            self.log.debug('built network interface from CLI options: {0}'
+                           .format(cli_iface))
+        else:
+            # Non-VPC
+            for group in self.args['group']:
+                if group.startswith('sg-'):
+                    if not self.params.get('SecurityGroupId'):
+                        self.params['SecurityGroupId'] = []
+                    self.params['SecurityGroupId'].append(group)
+                else:
+                    if not self.params.get('SecurityGroup'):
+                        self.params['SecurityGroup'] = []
+                    self.params['SecurityGroup'].append(group)
+
 
     def print_result(self, result):
         self.print_reservation(result)

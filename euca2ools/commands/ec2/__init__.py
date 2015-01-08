@@ -177,7 +177,7 @@ class EC2Request(AWSQueryRequest, TabifyingMixin):
     def print_vpc(self, vpc):
         print self.tabify(('VPC', vpc.get('vpcId'), vpc.get('state'),
                            vpc.get('cidrBlock'), vpc.get('dhcpOptionsId'),
-                           vpc.get('instanceTenancy')))
+                           vpc.get('instanceTenancy'), vpc.get('isDefault')))
         for tag in vpc.get('tagSet') or []:
             self.print_resource_tag(tag, vpc.get('vpcId'))
 
