@@ -1,4 +1,4 @@
-# Copyright 2009-2014 Eucalyptus Systems, Inc.
+# Copyright 2009-2015 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -126,7 +126,6 @@ setup(name="euca2ools",
       scripts=sum((glob.glob('bin/euare-*'),
                    glob.glob('bin/euca-*'),
                    glob.glob('bin/euform-*'),
-                   glob.glob('bin/euimage-*'),
                    glob.glob('bin/eulb-*'),
                    glob.glob('bin/euscale-*'),
                    glob.glob('bin/euwatch-*')),
@@ -136,7 +135,7 @@ setup(name="euca2ools",
       install_requires=REQUIREMENTS,
       license='BSD (Simplified)',
       platforms='Posix; MacOS X',
-      classifiers=['Development Status :: 4 - Beta',
+      classifiers=['Development Status :: 5 - Production/Stable',
                    'Intended Audience :: Developers',
                    'Intended Audience :: System Administrators',
                    'License :: OSI Approved :: Simplified BSD License',
