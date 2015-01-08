@@ -46,7 +46,7 @@ class CreateStack(CloudFormationRequest):
             Arg('-n', '--notification-arns', dest='NotificationARNs.member',
                 metavar='ARN[,...]', type=delimited_list(','), action='append',
                 help='''SNS ARNs to publish stack actions to'''),
-            Arg('--capabilities', dest='Capabilities.member.',
+            Arg('--capabilities', dest='Capabilities.member',
                 metavar='CAP[,...]', type=delimited_list(','),
                 help='capabilities needed to create the stack'),
             Arg('-p', '--parameter', dest='param_sets', route_to=None,
