@@ -298,7 +298,8 @@ class EC2Request(AWSQueryRequest, TabifyingMixin):
             else:
                 privaddress = None
             print self.tabify(('ASSOCIATION', association.get('publicIp'),
-                               association.get('ipOwnerId'), privaddress))
+                               association.get('ipOwnerId'),
+                               privaddress.get('privateIpAddress')))
         for group in nic.get('groupSet', []):
             print self.tabify(('GROUP', group.get('groupId'),
                                group.get('groupName')))
