@@ -60,7 +60,7 @@ class RegisterImage(EC2Request):
                 "[SNAP-ID]:[GiB]:[true|false]:[standard|VOLTYPE[:IOPS]]"'''),
             Arg('--virtualization-type', dest='VirtualizationType',
                 choices=('paravirtual', 'hvm'),
-                help='[Privileged] virtualization type for the new image'),
+                help='virtualization type for the new image'),
             Arg('--platform', dest='Platform', metavar='windows',
                 choices=('windows',),
                 help="[Privileged] the new image's platform (windows)")]
