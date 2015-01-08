@@ -41,8 +41,11 @@ class ValidateTemplate(CloudFormationRequest):
 
     def print_result(self, result):
         print self.tabify(('DESCRIPTION', result.get('Description')))
-        for tag in self.LIST_TAGS:
-            if tag in result:
-                for result in result[tag]:
-                    for key, value in result.items():
-                        print self.tabify([tag.upper(), key, value])
+        for cap in result.get('Capabilities') or []:
+            print self.tabify(('CAPABILITY', cap))
+        for reason in result.get('CapabilitiesReason') or []:
+            print self.tabify(('CAPABILITYREASON', reason))
+        for param in result.get('Parameters') or []:
+            print self.tabify(('PARAMETER', param.get('ParameterKey'),
+                               param.get('NoEcho'), param.get('DefaultValue'),
+                               param.get('Description')))
