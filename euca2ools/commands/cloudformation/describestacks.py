@@ -34,7 +34,7 @@ class DescribeStacks(CloudFormationRequest):
                 help='limit results to a single stack'),
             Arg('--show-long', action='store_true', route_to=None,
                 help="show all of the stacks' info")]
-    LIST_TAGS = ['Stacks', 'Outputs']
+    LIST_TAGS = ['Outputs', 'Parameters', 'Stacks']
 
     def print_result(self, result):
         for stack in result['Stacks']:
@@ -42,6 +42,9 @@ class DescribeStacks(CloudFormationRequest):
             if self.args['show_long']:
                 print stack.get('StackId')
                 print stack.get('NotificationARNs')
+            if stack.get('Parameters'):
+                for param in stack.get('Parameters'):
+                    self.print_parameter(param)
             if stack.get('Outputs'):
                 for output in stack.get('Outputs'):
                     self.print_output(output)

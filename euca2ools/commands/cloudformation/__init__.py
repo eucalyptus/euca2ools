@@ -69,6 +69,12 @@ class CloudFormationRequest(AWSQueryRequest, TabifyingMixin):
             stack_bits.append(stack.get(attr))
         print self.tabify(stack_bits)
 
+    def print_parameter(self, param):
+        param_bits = ['PARAMETER']
+        for attr in ('ParameterKey', 'UsePreviousValue', 'ParameterValue'):
+            param_bits.append(param.get(attr))
+        print self.tabify(param_bits)
+
     def print_output(self, output):
         output_bits = ['OUTPUT']
         for attr in ('OutputKey', 'OutputValue'):
