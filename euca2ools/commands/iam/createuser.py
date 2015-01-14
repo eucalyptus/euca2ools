@@ -1,4 +1,4 @@
-# Copyright 2009-2014 Eucalyptus Systems, Inc.
+# Copyright 2009-2015 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -28,6 +28,7 @@ from requestbuilder import Arg
 from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT
 from euca2ools.commands.iam.addusertogroup import AddUserToGroup
 from euca2ools.commands.iam.createaccesskey import CreateAccessKey
+from euca2ools.commands.iam.getgroup import GetGroup
 
 
 class CreateUser(IAMRequest):
@@ -39,12 +40,23 @@ class CreateUser(IAMRequest):
                 help='path for the new user (default: "/")'),
             Arg('-g', '--group-name', route_to=None,
                 help='add the new user to a group'),
+            Arg('--verify', action='store_true', route_to=None,
+                help='''ensure the group given with -g exists before doing
+                anything'''),
             Arg('-k', '--create-accesskey', action='store_true', route_to=None,
                 help='''create an access key for the new user and print it to
                         standard out'''),
             Arg('-v', '--verbose', action='store_true', route_to=None,
                 help="print the new user's ARN and GUID"),
             AS_ACCOUNT]
+
+    def preprocess(self):
+        if self.args.get('verify') and self.args.get('group_name'):
+            obj = GetGroup.from_other(
+                self, GroupName=self.args['group_name'],
+                DelegateAccount=self.params['DelegateAccount'])
+            # This will blow up if the group does not exist.
+            obj.main()
 
     def postprocess(self, result):
         if self.args.get('group_name'):
