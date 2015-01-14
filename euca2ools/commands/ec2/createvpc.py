@@ -1,4 +1,4 @@
-# Copyright 2013-2014 Eucalyptus Systems, Inc.
+# Copyright 2013-2015 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -32,7 +32,7 @@ class CreateVpc(EC2Request):
     DESCRIPTION = 'Create a new VPC'
     ARGS = [Arg('CidrBlock', metavar='CIDR',
                 help='Address CIDR block for the new VPC (required)'),
-            Arg('--tenancy', dest='instanceTenancy',
+            Arg('--tenancy', dest='InstanceTenancy',
                 choices=('default', 'dedicated'),
                 help='the type of instance tenancy to use')]
     LIST_TAGS = ['tagSet']
