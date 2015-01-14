@@ -1,4 +1,4 @@
-# Copyright 2009-2014 Eucalyptus Systems, Inc.
+# Copyright 2009-2015 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -60,7 +60,8 @@ class RunInstances(EC2Request):
                     help='''file containing user data to make available to the
                     instances in this reservation''')),
             Arg('--addressing', dest='AddressingType',
-                choices=('public', 'private'), help='''[Eucalyptus only]
+                choices=('public', 'private'),
+                help='''[Eucalyptus only, non-VPC only]
                 addressing scheme to launch the instance with.  Use "private"
                 to run an instance with no public address.'''),
             Arg('-t', '--instance-type', dest='InstanceType',
