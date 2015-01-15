@@ -4,10 +4,11 @@
 euare-usercreate \- Create a new user and optionally add the user to a group or generate
 an access key for the user
 .SH SYNOPSIS
-euare\-usercreate \fB\-u\fR USERNAME [\-p PATH] [\-g GROUP_NAME] [\-k] [\-v]
-[\-\-as\-account ACCOUNT] [\-U URL] [\-\-region USER@REGION]
-[\-I KEY_ID] [\-S KEY] [\-\-security\-token TOKEN]
-[\-\-debug] [\-\-debugger] [\-\-version] [\-h]
+euare\-usercreate \fB\-u\fR USERNAME [\-p PATH] [\-g GROUP_NAME] [\-\-verify] [\-k]
+[\-v] [\-\-as\-account ACCOUNT] [\-U URL]
+[\-\-region USER@REGION] [\-I KEY_ID] [\-S KEY]
+[\-\-security\-token TOKEN] [\-\-debug] [\-\-debugger]
+[\-\-version] [\-h]
 .SH DESCRIPTION
 Create a new user and optionally add the user to a group or generate
 an access key for the user
@@ -21,6 +22,10 @@ path for the new user (default: "/")
 .TP
 \fB\-g\fR GROUP_NAME, \fB\-\-group\-name\fR GROUP_NAME
 add the new user to a group
+.TP
+\fB\-\-verify\fR
+ensure the group given with \fB\-g\fR exists before doing
+anything
 .TP
 \fB\-k\fR, \fB\-\-create\-accesskey\fR
 create an access key for the new user and print it to
