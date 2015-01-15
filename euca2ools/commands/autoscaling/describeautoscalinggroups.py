@@ -89,11 +89,11 @@ class DescribeAutoScalingGroups(AutoScalingRequest, TabifyingMixin):
                                                                   scale_group))
             for metric in group.get('EnabledMetrics', []):
                 lines.append(self._get_tabified_metric(metric))
-        for tag in result.get('Tags') or []:
-            lines.append(self.tabify(['TAG', tag.get('ResourceType'),
-                                      tag.get('ResourceId'), tag.get('Key'),
-                                      tag.get('Value'),
-                                      tag.get('PropagateAtLaunch')]))
+            for tag in group.get('Tags') or []:
+                lines.append(self.tabify(['TAG', tag.get('ResourceType'),
+                                          tag.get('ResourceId'),
+                                          tag.get('Key'), tag.get('Value'),
+                                          tag.get('PropagateAtLaunch')]))
         for line in lines:
             print line
 
