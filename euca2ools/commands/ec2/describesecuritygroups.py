@@ -89,10 +89,10 @@ class DescribeSecurityGroups(EC2Request):
                 print self.tabify(perm_base + perm_item)
             for othergroup in perm.get('groups', []):
                 perm_item = ['FROM', 'USER', othergroup.get('userId')]
+                if othergroup.get('groupName'):
+                    perm_item.extend(['NAME', othergroup['groupName']])
                 if othergroup.get('groupId'):
                     perm_item.extend(['ID', othergroup['groupId']])
-                else:
-                    perm_item.extend(['GRPNAME', othergroup['groupName']])
                 perm_item.append('ingress')
                 print self.tabify(perm_base + perm_item)
         for perm in group.get('ipPermissionsEgress', []):
@@ -105,10 +105,10 @@ class DescribeSecurityGroups(EC2Request):
                 print self.tabify(perm_base + perm_item)
             for othergroup in perm.get('groups', []):
                 perm_item = ['TO', 'USER', othergroup.get('userId')]
+                if othergroup.get('groupName'):
+                    perm_item.extend(['NAME', othergroup['groupName']])
                 if othergroup.get('groupId'):
                     perm_item.extend(['ID', othergroup['groupId']])
-                else:
-                    perm_item.extend(['GRPNAME', othergroup['groupName']])
                 perm_item.append('egress')
                 print self.tabify(perm_base + perm_item)
         for tag in group.get('tagSet', []):

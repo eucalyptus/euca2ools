@@ -114,14 +114,14 @@ class _ModifySecurityGroupRule(EC2Request):
         if self.params.get('IpPermissions.1.Groups.1.UserId'):
             perm_str.append('USER')
             perm_str.append(self.params.get('IpPermissions.1.Groups.1.UserId'))
-        if self.params.get('IpPermissions.1.Groups.1.GroupId'):
-            perm_str.append('GRPID')
-            perm_str.append(self.params.get(
-                'IpPermissions.1.Groups.1.GroupId'))
-        elif self.params.get('IpPermissions.1.Groups.1.GroupName'):
-            perm_str.append('GRPNAME')
+        if self.params.get('IpPermissions.1.Groups.1.GroupName'):
+            perm_str.append('NAME')
             perm_str.append(self.params.get(
                 'IpPermissions.1.Groups.1.GroupName'))
+        if self.params.get('IpPermissions.1.Groups.1.GroupId'):
+            perm_str.append('ID')
+            perm_str.append(self.params.get(
+                'IpPermissions.1.Groups.1.GroupId'))
         if self.params.get('IpPermissions.1.IpRanges.1.CidrIp'):
             perm_str.extend(['FROM', 'CIDR'])
             perm_str.append(self.params.get(
