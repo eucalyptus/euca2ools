@@ -1,4 +1,4 @@
-# Copyright 2014 Eucalyptus Systems, Inc.
+# Copyright 2014-2015 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -34,7 +34,7 @@ class CreateNetworkInterface(EC2Request):
                 the new network interface in (required)'''),
             Arg('-d', '--description', dest='Description', metavar='DESC',
                 help='description for the new network interface'),
-            Arg('-g', '--group', dest='SecurityGroupName', metavar='GROUP',
+            Arg('-g', '--group', dest='SecurityGroupId', metavar='GROUP',
                 action='append',
                 help='''ID of a security group to add the new network interface
                 to.  This option may be used more than once.  Each time adds
