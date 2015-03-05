@@ -37,6 +37,7 @@ from euca2ools import __version__
 
 
 REQUIREMENTS = ['lxml',
+                'PyYAML',
                 'requestbuilder>=0.2.0-pre3',
                 'requests',
                 'six>=1.4']
