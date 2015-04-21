@@ -27,6 +27,7 @@ import os
 import string
 import sys
 import urlparse
+import warnings
 
 from requestbuilder import Arg
 import requestbuilder.auth
@@ -59,6 +60,11 @@ class S3(requestbuilder.service.BaseService):
 
     def build_presigned_url(self, method='GET', path=None, params=None,
                             auth=None, auth_args=None):
+        # requestbuilder 0.2
+        msg = ('S3.build_presigned_url is deprecated; use '
+               'S3Request.get_presigned_url2 instead')
+        self.log.warn(msg)
+        warnings.warn(msg, DeprecationWarning)
         if path:
             # We can't simply use urljoin because a path might start with '/'
             # like it could for keys that start with that character.
@@ -141,11 +147,32 @@ class S3Request(requestbuilder.request.BaseRequest):
         self.redirects_left = 3
 
     def get_presigned_url(self, expiration_datetime):
+        # requestbuilder 0.2
+        msg = ('S3Request.get_presigned_url is deprecated; use '
+               'S3Request.get_presigned_url2 instead')
+        self.log.warn(msg)
+        warnings.warn(msg, DeprecationWarning)
         self.preprocess()
         return self.service.build_presigned_url(
             method=self.method, path=self.path, params=self.params,
             auth=self.auth,
             auth_args={'expiration_datetime': expiration_datetime})
+
+    def get_presigned_url2(self, timeout):
+        """
+        Get a pre-signed URL for this request that expires after a given
+        number of seconds.
+        """
+        # requestbuilder 0.3
+        self.preprocess()
+        # UNSIGNED-PAYLOAD is a magical string used for S3 V4 query auth.
+        # The older auth scheme doesn't actually use this, so leaving it
+        # here for now is harmless.
+        auth = requestbuilder.auth.S3QueryAuth.from_other(
+            self.auth, timeout=timeout, payload_hash='UNSIGNED-PAYLOAD')
+        return self.service.get_request_url(
+            method=self.method, path=self.path, params=self.params,
+            auth=auth)
 
     def handle_server_error(self, err):
         if err.status_code == 301:
