@@ -26,7 +26,6 @@
 from __future__ import division
 
 import argparse
-import datetime
 import math
 import uuid
 
@@ -129,8 +128,7 @@ class ImportVolume(EC2Request, S3AccessMixin, FileTransferProgressBarMixin):
                 auth=self.args['s3_auth'],
                 source='/'.join((self.args['bucket'], manifest_key)))
             days = self.args.get('expires') or 30
-            expiration = datetime.datetime.utcnow() + datetime.timedelta(days)
-            get_url = getobj.get_presigned_url(expiration)
+            get_url = getobj.get_presigned_url2(days * 86400)  # in seconds
             self.log.info('generated manifest GET URL: %s', get_url)
             self.params['Image.ImportManifestUrl'] = get_url
 
