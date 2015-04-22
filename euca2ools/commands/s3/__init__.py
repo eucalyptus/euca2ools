@@ -1,4 +1,4 @@
-# Copyright 2013-2014 Eucalyptus Systems, Inc.
+# Copyright 2013-2015 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -30,7 +30,7 @@ import urlparse
 import warnings
 
 from requestbuilder import Arg
-import requestbuilder.auth
+import requestbuilder.auth.aws
 import requestbuilder.exceptions
 import requestbuilder.request
 import requestbuilder.service
@@ -140,7 +140,7 @@ class S3(requestbuilder.service.BaseService):
 class S3Request(requestbuilder.request.BaseRequest):
     SUITE = Euca2ools
     SERVICE_CLASS = S3
-    AUTH_CLASS = requestbuilder.auth.S3RestAuth
+    AUTH_CLASS = requestbuilder.auth.aws.HmacV1Auth
 
     def __init__(self, **kwargs):
         requestbuilder.request.BaseRequest.__init__(self, **kwargs)
@@ -168,7 +168,7 @@ class S3Request(requestbuilder.request.BaseRequest):
         # UNSIGNED-PAYLOAD is a magical string used for S3 V4 query auth.
         # The older auth scheme doesn't actually use this, so leaving it
         # here for now is harmless.
-        auth = requestbuilder.auth.S3QueryAuth.from_other(
+        auth = requestbuilder.auth.aws.QueryHmacV1Auth.from_other(
             self.auth, timeout=timeout, payload_hash='UNSIGNED-PAYLOAD')
         return self.service.get_request_url(
             method=self.method, path=self.path, params=self.params,

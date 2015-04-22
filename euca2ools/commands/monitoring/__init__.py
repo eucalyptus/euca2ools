@@ -1,4 +1,4 @@
-# Copyright 2013-2014 Eucalyptus Systems, Inc.
+# Copyright 2013-2015 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -27,7 +27,7 @@ import os
 import sys
 
 from requestbuilder import Arg
-import requestbuilder.auth
+import requestbuilder.auth.aws
 from requestbuilder.mixins import TabifyingMixin
 from requestbuilder.request import AWSQueryRequest
 import requestbuilder.service
@@ -58,7 +58,7 @@ class CloudWatch(requestbuilder.service.BaseService):
 class CloudWatchRequest(AWSQueryRequest, TabifyingMixin):
     SUITE = Euca2ools
     SERVICE_CLASS = CloudWatch
-    AUTH_CLASS = requestbuilder.auth.QuerySigV2Auth
+    AUTH_CLASS = requestbuilder.auth.aws.QueryHmacV2Auth
     METHOD = 'POST'
 
     def parse_response(self, response):

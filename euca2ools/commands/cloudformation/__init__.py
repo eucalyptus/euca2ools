@@ -1,4 +1,4 @@
-# Copyright 2014 Eucalyptus Systems, Inc.
+# Copyright 2014-2015 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -24,7 +24,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 from requestbuilder import Arg
-import requestbuilder.auth
+import requestbuilder.auth.aws
 from requestbuilder.mixins import TabifyingMixin
 from requestbuilder.request import AWSQueryRequest
 import requestbuilder.service
@@ -55,7 +55,7 @@ class CloudFormation(requestbuilder.service.BaseService):
 class CloudFormationRequest(AWSQueryRequest, TabifyingMixin):
     SUITE = Euca2ools
     SERVICE_CLASS = CloudFormation
-    AUTH_CLASS = requestbuilder.auth.QuerySigV2Auth
+    AUTH_CLASS = requestbuilder.auth.aws.QueryHmacV2Auth
     METHOD = 'POST'
 
     def parse_response(self, response):

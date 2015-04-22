@@ -1,4 +1,4 @@
-# Copyright 2009-2014 Eucalyptus Systems, Inc.
+# Copyright 2009-2015 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -34,7 +34,7 @@ import sys
 
 import lxml.etree
 from requestbuilder import Arg
-from requestbuilder.auth import QuerySigV2Auth
+import requestbuilder.auth.aws
 from requestbuilder.exceptions import ArgumentError, AuthError, ClientError
 from requestbuilder.mixins import TabifyingMixin
 from requestbuilder.request import AWSQueryRequest
@@ -67,7 +67,7 @@ class EC2(BaseService):
 class EC2Request(AWSQueryRequest, TabifyingMixin):
     SUITE = Euca2ools
     SERVICE_CLASS = EC2
-    AUTH_CLASS = QuerySigV2Auth
+    AUTH_CLASS = requestbuilder.auth.aws.QueryHmacV2Auth
     METHOD = 'POST'
 
     def __init__(self, **kwargs):
