@@ -170,11 +170,11 @@ def check_dict_whitelist(dict_, err_context, whitelist=None):
                              .format(err_context, ', '.join(differences)))
 
 
-def transform_dict(dict_, transform_dict):
+def transform_dict(dict_, transformation_dict):
     transformed = {}
     for key, val in dict_.iteritems():
-        if key in transform_dict:
-            transformed[transform_dict[key]] = val
+        if key in transformation_dict:
+            transformed[transformation_dict[key]] = val
         else:
             transformed[key] = val
     return transformed

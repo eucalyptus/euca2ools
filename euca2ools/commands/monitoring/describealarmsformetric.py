@@ -50,8 +50,9 @@ class DescribeAlarmsForMetric(CloudWatchRequest, TabifyingMixin):
                 help='period over which statistics are applied'),
             Arg('--show-long', action='store_true', route_to=None,
                 help="show all of the alarms' info"),
-            Arg('--statistic', dest='Statistic', choices=('Average', 'Maximum',
-                'Minimum', 'SampleCount', 'Sum'),
+            Arg('--statistic', dest='Statistic',
+                choices=('Average', 'Maximum', 'Minimum', 'SampleCount',
+                         'Sum'),
                 help='statistic of the metric on which to trigger alarms'),
             Arg('--unit', dest='Unit',
                 help='unit of measurement for statistics')]

@@ -95,12 +95,11 @@ class EC2Request(AWSQueryRequest, TabifyingMixin):
         instance_line = ['INSTANCE']
         for key in ['instanceId', 'imageId', 'dnsName', 'privateDnsName']:
             instance_line.append(instance.get(key))
-        instance_line.append(instance.get('instanceState', {})
-                                     .get('name'))
+        instance_line.append(instance.get('instanceState', {}).get('name'))
         instance_line.append(instance.get('keyName'))
         instance_line.append(instance.get('amiLaunchIndex'))
         instance_line.append(','.join([code['productCode'] for code in
-                             instance.get('productCodes', [])]))
+                                       instance.get('productCodes', [])]))
         instance_line.append(instance.get('instanceType'))
         instance_line.append(instance.get('launchTime'))
         instance_line.append(instance.get('placement', {}).get(
@@ -355,7 +354,7 @@ class EC2Request(AWSQueryRequest, TabifyingMixin):
                     self.log.info('using connection info stylesheet %s',
                                   stylesheet)
                     with open(stylesheet) as stylesheet_file:
-                        xslt_root = lxml.etree.parse(xslt_file)
+                        xslt_root = lxml.etree.parse(stylesheet_file)
                 transform = lxml.etree.XSLT(xslt_root)
                 conn_info_root = lxml.etree.parse(io.BytesIO(
                     vpn.get('customerGatewayConfiguration')))

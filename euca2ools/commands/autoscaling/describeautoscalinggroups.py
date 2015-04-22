@@ -103,18 +103,15 @@ class DescribeAutoScalingGroups(AutoScalingRequest, TabifyingMixin):
                             instance.get('AvailabilityZone'),
                             instance.get('LifecycleState'),
                             instance.get('HealthStatus'),
-                            instance.get('LaunchConfigurationName')
-                            ])
+                            instance.get('LaunchConfigurationName')])
 
     def _get_tabified_suspended_process(self, process, scale_group):
         return self.tabify(['SUSPENDED-PROCESS',
                             process.get('ProcessName'),
                             process.get('SuspensionReason'),
-                            scale_group
-                            ])
+                            scale_group])
 
     def _get_tabified_metric(self, metric):
         return self.tabify(['ENABLED-METRICS',
                             metric.get('Metric'),
-                            metric.get('Granularity')
-                            ])
+                            metric.get('Granularity')])

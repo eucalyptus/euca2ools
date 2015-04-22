@@ -84,7 +84,7 @@ class ImagePackMetadata(object):
         return {'image': {'sha256sum': self.image_sha256sum,
                           'size': self.image_size},
                 'image_metadata': {'sha256sum': self.image_md_sha256sum},
-                                   'version': self.version}
+                'version': self.version}
 
 
 class ImageMetadata(object):

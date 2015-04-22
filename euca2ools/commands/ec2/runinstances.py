@@ -223,7 +223,7 @@ class RunInstances(EC2Request):
             if self.args.get('private_ip_address'):
                 cli_iface['PrivateIpAddresses'] = [
                     {'PrivateIpAddress': self.args['private_ip_address'],
-                    'Primary': 'true'}]
+                     'Primary': 'true'}]
             if self.args.get('secondary_address'):
                 sec_ips = [{'PrivateIpAddress': addr} for addr in
                            self.args['secondary_address']]
