@@ -29,8 +29,8 @@ from euca2ools.commands.ec2 import EC2Request
 
 class ResetImageAttribute(EC2Request):
     DESCRIPTION = 'Reset an attribute of an image to its default value'
-    ARGS = [Arg('ImageId', metavar='IMAGE',
-            help='ID of the image whose attribute should be reset (required)'),
+    ARGS = [Arg('ImageId', metavar='IMAGE', help='''ID of the image whose
+                attribute should be reset (required)'''),
             Arg('-l', '--launch-permission', dest='Attribute',
                 action='store_const', const='launchPermission', required=True,
                 help='reset launch permissions')]

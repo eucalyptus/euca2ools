@@ -95,12 +95,11 @@ class EC2Request(AWSQueryRequest, TabifyingMixin):
         instance_line = ['INSTANCE']
         for key in ['instanceId', 'imageId', 'dnsName', 'privateDnsName']:
             instance_line.append(instance.get(key))
-        instance_line.append(instance.get('instanceState', {})
-                                     .get('name'))
+        instance_line.append(instance.get('instanceState', {}).get('name'))
         instance_line.append(instance.get('keyName'))
         instance_line.append(instance.get('amiLaunchIndex'))
         instance_line.append(','.join([code['productCode'] for code in
-                             instance.get('productCodes', [])]))
+                                       instance.get('productCodes', [])]))
         instance_line.append(instance.get('instanceType'))
         instance_line.append(instance.get('launchTime'))
         instance_line.append(instance.get('placement', {}).get(

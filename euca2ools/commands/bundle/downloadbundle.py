@@ -75,6 +75,6 @@ class DownloadBundle(S3Request, FileTransferProgressBarMixin,
     def print_result(self, result):
         _, manifest_filename = result
         if (manifest_filename and
-            (isinstance(self.args['dest'], basestring) or
-             self.args['dest'].fileno() != sys.stdout.fileno())):
+                (isinstance(self.args['dest'], basestring) or
+                 self.args['dest'].fileno() != sys.stdout.fileno())):
             print 'Wrote manifest', manifest_filename
