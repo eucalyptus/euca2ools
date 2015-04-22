@@ -354,7 +354,7 @@ class EC2Request(AWSQueryRequest, TabifyingMixin):
                     self.log.info('using connection info stylesheet %s',
                                   stylesheet)
                     with open(stylesheet) as stylesheet_file:
-                        xslt_root = lxml.etree.parse(xslt_file)
+                        xslt_root = lxml.etree.parse(stylesheet_file)
                 transform = lxml.etree.XSLT(xslt_root)
                 conn_info_root = lxml.etree.parse(io.BytesIO(
                     vpn.get('customerGatewayConfiguration')))

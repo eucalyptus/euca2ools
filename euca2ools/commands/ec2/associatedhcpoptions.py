@@ -36,6 +36,6 @@ class AssociateDhcpOptions(EC2Request):
                 help='''ID of the VPC to associate the DHCP option set
                 with (required)''')]
 
-    def print_result(self, result):
+    def print_result(self, _):
         print self.tabify(('DHCPOPTIONS',
                            self.args['DhcpOptionsId'], self.args['VpcId']))

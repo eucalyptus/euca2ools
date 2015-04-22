@@ -88,9 +88,10 @@ class InstallPackedImage(S3Request, FileTransferProgressBarMixin,
         unpacked_image = tempfile.TemporaryFile()
         with ImagePack.open(self.args['pack_filename']) as pack:
             if self.args['profile'] not in pack.image_md.profiles:
-                raise ValueError('no such profile: "{0}" (choose from {1})'
-                                 .format(self.args['profile'],
-                                 ', '.join(pack.image_md.profiles.keys())))
+                raise ValueError(
+                    'no such profile: "{0}" (choose from {1})'.format(
+                        self.args['profile'],
+                        ', '.join(pack.image_md.profiles.keys())))
             with pack.open_image() as image:
                 # We could technically hand the image file object
                 # directly to the installation process and calculate

@@ -23,7 +23,7 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from requestbuilder import Arg, MutuallyExclusiveArgList
+from requestbuilder import Arg
 
 from euca2ools.commands.ec2 import EC2Request
 
@@ -36,6 +36,6 @@ class ResetNetworkInterfaceAttribute(EC2Request):
                 action='store_const', const='sourceDestCheck',
                 help='enable source/destination checking')]
 
-    def print_result(self, result):
+    def print_result(self, _):
         print self.tabify((self.params['Attribute'],
                            self.params['NetworkInterfaceId'], 'RESET'))
