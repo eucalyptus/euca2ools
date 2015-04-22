@@ -52,8 +52,9 @@ class PutMetricAlarm(CloudWatchRequest):
             Arg('--period', dest='Period', metavar='SECONDS', type=int,
                 required=True, help='''period over which the specified
                 statistic is applied (required)'''),
-            Arg('--statistic', dest='Statistic', choices=('Average', 'Maximum',
-                'Minimum', 'SampleCount', 'Sum'), required=True,
+            Arg('--statistic', dest='Statistic', required=True,
+                choices=('Average', 'Maximum', 'Minimum', 'SampleCount',
+                         'Sum'),
                 help='statistic on which to alarm (required)'),
             Arg('--threshold', dest='Threshold', metavar='FLOAT', type=float,
                 required=True,
