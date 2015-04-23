@@ -51,7 +51,7 @@ class CloudFormation(requestbuilder.service.BaseService):
 class CloudFormationRequest(AWSQueryRequest, TabifyingMixin):
     SUITE = Euca2ools
     SERVICE_CLASS = CloudFormation
-    AUTH_CLASS = requestbuilder.auth.aws.QueryHmacV2Auth
+    AUTH_CLASS = requestbuilder.auth.aws.HmacV4Auth
     METHOD = 'POST'
 
     def parse_response(self, response):

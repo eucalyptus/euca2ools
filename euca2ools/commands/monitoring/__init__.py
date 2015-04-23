@@ -54,7 +54,7 @@ class CloudWatch(requestbuilder.service.BaseService):
 class CloudWatchRequest(AWSQueryRequest, TabifyingMixin):
     SUITE = Euca2ools
     SERVICE_CLASS = CloudWatch
-    AUTH_CLASS = requestbuilder.auth.aws.QueryHmacV2Auth
+    AUTH_CLASS = requestbuilder.auth.aws.HmacV4Auth
     METHOD = 'POST'
 
     def parse_response(self, response):

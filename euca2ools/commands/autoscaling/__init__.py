@@ -53,7 +53,7 @@ class AutoScaling(requestbuilder.service.BaseService):
 class AutoScalingRequest(requestbuilder.request.AWSQueryRequest):
     SUITE = Euca2ools
     SERVICE_CLASS = AutoScaling
-    AUTH_CLASS = requestbuilder.auth.aws.QueryHmacV2Auth
+    AUTH_CLASS = requestbuilder.auth.aws.HmacV4Auth
     METHOD = 'POST'
 
     def parse_response(self, response):

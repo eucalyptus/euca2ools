@@ -62,7 +62,7 @@ class EC2(BaseService):
 class EC2Request(AWSQueryRequest, TabifyingMixin):
     SUITE = Euca2ools
     SERVICE_CLASS = EC2
-    AUTH_CLASS = requestbuilder.auth.aws.QueryHmacV2Auth
+    AUTH_CLASS = requestbuilder.auth.aws.HmacV4Auth
     METHOD = 'POST'
 
     def __init__(self, **kwargs):

@@ -54,7 +54,7 @@ class IAM(requestbuilder.service.BaseService):
 class IAMRequest(requestbuilder.request.AWSQueryRequest):
     SUITE = Euca2ools
     SERVICE_CLASS = IAM
-    AUTH_CLASS = requestbuilder.auth.aws.QueryHmacV2Auth
+    AUTH_CLASS = requestbuilder.auth.aws.HmacV4Auth
     METHOD = 'POST'
 
     def parse_response(self, response):
