@@ -79,27 +79,6 @@ def strip_response_metadata(response_dict):
         return response_dict
 
 
-def substitute_euca_region(obj):
-    if os.getenv('EUCA_REGION') and not os.getenv(obj.REGION_ENVVAR):
-        msg = ('EUCA_REGION environment variable is deprecated; use {0} '
-               'instead').format(obj.REGION_ENVVAR)
-        obj.log.warn(msg)
-        print >> sys.stderr, msg
-        os.environ[obj.REGION_ENVVAR] = os.getenv('EUCA_REGION')
-
-
-def magic(config, msg, suffix=None):
-    if not sys.stdout.isatty() or not sys.stderr.isatty():
-        return ''
-    try:
-        if config.convert_to_bool(config.get_global_option('magic'),
-                                  default=False):
-            return '\033[95m{0}\033[0m{1}'.format(msg, suffix or '')
-        return ''
-    except ValueError:
-        return ''
-
-
 def build_iam_policy(effect, resources, actions):
     policy = {'Statement': []}
     for resource in resources or []:

@@ -39,7 +39,6 @@ import six
 
 from euca2ools.commands import Euca2ools
 from euca2ools.exceptions import AWSError
-from euca2ools.util import magic, substitute_euca_region
 
 
 class S3(requestbuilder.service.BaseService):
@@ -50,10 +49,6 @@ class S3(requestbuilder.service.BaseService):
 
     ARGS = [Arg('-U', '--url', metavar='URL',
                 help='object storage service endpoint URL')]
-
-    def configure(self):
-        substitute_euca_region(self)
-        requestbuilder.service.BaseService.configure(self)
 
     def handle_http_error(self, response):
         raise AWSError(response)
@@ -194,8 +189,6 @@ class S3Request(requestbuilder.request.BaseRequest):
             msg = ('Bucket {0}is not available from endpoint "{1}".  Ensure '
                    "the object storage service URL matches the bucket's "
                    'location.'.format(bucket, parsed.netloc))
-            msg = magic(self.config, 'Your princess is in another castle!',
-                        '  ') + msg
             raise requestbuilder.exceptions.ClientError(msg)
         else:
             return requestbuilder.request.BaseRequest.handle_server_error(

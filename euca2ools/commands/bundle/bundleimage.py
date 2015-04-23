@@ -1,4 +1,4 @@
-# Copyright 2013-2014 Eucalyptus Systems, Inc.
+# Copyright 2013-2015 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -38,7 +38,7 @@ from euca2ools.bundle.pipes.fittings import (create_bundle_part_writer,
 import euca2ools.bundle.util
 from euca2ools.commands import Euca2ools
 from euca2ools.commands.bundle.mixins import BundleCreatingMixin
-from euca2ools.util import mkdtemp_for_large_files, substitute_euca_region
+from euca2ools.util import mkdtemp_for_large_files
 
 
 class BundleImage(BaseCommand, BundleCreatingMixin,
@@ -50,7 +50,6 @@ class BundleImage(BaseCommand, BundleCreatingMixin,
 
     # noinspection PyExceptionInherit
     def configure(self):
-        substitute_euca_region(self)
         self.update_config_view()
 
         BaseCommand.configure(self)

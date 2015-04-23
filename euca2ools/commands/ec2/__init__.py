@@ -43,7 +43,6 @@ import requests.exceptions
 
 from euca2ools.commands import Euca2ools
 from euca2ools.exceptions import AWSError
-from euca2ools.util import substitute_euca_region
 
 
 class EC2(BaseService):
@@ -55,10 +54,6 @@ class EC2(BaseService):
 
     ARGS = [Arg('-U', '--url', metavar='URL',
                 help='compute service endpoint URL')]
-
-    def configure(self):
-        substitute_euca_region(self)
-        BaseService.configure(self)
 
     def handle_http_error(self, response):
         raise AWSError(response)

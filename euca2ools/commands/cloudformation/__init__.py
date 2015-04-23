@@ -31,7 +31,7 @@ import requestbuilder.service
 
 from euca2ools.commands import Euca2ools
 from euca2ools.exceptions import AWSError
-from euca2ools.util import strip_response_metadata, substitute_euca_region
+from euca2ools.util import strip_response_metadata
 
 
 class CloudFormation(requestbuilder.service.BaseService):
@@ -43,10 +43,6 @@ class CloudFormation(requestbuilder.service.BaseService):
 
     ARGS = [Arg('-U', '--url', metavar='URL',
                 help='deployment templating service endpoint URL')]
-
-    def configure(self):
-        substitute_euca_region(self)
-        requestbuilder.service.BaseService.configure(self)
 
     def handle_http_error(self, response):
         raise AWSError(response)

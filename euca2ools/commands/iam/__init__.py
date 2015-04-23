@@ -34,7 +34,7 @@ import requestbuilder.service
 
 from euca2ools.commands import Euca2ools
 from euca2ools.exceptions import AWSError
-from euca2ools.util import strip_response_metadata, substitute_euca_region
+from euca2ools.util import strip_response_metadata
 
 
 class IAM(requestbuilder.service.BaseService):
@@ -46,16 +46,6 @@ class IAM(requestbuilder.service.BaseService):
 
     ARGS = [Arg('-U', '--url', metavar='URL',
                 help='identity service endpoint URL')]
-
-    def configure(self):
-        substitute_euca_region(self)
-        if os.getenv('EUARE_URL') and not os.getenv(self.URL_ENVVAR):
-            msg = ('EUARE_URL environment variable is deprecated; use {0} '
-                   'instead').format(self.URL_ENVVAR)
-            self.log.warn(msg)
-            print >> sys.stderr, msg
-            os.environ[self.URL_ENVVAR] = os.getenv('EUARE_URL')
-        requestbuilder.service.BaseService.configure(self)
 
     def handle_http_error(self, response):
         raise AWSError(response)
