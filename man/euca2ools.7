@@ -1,0 +1,65 @@
+.Dd 21 March 2015
+.Dt EUCA2OOLS 7
+.Os euca2ools 3.2
+.Sh NAME
+.Nm euca2ools
+.Nd eucalyptus command line client tools
+.Sh DESCRIPTION
+The
+.Nm
+suite is a set of command line tools that interact with
+.Dq Amazon Web Services
+.Pq AWS ,
+Eucalyptus, and other AWS-compatible clouds using the REST-
+and query-based APIs for the following web services:
+.Bl -bullet
+.It
+.Em Auto Scaling
+.Po
+see commands that start with
+.Em euscale
+.Pc
+.It
+.Em CloudFormation
+templating
+.Po
+see commands that start with
+.Em euform
+.Pc
+.It
+.Em CloudWatch
+monitoring
+.Po
+see commands that start with
+.Em euwatch
+.Pc
+.It
+.Em EC2
+compute
+.Po
+see commands that start with
+.Em euca
+.Pc
+.It
+.Em Elastic Load Balancing
+.Po
+see commands that start with
+.Em eulb
+.Pc
+.It
+.Em IAM
+.Pq Identity and Access Management
+.Po
+see commands that start with
+.Em euare
+.Pc
+.El
+.Pp
+.Nm
+are designed to make it as easy as possible to work with
+multiple AWS-compatible clouds from the command line using
+.Xr euca2ools.ini 5
+configuration files, command line options, and shortcuts.
+.Sh SEE ALSO
+.Bl
+.Xr euca2ools.ini 5
