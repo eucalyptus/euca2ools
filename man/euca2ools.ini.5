@@ -1,0 +1,252 @@
+.Dd 21 March 2015
+.Dt EUCA2OOLS.INI
+.Os euca2ools 3.2
+.Sh NAME
+.Nm euca2ools.ini
+.Nd configuration for euca2ools
+.Sh DESCRIPTION
+The
+.Nm
+file is used to configure the euca2ools suite of command
+line tools.  It stores the locations of the services for
+the commands to contact, the security credentials to use
+to authenticate to them, and other configuration options
+as well.
+.Sh FILE FORMAT
+.Nm
+is broken into a number of sections.  Sections are
+denoted by section headers, which consist of section
+names surrounded by square braces.  Within each section,
+an option is set by listing its name, an
+.Dq =
+sign, and its value.  For example, the following enables
+debugging for all commands by setting the
+.Dq debug
+option in the
+.Dq global
+section to
+.Dq true :
+.Bd -literal -offset Ds
+[global]
+debug = true
+.Ed
+.Pp
+Some sections have user-defined names.  Such a section's
+name is defined by a second word in its header.  Named
+sections provide a means of choosing different
+configuration using the command line.  For example, the
+following defines two regions with different URLs for
+their EC2 services that one can select using the
+.Fl -region
+command line option:
+.Bd -literal -offset Ds
+[region us-east-1]
+ec2-url = https://ec2.us-east-1.amazonaws.com/
+
+[region eu-west-1]
+ec2-url = https://ec2.eu-west-1.amazonaws.com/
+.Ed
+.Pp
+Named sections can contain
+.Dq *
+wildcards, which makes them act as fallbacks when options
+are not available in sections with more specific names
+that contain fewer wildcards.  Sections with more specific
+names take precedence over those with less specific names.
+.Dq *
+sections function as defaults when the value for an option
+cannot be found anywhere else.
+.Pp
+Named sections can also be organized into groups by
+choosing names for groups and prepending section names
+with them, separated by
+.Dq \&:
+characters.  When combined with wildcards, this allows
+one to specify defaults for several sections at once
+and then override them as needed as in the following
+example:
+.Bd -literal -offset Ds
+[region aws:*]
+certificate = /usr/share/euca2ools/certs/cert-ec2.pem
+verify-ssl = true
+
+[region aws:us-gov-west-1]
+certificate = /usr/share/euca2ools/certs/cert-ec2-gov.pem
+.Ed
+.Pp
+Finally, options in named sections may refer to other
+sections by using the
+.Em use
+keyword followed by the section name to refer to.
+This differs from simply duplicating the option from the
+other section in that commands that are sensitive to the
+name of the section the option came from, such as those
+that use AWS signature version 4, will be able to determine
+which section an option originates from.
+.Sh REGION SELECTION
+The
+.Fl -region
+option provided by most euca2ools commands allows one to
+control the
+.Sx user section
+and the
+.Sx region section
+those commands use to find configuration data by supplying
+it with a user name, a region name, or both in one of the
+following formats:
+.Pp
+.Bl -bullet -compact
+.It
+.Fl -region Ar REGION
+.It
+.Fl -region Ar USER@
+.It
+.Fl -region Ar USER@REGION
+.El
+.Pp
+The
+.Ev AWS_DEFAULT_REGION
+option works the same way, but with lower priority.
+.Sh OPTIONS
+.Ss Global section
+The global section contains settings that affect all
+commands.
+.Bl -tag -width Ds
+.It Va debug
+When set to
+.Cm true ,
+enable debugging for all commands.  When set to
+.Cm color ,
+enable debugging for all commands and additionally colorize
+debug output based on severity level.
+.It Va default-region
+The name of the region to use when no region is otherwise
+specified.
+.It Va max-retries
+The maximum number of times commands should retry their
+requests to the server before giving up.  The default is 2.
+.It Va timeout
+The amount of time, in seconds, to wait for the server to
+respond to requests before giving up.  The default is 30.
+.El
+.Ss User section
+A user section contains information that is specific to
+an identity in the cloud, usually an IAM user.
+.Bl -tag -width Ds
+.It Va account-id
+The account's 12-digit ID number.
+.It Va key-id
+The user's access key ID to use for authentication.
+Access key IDs come paired with secret keys; the ID
+specified with this option must correspond to the secret
+key specified with the
+.Va secret-key
+option.
+.It Va secret-key
+The user's secret key to use for authentication.
+Secret keys come paired with access key IDs; the secret
+key specified with this option must correspond to the
+access key ID specified with the
+.Va key-id
+option.
+.It Va certificate
+The file name containing the user's signing certificate.
+This is used only by commands that bundle images:
+.Xr euca-bundle-and-upload-image 1 ,
+.Xr euca-bundle-image 1 ,
+.Xr euca-bundle-vol 1 ,
+.Xr euca-install-image 1 ,
+and
+.Xr euimage-install-pack 1 .
+.It Va private-key
+The file name containing the private key for the user's
+signing certificate.  This is used only by commands that
+bundle and unbundle images:
+.Xr euca-bundle-and-upload-image 1 ,
+.Xr euca-bundle-image 1 ,
+.Xr euca-bundle-vol 1 ,
+.Xr euca-download-and-unbundle 1 ,
+.Xr euca-install-image 1 ,
+.Xr euca-unbundle 1 ,
+and
+.Xr euimage-install-pack 1 .
+.El
+.Ss Region section
+A region section contains information that is specific to
+a cloud region, such as a Eucalyptus installation or an
+Amazon Web Services region.
+.Bl -tag -width Ds
+.It Va SERVICE-url
+The URL to use to contact the service with the name
+.Va SERVICE .
+Valid service names include:
+.Bl -tag -width Ds
+.It autoscaling
+The instance auto-scaling service.
+.It cloudformation
+The CloudFormation templating service.
+.It ec2
+The compute service.
+.It elasticloadbalancing
+The load balancing service.
+.It iam
+The identity and access management service.
+.It monitoring
+The instance monitoring service.
+.It s3
+The object storage service.
+.It swf
+The workflow service.
+.El
+.It Va user
+The
+.Sx user section
+to use for this region when no other user is otherwise
+specified.
+.It Va certificate
+The file name containing the cloud's image-bundling
+certificate.  This is used only by commands that bundle
+images:
+.Xr euca-bundle-and-upload-image 1 ,
+.Xr euca-bundle-image 1 ,
+.Xr euca-bundle-vol 1 ,
+.Xr euca-install-image 1 ,
+and
+.Xr euimage-install-pack 1 .
+.It Va s3-location-constraint
+The location constraint needed to create buckets in the
+region's object storage service.
+.It Va verify-ssl
+Whether or not to verify the server's SSL certificates.
+The default is false.
+.It Va vpn-stylesheet
+The location of the XSLT stylesheet for
+.Xr euca-create-vpn-connection 1
+or
+.Xr euca-describe-vpn-connections 1
+to use to reformat VPN connection information.  If the
+location is an HTTP or HTTPS URL it will be downloaded
+as needed.  If it contains
+.Dq {format}
+that will be replaced with the desired format.
+.Sh FILES
+.Nm
+configuration data are read from files in alphabetical
+order in the following locations:
+.Pp
+.Bl -enum -compact
+.It
+.Pa /etc/euca2ools/euca2ools.ini
+.It
+.Pa /etc/euca2ools/conf.d/*.ini
+.It
+.Pa ~/.euca/*.ini
+.El
+.Pp
+In cases where the same option is defined in more than
+one file, the file that appears last in that list will
+take precedence.
+.Sh CAVEATS
+.Sh HISTORY
+.Nm
+first appeared in euca2ools 3.0.
