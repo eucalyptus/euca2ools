@@ -31,8 +31,7 @@ from requestbuilder.mixins import TabifyingMixin
 class CreateAccount(IAMRequest, TabifyingMixin):
     DESCRIPTION = '[Eucalyptus cloud admin only] Create a new account'
     ARGS = [Arg('-a', '--account-name', dest='AccountName', metavar='ACCOUNT',
-                required=True,
-                help='name of the account to create (required)')]
+                help='name (alias) of the account to create')]
 
     def print_result(self, result):
         print self.tabify((result.get('Account', {}).get('AccountName'),
