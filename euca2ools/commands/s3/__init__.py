@@ -141,6 +141,18 @@ class S3Request(requestbuilder.request.BaseRequest):
         requestbuilder.request.BaseRequest.__init__(self, **kwargs)
         self.redirects_left = 3
 
+    def configure(self):
+        requestbuilder.request.BaseRequest.configure(self)
+        if self.__should_use_sigv4():
+            self.log.info('switching to HmacV4Auth')
+            auth = requestbuilder.auth.aws.HmacV4Auth.from_other(self.auth)
+            auth.configure()
+            self.auth = auth
+
+    def __should_use_sigv4(self):
+        return self.config.convert_to_bool(
+            self.config.get_region_option('s3-force-sigv4'))
+
     def get_presigned_url(self, expiration_datetime):
         # requestbuilder 0.2
         msg = ('S3Request.get_presigned_url is deprecated; use '
@@ -160,11 +172,13 @@ class S3Request(requestbuilder.request.BaseRequest):
         """
         # requestbuilder 0.3
         self.preprocess()
-        # UNSIGNED-PAYLOAD is a magical string used for S3 V4 query auth.
-        # The older auth scheme doesn't actually use this, so leaving it
-        # here for now is harmless.
-        auth = requestbuilder.auth.aws.QueryHmacV1Auth.from_other(
-            self.auth, timeout=timeout, payload_hash='UNSIGNED-PAYLOAD')
+        if self.__should_use_sigv4():
+            # UNSIGNED-PAYLOAD is a magical string used for S3 V4 query auth.
+            auth = requestbuilder.auth.aws.QueryHmacV4Auth.from_other(
+                self.auth, timeout=timeout, payload_hash='UNSIGNED-PAYLOAD')
+        else:
+            auth = requestbuilder.auth.aws.QueryHmacV1Auth.from_other(
+                self.auth, timeout=timeout)
         return self.service.get_request_url(
             method=self.method, path=self.path, params=self.params,
             auth=auth)
