@@ -1,4 +1,4 @@
-# Copyright 2009-2014 Eucalyptus Systems, Inc.
+# Copyright 2009-2015 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -23,15 +23,17 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.iam import IAMRequest
 from requestbuilder import Arg
 from requestbuilder.mixins import TabifyingMixin
+
+from euca2ools.commands.iam import IAMRequest
 
 
 class CreateAccount(IAMRequest, TabifyingMixin):
     DESCRIPTION = '[Eucalyptus cloud admin only] Create a new account'
     ARGS = [Arg('-a', '--account-name', dest='AccountName', metavar='ACCOUNT',
-                help='name (alias) of the account to create')]
+                help='''also add an alias (name) to the new account
+                (required on eucalyptus < 4.2)''')]
 
     def print_result(self, result):
         print self.tabify((result.get('Account', {}).get('AccountName'),
