@@ -1,4 +1,4 @@
-# Copyright 2009-2014 Eucalyptus Systems, Inc.
+# Copyright 2009-2015 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -157,3 +157,27 @@ def transform_dict(dict_, transformation_dict):
         else:
             transformed[key] = val
     return transformed
+
+
+def add_fake_region_name(service):
+    """
+    If no name for a region is otherwise defined (i.e. service.region_name
+    is None and the AWS_AUTH_REGION environment variable is not set),
+    print a warning and add a fake region name so HmacV4Auth has something
+    to work with.  This works because eucalyptus doesn't care what name
+    one chooses for a region.
+
+    Setups that use eucarc files against AWS will still be broken.
+
+    This was added in euca2ools the 3.3 series and should be removed
+    some time after that.
+    """
+
+    if service.region_name is None and not os.getenv('AWS_AUTH_REGION'):
+        msg = ('region names are required by AWS and will be required '
+               'for Eucalyptus in a future release; either use '
+               'euca2ools.ini(5) files or set AWS_AUTH_REGION in the '
+               'environment to provide one')
+        print >> sys.stderr, 'warning:', msg
+        service.region_name = 'undefined-{0}'.format(os.getpid())
+        service.log.info('added fake region name %s', service.region_name)

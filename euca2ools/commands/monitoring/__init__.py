@@ -34,7 +34,7 @@ import requestbuilder.service
 
 from euca2ools.commands import Euca2ools
 from euca2ools.exceptions import AWSError
-from euca2ools.util import strip_response_metadata
+from euca2ools.util import strip_response_metadata, add_fake_region_name
 
 
 class CloudWatch(requestbuilder.service.BaseService):
@@ -46,6 +46,10 @@ class CloudWatch(requestbuilder.service.BaseService):
 
     ARGS = [Arg('-U', '--url', metavar='URL',
                 help='instance monitoring service endpoint URL')]
+
+    def configure(self):
+        requestbuilder.service.BaseService.configure(self)
+        add_fake_region_name(self)
 
     def handle_http_error(self, response):
         raise AWSError(response)

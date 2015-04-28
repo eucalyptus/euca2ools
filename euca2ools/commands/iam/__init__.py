@@ -34,7 +34,7 @@ import requestbuilder.service
 
 from euca2ools.commands import Euca2ools
 from euca2ools.exceptions import AWSError
-from euca2ools.util import strip_response_metadata
+from euca2ools.util import strip_response_metadata, add_fake_region_name
 
 
 class IAM(requestbuilder.service.BaseService):
@@ -46,6 +46,10 @@ class IAM(requestbuilder.service.BaseService):
 
     ARGS = [Arg('-U', '--url', metavar='URL',
                 help='identity service endpoint URL')]
+
+    def configure(self):
+        requestbuilder.service.BaseService.configure(self)
+        add_fake_region_name(self)
 
     def handle_http_error(self, response):
         raise AWSError(response)
@@ -64,6 +68,7 @@ class IAMRequest(requestbuilder.request.AWSQueryRequest):
         # elements.  If that's all we have after stripping out ResponseMetadata
         # then just return its contents.
         return strip_response_metadata(response_dict)
+
 
 AS_ACCOUNT = Arg('--as-account', dest='DelegateAccount', metavar='ACCOUNT',
                  help='''[Eucalyptus cloud admin only] run this command as
