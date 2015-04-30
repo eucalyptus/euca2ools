@@ -1,4 +1,4 @@
-# Copyright 2009-2013 Eucalyptus Systems, Inc.
+# Copyright 2009-2015 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -70,8 +70,8 @@ class DescribeSnapshots(EC2Request):
                                     'argument -r/--restorable-by')
 
     def main(self):
-        if not any(self.args.get(item) for item in ('all', 'Owner',
-                                                    'RestorableBy')):
+        if not any(self.args.get(item) for item in ('all', 'SnapshotId',
+                                                    'Owner', 'RestorableBy')):
             # Default to owned snapshots and those with explicit restore perms
             self.params['Owner'] = ['self']
             owned = self.send()
