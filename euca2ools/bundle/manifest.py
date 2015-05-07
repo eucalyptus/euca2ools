@@ -145,6 +145,21 @@ class BundleManifest(object):
         mconfig = xml.machine_configuration
         assert self.image_arch is not None
         mconfig.architecture = self.image_arch
+        if self.image_type == 'machine':
+            if self.block_device_mappings:
+                mconfig.block_device_mapping = None
+                for virtual, device in sorted(
+                        self.block_device_mappings.items()):
+                    xml_mapping = lxml.objectify.Element('mapping')
+                    xml_mapping.virtual = virtual
+                    xml_mapping.device = device
+                    mconfig.block_device_mapping.append(xml_mapping)
+            if self.product_codes:
+                mconfig.product_codes = None
+                for code in self.product_codes:
+                    xml_code = lxml.objectify.Element('product_code')
+                    mconfig.product_codes.append(xml_code)
+                    mconfig.product_codes.product_code[-1] = code
         # kernel_id and ramdisk_id are normally meaningful only for machine
         # images, but eucalyptus also uses them to indicate kernel and ramdisk
         # images using the magic string "true", so their presence cannot be
@@ -155,21 +170,6 @@ class BundleManifest(object):
             mconfig.kernel_id = self.kernel_id
         if self.ramdisk_id:
             mconfig.ramdisk_id = self.ramdisk_id
-        if self.image_type == 'machine':
-            if self.block_device_mappings:
-                mconfig.block_device_mapping = None
-                for virtual, device in sorted(
-                        self.block_device_mappings.items()):
-                    xml_mapping = lxml.objectify.Element('mapping')
-                    xml_mapping.device = device
-                    xml_mapping.virtual = virtual
-                    mconfig.block_device_mapping.append(xml_mapping)
-            if self.product_codes:
-                mconfig.product_codes = None
-                for code in self.product_codes:
-                    xml_code = lxml.objectify.Element('product_code')
-                    mconfig.product_codes.append(xml_code)
-                    mconfig.product_codes.product_code[-1] = code
 
         # Image info
         xml.image = None
