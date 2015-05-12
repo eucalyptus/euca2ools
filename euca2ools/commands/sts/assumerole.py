@@ -130,16 +130,29 @@ class AssumeRole(STSRequest):
         creds = result['Credentials']
         # If this list changes please go update ReleaseRole.
         self.__print_var('AWS_ACCESS_KEY_ID', creds['AccessKeyId'])
+        self.__print_var('AWS_ACCESS_KEY', creds['AccessKeyId'])
+        self.__print_var('EC2_ACCESS_KEY', creds['AccessKeyId'])
+        self.__print_var('AWS_SECRET_ACCESS_KEY', creds['SecretAccessKey'])
         self.__print_var('AWS_SECRET_KEY', creds['SecretAccessKey'])
+        self.__print_var('EC2_SECRET_KEY', creds['SecretAccessKey'])
+        self.__print_var('AWS_SESSION_TOKEN', creds['SessionToken'])
         self.__print_var('AWS_SECURITY_TOKEN', creds['SessionToken'])
         self.__print_var('AWS_CREDENTIAL_EXPIRATION', creds['Expiration'])
         self.__print_var('EC2_USER_ID', self.params['RoleArn'].split(':')[4])
+        # Unset AWS_CREDENTIAL_FILE to avoid accidentally using its creds
+        self.__print_var('AWS_CREDENTIAL_FILE', None)
 
     def __print_var(self, key, val):
         if (self.args.get('csh_output') or
                 (not self.args.get('sh_output') and
                  os.getenv('SHELL', '').endswith('csh'))):
-            fmt = 'setenv {key} {val};'
+            if val:
+                fmt = 'setenv {key} {val};'
+            else:
+                fmt = 'unsetenv {key};'
         else:
-            fmt = '{key}={val}; export {key};'
+            if val:
+                fmt = '{key}={val}; export {key};'
+            else:
+                fmt = 'unset {key};'
         print fmt.format(key=key, val=val)

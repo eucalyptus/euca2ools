@@ -58,8 +58,12 @@ class ReleaseRole(BaseCommand):
                     like a csh-style shell'''))]
 
     def print_result(self, _):
-        for var in ('EC2_USER_ID', 'AWS_ACCESS_KEY_ID', 'AWS_SECRET_KEY',
-                    'AWS_SECURITY_TOKEN', 'AWS_CREDENTIAL_EXPIRATION'):
+        for var in (
+                'AWS_ACCESS_KEY_ID', 'AWS_ACCESS_KEY', 'EC2_ACCESS_KEY',
+                'AWS_SECRET_ACCESS_KEY', 'AWS_SECRET_KEY',
+                'EC2_SECRET_KEY', 'AWS_SESSION_TOKEN',
+                'AWS_SECURITY_TOKEN', 'AWS_CREDENTIAL_EXPIRATION',
+                'EC2_USER_ID', 'AWS_CREDENTIAL_FILE'):
             if (self.args.get('csh_output') or
                     (not self.args.get('sh_output') and
                      os.getenv('SHELL', '').endswith('csh'))):
