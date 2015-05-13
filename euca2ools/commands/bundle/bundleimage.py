@@ -23,9 +23,11 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import argparse
 import os.path
 import tarfile
 
+from requestbuilder import Arg
 from requestbuilder.command import BaseCommand
 from requestbuilder.mixins import (FileTransferProgressBarMixin,
                                    RegionConfigurableMixin)
@@ -38,6 +40,7 @@ from euca2ools.bundle.pipes.fittings import (create_bundle_part_writer,
 import euca2ools.bundle.util
 from euca2ools.commands import Euca2ools
 from euca2ools.commands.bundle.mixins import BundleCreatingMixin
+from euca2ools.commands.iam import IAMRequest
 from euca2ools.util import mkdtemp_for_large_files
 
 
@@ -47,6 +50,14 @@ class BundleImage(BaseCommand, BundleCreatingMixin,
     SUITE = Euca2ools
     DESCRIPTION = 'Prepare an image for use in the cloud'
     REGION_ENVVAR = 'AWS_DEFAULT_REGION'
+    ARGS = [Arg('--check-cert', action='store_true', route_to=None,
+                help='ensure the certificate is active before bundling'),
+            Arg('--iam-url', route_to=None,
+                help='identity service endpoint URL'),
+            Arg('--iam-service', route_to=None, help=argparse.SUPPRESS),
+            Arg('--iam-auth', route_to=None, help=argparse.SUPPRESS),
+            # Needed because BundleImage has no auth class of its own
+            IAMRequest.AUTH_CLASS.ARGS]
 
     # noinspection PyExceptionInherit
     def configure(self):
@@ -59,7 +70,25 @@ class BundleImage(BaseCommand, BundleCreatingMixin,
         self.configure_bundle_output()
         self.generate_encryption_keys()
 
+        if self.args.get('check_cert'):
+            # We would normally make short work of this using from_other
+            # methods, but since BundleImage doesn't have service or
+            # auth classes of its own we get to do this the hard way.
+            if not self.args.get('iam_service'):
+                self.args['iam_service'] = \
+                    IAMRequest.SERVICE_CLASS(
+                        config=self.config, loglevel=self.log.level,
+                        url=self.args.get('iam_url'))
+            if not self.args.get('iam_auth'):
+                self.args['iam_auth'] = \
+                    IAMRequest.AUTH_CLASS(
+                        config=self.config, loglevel=self.log.level,
+                        **self.args)
+
     def main(self):
+        if self.args.get('check_cert'):
+            self.check_certificate(self.args['iam_service'],
+                                   self.args['iam_auth'])
         if self.args.get('destination'):
             path_prefix = os.path.join(self.args['destination'],
                                        self.args['prefix'])

@@ -33,6 +33,7 @@ from requestbuilder.mixins import FileTransferProgressBarMixin, TabifyingMixin
 
 from euca2ools.commands.ec2 import EC2
 from euca2ools.commands.ec2.registerimage import RegisterImage
+from euca2ools.commands.iam import IAMRequest
 from euca2ools.commands.s3 import S3Request
 from euca2ools.commands.bundle.bundleanduploadimage import BundleAndUploadImage
 from euca2ools.commands.bundle.mixins import BundleCreatingMixin, \
@@ -58,7 +59,13 @@ class InstallImage(S3Request, BundleCreatingMixin, BundleUploadingMixin,
             Arg('--ec2-url', route_to=None,
                 help='compute service endpoint URL'),
             Arg('--ec2-auth', route_to=None, help=argparse.SUPPRESS),
-            Arg('--ec2-service', route_to=None, help=argparse.SUPPRESS)]
+            Arg('--ec2-service', route_to=None, help=argparse.SUPPRESS),
+            Arg('--check-cert', action='store_true', route_to=None,
+                help='ensure the certificate is active before bundling'),
+            Arg('--iam-url', route_to=None,
+                help='identity service endpoint URL'),
+            Arg('--iam-service', route_to=None, help=argparse.SUPPRESS),
+            Arg('--iam-auth', route_to=None, help=argparse.SUPPRESS)]
 
     def configure(self):
         S3Request.configure(self)
@@ -70,9 +77,16 @@ class InstallImage(S3Request, BundleCreatingMixin, BundleUploadingMixin,
         if not self.args.get("ec2_service"):
             self.args["ec2_service"] = EC2.from_other(
                 self.service, url=self.args.get('ec2_url'))
-
         if not self.args.get("ec2_auth"):
             self.args["ec2_auth"] = QueryHmacV2Auth.from_other(self.auth)
+
+        if self.args.get("check_cert"):
+            if not self.args.get("iam_service"):
+                self.args["iam_service"] = IAMRequest.SERVICE_CLASS.from_other(
+                    self.service)
+            if not self.args.get("iam_auth"):
+                self.args["iam_auth"] = IAMRequest.AUTH_CLASS.from_other(
+                    self.auth)
 
     def main(self):
         req = BundleAndUploadImage.from_other(
@@ -88,7 +102,11 @@ class InstallImage(S3Request, BundleCreatingMixin, BundleUploadingMixin,
             enc_iv=self.args.get("enc_iv"), enc_key=self.args.get("enc_key"),
             max_pending_parts=self.args.get("max_pending_parts"),
             part_size=self.args.get("part_size"), batch=self.args.get("batch"),
-            show_progress=self.args.get("show_progress"))
+            show_progress=self.args.get("show_progress"),
+            check_cert=self.args.get("check_cert"),
+            iam_url=self.args.get("iam_url"),
+            iam_service=self.args.get("iam_service"),
+            iam_auth=self.args.get("iam_auth"))
         result_bundle = req.main()
         image_location = result_bundle['manifests'][0]["key"]
 

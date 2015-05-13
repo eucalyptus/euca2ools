@@ -1,4 +1,4 @@
-# Copyright 2013-2014 Eucalyptus Systems, Inc.
+# Copyright 2013-2015 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -23,6 +23,7 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import argparse
 import multiprocessing
 import os.path
 import tarfile
@@ -38,6 +39,7 @@ import euca2ools.bundle.manifest
 import euca2ools.bundle.util
 from euca2ools.commands.bundle.mixins import (BundleCreatingMixin,
                                               BundleUploadingMixin)
+from euca2ools.commands.iam import IAMRequest
 from euca2ools.commands.s3 import S3Request
 from euca2ools.util import mkdtemp_for_large_files
 
@@ -50,7 +52,13 @@ class BundleAndUploadImage(S3Request, BundleCreatingMixin,
                 help='do not delete the bundle as it is being uploaded'),
             Arg('--max-pending-parts', type=int, default=2,
                 help='''pause the bundling process when more than this number
-                of parts are waiting to be uploaded (default: 2)''')]
+                of parts are waiting to be uploaded (default: 2)'''),
+            Arg('--check-cert', action='store_true', route_to=None,
+                help='ensure the certificate is active before bundling'),
+            Arg('--iam-url', route_to=None,
+                help='identity service endpoint URL'),
+            Arg('--iam-service', route_to=None, help=argparse.SUPPRESS),
+            Arg('--iam-auth', route_to=None, help=argparse.SUPPRESS)]
 
     # noinspection PyExceptionInherit
     def configure(self):
@@ -63,7 +71,18 @@ class BundleAndUploadImage(S3Request, BundleCreatingMixin,
         self.configure_bundle_output()
         self.generate_encryption_keys()
 
+        if self.args.get('check_cert'):
+            if not self.args.get('iam_service'):
+                self.args['iam_service'] = IAMRequest.SERVICE_CLASS.from_other(
+                    self.service)
+            if not self.args.get('iam_auth'):
+                self.args['iam_auth'] = IAMRequest.AUTH_CLASS.from_other(
+                    self.auth)
+
     def main(self):
+        if self.args.get('check_cert'):
+            self.check_certificate(self.args['iam_service'],
+                                   self.args['iam_auth'])
         if self.args.get('destination'):
             path_prefix = os.path.join(self.args['destination'],
                                        self.args['prefix'])

@@ -1,4 +1,4 @@
-# Copyright 2013-2014 Eucalyptus Systems, Inc.
+# Copyright 2013-2015 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -27,8 +27,9 @@ import argparse
 import base64
 import os.path
 import random
-import tempfile
+import subprocess
 import sys
+import tempfile
 
 from requestbuilder import Arg, MutuallyExclusiveArgList
 from requestbuilder.exceptions import ArgumentError
@@ -38,6 +39,9 @@ import euca2ools.bundle.util
 from euca2ools.commands.argtypes import (b64encoded_file_contents,
                                          delimited_list, filesize,
                                          manifest_block_device_mappings)
+from euca2ools.commands.iam.listsigningcertificates import \
+    ListSigningCertificates
+from euca2ools.commands.iam.listusers import ListUsers
 from euca2ools.commands.s3.checkbucket import CheckBucket
 from euca2ools.commands.s3.createbucket import CreateBucket
 from euca2ools.commands.s3.getobject import GetObject
@@ -294,6 +298,39 @@ class BundleCreatingMixin(object):
                                     self.args['ec2cert'],
                                     pretty_print=pretty_print)
 
+    # VALIDATORS #
+
+    def check_certificate(self, iam_service, iam_auth):
+        with open(self.args['cert']) as cert:
+            fprint = _get_cert_fingerprint(cert.read())
+        self.log.debug('looking for cert with fingerprint: %s', fprint)
+
+        req = ListUsers(config=self.config, loglevel=self.log.level,
+                        service=iam_service, auth=iam_auth)
+        response = req.main()
+        for user in [{}] + (list(response.get('Users') or [])):
+            # The empty user lets this verify account creds when
+            # called with account creds.
+            username = user.get('UserName')
+            req = ListSigningCertificates.from_other(req, UserName=username)
+            response = req.main()
+            for cert in response.get('Certificates') or []:
+                cert_fprint = _get_cert_fingerprint(cert['CertificateBody'])
+                if cert_fprint == fprint:
+                    # Found the cert we're looking for
+                    self.log.debug(
+                        'cert has ID %s, owning user %s',
+                        cert['CertificateId'], cert.get('UserName'))
+                    if cert.get('Status').lower() != 'active':
+                        raise RuntimeError(
+                            'certificate {0} is {1} (ID: {2}, user: {3})'
+                            .format(self.args['cert'], cert['Status'],
+                                    cert['CertificateId'],
+                                    cert.get('UserName')))
+                    return
+        raise RuntimeError('certificate {0} is unknown to the service'
+                           .format(self.args['cert']))
+
 
 class BundleUploadingMixin(object):
     ARGS = [Arg('-b', '--bucket', metavar='BUCKET[/PREFIX]', required=True,
@@ -534,3 +571,9 @@ def _assert_is_file(filename, filetype):
     if not os.path.isfile(filename):
         raise ArgumentError("{0} file '{1}' is not a file"
                             .format(filetype, filename))
+
+
+def _get_cert_fingerprint(cert_content):
+    popen = subprocess.Popen(('openssl', 'x509', '-fingerprint', '-noout'),
+                             stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+    return popen.communicate(cert_content)[0].strip()
