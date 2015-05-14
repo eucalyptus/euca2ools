@@ -1,4 +1,4 @@
-# Copyright 2012-2014 Eucalyptus Systems, Inc.
+# Copyright 2012-2015 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -23,6 +23,8 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import socket
+
 from requestbuilder import Arg, MutuallyExclusiveArgList
 from requestbuilder.exceptions import ArgumentError
 
@@ -40,8 +42,10 @@ class _ModifySecurityGroupRule(EC2Request):
                 help='''[VPC only] manage an egress rule, which controls
                 traffic leaving the group'''),
             Arg('-P', '--protocol', dest='IpPermissions.1.IpProtocol',
-                choices=['tcp', 'udp', 'icmp', '6', '17', '1'], default='tcp',
-                help='protocol to affect (default: tcp)'),
+                metavar='PROTOCOL', default='tcp',
+                help='''the protocol to affect (Non-VPC: tcp, udp, icmp)
+                (VPC only: tcp, udp, icmp, -1/all, other protocol numbers)
+                (default: tcp)'''),
             Arg('-p', '--port-range', dest='port_range', metavar='RANGE',
                 route_to=None, help='''range of ports (specified as "from-to")
                 or a single port number (required for tcp and udp)'''),
@@ -90,11 +94,22 @@ class _ModifySecurityGroupRule(EC2Request):
                                         'group IDs, not names')
                 self.params['IpPermissions.1.Groups.1.GroupName'] = target_group
 
-        from_port, to_port = parse_ports(
-            self.args.get('IpPermissions.1.IpProtocol'),
-            self.args.get('port_range'), self.args.get('icmp_type_code'))
-        self.params['IpPermissions.1.FromPort'] = from_port
-        self.params['IpPermissions.1.ToPort'] = to_port
+        protocol = self.args.get('IpPermissions.1.IpProtocol')
+        if str(protocol).lower() in ('icmp', 'tcp', 'udp', '1', '6', '17'):
+            from_port, to_port = parse_ports(
+                protocol, self.args.get('port_range'),
+                self.args.get('icmp_type_code'))
+            self.params['IpPermissions.1.FromPort'] = from_port
+            self.params['IpPermissions.1.ToPort'] = to_port
+        elif str(protocol).lower() in ('all', '-1'):
+            self.params['IpPermissions.1.IpProtocol'] = -1
+        elif not str(protocol).isdigit():
+            try:
+                self.params['IpPermissions.1.IpProtocol'] = \
+                    socket.getprotobyname(protocol)
+            except socket.error:
+                raise ArgumentError('argument -P: no such protocol: {0}'
+                                    .format(protocol))
 
         if (not self.args.get('IpPermissions.1.IpRanges.1.GroupName') and
                 not self.args.get('IpPermissions.1.IpRanges.1.CidrIp')):

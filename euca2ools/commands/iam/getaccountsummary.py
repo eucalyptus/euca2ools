@@ -29,7 +29,7 @@ from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT
 class GetAccountSummary(IAMRequest):
     DESCRIPTION = ('Display account-level information about account entity '
                    'usage and IAM quotas')
-    PARAMS = [AS_ACCOUNT]
+    ARGS = [AS_ACCOUNT]
     LIST_TAGS = ['SummaryMap']
 
     def print_result(self, result):

@@ -101,6 +101,9 @@ class RunInstances(EC2Request):
             Arg('-s', '--subnet', metavar='SUBNET', route_to=None,
                 help='''[VPC only] subnet to create the instance's network
                 interface in'''),
+            Arg('--associate-public-ip-address', action='store_true',
+                route_to=None, help='''[VPC only] assign a public address
+                to the instance's network interface'''),
             Arg('--private-ip-address', metavar='ADDRESS', route_to=None,
                 help='''[VPC only] assign a specific primary private IP address
                 to an instance's interface'''),
@@ -220,6 +223,8 @@ class RunInstances(EC2Request):
                                         'specified by ID when using VPC')
                 cli_iface.setdefault('SecurityGroupId', [])
                 cli_iface['SecurityGroupId'].append(group)
+            if self.args.get('associate_public_ip_address'):
+                cli_iface['AssociatePublicIpAddress'] = True
             if self.args.get('private_ip_address'):
                 cli_iface['PrivateIpAddresses'] = [
                     {'PrivateIpAddress': self.args['private_ip_address'],

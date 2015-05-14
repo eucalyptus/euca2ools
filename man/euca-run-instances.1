@@ -4,6 +4,7 @@
 euca-run-instances \- Launch instances of a machine image
 .SH SYNOPSIS
 euca\-run\-instances [\-n MIN[\-MAX]] [\-g GROUP] [\-k KEYPAIR]
+.TP
 [\-d DATA | \fB\-\-user\-data\-force\fR DATA | \fB\-f\fR FILE]
 [\-\-addressing {public,private}] [\-t INSTANCETYPE]
 [\-z ZONE] [\-\-kernel KERNEL] [\-\-ramdisk RAMDISK]
@@ -12,6 +13,7 @@ euca\-run\-instances [\-n MIN[\-MAX]] [\-g GROUP] [\-k KEYPAIR]
 [\-\-placement\-group PLGROUP]
 [\-\-tenancy {default,dedicated}]
 [\-\-client\-token TOKEN] [\-s SUBNET]
+[\-\-associate\-public\-ip\-address]
 [\-\-private\-ip\-address ADDRESS]
 [\-\-secondary\-address ADDRESS | \fB\-\-secondary\-count\fR COUNT]
 [\-a INTERFACE] [\-p IPROFILE] [\-\-ebs\-optimized]
@@ -97,6 +99,10 @@ unique identifier to ensure request idempotency
 \fB\-s\fR SUBNET, \fB\-\-subnet\fR SUBNET
 [VPC only] subnet to create the instance's network
 interface in
+.TP
+\fB\-\-associate\-public\-ip\-address\fR
+[VPC only] assign a public address to the instance's
+network interface
 .TP
 \fB\-\-private\-ip\-address\fR ADDRESS
 [VPC only] assign a specific primary private IP
