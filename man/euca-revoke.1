@@ -3,11 +3,11 @@
 .SH NAME
 euca-revoke \- Remove a rule from a security group
 .SH SYNOPSIS
-euca\-revoke [\-\-egress] [\-P {tcp,udp,icmp,6,17,1}] [\-p RANGE]
-[\-t TYPE:CODE] [\-s CIDR | \fB\-o\fR GROUP] [\-u ACCOUNT]
-[\-\-show\-empty\-fields] [\-U URL] [\-\-region USER@REGION]
-[\-I KEY_ID] [\-S KEY] [\-\-security\-token TOKEN] [\-\-debug]
-[\-\-debugger] [\-\-version] [\-h]
+euca\-revoke [\-\-egress] [\-P PROTOCOL] [\-p RANGE] [\-t TYPE:CODE]
+[\-s CIDR | \fB\-o\fR GROUP] [\-u ACCOUNT] [\-\-show\-empty\-fields]
+[\-U URL] [\-\-region USER@REGION] [\-I KEY_ID] [\-S KEY]
+[\-\-security\-token TOKEN] [\-\-debug] [\-\-debugger] [\-\-version]
+[\-h]
 GROUP
 .SH DESCRIPTION
 Remove a rule from a security group
@@ -21,8 +21,10 @@ name or ID of the security group to modify (required)
 [VPC only] manage an egress rule, which controls
 traffic leaving the group
 .TP
-\fB\-P\fR {tcp,udp,icmp,6,17,1}, \fB\-\-protocol\fR {tcp,udp,icmp,6,17,1}
-protocol to affect (default: tcp)
+\fB\-P\fR PROTOCOL, \fB\-\-protocol\fR PROTOCOL
+the protocol to affect (Non\-VPC: tcp, udp, icmp) (VPC
+only: tcp, udp, icmp, \fB\-1\fR/all, other protocol numbers)
+(default: tcp)
 .TP
 \fB\-p\fR RANGE, \fB\-\-port\-range\fR RANGE
 range of ports (specified as "from\-to") or a single

@@ -1,4 +1,4 @@
-# Copyright 2009-2014 Eucalyptus Systems, Inc.
+# Copyright 2009-2015 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -447,7 +447,7 @@ def parse_ports(protocol, port_range=None, icmp_type_code=None):
     # changes then please fix this.
     from_port = None
     to_port = None
-    if protocol in ('icmp', '1', 1):
+    if str(protocol).lower() in ('icmp', '1'):
         if port_range:
             raise ArgumentError('argument -p/--port-range: not compatible '
                                 'with protocol "{0}"'.format(protocol))
@@ -467,7 +467,7 @@ def parse_ports(protocol, port_range=None, icmp_type_code=None):
         if from_port < -1 or to_port < -1:
             raise ArgumentError('argument -t/--icmp-type-code: ICMP type, '
                                 'code must be at least -1')
-    elif protocol in ('tcp', '6', 6, 'udp', '13', 13, 'sctp', '132', 132):
+    elif str(protocol).lower() in ('tcp', '6', 'udp', '17'):
         if icmp_type_code:
             raise ArgumentError('argument -t/--icmp-type-code: not compatible '
                                 'with protocol "{0}"'.format(protocol))
