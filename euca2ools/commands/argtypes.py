@@ -280,10 +280,12 @@ def ternary_tag_def(tag_str):
 
 
 def delimited_list(delimiter, item_type=str):
-    def _concrete_delimited_list(list_as_str):
+    def _delimited_list(list_as_str):
         if isinstance(list_as_str, str) and len(list_as_str) > 0:
             return [item_type(item.strip()) for item in
                     list_as_str.split(delimiter) if len(item.strip()) > 0]
         else:
             return []
-    return _concrete_delimited_list
+    # Improve the output of argparse's TypeError/ValueError handling
+    _delimited_list.__name__ = '{0} list'.format(item_type.__name__)
+    return _delimited_list
