@@ -24,6 +24,8 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import os
+import pipes
+import sys
 
 from requestbuilder import Arg, MutuallyExclusiveArgList
 from requestbuilder.command import BaseCommand
@@ -58,6 +60,11 @@ class ReleaseRole(BaseCommand):
                     like a csh-style shell'''))]
 
     def print_result(self, _):
+        print '# Shellcode for releasing role credentials'
+        print '# If you can read this, rerun this program with eval:'
+        print '#     eval `{0}`'.format(
+            ' '.join(pipes.quote(arg) for arg in sys.argv))
+        print
         for var in (
                 'AWS_ACCESS_KEY_ID', 'AWS_ACCESS_KEY', 'EC2_ACCESS_KEY',
                 'AWS_SECRET_ACCESS_KEY', 'AWS_SECRET_KEY',

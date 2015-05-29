@@ -25,6 +25,8 @@
 
 import datetime
 import os
+import pipes
+import sys
 
 from requestbuilder import Arg, MutuallyExclusiveArgList
 from requestbuilder.exceptions import ArgumentError
@@ -128,6 +130,12 @@ class AssumeRole(STSRequest):
 
     def print_result(self, result):
         creds = result['Credentials']
+        print '# Automatic STS credentials generated on {0}'.format(
+            datetime.datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ'))
+        print '# If you can read this, rerun this program with eval:'
+        print '#     eval `{0}`'.format(
+            ' '.join(pipes.quote(arg) for arg in sys.argv))
+        print
         # If this list changes please go update ReleaseRole.
         self.__print_var('AWS_ACCESS_KEY_ID', creds['AccessKeyId'])
         self.__print_var('AWS_ACCESS_KEY', creds['AccessKeyId'])
