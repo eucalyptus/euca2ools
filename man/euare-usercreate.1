@@ -5,7 +5,8 @@ euare-usercreate \- Create a new user and optionally add the user to a group or 
 an access key for the user
 .SH SYNOPSIS
 euare\-usercreate \fB\-u\fR USERNAME [\-p PATH] [\-g GROUP_NAME] [\-\-verify] [\-k]
-[\-v] [\-\-as\-account ACCOUNT] [\-U URL]
+.TP
+[\-v | \fB\-w]\fR [\-d DOMAIN] [\-\-as\-account ACCOUNT] [\-U URL]
 [\-\-region USER@REGION] [\-I KEY_ID] [\-S KEY]
 [\-\-security\-token TOKEN] [\-\-debug] [\-\-debugger]
 [\-\-version] [\-h]
@@ -28,11 +29,19 @@ ensure the group given with \fB\-g\fR exists before doing
 anything
 .TP
 \fB\-k\fR, \fB\-\-create\-accesskey\fR
-create an access key for the new user and print it to
-standard out
+also create an access key for the new user and show it
 .TP
 \fB\-v\fR, \fB\-\-verbose\fR
-print the new user's ARN and GUID
+show the new user's ARN and GUID
+.TP
+\fB\-w\fR, \fB\-\-write\-config\fR
+output access keys and region information in the form
+of a euca2ools.ini(5) configuration file instead of by
+themselves (implies \fB\-k\fR)
+.TP
+\fB\-d\fR DOMAIN, \fB\-\-domain\fR DOMAIN
+the DNS domain to use for region information in
+configuration file output (default: based on IAM URL)
 .TP
 \fB\-\-as\-account\fR ACCOUNT
 [Eucalyptus cloud admin only] run this command as the

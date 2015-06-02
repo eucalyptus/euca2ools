@@ -23,7 +23,9 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from requestbuilder import Arg
+import sys
+
+from requestbuilder import Arg, MutuallyExclusiveArgList
 
 from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT
 from euca2ools.commands.iam.addusertogroup import AddUserToGroup
@@ -44,10 +46,17 @@ class CreateUser(IAMRequest):
                 help='''ensure the group given with -g exists before doing
                 anything'''),
             Arg('-k', '--create-accesskey', action='store_true', route_to=None,
-                help='''create an access key for the new user and print it to
-                        standard out'''),
-            Arg('-v', '--verbose', action='store_true', route_to=None,
-                help="print the new user's ARN and GUID"),
+                help='also create an access key for the new user and show it'),
+            MutuallyExclusiveArgList(
+                Arg('-v', '--verbose', action='store_true', route_to=None,
+                    help="show the new user's ARN and GUID"),
+                Arg('-w', '--write-config', action='store_true', route_to=None,
+                    help='''output access keys and region information in the
+                    form of a euca2ools.ini(5) configuration file instead of
+                    by themselves (implies -k)''')),
+            Arg('-d', '--domain', route_to=None, help='''the DNS domain to
+                use for region information in configuration file output
+                (default: based on IAM URL)'''),
             AS_ACCOUNT]
 
     def preprocess(self):
@@ -65,17 +74,22 @@ class CreateUser(IAMRequest):
                 GroupName=self.args['group_name'],
                 DelegateAccount=self.params['DelegateAccount'])
             obj.main()
-        if self.args.get('create_accesskey'):
+        if self.args.get('create_accesskey') or self.args.get('write_config'):
             obj = CreateAccessKey.from_other(
                 self, UserName=self.args['UserName'],
-                DelegateAccount=self.params['DelegateAccount'])
+                DelegateAccount=self.params['DelegateAccount'],
+                write_config=self.args.get('write_config'),
+                domain=self.args.get('domain'))
             key_result = obj.main()
             result.update(key_result)
 
     def print_result(self, result):
-        if self.args['verbose']:
-            print result['User']['Arn']
-            print result['User']['UserId']
-        if 'AccessKey' in result:
-            print result['AccessKey']['AccessKeyId']
-            print result['AccessKey']['SecretAccessKey']
+        if self.args.get('write_config'):
+            result['configfile'].write(sys.stdout)
+        else:
+            if self.args['verbose']:
+                print result['User']['Arn']
+                print result['User']['UserId']
+            if 'AccessKey' in result:
+                print result['AccessKey']['AccessKeyId']
+                print result['AccessKey']['SecretAccessKey']

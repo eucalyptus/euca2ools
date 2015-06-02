@@ -3,8 +3,9 @@
 .SH NAME
 euare-useraddkey \- Create a new access key for a user
 .SH SYNOPSIS
-euare\-useraddkey [\-u USERNAME] [\-\-as\-account ACCOUNT] [\-U URL]
-[\-\-region USER@REGION] [\-I KEY_ID] [\-S KEY]
+euare\-useraddkey [\-u USERNAME] [\-w] [\-d DOMAIN] [\-\-as\-account ACCOUNT]
+.TP
+[\-U URL] [\-\-region USER@REGION] [\-I KEY_ID] [\-S KEY]
 [\-\-security\-token TOKEN] [\-\-debug] [\-\-debugger]
 [\-\-version] [\-h]
 .SH DESCRIPTION
@@ -14,6 +15,15 @@ Create a new access key for a user
 \fB\-u\fR USERNAME, \fB\-\-user\-name\fR USERNAME
 user the new key will belong to (default: current
 user)
+.TP
+\fB\-w\fR, \fB\-\-write\-config\fR
+output access keys and region information in the form
+of a euca2ools.ini(5) configuration file instead of by
+themselves
+.TP
+\fB\-d\fR DOMAIN, \fB\-\-domain\fR DOMAIN
+the DNS domain to use for region information in
+configuration file output (default: based on IAM URL)
 .TP
 \fB\-\-as\-account\fR ACCOUNT
 [Eucalyptus cloud admin only] run this command as the
