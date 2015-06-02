@@ -130,12 +130,6 @@ class AssumeRole(STSRequest):
 
     def print_result(self, result):
         creds = result['Credentials']
-        print '# Automatic STS credentials generated on {0}'.format(
-            datetime.datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ'))
-        print '# If you can read this, rerun this program with eval:'
-        print '#     eval `{0}`'.format(
-            ' '.join(pipes.quote(arg) for arg in sys.argv))
-        print
         # If this list changes please go update ReleaseRole.
         self.__print_var('AWS_ACCESS_KEY_ID', creds['AccessKeyId'])
         self.__print_var('AWS_ACCESS_KEY', creds['AccessKeyId'])
@@ -149,6 +143,10 @@ class AssumeRole(STSRequest):
         self.__print_var('EC2_USER_ID', self.params['RoleArn'].split(':')[4])
         # Unset AWS_CREDENTIAL_FILE to avoid accidentally using its creds
         self.__print_var('AWS_CREDENTIAL_FILE', None)
+        print
+        print '# If you can read this, rerun this program with eval:'
+        print '#     eval `{0}`'.format(
+            ' '.join(pipes.quote(arg) for arg in sys.argv))
 
     def __print_var(self, key, val):
         if (self.args.get('csh_output') or

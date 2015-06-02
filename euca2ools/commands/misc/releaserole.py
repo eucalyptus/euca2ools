@@ -60,11 +60,6 @@ class ReleaseRole(BaseCommand):
                     like a csh-style shell'''))]
 
     def print_result(self, _):
-        print '# Shellcode for releasing role credentials'
-        print '# If you can read this, rerun this program with eval:'
-        print '#     eval `{0}`'.format(
-            ' '.join(pipes.quote(arg) for arg in sys.argv))
-        print
         for var in (
                 'AWS_ACCESS_KEY_ID', 'AWS_ACCESS_KEY', 'EC2_ACCESS_KEY',
                 'AWS_SECRET_ACCESS_KEY', 'AWS_SECRET_KEY',
@@ -78,3 +73,7 @@ class ReleaseRole(BaseCommand):
             else:
                 fmt = 'unset {0};'
             print fmt.format(var)
+        print
+        print '# If you can read this, rerun this program with eval:'
+        print '#     eval `{0}`'.format(
+            ' '.join(pipes.quote(arg) for arg in sys.argv))
