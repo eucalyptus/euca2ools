@@ -52,19 +52,15 @@ class CreateAccessKey(IAMRequest):
 
     def postprocess(self, result):
         if self.args.get('write_config'):
-            url_format = '{scheme}://{service}.{domain}/'
             parsed = six.moves.urllib.parse.urlparse(self.service.endpoint)
             if not self.args.get('domain'):
                 dnsname = parsed.netloc.split(':')[0]
                 if all(label.isdigit() for label in dnsname.split('.')):
-                    msg = ('warning: IAM URL {0} refers to a specific IP '
-                           'address; use -d/--domain to supply the region\'s '
+                    msg = ('IAM URL {0} refers to a specific IP address; '
+                           'use -d/--domain to supply the region\'s '
                            'DNS domain'.format(self.service.endpoint))
-                    print >> sys.stderr, msg
-                    url_format = '{scheme}://{domain}/services/{service}'
-                    self.args['domain'] = parsed.netloc
-                else:
-                    self.args['domain'] = parsed.netloc.split('.', 1)[1]
+                    raise ValueError(msg)
+                self.args['domain'] = parsed.netloc.split('.', 1)[1]
             assert self.args.get('domain')
             if ':' not in self.args['domain'] and ':' in parsed.netloc:
                 # Add the port
@@ -83,7 +79,7 @@ class CreateAccessKey(IAMRequest):
             section = 'region {0}'.format(region_name)
             configfile.add_section(section)
             for service in sorted(_get_service_names()):
-                url = url_format.format(
+                url = '{scheme}://{service}.{domain}/'.format(
                     scheme=parsed.scheme, domain=self.args['domain'],
                     service=service)
                 configfile.set(section, '{0}-url'.format(service), url)
