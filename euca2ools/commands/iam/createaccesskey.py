@@ -56,33 +56,35 @@ class CreateAccessKey(IAMRequest):
             if not self.args.get('domain'):
                 dnsname = parsed.netloc.split(':')[0]
                 if all(label.isdigit() for label in dnsname.split('.')):
-                    msg = ('IAM URL {0} refers to a specific IP address; '
-                           'use -d/--domain to supply the region\'s '
-                           'DNS domain'.format(self.service.endpoint))
-                    raise ValueError(msg)
-                self.args['domain'] = parsed.netloc.split('.', 1)[1]
-            assert self.args.get('domain')
-            if ':' not in self.args['domain'] and ':' in parsed.netloc:
-                # Add the port
-                self.args['domain'] += ':' + parsed.netloc.split(':')[1]
-            # This uses self.config.region instead of
-            # self.service.region_name because the latter is a global
-            # service in AWS and thus frequently deferred with "use"
-            # statements.  That may eventually happen in eucalyptus
-            # cloud federations as well.
-            #
-            # At some point an option that lets one choose a region name
-            # at the command line may be useful, but until someone asks
-            # for it let's not clutter it up for now.
-            region_name = self.config.region or self.args['domain']
+                    msg = ('warning: IAM URL {0} refers to a specific IP; '
+                           'for a complete configuration file supply '
+                           'the region\'s DNS domain with -d/--domain'
+                           .format(self.service.endpoint))
+                    print >> sys.stderr, msg
+                else:
+                    self.args['domain'] = parsed.netloc.split('.', 1)[1]
             configfile = six.moves.configparser.SafeConfigParser()
-            section = 'region {0}'.format(region_name)
-            configfile.add_section(section)
-            for service in sorted(_get_service_names()):
-                url = '{scheme}://{service}.{domain}/'.format(
-                    scheme=parsed.scheme, domain=self.args['domain'],
-                    service=service)
-                configfile.set(section, '{0}-url'.format(service), url)
+            if self.args.get('domain'):
+                if ':' not in self.args['domain'] and ':' in parsed.netloc:
+                    # Add the port
+                    self.args['domain'] += ':' + parsed.netloc.split(':')[1]
+                # This uses self.config.region instead of
+                # self.service.region_name because the latter is a global
+                # service in AWS and thus frequently deferred with "use"
+                # statements.  That may eventually happen in eucalyptus
+                # cloud federations as well.
+                #
+                # At some point an option that lets one choose a region
+                # name at the command line may be useful, but until
+                # someone asks for it let's not clutter it up for now.
+                region_name = self.config.region or self.args['domain']
+                section = 'region {0}'.format(region_name)
+                configfile.add_section(section)
+                for service in sorted(_get_service_names()):
+                    url = '{scheme}://{service}.{domain}/'.format(
+                        scheme=parsed.scheme, domain=self.args['domain'],
+                        service=service)
+                    configfile.set(section, '{0}-url'.format(service), url)
             section = 'user {0}'.format(result['AccessKey'].get('UserName')
                                         or 'root')
             configfile.add_section(section)
