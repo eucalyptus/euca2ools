@@ -1,4 +1,4 @@
-# Copyright 2009-2013 Eucalyptus Systems, Inc.
+# Copyright 2009-2015 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -31,7 +31,8 @@ from requestbuilder.response import PaginatedResponse
 class GetGroup(IAMRequest):
     DESCRIPTION = 'List all the users in a group'
     ARGS = [Arg('-g', '--group-name', dest='GroupName', metavar='GROUP',
-                required=True, help='name of the group to show info about'),
+                required=True,
+                help='name of the group to enumerate (required)'),
             AS_ACCOUNT]
     LIST_TAGS = ['Users']
 

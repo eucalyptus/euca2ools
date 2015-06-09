@@ -1,4 +1,4 @@
-# Copyright 2014 Eucalyptus Systems, Inc.
+# Copyright 2014-2015 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -31,7 +31,7 @@ class DeleteRolePolicy(IAMRequest):
     DESCRIPTION = 'Remove a policy from a role'
     ARGS = [Arg('-r', '--role-name', dest='RoleName', metavar='ROLE',
                 required=True,
-                help='user the policy is attached to (required)'),
+                help='role the policy is attached to (required)'),
             Arg('-p', '--policy-name', dest='PolicyName', metavar='POLICY',
                 required=True, help='name of the policy to delete (required)'),
             AS_ACCOUNT]

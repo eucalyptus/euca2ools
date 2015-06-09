@@ -4,6 +4,7 @@
 euare-grouplistusers \- List all the users in a group
 .SH SYNOPSIS
 euare\-grouplistusers \fB\-g\fR GROUP [\-\-as\-account ACCOUNT] [\-U URL]
+.TP
 [\-\-region USER@REGION] [\-I KEY_ID] [\-S KEY]
 [\-\-security\-token TOKEN] [\-\-debug] [\-\-debugger]
 [\-\-version] [\-h]
@@ -12,7 +13,7 @@ List all the users in a group
 .SS "optional arguments:"
 .TP
 \fB\-g\fR GROUP, \fB\-\-group\-name\fR GROUP
-name of the group to show info about
+name of the group to enumerate (required)
 .TP
 \fB\-\-as\-account\fR ACCOUNT
 [Eucalyptus cloud admin only] run this command as the

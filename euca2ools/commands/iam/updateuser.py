@@ -1,4 +1,4 @@
-# Copyright 2009-2013 Eucalyptus Systems, Inc.
+# Copyright 2009-2015 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -38,11 +38,11 @@ class UpdateUser(IAMRequest):
             Arg('--enabled', dest='Enabled', choices=('true', 'false'),
                 help='''[Eucalyptus only] 'true' to enable the user, or 'false'
                         to disable the user'''),
+            Arg('--pwd-expires', dest='PasswordExpiration',
+                metavar='YYYY-MM-DDThh:mm:ssZ', help='''[Eucalyptus only]
+                New password expiration date, in ISO8601 format'''),
             Arg('--reg-status', dest='RegStatus',
                 choices=('REGISTERED', 'APPROVED', 'CONFIRMED'),
-                help='''[Eucalyptus only] new registration status. Only
+                help='''[Eucalyptus < 4.2 only] new registration status. Only
                         CONFIRMED users may access the system.'''),
-            Arg('--pwd-expires', dest='PasswordExpiration', metavar='DATETIME',
-                help='''[Eucalyptus only] New password expiration date, in
-                        ISO8601 format'''),
             AS_ACCOUNT]

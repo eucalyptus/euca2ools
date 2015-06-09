@@ -23,6 +23,7 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import argparse
 import json
 import urllib
 
@@ -42,8 +43,11 @@ class CreateRole(IAMRequest):
                 Arg('-f', dest='AssumeRolePolicyDocument', metavar='FILE',
                     type=file_contents,
                     help='file containing the policy for the new role'),
-                Arg('-s', '--service_', route_to=None, help='''service to allow
-                    access to the role (e.g. ec2.amazonaws.com)'''))
+                Arg('-s', '--service', dest='service_', metavar='SERVICE',
+                    route_to=None, help='''service to allow access to
+                    the role (e.g. ec2.amazonaws.com)'''),
+                # For compatibility with a typo in < 3.2.1
+                Arg('--service_', route_to=None, help=argparse.SUPPRESS))
             .required(),
             Arg('-v', '--verbose', action='store_true', route_to=None,
                 help="print the new role's ARN, GUID, and policy"),
