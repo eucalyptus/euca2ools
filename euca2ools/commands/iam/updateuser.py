@@ -42,7 +42,7 @@ class UpdateUser(IAMRequest):
                 choices=('REGISTERED', 'APPROVED', 'CONFIRMED'),
                 help='''[Eucalyptus only] new registration status. Only
                         CONFIRMED users may access the system.'''),
-            Arg('--pwd-expires', dest='PasswordExpiration', metavar='DATETIME',
-                help='''[Eucalyptus only] New password expiration date, in
-                        ISO8601 format'''),
+            Arg('--pwd-expires', dest='PasswordExpiration',
+                metavar='YYYY-MM-DDThh:mm:ssZ', help='''[Eucalyptus only]
+                New password expiration date, in ISO8601 format'''),
             AS_ACCOUNT]

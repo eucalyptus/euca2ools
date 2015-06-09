@@ -35,7 +35,7 @@ class UploadServerCertificate(IAMRequest):
                 help='name to give the new server certificate (required)'),
             MutuallyExclusiveArgList(
                 Arg('-c', '--certificate-body', dest='CertificateBody',
-                    metavar='CERT', help='PEM-encoded certificate'),
+                    metavar='CERT_CONTENT', help='PEM-encoded certificate'),
                 Arg('--certificate-file', dest='CertificateBody',
                     metavar='FILE', type=open,
                     help='file containing the PEM-encoded certificate'))

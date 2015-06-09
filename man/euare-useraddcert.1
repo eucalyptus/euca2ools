@@ -3,8 +3,10 @@
 .SH NAME
 euare-useraddcert \- Upload a signing certificate
 .SH SYNOPSIS
-euare\-useraddcert [\-u USER] (\fB\-c\fR CERT | \fB\-f\fR FILE) [\-\-as\-account ACCOUNT]
-[\-U URL] [\-\-region USER@REGION] [\-I KEY_ID] [\-S KEY]
+euare\-useraddcert [\-u USER] (\fB\-c\fR CERT_CONTENT | \fB\-f\fR FILE)
+.TP
+[\-\-as\-account ACCOUNT] [\-U URL]
+[\-\-region USER@REGION] [\-I KEY_ID] [\-S KEY]
 [\-\-security\-token TOKEN] [\-\-debug] [\-\-debugger]
 [\-\-version] [\-h]
 .SH DESCRIPTION
@@ -15,8 +17,8 @@ Upload a signing certificate
 user the signing certificate is for (default: current
 user)
 .TP
-\fB\-c\fR CERT, \fB\-\-certificate\-body\fR CERT
-contents of the new certificate
+\fB\-c\fR CERT_CONTENT, \fB\-\-certificate\-body\fR CERT_CONTENT
+PEM\-encoded contents of the new certificate
 .TP
 \fB\-f\fR FILE, \fB\-\-certificate\-file\fR FILE
 file containing the new certificate

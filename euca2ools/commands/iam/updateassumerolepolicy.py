@@ -1,4 +1,4 @@
-# Copyright 2014 Eucalyptus Systems, Inc.
+# Copyright 2014-2015 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -32,7 +32,7 @@ from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT
 
 
 class UpdateAssumeRolePolicy(IAMRequest):
-    DESCRIPTION = 'Update the policy that grants an entity to assume a role'
+    DESCRIPTION = 'Update the policy that allows entities to assume a role'
     ARGS = [Arg('-r', '--role-name', dest='RoleName', metavar='ROLE',
                 required=True, help='role to update (required)'),
             MutuallyExclusiveArgList(

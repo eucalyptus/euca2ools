@@ -4,11 +4,12 @@
 euare-usermod \- Change the name and/or path of a user
 .SH SYNOPSIS
 euare\-usermod \fB\-u\fR USER [\-n USER] [\-p PATH] [\-\-enabled {true,false}]
+.TP
 [\-\-reg\-status {REGISTERED,APPROVED,CONFIRMED}]
-[\-\-pwd\-expires DATETIME] [\-\-as\-account ACCOUNT] [\-U URL]
-[\-\-region USER@REGION] [\-I KEY_ID] [\-S KEY]
-[\-\-security\-token TOKEN] [\-\-debug] [\-\-debugger]
-[\-\-version] [\-h]
+[\-\-pwd\-expires YYYY\-MM\-DDThh:mm:ssZ]
+[\-\-as\-account ACCOUNT] [\-U URL] [\-\-region USER@REGION]
+[\-I KEY_ID] [\-S KEY] [\-\-security\-token TOKEN] [\-\-debug]
+[\-\-debugger] [\-\-version] [\-h]
 .SH DESCRIPTION
 Change the name and/or path of a user
 .SS "optional arguments:"
@@ -30,7 +31,7 @@ new path for the user
 [Eucalyptus only] new registration status. Only
 CONFIRMED users may access the system.
 .TP
-\fB\-\-pwd\-expires\fR DATETIME
+\fB\-\-pwd\-expires\fR YYYY\-MM\-DDThh:mm:ssZ
 [Eucalyptus only] New password expiration date, in
 ISO8601 format
 .TP
