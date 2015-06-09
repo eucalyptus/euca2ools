@@ -1,4 +1,4 @@
-# Copyright 2009-2014 Eucalyptus Systems, Inc.
+# Copyright 2009-2015 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -23,15 +23,15 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT
 from requestbuilder import Arg
+
+from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT, arg_user
 
 
 class GetLoginProfile(IAMRequest):
     DESCRIPTION = 'Verify that a user has a password'
-    ARGS = [Arg('-u', '--user-name', dest='UserName', metavar='USER',
-                required=True,
-                help='user whose password to verify (required)'),
+    ARGS = [arg_user(
+                help='user owning the password to check (required)'),
             Arg('--verbose', action='store_true', route_to=None,
                 help="print extra info about the user's password"),
             AS_ACCOUNT]

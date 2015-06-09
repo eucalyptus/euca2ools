@@ -4,22 +4,24 @@
 euare-usermodcert \- Change the status of a signing certificate from Active to Inactive, or
 vice versa
 .SH SYNOPSIS
-euare\-usermodcert [\-u USER] \fB\-c\fR CERT \fB\-s\fR {Active,Inactive}
-[\-\-as\-account ACCOUNT] [\-U URL]
-[\-\-region USER@REGION] [\-I KEY_ID] [\-S KEY]
+euare\-usermodcert [\-u USER] \fB\-s\fR {Active,Inactive} [\-\-as\-account ACCOUNT]
+.TP
+[\-U URL] [\-\-region USER@REGION] [\-I KEY_ID] [\-S KEY]
 [\-\-security\-token TOKEN] [\-\-debug] [\-\-debugger]
 [\-\-version] [\-h]
+CERT
 .SH DESCRIPTION
 Change the status of a signing certificate from Active to Inactive, or
 vice versa
+.SS "positional arguments:"
+.TP
+CERT
+ID of the signing certificate to update (required)
 .SS "optional arguments:"
 .TP
 \fB\-u\fR USER, \fB\-\-user\-name\fR USER
 user owning the signing certificate to update
 (default: current user)
-.TP
-\fB\-c\fR CERT, \fB\-\-certificate\-id\fR CERT
-ID of the signing certificate to update
 .TP
 \fB\-s\fR {Active,Inactive}, \fB\-\-status\fR {Active,Inactive}
 status to assign to the certificate

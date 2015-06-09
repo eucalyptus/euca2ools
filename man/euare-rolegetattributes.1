@@ -3,16 +3,19 @@
 .SH NAME
 euare-rolegetattributes \- Display a role's ARN, GUID, and policy
 .SH SYNOPSIS
-euare\-rolegetattributes \fB\-r\fR ROLE [\-\-as\-account ACCOUNT] [\-U URL]
+euare\-rolegetattributes [\-\-as\-account ACCOUNT] [\-U URL]
+.TP
 [\-\-region USER@REGION] [\-I KEY_ID] [\-S KEY]
 [\-\-security\-token TOKEN] [\-\-debug] [\-\-debugger]
 [\-\-version] [\-h]
+ROLE
 .SH DESCRIPTION
 Display a role's ARN, GUID, and policy
-.SS "optional arguments:"
+.SS "positional arguments:"
 .TP
-\fB\-r\fR ROLE, \fB\-\-role\-name\fR ROLE
-name of the role to show info about (required)
+ROLE
+name of the role to describe (required)
+.SS "optional arguments:"
 .TP
 \fB\-\-as\-account\fR ACCOUNT
 [Eucalyptus cloud admin only] run this command as the

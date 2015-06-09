@@ -32,15 +32,15 @@ from requestbuilder.service import BaseService
 import six
 
 import euca2ools.commands
-from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT
+from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT, arg_user
 from euca2ools.commands.iam.getuser import GetUser
 import euca2ools.exceptions
 
 
 class CreateAccessKey(IAMRequest):
     DESCRIPTION = 'Create a new access key for a user'
-    ARGS = [Arg('-u', '--user-name', dest='UserName', help='''user the new key
-                will belong to (default: current user)'''),
+    ARGS = [arg_user(help='''user the new key will belong to
+                     (default: current user)'''),
             Arg('-w', '--write-config', action='store_true', route_to=None,
                 help='''output access keys and region information in the
                 form of a euca2ools.ini(5) configuration file instead of

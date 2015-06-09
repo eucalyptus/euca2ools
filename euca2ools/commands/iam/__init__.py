@@ -73,3 +73,57 @@ class IAMRequest(requestbuilder.request.AWSQueryRequest):
 AS_ACCOUNT = Arg('--as-account', dest='DelegateAccount', metavar='ACCOUNT',
                  help='''[Eucalyptus cloud admin only] run this command as
                  the administrator of another account''')
+
+
+def arg_account_name(**kwargs):
+    return [Arg('AccountName', metavar='ACCOUNT', **kwargs),
+            Arg('-a', '--account-name', action='store_true', dest='dummy',
+                route_to=None, help=argparse.SUPPRESS)]
+
+
+def arg_account_alias(**kwargs):
+    return [Arg('AccountAlias', metavar='ACCOUNT', **kwargs),
+            Arg('-a', '--account-alias', action='store_true', dest='dummy',
+                route_to=None, help=argparse.SUPPRESS)]
+
+
+def arg_user(**kwargs):
+    return [Arg('UserName', metavar='USER', **kwargs),
+            Arg('-u', '--user-name', action='store_true', dest='dummy',
+                route_to=None, help=argparse.SUPPRESS)]
+
+
+def arg_group(**kwargs):
+    return [Arg('GroupName', metavar='GROUP', **kwargs),
+            Arg('-g', '--group-name', action='store_true', dest='dummy',
+                route_to=None, help=argparse.SUPPRESS)]
+
+
+def arg_role(**kwargs):
+    return [Arg('RoleName', metavar='ROLE', **kwargs),
+            Arg('-r', '--role-name', action='store_true', dest='dummy',
+                route_to=None, help=argparse.SUPPRESS)]
+
+
+def arg_iprofile(**kwargs):
+    return [Arg('InstanceProfileName', metavar='IPROFILE', **kwargs),
+            Arg('-s', '--instance-profile-name', action='store_true',
+                dest='dummy', route_to=None, help=argparse.SUPPRESS)]
+
+
+def arg_key_id(**kwargs):
+    return [Arg('AccessKeyId', metavar='KEY_ID', **kwargs),
+            Arg('-k', '--user-key-id', action='store_true', dest='dummy',
+                route_to=None, help=argparse.SUPPRESS)]
+
+
+def arg_signing_cert(**kwargs):
+    return [Arg('CertificateId', metavar='CERT', **kwargs),
+            Arg('-c', '--certificate-id', action='store_true',
+                dest='dummy', route_to=None, help=argparse.SUPPRESS)]
+
+
+def arg_server_cert(**kwargs):
+    return [Arg('ServerCertificateName', metavar='CERT', **kwargs),
+            Arg('-s', '--server-certificate-name', action='store_true',
+                dest='dummy', route_to=None, help=argparse.SUPPRESS)]

@@ -3,16 +3,19 @@
 .SH NAME
 euare-userlistgroups \- List all groups a user is a member of
 .SH SYNOPSIS
-euare\-userlistgroups \fB\-u\fR USER [\-\-as\-account ACCOUNT] [\-U URL]
+euare\-userlistgroups [\-\-as\-account ACCOUNT] [\-U URL]
+.TP
 [\-\-region USER@REGION] [\-I KEY_ID] [\-S KEY]
 [\-\-security\-token TOKEN] [\-\-debug] [\-\-debugger]
 [\-\-version] [\-h]
+USER
 .SH DESCRIPTION
 List all groups a user is a member of
-.SS "optional arguments:"
+.SS "positional arguments:"
 .TP
-\fB\-u\fR USER, \fB\-\-user\-name\fR USER
+USER
 user to list membership for (required)
+.SS "optional arguments:"
 .TP
 \fB\-\-as\-account\fR ACCOUNT
 [Eucalyptus cloud admin only] run this command as the

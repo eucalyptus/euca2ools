@@ -3,16 +3,19 @@
 .SH NAME
 euare-usermodloginprofile \- Update a user's password
 .SH SYNOPSIS
-euare\-usermodloginprofile \fB\-u\fR USER [\-p PASSWORD] [\-\-as\-account ACCOUNT]
-[\-U URL] [\-\-region USER@REGION] [\-I KEY_ID]
-[\-S KEY] [\-\-security\-token TOKEN] [\-\-debug]
+euare\-usermodloginprofile [\-p PASSWORD] [\-\-as\-account ACCOUNT] [\-U URL]
+.TP
+[\-\-region USER@REGION] [\-I KEY_ID] [\-S KEY]
+[\-\-security\-token TOKEN] [\-\-debug]
 [\-\-debugger] [\-\-version] [\-h]
+USER
 .SH DESCRIPTION
 Update a user's password
-.SS "optional arguments:"
+.SS "positional arguments:"
 .TP
-\fB\-u\fR USER, \fB\-\-user\-name\fR USER
+USER
 name of the user to change a password for (required)
+.SS "optional arguments:"
 .TP
 \fB\-p\fR PASSWORD, \fB\-\-password\fR PASSWORD
 the new password. If unspecified, the new password

@@ -1,4 +1,4 @@
-# Copyright 2009-2013 Eucalyptus Systems, Inc.
+# Copyright 2009-2015 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -23,15 +23,16 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT
 from requestbuilder import Arg
 from requestbuilder.response import PaginatedResponse
+
+from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT, arg_user
 
 
 class ListAccessKeys(IAMRequest):
     DESCRIPTION = "List a user's access keys"
-    ARGS = [Arg('-u', '--user-name', dest='UserName', metavar='USER',
-                help='user to list keys for (default: current user)'),
+    ARGS = [arg_user(nargs='?',
+                     help='user to list keys for (default: current user)'),
             AS_ACCOUNT]
     LIST_TAGS = ['AccessKeyMetadata']
 

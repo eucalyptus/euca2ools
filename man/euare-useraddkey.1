@@ -3,18 +3,20 @@
 .SH NAME
 euare-useraddkey \- Create a new access key for a user
 .SH SYNOPSIS
-euare\-useraddkey [\-u USERNAME] [\-w] [\-d DOMAIN] [\-\-as\-account ACCOUNT]
+euare\-useraddkey [\-w] [\-d DOMAIN] [\-\-as\-account ACCOUNT] [\-U URL]
 .TP
-[\-U URL] [\-\-region USER@REGION] [\-I KEY_ID] [\-S KEY]
+[\-\-region USER@REGION] [\-I KEY_ID] [\-S KEY]
 [\-\-security\-token TOKEN] [\-\-debug] [\-\-debugger]
 [\-\-version] [\-h]
+USER
 .SH DESCRIPTION
 Create a new access key for a user
-.SS "optional arguments:"
+.SS "positional arguments:"
 .TP
-\fB\-u\fR USERNAME, \fB\-\-user\-name\fR USERNAME
+USER
 user the new key will belong to (default: current
 user)
+.SS "optional arguments:"
 .TP
 \fB\-w\fR, \fB\-\-write\-config\fR
 output access keys and region information in the form

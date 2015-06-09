@@ -3,17 +3,20 @@
 .SH NAME
 euare-useruploadpolicy \- Attach a policy to a user
 .SH SYNOPSIS
-euare\-useruploadpolicy \fB\-u\fR USER \fB\-p\fR POLICY (\fB\-o\fR POLICY_CONTENT | \fB\-f\fR FILE)
+euare\-useruploadpolicy \fB\-p\fR POLICY (\fB\-o\fR POLICY_CONTENT | \fB\-f\fR FILE)
+.TP
 [\-\-as\-account ACCOUNT] [\-U URL]
 [\-\-region USER@REGION] [\-I KEY_ID] [\-S KEY]
 [\-\-security\-token TOKEN] [\-\-debug] [\-\-debugger]
 [\-\-version] [\-h]
+USER
 .SH DESCRIPTION
 Attach a policy to a user
-.SS "optional arguments:"
+.SS "positional arguments:"
 .TP
-\fB\-u\fR USER, \fB\-\-user\-name\fR USER
+USER
 user to attach the policy to (required)
+.SS "optional arguments:"
 .TP
 \fB\-p\fR POLICY, \fB\-\-policy\-name\fR POLICY
 name of the policy (required)

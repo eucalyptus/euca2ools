@@ -1,4 +1,4 @@
-# Copyright 2009-2014 Eucalyptus Systems, Inc.
+# Copyright 2009-2015 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -23,18 +23,18 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.iam import IAMRequest
-from euca2ools.commands.iam.getaccountpolicy import GetAccountPolicy
 from requestbuilder import Arg
 from requestbuilder.response import PaginatedResponse
 
+from euca2ools.commands.iam import IAMRequest, arg_account_name
+from euca2ools.commands.iam.getaccountpolicy import GetAccountPolicy
+
 
 class ListAccountPolicies(IAMRequest):
-    DESCRIPTION = ('[Eucalyptus only] List one specific policy or all '
-                   'policies attached to an account. If no policies are '
-                   'attached to the account, the action still succeeds.')
-    ARGS = [Arg('-a', '--account-name', dest='AccountName', metavar='ACCOUNT',
-                required=True, help='account owning the policies to list'),
+    DESCRIPTION = ('[Eucalyptus only] List one or all policies '
+                   'policies attached to an account')
+    ARGS = [arg_account_name(help='''name or ID of the account owning
+                             the policies to list (required)'''),
             Arg('-p', '--policy-name', metavar='POLICY', route_to=None,
                 help='display a specific policy'),
             Arg('-v', '--verbose', action='store_true', route_to=None,

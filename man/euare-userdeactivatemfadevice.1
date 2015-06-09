@@ -3,17 +3,19 @@
 .SH NAME
 euare-userdeactivatemfadevice \- Deactivate an MFA device
 .SH SYNOPSIS
-euare\-userdeactivatemfadevice \fB\-u\fR USER \fB\-s\fR SERIAL [\-\-as\-account ACCOUNT]
-[\-U URL] [\-\-region USER@REGION]
-[\-I KEY_ID] [\-S KEY]
-[\-\-security\-token TOKEN] [\-\-debug]
-[\-\-debugger] [\-\-version] [\-h]
+euare\-userdeactivatemfadevice \fB\-s\fR SERIAL [\-\-as\-account ACCOUNT] [\-U URL]
+.TP
+[\-\-region USER@REGION] [\-I KEY_ID]
+[\-S KEY] [\-\-security\-token TOKEN]
+[\-\-debug] [\-\-debugger] [\-\-version] [\-h]
+USER
 .SH DESCRIPTION
 Deactivate an MFA device
-.SS "optional arguments:"
+.SS "positional arguments:"
 .TP
-\fB\-u\fR USER, \fB\-\-user\-name\fR USER
-user whose MFA device to deactivate (required)
+USER
+user owning the MFA device to deactivate (required)
+.SS "optional arguments:"
 .TP
 \fB\-s\fR SERIAL, \fB\-\-serial\-number\fR SERIAL
 serial number of the MFA device to deactivate

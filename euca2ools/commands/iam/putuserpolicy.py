@@ -1,4 +1,4 @@
-# Copyright 2009-2013 Eucalyptus Systems, Inc.
+# Copyright 2009-2015 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -25,13 +25,12 @@
 
 from requestbuilder import Arg, MutuallyExclusiveArgList
 
-from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT
+from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT, arg_user
 
 
 class PutUserPolicy(IAMRequest):
     DESCRIPTION = 'Attach a policy to a user'
-    ARGS = [Arg('-u', '--user-name', dest='UserName', metavar='USER',
-                required=True, help='user to attach the policy to (required)'),
+    ARGS = [arg_user(help='user to attach the policy to (required)'),
             Arg('-p', '--policy-name', dest='PolicyName', metavar='POLICY',
                 required=True, help='name of the policy (required)'),
             MutuallyExclusiveArgList(

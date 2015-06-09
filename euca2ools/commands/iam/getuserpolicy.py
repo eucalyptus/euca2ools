@@ -1,4 +1,4 @@
-# Copyright 2009-2013 Eucalyptus Systems, Inc.
+# Copyright 2009-2015 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -23,17 +23,17 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT
 import json
-from requestbuilder import Arg
 import urllib
+
+from requestbuilder import Arg
+
+from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT, arg_user
 
 
 class GetUserPolicy(IAMRequest):
     DESCRIPTION = "Display a user's policy"
-    ARGS = [Arg('-u', '--user-name', dest='UserName', metavar='USER',
-                required=True,
-                help='user the poilcy is attached to (required)'),
+    ARGS = [arg_user(help='user the poilcy is attached to (required)'),
             Arg('-p', '--policy-name', dest='PolicyName', metavar='POLICY',
                 required=True, help='name of the policy to show (required)'),
             Arg('--pretty-print', action='store_true', route_to=None,

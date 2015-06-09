@@ -3,16 +3,19 @@
 .SH NAME
 euare-accountdelpolicy \- [Eucalyptus cloud admin only] Remove a policy from an account
 .SH SYNOPSIS
-euare\-accountdelpolicy \fB\-a\fR ACCOUNT \fB\-p\fR POLICY [\-U URL]
-[\-\-region USER@REGION] [\-I KEY_ID] [\-S KEY]
-[\-\-security\-token TOKEN] [\-\-debug] [\-\-debugger]
-[\-\-version] [\-h]
+euare\-accountdelpolicy \fB\-p\fR POLICY [\-U URL] [\-\-region USER@REGION]
+.TP
+[\-I KEY_ID] [\-S KEY] [\-\-security\-token TOKEN]
+[\-\-debug] [\-\-debugger] [\-\-version] [\-h]
+ACCOUNT
 .SH DESCRIPTION
 [Eucalyptus cloud admin only] Remove a policy from an account
-.SS "optional arguments:"
+.SS "positional arguments:"
 .TP
-\fB\-a\fR ACCOUNT, \fB\-\-account\-name\fR ACCOUNT
-account the policy is attached to (required)
+ACCOUNT
+name or ID of the account the policy is attached to
+(required)
+.SS "optional arguments:"
 .TP
 \fB\-p\fR POLICY, \fB\-\-policy\-name\fR POLICY
 name of the policy to delete (required)

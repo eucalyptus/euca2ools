@@ -28,15 +28,14 @@ import sys
 from requestbuilder import Arg
 from requestbuilder.mixins import TabifyingMixin
 
-from euca2ools.commands.iam import IAMRequest
+from euca2ools.commands.iam import IAMRequest, arg_account_name
 from euca2ools.commands.iam.createaccesskey import CreateAccessKey
 
 
 class CreateAccount(IAMRequest, TabifyingMixin):
     DESCRIPTION = '[Eucalyptus cloud admin only] Create a new account'
-    ARGS = [Arg('-a', '--account-name', dest='AccountName', metavar='ACCOUNT',
-                help='''also add an alias (name) to the new account
-                (required on eucalyptus < 4.2)'''),
+    ARGS = [arg_account_name(nargs='?', help='''also add an alias (name) to the
+                             new account (required on eucalyptus < 4.2)'''),
             Arg('-k', '--create-accesskey', action='store_true', route_to=None,
                 help='''also create an access key for the new account's
                 administrator and show it'''),

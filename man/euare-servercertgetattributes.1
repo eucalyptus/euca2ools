@@ -3,17 +3,19 @@
 .SH NAME
 euare-servercertgetattributes \- Show the ARN and GUID of a server certificate
 .SH SYNOPSIS
-euare\-servercertgetattributes \fB\-s\fR CERT [\-\-as\-account ACCOUNT] [\-U URL]
+euare\-servercertgetattributes [\-\-as\-account ACCOUNT] [\-U URL]
+.TP
 [\-\-region USER@REGION] [\-I KEY_ID]
 [\-S KEY] [\-\-security\-token TOKEN]
 [\-\-debug] [\-\-debugger] [\-\-version] [\-h]
+CERT
 .SH DESCRIPTION
 Show the ARN and GUID of a server certificate
-.SS "optional arguments:"
+.SS "positional arguments:"
 .TP
-\fB\-s\fR CERT, \fB\-\-server\-certificate\-name\fR CERT
-name of the server certificate to retrieve info about
-(required)
+CERT
+name of the server certificate to describe (required)
+.SS "optional arguments:"
 .TP
 \fB\-\-as\-account\fR ACCOUNT
 [Eucalyptus cloud admin only] run this command as the

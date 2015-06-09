@@ -3,16 +3,19 @@
 .SH NAME
 euare-accountaliascreate \- Create an alias for an account, a.k.a. an account name
 .SH SYNOPSIS
-euare\-accountaliascreate \fB\-a\fR ALIAS [\-\-as\-account ACCOUNT] [\-U URL]
+euare\-accountaliascreate [\-\-as\-account ACCOUNT] [\-U URL]
+.TP
 [\-\-region USER@REGION] [\-I KEY_ID] [\-S KEY]
 [\-\-security\-token TOKEN] [\-\-debug]
 [\-\-debugger] [\-\-version] [\-h]
+ACCOUNT
 .SH DESCRIPTION
 Create an alias for an account, a.k.a. an account name
-.SS "optional arguments:"
+.SS "positional arguments:"
 .TP
-\fB\-a\fR ALIAS, \fB\-\-account\-alias\fR ALIAS
+ACCOUNT
 name of the alias to create (required)
+.SS "optional arguments:"
 .TP
 \fB\-\-as\-account\fR ACCOUNT
 [Eucalyptus cloud admin only] run this command as the

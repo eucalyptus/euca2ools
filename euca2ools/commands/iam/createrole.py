@@ -1,4 +1,4 @@
-# Copyright 2014 Eucalyptus Systems, Inc.
+# Copyright 2014-2015 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -29,21 +29,21 @@ import urllib
 from requestbuilder import Arg, MutuallyExclusiveArgList
 
 from euca2ools.commands.argtypes import file_contents
-from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT
+from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT, arg_role
 
 
 class CreateRole(IAMRequest):
     DESCRIPTION = 'Create a new role'
-    ARGS = [Arg('-r', '--role-name', dest='RoleName', metavar='ROLE',
-                required=True, help='name of the new role (required)'),
+    ARGS = [arg_role(help='name of the new role (required)'),
             Arg('-p', '--path', dest='Path',
                 help='path for the new role (default: "/")'),
             MutuallyExclusiveArgList(
                 Arg('-f', dest='AssumeRolePolicyDocument', metavar='FILE',
                     type=file_contents,
                     help='file containing the policy for the new role'),
-                Arg('-s', '--service_', route_to=None, help='''service to allow
-                    access to the role (e.g. ec2.amazonaws.com)'''))
+                Arg('-s', '--service', dest='service_', metavar='SERVICE',
+                    route_to=None, help='''service to allow access to
+                    the role (e.g. ec2.amazonaws.com)'''))
             .required(),
             Arg('-v', '--verbose', action='store_true', route_to=None,
                 help="print the new role's ARN, GUID, and policy"),

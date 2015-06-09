@@ -3,17 +3,19 @@
 .SH NAME
 euare-groupgetpolicy \- Display a group's policy
 .SH SYNOPSIS
-euare\-groupgetpolicy \fB\-g\fR GROUP \fB\-p\fR POLICY [\-\-pretty\-print]
-[\-\-as\-account ACCOUNT] [\-U URL]
-[\-\-region USER@REGION] [\-I KEY_ID] [\-S KEY]
-[\-\-security\-token TOKEN] [\-\-debug] [\-\-debugger]
-[\-\-version] [\-h]
+euare\-groupgetpolicy \fB\-p\fR POLICY [\-\-pretty\-print] [\-\-as\-account ACCOUNT]
+.TP
+[\-U URL] [\-\-region USER@REGION] [\-I KEY_ID]
+[\-S KEY] [\-\-security\-token TOKEN] [\-\-debug]
+[\-\-debugger] [\-\-version] [\-h]
+GROUP
 .SH DESCRIPTION
 Display a group's policy
-.SS "optional arguments:"
+.SS "positional arguments:"
 .TP
-\fB\-g\fR GROUP, \fB\-\-group\-name\fR GROUP
+GROUP
 group the policy is attached to (required)
+.SS "optional arguments:"
 .TP
 \fB\-p\fR POLICY, \fB\-\-policy\-name\fR POLICY
 name of the policy to show (required)

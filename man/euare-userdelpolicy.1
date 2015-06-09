@@ -3,16 +3,19 @@
 .SH NAME
 euare-userdelpolicy \- Remove a policy from a user
 .SH SYNOPSIS
-euare\-userdelpolicy \fB\-u\fR USER \fB\-p\fR POLICY [\-\-as\-account ACCOUNT] [\-U URL]
+euare\-userdelpolicy \fB\-p\fR POLICY [\-\-as\-account ACCOUNT] [\-U URL]
+.TP
 [\-\-region USER@REGION] [\-I KEY_ID] [\-S KEY]
 [\-\-security\-token TOKEN] [\-\-debug] [\-\-debugger]
 [\-\-version] [\-h]
+USER
 .SH DESCRIPTION
 Remove a policy from a user
-.SS "optional arguments:"
+.SS "positional arguments:"
 .TP
-\fB\-u\fR USER, \fB\-\-user\-name\fR USER
+USER
 user the policy is attached to (required)
+.SS "optional arguments:"
 .TP
 \fB\-p\fR POLICY, \fB\-\-policy\-name\fR POLICY
 name of the policy to delete (required)

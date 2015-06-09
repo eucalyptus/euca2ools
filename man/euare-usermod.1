@@ -3,18 +3,21 @@
 .SH NAME
 euare-usermod \- Change the name and/or path of a user
 .SH SYNOPSIS
-euare\-usermod \fB\-u\fR USER [\-n USER] [\-p PATH] [\-\-enabled {true,false}]
+euare\-usermod [\-n USER] [\-p PATH] [\-\-enabled {true,false}]
+.TP
 [\-\-reg\-status {REGISTERED,APPROVED,CONFIRMED}]
-[\-\-pwd\-expires DATETIME] [\-\-as\-account ACCOUNT] [\-U URL]
-[\-\-region USER@REGION] [\-I KEY_ID] [\-S KEY]
-[\-\-security\-token TOKEN] [\-\-debug] [\-\-debugger]
-[\-\-version] [\-h]
+[\-\-pwd\-expires YYYY\-MM\-DDThh:mm:ssZ]
+[\-\-as\-account ACCOUNT] [\-U URL] [\-\-region USER@REGION]
+[\-I KEY_ID] [\-S KEY] [\-\-security\-token TOKEN] [\-\-debug]
+[\-\-debugger] [\-\-version] [\-h]
+USER
 .SH DESCRIPTION
 Change the name and/or path of a user
-.SS "optional arguments:"
+.SS "positional arguments:"
 .TP
-\fB\-u\fR USER, \fB\-\-user\-name\fR USER
+USER
 name of the user to update
+.SS "optional arguments:"
 .TP
 \fB\-n\fR USER, \fB\-\-new\-user\-name\fR USER
 new name for the user
@@ -27,10 +30,10 @@ new path for the user
 \&'false' to disable the user
 .TP
 \fB\-\-reg\-status\fR {REGISTERED,APPROVED,CONFIRMED}
-[Eucalyptus only] new registration status. Only
+[Eucalyptus < 4.2 only] new registration status. Only
 CONFIRMED users may access the system.
 .TP
-\fB\-\-pwd\-expires\fR DATETIME
+\fB\-\-pwd\-expires\fR YYYY\-MM\-DDThh:mm:ssZ
 [Eucalyptus only] New password expiration date, in
 ISO8601 format
 .TP

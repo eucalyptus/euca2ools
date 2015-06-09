@@ -1,4 +1,4 @@
-# Copyright 2009-2012 Eucalyptus Systems, Inc.
+# Copyright 2009-2015 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -23,14 +23,14 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT
 from requestbuilder import Arg
+
+from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT, arg_group
 
 
 class AddUserToGroup(IAMRequest):
     DESCRIPTION = 'Add a user to a group'
-    ARGS = [Arg('-g', '--group-name', dest='GroupName', required=True,
-                help='group to add the user to'),
+    ARGS = [arg_group(help='the group to add the user to (required)'),
             Arg('-u', '--user-name', dest='UserName', required=True,
-                help='user to add'),
+                help='the user to add (required)'),
             AS_ACCOUNT]

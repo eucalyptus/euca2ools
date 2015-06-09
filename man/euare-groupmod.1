@@ -3,16 +3,19 @@
 .SH NAME
 euare-groupmod \- Change the name and/or path of a group
 .SH SYNOPSIS
-euare\-groupmod \fB\-g\fR GROUP [\-n GROUP] [\-p PATH] [\-\-as\-account ACCOUNT]
-[\-U URL] [\-\-region USER@REGION] [\-I KEY_ID] [\-S KEY]
+euare\-groupmod [\-n GROUP] [\-p PATH] [\-\-as\-account ACCOUNT] [\-U URL]
+.TP
+[\-\-region USER@REGION] [\-I KEY_ID] [\-S KEY]
 [\-\-security\-token TOKEN] [\-\-debug] [\-\-debugger]
 [\-\-version] [\-h]
+GROUP
 .SH DESCRIPTION
 Change the name and/or path of a group
-.SS "optional arguments:"
+.SS "positional arguments:"
 .TP
-\fB\-g\fR GROUP, \fB\-\-group\-name\fR GROUP
-name of the group to update
+GROUP
+name of the group to update (required)
+.SS "optional arguments:"
 .TP
 \fB\-n\fR GROUP, \fB\-\-new\-group\-name\fR GROUP
 new name for the group

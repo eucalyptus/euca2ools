@@ -3,16 +3,19 @@
 .SH NAME
 euare-rolecreate \- Create a new role
 .SH SYNOPSIS
-euare\-rolecreate \fB\-r\fR ROLE [\-p PATH] (\fB\-f\fR FILE | \fB\-s\fR SERVICE_) [\-v]
+euare\-rolecreate [\-p PATH] (\fB\-f\fR FILE | \fB\-s\fR SERVICE) [\-v]
+.TP
 [\-\-as\-account ACCOUNT] [\-U URL] [\-\-region USER@REGION]
 [\-I KEY_ID] [\-S KEY] [\-\-security\-token TOKEN]
 [\-\-debug] [\-\-debugger] [\-\-version] [\-h]
+ROLE
 .SH DESCRIPTION
 Create a new role
-.SS "optional arguments:"
+.SS "positional arguments:"
 .TP
-\fB\-r\fR ROLE, \fB\-\-role\-name\fR ROLE
+ROLE
 name of the new role (required)
+.SS "optional arguments:"
 .TP
 \fB\-p\fR PATH, \fB\-\-path\fR PATH
 path for the new role (default: "/")
@@ -20,7 +23,7 @@ path for the new role (default: "/")
 \fB\-f\fR FILE
 file containing the policy for the new role
 .TP
-\fB\-s\fR SERVICE_, \fB\-\-service_\fR SERVICE_
+\fB\-s\fR SERVICE, \fB\-\-service\fR SERVICE
 service to allow access to the role (e.g.
 ec2.amazonaws.com)
 .TP

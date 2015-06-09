@@ -1,4 +1,4 @@
-# Copyright 2009-2012 Eucalyptus Systems, Inc.
+# Copyright 2009-2015 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -23,13 +23,13 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT
 from requestbuilder import Arg
+
+from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT, arg_user
 
 
 class DeleteLoginProfile(IAMRequest):
     DESCRIPTION = "Delete a user's password"
-    ARGS = [Arg('-u', '--user-name', dest='UserName', metavar='USER',
-                required=True, help='''name of the user whose password should
-                be deleted (required)'''),
+    ARGS = [arg_user(help='''name of the user whose password should be
+                     deleted (required)'''),
             AS_ACCOUNT]

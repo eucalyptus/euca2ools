@@ -3,16 +3,19 @@
 .SH NAME
 euare-servercertmod \- Change the name and/or path of a server certificate
 .SH SYNOPSIS
-euare\-servercertmod \fB\-s\fR CERT [\-n CERT] [\-p PATH] [\-\-as\-account ACCOUNT]
-[\-U URL] [\-\-region USER@REGION] [\-I KEY_ID]
-[\-S KEY] [\-\-security\-token TOKEN] [\-\-debug]
-[\-\-debugger] [\-\-version] [\-h]
+euare\-servercertmod [\-n CERT] [\-p PATH] [\-\-as\-account ACCOUNT] [\-U URL]
+.TP
+[\-\-region USER@REGION] [\-I KEY_ID] [\-S KEY]
+[\-\-security\-token TOKEN] [\-\-debug] [\-\-debugger]
+[\-\-version] [\-h]
+CERT
 .SH DESCRIPTION
 Change the name and/or path of a server certificate
-.SS "optional arguments:"
+.SS "positional arguments:"
 .TP
-\fB\-s\fR CERT, \fB\-\-server\-certificate\-name\fR CERT
+CERT
 name of the server certificate to update
+.SS "optional arguments:"
 .TP
 \fB\-n\fR CERT, \fB\-\-new\-server\-certificate\-name\fR CERT
 new name for the server certificate

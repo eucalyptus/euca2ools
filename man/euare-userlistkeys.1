@@ -3,16 +3,19 @@
 .SH NAME
 euare-userlistkeys \- List a user's access keys
 .SH SYNOPSIS
-euare\-userlistkeys [\-u USER] [\-\-as\-account ACCOUNT] [\-U URL]
+euare\-userlistkeys [\-\-as\-account ACCOUNT] [\-U URL]
+.TP
 [\-\-region USER@REGION] [\-I KEY_ID] [\-S KEY]
 [\-\-security\-token TOKEN] [\-\-debug] [\-\-debugger]
 [\-\-version] [\-h]
+[USER]
 .SH DESCRIPTION
 List a user's access keys
-.SS "optional arguments:"
+.SS "positional arguments:"
 .TP
-\fB\-u\fR USER, \fB\-\-user\-name\fR USER
+USER
 user to list keys for (default: current user)
+.SS "optional arguments:"
 .TP
 \fB\-\-as\-account\fR ACCOUNT
 [Eucalyptus cloud admin only] run this command as the

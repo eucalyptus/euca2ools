@@ -3,16 +3,19 @@
 .SH NAME
 euare-groupcreate \- Create a new group
 .SH SYNOPSIS
-euare\-groupcreate \fB\-g\fR GROUP [\-p PATH] [\-v] [\-\-as\-account ACCOUNT]
-[\-U URL] [\-\-region USER@REGION] [\-I KEY_ID] [\-S KEY]
+euare\-groupcreate [\-p PATH] [\-v] [\-\-as\-account ACCOUNT] [\-U URL]
+.TP
+[\-\-region USER@REGION] [\-I KEY_ID] [\-S KEY]
 [\-\-security\-token TOKEN] [\-\-debug] [\-\-debugger]
 [\-\-version] [\-h]
+GROUP
 .SH DESCRIPTION
 Create a new group
-.SS "optional arguments:"
+.SS "positional arguments:"
 .TP
-\fB\-g\fR GROUP, \fB\-\-group\-name\fR GROUP
+GROUP
 name of the new group (required)
+.SS "optional arguments:"
 .TP
 \fB\-p\fR PATH, \fB\-\-path\fR PATH
 path for the new group (default: "/")

@@ -3,19 +3,20 @@
 .SH NAME
 euare-instanceprofilegetattributes \- Display an instance profile's ARN and GUID
 .SH SYNOPSIS
-euare\-instanceprofilegetattributes \fB\-s\fR IPROFILE [\-r]
-[\-\-as\-account ACCOUNT] [\-U URL]
+euare\-instanceprofilegetattributes [\-r] [\-\-as\-account ACCOUNT] [\-U URL]
+.TP
 [\-\-region USER@REGION] [\-I KEY_ID]
 [\-S KEY] [\-\-security\-token TOKEN]
 [\-\-debug] [\-\-debugger] [\-\-version]
 [\-h]
+IPROFILE
 .SH DESCRIPTION
 Display an instance profile's ARN and GUID
-.SS "optional arguments:"
+.SS "positional arguments:"
 .TP
-\fB\-s\fR IPROFILE, \fB\-\-instance\-profile\-name\fR IPROFILE
-name of the instance profile to show info about
-(required)
+IPROFILE
+name of the instance profile to describe (required)
+.SS "optional arguments:"
 .TP
 \fB\-r\fR
 also list the roles associated with the instance

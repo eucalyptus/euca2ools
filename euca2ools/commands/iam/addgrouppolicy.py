@@ -1,4 +1,4 @@
-# Copyright 2009-2014 Eucalyptus Systems, Inc.
+# Copyright 2009-2015 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -27,16 +27,15 @@ import json
 
 from requestbuilder import Arg
 
-from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT
+from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT, arg_group
 from euca2ools.commands.iam.putgrouppolicy import PutGroupPolicy
 from euca2ools.util import build_iam_policy
 
 
 class AddGroupPolicy(IAMRequest):
     DESCRIPTION = ('Add a new policy to a group. To add more complex policies '
-                   'than this tool supports, see euare-groupuploadpolicy.')
-    ARGS = [Arg('-g', '--group-name', metavar='GROUP', required=True,
-                help='group to attach the policy to (required)'),
+                   'than this tool supports, see euare-groupuploadpolicy(1).')
+    ARGS = [arg_group(help='group to attach the policy to (required)'),
             Arg('-p', '--policy-name', metavar='POLICY', required=True,
                 help='name of the new policy (required)'),
             Arg('-e', '--effect', choices=('Allow', 'Deny'), required=True,
@@ -56,7 +55,7 @@ class AddGroupPolicy(IAMRequest):
                                   self.args['actions'])
         policy_doc = json.dumps(policy)
         req = PutGroupPolicy.from_other(
-            self, GroupName=self.args['group_name'],
+            self, GroupName=self.args['GroupName'],
             PolicyName=self.args['policy_name'],
             PolicyDocument=policy_doc,
             DelegateAccount=self.params['DelegateAccount'])

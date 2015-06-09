@@ -3,19 +3,22 @@
 .SH NAME
 euare-groupadduser \- Add a user to a group
 .SH SYNOPSIS
-euare\-groupadduser \fB\-g\fR GROUPNAME \fB\-u\fR USERNAME [\-\-as\-account ACCOUNT]
-[\-U URL] [\-\-region USER@REGION] [\-I KEY_ID] [\-S KEY]
+euare\-groupadduser \fB\-u\fR USERNAME [\-\-as\-account ACCOUNT] [\-U URL]
+.TP
+[\-\-region USER@REGION] [\-I KEY_ID] [\-S KEY]
 [\-\-security\-token TOKEN] [\-\-debug] [\-\-debugger]
 [\-\-version] [\-h]
+GROUP
 .SH DESCRIPTION
 Add a user to a group
+.SS "positional arguments:"
+.TP
+GROUP
+the group to add the user to (required)
 .SS "optional arguments:"
 .TP
-\fB\-g\fR GROUPNAME, \fB\-\-group\-name\fR GROUPNAME
-group to add the user to
-.TP
 \fB\-u\fR USERNAME, \fB\-\-user\-name\fR USERNAME
-user to add
+the user to add (required)
 .TP
 \fB\-\-as\-account\fR ACCOUNT
 [Eucalyptus cloud admin only] run this command as the

@@ -23,15 +23,16 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT
 from requestbuilder import Arg
 from requestbuilder.response import PaginatedResponse
+
+from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT, arg_user
 
 
 class ListSigningCertificates(IAMRequest):
     DESCRIPTION = "List a user's signing certificates"
-    ARGS = [Arg('-u', '--user-name', dest='UserName', metavar='USER',
-                help='user to list certificates for (default: current user)'),
+    ARGS = [arg_user(nargs='?', help='''user to list certificates for
+                     (default: current user)'''),
             Arg('-v', '--verbose', action='store_true', route_to=None,
                 help="also show certificates' contents"),
             AS_ACCOUNT]

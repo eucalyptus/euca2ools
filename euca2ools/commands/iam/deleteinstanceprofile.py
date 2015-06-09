@@ -1,4 +1,4 @@
-# Copyright 2014 Eucalyptus Systems, Inc.
+# Copyright 2014-2015 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -25,7 +25,7 @@
 
 from requestbuilder import Arg
 
-from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT
+from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT, arg_iprofile
 from euca2ools.commands.iam.deleterole import DeleteRole
 from euca2ools.commands.iam.getinstanceprofile import GetInstanceProfile
 from euca2ools.commands.iam.removerolefrominstanceprofile import \
@@ -36,8 +36,7 @@ class DeleteInstanceProfile(IAMRequest):
     DESCRIPTION = ('Delete an instance profile\n\nThis will break any running '
                    'instances that depend upon access to the deleted instance '
                    'profile.')
-    ARGS = [Arg('-s', '--instance-profile-name', dest='InstanceProfileName',
-                metavar='IPROFILE', required=True,
+    ARGS = [arg_iprofile(
                 help='name of the instance profile to delete (required)'),
             Arg('-r', '--recursive', action='store_true', route_to=None,
                 help='''remove all IAM resources associated with the instance

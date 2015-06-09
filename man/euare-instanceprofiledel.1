@@ -3,19 +3,22 @@
 .SH NAME
 euare-instanceprofiledel \- Delete an instance profile
 .SH SYNOPSIS
-euare\-instanceprofiledel \fB\-s\fR IPROFILE [\-r] [\-p] [\-\-as\-account ACCOUNT]
-[\-U URL] [\-\-region USER@REGION] [\-I KEY_ID]
-[\-S KEY] [\-\-security\-token TOKEN] [\-\-debug]
+euare\-instanceprofiledel [\-r] [\-p] [\-\-as\-account ACCOUNT] [\-U URL]
+.TP
+[\-\-region USER@REGION] [\-I KEY_ID] [\-S KEY]
+[\-\-security\-token TOKEN] [\-\-debug]
 [\-\-debugger] [\-\-version] [\-h]
+IPROFILE
 .SH DESCRIPTION
 Delete an instance profile
 .SH DESCRIPTION
 This will break any running instances that depend upon access to the
 deleted instance profile.
-.SS "optional arguments:"
+.SS "positional arguments:"
 .TP
-\fB\-s\fR IPROFILE, \fB\-\-instance\-profile\-name\fR IPROFILE
+IPROFILE
 name of the instance profile to delete (required)
+.SS "optional arguments:"
 .TP
 \fB\-r\fR, \fB\-\-recursive\fR
 remove all IAM resources associated with the instance

@@ -3,17 +3,20 @@
 .SH NAME
 euare-instanceprofilelistforrole \- List all instance profiles that use a role
 .SH SYNOPSIS
-euare\-instanceprofilelistforrole \fB\-r\fR ROLE [\-\-as\-account ACCOUNT]
-[\-U URL] [\-\-region USER@REGION]
-[\-I KEY_ID] [\-S KEY]
-[\-\-security\-token TOKEN] [\-\-debug]
-[\-\-debugger] [\-\-version] [\-h]
+euare\-instanceprofilelistforrole [\-\-as\-account ACCOUNT] [\-U URL]
+.TP
+[\-\-region USER@REGION] [\-I KEY_ID]
+[\-S KEY] [\-\-security\-token TOKEN]
+[\-\-debug] [\-\-debugger] [\-\-version]
+[\-h]
+ROLE
 .SH DESCRIPTION
 List all instance profiles that use a role
-.SS "optional arguments:"
+.SS "positional arguments:"
 .TP
-\fB\-r\fR ROLE, \fB\-\-role\-name\fR ROLE
+ROLE
 role to list membership for (required)
+.SS "optional arguments:"
 .TP
 \fB\-\-as\-account\fR ACCOUNT
 [Eucalyptus cloud admin only] run this command as the

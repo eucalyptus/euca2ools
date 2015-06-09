@@ -3,17 +3,19 @@
 .SH NAME
 euare-usergetinfo \- [Eucalyptus only] Display information about a user
 .SH SYNOPSIS
-euare\-usergetinfo [\-u USER] [\-k INFOKEY] [\-\-as\-account ACCOUNT]
+euare\-usergetinfo [\-k INFOKEY] [\-\-as\-account ACCOUNT]
+.TP
 [\-\-show\-empty\-fields] [\-U URL] [\-\-region USER@REGION]
 [\-I KEY_ID] [\-S KEY] [\-\-security\-token TOKEN]
 [\-\-debug] [\-\-debugger] [\-\-version] [\-h]
+[USER]
 .SH DESCRIPTION
 [Eucalyptus only] Display information about a user
-.SS "optional arguments:"
+.SS "positional arguments:"
 .TP
-\fB\-u\fR USER, \fB\-\-user\-name\fR USER
-name of the user to display info for (default: current
-user)
+USER
+name of the user to describe (default: current user)
+.SS "optional arguments:"
 .TP
 \fB\-k\fR INFOKEY, \fB\-\-info\-key\fR INFOKEY
 name of the piece of user info to show

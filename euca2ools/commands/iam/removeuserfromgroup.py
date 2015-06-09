@@ -1,4 +1,4 @@
-# Copyright 2009-2014 Eucalyptus Systems, Inc.
+# Copyright 2009-2015 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -23,8 +23,9 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT
 from requestbuilder import Arg
+
+from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT, arg_group
 
 
 class RemoveUserFromGroup(IAMRequest):
@@ -32,9 +33,7 @@ class RemoveUserFromGroup(IAMRequest):
     ARGS = [Arg('-u', '--user-name', dest='user_names', metavar='USER',
                 action='append', route_to=None, required=True,
                 help='user to remove from the group (required)'),
-            Arg('-g', '--group-name', dest='GroupName', metavar='GROUP',
-                required=True,
-                help='group to remove the user from (required)'),
+            arg_group(help='group to remove the user from (required)'),
             AS_ACCOUNT]
 
     def main(self):

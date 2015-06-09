@@ -1,4 +1,4 @@
-# Copyright 2014 Eucalyptus Systems, Inc.
+# Copyright 2014-2015 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -28,14 +28,12 @@ import urllib
 
 from requestbuilder import Arg
 
-from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT
+from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT, arg_role
 
 
 class GetRolePolicy(IAMRequest):
-    DESCRIPTION = "Display a user's policy"
-    ARGS = [Arg('-r', '--role-name', dest='RoleName', metavar='ROLE',
-                required=True,
-                help='role the poilcy is attached to (required)'),
+    DESCRIPTION = "Display a role's policy"
+    ARGS = [arg_role(help='role the poilcy is attached to (required)'),
             Arg('-p', '--policy-name', dest='PolicyName', metavar='POLICY',
                 required=True, help='name of the policy to show (required)'),
             Arg('--pretty-print', action='store_true', route_to=None,

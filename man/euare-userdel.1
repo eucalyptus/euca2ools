@@ -3,16 +3,19 @@
 .SH NAME
 euare-userdel \- Delete a user
 .SH SYNOPSIS
-euare\-userdel \fB\-u\fR USER [\-r] [\-p] [\-\-as\-account ACCOUNT] [\-U URL]
+euare\-userdel [\-r] [\-p] [\-\-as\-account ACCOUNT] [\-U URL]
+.TP
 [\-\-region USER@REGION] [\-I KEY_ID] [\-S KEY]
 [\-\-security\-token TOKEN] [\-\-debug] [\-\-debugger]
 [\-\-version] [\-h]
+USER
 .SH DESCRIPTION
 Delete a user
-.SS "optional arguments:"
+.SS "positional arguments:"
 .TP
-\fB\-u\fR USER, \fB\-\-user\-name\fR USER
+USER
 name of the user to delete (required)
+.SS "optional arguments:"
 .TP
 \fB\-r\fR, \fB\-\-recursive\fR
 remove all IAM resources associated with the user

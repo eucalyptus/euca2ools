@@ -1,4 +1,4 @@
-# Copyright 2009-2014 Eucalyptus Systems, Inc.
+# Copyright 2009-2015 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -25,14 +25,13 @@
 
 from requestbuilder import Arg, MutuallyExclusiveArgList
 
-from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT
+from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT, arg_user
 
 
 class UploadSigningCertificate(IAMRequest):
     DESCRIPTION = 'Upload a signing certificate'
-    ARGS = [Arg('-u', '--user-name', dest='UserName', metavar='USER',
-                help='''user the signing certificate is for (default: current
-                user)'''),
+    ARGS = [arg_user(help='''user the signing certificate is for
+                     (default: current user)'''),
             MutuallyExclusiveArgList(
                 Arg('-c', '--certificate-body', dest='CertificateBody',
                     metavar='CERT', help='contents of the new certificate'),

@@ -3,16 +3,19 @@
 .SH NAME
 euare-usergetloginprofile \- Verify that a user has a password
 .SH SYNOPSIS
-euare\-usergetloginprofile \fB\-u\fR USER [\-\-verbose] [\-\-as\-account ACCOUNT]
-[\-U URL] [\-\-region USER@REGION] [\-I KEY_ID]
-[\-S KEY] [\-\-security\-token TOKEN] [\-\-debug]
+euare\-usergetloginprofile [\-\-verbose] [\-\-as\-account ACCOUNT] [\-U URL]
+.TP
+[\-\-region USER@REGION] [\-I KEY_ID] [\-S KEY]
+[\-\-security\-token TOKEN] [\-\-debug]
 [\-\-debugger] [\-\-version] [\-h]
+USER
 .SH DESCRIPTION
 Verify that a user has a password
-.SS "optional arguments:"
+.SS "positional arguments:"
 .TP
-\fB\-u\fR USER, \fB\-\-user\-name\fR USER
-user whose password to verify (required)
+USER
+user owning the password to check (required)
+.SS "optional arguments:"
 .TP
 \fB\-\-verbose\fR
 print extra info about the user's password

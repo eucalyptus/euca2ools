@@ -1,4 +1,4 @@
-# Copyright 2009-2013 Eucalyptus Systems, Inc.
+# Copyright 2009-2015 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -23,17 +23,17 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT
-from requestbuilder import Arg
 import json
 import urllib
+
+from requestbuilder import Arg
+
+from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT, arg_group
 
 
 class GetGroupPolicy(IAMRequest):
     DESCRIPTION = "Display a group's policy"
-    ARGS = [Arg('-g', '--group-name', dest='GroupName', metavar='GROUP',
-                required=True,
-                help='group the policy is attached to (required)'),
+    ARGS = [arg_group(help='group the policy is attached to (required)'),
             Arg('-p', '--policy-name', dest='PolicyName', metavar='POLICY',
                 required=True, help='name of the policy to show (required)'),
             Arg('--pretty-print', action='store_true', route_to=None,

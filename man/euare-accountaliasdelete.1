@@ -3,16 +3,19 @@
 .SH NAME
 euare-accountaliasdelete \- Delete an account's alias, a.k.a. its account name
 .SH SYNOPSIS
-euare\-accountaliasdelete \fB\-a\fR ALIAS [\-\-as\-account ACCOUNT] [\-U URL]
+euare\-accountaliasdelete [\-\-as\-account ACCOUNT] [\-U URL]
+.TP
 [\-\-region USER@REGION] [\-I KEY_ID] [\-S KEY]
 [\-\-security\-token TOKEN] [\-\-debug]
 [\-\-debugger] [\-\-version] [\-h]
+ACCOUNT
 .SH DESCRIPTION
 Delete an account's alias, a.k.a. its account name
-.SS "optional arguments:"
+.SS "positional arguments:"
 .TP
-\fB\-a\fR ALIAS, \fB\-\-account\-alias\fR ALIAS
+ACCOUNT
 name of the alias to delete (required)
+.SS "optional arguments:"
 .TP
 \fB\-\-as\-account\fR ACCOUNT
 [Eucalyptus cloud admin only] run this command as the

@@ -3,18 +3,20 @@
 .SH NAME
 euare-instanceprofilecreate \- Create a new instance profile
 .SH SYNOPSIS
-euare\-instanceprofilecreate \fB\-s\fR IPROFILE [\-p PATH]
-[\-r ROLE | \fB\-\-create\-role]\fR [\-v]
+euare\-instanceprofilecreate [\-p PATH] [\-r ROLE | \fB\-\-create\-role]\fR [\-v]
+.TP
 [\-\-as\-account ACCOUNT] [\-U URL]
 [\-\-region USER@REGION] [\-I KEY_ID] [\-S KEY]
 [\-\-security\-token TOKEN] [\-\-debug]
 [\-\-debugger] [\-\-version] [\-h]
+IPROFILE
 .SH DESCRIPTION
 Create a new instance profile
-.SS "optional arguments:"
+.SS "positional arguments:"
 .TP
-\fB\-s\fR IPROFILE, \fB\-\-instance\-profile\-name\fR IPROFILE
+IPROFILE
 name of the new instance profile (required)
+.SS "optional arguments:"
 .TP
 \fB\-p\fR PATH, \fB\-\-path\fR PATH
 path for the new instance profile (default: "/")

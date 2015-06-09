@@ -3,16 +3,19 @@
 .SH NAME
 euare-groupdel \- Delete a group
 .SH SYNOPSIS
-euare\-groupdel \fB\-g\fR GROUP [\-r] [\-p] [\-\-as\-account ACCOUNT] [\-U URL]
+euare\-groupdel [\-r] [\-p] [\-\-as\-account ACCOUNT] [\-U URL]
+.TP
 [\-\-region USER@REGION] [\-I KEY_ID] [\-S KEY]
 [\-\-security\-token TOKEN] [\-\-debug] [\-\-debugger]
 [\-\-version] [\-h]
+GROUP
 .SH DESCRIPTION
 Delete a group
-.SS "optional arguments:"
+.SS "positional arguments:"
 .TP
-\fB\-g\fR GROUP, \fB\-\-group\-name\fR GROUP
+GROUP
 name of the group to delete (required)
+.SS "optional arguments:"
 .TP
 \fB\-r\fR, \fB\-\-recursive\fR
 remove all user memberships and policies associated

@@ -3,16 +3,19 @@
 .SH NAME
 euare-userdelcert \- Delete a signing certificate
 .SH SYNOPSIS
-euare\-userdelcert \fB\-c\fR CERT [\-u USER] [\-\-as\-account ACCOUNT] [\-U URL]
+euare\-userdelcert [\-u USER] [\-\-as\-account ACCOUNT] [\-U URL]
+.TP
 [\-\-region USER@REGION] [\-I KEY_ID] [\-S KEY]
 [\-\-security\-token TOKEN] [\-\-debug] [\-\-debugger]
 [\-\-version] [\-h]
+CERT
 .SH DESCRIPTION
 Delete a signing certificate
-.SS "optional arguments:"
+.SS "positional arguments:"
 .TP
-\fB\-c\fR CERT, \fB\-\-certificate\-id\fR CERT
+CERT
 ID of the signing certificate to delete (required)
+.SS "optional arguments:"
 .TP
 \fB\-u\fR USER, \fB\-\-user\-name\fR USER
 user the signing certificate belongs to (default:

@@ -3,16 +3,19 @@
 .SH NAME
 euare-userlistcerts \- List a user's signing certificates
 .SH SYNOPSIS
-euare\-userlistcerts [\-u USER] [\-v] [\-\-as\-account ACCOUNT] [\-U URL]
+euare\-userlistcerts [\-v] [\-\-as\-account ACCOUNT] [\-U URL]
+.TP
 [\-\-region USER@REGION] [\-I KEY_ID] [\-S KEY]
 [\-\-security\-token TOKEN] [\-\-debug] [\-\-debugger]
 [\-\-version] [\-h]
+[USER]
 .SH DESCRIPTION
 List a user's signing certificates
-.SS "optional arguments:"
+.SS "positional arguments:"
 .TP
-\fB\-u\fR USER, \fB\-\-user\-name\fR USER
+USER
 user to list certificates for (default: current user)
+.SS "optional arguments:"
 .TP
 \fB\-v\fR, \fB\-\-verbose\fR
 also show certificates' contents

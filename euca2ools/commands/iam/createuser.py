@@ -27,21 +27,19 @@ import sys
 
 from requestbuilder import Arg, MutuallyExclusiveArgList
 
-from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT
+from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT, arg_user
 from euca2ools.commands.iam.addusertogroup import AddUserToGroup
 from euca2ools.commands.iam.createaccesskey import CreateAccessKey
 from euca2ools.commands.iam.getgroup import GetGroup
 
 
 class CreateUser(IAMRequest):
-    DESCRIPTION = ('Create a new user and optionally add the user to a group '
-                   'or generate an access key for the user')
-    ARGS = [Arg('-u', '--user-name', dest='UserName', required=True,
-                help='name of the new user'),
+    DESCRIPTION = 'Create a new user'
+    ARGS = [arg_user(help='name of the new user (required)'),
             Arg('-p', '--path', dest='Path',
                 help='path for the new user (default: "/")'),
             Arg('-g', '--group-name', route_to=None,
-                help='add the new user to a group'),
+                help='also add the new user to a group'),
             Arg('--verify', action='store_true', route_to=None,
                 help='''ensure the group given with -g exists before doing
                 anything'''),

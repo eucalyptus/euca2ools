@@ -3,17 +3,20 @@
 .SH NAME
 euare-userdelloginprofile \- Delete a user's password
 .SH SYNOPSIS
-euare\-userdelloginprofile \fB\-u\fR USER [\-\-as\-account ACCOUNT] [\-U URL]
+euare\-userdelloginprofile [\-\-as\-account ACCOUNT] [\-U URL]
+.TP
 [\-\-region USER@REGION] [\-I KEY_ID] [\-S KEY]
 [\-\-security\-token TOKEN] [\-\-debug]
 [\-\-debugger] [\-\-version] [\-h]
+USER
 .SH DESCRIPTION
 Delete a user's password
-.SS "optional arguments:"
+.SS "positional arguments:"
 .TP
-\fB\-u\fR USER, \fB\-\-user\-name\fR USER
+USER
 name of the user whose password should be deleted
 (required)
+.SS "optional arguments:"
 .TP
 \fB\-\-as\-account\fR ACCOUNT
 [Eucalyptus cloud admin only] run this command as the

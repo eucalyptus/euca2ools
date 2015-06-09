@@ -3,15 +3,18 @@
 .SH NAME
 euare-accountdel \- [Eucalyptus cloud admin only] Delete an account
 .SH SYNOPSIS
-euare\-accountdel \fB\-a\fR ACCOUNT [\-r] [\-U URL] [\-\-region USER@REGION]
-[\-I KEY_ID] [\-S KEY] [\-\-security\-token TOKEN]
-[\-\-debug] [\-\-debugger] [\-\-version] [\-h]
+euare\-accountdel [\-r] [\-U URL] [\-\-region USER@REGION] [\-I KEY_ID]
+.TP
+[\-S KEY] [\-\-security\-token TOKEN] [\-\-debug]
+[\-\-debugger] [\-\-version] [\-h]
+ACCOUNT
 .SH DESCRIPTION
 [Eucalyptus cloud admin only] Delete an account
-.SS "optional arguments:"
+.SS "positional arguments:"
 .TP
-\fB\-a\fR ACCOUNT, \fB\-\-account\-name\fR ACCOUNT
-name of the account to delete (required)
+ACCOUNT
+name or ID of the account to delete (required)
+.SS "optional arguments:"
 .TP
 \fB\-r\fR, \fB\-\-recursive\fR
 delete all users, groups, and policies associated with

@@ -3,16 +3,19 @@
 .SH NAME
 euare-userupdateinfo \- [Eucalyptus only] Update a user's information
 .SH SYNOPSIS
-euare\-userupdateinfo [\-u USER] \fB\-k\fR KEY [\-i VALUE] [\-\-as\-account ACCOUNT]
-[\-U URL] [\-\-region USER@REGION] [\-I KEY_ID]
-[\-S KEY] [\-\-security\-token TOKEN] [\-\-debug]
-[\-\-debugger] [\-\-version] [\-h]
+euare\-userupdateinfo \fB\-k\fR KEY [\-i VALUE] [\-\-as\-account ACCOUNT] [\-U URL]
+.TP
+[\-\-region USER@REGION] [\-I KEY_ID] [\-S KEY]
+[\-\-security\-token TOKEN] [\-\-debug] [\-\-debugger]
+[\-\-version] [\-h]
+[USER]
 .SH DESCRIPTION
 [Eucalyptus only] Update a user's information
-.SS "optional arguments:"
+.SS "positional arguments:"
 .TP
-\fB\-u\fR USER, \fB\-\-user\-name\fR USER
+USER
 user to update (default: current user)
+.SS "optional arguments:"
 .TP
 \fB\-k\fR KEY, \fB\-\-info\-key\fR KEY
 name of the info field to set (required)

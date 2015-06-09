@@ -3,16 +3,19 @@
 .SH NAME
 euare-roledel \- Delete a role
 .SH SYNOPSIS
-euare\-roledel \fB\-r\fR ROLE [\-c] [\-p] [\-\-as\-account ACCOUNT] [\-U URL]
+euare\-roledel [\-c] [\-p] [\-\-as\-account ACCOUNT] [\-U URL]
+.TP
 [\-\-region USER@REGION] [\-I KEY_ID] [\-S KEY]
 [\-\-security\-token TOKEN] [\-\-debug] [\-\-debugger]
 [\-\-version] [\-h]
+ROLE
 .SH DESCRIPTION
 Delete a role
-.SS "optional arguments:"
+.SS "positional arguments:"
 .TP
-\fB\-r\fR ROLE, \fB\-\-role\-name\fR ROLE
+ROLE
 name of the role to delete (required)
+.SS "optional arguments:"
 .TP
 \fB\-c\fR, \fB\-\-recursive\fR
 remove all IAM resources associated with the role

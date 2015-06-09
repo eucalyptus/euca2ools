@@ -3,20 +3,23 @@
 .SH NAME
 euare-instanceprofileaddrole \- Add a role to an instance profile
 .SH SYNOPSIS
-euare\-instanceprofileaddrole \fB\-r\fR ROLENAME \fB\-s\fR IPROFILE
-[\-\-as\-account ACCOUNT] [\-U URL]
-[\-\-region USER@REGION] [\-I KEY_ID]
-[\-S KEY] [\-\-security\-token TOKEN]
-[\-\-debug] [\-\-debugger] [\-\-version] [\-h]
+euare\-instanceprofileaddrole \fB\-r\fR ROLENAME [\-\-as\-account ACCOUNT]
+.TP
+[\-U URL] [\-\-region USER@REGION]
+[\-I KEY_ID] [\-S KEY]
+[\-\-security\-token TOKEN] [\-\-debug]
+[\-\-debugger] [\-\-version] [\-h]
+IPROFILE
 .SH DESCRIPTION
 Add a role to an instance profile
+.SS "positional arguments:"
+.TP
+IPROFILE
+instance profile to add the role to (required)
 .SS "optional arguments:"
 .TP
 \fB\-r\fR ROLENAME, \fB\-\-role\-name\fR ROLENAME
 role to add (required)
-.TP
-\fB\-s\fR IPROFILE, \fB\-\-instance\-profile\-name\fR IPROFILE
-instance profile to add the role to (required)
 .TP
 \fB\-\-as\-account\fR ACCOUNT
 [Eucalyptus cloud admin only] run this command as the

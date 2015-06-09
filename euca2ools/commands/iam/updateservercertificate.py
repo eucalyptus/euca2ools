@@ -1,4 +1,4 @@
-# Copyright 2009-2014 Eucalyptus Systems, Inc.
+# Copyright 2009-2015 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -23,15 +23,14 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT
 from requestbuilder import Arg
+
+from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT, arg_server_cert
 
 
 class UpdateServerCertificate(IAMRequest):
     DESCRIPTION = 'Change the name and/or path of a server certificate'
-    ARGS = [Arg('-s', '--server-certificate-name',
-                dest='ServerCertificateName', metavar='CERT', required=True,
-                help='name of the server certificate to update'),
+    ARGS = [arg_server_cert(help='name of the server certificate to update'),
             Arg('-n', '--new-server-certificate-name',
                 dest='NewServerCertificateName', metavar='CERT',
                 help='new name for the server certificate'),

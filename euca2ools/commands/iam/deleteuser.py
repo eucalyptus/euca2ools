@@ -1,4 +1,4 @@
-# Copyright 2009-2014 Eucalyptus Systems, Inc.
+# Copyright 2009-2015 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -27,7 +27,7 @@ import argparse
 
 from requestbuilder import Arg
 
-from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT
+from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT, arg_user
 from euca2ools.commands.iam.deleteaccesskey import DeleteAccessKey
 from euca2ools.commands.iam.deleteloginprofile import DeleteLoginProfile
 from euca2ools.commands.iam.deletesigningcertificate import \
@@ -45,8 +45,7 @@ from euca2ools.exceptions import AWSError
 
 class DeleteUser(IAMRequest):
     DESCRIPTION = 'Delete a user'
-    ARGS = [Arg('-u', '--user-name', dest='UserName', metavar='USER',
-                required=True, help='name of the user to delete (required)'),
+    ARGS = [arg_user(help='name of the user to delete (required)'),
             Arg('-r', '--recursive', action='store_true', route_to=None,
                 help='''remove all IAM resources associated with the user
                         first'''),
