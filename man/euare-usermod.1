@@ -5,8 +5,8 @@ euare-usermod \- Change the name and/or path of a user
 .SH SYNOPSIS
 euare\-usermod [\-n USER] [\-p PATH] [\-\-enabled {true,false}]
 .TP
-[\-\-reg\-status {REGISTERED,APPROVED,CONFIRMED}]
 [\-\-pwd\-expires YYYY\-MM\-DDThh:mm:ssZ]
+[\-\-reg\-status {REGISTERED,APPROVED,CONFIRMED}]
 [\-\-as\-account ACCOUNT] [\-U URL] [\-\-region USER@REGION]
 [\-I KEY_ID] [\-S KEY] [\-\-security\-token TOKEN] [\-\-debug]
 [\-\-debugger] [\-\-version] [\-h]
@@ -29,13 +29,13 @@ new path for the user
 [Eucalyptus only] 'true' to enable the user, or
 \&'false' to disable the user
 .TP
-\fB\-\-reg\-status\fR {REGISTERED,APPROVED,CONFIRMED}
-[Eucalyptus < 4.2 only] new registration status. Only
-CONFIRMED users may access the system.
-.TP
 \fB\-\-pwd\-expires\fR YYYY\-MM\-DDThh:mm:ssZ
 [Eucalyptus only] New password expiration date, in
 ISO8601 format
+.TP
+\fB\-\-reg\-status\fR {REGISTERED,APPROVED,CONFIRMED}
+[Eucalyptus < 4.2 only] new registration status. Only
+CONFIRMED users may access the system.
 .TP
 \fB\-\-as\-account\fR ACCOUNT
 [Eucalyptus cloud admin only] run this command as the

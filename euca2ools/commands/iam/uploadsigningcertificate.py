@@ -34,7 +34,8 @@ class UploadSigningCertificate(IAMRequest):
                      (default: current user)'''),
             MutuallyExclusiveArgList(
                 Arg('-c', '--certificate-body', dest='CertificateBody',
-                    metavar='CERT', help='contents of the new certificate'),
+                    metavar='CERT_CONTENT',
+                    help='PEM-encoded contents of the new certificate'),
                 Arg('-f', '--certificate-file', dest='CertificateBody',
                     metavar='FILE', type=open,
                     help='file containing the new certificate'))
