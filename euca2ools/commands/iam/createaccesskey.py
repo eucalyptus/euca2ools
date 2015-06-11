@@ -78,7 +78,7 @@ class CreateAccessKey(IAMRequest):
                 # name at the command line may be useful, but until
                 # someone asks for it let's not clutter it up for now.
                 region_name = self.config.region or self.args['domain']
-                section = 'region {0}'.format(region_name)
+                section = 'region {0}'.format(region_name.split(':')[0])
                 configfile.add_section(section)
                 for service in sorted(_get_service_names()):
                     url = '{scheme}://{service}.{domain}/'.format(
