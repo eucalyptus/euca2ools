@@ -88,6 +88,13 @@ class InstallImage(S3Request, BundleCreatingMixin, BundleUploadingMixin,
                 self.args["iam_auth"] = IAMRequest.AUTH_CLASS.from_other(
                     self.auth)
 
+        if self.args.get('url') and not self.args.get('ec2_url'):
+            self.log.warn('-U/--url used without --ec2-url; communication '
+                          'with different regions may result')
+        if self.args.get('ec2_url') and not self.args.get('url'):
+            self.log.warn('--ec2-url used without -U/--url; communication '
+                          'with different regions may result')
+
     def main(self):
         req = BundleAndUploadImage.from_other(
             self, image=self.args["image"], arch=self.args["arch"],
