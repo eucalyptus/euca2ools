@@ -13,7 +13,7 @@ euca\-run\-instances [\-n MIN[\-MAX]] [\-g GROUP] [\-k KEYPAIR]
 [\-\-placement\-group PLGROUP]
 [\-\-tenancy {default,dedicated}]
 [\-\-client\-token TOKEN] [\-s SUBNET]
-[\-\-associate\-public\-ip\-address]
+[\-\-associate\-public\-ip\-address ASSOCIATE_PUBLIC_IP_ADDRESS]
 [\-\-private\-ip\-address ADDRESS]
 [\-\-secondary\-address ADDRESS | \fB\-\-secondary\-count\fR COUNT]
 [\-a INTERFACE] [\-p IPROFILE] [\-\-ebs\-optimized]
@@ -100,7 +100,7 @@ unique identifier to ensure request idempotency
 [VPC only] subnet to create the instance's network
 interface in
 .TP
-\fB\-\-associate\-public\-ip\-address\fR
+\fB\-\-associate\-public\-ip\-address\fR ASSOCIATE_PUBLIC_IP_ADDRESS
 [VPC only] assign a public address to the instance's
 network interface
 .TP
