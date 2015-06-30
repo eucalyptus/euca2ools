@@ -30,7 +30,7 @@ from requestbuilder import Arg, MutuallyExclusiveArgList
 from requestbuilder.exceptions import ArgumentError
 
 from euca2ools.commands.argtypes import (ec2_block_device_mapping,
-                                         vpc_interface)
+                                         flexible_bool, vpc_interface)
 from euca2ools.commands.ec2 import EC2Request
 
 
@@ -101,7 +101,7 @@ class RunInstances(EC2Request):
             Arg('-s', '--subnet', metavar='SUBNET', route_to=None,
                 help='''[VPC only] subnet to create the instance's network
                 interface in'''),
-            Arg('--associate-public-ip-address', action='store_true',
+            Arg('--associate-public-ip-address', type=flexible_bool,
                 route_to=None, help='''[VPC only] assign a public address
                 to the instance's network interface'''),
             Arg('--private-ip-address', metavar='ADDRESS', route_to=None,
@@ -223,8 +223,9 @@ class RunInstances(EC2Request):
                                         'specified by ID when using VPC')
                 cli_iface.setdefault('SecurityGroupId', [])
                 cli_iface['SecurityGroupId'].append(group)
-            if self.args.get('associate_public_ip_address'):
-                cli_iface['AssociatePublicIpAddress'] = True
+            if self.args.get('associate_public_ip_address') is not None:
+                cli_iface['AssociatePublicIpAddress'] = \
+                    self.args['associate_public_ip_address']
             if self.args.get('private_ip_address'):
                 cli_iface['PrivateIpAddresses'] = [
                     {'PrivateIpAddress': self.args['private_ip_address'],
