@@ -3,10 +3,12 @@
 .SH NAME
 euca-bundle-image \- Prepare an image for use in the cloud
 .SH SYNOPSIS
-euca\-bundle\-image \fB\-i\fR FILE [\-p PREFIX] [\-d DIR] \fB\-r\fR
-{i386,x86_64,armhf,ppc,ppc64} [\-k FILE] [\-c FILE]
-[\-\-ec2cert FILE] [\-u ACCOUNT] [\-\-kernel IMAGE]
-[\-\-ramdisk IMAGE]
+euca\-bundle\-image [\-I KEY_ID] [\-S KEY] [\-\-security\-token TOKEN] \fB\-i\fR FILE
+.TP
+[\-p PREFIX] [\-d DIR] \fB\-r\fR {i386,x86_64,armhf,ppc,ppc64}
+[\-k FILE] [\-c FILE] [\-\-ec2cert FILE] [\-u ACCOUNT]
+[\-\-kernel IMAGE] [\-\-ramdisk IMAGE]
+[\-\-empyrean\-url EMPYREAN_URL]
 [\-B VIRTUAL1=DEVICE1,VIRTUAL2=DEVICE2,...]
 [\-\-productcodes CODE1,CODE2,...]
 [\-\-image\-size IMAGE_SIZE]
@@ -15,6 +17,12 @@ euca\-bundle\-image \fB\-i\fR FILE [\-p PREFIX] [\-d DIR] \fB\-r\fR
 .SH DESCRIPTION
 Prepare an image for use in the cloud
 .SS "optional arguments:"
+.HP
+\fB\-I\fR KEY_ID, \fB\-\-access\-key\-id\fR KEY_ID
+.HP
+\fB\-S\fR KEY, \fB\-\-secret\-key\fR KEY
+.HP
+\fB\-\-security\-token\fR TOKEN
 .TP
 \fB\-i\fR FILE, \fB\-\-image\fR FILE
 file containing the image to bundle (required)
@@ -27,21 +35,25 @@ the image's file name)
 \fB\-d\fR DIR, \fB\-\-destination\fR DIR
 location to place the bundle's files (default: dir
 named by TMPDIR, TEMP, or TMP environment variables,
-or otherwise \fI/var/tmp\fP)
+or otherwise \fI\,/var/tmp\/\fP)
 .TP
 \fB\-r\fR {i386,x86_64,armhf,ppc,ppc64}, \fB\-\-arch\fR {i386,x86_64,armhf,ppc,ppc64}
 the image's architecture (required)
 .TP
 \fB\-k\fR FILE, \fB\-\-privatekey\fR FILE
 file containing your private key to sign the bundle's
-manifest with. This private key will also be required
-to unbundle the image in the future.
+manifest with. If one is not available the bundle will
+not be signed.
 .TP
 \fB\-c\fR FILE, \fB\-\-cert\fR FILE
-file containing your X.509 certificate
+file containing your X.509 certificate. If one is not
+available it will not be possible to unbundle the
+bundle without cloud administrator assistance.
 .TP
 \fB\-\-ec2cert\fR FILE
-file containing the cloud's X.509 certificate
+file containing the cloud's X.509 certificate. If one
+is not available locally it must be available from the
+empyrean service.
 .TP
 \fB\-u\fR ACCOUNT, \fB\-\-user\fR ACCOUNT
 your account ID
@@ -53,6 +65,10 @@ image
 \fB\-\-ramdisk\fR IMAGE
 ID of the ramdisk image to associate with this machine
 image
+.TP
+\fB\-\-empyrean\-url\fR EMPYREAN_URL
+[Eucalyptus only] bootstrap service endpoint URL (used
+for obtaining \fB\-\-ec2cert\fR automatically
 .TP
 \fB\-B\fR VIRTUAL1=DEVICE1,VIRTUAL2=DEVICE2,..., \fB\-\-block\-device\-mappings\fR VIRTUAL1=DEVICE1,VIRTUAL2=DEVICE2,...
 block device mapping scheme with which to launch

@@ -52,11 +52,7 @@ class BundleAndUploadImage(S3Request, BundleCreatingMixin,
                 help='do not delete the bundle as it is being uploaded'),
             Arg('--max-pending-parts', type=int, default=2,
                 help='''pause the bundling process when more than this number
-                of parts are waiting to be uploaded (default: 2)'''),
-            Arg('--iam-url', route_to=None,
-                help='identity service endpoint URL'),
-            Arg('--iam-service', route_to=None, help=argparse.SUPPRESS),
-            Arg('--iam-auth', route_to=None, help=argparse.SUPPRESS)]
+                of parts are waiting to be uploaded (default: 2)''')]
 
     # noinspection PyExceptionInherit
     def configure(self):

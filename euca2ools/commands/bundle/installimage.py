@@ -59,11 +59,7 @@ class InstallImage(S3Request, BundleCreatingMixin, BundleUploadingMixin,
             Arg('--ec2-url', route_to=None,
                 help='compute service endpoint URL'),
             Arg('--ec2-auth', route_to=None, help=argparse.SUPPRESS),
-            Arg('--ec2-service', route_to=None, help=argparse.SUPPRESS),
-            Arg('--iam-url', route_to=None,
-                help='identity service endpoint URL'),
-            Arg('--iam-service', route_to=None, help=argparse.SUPPRESS),
-            Arg('--iam-auth', route_to=None, help=argparse.SUPPRESS)]
+            Arg('--ec2-service', route_to=None, help=argparse.SUPPRESS)]
 
     def configure(self):
         S3Request.configure(self)
@@ -111,10 +107,7 @@ class InstallImage(S3Request, BundleCreatingMixin, BundleUploadingMixin,
             enc_iv=self.args.get("enc_iv"), enc_key=self.args.get("enc_key"),
             max_pending_parts=self.args.get("max_pending_parts"),
             part_size=self.args.get("part_size"), batch=self.args.get("batch"),
-            show_progress=self.args.get("show_progress"),
-            iam_url=self.args.get("iam_url"),
-            iam_service=self.args.get("iam_service"),
-            iam_auth=self.args.get("iam_auth"))
+            show_progress=self.args.get("show_progress"))
         result_bundle = req.main()
         image_location = result_bundle['manifests'][0]["key"]
 
