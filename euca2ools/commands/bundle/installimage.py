@@ -33,7 +33,7 @@ from requestbuilder.mixins import FileTransferProgressBarMixin, TabifyingMixin
 
 from euca2ools.commands.ec2 import EC2
 from euca2ools.commands.ec2.registerimage import RegisterImage
-from euca2ools.commands.iam import IAMRequest
+from euca2ools.commands.empyrean import EmpyreanRequest
 from euca2ools.commands.s3 import S3Request
 from euca2ools.commands.bundle.bundleanduploadimage import BundleAndUploadImage
 from euca2ools.commands.bundle.mixins import BundleCreatingMixin, \
@@ -60,8 +60,6 @@ class InstallImage(S3Request, BundleCreatingMixin, BundleUploadingMixin,
                 help='compute service endpoint URL'),
             Arg('--ec2-auth', route_to=None, help=argparse.SUPPRESS),
             Arg('--ec2-service', route_to=None, help=argparse.SUPPRESS),
-            Arg('--check-cert', action='store_true', route_to=None,
-                help='ensure the certificate is active before bundling'),
             Arg('--iam-url', route_to=None,
                 help='identity service endpoint URL'),
             Arg('--iam-service', route_to=None, help=argparse.SUPPRESS),
@@ -69,10 +67,6 @@ class InstallImage(S3Request, BundleCreatingMixin, BundleUploadingMixin,
 
     def configure(self):
         S3Request.configure(self)
-        self.configure_bundle_upload_auth()
-        self.configure_bundle_creds()
-        self.configure_bundle_output()
-        self.configure_bundle_properties()
 
         if not self.args.get("ec2_service"):
             self.args["ec2_service"] = EC2.from_other(
@@ -80,20 +74,28 @@ class InstallImage(S3Request, BundleCreatingMixin, BundleUploadingMixin,
         if not self.args.get("ec2_auth"):
             self.args["ec2_auth"] = QueryHmacV2Auth.from_other(self.auth)
 
-        if self.args.get("check_cert"):
-            if not self.args.get("iam_service"):
-                self.args["iam_service"] = IAMRequest.SERVICE_CLASS.from_other(
-                    self.service)
-            if not self.args.get("iam_auth"):
-                self.args["iam_auth"] = IAMRequest.AUTH_CLASS.from_other(
-                    self.auth)
-
         if self.args.get('url') and not self.args.get('ec2_url'):
             self.log.warn('-U/--url used without --ec2-url; communication '
                           'with different regions may result')
         if self.args.get('ec2_url') and not self.args.get('url'):
             self.log.warn('--ec2-url used without -U/--url; communication '
                           'with different regions may result')
+
+        # Set up access to empyrean in case we need auto cert fetching.
+        try:
+            self.args['empyrean_service'] = \
+                EmpyreanRequest.SERVICE_CLASS.from_other(
+                    self.service, url=self.args.get('empyrean_url'))
+            self.args['empyrean_auth'] = EmpyreanRequest.AUTH_CLASS.from_other(
+                self.auth)
+        except:
+            self.log.debug('empyrean setup failed; auto cert fetching '
+                           'will be unavailable', exc_info=True)
+
+        self.configure_bundle_upload_auth()
+        self.configure_bundle_creds()
+        self.configure_bundle_properties()
+        self.configure_bundle_output()
 
     def main(self):
         req = BundleAndUploadImage.from_other(
@@ -110,7 +112,6 @@ class InstallImage(S3Request, BundleCreatingMixin, BundleUploadingMixin,
             max_pending_parts=self.args.get("max_pending_parts"),
             part_size=self.args.get("part_size"), batch=self.args.get("batch"),
             show_progress=self.args.get("show_progress"),
-            check_cert=self.args.get("check_cert"),
             iam_url=self.args.get("iam_url"),
             iam_service=self.args.get("iam_service"),
             iam_auth=self.args.get("iam_auth"))
