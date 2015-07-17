@@ -78,7 +78,7 @@ class UploadBundle(S3Request, BundleUploadingMixin,
         part_gen.join()
 
         # (conditionally) upload the manifest
-        if not self.args.get('skip_manifest'):
+        if not self.args.get('skipmanifest'):
             manifest_dest = (key_prefix +
                              os.path.basename(self.args['manifest']))
             req = PutObject.from_other(
