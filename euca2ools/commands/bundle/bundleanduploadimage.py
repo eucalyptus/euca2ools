@@ -101,7 +101,8 @@ class BundleAndUploadImage(S3Request, BundleCreatingMixin,
                                   self.args['cert'], self.args['ec2cert'])
         manifest_dest = key_prefix + os.path.basename(manifest_filename)
         self.upload_bundle_file(manifest_filename, manifest_dest,
-                                show_progress=self.args.get('show_progress'))
+                                show_progress=self.args.get('show_progress'),
+                                show_porcelain=self.args.get('show_porcelain'))
         if not self.args.get('preserve_bundle', False):
             os.remove(manifest_filename)
 
@@ -175,7 +176,8 @@ class BundleAndUploadImage(S3Request, BundleCreatingMixin,
                 bundle_partinfo_mpconn, key_prefix,
                 partinfo_out_mpconn=uploaded_partinfo_mpconn_w,
                 part_write_sem=part_write_sem,
-                show_progress=self.args.get('show_progress'))
+                show_progress=self.args.get('show_progress'),
+                show_porcelain=self.args.get('show_porcelain'))
         finally:
             # Make sure the writer gets a chance to exit
             part_write_sem.release()
