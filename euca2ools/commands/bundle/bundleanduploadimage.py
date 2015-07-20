@@ -56,6 +56,11 @@ class BundleAndUploadImage(S3Request, BundleCreatingMixin,
 
     # noinspection PyExceptionInherit
     def configure(self):
+        # This goes before configure because -S's absence causes
+        # self.auth.configure to blow up.  With an upload policy that
+        # is undesirable.
+        self.configure_bundle_upload_auth()
+
         S3Request.configure(self)
 
         # Set up access to empyrean in case we need auto cert fetching.
@@ -69,7 +74,6 @@ class BundleAndUploadImage(S3Request, BundleCreatingMixin,
             self.log.debug('empyrean setup failed; auto cert fetching '
                            'will be unavailable', exc_info=True)
 
-        self.configure_bundle_upload_auth()
         self.configure_bundle_creds()
         self.configure_bundle_properties()
         self.configure_bundle_output()
