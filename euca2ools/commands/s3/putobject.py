@@ -31,7 +31,8 @@ import threading
 import time
 
 from requestbuilder import Arg
-from requestbuilder.exceptions import ArgumentError, ClientError
+from requestbuilder.exceptions import (ArgumentError, ClientError,
+                                       TimeoutError)
 from requestbuilder.mixins import FileTransferProgressBarMixin
 
 from euca2ools.commands.s3 import S3Request
@@ -141,20 +142,21 @@ class PutObject(S3Request, FileTransferProgressBarMixin):
                                our_md5, their_md5)
                 raise ClientError('upload was corrupted during transit')
         except ClientError as err:
-            if len(err.args) > 0 and isinstance(err.args[0], socket.error):
-                self.log.warn('socket error')
+            if isinstance(err, TimeoutError):
                 if retries_left > 0:
-                    self.log.info('retrying upload (%i retries remaining)',
-                                  retries_left)
+                    self.log.info('retrying upload (%i retry attempt(s) '
+                                  'remaining)', retries_left)
                     source.rewind()
                     return self.try_send(source, retries_left - 1)
             with self._lock:
+                self.log.error('upload failed', exc_info=True)
                 self.last_upload_error = err
-            raise
+            return
         except Exception as err:
             with self._lock:
+                self.log.error('upload failed', exc_info=True)
                 self.last_upload_error = err
-            raise
+            return
 
 
 class _FileObjectExtent(object):

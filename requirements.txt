@@ -1,5 +1,5 @@
 lxml
 PyYAML
-requestbuilder>=0.3.0-pre1
+requestbuilder>=0.3.4
 requests
 six>=1.4
