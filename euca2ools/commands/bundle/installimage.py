@@ -111,8 +111,7 @@ class InstallImage(S3Request, BundleCreatingMixin, BundleUploadingMixin,
             enc_iv=self.args.get("enc_iv"), enc_key=self.args.get("enc_key"),
             max_pending_parts=self.args.get("max_pending_parts"),
             part_size=self.args.get("part_size"), batch=self.args.get("batch"),
-            show_progress=self.args.get("show_progress"),
-            show_porcelain=self.args.get('show_porcelain'))
+            show_progress=self.args.get("show_progress"))
         result_bundle = req.main()
         image_location = result_bundle['manifests'][0]["key"]
 
