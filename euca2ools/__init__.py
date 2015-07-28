@@ -1,4 +1,4 @@
-# Copyright 2009-2014 Eucalyptus Systems, Inc.
+# Copyright 2009-2015 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -27,7 +27,7 @@ import os.path
 import subprocess
 
 
-__version__ = '3.1.1'
+__version__ = '3.1.3'
 
 BUFSIZE = 8192
 
