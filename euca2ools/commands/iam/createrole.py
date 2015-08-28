@@ -41,7 +41,7 @@ class CreateRole(IAMRequest):
             MutuallyExclusiveArgList(
                 Arg('-f', dest='AssumeRolePolicyDocument', metavar='FILE',
                     type=file_contents,
-                    help='file containing the policy for the new role'),
+                    help='file containing the trust policy for the new role'),
                 Arg('-s', '--service', dest='service_', metavar='SERVICE',
                     route_to=None, help='''service to allow access to
                     the role (e.g. ec2.amazonaws.com)'''),

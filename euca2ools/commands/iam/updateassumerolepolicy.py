@@ -32,7 +32,8 @@ from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT, arg_role
 
 
 class UpdateAssumeRolePolicy(IAMRequest):
-    DESCRIPTION = 'Update the policy that allows entities to assume a role'
+    DESCRIPTION = ("Update a role's trust policy, the policy that allows "
+                   "entities to assume a role")
     ARGS = [arg_role(help='role to update (required)'),
             MutuallyExclusiveArgList(
                 Arg('-f', dest='PolicyDocument', metavar='FILE',

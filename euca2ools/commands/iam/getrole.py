@@ -31,7 +31,7 @@ from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT, arg_role
 
 
 class GetRole(IAMRequest):
-    DESCRIPTION = "Display a role's ARN, GUID, and policy"
+    DESCRIPTION = "Display a role's ARN, GUID, and trust policy"
     ARGS = [arg_role(help='name of the role to describe (required)'),
             AS_ACCOUNT]
 
