@@ -8,7 +8,7 @@ euca\-bundle\-image [\-I KEY_ID] [\-S KEY] [\-\-security\-token TOKEN] \fB\-i\fR
 [\-p PREFIX] [\-d DIR] \fB\-r\fR {i386,x86_64,armhf,ppc,ppc64}
 [\-k FILE] [\-c FILE] [\-\-ec2cert FILE] [\-u ACCOUNT]
 [\-\-kernel IMAGE] [\-\-ramdisk IMAGE]
-[\-\-empyrean\-url EMPYREAN_URL]
+[\-\-bootstrap\-url BOOTSTRAP_URL]
 [\-B VIRTUAL1=DEVICE1,VIRTUAL2=DEVICE2,...]
 [\-\-productcodes CODE1,CODE2,...]
 [\-\-image\-size IMAGE_SIZE]
@@ -53,7 +53,7 @@ bundle without cloud administrator assistance.
 \fB\-\-ec2cert\fR FILE
 file containing the cloud's X.509 certificate. If one
 is not available locally it must be available from the
-empyrean service.
+bootstrap service.
 .TP
 \fB\-u\fR ACCOUNT, \fB\-\-user\fR ACCOUNT
 your account ID
@@ -66,7 +66,7 @@ image
 ID of the ramdisk image to associate with this machine
 image
 .TP
-\fB\-\-empyrean\-url\fR EMPYREAN_URL
+\fB\-\-bootstrap\-url\fR BOOTSTRAP_URL
 [Eucalyptus only] bootstrap service endpoint URL (used
 for obtaining \fB\-\-ec2cert\fR automatically
 .TP

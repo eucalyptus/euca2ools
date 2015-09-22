@@ -39,7 +39,7 @@ import euca2ools.bundle.manifest
 import euca2ools.bundle.util
 from euca2ools.commands.bundle.mixins import (BundleCreatingMixin,
                                               BundleUploadingMixin)
-from euca2ools.commands.empyrean import EmpyreanRequest
+from euca2ools.commands.bootstrap import BootstrapRequest
 from euca2ools.commands.s3 import S3Request
 from euca2ools.util import mkdtemp_for_large_files
 
@@ -63,15 +63,15 @@ class BundleAndUploadImage(S3Request, BundleCreatingMixin,
 
         S3Request.configure(self)
 
-        # Set up access to empyrean in case we need auto cert fetching.
+        # Set up access to bootstrap in case we need auto cert fetching.
         try:
-            self.args['empyrean_service'] = \
-                EmpyreanRequest.SERVICE_CLASS.from_other(
-                    self.service, url=self.args.get('empyrean_url'))
-            self.args['empyrean_auth'] = EmpyreanRequest.AUTH_CLASS.from_other(
-                self.auth)
+            self.args['bootstrap_service'] = \
+                BootstrapRequest.SERVICE_CLASS.from_other(
+                    self.service, url=self.args.get('bootstrap_url'))
+            self.args['bootstrap_auth'] = \
+                BootstrapRequest.AUTH_CLASS.from_other(self.auth)
         except:
-            self.log.debug('empyrean setup failed; auto cert fetching '
+            self.log.debug('bootstrap setup failed; auto cert fetching '
                            'will be unavailable', exc_info=True)
 
         self.configure_bundle_creds()

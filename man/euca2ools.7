@@ -37,14 +37,14 @@ configuration files, command line options, and shortcuts.
 .Bl -column elasticloadbalancing 0000-00-00 AWS_CLOUDFORMATION_URL
 .It Sy Name Ta Sy Version Ta Sy Environment variable Ta Sy Commands
 .It autoscaling Ta 2011-01-01 Ta AWS_AUTO_SCALING_URL Ta Xr euscale-*
-.It cloudformation Ta 2010-05-15 Ta AWS_CLOUDFORMATION_URL Ta Xr euform-*
-.It ec2 Ta 2014-06-15 Ta EC2_URL Ta Xr euca-*
-.It elasticloadbalancing Ta 2012-06-01 Ta AWS_ELB_URL Ta Xr eulb-*
-.It empyrean Ta Ta EMPYREAN_URL Ta
+.It bootstrap Ta Ta EUCA_BOOTSTRAP_URL Ta
 .Xr euca-bundle-image 1 ,
 .Xr euca-bundle-and-upload-image 1 ,
 .Xr euca-install-image 1 ,
 .Xr euimage-install-pack 1
+.It cloudformation Ta 2010-05-15 Ta AWS_CLOUDFORMATION_URL Ta Xr euform-*
+.It ec2 Ta 2014-06-15 Ta EC2_URL Ta Xr euca-*
+.It elasticloadbalancing Ta 2012-06-01 Ta AWS_ELB_URL Ta Xr eulb-*
 .It iam Ta 2010-05-08 Ta AWS_IAM_URL Ta Xr euare-*
 .It monitoring Ta 2010-08-01 Ta AWS_CLOUDWATCH_URL Ta Xr euwatch-*
 .It s3 Ta 2006-03-01 Ta S3_URL Ta
@@ -58,8 +58,10 @@ configuration files, command line options, and shortcuts.
 .El
 .Sh NOTES
 The
-.Dq empyrean
-service is specific to eucalyptus.  Tools that bundle
+.Dq bootstrap
+service, also known as the
+.Dq Empyrean
+service, is specific to eucalyptus.  Commands that bundle
 images can optionally use it to obtain the cloud's
 signing certificate automatically, provided the cloud
 runs eucalyptus 4.2 or later.

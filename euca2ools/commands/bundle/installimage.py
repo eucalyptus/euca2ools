@@ -33,7 +33,7 @@ from requestbuilder.mixins import FileTransferProgressBarMixin, TabifyingMixin
 
 from euca2ools.commands.ec2 import EC2
 from euca2ools.commands.ec2.registerimage import RegisterImage
-from euca2ools.commands.empyrean import EmpyreanRequest
+from euca2ools.commands.bootstrap import BootstrapRequest
 from euca2ools.commands.s3 import S3Request
 from euca2ools.commands.bundle.bundleanduploadimage import BundleAndUploadImage
 from euca2ools.commands.bundle.mixins import BundleCreatingMixin, \
@@ -82,15 +82,15 @@ class InstallImage(S3Request, BundleCreatingMixin, BundleUploadingMixin,
             self.log.warn('--ec2-url used without -U/--url; communication '
                           'with different regions may result')
 
-        # Set up access to empyrean in case we need auto cert fetching.
+        # Set up access to bootstrap in case we need auto cert fetching.
         try:
-            self.args['empyrean_service'] = \
-                EmpyreanRequest.SERVICE_CLASS.from_other(
-                    self.service, url=self.args.get('empyrean_url'))
-            self.args['empyrean_auth'] = EmpyreanRequest.AUTH_CLASS.from_other(
-                self.auth)
+            self.args['bootstrap_service'] = \
+                BootstrapRequest.SERVICE_CLASS.from_other(
+                    self.service, url=self.args.get('bootstrap_url'))
+            self.args['bootstrap_auth'] = \
+                BootstrapRequest.AUTH_CLASS.from_other(self.auth)
         except:
-            self.log.debug('empyrean setup failed; auto cert fetching '
+            self.log.debug('bootstrap setup failed; auto cert fetching '
                            'will be unavailable', exc_info=True)
 
         self.configure_bundle_creds()

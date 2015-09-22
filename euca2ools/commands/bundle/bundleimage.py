@@ -38,7 +38,7 @@ from euca2ools.bundle.pipes.fittings import (create_bundle_part_writer,
 import euca2ools.bundle.util
 from euca2ools.commands import Euca2ools
 from euca2ools.commands.bundle.mixins import BundleCreatingMixin
-from euca2ools.commands.empyrean import EmpyreanRequest
+from euca2ools.commands.bootstrap import BootstrapRequest
 from euca2ools.util import mkdtemp_for_large_files
 
 
@@ -49,7 +49,7 @@ class BundleImage(BaseCommand, BundleCreatingMixin,
     DESCRIPTION = 'Prepare an image for use in the cloud'
     REGION_ENVVAR = 'AWS_DEFAULT_REGION'
     # Needed because BundleImage has no auth class of its own
-    ARGS = EmpyreanRequest.AUTH_CLASS.ARGS
+    ARGS = BootstrapRequest.AUTH_CLASS.ARGS
 
     # noinspection PyExceptionInherit
     def configure(self):
@@ -57,33 +57,33 @@ class BundleImage(BaseCommand, BundleCreatingMixin,
 
         BaseCommand.configure(self)
 
-        # Set up access to empyrean in case we need auto cert fetching.
+        # Set up access to bootstrap in case we need auto cert fetching.
         #
         # We would normally make short work of this using from_other
         # methods, but since BundleImage doesn't have service or
         # auth classes of its own we get to do this the hard way.
-        if not self.args.get('empyrean_service'):
-            service = EmpyreanRequest.SERVICE_CLASS(
+        if not self.args.get('bootstrap_service'):
+            service = BootstrapRequest.SERVICE_CLASS(
                 config=self.config, loglevel=self.log.level,
-                url=self.args.get('empyrean_url'))
+                url=self.args.get('bootstrap_url'))
             try:
                 service.configure()
             except:
-                self.log.debug('empyrean service setup failed; auto cert '
+                self.log.debug('bootstrap service setup failed; auto cert '
                                'fetching will be unavailable', exc_info=True)
             else:
-                self.args['empyrean_service'] = service
-        if (not self.args.get('empyrean_auth') and
-                self.args.get('empyrean_service')):
-            auth = EmpyreanRequest.AUTH_CLASS(
+                self.args['bootstrap_service'] = service
+        if (not self.args.get('bootstrap_auth') and
+                self.args.get('bootstrap_service')):
+            auth = BootstrapRequest.AUTH_CLASS(
                 config=self.config, loglevel=self.log.level, **self.args)
             try:
                 auth.configure()
             except:
-                self.log.debug('empyrean auth setup failed; auto cert '
+                self.log.debug('bootstrap auth setup failed; auto cert '
                                'fetching will be unavailable', exc_info=True)
             else:
-                self.args['empyrean_auth'] = auth
+                self.args['bootstrap_auth'] = auth
 
         self.configure_bundle_creds()
         self.configure_bundle_properties()

@@ -40,7 +40,7 @@ import euca2ools.bundle.util
 from euca2ools.commands.argtypes import (b64encoded_file_contents,
                                          delimited_list, filesize,
                                          manifest_block_device_mappings)
-from euca2ools.commands.empyrean.describeservicecertificates import \
+from euca2ools.commands.bootstrap.describeservicecertificates import \
     DescribeServiceCertificates
 from euca2ools.commands.s3.checkbucket import CheckBucket
 from euca2ools.commands.s3.createbucket import CreateBucket
@@ -76,18 +76,18 @@ class BundleCreatingMixin(object):
                 cloud administrator assistance.'''),
             Arg('--ec2cert', metavar='FILE', help='''file containing the
                 cloud's X.509 certificate.  If one is not available
-                locally it must be available from the empyrean
+                locally it must be available from the bootstrap
                 service.'''),
             Arg('-u', '--user', metavar='ACCOUNT', help='your account ID'),
             Arg('--kernel', metavar='IMAGE', help='''ID of the kernel image to
                 associate with this machine image'''),
             Arg('--ramdisk', metavar='IMAGE', help='''ID of the ramdisk image
                 to associate with this machine image'''),
-            Arg('--empyrean-url', route_to=None, help='''[Eucalyptus
+            Arg('--bootstrap-url', route_to=None, help='''[Eucalyptus
                 only] bootstrap service endpoint URL (used for obtaining
                 --ec2cert automatically'''),
-            Arg('--empyrean-service', route_to=None, help=argparse.SUPPRESS),
-            Arg('--empyrean-auth', route_to=None, help=argparse.SUPPRESS),
+            Arg('--bootstrap-service', route_to=None, help=argparse.SUPPRESS),
+            Arg('--bootstrap-auth', route_to=None, help=argparse.SUPPRESS),
 
             # Obscurities
             Arg('-B', '--block-device-mappings',
@@ -188,16 +188,17 @@ class BundleCreatingMixin(object):
             elif config_val:
                 self.log.debug('using cloud certificate from configuration')
                 self.args['ec2cert'] = config_val
-            elif (self.args.get('empyrean_service') and
-                  self.args.get('empyrean_auth')):
+            elif (self.args.get('bootstrap_service') and
+                  self.args.get('bootstrap_auth')):
                 # Sending requests during configure() can be precarious.
                 # Pay close attention to ordering to ensure all
                 # of this request's dependencies have been fulfilled.
                 fetched_cert = self.__get_bundle_certificate(
-                    self.args['empyrean_service'], self.args['empyrean_auth'])
+                    self.args['bootstrap_service'],
+                    self.args['bootstrap_auth'])
                 if fetched_cert:
                     self.log.debug('using cloud certificate from '
-                                   'empyrean service')
+                                   'bootstrap service')
                     self.args['ec2cert'] = fetched_cert
         if self.args.get('ec2cert'):
             self.args['ec2cert'] = os.path.expanduser(os.path.expandvars(
@@ -206,7 +207,7 @@ class BundleCreatingMixin(object):
         if not self.args.get('ec2cert'):
             raise ArgumentError(
                 'missing cloud certificate; please supply one with '
-                '--ec2cert or use --empyrean-url to fetch one automatically')
+                '--ec2cert or use --bootstrap-url to fetch one automatically')
         self.log.debug('cloud certificate: %s', self.args['ec2cert'])
 
     def configure_bundle_output(self):
@@ -284,12 +285,12 @@ class BundleCreatingMixin(object):
         self.args['enc_key'] = '{0:0>32x}'.format(enc_key_i)
         self.args['enc_iv'] = '{0:0>32x}'.format(enc_iv_i)
 
-    def __get_bundle_certificate(self, empyrean_service, empyrean_auth):
+    def __get_bundle_certificate(self, bootstrap_service, bootstrap_auth):
         self.log.info('attempting to obtain cloud certificate from '
-                      'empyrean service')
+                      'bootstrap service')
         req = DescribeServiceCertificates(
             config=self.config, loglevel=self.log.level,
-            service=empyrean_service, auth=empyrean_auth,
+            service=bootstrap_service, auth=bootstrap_auth,
             Format='pem', FingerprintDigest='SHA-256')
         response = req.main()
         for cert in response.get('serviceCertificates') or []:

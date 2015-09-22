@@ -122,7 +122,7 @@ class CreateAccessKey(IAMRequest):
 
 
 def _get_service_names():
-    svcnames = ['empyrean', 'properties', 'reporting']
+    svcnames = ['bootstrap', 'properties', 'reporting']
     for importer, modname, ispkg in pkgutil.iter_modules(
             euca2ools.commands.__path__, euca2ools.commands.__name__ + '.'):
         module = __import__(modname, fromlist='dummy')

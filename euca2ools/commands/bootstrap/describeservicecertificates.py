@@ -25,10 +25,10 @@
 
 from requestbuilder import Arg, Filter
 
-from euca2ools.commands.empyrean import EmpyreanRequest
+from euca2ools.commands.bootstrap import BootstrapRequest
 
 
-class DescribeServiceCertificates(EmpyreanRequest):
+class DescribeServiceCertificates(BootstrapRequest):
     DESCRIPTION = 'Show information about one or more service certificates'
     ARGS = [Arg('--format', dest='Format', choices=('pem', 'der'),
                 type=str.lower, help='format to output certificates in'),
