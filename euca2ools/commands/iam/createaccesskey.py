@@ -23,18 +23,15 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import inspect
-import pkgutil
 import sys
 
 from requestbuilder import Arg
-from requestbuilder.service import BaseService
 import six
 
-import euca2ools.commands
 from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT, arg_user
 from euca2ools.commands.iam.getuser import GetUser
 import euca2ools.exceptions
+import euca2ools.util
 
 
 class CreateAccessKey(IAMRequest):
@@ -80,7 +77,7 @@ class CreateAccessKey(IAMRequest):
                 region_name = self.config.region or self.args['domain']
                 section = 'region {0}'.format(region_name.split(':')[0])
                 configfile.add_section(section)
-                for service in sorted(_get_service_names()):
+                for service in sorted(euca2ools.util.generate_service_names()):
                     url = '{scheme}://{service}.{domain}/'.format(
                         scheme=parsed.scheme, domain=self.args['domain'],
                         service=service)
@@ -119,15 +116,3 @@ class CreateAccessKey(IAMRequest):
             raise
         arn = response['User']['Arn']
         return arn.split(':')[4]
-
-
-def _get_service_names():
-    svcnames = ['bootstrap', 'properties', 'reporting']
-    for importer, modname, ispkg in pkgutil.iter_modules(
-            euca2ools.commands.__path__, euca2ools.commands.__name__ + '.'):
-        module = __import__(modname, fromlist='dummy')
-        for name, obj in inspect.getmembers(module):
-            if (inspect.isclass(obj) and inspect.getmodule(obj) == module and
-                    issubclass(obj, BaseService)):
-                svcnames.append(obj.NAME)
-    return svcnames

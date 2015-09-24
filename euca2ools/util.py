@@ -25,11 +25,17 @@
 
 import datetime
 import getpass
+import inspect
 import os.path
+import pkgutil
 import stat
 import struct
 import sys
 import tempfile
+
+import requestbuilder.service
+
+import euca2ools.commands
 
 
 def build_progressbar_label_template(fnames):
@@ -176,3 +182,20 @@ def add_fake_region_name(service):
     if service.region_name is None and not os.getenv('AWS_AUTH_REGION'):
         service.region_name = 'undefined-{0}'.format(os.getpid())
         service.log.warn('added fake region name %s', service.region_name)
+
+
+def generate_service_names():
+    """
+    Generate a dict with keys for each service and values for those
+    services' corresponding URL environment variables, if any.
+    """
+    services = {'properties': 'EUCA_PROPERTIES_URL',
+                'reporting': 'EUCA_REPORTING_URL'}
+    for importer, modname, ispkg in pkgutil.iter_modules(
+            euca2ools.commands.__path__, euca2ools.commands.__name__ + '.'):
+        module = __import__(modname, fromlist='dummy')
+        for name, obj in inspect.getmembers(module):
+            if (inspect.isclass(obj) and inspect.getmodule(obj) == module and
+                    issubclass(obj, requestbuilder.service.BaseService)):
+                services[obj.NAME] = obj.URL_ENVVAR
+    return services
