@@ -71,6 +71,8 @@ class GenerateEnvironment(BaseCommand, RegionConfigurableMixin):
         env_vars['AWS_SECURITY_TOKEN'] = auth.args.get('security_token')
         env_vars['AWS_CREDENTIAL_EXPIRATION'] = auth.args.get(
             'credential_expiration')
+        env_vars['EC2_USER_ID'] = os.getenv(
+            'EC2_USER_ID', self.config.get_user_option('account-id'))
         env_vars['EC2_CERT'] = os.getenv(
             'EC2_CERT', self.config.get_user_option('certificate'))
         env_vars['EC2_PRIVATE_KEY'] = os.getenv(
