@@ -23,13 +23,19 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import os.path
 import sys
 
 from requestbuilder import Arg
+import requestbuilder.exceptions
 from requestbuilder.mixins import TabifyingMixin
+import six
 
 from euca2ools.commands.iam import IAMRequest, arg_account_name
 from euca2ools.commands.iam.createaccesskey import CreateAccessKey
+
+
+CLC_CRED_CHECK_FILE = '/usr/sbin/clcadmin-assume-system-credentials'
 
 
 class CreateAccount(IAMRequest, TabifyingMixin):
@@ -46,6 +52,18 @@ class CreateAccount(IAMRequest, TabifyingMixin):
             Arg('-d', '--domain', route_to=None, help='''the DNS domain to
                 use for region information in configuration file output
                 (default: based on IAM URL)''')]
+
+    def configure(self):
+        try:
+            IAMRequest.configure(self)
+        except requestbuilder.exceptions.AuthError as err:
+            if (os.path.exists(CLC_CRED_CHECK_FILE) and len(err.args) > 0 and
+                    isinstance(err.args[0], six.string_types)):
+                msg = ("{0}.  If a cloud controller is running, you "
+                       "can assume administrator credentials with "
+                       "eval `clcadmin-assume-system-credentials`")
+                err.args = (msg.format(err.args[0]),) + err.args[1:]
+            raise
 
     def postprocess(self, result):
         if self.args.get('create_accesskey') or self.args.get('write_config'):
