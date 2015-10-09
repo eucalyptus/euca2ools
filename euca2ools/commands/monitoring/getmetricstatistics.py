@@ -1,4 +1,4 @@
-# Copyright 2013 Eucalyptus Systems, Inc.
+# Copyright 2013-2015 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -24,13 +24,15 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import datetime
-from euca2ools.commands.argtypes import delimited_list
-from euca2ools.commands.monitoring import CloudWatchRequest
-from euca2ools.commands.monitoring.argtypes import cloudwatch_dimension
+
 from requestbuilder import Arg
 from requestbuilder.exceptions import ArgumentError
 from requestbuilder.mixins import TabifyingMixin
 from requestbuilder.response import PaginatedResponse
+
+from euca2ools.commands.argtypes import delimited_list
+from euca2ools.commands.monitoring import CloudWatchRequest
+from euca2ools.commands.monitoring.argtypes import cloudwatch_dimension
 
 
 class GetMetricStatistics(CloudWatchRequest, TabifyingMixin):
@@ -53,8 +55,8 @@ class GetMetricStatistics(CloudWatchRequest, TabifyingMixin):
                 metavar='YYYY-MM-DDThh:mm:ssZ', help='''latest time to retrieve
                 data points for (default: now)'''),
             Arg('--period', dest='Period', metavar='SECONDS', type=int,
-                help='''granularity of the returned data points (must be a
-                multiple of 60)'''),
+                default=60, help='''granularity of the returned data
+                points (must be a multiple of 60) (default: 60)'''),
             Arg('--unit', dest='Unit', help='unit the metric is reported in')]
     LIST_TAGS = ['Datapoints']
 
