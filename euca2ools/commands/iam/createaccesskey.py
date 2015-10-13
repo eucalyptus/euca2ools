@@ -45,6 +45,10 @@ class CreateAccessKey(IAMRequest):
             Arg('-d', '--domain', route_to=None, help='''the DNS domain
                 to use for region information in configuration file
                 output (default: based on IAM URL)'''),
+            Arg('-l', '--set-default-user', action='store_true', route_to=None,
+                help='''set this user as the default user for the region
+                in euca2ools.ini(5) configuration file output.  This
+                option is only useful when used with -w.'''),
             AS_ACCOUNT]
 
     def postprocess(self, result):
@@ -87,9 +91,8 @@ class CreateAccessKey(IAMRequest):
             user_name = result['AccessKey'].get('UserName') or 'root'
             account_id = self.get_user_account_id()
             if account_id:
-                user_section = 'user {0}:{1}'.format(account_id, user_name)
-            else:
-                user_section = 'user {0}'.format(user_name)
+                user_name = '{0}:{1}'.format(account_id, user_name)
+            user_section = 'user {0}'.format(user_name)
             configfile.add_section(user_section)
             configfile.set(user_section, 'key-id',
                            result['AccessKey']['AccessKeyId'])
@@ -97,6 +100,8 @@ class CreateAccessKey(IAMRequest):
                            result['AccessKey']['SecretAccessKey'])
             if account_id:
                 configfile.set(user_section, 'account-id', account_id)
+            if self.args.get('set_default_user'):
+                configfile.set(region_section, 'user', user_name)
             result['configfile'] = configfile
 
     def print_result(self, result):

@@ -51,7 +51,11 @@ class CreateAccount(IAMRequest, TabifyingMixin):
                 by themselves (implies -k)'''),
             Arg('-d', '--domain', route_to=None, help='''the DNS domain to
                 use for region information in configuration file output
-                (default: based on IAM URL)''')]
+                (default: based on IAM URL)'''),
+            Arg('-l', '--set-default-user', action='store_true', route_to=None,
+                help='''set this user as the default user for the region
+                in euca2ools.ini(5) configuration file output.  This
+                option is only useful when used with -w.''')]
 
     def configure(self):
         try:
@@ -71,7 +75,8 @@ class CreateAccount(IAMRequest, TabifyingMixin):
                 self, UserName='admin',
                 DelegateAccount=result['Account']['AccountId'],
                 write_config=self.args.get('write_config'),
-                domain=self.args.get('domain'))
+                domain=self.args.get('domain'),
+                set_default_user=self.args.get('set_default_user'))
             key_result = obj.main()
             result.update(key_result)
 
