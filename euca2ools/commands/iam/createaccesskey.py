@@ -75,23 +75,28 @@ class CreateAccessKey(IAMRequest):
                 # name at the command line may be useful, but until
                 # someone asks for it let's not clutter it up for now.
                 region_name = self.config.region or self.args['domain']
-                section = 'region {0}'.format(region_name.split(':')[0])
-                configfile.add_section(section)
+                region_section = 'region {0}'.format(region_name.split(':')[0])
+                configfile.add_section(region_section)
                 for service in sorted(euca2ools.util.generate_service_names()):
                     url = '{scheme}://{service}.{domain}/'.format(
                         scheme=parsed.scheme, domain=self.args['domain'],
                         service=service)
-                    configfile.set(section, '{0}-url'.format(service), url)
-            section = 'user {0}'.format(result['AccessKey'].get('UserName')
-                                        or 'root')
-            configfile.add_section(section)
-            configfile.set(section, 'key-id',
-                           result['AccessKey']['AccessKeyId'])
-            configfile.set(section, 'secret-key',
-                           result['AccessKey']['SecretAccessKey'])
+                    configfile.set(region_section, '{0}-url'.format(service),
+                                   url)
+
+            user_name = result['AccessKey'].get('UserName') or 'root'
             account_id = self.get_user_account_id()
             if account_id:
-                configfile.set(section, 'account-id', account_id)
+                user_section = 'user {0}:{1}'.format(account_id, user_name)
+            else:
+                user_section = 'user {0}'.format(user_name)
+            configfile.add_section(user_section)
+            configfile.set(user_section, 'key-id',
+                           result['AccessKey']['AccessKeyId'])
+            configfile.set(user_section, 'secret-key',
+                           result['AccessKey']['SecretAccessKey'])
+            if account_id:
+                configfile.set(user_section, 'account-id', account_id)
             result['configfile'] = configfile
 
     def print_result(self, result):
