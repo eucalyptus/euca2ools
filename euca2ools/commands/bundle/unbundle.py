@@ -115,16 +115,16 @@ class Unbundle(BaseCommand, FileTransferProgressBarMixin,
                         outfile.flush()
                     else:
                         break
-                actual_hexdigest = digest.hexdigest()
-                if actual_hexdigest != part.hexdigest:
+                actual_digest = int(digest.hexdigest(), 16)
+                expected_digest = int(part.hexdigest, 16)
+                if actual_digest != expected_digest:
                     self.log.error('rejecting unbundle due to part SHA1 '
-                                   'mismatch (expected: %s, actual: %s)',
-                                   part.hexdigest, actual_hexdigest)
+                                   'mismatch (expected: %x, actual: %x)',
+                                   expected_digest, actual_digest)
                     raise RuntimeError(
                         "bundle part '{0}' appears to be corrupt (expected "
-                        "SHA1: {1}, actual: {2}"
-                        .format(part.filename, part.hexdigest,
-                                actual_hexdigest))
+                        "SHA1: {1:x}, actual: {2:x}"
+                        .format(part.filename, expected_digest, actual_digest))
 
     def main(self):
         manifest = BundleManifest.read_from_fileobj(

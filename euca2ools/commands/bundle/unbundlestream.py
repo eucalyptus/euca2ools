@@ -86,18 +86,17 @@ class UnbundleStream(BaseCommand, FileTransferProgressBarMixin,
         unbundle_out_w.close()
         actual_size = copy_with_progressbar(unbundle_out_r, self.args['dest'],
                                             progressbar=pbar)
-        actual_sha1 = unbundle_sha1_r.recv()
+        actual_sha1 = int(unbundle_sha1_r.recv(), 16)
         unbundle_sha1_r.close()
 
-        expected_sha1 = self.args.get('sha1_digest') or ''
-        expected_sha1 = expected_sha1.lower().strip('0x')
+        expected_sha1 = int(self.args.get('sha1_digest') or '0', 16)
         expected_size = self.args.get('image_size')
         if expected_sha1 and expected_sha1 != actual_sha1:
             self.log.error('rejecting unbundle due to SHA1 mismatch '
-                           '(expected SHA1: %s, actual: %s)',
+                           '(expected SHA1: %x, actual: %x)',
                            expected_sha1, actual_sha1)
             raise RuntimeError('bundle appears to be corrupt (expected SHA1: '
-                               '{0}, actual: {1})'
+                               '{0:x}, actual: {1:x})'
                                .format(expected_sha1, actual_sha1))
         expected_size = self.args.get('image_size')
         if expected_size and expected_size != actual_size:
