@@ -1,4 +1,4 @@
-# Copyright 2013-2014 Eucalyptus Systems, Inc.
+# Copyright 2013-2015 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -27,9 +27,10 @@ import os
 import string
 import sys
 import urlparse
+import warnings
 
 from requestbuilder import Arg
-import requestbuilder.auth
+import requestbuilder.auth.aws
 import requestbuilder.exceptions
 import requestbuilder.request
 import requestbuilder.service
@@ -38,7 +39,6 @@ import six
 
 from euca2ools.commands import Euca2ools
 from euca2ools.exceptions import AWSError
-from euca2ools.util import magic, substitute_euca_region
 
 
 class S3(requestbuilder.service.BaseService):
@@ -50,15 +50,16 @@ class S3(requestbuilder.service.BaseService):
     ARGS = [Arg('-U', '--url', metavar='URL',
                 help='object storage service endpoint URL')]
 
-    def configure(self):
-        substitute_euca_region(self)
-        requestbuilder.service.BaseService.configure(self)
-
     def handle_http_error(self, response):
         raise AWSError(response)
 
     def build_presigned_url(self, method='GET', path=None, params=None,
                             auth=None, auth_args=None):
+        # requestbuilder 0.2
+        msg = ('S3.build_presigned_url is deprecated; use '
+               'S3Request.get_presigned_url2 instead')
+        self.log.warn(msg)
+        warnings.warn(msg, DeprecationWarning)
         if path:
             # We can't simply use urljoin because a path might start with '/'
             # like it could for keys that start with that character.
@@ -134,18 +135,53 @@ class S3(requestbuilder.service.BaseService):
 class S3Request(requestbuilder.request.BaseRequest):
     SUITE = Euca2ools
     SERVICE_CLASS = S3
-    AUTH_CLASS = requestbuilder.auth.S3RestAuth
+    AUTH_CLASS = requestbuilder.auth.aws.HmacV1Auth
 
     def __init__(self, **kwargs):
         requestbuilder.request.BaseRequest.__init__(self, **kwargs)
         self.redirects_left = 3
 
+    def configure(self):
+        requestbuilder.request.BaseRequest.configure(self)
+        if self.__should_use_sigv4():
+            self.log.info('switching to HmacV4Auth')
+            auth = requestbuilder.auth.aws.HmacV4Auth.from_other(self.auth)
+            auth.configure()
+            self.auth = auth
+
+    def __should_use_sigv4(self):
+        return self.config.convert_to_bool(
+            self.config.get_region_option('s3-force-sigv4'))
+
     def get_presigned_url(self, expiration_datetime):
+        # requestbuilder 0.2
+        msg = ('S3Request.get_presigned_url is deprecated; use '
+               'S3Request.get_presigned_url2 instead')
+        self.log.warn(msg)
+        warnings.warn(msg, DeprecationWarning)
         self.preprocess()
         return self.service.build_presigned_url(
             method=self.method, path=self.path, params=self.params,
             auth=self.auth,
             auth_args={'expiration_datetime': expiration_datetime})
+
+    def get_presigned_url2(self, timeout):
+        """
+        Get a pre-signed URL for this request that expires after a given
+        number of seconds.
+        """
+        # requestbuilder 0.3
+        self.preprocess()
+        if self.__should_use_sigv4():
+            # UNSIGNED-PAYLOAD is a magical string used for S3 V4 query auth.
+            auth = requestbuilder.auth.aws.QueryHmacV4Auth.from_other(
+                self.auth, timeout=timeout, payload_hash='UNSIGNED-PAYLOAD')
+        else:
+            auth = requestbuilder.auth.aws.QueryHmacV1Auth.from_other(
+                self.auth, timeout=timeout)
+        return self.service.get_request_url(
+            method=self.method, path=self.path, params=self.params,
+            auth=auth)
 
     def handle_server_error(self, err):
         if err.status_code == 301:
@@ -167,8 +203,6 @@ class S3Request(requestbuilder.request.BaseRequest):
             msg = ('Bucket {0}is not available from endpoint "{1}".  Ensure '
                    "the object storage service URL matches the bucket's "
                    'location.'.format(bucket, parsed.netloc))
-            msg = magic(self.config, 'Your princess is in another castle!',
-                        '  ') + msg
             raise requestbuilder.exceptions.ClientError(msg)
         else:
             return requestbuilder.request.BaseRequest.handle_server_error(

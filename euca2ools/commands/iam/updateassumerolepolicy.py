@@ -28,13 +28,13 @@ import json
 from requestbuilder import Arg, MutuallyExclusiveArgList
 
 from euca2ools.commands.argtypes import file_contents
-from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT
+from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT, arg_role
 
 
 class UpdateAssumeRolePolicy(IAMRequest):
-    DESCRIPTION = 'Update the policy that allows entities to assume a role'
-    ARGS = [Arg('-r', '--role-name', dest='RoleName', metavar='ROLE',
-                required=True, help='role to update (required)'),
+    DESCRIPTION = ("Update a role's trust policy, the policy that allows "
+                   "entities to assume a role")
+    ARGS = [arg_role(help='role to update (required)'),
             MutuallyExclusiveArgList(
                 Arg('-f', dest='PolicyDocument', metavar='FILE',
                     type=file_contents,

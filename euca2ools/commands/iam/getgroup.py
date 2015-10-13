@@ -23,16 +23,15 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT
 from requestbuilder import Arg
 from requestbuilder.response import PaginatedResponse
+
+from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT, arg_group
 
 
 class GetGroup(IAMRequest):
     DESCRIPTION = 'List all the users in a group'
-    ARGS = [Arg('-g', '--group-name', dest='GroupName', metavar='GROUP',
-                required=True,
-                help='name of the group to enumerate (required)'),
+    ARGS = [arg_group(help='name of the group to enumerate (required)'),
             AS_ACCOUNT]
     LIST_TAGS = ['Users']
 

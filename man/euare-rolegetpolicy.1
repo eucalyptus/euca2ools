@@ -3,18 +3,19 @@
 .SH NAME
 euare-rolegetpolicy \- Display a role's policy
 .SH SYNOPSIS
-euare\-rolegetpolicy \fB\-r\fR ROLE \fB\-p\fR POLICY [\-\-pretty\-print]
+euare\-rolegetpolicy \fB\-p\fR POLICY [\-\-pretty\-print] [\-\-as\-account ACCOUNT]
 .TP
-[\-\-as\-account ACCOUNT] [\-U URL]
-[\-\-region USER@REGION] [\-I KEY_ID] [\-S KEY]
-[\-\-security\-token TOKEN] [\-\-debug] [\-\-debugger]
-[\-\-version] [\-h]
+[\-U URL] [\-\-region USER@REGION] [\-I KEY_ID]
+[\-S KEY] [\-\-security\-token TOKEN] [\-\-debug]
+[\-\-debugger] [\-\-version] [\-h]
+ROLE
 .SH DESCRIPTION
 Display a role's policy
-.SS "optional arguments:"
+.SS "positional arguments:"
 .TP
-\fB\-r\fR ROLE, \fB\-\-role\-name\fR ROLE
+ROLE
 role the poilcy is attached to (required)
+.SS "optional arguments:"
 .TP
 \fB\-p\fR POLICY, \fB\-\-policy\-name\fR POLICY
 name of the policy to show (required)

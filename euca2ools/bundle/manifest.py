@@ -93,7 +93,7 @@ class BundleManifest(object):
                 manifest.enc_key = _decrypt_hex(
                     xml.image.user_encrypted_key.text.strip(),
                     privkey_filename)
-            except ValueError:
+            except (AttributeError, ValueError):
                 manifest.enc_key = _decrypt_hex(
                     xml.image.ec2_encrypted_key.text.strip(), privkey_filename)
             manifest.enc_algorithm = xml.image.user_encrypted_key.get(
@@ -101,7 +101,7 @@ class BundleManifest(object):
             try:
                 manifest.enc_iv = _decrypt_hex(
                     xml.image.user_encrypted_iv.text.strip(), privkey_filename)
-            except ValueError:
+            except (AttributeError, ValueError):
                 manifest.enc_iv = _decrypt_hex(
                     xml.image.ec2_encrypted_iv.text.strip(), privkey_filename)
 
@@ -197,20 +197,24 @@ class BundleManifest(object):
         assert self.enc_key is not None
         assert self.enc_iv is not None
         assert self.enc_algorithm is not None
-        # xml.image.append(lxml.etree.Comment(' EC2 cert fingerprint:  {0} '
-        #                                     .format(ec2_fp)))
         xml.image.ec2_encrypted_key = _public_encrypt(self.enc_key,
                                                       ec2_cert_filename)
         xml.image.ec2_encrypted_key.set('algorithm', self.enc_algorithm)
-        # xml.image.append(lxml.etree.Comment(' User cert fingerprint: {0} '
-        #                                     .format(user_fp)))
-        xml.image.user_encrypted_key = _public_encrypt(self.enc_key,
-                                                       user_cert_filename)
+        if user_cert_filename:
+            xml.image.user_encrypted_key = _public_encrypt(self.enc_key,
+                                                           user_cert_filename)
+        else:
+            # Absence results in 400 (InvalidManifest)
+            xml.image.user_encrypted_key = None
         xml.image.user_encrypted_key.set('algorithm', self.enc_algorithm)
         xml.image.ec2_encrypted_iv = _public_encrypt(self.enc_iv,
                                                      ec2_cert_filename)
-        xml.image.user_encrypted_iv = _public_encrypt(self.enc_iv,
-                                                      user_cert_filename)
+        if user_cert_filename:
+            xml.image.user_encrypted_iv = _public_encrypt(self.enc_iv,
+                                                          user_cert_filename)
+        else:
+            # Absence results in 400 (InvalidManifest)
+            xml.image.user_encrypted_iv = None
 
         # Bundle parts
         xml.image.parts = None
@@ -230,10 +234,14 @@ class BundleManifest(object):
         # Cleanup for signature
         lxml.objectify.deannotate(xml, xsi_nil=True)
         lxml.etree.cleanup_namespaces(xml)
-        to_sign = (lxml.etree.tostring(xml.machine_configuration) +
-                   lxml.etree.tostring(xml.image))
-        self.log.debug('string to sign: %s', repr(to_sign))
-        signature = _rsa_sha1_sign(to_sign, privkey_filename)
+        if privkey_filename:
+            to_sign = (lxml.etree.tostring(xml.machine_configuration) +
+                       lxml.etree.tostring(xml.image))
+            signature = _rsa_sha1_sign(to_sign, privkey_filename)
+        else:
+            # Absence yields 400 (InvalidManifest)
+            # Empty contents yield 500 (InternalError)
+            signature = 'UNSIGNED'
         xml.signature = signature
         self.log.debug('hex-encoded signature: %s', signature)
         lxml.objectify.deannotate(xml, xsi_nil=True)

@@ -1,4 +1,4 @@
-# Copyright 2009-2014 Eucalyptus Systems, Inc.
+# Copyright 2009-2015 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -28,13 +28,13 @@ import os
 import sys
 
 from requestbuilder import Arg
-import requestbuilder.auth
+import requestbuilder.auth.aws
 import requestbuilder.request
 import requestbuilder.service
 
 from euca2ools.commands import Euca2ools
 from euca2ools.exceptions import AWSError
-from euca2ools.util import strip_response_metadata, substitute_euca_region
+from euca2ools.util import strip_response_metadata, add_fake_region_name
 
 
 class IAM(requestbuilder.service.BaseService):
@@ -48,14 +48,8 @@ class IAM(requestbuilder.service.BaseService):
                 help='identity service endpoint URL')]
 
     def configure(self):
-        substitute_euca_region(self)
-        if os.getenv('EUARE_URL') and not os.getenv(self.URL_ENVVAR):
-            msg = ('EUARE_URL environment variable is deprecated; use {0} '
-                   'instead').format(self.URL_ENVVAR)
-            self.log.warn(msg)
-            print >> sys.stderr, msg
-            os.environ[self.URL_ENVVAR] = os.getenv('EUARE_URL')
         requestbuilder.service.BaseService.configure(self)
+        add_fake_region_name(self)
 
     def handle_http_error(self, response):
         raise AWSError(response)
@@ -64,7 +58,7 @@ class IAM(requestbuilder.service.BaseService):
 class IAMRequest(requestbuilder.request.AWSQueryRequest):
     SUITE = Euca2ools
     SERVICE_CLASS = IAM
-    AUTH_CLASS = requestbuilder.auth.QuerySigV2Auth
+    AUTH_CLASS = requestbuilder.auth.aws.HmacV4Auth
     METHOD = 'POST'
 
     def parse_response(self, response):
@@ -75,6 +69,61 @@ class IAMRequest(requestbuilder.request.AWSQueryRequest):
         # then just return its contents.
         return strip_response_metadata(response_dict)
 
+
 AS_ACCOUNT = Arg('--as-account', dest='DelegateAccount', metavar='ACCOUNT',
                  help='''[Eucalyptus cloud admin only] run this command as
                  the administrator of another account''')
+
+
+def arg_account_name(**kwargs):
+    return [Arg('AccountName', metavar='ACCOUNT', **kwargs),
+            Arg('-a', '--account-name', action='store_true', dest='dummy',
+                route_to=None, help=argparse.SUPPRESS)]
+
+
+def arg_account_alias(**kwargs):
+    return [Arg('AccountAlias', metavar='ACCOUNT', **kwargs),
+            Arg('-a', '--account-alias', action='store_true', dest='dummy',
+                route_to=None, help=argparse.SUPPRESS)]
+
+
+def arg_user(**kwargs):
+    return [Arg('UserName', metavar='USER', **kwargs),
+            Arg('-u', '--user-name', action='store_true', dest='dummy',
+                route_to=None, help=argparse.SUPPRESS)]
+
+
+def arg_group(**kwargs):
+    return [Arg('GroupName', metavar='GROUP', **kwargs),
+            Arg('-g', '--group-name', action='store_true', dest='dummy',
+                route_to=None, help=argparse.SUPPRESS)]
+
+
+def arg_role(**kwargs):
+    return [Arg('RoleName', metavar='ROLE', **kwargs),
+            Arg('-r', '--role-name', action='store_true', dest='dummy',
+                route_to=None, help=argparse.SUPPRESS)]
+
+
+def arg_iprofile(**kwargs):
+    return [Arg('InstanceProfileName', metavar='IPROFILE', **kwargs),
+            Arg('-s', '--instance-profile-name', action='store_true',
+                dest='dummy', route_to=None, help=argparse.SUPPRESS)]
+
+
+def arg_key_id(**kwargs):
+    return [Arg('AccessKeyId', metavar='KEY_ID', **kwargs),
+            Arg('-k', '--user-key-id', action='store_true', dest='dummy',
+                route_to=None, help=argparse.SUPPRESS)]
+
+
+def arg_signing_cert(**kwargs):
+    return [Arg('CertificateId', metavar='CERT', **kwargs),
+            Arg('-c', '--certificate-id', action='store_true',
+                dest='dummy', route_to=None, help=argparse.SUPPRESS)]
+
+
+def arg_server_cert(**kwargs):
+    return [Arg('ServerCertificateName', metavar='CERT', **kwargs),
+            Arg('-s', '--server-certificate-name', action='store_true',
+                dest='dummy', route_to=None, help=argparse.SUPPRESS)]

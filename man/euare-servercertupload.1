@@ -3,21 +3,22 @@
 .SH NAME
 euare-servercertupload \- Upload a server certificate
 .SH SYNOPSIS
-euare\-servercertupload \fB\-s\fR CERTNAME
+euare\-servercertupload (\fB\-c\fR CERT_CONTENT | \fB\-\-certificate\-file\fR FILE)
 .TP
-(\fB\-c\fR CERT_CONTENT | \fB\-\-certificate\-file\fR FILE)
 (\fB\-\-private\-key\fR KEY | \fB\-\-private\-key\-file\fR FILE)
 [\-\-certificate\-chain CHAIN | \fB\-\-certificate\-chain\-file\fR FILE]
 [\-p PATH] [\-\-as\-account ACCOUNT] [\-U URL]
 [\-\-region USER@REGION] [\-I KEY_ID] [\-S KEY]
 [\-\-security\-token TOKEN] [\-\-debug] [\-\-debugger]
 [\-\-version] [\-h]
+CERT
 .SH DESCRIPTION
 Upload a server certificate
-.SS "optional arguments:"
+.SS "positional arguments:"
 .TP
-\fB\-s\fR CERTNAME, \fB\-\-server\-certificate\-name\fR CERTNAME
+CERT
 name to give the new server certificate (required)
+.SS "optional arguments:"
 .TP
 \fB\-c\fR CERT_CONTENT, \fB\-\-certificate\-body\fR CERT_CONTENT
 PEM\-encoded certificate

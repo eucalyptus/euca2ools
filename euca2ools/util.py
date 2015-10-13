@@ -1,4 +1,4 @@
-# Copyright 2009-2014 Eucalyptus Systems, Inc.
+# Copyright 2009-2015 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -25,11 +25,17 @@
 
 import datetime
 import getpass
+import inspect
 import os.path
+import pkgutil
 import stat
 import struct
 import sys
 import tempfile
+
+import requestbuilder.service
+
+import euca2ools.commands
 
 
 def build_progressbar_label_template(fnames):
@@ -77,27 +83,6 @@ def strip_response_metadata(response_dict):
         return response_dict[useful_keys[0]] or {}
     else:
         return response_dict
-
-
-def substitute_euca_region(obj):
-    if os.getenv('EUCA_REGION') and not os.getenv(obj.REGION_ENVVAR):
-        msg = ('EUCA_REGION environment variable is deprecated; use {0} '
-               'instead').format(obj.REGION_ENVVAR)
-        obj.log.warn(msg)
-        print >> sys.stderr, msg
-        os.environ[obj.REGION_ENVVAR] = os.getenv('EUCA_REGION')
-
-
-def magic(config, msg, suffix=None):
-    if not sys.stdout.isatty() or not sys.stderr.isatty():
-        return ''
-    try:
-        if config.convert_to_bool(config.get_global_option('magic'),
-                                  default=False):
-            return '\033[95m{0}\033[0m{1}'.format(msg, suffix or '')
-        return ''
-    except ValueError:
-        return ''
 
 
 def build_iam_policy(effect, resources, actions):
@@ -178,3 +163,39 @@ def transform_dict(dict_, transformation_dict):
         else:
             transformed[key] = val
     return transformed
+
+
+def add_fake_region_name(service):
+    """
+    If no name for a region is otherwise defined (i.e. service.region_name
+    is None and the AWS_AUTH_REGION environment variable is not set),
+    log a warning and add a fake region name so HmacV4Auth has something
+    to work with.  This works because eucalyptus doesn't care what name
+    one chooses for a region.
+
+    Setups that use eucarc files against AWS will still be broken.
+
+    This was added in euca2ools the 3.3 series and should be removed
+    some time after that.
+    """
+
+    if service.region_name is None and not os.getenv('AWS_AUTH_REGION'):
+        service.region_name = 'undefined-{0}'.format(os.getpid())
+        service.log.warn('added fake region name %s', service.region_name)
+
+
+def generate_service_names():
+    """
+    Generate a dict with keys for each service and values for those
+    services' corresponding URL environment variables, if any.
+    """
+    services = {'properties': 'EUCA_PROPERTIES_URL',
+                'reporting': 'EUCA_REPORTING_URL'}
+    for importer, modname, ispkg in pkgutil.iter_modules(
+            euca2ools.commands.__path__, euca2ools.commands.__name__ + '.'):
+        module = __import__(modname, fromlist='dummy')
+        for name, obj in inspect.getmembers(module):
+            if (inspect.isclass(obj) and inspect.getmodule(obj) == module and
+                    issubclass(obj, requestbuilder.service.BaseService)):
+                services[obj.NAME] = obj.URL_ENVVAR
+    return services

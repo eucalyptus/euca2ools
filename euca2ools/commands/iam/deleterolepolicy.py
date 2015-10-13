@@ -23,15 +23,14 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT
 from requestbuilder import Arg
+
+from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT, arg_role
 
 
 class DeleteRolePolicy(IAMRequest):
     DESCRIPTION = 'Remove a policy from a role'
-    ARGS = [Arg('-r', '--role-name', dest='RoleName', metavar='ROLE',
-                required=True,
-                help='role the policy is attached to (required)'),
+    ARGS = [arg_role(help='role the policy is attached to (required)'),
             Arg('-p', '--policy-name', dest='PolicyName', metavar='POLICY',
                 required=True, help='name of the policy to delete (required)'),
             AS_ACCOUNT]

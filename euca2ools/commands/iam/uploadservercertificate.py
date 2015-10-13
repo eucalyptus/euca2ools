@@ -1,4 +1,4 @@
-# Copyright 2009-2014 Eucalyptus Systems, Inc.
+# Copyright 2009-2015 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -25,13 +25,12 @@
 
 from requestbuilder import Arg, MutuallyExclusiveArgList
 
-from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT
+from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT, arg_server_cert
 
 
 class UploadServerCertificate(IAMRequest):
     DESCRIPTION = 'Upload a server certificate'
-    ARGS = [Arg('-s', '--server-certificate-name', metavar='CERTNAME',
-                dest='ServerCertificateName', required=True,
+    ARGS = [arg_server_cert(
                 help='name to give the new server certificate (required)'),
             MutuallyExclusiveArgList(
                 Arg('-c', '--certificate-body', dest='CertificateBody',

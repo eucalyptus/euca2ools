@@ -34,7 +34,7 @@ class ImagePackMetadata(object):
         self.image_sha256sum = None
         self.image_size = None
         self.image_md_sha256sum = None
-        self.version = 1
+        self.version = 1  # Bump this with each incompatible change
 
     @classmethod
     def from_fileobj(cls, fileobj):
@@ -43,6 +43,13 @@ class ImagePackMetadata(object):
         check_dict_whitelist(metadata, 'pack', ['image', 'image_metadata',
                                                 'version'])
         if metadata.get('version'):
+            # This is the version of the pack metadata, not the image.
+            # If we make backwards-incompatible changes this allows us
+            # to tell what to expect so we can continue to handle packs
+            # that precede those changes.
+            #
+            # Because there is only one metadata version right now this
+            # method is rather dumb -- it accepts only version 1.
             if int(metadata['version']) != 1:
                 raise ValueError('pack has metadata version {0}; expected 1'
                                  .format(metadata['version']))

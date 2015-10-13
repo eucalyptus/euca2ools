@@ -1,4 +1,4 @@
-# Copyright 2009-2013 Eucalyptus Systems, Inc.
+# Copyright 2009-2015 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -23,15 +23,14 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT
 from requestbuilder import Arg
+
+from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT, arg_user
 
 
 class EnableMFADevice(IAMRequest):
     DESCRIPTION = 'Enable an MFA device'
-    ARGS = [Arg('-u', '--user-name', dest='UserName', metavar='USER',
-                required=True,
-                help='user to enable the MFA device for (required)'),
+    ARGS = [arg_user(help='user to enable the MFA device for (required)'),
             Arg('-s', '--serial-number', dest='SerialNumber', metavar='SERIAL',
                 required=True,
                 help='serial number of the MFA device to activate (required)'),

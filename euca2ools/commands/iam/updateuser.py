@@ -23,14 +23,14 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT
 from requestbuilder import Arg
+
+from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT, arg_user
 
 
 class UpdateUser(IAMRequest):
     DESCRIPTION = 'Change the name and/or path of a user'
-    ARGS = [Arg('-u', '--user-name', dest='UserName', metavar='USER',
-                required=True, help='name of the user to update'),
+    ARGS = [arg_user(help='name of the user to update'),
             Arg('-n', '--new-user-name', dest='NewUserName', metavar='USER',
                 help='new name for the user'),
             Arg('-p', '--new-path', dest='NewPath', metavar='PATH',

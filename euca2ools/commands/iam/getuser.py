@@ -1,4 +1,4 @@
-# Copyright 2009-2013 Eucalyptus Systems, Inc.
+# Copyright 2009-2015 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -23,15 +23,15 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT
 from requestbuilder import Arg
+
+from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT, arg_user
 
 
 class GetUser(IAMRequest):
     DESCRIPTION = "Display a user's ARN and GUID"
-    ARGS = [Arg('-u', '--user-name', dest='UserName', metavar='USER',
-                help='''name of the user to show info about (default: current
-                        user)'''),
+    ARGS = [arg_user(nargs='?', help='''name of the user to describe
+                     (default: current user)'''),
             Arg('--show-extra', dest='ShowExtra', action='store_const',
                 const='true', help='also display additional user info'),
             AS_ACCOUNT]

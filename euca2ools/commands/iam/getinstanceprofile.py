@@ -1,4 +1,4 @@
-# Copyright 2014 Eucalyptus Systems, Inc.
+# Copyright 2014-2015 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -25,14 +25,13 @@
 
 from requestbuilder import Arg
 
-from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT
+from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT, arg_iprofile
 
 
 class GetInstanceProfile(IAMRequest):
     DESCRIPTION = "Display an instance profile's ARN and GUID"
-    ARGS = [Arg('-s', '--instance-profile-name', dest='InstanceProfileName',
-                metavar='IPROFILE', required=True, help='''name of the
-                instance profile to show info about (required)'''),
+    ARGS = [arg_iprofile(
+                help='name of the instance profile to describe (required)'),
             Arg('-r', dest='show_roles', action='store_true', route_to=None,
                 help='''also list the roles associated with the instance
                 profile'''),

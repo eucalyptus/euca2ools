@@ -34,7 +34,7 @@ import sys
 
 import lxml.etree
 from requestbuilder import Arg
-from requestbuilder.auth import QuerySigV2Auth
+import requestbuilder.auth.aws
 from requestbuilder.exceptions import ArgumentError, AuthError, ClientError
 from requestbuilder.mixins import TabifyingMixin
 from requestbuilder.request import AWSQueryRequest
@@ -43,7 +43,7 @@ import requests.exceptions
 
 from euca2ools.commands import Euca2ools
 from euca2ools.exceptions import AWSError
-from euca2ools.util import substitute_euca_region
+from euca2ools.util import add_fake_region_name
 
 
 class EC2(BaseService):
@@ -57,8 +57,8 @@ class EC2(BaseService):
                 help='compute service endpoint URL')]
 
     def configure(self):
-        substitute_euca_region(self)
-        BaseService.configure(self)
+        requestbuilder.service.BaseService.configure(self)
+        add_fake_region_name(self)
 
     def handle_http_error(self, response):
         raise AWSError(response)
@@ -67,7 +67,7 @@ class EC2(BaseService):
 class EC2Request(AWSQueryRequest, TabifyingMixin):
     SUITE = Euca2ools
     SERVICE_CLASS = EC2
-    AUTH_CLASS = QuerySigV2Auth
+    AUTH_CLASS = requestbuilder.auth.aws.HmacV4Auth
     METHOD = 'POST'
 
     def __init__(self, **kwargs):

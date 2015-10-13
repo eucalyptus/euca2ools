@@ -1,4 +1,4 @@
-# Copyright 2014 Eucalyptus Systems, Inc.
+# Copyright 2014-2015 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -23,19 +23,17 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from requestbuilder import Arg, MutuallyExclusiveArgList
-
-from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT
+from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT, arg_iprofile
 from euca2ools.commands.iam.addroletoinstanceprofile import \
     AddRoleToInstanceProfile
 from euca2ools.commands.iam.createrole import CreateRole
 
+from requestbuilder import Arg, MutuallyExclusiveArgList
+
 
 class CreateInstanceProfile(IAMRequest):
     DESCRIPTION = 'Create a new instance profile'
-    ARGS = [Arg('-s', '--instance-profile-name', dest='InstanceProfileName',
-                metavar='IPROFILE', required=True,
-                help='name of the new instance profile (required)'),
+    ARGS = [arg_iprofile(help='name of the new instance profile (required)'),
             Arg('-p', '--path', dest='Path',
                 help='path for the new instance profile (default: "/")'),
             MutuallyExclusiveArgList(

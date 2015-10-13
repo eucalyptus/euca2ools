@@ -1,4 +1,4 @@
-# Copyright 2009-2014 Eucalyptus Systems, Inc.
+# Copyright 2009-2015 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -23,15 +23,14 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT
 from requestbuilder import Arg
+
+from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT, arg_key_id
 
 
 class DeleteAccessKey(IAMRequest):
     DESCRIPTION = 'Delete an access key'
-    ARGS = [Arg('-k', '--user-key-id', dest='AccessKeyId', metavar='KEY_ID',
-                required=True,
-                help='ID of the access key to delete (required)'),
+    ARGS = [arg_key_id(help='ID of the access key to delete (required)'),
             Arg('-u', '--user-name', dest='UserName', metavar='USER',
                 help='user the key belongs to (default: current user)'),
             AS_ACCOUNT]

@@ -1,4 +1,4 @@
-# Copyright 2014 Eucalyptus Systems, Inc.
+# Copyright 2014-2015 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -28,11 +28,12 @@ from __future__ import division
 import argparse
 
 from requestbuilder import Arg
-from requestbuilder.auth import QuerySigV2Auth
+from requestbuilder.auth.aws import QueryHmacV2Auth
 from requestbuilder.mixins import FileTransferProgressBarMixin, TabifyingMixin
 
 from euca2ools.commands.ec2 import EC2
 from euca2ools.commands.ec2.registerimage import RegisterImage
+from euca2ools.commands.bootstrap import BootstrapRequest
 from euca2ools.commands.s3 import S3Request
 from euca2ools.commands.bundle.bundleanduploadimage import BundleAndUploadImage
 from euca2ools.commands.bundle.mixins import BundleCreatingMixin, \
@@ -61,18 +62,40 @@ class InstallImage(S3Request, BundleCreatingMixin, BundleUploadingMixin,
             Arg('--ec2-service', route_to=None, help=argparse.SUPPRESS)]
 
     def configure(self):
-        S3Request.configure(self)
+        # This goes before configure because -S's absence causes
+        # self.auth.configure to blow up.  With an upload policy that
+        # is undesirable.
         self.configure_bundle_upload_auth()
-        self.configure_bundle_creds()
-        self.configure_bundle_output()
-        self.configure_bundle_properties()
+
+        S3Request.configure(self)
 
         if not self.args.get("ec2_service"):
             self.args["ec2_service"] = EC2.from_other(
                 self.service, url=self.args.get('ec2_url'))
-
         if not self.args.get("ec2_auth"):
-            self.args["ec2_auth"] = QuerySigV2Auth.from_other(self.auth)
+            self.args["ec2_auth"] = QueryHmacV2Auth.from_other(self.auth)
+
+        if self.args.get('url') and not self.args.get('ec2_url'):
+            self.log.warn('-U/--url used without --ec2-url; communication '
+                          'with different regions may result')
+        if self.args.get('ec2_url') and not self.args.get('url'):
+            self.log.warn('--ec2-url used without -U/--url; communication '
+                          'with different regions may result')
+
+        # Set up access to bootstrap in case we need auto cert fetching.
+        try:
+            self.args['bootstrap_service'] = \
+                BootstrapRequest.SERVICE_CLASS.from_other(
+                    self.service, url=self.args.get('bootstrap_url'))
+            self.args['bootstrap_auth'] = \
+                BootstrapRequest.AUTH_CLASS.from_other(self.auth)
+        except:
+            self.log.debug('bootstrap setup failed; auto cert fetching '
+                           'will be unavailable', exc_info=True)
+
+        self.configure_bundle_creds()
+        self.configure_bundle_properties()
+        self.configure_bundle_output()
 
     def main(self):
         req = BundleAndUploadImage.from_other(

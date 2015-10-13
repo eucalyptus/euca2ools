@@ -1,4 +1,4 @@
-# Copyright 2009-2013 Eucalyptus Systems, Inc.
+# Copyright 2009-2015 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -23,20 +23,19 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT
 from requestbuilder import Arg
+
+from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT, arg_key_id
 
 
 class UpdateAccessKey(IAMRequest):
     DESCRIPTION = ('Change the status of an access key from Active to '
                    'Inactive, or vice versa')
-    ARGS = [Arg('-u', '--user-name', dest='UserName', metavar='USER',
-                help='''user owning the access key to update (default: current
-                        user)'''),
-            Arg('-k', '--user-key-id', dest='AccessKeyId', metavar='KEY_ID',
-                required=True,
-                help='ID of the access key to update (required)'),
+    ARGS = [arg_key_id(help='ID of the access key to update (required)'),
             Arg('-s', '--status', dest='Status', required=True,
                 choices=('Active', 'Inactive'),
                 help='status to assign to the access key (required)'),
+            Arg('-u', '--user-name', dest='UserName', metavar='USER',
+                help='''user owning the access key to update (default: current
+                        user)'''),
             AS_ACCOUNT]

@@ -1,4 +1,4 @@
-# Copyright 2014 Eucalyptus Systems, Inc.
+# Copyright 2014-2015 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -27,16 +27,15 @@ import json
 
 from requestbuilder import Arg
 
-from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT
+from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT, arg_role
 from euca2ools.commands.iam.putrolepolicy import PutRolePolicy
 from euca2ools.util import build_iam_policy
 
 
 class AddRolePolicy(IAMRequest):
     DESCRIPTION = ('Add a new policy to a role.  To add more complex policies '
-                   'than this tool supports, see euare-roleuploadpolicy.')
-    ARGS = [Arg('-r', '--role-name', metavar='ROLE', required=True,
-                help='role to attach the policy to (required)'),
+                   'than this tool supports, see euare-roleuploadpolicy(1).')
+    ARGS = [arg_role(help='role to attach the policy to (required)'),
             Arg('-p', '--policy-name', metavar='POLICY', required=True,
                 help='name of the new policy (required)'),
             Arg('-e', '--effect', choices=('Allow', 'Deny'), required=True,
@@ -56,7 +55,7 @@ class AddRolePolicy(IAMRequest):
                                   self.args['actions'])
         policy_doc = json.dumps(policy)
         req = PutRolePolicy.from_other(
-            self, RoleName=self.args['role_name'],
+            self, RoleName=self.args['RoleName'],
             PolicyName=self.args['policy_name'],
             PolicyDocument=policy_doc,
             DelegateAccount=self.params['DelegateAccount'])

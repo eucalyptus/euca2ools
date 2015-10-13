@@ -1,4 +1,4 @@
-# Copyright 2009-2014 Eucalyptus Systems, Inc.
+# Copyright 2009-2015 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -50,6 +50,9 @@ class UploadBundle(S3Request, BundleUploadingMixin,
                 help='do not upload the manifest')]
 
     def configure(self):
+        # This goes before configure because -S's absence causes
+        # self.auth.configure to blow up.  With an upload policy that
+        # is undesirable.
         self.configure_bundle_upload_auth()
         S3Request.configure(self)
 

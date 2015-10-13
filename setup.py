@@ -37,7 +37,8 @@ from euca2ools import __version__
 
 
 REQUIREMENTS = ['lxml',
-                'requestbuilder>=0.2.0-pre3',
+                'PyYAML',
+                'requestbuilder>=0.4',
                 'requests',
                 'six>=1.4']
 if sys.version_info < (2, 7):
@@ -126,6 +127,7 @@ setup(name="euca2ools",
       scripts=sum((glob.glob('bin/euare-*'),
                    glob.glob('bin/euca-*'),
                    glob.glob('bin/euform-*'),
+                   glob.glob('bin/euimage-*'),
                    glob.glob('bin/eulb-*'),
                    glob.glob('bin/euscale-*'),
                    glob.glob('bin/euwatch-*')),

@@ -1,4 +1,4 @@
-# Copyright 2009-2014 Eucalyptus Systems, Inc.
+# Copyright 2009-2015 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -23,15 +23,15 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.iam import IAMRequest
 from requestbuilder import Arg
+
+from euca2ools.commands.iam import IAMRequest, arg_account_name
 
 
 class DeleteAccount(IAMRequest):
     DESCRIPTION = '[Eucalyptus cloud admin only] Delete an account'
-    ARGS = [Arg('-a', '--account-name', dest='AccountName', metavar='ACCOUNT',
-                required=True,
-                help='name of the account to delete (required)'),
+    ARGS = [arg_account_name(
+                help='name or ID of the account to delete (required)'),
             Arg('-r', '--recursive', dest='Recursive', action='store_const',
                 const='true', help='''delete all users, groups, and policies
                                       associated with the account as well''')]

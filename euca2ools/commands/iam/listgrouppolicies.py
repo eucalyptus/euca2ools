@@ -1,4 +1,4 @@
-# Copyright 2009-2014 Eucalyptus Systems, Inc.
+# Copyright 2009-2015 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -26,16 +26,13 @@
 from requestbuilder import Arg
 from requestbuilder.response import PaginatedResponse
 
-from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT
+from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT, arg_group
 from euca2ools.commands.iam.getgrouppolicy import GetGroupPolicy
 
 
 class ListGroupPolicies(IAMRequest):
-    DESCRIPTION = ('List one specific policy or all policies attached to a '
-                   'group.  If no policies are attached to the group, the '
-                   'command still succeeds.')
-    ARGS = [Arg('-g', '--group-name', dest='GroupName', metavar='GROUP',
-                required=True, help='group owning the policies to list'),
+    DESCRIPTION = 'List one or all policies attached to a group'
+    ARGS = [arg_group(help='group owning the policies to list (required)'),
             Arg('-p', '--policy-name', metavar='POLICY', route_to=None,
                 help='display a specific policy'),
             Arg('-v', '--verbose', action='store_true', route_to=None,

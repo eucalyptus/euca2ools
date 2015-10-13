@@ -1,4 +1,4 @@
-# Copyright 2013-2014 Eucalyptus Systems, Inc.
+# Copyright 2013-2015 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -38,7 +38,8 @@ from euca2ools.bundle.pipes.fittings import (create_bundle_part_writer,
 import euca2ools.bundle.util
 from euca2ools.commands import Euca2ools
 from euca2ools.commands.bundle.mixins import BundleCreatingMixin
-from euca2ools.util import mkdtemp_for_large_files, substitute_euca_region
+from euca2ools.commands.bootstrap import BootstrapRequest
+from euca2ools.util import mkdtemp_for_large_files
 
 
 class BundleImage(BaseCommand, BundleCreatingMixin,
@@ -47,13 +48,42 @@ class BundleImage(BaseCommand, BundleCreatingMixin,
     SUITE = Euca2ools
     DESCRIPTION = 'Prepare an image for use in the cloud'
     REGION_ENVVAR = 'AWS_DEFAULT_REGION'
+    # Needed because BundleImage has no auth class of its own
+    ARGS = BootstrapRequest.AUTH_CLASS.ARGS
 
     # noinspection PyExceptionInherit
     def configure(self):
-        substitute_euca_region(self)
         self.update_config_view()
 
         BaseCommand.configure(self)
+
+        # Set up access to bootstrap in case we need auto cert fetching.
+        #
+        # We would normally make short work of this using from_other
+        # methods, but since BundleImage doesn't have service or
+        # auth classes of its own we get to do this the hard way.
+        if not self.args.get('bootstrap_service'):
+            service = BootstrapRequest.SERVICE_CLASS(
+                config=self.config, loglevel=self.log.level,
+                url=self.args.get('bootstrap_url'))
+            try:
+                service.configure()
+            except:
+                self.log.debug('bootstrap service setup failed; auto cert '
+                               'fetching will be unavailable', exc_info=True)
+            else:
+                self.args['bootstrap_service'] = service
+        if (not self.args.get('bootstrap_auth') and
+                self.args.get('bootstrap_service')):
+            auth = BootstrapRequest.AUTH_CLASS(
+                config=self.config, loglevel=self.log.level, **self.args)
+            try:
+                auth.configure()
+            except:
+                self.log.debug('bootstrap auth setup failed; auto cert '
+                               'fetching will be unavailable', exc_info=True)
+            else:
+                self.args['bootstrap_auth'] = auth
 
         self.configure_bundle_creds()
         self.configure_bundle_properties()

@@ -24,7 +24,6 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import argparse
-import datetime
 import os.path
 import tempfile
 
@@ -156,7 +155,7 @@ class ResumeImport(EC2Request, S3AccessMixin, FileTransferProgressBarMixin):
 
     def __generate_manifest(self, vol_container, file_size):
         days = self.args.get('expires') or 30
-        expiration = datetime.datetime.utcnow() + datetime.timedelta(days)
+        timeout = days * 86400  # in seconds
         _, bucket, key = self.args['s3_service'].resolve_url_to_location(
             vol_container['image']['importManifestUrl'])
         key_prefix = key.rsplit('/', 1)[0]
@@ -165,7 +164,7 @@ class ResumeImport(EC2Request, S3AccessMixin, FileTransferProgressBarMixin):
         delete_req = DeleteObject.from_other(
             self, service=self.args['s3_service'], auth=self.args['s3_auth'],
             path='/'.join((bucket, key)))
-        manifest.self_destruct_url = delete_req.get_presigned_url(expiration)
+        manifest.self_destruct_url = delete_req.get_presigned_url2(timeout)
         manifest.image_size = int(vol_container['image']['size'])
         manifest.volume_size = int(vol_container['volume']['size'])
         part_size = (self.args.get('part_size') or 10) * 2 ** 20  # MiB
@@ -180,9 +179,9 @@ class ResumeImport(EC2Request, S3AccessMixin, FileTransferProgressBarMixin):
             head_req = HeadObject.from_other(delete_req, path=part_path)
             get_req = GetObject.from_other(delete_req, source=part_path)
             delete_req = DeleteObject.from_other(delete_req, path=part_path)
-            part.head_url = head_req.get_presigned_url(expiration)
-            part.get_url = get_req.get_presigned_url(expiration)
-            part.delete_url = delete_req.get_presigned_url(expiration)
+            part.head_url = head_req.get_presigned_url2(timeout)
+            part.get_url = get_req.get_presigned_url2(timeout)
+            part.delete_url = delete_req.get_presigned_url2(timeout)
             manifest.image_parts.append(part)
         return manifest
 

@@ -23,31 +23,42 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from requestbuilder import Arg
+import sys
 
-from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT
+from requestbuilder import Arg, MutuallyExclusiveArgList
+
+from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT, arg_user
 from euca2ools.commands.iam.addusertogroup import AddUserToGroup
 from euca2ools.commands.iam.createaccesskey import CreateAccessKey
 from euca2ools.commands.iam.getgroup import GetGroup
 
 
 class CreateUser(IAMRequest):
-    DESCRIPTION = ('Create a new user and optionally add the user to a group '
-                   'or generate an access key for the user')
-    ARGS = [Arg('-u', '--user-name', dest='UserName', required=True,
-                help='name of the new user'),
+    DESCRIPTION = 'Create a new user'
+    ARGS = [arg_user(help='name of the new user (required)'),
             Arg('-p', '--path', dest='Path',
                 help='path for the new user (default: "/")'),
             Arg('-g', '--group-name', route_to=None,
-                help='add the new user to a group'),
+                help='also add the new user to a group'),
             Arg('--verify', action='store_true', route_to=None,
                 help='''ensure the group given with -g exists before doing
                 anything'''),
             Arg('-k', '--create-accesskey', action='store_true', route_to=None,
-                help='''create an access key for the new user and print it to
-                        standard out'''),
-            Arg('-v', '--verbose', action='store_true', route_to=None,
-                help="print the new user's ARN and GUID"),
+                help='also create an access key for the new user and show it'),
+            MutuallyExclusiveArgList(
+                Arg('-v', '--verbose', action='store_true', route_to=None,
+                    help="show the new user's ARN and GUID"),
+                Arg('-w', '--write-config', action='store_true', route_to=None,
+                    help='''output access keys and region information in the
+                    form of a euca2ools.ini(5) configuration file instead of
+                    by themselves (implies -k)''')),
+            Arg('-d', '--domain', route_to=None, help='''the DNS domain to
+                use for region information in configuration file output
+                (default: based on IAM URL)'''),
+            Arg('-l', '--set-default-user', action='store_true', route_to=None,
+                help='''set this user as the default user for the region
+                in euca2ools.ini(5) configuration file output.  This
+                option is only useful when used with -w.'''),
             AS_ACCOUNT]
 
     def preprocess(self):
@@ -65,17 +76,23 @@ class CreateUser(IAMRequest):
                 GroupName=self.args['group_name'],
                 DelegateAccount=self.params['DelegateAccount'])
             obj.main()
-        if self.args.get('create_accesskey'):
+        if self.args.get('create_accesskey') or self.args.get('write_config'):
             obj = CreateAccessKey.from_other(
                 self, UserName=self.args['UserName'],
-                DelegateAccount=self.params['DelegateAccount'])
+                DelegateAccount=self.params['DelegateAccount'],
+                write_config=self.args.get('write_config'),
+                domain=self.args.get('domain'),
+                set_default_user=self.args.get('set_default_user'))
             key_result = obj.main()
             result.update(key_result)
 
     def print_result(self, result):
-        if self.args['verbose']:
-            print result['User']['Arn']
-            print result['User']['UserId']
-        if 'AccessKey' in result:
-            print result['AccessKey']['AccessKeyId']
-            print result['AccessKey']['SecretAccessKey']
+        if self.args.get('write_config'):
+            result['configfile'].write(sys.stdout)
+        else:
+            if self.args['verbose']:
+                print result['User']['Arn']
+                print result['User']['UserId']
+            if 'AccessKey' in result:
+                print result['AccessKey']['AccessKeyId']
+                print result['AccessKey']['SecretAccessKey']

@@ -1,4 +1,4 @@
-# Copyright 2014 Eucalyptus Systems, Inc.
+# Copyright 2014-2015 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -24,14 +24,14 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 from requestbuilder import Arg
-import requestbuilder.auth
+import requestbuilder.auth.aws
 from requestbuilder.mixins import TabifyingMixin
 from requestbuilder.request import AWSQueryRequest
 import requestbuilder.service
 
 from euca2ools.commands import Euca2ools
 from euca2ools.exceptions import AWSError
-from euca2ools.util import strip_response_metadata, substitute_euca_region
+from euca2ools.util import strip_response_metadata, add_fake_region_name
 
 
 class CloudFormation(requestbuilder.service.BaseService):
@@ -45,8 +45,8 @@ class CloudFormation(requestbuilder.service.BaseService):
                 help='deployment templating service endpoint URL')]
 
     def configure(self):
-        substitute_euca_region(self)
         requestbuilder.service.BaseService.configure(self)
+        add_fake_region_name(self)
 
     def handle_http_error(self, response):
         raise AWSError(response)
@@ -55,7 +55,7 @@ class CloudFormation(requestbuilder.service.BaseService):
 class CloudFormationRequest(AWSQueryRequest, TabifyingMixin):
     SUITE = Euca2ools
     SERVICE_CLASS = CloudFormation
-    AUTH_CLASS = requestbuilder.auth.QuerySigV2Auth
+    AUTH_CLASS = requestbuilder.auth.aws.HmacV4Auth
     METHOD = 'POST'
 
     def parse_response(self, response):

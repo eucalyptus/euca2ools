@@ -1,4 +1,4 @@
-# Copyright 2009-2014 Eucalyptus Systems, Inc.
+# Copyright 2009-2015 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -27,7 +27,7 @@ import argparse
 
 from requestbuilder import Arg
 
-from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT
+from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT, arg_group
 from euca2ools.commands.iam.deletegrouppolicy import DeleteGroupPolicy
 from euca2ools.commands.iam.getgroup import GetGroup
 from euca2ools.commands.iam.listgrouppolicies import ListGroupPolicies
@@ -36,11 +36,10 @@ from euca2ools.commands.iam.removeuserfromgroup import RemoveUserFromGroup
 
 class DeleteGroup(IAMRequest):
     DESCRIPTION = 'Delete a group'
-    ARGS = [Arg('-g', '--group-name', dest='GroupName', metavar='GROUP',
-                required=True, help='name of the group to delete (required)'),
+    ARGS = [arg_group(help='name of the group to delete (required)'),
             Arg('-r', '--recursive', action='store_true', route_to=None,
                 help='''remove all user memberships and policies associated
-                        with the group first'''),
+                with the group first'''),
             Arg('-R', '--recursive-euca', dest='IsRecursive',
                 action='store_const', const='true', help=argparse.SUPPRESS),
             Arg('-p', '--pretend', action='store_true', route_to=None,

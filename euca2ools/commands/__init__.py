@@ -1,4 +1,4 @@
-# Copyright 2009-2014 Eucalyptus Systems, Inc.
+# Copyright 2009-2015 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -54,7 +54,7 @@ class Euca2ools(object):
     # noinspection PyBroadException
     @staticmethod
     def format_version():
-        version_lines = ['euca2ools {0} (Apollo)'.format(__version__)]
+        version_lines = ['euca2ools {0} (Yokohama)'.format(__version__)]
         try:
             if os.path.isfile('/etc/eucalyptus/eucalyptus-version'):
                 with open('/etc/eucalyptus/eucalyptus-version') as ver_file:

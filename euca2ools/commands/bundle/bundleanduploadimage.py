@@ -1,4 +1,4 @@
-# Copyright 2013-2014 Eucalyptus Systems, Inc.
+# Copyright 2013-2015 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -23,6 +23,7 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import argparse
 import multiprocessing
 import os.path
 import tarfile
@@ -38,6 +39,7 @@ import euca2ools.bundle.manifest
 import euca2ools.bundle.util
 from euca2ools.commands.bundle.mixins import (BundleCreatingMixin,
                                               BundleUploadingMixin)
+from euca2ools.commands.bootstrap import BootstrapRequest
 from euca2ools.commands.s3 import S3Request
 from euca2ools.util import mkdtemp_for_large_files
 
@@ -54,9 +56,23 @@ class BundleAndUploadImage(S3Request, BundleCreatingMixin,
 
     # noinspection PyExceptionInherit
     def configure(self):
+        # This goes before configure because -S's absence causes
+        # self.auth.configure to blow up.  With an upload policy that
+        # is undesirable.
         self.configure_bundle_upload_auth()
 
         S3Request.configure(self)
+
+        # Set up access to bootstrap in case we need auto cert fetching.
+        try:
+            self.args['bootstrap_service'] = \
+                BootstrapRequest.SERVICE_CLASS.from_other(
+                    self.service, url=self.args.get('bootstrap_url'))
+            self.args['bootstrap_auth'] = \
+                BootstrapRequest.AUTH_CLASS.from_other(self.auth)
+        except:
+            self.log.debug('bootstrap setup failed; auto cert fetching '
+                           'will be unavailable', exc_info=True)
 
         self.configure_bundle_creds()
         self.configure_bundle_properties()

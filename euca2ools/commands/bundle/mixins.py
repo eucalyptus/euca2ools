@@ -1,4 +1,4 @@
-# Copyright 2013-2014 Eucalyptus Systems, Inc.
+# Copyright 2013-2015 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -24,11 +24,13 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import argparse
+import atexit
 import base64
 import os.path
 import random
-import tempfile
+import subprocess
 import sys
+import tempfile
 
 from requestbuilder import Arg, MutuallyExclusiveArgList
 from requestbuilder.exceptions import ArgumentError
@@ -38,6 +40,8 @@ import euca2ools.bundle.util
 from euca2ools.commands.argtypes import (b64encoded_file_contents,
                                          delimited_list, filesize,
                                          manifest_block_device_mappings)
+from euca2ools.commands.bootstrap.describeservicecertificates import \
+    DescribeServiceCertificates
 from euca2ools.commands.s3.checkbucket import CheckBucket
 from euca2ools.commands.s3.createbucket import CreateBucket
 from euca2ools.commands.s3.getobject import GetObject
@@ -64,18 +68,26 @@ class BundleCreatingMixin(object):
 
             # User- and cloud-specific stuff
             Arg('-k', '--privatekey', metavar='FILE', help='''file containing
-                your private key to sign the bundle's manifest with.  This
-                private key will also be required to unbundle the image in the
-                future.'''),
-            Arg('-c', '--cert', metavar='FILE',
-                help='file containing your X.509 certificate'),
+                your private key to sign the bundle's manifest with.  If one
+                is not available the bundle will not be signed.'''),
+            Arg('-c', '--cert', metavar='FILE', help='''file containing
+                your X.509 certificate.  If one is not available it
+                will not be possible to unbundle the bundle without
+                cloud administrator assistance.'''),
             Arg('--ec2cert', metavar='FILE', help='''file containing the
-                cloud's X.509 certificate'''),
+                cloud's X.509 certificate.  If one is not available
+                locally it must be available from the bootstrap
+                service.'''),
             Arg('-u', '--user', metavar='ACCOUNT', help='your account ID'),
             Arg('--kernel', metavar='IMAGE', help='''ID of the kernel image to
                 associate with this machine image'''),
             Arg('--ramdisk', metavar='IMAGE', help='''ID of the ramdisk image
                 to associate with this machine image'''),
+            Arg('--bootstrap-url', route_to=None, help='''[Eucalyptus
+                only] bootstrap service endpoint URL (used for obtaining
+                --ec2cert automatically'''),
+            Arg('--bootstrap-service', route_to=None, help=argparse.SUPPRESS),
+            Arg('--bootstrap-auth', route_to=None, help=argparse.SUPPRESS),
 
             # Obscurities
             Arg('-B', '--block-device-mappings',
@@ -114,74 +126,89 @@ class BundleCreatingMixin(object):
     # CONFIG METHODS #
 
     def configure_bundle_creds(self):
-        # User's X.509 certificate (user-level in config)
-        if not self.args.get('cert'):
-            config_cert = self.config.get_user_option('certificate')
-            if 'EC2_CERT' in os.environ:
-                self.args['cert'] = os.getenv('EC2_CERT')
-            elif 'EUCA_CERT' in os.environ:  # used by the NC
-                self.args['cert'] = os.getenv('EUCA_CERT')
-            elif config_cert:
-                self.args['cert'] = config_cert
-        if self.args.get('cert'):
-            self.args['cert'] = os.path.expanduser(os.path.expandvars(
-                self.args['cert']))
-            _assert_is_file(self.args['cert'], 'user certificate')
-
-        # User's private key (user-level in config)
-        if not self.args.get('privatekey'):
-            config_privatekey = self.config.get_user_option('private-key')
-            if 'EC2_PRIVATE_KEY' in os.environ:
-                self.args['privatekey'] = os.getenv('EC2_PRIVATE_KEY')
-            if 'EUCA_PRIVATE_KEY' in os.environ:  # used by the NC
-                self.args['privatekey'] = os.getenv('EUCA_PRIVATE_KEY')
-            elif config_privatekey:
-                self.args['privatekey'] = config_privatekey
-        if self.args.get('privatekey'):
-            self.args['privatekey'] = os.path.expanduser(os.path.expandvars(
-                self.args['privatekey']))
-            _assert_is_file(self.args['privatekey'], 'private key')
-
-        # Cloud's X.509 cert (region-level in config)
-        if not self.args.get('ec2cert'):
-            config_privatekey = self.config.get_region_option('certificate')
-            if 'EUCALYPTUS_CERT' in os.environ:
-                # This has no EC2 equivalent since they just bundle their cert.
-                self.args['ec2cert'] = os.getenv('EUCALYPTUS_CERT')
-            elif config_privatekey:
-                self.args['ec2cert'] = config_privatekey
-        if self.args.get('ec2cert'):
-            self.args['ec2cert'] = os.path.expanduser(os.path.expandvars(
-                self.args['ec2cert']))
-            _assert_is_file(self.args['ec2cert'], 'cloud certificate')
-
         # User's account ID (user-level)
         if not self.args.get('user'):
-            config_account_id = self.config.get_user_option('account-id')
+            config_val = self.config.get_user_option('account-id')
             if 'EC2_USER_ID' in os.environ:
+                self.log.debug('using account ID from environment')
                 self.args['user'] = os.getenv('EC2_USER_ID')
-            elif config_account_id:
-                self.args['user'] = config_account_id
+            elif config_val:
+                self.log.debug('using account ID from configuration')
+                self.args['user'] = config_val
         if self.args.get('user'):
             self.args['user'] = self.args['user'].replace('-', '')
-
-        # Now validate everything
-        if not self.args.get('cert'):
-            raise ArgumentError(
-                'missing certificate; please supply one with -c')
-        self.log.debug('certificate: %s', self.args['cert'])
-        if not self.args.get('privatekey'):
-            raise ArgumentError(
-                'missing private key; please supply one with -k')
-        self.log.debug('private key: %s', self.args['privatekey'])
-        if not self.args.get('ec2cert'):
-            raise ArgumentError(
-                'missing cloud certificate; please supply one with --ec2cert')
-        self.log.debug('cloud certificate: %s', self.args['ec2cert'])
         if not self.args.get('user'):
             raise ArgumentError(
                 'missing account ID; please supply one with --user')
         self.log.debug('account ID: %s', self.args['user'])
+
+        # User's X.509 certificate (user-level in config)
+        if not self.args.get('cert'):
+            config_val = self.config.get_user_option('certificate')
+            if 'EC2_CERT' in os.environ:
+                self.log.debug('using certificate from environment')
+                self.args['cert'] = os.getenv('EC2_CERT')
+            elif 'EUCA_CERT' in os.environ:  # used by the NC
+                self.log.debug('using certificate from environment')
+                self.args['cert'] = os.getenv('EUCA_CERT')
+            elif config_val:
+                self.log.debug('using certificate from configuration')
+                self.args['cert'] = config_val
+        if self.args.get('cert'):
+            self.args['cert'] = os.path.expanduser(os.path.expandvars(
+                self.args['cert']))
+            _assert_is_file(self.args['cert'], 'user certificate')
+        self.log.debug('certificate: %s', self.args['cert'])
+
+        # User's private key (user-level in config)
+        if not self.args.get('privatekey'):
+            config_val = self.config.get_user_option('private-key')
+            if 'EC2_PRIVATE_KEY' in os.environ:
+                self.log.debug('using private key from environment')
+                self.args['privatekey'] = os.getenv('EC2_PRIVATE_KEY')
+            if 'EUCA_PRIVATE_KEY' in os.environ:  # used by the NC
+                self.log.debug('using private key from environment')
+                self.args['privatekey'] = os.getenv('EUCA_PRIVATE_KEY')
+            elif config_val:
+                self.log.debug('using private key from configuration')
+                self.args['privatekey'] = config_val
+        if self.args.get('privatekey'):
+            self.args['privatekey'] = os.path.expanduser(os.path.expandvars(
+                self.args['privatekey']))
+            _assert_is_file(self.args['privatekey'], 'private key')
+        self.log.debug('private key: %s', self.args['privatekey'])
+
+        # Cloud's X.509 cert (region-level in config)
+        if not self.args.get('ec2cert'):
+            config_val = self.config.get_region_option('certificate')
+            if 'EUCALYPTUS_CERT' in os.environ:
+                # This has no EC2 equivalent since they just bundle their cert.
+                self.log.debug('using cloud certificate from environment')
+                self.args['ec2cert'] = os.getenv('EUCALYPTUS_CERT')
+            elif config_val:
+                self.log.debug('using cloud certificate from configuration')
+                self.args['ec2cert'] = config_val
+            elif (self.args.get('bootstrap_service') and
+                  self.args.get('bootstrap_auth')):
+                # Sending requests during configure() can be precarious.
+                # Pay close attention to ordering to ensure all
+                # of this request's dependencies have been fulfilled.
+                fetched_cert = self.__get_bundle_certificate(
+                    self.args['bootstrap_service'],
+                    self.args['bootstrap_auth'])
+                if fetched_cert:
+                    self.log.debug('using cloud certificate from '
+                                   'bootstrap service')
+                    self.args['ec2cert'] = fetched_cert
+        if self.args.get('ec2cert'):
+            self.args['ec2cert'] = os.path.expanduser(os.path.expandvars(
+                self.args['ec2cert']))
+            _assert_is_file(self.args['ec2cert'], 'cloud certificate')
+        if not self.args.get('ec2cert'):
+            raise ArgumentError(
+                'missing cloud certificate; please supply one with '
+                '--ec2cert or use --bootstrap-url to fetch one automatically')
+        self.log.debug('cloud certificate: %s', self.args['ec2cert'])
 
     def configure_bundle_output(self):
         if (self.args.get('destination') and
@@ -257,6 +284,24 @@ class BundleCreatingMixin(object):
             enc_iv_i = srand.getrandbits(128)
         self.args['enc_key'] = '{0:0>32x}'.format(enc_key_i)
         self.args['enc_iv'] = '{0:0>32x}'.format(enc_iv_i)
+
+    def __get_bundle_certificate(self, bootstrap_service, bootstrap_auth):
+        self.log.info('attempting to obtain cloud certificate from '
+                      'bootstrap service')
+        req = DescribeServiceCertificates(
+            config=self.config, loglevel=self.log.level,
+            service=bootstrap_service, auth=bootstrap_auth,
+            Format='pem', FingerprintDigest='SHA-256')
+        response = req.main()
+        for cert in response.get('serviceCertificates') or []:
+            if (cert.get('certificateUsage') == 'image-bundling' and
+                    cert.get('serviceType') == 'compute'):
+                cert_file = tempfile.NamedTemporaryFile(delete=False)
+                cert_file.write(cert['certificate'])
+                cert_file.file.flush()
+                self.args['ec2cert'] = cert_file.name
+                atexit.register(os.remove, cert_file.name)
+                return cert_file.name
 
     # MANIFEST GENERATION METHODS #
 
@@ -534,3 +579,9 @@ def _assert_is_file(filename, filetype):
     if not os.path.isfile(filename):
         raise ArgumentError("{0} file '{1}' is not a file"
                             .format(filetype, filename))
+
+
+def _get_cert_fingerprint(cert_content):
+    popen = subprocess.Popen(('openssl', 'x509', '-fingerprint', '-noout'),
+                             stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+    return popen.communicate(cert_content)[0].strip()

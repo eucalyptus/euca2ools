@@ -1,4 +1,4 @@
-# Copyright 2009-2014 Eucalyptus Systems, Inc.
+# Copyright 2009-2015 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -27,16 +27,15 @@ import json
 
 from requestbuilder import Arg
 
-from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT
+from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT, arg_user
 from euca2ools.commands.iam.putuserpolicy import PutUserPolicy
 from euca2ools.util import build_iam_policy
 
 
 class AddUserPolicy(IAMRequest):
     DESCRIPTION = ('Add a new policy to a user. To add more complex policies '
-                   'than this tool supports, see euare-useruploadpolicy.')
-    ARGS = [Arg('-u', '--user-name', metavar='USER', required=True,
-                help='user to attach the policy to (required)'),
+                   'than this tool supports, see euare-useruploadpolicy(1).')
+    ARGS = [arg_user(help='user to attach the policy to (required)'),
             Arg('-p', '--policy-name', metavar='POLICY', required=True,
                 help='name of the new policy (required)'),
             Arg('-e', '--effect', choices=('Allow', 'Deny'), required=True,
@@ -56,7 +55,7 @@ class AddUserPolicy(IAMRequest):
                                   self.args['actions'])
         policy_doc = json.dumps(policy)
         req = PutUserPolicy.from_other(
-            self, UserName=self.args['user_name'],
+            self, UserName=self.args['UserName'],
             PolicyName=self.args['policy_name'], PolicyDocument=policy_doc,
             DelegateAccount=self.params['DelegateAccount'])
         response = req.main()

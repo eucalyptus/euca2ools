@@ -10,6 +10,7 @@ FILE [\-p PREFIX] [\-d DIR] \fB\-r\fR
 {i386,x86_64,armhf,ppc,ppc64} [\-k FILE]
 [\-c FILE] [\-\-ec2cert FILE] [\-u ACCOUNT]
 [\-\-kernel IMAGE] [\-\-ramdisk IMAGE]
+[\-\-bootstrap\-url BOOTSTRAP_URL]
 [\-B VIRTUAL1=DEVICE1,VIRTUAL2=DEVICE2,...]
 [\-\-productcodes CODE1,CODE2,...]
 [\-\-image\-size IMAGE_SIZE] \fB\-b\fR
@@ -51,14 +52,18 @@ the image's architecture (required)
 .TP
 \fB\-k\fR FILE, \fB\-\-privatekey\fR FILE
 file containing your private key to sign the bundle's
-manifest with. This private key will also be required
-to unbundle the image in the future.
+manifest with. If one is not available the bundle will
+not be signed.
 .TP
 \fB\-c\fR FILE, \fB\-\-cert\fR FILE
-file containing your X.509 certificate
+file containing your X.509 certificate. If one is not
+available it will not be possible to unbundle the
+bundle without cloud administrator assistance.
 .TP
 \fB\-\-ec2cert\fR FILE
-file containing the cloud's X.509 certificate
+file containing the cloud's X.509 certificate. If one
+is not available locally it must be available from the
+bootstrap service.
 .TP
 \fB\-u\fR ACCOUNT, \fB\-\-user\fR ACCOUNT
 your account ID
@@ -70,6 +75,10 @@ image
 \fB\-\-ramdisk\fR IMAGE
 ID of the ramdisk image to associate with this machine
 image
+.TP
+\fB\-\-bootstrap\-url\fR BOOTSTRAP_URL
+[Eucalyptus only] bootstrap service endpoint URL (used
+for obtaining \fB\-\-ec2cert\fR automatically
 .TP
 \fB\-B\fR VIRTUAL1=DEVICE1,VIRTUAL2=DEVICE2,..., \fB\-\-block\-device\-mappings\fR VIRTUAL1=DEVICE1,VIRTUAL2=DEVICE2,...
 block device mapping scheme with which to launch

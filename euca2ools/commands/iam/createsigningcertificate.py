@@ -1,4 +1,4 @@
-# Copyright 2009-2014 Eucalyptus Systems, Inc.
+# Copyright 2009-2015 Eucalyptus Systems, Inc.
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -23,16 +23,17 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT
 import os
+
 from requestbuilder import Arg
+
+from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT, arg_user
 
 
 class CreateSigningCertificate(IAMRequest):
     DESCRIPTION = '[Eucalyptus only] Create a new signing certificate'
-    ARGS = [Arg('-u', '--user-name', dest='UserName', metavar='USER',
-                help='''user to create the signing certificate for (default:
-                current user)'''),
+    ARGS = [arg_user(nargs='?', help='''user to create the signing
+                     certificate for (default: current user)'''),
             Arg('--out', metavar='FILE', route_to=None,
                 help='file to write the certificate to (default: stdout)'),
             Arg('--keyout', metavar='FILE', route_to=None,

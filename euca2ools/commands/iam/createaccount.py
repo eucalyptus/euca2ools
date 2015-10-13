@@ -23,18 +23,69 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from requestbuilder import Arg
-from requestbuilder.mixins import TabifyingMixin
+import os.path
+import sys
 
-from euca2ools.commands.iam import IAMRequest
+from requestbuilder import Arg
+import requestbuilder.exceptions
+from requestbuilder.mixins import TabifyingMixin
+import six
+
+from euca2ools.commands.iam import IAMRequest, arg_account_name
+from euca2ools.commands.iam.createaccesskey import CreateAccessKey
+
+
+CLC_CRED_CHECK_FILE = '/usr/sbin/clcadmin-assume-system-credentials'
 
 
 class CreateAccount(IAMRequest, TabifyingMixin):
     DESCRIPTION = '[Eucalyptus cloud admin only] Create a new account'
-    ARGS = [Arg('-a', '--account-name', dest='AccountName', metavar='ACCOUNT',
-                help='''also add an alias (name) to the new account
-                (required on eucalyptus < 4.2)''')]
+    ARGS = [arg_account_name(nargs='?', help='''also add an alias (name) to the
+                             new account (required on eucalyptus < 4.2)'''),
+            Arg('-k', '--create-accesskey', action='store_true', route_to=None,
+                help='''also create an access key for the new account's
+                administrator and show it'''),
+            Arg('-w', '--write-config', action='store_true', route_to=None,
+                help='''output access keys and region information in the
+                form of a euca2ools.ini(5) configuration file instead of
+                by themselves (implies -k)'''),
+            Arg('-d', '--domain', route_to=None, help='''the DNS domain to
+                use for region information in configuration file output
+                (default: based on IAM URL)'''),
+            Arg('-l', '--set-default-user', action='store_true', route_to=None,
+                help='''set this user as the default user for the region
+                in euca2ools.ini(5) configuration file output.  This
+                option is only useful when used with -w.''')]
+
+    def configure(self):
+        try:
+            IAMRequest.configure(self)
+        except requestbuilder.exceptions.AuthError as err:
+            if (os.path.exists(CLC_CRED_CHECK_FILE) and len(err.args) > 0 and
+                    isinstance(err.args[0], six.string_types)):
+                msg = ("{0}.  If a cloud controller is running, you "
+                       "can assume administrator credentials with "
+                       "eval `clcadmin-assume-system-credentials`")
+                err.args = (msg.format(err.args[0]),) + err.args[1:]
+            raise
+
+    def postprocess(self, result):
+        if self.args.get('create_accesskey') or self.args.get('write_config'):
+            obj = CreateAccessKey.from_other(
+                self, UserName='admin',
+                DelegateAccount=result['Account']['AccountId'],
+                write_config=self.args.get('write_config'),
+                domain=self.args.get('domain'),
+                set_default_user=self.args.get('set_default_user'))
+            key_result = obj.main()
+            result.update(key_result)
 
     def print_result(self, result):
-        print self.tabify((result.get('Account', {}).get('AccountName'),
-                           result.get('Account', {}).get('AccountId')))
+        if self.args.get('write_config'):
+            result['configfile'].write(sys.stdout)
+        else:
+            print self.tabify((result.get('Account', {}).get('AccountName'),
+                               result.get('Account', {}).get('AccountId')))
+            if 'AccessKey' in result:
+                print result['AccessKey']['AccessKeyId']
+                print result['AccessKey']['SecretAccessKey']

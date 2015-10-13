@@ -3,18 +3,33 @@
 .SH NAME
 euare-accountcreate \- [Eucalyptus cloud admin only] Create a new account
 .SH SYNOPSIS
-euare\-accountcreate [\-a ACCOUNT] [\-\-show\-empty\-fields] [\-U URL]
+euare\-accountcreate [\-k] [\-w] [\-d DOMAIN] [\-\-show\-empty\-fields]
 .TP
-[\-\-region USER@REGION] [\-I KEY_ID] [\-S KEY]
-[\-\-security\-token TOKEN] [\-\-debug] [\-\-debugger]
-[\-\-version] [\-h]
+[\-U URL] [\-\-region USER@REGION] [\-I KEY_ID]
+[\-S KEY] [\-\-security\-token TOKEN] [\-\-debug]
+[\-\-debugger] [\-\-version] [\-h]
+[ACCOUNT]
 .SH DESCRIPTION
 [Eucalyptus cloud admin only] Create a new account
-.SS "optional arguments:"
+.SS "positional arguments:"
 .TP
-\fB\-a\fR ACCOUNT, \fB\-\-account\-name\fR ACCOUNT
+ACCOUNT
 also add an alias (name) to the new account (required
 on eucalyptus < 4.2)
+.SS "optional arguments:"
+.TP
+\fB\-k\fR, \fB\-\-create\-accesskey\fR
+also create an access key for the new account's
+administrator and show it
+.TP
+\fB\-w\fR, \fB\-\-write\-config\fR
+output access keys and region information in the form
+of a euca2ools.ini(5) configuration file instead of by
+themselves (implies \fB\-k\fR)
+.TP
+\fB\-d\fR DOMAIN, \fB\-\-domain\fR DOMAIN
+the DNS domain to use for region information in
+configuration file output (default: based on IAM URL)
 .TP
 \fB\-\-show\-empty\-fields\fR
 show empty values as "(nil)"
