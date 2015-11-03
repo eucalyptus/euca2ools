@@ -70,7 +70,7 @@ class PutMetricData(CloudWatchRequest):
                     help='''statistic values for the metric.  Maximum, Minimum,
                     SampleCount, and Sum values are all required.'''))
             .required(),
-            Arg('-d', '--dimensions', dest='Dimensions.member',
+            Arg('-d', '--dimensions', dest='MetricData.member.1.Dimensions.member',
                 metavar='KEY1=VALUE1,KEY2=VALUE2,...',
                 type=delimited_list(',', item_type=cloudwatch_dimension),
                 help='the dimensions of the metric to add data points to'),
