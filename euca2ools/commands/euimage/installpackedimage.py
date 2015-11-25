@@ -28,7 +28,7 @@ import hashlib
 import tempfile
 
 from requestbuilder import Arg
-from requestbuilder.auth.aws import QueryHmacV2Auth
+from requestbuilder.auth.aws import HmacV4Auth
 from requestbuilder.mixins import FileTransferProgressBarMixin, TabifyingMixin
 
 import euca2ools
@@ -77,7 +77,7 @@ class InstallPackedImage(S3Request, FileTransferProgressBarMixin,
                 self.service, url=self.args.get('ec2_url'))
 
         if not self.args.get('ec2_auth'):
-            self.args['ec2_auth'] = QueryHmacV2Auth.from_other(self.auth)
+            self.args['ec2_auth'] = HmacV4Auth.from_other(self.auth)
         if not self.args.get('profile'):
             self.args['profile'] = 'default'
 
