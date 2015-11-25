@@ -158,7 +158,7 @@ class BundleCreatingMixin(object):
             self.args['cert'] = os.path.expanduser(os.path.expandvars(
                 self.args['cert']))
             _assert_is_file(self.args['cert'], 'user certificate')
-        self.log.debug('certificate: %s', self.args['cert'])
+        self.log.debug('certificate: %s', self.args.get('cert'))
 
         # User's private key (user-level in config)
         if not self.args.get('privatekey'):
@@ -176,7 +176,7 @@ class BundleCreatingMixin(object):
             self.args['privatekey'] = os.path.expanduser(os.path.expandvars(
                 self.args['privatekey']))
             _assert_is_file(self.args['privatekey'], 'private key')
-        self.log.debug('private key: %s', self.args['privatekey'])
+        self.log.debug('private key: %s', self.args.get('privatekey'))
 
         # Cloud's X.509 cert (region-level in config)
         if not self.args.get('ec2cert'):
