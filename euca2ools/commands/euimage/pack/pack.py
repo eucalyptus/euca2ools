@@ -112,8 +112,8 @@ class ImagePack(object):
             pack.pack_md.image_size = bytes_read
 
             # Write metadata and pack everything up
-            with contextlib.closing(tarfile.open(pack.filename, 'w')) \
-                    as tarball:
+            with contextlib.closing(tarfile.open(pack.filename, 'w',
+                                                 dereference=True)) as tarball:
                 with tempfile.NamedTemporaryFile() as pack_md_file:
                     pack.pack_md.dump_to_fileobj(pack_md_file)
                     tarball.add(pack_md_file.name, arcname=PACK_MD_ARCNAME)
