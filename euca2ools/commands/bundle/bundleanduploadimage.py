@@ -101,8 +101,8 @@ class BundleAndUploadImage(S3Request, BundleCreatingMixin,
         manifest = self.build_manifest(digest, partinfo)
         manifest_filename = '{0}.manifest.xml'.format(path_prefix)
         with open(manifest_filename, 'w') as manifest_file:
-            manifest.dump_to_file(manifest_file, self.args['privatekey'],
-                                  self.args['cert'], self.args['ec2cert'])
+            manifest.dump_to_file(manifest_file, self.args.get('privatekey'),
+                                  self.args.get('cert'), self.args['ec2cert'])
         manifest_dest = key_prefix + os.path.basename(manifest_filename)
         self.upload_bundle_file(manifest_filename, manifest_dest,
                                 show_progress=self.args.get('show_progress'))
