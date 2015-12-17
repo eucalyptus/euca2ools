@@ -63,7 +63,7 @@ class BundleCreatingMixin(object):
                 the bundle's files (default:  dir named by TMPDIR, TEMP, or TMP
                 environment variables, or otherwise /var/tmp)'''),
             Arg('-r', '--arch', required=True,
-                choices=('i386', 'x86_64', 'armhf', 'ppc', 'ppc64'),
+                choices=('i386', 'x86_64', 'armhf', 'ppc', 'ppc64', 'ppc64le'),
                 help="the image's architecture (required)"),
 
             # User- and cloud-specific stuff
