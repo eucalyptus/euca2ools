@@ -46,6 +46,8 @@ class DescribeRouteTables(EC2Request):
                       block specified in one of the table's routes'''),
                Filter('route.gateway-id', help='''ID of a gateway
                       specified by a route in the table'''),
+               Filter('route.instance-id', help='''ID of an instance
+                      specified by a route in the table'''),
                Filter('route.vpc-peering-connection-id',
                       help='''ID of a VPC peering connection specified
                       by a route in the table'''),
