@@ -280,7 +280,7 @@ class EC2Request(AWSQueryRequest, TabifyingMixin):
         print self.tabify(['NETWORKINTERFACE'] + nic_info)
         if nic.get('attachment'):
             attachment_info = [nic['attachment'].get(attr) for attr in (
-                'attachmentID', 'deviceIndex', 'status', 'attachTime',
+                'attachmentId', 'deviceIndex', 'status', 'attachTime',
                 'deleteOnTermination')]
             print self.tabify(['ATTACHMENT'] + attachment_info)
         privaddresses = nic.get('privateIpAddressesSet', [])
