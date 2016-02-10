@@ -72,8 +72,7 @@ class _ModifySecurityGroupRule(EC2Request):
     def configure(self):
         EC2Request.configure(self)
 
-        if (self.args['group'].startswith('sg-') and
-                len(self.args['group']) == 11):
+        if self.args['group'].startswith('sg-'):
             # The check could probably be a little better, but meh.  Fix if
             # needed.
             self.params['GroupId'] = self.args['group']
@@ -85,7 +84,7 @@ class _ModifySecurityGroupRule(EC2Request):
 
         target_group = self.args.get('target_group')
         if target_group is not None:
-            if target_group.startswith('sg-') and len(target_group) == 11:
+            if target_group.startswith('sg-'):
                 # Same note as above
                 self.params['IpPermissions.1.Groups.1.GroupId'] = target_group
             else:
