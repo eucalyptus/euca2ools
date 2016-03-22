@@ -256,8 +256,12 @@ def binary_tag_def(tag_str):
      - 'key=':      {'Key': key, 'Value': EMPTY}
      - 'key':       {'Key': key, 'Value': EMPTY}
     """
-    if '=' in tag_str:
+    if not tag_str:
+        raise ValueError('tag must be non-empty')
+    elif '=' in tag_str:
         (key, val) = tag_str.split('=', 1)
+        if not key:
+            raise ValueError('tag "{0}" must include a key'.format(tag_str))
         return {'Key': key, 'Value': val or EMPTY}
     else:
         return {'Key': tag_str, 'Value': EMPTY}
