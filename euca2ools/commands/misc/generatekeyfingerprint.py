@@ -1,4 +1,4 @@
-# Copyright 2014 Eucalyptus Systems, Inc.
+# Copyright (c) 2014-2016 Hewlett Packard Enterprise Development LP
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -44,7 +44,9 @@ class GenerateKeyFingerprint(BaseCommand):
         pkcs8 = subprocess.Popen(
             ('openssl', 'pkcs8', '-in', self.args['privkey_filename'],
              '-nocrypt', '-topk8', '-outform', 'DER'), stdout=subprocess.PIPE)
-        privkey = pkcs8.stdout.read()
+        privkey = pkcs8.communicate()[0]
+        if pkcs8.returncode:
+            raise subprocess.CalledProcessError(pkcs8.returncode, 'openssl')
         fprint = hashlib.sha1(privkey).hexdigest()
         return ':'.join(fprint[i:i+2] for i in range(0, len(fprint), 2))
 
