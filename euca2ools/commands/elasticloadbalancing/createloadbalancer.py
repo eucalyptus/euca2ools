@@ -1,4 +1,4 @@
-# Copyright 2013 Eucalyptus Systems, Inc.
+# Copyright (c) 2013-2016 Hewlett Packard Enterprise Development LP
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -26,7 +26,7 @@
 from requestbuilder import Arg, MutuallyExclusiveArgList
 from requestbuilder.mixins import TabifyingMixin
 
-from euca2ools.commands.argtypes import delimited_list
+from euca2ools.commands.argtypes import binary_tag_def, delimited_list
 from euca2ools.commands.elasticloadbalancing import ELBRequest
 from euca2ools.commands.elasticloadbalancing.argtypes import listener
 
@@ -65,7 +65,10 @@ class CreateLoadBalancer(ELBRequest, TabifyingMixin):
             Arg('-g', '--security-groups', dest='SecurityGroups.member',
                 metavar='GROUP1,GROUP2,...', type=delimited_list(','),
                 help='''[VPC only] IDs of the security groups to assign to the
-                new load balancer''')]
+                new load balancer'''),
+            Arg('-t', '--tag', dest='Tags.member', action='append',
+                metavar='KEY=VALUE', type=binary_tag_def,
+                help='key and value of a tag to add to the new load balancer')]
 
     def print_result(self, result):
         print self.tabify(('DNS_NAME', result.get('DNSName')))
