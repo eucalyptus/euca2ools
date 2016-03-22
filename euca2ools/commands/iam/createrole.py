@@ -1,4 +1,4 @@
-# Copyright 2014-2015 Eucalyptus Systems, Inc.
+# Copyright (c) 2014-2016 Hewlett Packard Enterprise Development LP
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -39,8 +39,8 @@ class CreateRole(IAMRequest):
             Arg('-p', '--path', dest='Path',
                 help='path for the new role (default: "/")'),
             MutuallyExclusiveArgList(
-                Arg('-f', dest='AssumeRolePolicyDocument', metavar='FILE',
-                    type=file_contents,
+                Arg('-f', '--trust-policy', dest='AssumeRolePolicyDocument',
+                    metavar='FILE', type=file_contents,
                     help='file containing the trust policy for the new role'),
                 Arg('-s', '--service', dest='service_', metavar='SERVICE',
                     route_to=None, help='''service to allow access to

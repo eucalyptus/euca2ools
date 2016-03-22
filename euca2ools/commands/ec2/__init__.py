@@ -1,4 +1,4 @@
-# Copyright 2009-2015 Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2016 Hewlett Packard Enterprise Development LP
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -280,7 +280,7 @@ class EC2Request(AWSQueryRequest, TabifyingMixin):
         print self.tabify(['NETWORKINTERFACE'] + nic_info)
         if nic.get('attachment'):
             attachment_info = [nic['attachment'].get(attr) for attr in (
-                'attachmentID', 'deviceIndex', 'status', 'attachTime',
+                'attachmentId', 'deviceIndex', 'status', 'attachTime',
                 'deleteOnTermination')]
             print self.tabify(['ATTACHMENT'] + attachment_info)
         privaddresses = nic.get('privateIpAddressesSet', [])
@@ -310,6 +310,8 @@ class EC2Request(AWSQueryRequest, TabifyingMixin):
             print self.tabify(('PRIVATEIPADDRESS',
                                privaddress.get('privateIpAddress'),
                                privaddress.get('privateDnsName'), primary))
+        for tag in nic.get('tagSet') or []:
+            self.print_resource_tag(tag, nic.get('networkInterfaceId'))
 
     def print_customer_gateway(self, cgw):
         print self.tabify(('CUSTOMERGATEWAY', cgw.get('customerGatewayId'),

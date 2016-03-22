@@ -5,7 +5,7 @@ export TERM="dumb"  # http://www.incenp.org/notes/2012/python-term-smm-fix.html
 
 py_version=$(python -c 'import sys; print ".".join(map(str, sys.version_info[:2]))')
 script_dir="build/scripts-$py_version"
-version="$($script_dir/euca-version 2>&1 | sed -e 's/^euca2ools *\([^(]*\).*/\1/' -e 's/ *$//')"
+version="$($script_dir/euca-version 2>&1 | sed -e 's/^euca2ools \([0-9]\.[0-9]\).*/\1/')"
 
 mkdir -p man
 for exe in $@; do

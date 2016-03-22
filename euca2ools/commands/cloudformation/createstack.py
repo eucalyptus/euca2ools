@@ -1,4 +1,4 @@
-# Copyright 2014-2015 Eucalyptus Systems, Inc.
+# Copyright (c) 2014-2016 Hewlett Packard Enterprise Development LP
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -23,6 +23,8 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import argparse
+
 from requestbuilder import Arg, MutuallyExclusiveArgList
 
 from euca2ools.commands.argtypes import binary_tag_def, delimited_list
@@ -42,7 +44,8 @@ class CreateStack(CloudFormationRequest):
                     help="URL pointing to the new stack's JSON template"))
             .required(),
             Arg('-d', '--disable-rollback', dest='DisableRollback',
-                action='store_true', help='disable rollback on failure'),
+                action='store_true', default=argparse.SUPPRESS,
+                help='disable rollback on failure'),
             Arg('-n', '--notification-arns', dest='NotificationARNs.member',
                 metavar='ARN[,...]', type=delimited_list(','), action='append',
                 help='''SNS ARNs to publish stack actions to'''),
