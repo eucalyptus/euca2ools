@@ -6,6 +6,7 @@ euform-update-stack \- Update a stack with a new template
 euform\-update\-stack (\fB\-\-template\-file\fR FILE | \fB\-\-template\-url\fR URL)
 .TP
 [\-\-capabilities CAP[,...]] [\-p KEY=VALUE]
+[\-\-tag KEY[=VALUE] | \fB\-\-delete\-tags]\fR
 [\-\-show\-empty\-fields] [\-U URL]
 [\-\-region USER@REGION] [\-I KEY_ID] [\-S KEY]
 [\-\-security\-token TOKEN] [\-\-debug] [\-\-debugger]
@@ -31,6 +32,14 @@ capabilities needed to update the stack
 \fB\-p\fR KEY=VALUE, \fB\-\-parameter\fR KEY=VALUE
 key and value of the parameters to use with the
 stack's template, separated by an "=" character
+.TP
+\fB\-\-tag\fR KEY[=VALUE]
+key and optional value of a tag to add, separated by
+an "=" character. If no value is given the tag's value
+is set to an empty string.
+.TP
+\fB\-\-delete\-tags\fR
+remove all tags associated with the stack
 .TP
 \fB\-\-show\-empty\-fields\fR
 show empty values as "(nil)"
