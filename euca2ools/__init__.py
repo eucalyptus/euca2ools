@@ -27,7 +27,7 @@ import os.path
 import subprocess
 
 
-__version__ = '3.2-devel'
+__version__ = '3.3-devel'
 
 BUFSIZE = 16 * 1024
 
