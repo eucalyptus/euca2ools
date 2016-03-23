@@ -1,4 +1,4 @@
-# Copyright 2013-2014 Eucalyptus Systems, Inc.
+# Copyright (c) 2013-2016 Hewlett Packard Enterprise Development LP
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -54,8 +54,7 @@ class DescribeInstanceTypes(EC2Request, TabifyingMixin):
             vmtypes[vmtype['name']] = {'cpu': vmtype.get('cpu'),
                                        'memory': vmtype.get('memory'),
                                        'disk': vmtype.get('disk'),
-                                       'networkInterfaces':
-                                         vmtype.get('networkInterfaces'),
+                                       'nics': vmtype.get('networkInterfaces'),
                                        'available': 0,
                                        'max': 0}
             if self.params.get('Availability', False):
@@ -69,6 +68,7 @@ class DescribeInstanceTypes(EC2Request, TabifyingMixin):
                         'cpu': vmtype.get('cpu'),
                         'memory': vmtype.get('memory'),
                         'disk': vmtype.get('disk'),
+                        'nics': vmtype.get('networkInterfaces'),
                         'available': available,
                         'max': max_}
 
@@ -86,7 +86,7 @@ class DescribeInstanceTypes(EC2Request, TabifyingMixin):
                   'cpu': 'CPUs',
                   'memory': 'Memory (MiB)',
                   'disk': 'Disk (GiB)',
-                  'networkInterfaces': 'ENIs',
+                  'nics': 'NICs',
                   'used': 'Used',
                   'total': 'Total',
                   'used_pct': 'Used %'}
@@ -104,8 +104,7 @@ class DescribeInstanceTypes(EC2Request, TabifyingMixin):
                            'cpu': vmtypes[vmtype_name].get('cpu'),
                            'memory': vmtypes[vmtype_name].get('memory'),
                            'disk': vmtypes[vmtype_name].get('disk'),
-                           'networkInterfaces':
-                             vmtypes[vmtype_name].get('networkInterfaces'),
+                           'nics': vmtypes[vmtype_name].get('nics'),
                            'used': used,
                            'total': total,
                            'used_pct': used_pct}
@@ -115,7 +114,7 @@ class DescribeInstanceTypes(EC2Request, TabifyingMixin):
                     field_lengths[field] = len(str(vmtype_info[field]))
         type_template = ('{{name:<{name}}}  {{cpu:>{cpu}}}  '
                          '{{memory:>{memory}}}  {{disk:>{disk}}}  '
-                         '{{networkInterfaces:>{networkInterfaces}}}')
+                         '{{nics:>{nics}}}')
         if self.args.get('Availability', False):
             type_template += ('  {{used:>{used}}} / {{total:>{total}}}  '
                               '{{used_pct:>{used_pct}}}')
