@@ -54,7 +54,7 @@ class Euca2ools(object):
     # noinspection PyBroadException
     @staticmethod
     def format_version():
-        version_lines = ['euca2ools {0} (Yokohama)'.format(__version__)]
+        version_lines = ['euca2ools {0} (Newton)'.format(__version__)]
         try:
             if os.path.isfile('/etc/eucalyptus/eucalyptus-version'):
                 with open('/etc/eucalyptus/eucalyptus-version') as ver_file:
