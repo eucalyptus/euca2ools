@@ -47,10 +47,15 @@ class AssociateAddress(EC2Request):
                 metavar='ADDRESS', help='''[VPC only] the private address to
                 associate with the address being associated in the VPC
                 (default: primary private IP)'''),
-            Arg('--allow-reassociation', dest='AllowReassociation',
-                action='store_const', const='true',
-                help='''[VPC only] allow the address to be associated even if
-                it is already associated with another interface''')]
+            MutuallyExclusiveArgList(
+                Arg('--allow-reassociation', dest='AllowReassociation',
+                    action='store_const', const='true',
+                    help='''[VPC only] allow the address to be associated even
+                    if it is already associated with another interface'''),
+                Arg('--no-allow-reassociation', dest='AllowReassociation',
+                    action='store_const', const='false',
+                    help='''[VPC only] do not allow the address to be associated
+                    if it is already associated with another interface'''))]
 
     # noinspection PyExceptionInherit
     def configure(self):

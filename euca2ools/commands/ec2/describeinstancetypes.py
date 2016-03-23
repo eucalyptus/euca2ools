@@ -54,6 +54,8 @@ class DescribeInstanceTypes(EC2Request, TabifyingMixin):
             vmtypes[vmtype['name']] = {'cpu': vmtype.get('cpu'),
                                        'memory': vmtype.get('memory'),
                                        'disk': vmtype.get('disk'),
+                                       'networkInterfaces':
+                                         vmtype.get('networkInterfaces'),
                                        'available': 0,
                                        'max': 0}
             if self.params.get('Availability', False):
@@ -84,6 +86,7 @@ class DescribeInstanceTypes(EC2Request, TabifyingMixin):
                   'cpu': 'CPUs',
                   'memory': 'Memory (MiB)',
                   'disk': 'Disk (GiB)',
+                  'networkInterfaces': 'ENIs',
                   'used': 'Used',
                   'total': 'Total',
                   'used_pct': 'Used %'}
@@ -101,6 +104,8 @@ class DescribeInstanceTypes(EC2Request, TabifyingMixin):
                            'cpu': vmtypes[vmtype_name].get('cpu'),
                            'memory': vmtypes[vmtype_name].get('memory'),
                            'disk': vmtypes[vmtype_name].get('disk'),
+                           'networkInterfaces':
+                             vmtypes[vmtype_name].get('networkInterfaces'),
                            'used': used,
                            'total': total,
                            'used_pct': used_pct}
@@ -109,7 +114,8 @@ class DescribeInstanceTypes(EC2Request, TabifyingMixin):
                 if len(str(vmtype_info[field])) > field_lengths[field]:
                     field_lengths[field] = len(str(vmtype_info[field]))
         type_template = ('{{name:<{name}}}  {{cpu:>{cpu}}}  '
-                         '{{memory:>{memory}}}  {{disk:>{disk}}}')
+                         '{{memory:>{memory}}}  {{disk:>{disk}}}  '
+                         '{{networkInterfaces:>{networkInterfaces}}}')
         if self.args.get('Availability', False):
             type_template += ('  {{used:>{used}}} / {{total:>{total}}}  '
                               '{{used_pct:>{used_pct}}}')
