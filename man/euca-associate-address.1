@@ -5,7 +5,8 @@ euca-associate-address \- Associate an elastic IP address with a running instanc
 .SH SYNOPSIS
 euca\-associate\-address [\-a ALLOC] (\fB\-i\fR INSTANCE | \fB\-n\fR INTERFACE)
 .TP
-[\-p ADDRESS] [\-\-allow\-reassociation]
+[\-p ADDRESS]
+[\-\-allow\-reassociation | \fB\-\-no\-allow\-reassociation]\fR
 [\-\-show\-empty\-fields] [\-U URL]
 [\-\-region USER@REGION] [\-I KEY_ID] [\-S KEY]
 [\-\-security\-token TOKEN] [\-\-debug] [\-\-debugger]
@@ -37,6 +38,10 @@ private IP)
 \fB\-\-allow\-reassociation\fR
 [VPC only] allow the address to be associated even if
 it is already associated with another interface
+.TP
+\fB\-\-no\-allow\-reassociation\fR
+[VPC only] do not allow the address to be associated
+if it is already associated with another interface
 .TP
 \fB\-\-show\-empty\-fields\fR
 show empty values as "(nil)"
