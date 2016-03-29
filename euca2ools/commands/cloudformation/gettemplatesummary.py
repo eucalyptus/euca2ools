@@ -29,7 +29,7 @@ from euca2ools.commands.cloudformation import CloudFormationRequest
 
 
 class GetTemplateSummary(CloudFormationRequest):
-    DESCRIPTION = "Returns summary of a template"
+    DESCRIPTION = "Summarize a template"
     ARGS = [Arg('StackName', metavar='STACK', help='''name or ID of the
                 stack (names cannot be used for deleted stacks) (required)''')]
     LIST_TAGS = ['Capabilities', 'Parameters', 'ResourceTypes']
