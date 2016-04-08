@@ -23,15 +23,22 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from requestbuilder import Arg
+from requestbuilder import Arg, MutuallyExclusiveArgList
 
 from euca2ools.commands.cloudformation import CloudFormationRequest
 
 
 class GetTemplateSummary(CloudFormationRequest):
     DESCRIPTION = "Summarize a template"
-    ARGS = [Arg('StackName', metavar='STACK', help='''name or ID of the
-                stack (names cannot be used for deleted stacks) (required)''')]
+    ARGS = [MutuallyExclusiveArgList(
+        Arg('StackName', metavar='STACK', nargs='?', help='''name or ID of the
+            stack (names cannot be used for deleted stacks)'''),
+        Arg('--template-file', dest='TemplateBody',
+            metavar='FILE', type=open,
+            help='file location containing JSON template'),
+        Arg('--template-url', dest='TemplateURL',
+            metavar='URL', help='S3 URL for JSON template'))
+            .required()]
     LIST_TAGS = ['Capabilities', 'Parameters', 'ResourceTypes']
 
     def print_result(self, result):
