@@ -188,6 +188,20 @@ class EC2Request(AWSQueryRequest, TabifyingMixin):
         for tag in igw.get('tagSet') or []:
             self.print_resource_tag(tag, igw.get('internetGatewayId'))
 
+    def print_nat_gateway(self, natgw):
+        print self.tabify(('NATGATEWAY', natgw.get('natGatewayId'),
+                           natgw.get('state'), natgw.get('subnetId'),
+                           natgw.get('vpcId'), natgw.get('failureCode'),
+                           natgw.get('failureMessage'),
+                           natgw.get('createTime'),
+                           natgw.get('deleteTime'),))
+        for address_set in natgw.get('natGatewayAddressSet') or []:
+            print self.tabify(('NATGATEWAYADDRESSES',
+                               address_set.get('allocationId'),
+                               address_set.get('networkInterfaceId'),
+                               address_set.get('publicIp'),
+                               address_set.get('privateIp')))
+
     def print_peering_connection(self, pcx):
         status = pcx.get('status') or {}
         print self.tabify(('VPCPEERINGCONNECTION',
