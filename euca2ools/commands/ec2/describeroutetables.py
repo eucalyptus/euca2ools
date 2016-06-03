@@ -1,4 +1,4 @@
-# Copyright 2013-2014 Eucalyptus Systems, Inc.
+# Copyright 2013-2016 Hewlett Packard Enterprise Development LP
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -47,6 +47,8 @@ class DescribeRouteTables(EC2Request):
                Filter('route.gateway-id', help='''ID of a gateway
                       specified by a route in the table'''),
                Filter('route.instance-id', help='''ID of an instance
+                      specified by a route in the table'''),
+               Filter('route.nat-gateway-id', help='''ID of a NAT gateway
                       specified by a route in the table'''),
                Filter('route.vpc-peering-connection-id',
                       help='''ID of a VPC peering connection specified

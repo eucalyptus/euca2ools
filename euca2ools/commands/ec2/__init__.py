@@ -256,6 +256,7 @@ class EC2Request(AWSQueryRequest, TabifyingMixin):
         for route in table.get('routeSet') or []:
             target = (route.get('gatewayId') or route.get('instanceId') or
                       route.get('networkInterfaceId') or
+                      route.get('natGatewayId') or
                       route.get('vpcPeeringConnectionId'))
             print self.tabify((
                 'ROUTE', target, route.get('state'),
