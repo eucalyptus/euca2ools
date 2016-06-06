@@ -49,7 +49,7 @@ from euca2ools.util import add_fake_region_name
 class EC2(BaseService):
     NAME = 'ec2'
     DESCRIPTION = 'Elastic compute cloud service'
-    API_VERSION = '2014-06-15'
+    API_VERSION = '2015-10-01'
     REGION_ENVVAR = 'AWS_DEFAULT_REGION'
     URL_ENVVAR = 'EC2_URL'
 

@@ -1,4 +1,4 @@
-# Copyright 2014 Eucalyptus Systems, Inc.
+# Copyright 2014-2016 Hewlett Packard Enterprise Development LP
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -61,7 +61,7 @@ class ModifyInstanceAttribute(EC2Request):
                 Arg('--disable-api-termination', choices=('true', 'false'),
                     dest='DisableApiTermination.Value', help='''change whether
                     or not the instance may be terminated'''),
-                Arg('--ebs-optimized', dest='EbsOptimized',
+                Arg('--ebs-optimized', dest='EbsOptimized.Value',
                     choices=('true', 'false'), help='''change whether or not
                     the instance should be optimized for EBS I/O'''),
                 Arg('-g', '--group-id', dest='GroupId', metavar='GROUP',

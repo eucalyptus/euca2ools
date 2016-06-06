@@ -30,7 +30,6 @@ from euca2ools.commands.ec2 import EC2Request
 
 
 class AssociateAddress(EC2Request):
-    API_VERSION = '2015-10-01'
     DESCRIPTION = 'Associate an elastic IP address with a running instance'
     ARGS = [Arg('PublicIp', metavar='ADDRESS', nargs='?', help='''[Non-VPC
                 only] IP address to associate (required)'''),
