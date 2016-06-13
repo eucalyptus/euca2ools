@@ -49,7 +49,7 @@ from euca2ools.util import add_fake_region_name
 class EC2(BaseService):
     NAME = 'ec2'
     DESCRIPTION = 'Elastic compute cloud service'
-    API_VERSION = '2014-06-15'
+    API_VERSION = '2015-10-01'
     REGION_ENVVAR = 'AWS_DEFAULT_REGION'
     URL_ENVVAR = 'EC2_URL'
 
@@ -188,6 +188,20 @@ class EC2Request(AWSQueryRequest, TabifyingMixin):
         for tag in igw.get('tagSet') or []:
             self.print_resource_tag(tag, igw.get('internetGatewayId'))
 
+    def print_nat_gateway(self, natgw):
+        print self.tabify(('NATGATEWAY', natgw.get('natGatewayId'),
+                           natgw.get('state'), natgw.get('subnetId'),
+                           natgw.get('vpcId'), natgw.get('failureCode'),
+                           natgw.get('failureMessage'),
+                           natgw.get('createTime'),
+                           natgw.get('deleteTime'),))
+        for address_set in natgw.get('natGatewayAddressSet') or []:
+            print self.tabify(('NATGATEWAYADDRESSES',
+                               address_set.get('allocationId'),
+                               address_set.get('networkInterfaceId'),
+                               address_set.get('publicIp'),
+                               address_set.get('privateIp')))
+
     def print_peering_connection(self, pcx):
         status = pcx.get('status') or {}
         print self.tabify(('VPCPEERINGCONNECTION',
@@ -256,6 +270,7 @@ class EC2Request(AWSQueryRequest, TabifyingMixin):
         for route in table.get('routeSet') or []:
             target = (route.get('gatewayId') or route.get('instanceId') or
                       route.get('networkInterfaceId') or
+                      route.get('natGatewayId') or
                       route.get('vpcPeeringConnectionId'))
             print self.tabify((
                 'ROUTE', target, route.get('state'),

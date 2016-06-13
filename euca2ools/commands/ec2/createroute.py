@@ -1,4 +1,4 @@
-# Copyright 2013-2014 Eucalyptus Systems, Inc.
+# Copyright 2013-2016 Hewlett Packard Enterprise Development LP
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -36,8 +36,9 @@ class CreateRoute(EC2Request):
                 metavar='CIDR', required=True,
                 help='CIDR address block the route should affect (required)'),
             MutuallyExclusiveArgList(
-                Arg('-g', '--gateway-id', dest='GatewayId', metavar='GATEWAY',
-                    help='ID of an Internet gateway to target'),
+                Arg('-g', '--gateway-id', metavar='GATEWAY', route_to=None,
+                    help='ID of an Internet, NAT, or virtual private '
+                         'gateway to target'),
                 Arg('-i', '--instance', dest='InstanceId', metavar='INSTANCE',
                     help='ID of a NAT instance to target'),
                 Arg('-n', '--network-interface', dest='NetworkInterfaceId',
@@ -47,8 +48,18 @@ class CreateRoute(EC2Request):
                     help='ID of a VPC peering connection to target'))
             .required()]
 
+    def configure(self):
+        EC2Request.configure(self)
+        gateway_id = self.args['gateway_id']
+        if gateway_id:
+            if gateway_id.startswith('nat-'):
+                self.params['NatGatewayId'] = gateway_id
+            else:
+                self.params['GatewayId'] = gateway_id
+
     def print_result(self, _):
         target = (self.args.get('GatewayId') or self.args.get('InstanceId') or
                   self.args.get('NetworkInterfaceId') or
+                  self.args.get('NatGatewayId') or
                   self.args.get('VpcPeeringConnectionId'))
         print self.tabify(('ROUTE', target, self.args['DestinationCidrBlock']))
