@@ -1,4 +1,4 @@
-# Copyright 2009-2015 Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2016 Hewlett Packard Enterprise Development LP
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -34,6 +34,7 @@ import sys
 import tempfile
 
 import requestbuilder.service
+import six
 
 import euca2ools.commands
 
@@ -73,7 +74,7 @@ def prompt_for_password():
     if pass1 == pass2:
         return pass1
     else:
-        print >> sys.stderr, 'error: passwords do not match'
+        six.print_('error: passwords do not match', file=sys.stderr)
         return prompt_for_password()
 
 
@@ -191,10 +192,10 @@ def generate_service_names():
     """
     services = {'properties': 'EUCA_PROPERTIES_URL',
                 'reporting': 'EUCA_REPORTING_URL'}
-    for importer, modname, ispkg in pkgutil.iter_modules(
+    for _, modname, _ in pkgutil.iter_modules(
             euca2ools.commands.__path__, euca2ools.commands.__name__ + '.'):
         module = __import__(modname, fromlist='dummy')
-        for name, obj in inspect.getmembers(module):
+        for _, obj in inspect.getmembers(module):
             if (inspect.isclass(obj) and inspect.getmodule(obj) == module and
                     issubclass(obj, requestbuilder.service.BaseService)):
                 services[obj.NAME] = obj.URL_ENVVAR

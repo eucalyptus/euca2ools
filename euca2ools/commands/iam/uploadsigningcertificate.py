@@ -1,4 +1,4 @@
-# Copyright 2009-2015 Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2016 Hewlett Packard Enterprise Development LP
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -42,5 +42,7 @@ class UploadSigningCertificate(IAMRequest):
             .required(),
             AS_ACCOUNT]
 
+    # pylint: disable=no-self-use
     def print_result(self, result):
         print result.get('Certificate', {}).get('CertificateId')
+    # pylint: enable=no-self-use

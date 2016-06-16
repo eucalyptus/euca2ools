@@ -1,4 +1,4 @@
-# (C) Copyright 2014 Eucalyptus Systems, Inc.
+# Copyright (c) 2014-2016 Hewlett Packard Enterprise Development LP
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -50,5 +50,7 @@ class PackImage(BaseCommand, FileTransferProgressBarMixin):
                                self.args['image_filename'], progressbar=pbar)
         return pack.filename
 
+    # pylint: disable=no-self-use
     def print_result(self, pack_filename):
         print 'Wrote', pack_filename
+    # pylint: enable=no-self-use

@@ -1,4 +1,4 @@
-# Copyright 2015 Eucalyptus Systems, Inc.
+# Copyright (c) 2015-2016 Hewlett Packard Enterprise Development LP
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -38,20 +38,6 @@ class DescribeLoadBalancerAttributes(ELBRequest, TabifyingMixin):
         attrs = result.get('LoadBalancerAttributes') or {}
         for key, val in sorted(flatten(attrs)):
             print self.tabify((key, val))
-        return
-        for policy in result.get('PolicyDescriptions', []):
-            bits = ['POLICY', policy.get('PolicyName'),
-                    policy.get('PolicyTypeName')]
-            if self.args['show_long']:
-                attrs = []
-                for attr in policy.get('PolicyAttributeDescriptions', []):
-                    attrs.append('{{name={0},value={1}}}'.format(
-                        attr.get('AttributeName'), attr.get('AttributeValue')))
-                if len(attrs) > 0:
-                    bits.append(','.join(attrs))
-                else:
-                    bits.append(None)
-            print self.tabify(bits)
 
 
 def flatten(attrs):

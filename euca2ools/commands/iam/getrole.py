@@ -1,4 +1,4 @@
-# Copyright 2014-2015 Eucalyptus Systems, Inc.
+# Copyright (c) 2014-2016 Hewlett Packard Enterprise Development LP
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -25,8 +25,6 @@
 
 import urllib
 
-from requestbuilder import Arg
-
 from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT, arg_role
 
 
@@ -35,8 +33,10 @@ class GetRole(IAMRequest):
     ARGS = [arg_role(help='name of the role to describe (required)'),
             AS_ACCOUNT]
 
+    # pylint: disable=no-self-use
     def print_result(self, result):
         print result.get('Role', {}).get('Arn')
         print result.get('Role', {}).get('RoleId')
         print urllib.unquote(result.get('Role', {})
                              .get('AssumeRolePolicyDocument'))
+    # pylint: enable=no-self-use

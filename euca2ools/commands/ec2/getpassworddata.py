@@ -1,4 +1,4 @@
-# Copyright 2009-2013 Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2016 Hewlett Packard Enterprise Development LP
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -23,8 +23,9 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.ec2 import EC2Request
 from requestbuilder import Arg
+
+from euca2ools.commands.ec2 import EC2Request
 
 
 class GetPasswordData(EC2Request):
@@ -35,6 +36,8 @@ class GetPasswordData(EC2Request):
     ARGS = [Arg('InstanceId', metavar='INSTANCE', help='''ID of the instance to
                 obtain the initial password for (required)''')]
 
+    # pylint: disable=no-self-use
     def print_result(self, result):
         if result.get('passwordData'):
             print result['passwordData']
+    # pylint: enable=no-self-use

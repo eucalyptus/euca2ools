@@ -1,4 +1,4 @@
-# Copyright 2013-2014 Eucalyptus Systems, Inc.
+# Copyright (c) 2013-2016 Hewlett Packard Enterprise Development LP
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -83,6 +83,8 @@ class ListBucket(S3Request, TabifyingMixin):
             list_item_tags=('Contents', 'CommonPrefixes'))
         return response_dict['ListBucketResult']
 
+    # pylint: disable=no-self-use
     def print_result(self, result):
         for obj in result.get('Contents', []):
             print obj.get('Key')
+    # pylint: enable=no-self-use

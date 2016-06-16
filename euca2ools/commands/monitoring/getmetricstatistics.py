@@ -1,4 +1,4 @@
-# Copyright 2013-2015 Eucalyptus Systems, Inc.
+# Copyright (c) 2013-2016 Hewlett Packard Enterprise Development LP
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -81,11 +81,15 @@ class GetMetricStatistics(CloudWatchRequest, TabifyingMixin):
 
         return PaginatedResponse(self, (None,), ('Datapoints',))
 
+    # pylint: disable=no-self-use
     def prepare_for_page(self, page):
         self.params['NextToken'] = page
+    # pylint: enable=no-self-use
 
+    # pylint: disable=no-self-use
     def get_next_page(self, response):
         return response.get('NextToken') or None
+    # pylint: enable=no-self-use
 
     def print_result(self, result):
         points = []

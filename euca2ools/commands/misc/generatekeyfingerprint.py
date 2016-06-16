@@ -50,5 +50,7 @@ class GenerateKeyFingerprint(BaseCommand):
         fprint = hashlib.sha1(privkey).hexdigest()
         return ':'.join(fprint[i:i+2] for i in range(0, len(fprint), 2))
 
+    # pylint: disable=no-self-use
     def print_result(self, fprint):
         print fprint
+    # pylint: enable=no-self-use

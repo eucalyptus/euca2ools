@@ -33,5 +33,7 @@ class DeleteNatGateway(EC2Request):
     ARGS = [Arg('NatGatewayId', metavar='NGATEWAY',
                 help='ID of the NAT gateway to delete (required)')]
 
+    # pylint: disable=no-self-use
     def print_result(self, result):
         print result.get('natGatewayId') or {}
+    # pylint: enable=no-self-use

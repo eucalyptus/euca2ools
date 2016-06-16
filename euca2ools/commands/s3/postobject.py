@@ -1,4 +1,4 @@
-# Copyright 2014 Eucalyptus Systems, Inc.
+# Copyright (c) 2014-2016 Hewlett Packard Enterprise Development LP
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -101,6 +101,8 @@ class PostObject(S3Request):
         #
         # FIXME:  While you're in there, would you mind adding progress bar
         # support?  8^)
+        # pylint: disable=access-member-before-definition
         self.path, _, self.params['key'] = self.args['dest'].partition('/')
         self.body = self.params
+        # pylint: enable=access-member-before-definition
         self.params = None

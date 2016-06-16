@@ -1,4 +1,4 @@
-# Copyright 2009-2015 Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2016 Hewlett Packard Enterprise Development LP
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -45,10 +45,14 @@ class ListServerCertificates(IAMRequest):
         # Pages are defined by markers
         self.params['Marker'] = page
 
+    # pylint: disable=no-self-use
     def get_next_page(self, response):
         if response.get('IsTruncated') == 'true':
             return response['Marker']
+    # pylint: enable=no-self-use
 
+    # pylint: disable=no-self-use
     def print_result(self, result):
         for cert in result.get('ServerCertificateMetadataList', []):
             print cert['Arn']
+    # pylint: enable=no-self-use

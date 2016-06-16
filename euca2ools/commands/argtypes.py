@@ -1,4 +1,4 @@
-# Copyright 2012-2014 Eucalyptus Systems, Inc.
+# Copyright (c) 2012-2016 Hewlett Packard Enterprise Development LP
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -139,8 +139,7 @@ def vpc_interface(iface_as_str):
 
     if len(iface_as_str) == 0:
         raise argparse.ArgumentTypeError(
-            'network interface definitions must be non-empty'.format(
-                iface_as_str))
+            'network interface definitions must be non-empty')
 
     bits = iface_as_str.split(':')
     iface = {}

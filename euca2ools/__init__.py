@@ -47,6 +47,8 @@ if '__file__' in globals():
             __version__ = GIT.stdout.read().strip().lstrip('v')
             if type(__version__).__name__ == 'bytes':
                 __version__ = __version__.decode()
+    # pylint: disable=bare-except
     except:
         # Not really a bad thing; we'll just use what we had
         pass
+    # pylint: enable=bare-except

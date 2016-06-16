@@ -1,4 +1,4 @@
-# Copyright 2015 Eucalyptus Systems, Inc.
+# Copyright (c) 2015-2016 Hewlett Packard Enterprise Development LP
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -48,8 +48,10 @@ class Bootstrap(requestbuilder.service.BaseService):
         requestbuilder.service.BaseService.configure(self)
         add_fake_region_name(self)
 
+    # pylint: disable=no-self-use
     def handle_http_error(self, response):
         raise AWSError(response)
+    # pylint: enable=no-self-use
 
 
 class BootstrapRequest(requestbuilder.request.AWSQueryRequest):

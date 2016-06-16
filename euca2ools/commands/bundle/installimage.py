@@ -1,4 +1,4 @@
-# Copyright 2014-2015 Eucalyptus Systems, Inc.
+# Copyright (c) 2014-2016 Hewlett Packard Enterprise Development LP
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -29,6 +29,7 @@ import argparse
 
 from requestbuilder import Arg
 from requestbuilder.auth.aws import QueryHmacV2Auth
+from requestbuilder.exceptions import ClientError
 from requestbuilder.mixins import FileTransferProgressBarMixin, TabifyingMixin
 
 from euca2ools.commands.ec2 import EC2
@@ -89,7 +90,7 @@ class InstallImage(S3Request, BundleCreatingMixin, BundleUploadingMixin,
                     self.service, url=self.args.get('bootstrap_url'))
             self.args['bootstrap_auth'] = \
                 BootstrapRequest.AUTH_CLASS.from_other(self.auth)
-        except:
+        except ClientError:
             self.log.debug('bootstrap setup failed; auto cert fetching '
                            'will be unavailable', exc_info=True)
 

@@ -25,14 +25,12 @@
 
 import argparse
 import hashlib
-import socket
 import sys
 import threading
 import time
 
 from requestbuilder import Arg
-from requestbuilder.exceptions import (ArgumentError, ClientError,
-                                       TimeoutError)
+import requestbuilder.exceptions
 from requestbuilder.mixins import FileTransferProgressBarMixin
 
 from euca2ools.commands.s3 import S3Request
@@ -72,7 +70,7 @@ class PutObject(S3Request, FileTransferProgressBarMixin):
         S3Request.configure(self)
         if self.args['source'] == '-':
             if self.args.get('size') is None:
-                raise ArgumentError(
+                raise requestbuilder.exceptions.ArgumentError(
                     "argument --size is required when uploading stdin")
             source = _FileObjectExtent(sys.stdin, self.args['size'])
         elif isinstance(self.args['source'], basestring):
@@ -80,15 +78,17 @@ class PutObject(S3Request, FileTransferProgressBarMixin):
                 self.args['source'], size=self.args.get('size'))
         else:
             if self.args.get('size') is None:
-                raise ArgumentError(
+                raise requestbuilder.exceptions.ArgumentError(
                     "argument --size is required when uploading a file object")
             source = _FileObjectExtent(self.args['source'], self.args['size'])
         self.args['source'] = source
         bucket, _, key = self.args['dest'].partition('/')
         if not bucket:
-            raise ArgumentError('destination bucket name must be non-empty')
+            raise requestbuilder.exceptions.ArgumentError(
+                'destination bucket name must be non-empty')
         if not key:
-            raise ArgumentError('destination key name must be non-empty')
+            raise requestbuilder.exceptions.ArgumentError(
+                'destination key name must be non-empty')
 
     def preprocess(self):
         self.path = self.args['dest']
@@ -140,9 +140,10 @@ class PutObject(S3Request, FileTransferProgressBarMixin):
             if their_md5 != our_md5:
                 self.log.error('corrupt upload (our MD5: %s, their MD5: %s',
                                our_md5, their_md5)
-                raise ClientError('upload was corrupted during transit')
-        except ClientError as err:
-            if isinstance(err, TimeoutError):
+                raise requestbuilder.exceptions.ClientError(
+                    'upload was corrupted during transit')
+        except requestbuilder.exceptions.ClientError as err:
+            if isinstance(err, requestbuilder.exceptions.TimeoutError):
                 if retries_left > 0:
                     self.log.info('retrying upload (%i retry attempt(s) '
                                   'remaining)', retries_left)

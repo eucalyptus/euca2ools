@@ -1,4 +1,4 @@
-# Copyright 2014 Eucalyptus Systems, Inc.
+# Copyright (c) 2014-2016 Hewlett Packard Enterprise Development LP
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -39,5 +39,7 @@ class AttachNetworkInterface(EC2Request):
             Arg('NetworkInterfaceId', metavar='INTERFACE',
                 help='network interface to attach to the instance (required)')]
 
+    # pylint: disable=no-self-use
     def print_result(self, result):
         print result.get('attachmentId')
+    # pylint: enable=no-self-use

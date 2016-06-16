@@ -1,4 +1,4 @@
-# Copyright 2013-2015 Eucalyptus Systems, Inc.
+# Copyright (c) 2013-2016 Hewlett Packard Enterprise Development LP
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -27,6 +27,7 @@ import os.path
 import tarfile
 
 from requestbuilder.command import BaseCommand
+from requestbuilder.exceptions import ClientError
 from requestbuilder.mixins import (FileTransferProgressBarMixin,
                                    RegionConfigurableMixin)
 
@@ -68,7 +69,7 @@ class BundleImage(BaseCommand, BundleCreatingMixin,
                 url=self.args.get('bootstrap_url'))
             try:
                 service.configure()
-            except:
+            except ClientError:
                 self.log.debug('bootstrap service setup failed; auto cert '
                                'fetching will be unavailable', exc_info=True)
             else:
@@ -79,7 +80,7 @@ class BundleImage(BaseCommand, BundleCreatingMixin,
                 config=self.config, loglevel=self.log.level, **self.args)
             try:
                 auth.configure()
-            except:
+            except ClientError:
                 self.log.debug('bootstrap auth setup failed; auto cert '
                                'fetching will be unavailable', exc_info=True)
             else:
@@ -116,9 +117,11 @@ class BundleImage(BaseCommand, BundleCreatingMixin,
         # bundle for more than one region at a time.
         return (part.filename for part in partinfo), (manifest_filename,)
 
+    # pylint: disable=no-self-use
     def print_result(self, result):
         for manifest_filename in result[1]:
             print 'Wrote manifest', manifest_filename
+    # pylint: enable=no-self-use
 
     def create_bundle(self, path_prefix):
         # Fill out all the relevant info needed for a tarball

@@ -60,8 +60,10 @@ class EC2(BaseService):
         requestbuilder.service.BaseService.configure(self)
         add_fake_region_name(self)
 
+    # pylint: disable=no-self-use
     def handle_http_error(self, response):
         raise AWSError(response)
+    # pylint: enable=no-self-use
 
 
 class EC2Request(AWSQueryRequest, TabifyingMixin):

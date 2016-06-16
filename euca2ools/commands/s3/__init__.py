@@ -1,4 +1,4 @@
-# Copyright 2013-2015 Eucalyptus Systems, Inc.
+# Copyright (c) 2013-2016 Hewlett Packard Enterprise Development LP
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -50,8 +50,10 @@ class S3(requestbuilder.service.BaseService):
     ARGS = [Arg('-U', '--url', metavar='URL',
                 help='object storage service endpoint URL')]
 
+    # pylint: disable=no-self-use
     def handle_http_error(self, response):
         raise AWSError(response)
+    # pylint: enable=no-self-use
 
     def build_presigned_url(self, method='GET', path=None, params=None,
                             auth=None, auth_args=None):
@@ -145,7 +147,9 @@ class S3Request(requestbuilder.request.BaseRequest):
         requestbuilder.request.BaseRequest.configure(self)
         if self.__should_use_sigv4():
             self.log.info('switching to HmacV4Auth')
+            # pylint: disable=access-member-before-definition
             auth = requestbuilder.auth.aws.HmacV4Auth.from_other(self.auth)
+            # pylint: enable=access-member-before-definition
             auth.configure()
             self.auth = auth
 

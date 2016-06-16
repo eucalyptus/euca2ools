@@ -1,4 +1,4 @@
-# Copyright 2014 Eucalyptus Systems, Inc.
+# Copyright (c) 2014-2016 Hewlett Packard Enterprise Development LP
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -34,5 +34,7 @@ class GetTemplate(CloudFormationRequest):
                 stack (names cannot be used for deleted stacks) (required)''')]
     LIST_TAGS = ['Stacks']
 
+    # pylint: disable=no-self-use
     def print_result(self, result):
         print result.get('TemplateBody')
+    # pylint: enable=no-self-use

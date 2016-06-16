@@ -1,4 +1,4 @@
-# Copyright 2014-2015 Eucalyptus Systems, Inc.
+# Copyright (c) 2014-2016 Hewlett Packard Enterprise Development LP
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -23,7 +23,6 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from requestbuilder import Arg
 from requestbuilder.response import PaginatedResponse
 
 from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT, arg_role
@@ -42,10 +41,15 @@ class ListInstanceProfilesForRole(IAMRequest):
         # Pages are defined by markers
         self.params['Marker'] = page
 
+    # pylint: disable=no-self-use
     def get_next_page(self, response):
         if response.get('IsTruncated') == 'true':
             return response['Marker']
+    # pylint: enable=no-self-use
 
+    # pylint: disable=no-self-use
     def print_result(self, result):
         for profile in result.get('InstanceProfiles', []):
             print profile['Arn']
+    # pylint: enable=no-self-use
+

@@ -1,4 +1,4 @@
-# Copyright 2009-2014 Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2016 Hewlett Packard Enterprise Development LP
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -24,8 +24,8 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import hashlib
-import os
 import multiprocessing
+import os
 
 from requestbuilder import Arg
 from requestbuilder.command import BaseCommand
@@ -162,5 +162,7 @@ class Unbundle(BaseCommand, FileTransferProgressBarMixin,
             unbundlestream.main()
         return image_filename
 
+    # pylint: disable=no-self-use
     def print_result(self, image_filename):
         print 'Wrote', image_filename
+    # pylint: enable=no-self-use

@@ -62,5 +62,7 @@ class UpdateStack(CloudFormationRequest):
         stack_params = sum(self.args.get('param_sets') or [], [])
         self.params['Parameters.member'] = stack_params
 
+    # pylint: disable=no-self-use
     def print_result(self, result):
         print result.get('StackId')
+    # pylint: enable=no-self-use

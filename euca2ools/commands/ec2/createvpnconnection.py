@@ -1,4 +1,4 @@
-# Copyright 2014 Eucalyptus Systems, Inc.
+# Copyright (c) 2014-2016 Hewlett Packard Enterprise Development LP
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -84,7 +84,7 @@ class CreateVpnConnection(EC2Request):
                        'output; connection info will not be shown  (try '
                        'specifying one with "--stylesheet" or using '
                        '"--format xml")')
-                print >> sys.stderr, msg
+                six.print_(msg, file=sys.stderr)
             show_conn_info = bool(stylesheet)
         self.print_vpn_connection(result.get('vpnConnection') or {},
                                   show_conn_info=show_conn_info,

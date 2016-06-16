@@ -1,4 +1,4 @@
-# Copyright 2013 Eucalyptus Systems, Inc.
+# Copyright (c) 2013-2016 Hewlett Packard Enterprise Development LP
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -23,8 +23,9 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.autoscaling import AutoScalingRequest
 from requestbuilder import Arg
+
+from euca2ools.commands.autoscaling import AutoScalingRequest
 
 
 class PutScalingPolicy(AutoScalingRequest):
@@ -56,5 +57,7 @@ class PutScalingPolicy(AutoScalingRequest):
                 that this policy will change the group's desired capacity by at
                 least this much''')]
 
+    # pylint: disable=no-self-use
     def print_result(self, result):
         print result.get('PolicyARN')
+    # pylint: enable=no-self-use

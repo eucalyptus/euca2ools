@@ -1,4 +1,4 @@
-# Copyright 2014 Eucalyptus Systems, Inc.
+# Copyright (c) 2014-2016 Hewlett Packard Enterprise Development LP
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -26,6 +26,7 @@
 import sys
 
 from requestbuilder import Arg, Filter, GenericTagFilter
+import six
 
 from euca2ools.commands.ec2 import EC2Request
 
@@ -93,7 +94,7 @@ class DescribeVpnConnections(EC2Request):
                        'output; connection info will not be shown  (try '
                        'specifying one with "--stylesheet" or using '
                        '"--format xml")')
-                print >> sys.stderr, msg
+                six.print_(msg, file=sys.stderr)
             show_conn_info = bool(stylesheet)
         for vpn in result.get('vpnConnectionSet', []):
             self.print_vpn_connection(vpn, show_conn_info=show_conn_info,

@@ -1,4 +1,4 @@
-# Copyright 2009-2014 Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2016 Hewlett Packard Enterprise Development LP
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -151,7 +151,7 @@ class BundleVolume(BaseCommand, FileTransferProgressBarMixin):
                               'for root device %s', root_device)
                 raise ArgumentError(
                     'could not determine the type of partition table to use; '
-                    'specify one with -P/--partition'.format(root_device))
+                    'specify one with -P/--partition')
             self.log.info('discovered partition table type %s',
                           self.args['partition'])
         if not self.args.get('fstab') and not self.args.get('generate_fstab'):
@@ -202,9 +202,11 @@ class BundleVolume(BaseCommand, FileTransferProgressBarMixin):
         os.remove(image)
         return result
 
+    # pylint: disable=no-self-use
     def print_result(self, result):
         for manifest_filename in result[1]:
             print 'Wrote manifest', manifest_filename
+    # pylint: enable=no-self-use
 
     def __build_bundle_command(self, image_filename, image_size=None):
         bundle_args = ('prefix', 'destination', 'arch', 'privatekey', 'cert',

@@ -1,4 +1,4 @@
-# Copyright 2013-2015 Eucalyptus Systems, Inc.
+# Copyright (c) 2013-2016 Hewlett Packard Enterprise Development LP
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -23,12 +23,12 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import argparse
 import multiprocessing
 import os.path
 import tarfile
 
 from requestbuilder import Arg
+from requestbuilder.exceptions import ClientError
 from requestbuilder.mixins import FileTransferProgressBarMixin
 
 from euca2ools.bundle.pipes.core import create_bundle_pipeline
@@ -70,7 +70,7 @@ class BundleAndUploadImage(S3Request, BundleCreatingMixin,
                     self.service, url=self.args.get('bootstrap_url'))
             self.args['bootstrap_auth'] = \
                 BootstrapRequest.AUTH_CLASS.from_other(self.auth)
-        except:
+        except ClientError:
             self.log.debug('bootstrap setup failed; auto cert fetching '
                            'will be unavailable', exc_info=True)
 

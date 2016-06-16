@@ -1,4 +1,4 @@
-# Copyright 2013 Eucalyptus Systems, Inc.
+# Copyright (c) 2013-2016 Hewlett Packard Enterprise Development LP
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -23,12 +23,13 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.argtypes import delimited_list
-from euca2ools.commands.monitoring import CloudWatchRequest
-from euca2ools.commands.monitoring.argtypes import cloudwatch_dimension
 from requestbuilder import Arg
 from requestbuilder.mixins import TabifyingMixin
 from requestbuilder.response import PaginatedResponse
+
+from euca2ools.commands.argtypes import delimited_list
+from euca2ools.commands.monitoring import CloudWatchRequest
+from euca2ools.commands.monitoring.argtypes import cloudwatch_dimension
 
 
 class ListMetrics(CloudWatchRequest, TabifyingMixin):
@@ -49,8 +50,10 @@ class ListMetrics(CloudWatchRequest, TabifyingMixin):
     def prepare_for_page(self, page):
         self.params['NextToken'] = page
 
+    # pylint: disable=no-self-use
     def get_next_page(self, response):
         return response.get('NextToken') or None
+    # pylint: enable=no-self-use
 
     def print_result(self, result):
         out_lines = []

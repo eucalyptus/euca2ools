@@ -1,4 +1,4 @@
-# Copyright 2009-2013 Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2016 Hewlett Packard Enterprise Development LP
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -32,6 +32,8 @@ class GetAccountSummary(IAMRequest):
     ARGS = [AS_ACCOUNT]
     LIST_TAGS = ['SummaryMap']
 
+    # pylint: disable=no-self-use
     def print_result(self, result):
         for entry in sorted(result.get('SummaryMap', [])):
             print '{0}: {1}'.format(entry.get('key'), entry.get('value'))
+    # pylint: enable=no-self-use

@@ -60,9 +60,11 @@ class Euca2ools(object):
                 with open('/etc/eucalyptus/eucalyptus-version') as ver_file:
                     euca_version = ver_file.readline().strip()
                 version_lines.append('eucalyptus {0}'.format(euca_version))
+        # pylint: disable=bare-except
         except:
             # Those were just more crunchy bits.  If they don't work, oh well!
             pass
+        # pylint: enable=bare-except
         return '\n'.join(version_lines)
 
     def list_config_files(self):
