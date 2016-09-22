@@ -100,7 +100,9 @@ class PutObject(S3Request, FileTransferProgressBarMixin):
     def main(self):
         self.preprocess()
         source = self.args['source']
-        self.headers['Content-Length'] = source.size
+
+        # For requests >=2.11.0 it requires headers to be either str or bytes
+        self.headers['Content-Length'] = bytes(source.size)
 
         # We do the upload in another thread so the main thread can show a
         # progress bar.
