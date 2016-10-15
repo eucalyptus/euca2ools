@@ -170,19 +170,16 @@ def add_fake_region_name(service):
     """
     If no name for a region is otherwise defined (i.e. service.region_name
     is None and the AWS_AUTH_REGION environment variable is not set),
-    log a warning and add a fake region name so HmacV4Auth has something
+    log a notice and add a fake region name so HmacV4Auth has something
     to work with.  This works because eucalyptus doesn't care what name
     one chooses for a region.
 
     Setups that use eucarc files against AWS will still be broken.
-
-    This was added in euca2ools the 3.3 series and should be removed
-    some time after that.
     """
 
     if service.region_name is None and not os.getenv('AWS_AUTH_REGION'):
         service.region_name = 'undefined-{0}'.format(os.getpid())
-        service.log.warn('added fake region name %s', service.region_name)
+        service.log.notice('added fake region name %s', service.region_name)
 
 
 def generate_service_names():

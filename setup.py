@@ -1,4 +1,4 @@
-# Copyright 2009-2015 Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2016 Hewlett Packard Enterprise Development LP
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -38,7 +38,7 @@ from euca2ools import __version__
 
 REQUIREMENTS = ['lxml',
                 'PyYAML',
-                'requestbuilder>=0.4',
+                'requestbuilder>=0.6',
                 'requests',
                 'six>=1.4']
 if sys.version_info < (2, 7):
