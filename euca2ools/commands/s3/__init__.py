@@ -27,7 +27,6 @@ import os
 import string
 import sys
 import urlparse
-import warnings
 
 from requestbuilder import Arg
 import requestbuilder.auth.aws
@@ -54,28 +53,6 @@ class S3(requestbuilder.service.BaseService):
     def handle_http_error(self, response):
         raise AWSError(response)
     # pylint: enable=no-self-use
-
-    def build_presigned_url(self, method='GET', path=None, params=None,
-                            auth=None, auth_args=None):
-        # requestbuilder 0.2
-        msg = ('S3.build_presigned_url is deprecated; use '
-               'S3Request.get_presigned_url2 instead')
-        self.log.warn(msg)
-        warnings.warn(msg, DeprecationWarning)
-        if path:
-            # We can't simply use urljoin because a path might start with '/'
-            # like it could for keys that start with that character.
-            if self.endpoint.endswith('/'):
-                url = self.endpoint + path
-            else:
-                url = self.endpoint + '/' + path
-        else:
-            url = self.endpoint
-        request = requests.Request(method=method, url=url, params=params)
-        if auth is not None:
-            auth.apply_to_request_params(request, self, **(auth_args or {}))
-        p_request = request.prepare()
-        return p_request.url
 
     def resolve_url_to_location(self, url):
         """
@@ -156,18 +133,6 @@ class S3Request(requestbuilder.request.BaseRequest):
     def __should_use_sigv4(self):
         return self.config.convert_to_bool(
             self.config.get_region_option('s3-force-sigv4'))
-
-    def get_presigned_url(self, expiration_datetime):
-        # requestbuilder 0.2
-        msg = ('S3Request.get_presigned_url is deprecated; use '
-               'S3Request.get_presigned_url2 instead')
-        self.log.warn(msg)
-        warnings.warn(msg, DeprecationWarning)
-        self.preprocess()
-        return self.service.build_presigned_url(
-            method=self.method, path=self.path, params=self.params,
-            auth=self.auth,
-            auth_args={'expiration_datetime': expiration_datetime})
 
     def get_presigned_url2(self, timeout):
         """
