@@ -91,7 +91,7 @@ class ImportInstance(EC2Request, S3AccessMixin, FileTransferProgressBarMixin):
                 help='size of the image (required for non-raw files'),
             MutuallyExclusiveArgList(
                 Arg('--user-data', metavar='DATA', type=base64.b64encode,
-                    dest='LaunchSpecification.UserData',
+                    dest='LaunchSpecification.UserData.Data',
                     help='user data to supply to the instance'),
                 Arg('--user-data-file', metavar='FILE',
                     type=b64encoded_file_contents,
