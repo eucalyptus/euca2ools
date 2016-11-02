@@ -3,11 +3,12 @@
 .SH NAME
 euca-create-nat-gateway \- Create a new VPC NAT gateway
 .SH SYNOPSIS
-euca\-create\-nat\-gateway \fB\-s\fR SUBNET \fB\-a\fR ALLOC [\-\-show\-empty\-fields]
+euca\-create\-nat\-gateway \fB\-s\fR SUBNET \fB\-a\fR ALLOC [\-\-client\-token TOKEN]
 .TP
-[\-U URL] [\-\-region USER@REGION] [\-I KEY_ID]
-[\-S KEY] [\-\-security\-token TOKEN] [\-\-debug]
-[\-\-debugger] [\-\-version] [\-h]
+[\-\-show\-empty\-fields] [\-U URL]
+[\-\-region USER@REGION] [\-I KEY_ID] [\-S KEY]
+[\-\-security\-token TOKEN] [\-\-debug] [\-\-debugger]
+[\-\-version] [\-h]
 .SH DESCRIPTION
 Create a new VPC NAT gateway
 .SS "optional arguments:"
@@ -19,6 +20,9 @@ the subnet in which to create the new NAT gateway
 \fB\-a\fR ALLOC, \fB\-\-allocation\-id\fR ALLOC
 the allocation ID of the Elastic IP address to
 associate with the NAT gateway (required)
+.TP
+\fB\-\-client\-token\fR TOKEN
+unique identifier to ensure request idempotency
 .TP
 \fB\-\-show\-empty\-fields\fR
 show empty values as "(nil)"

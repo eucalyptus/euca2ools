@@ -35,7 +35,10 @@ class CreateNatGateway(EC2Request):
                 NAT gateway (required)'''),
             Arg('-a', '--allocation-id', dest='AllocationId', metavar='ALLOC',
                 required=True, help='''the allocation ID of the Elastic IP
-                address to associate with the NAT gateway (required)''')]
+                address to associate with the NAT gateway (required)'''),
+            Arg('--client-token', dest='ClientToken', metavar='TOKEN',
+                help='unique identifier to ensure request idempotency')]
+
 
     LIST_TAGS = ['natGatewayAddressSet']
 
