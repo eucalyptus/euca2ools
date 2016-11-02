@@ -30,7 +30,10 @@ from euca2ools.commands.cloudformation import CloudFormationRequest
 from euca2ools.commands.cloudformation.argtypes import parameter_list
 
 class UpdateStack(CloudFormationRequest):
-    DESCRIPTION = 'Update a stack with a new template'
+    """
+    Update a stack's template, parameters, or capabilities
+    """
+
     ARGS = [Arg('StackName', metavar='STACK',
                 help='name of the stack to update (required)'),
             MutuallyExclusiveArgList(
@@ -38,8 +41,7 @@ class UpdateStack(CloudFormationRequest):
                     metavar='FILE', type=open,
                     help='file containing a new JSON template for the stack'),
                 Arg('--template-url', dest='TemplateURL', metavar='URL',
-                    help='URL pointing to a new JSON template for the stack'))
-            .required(),
+                    help='URL pointing to a new JSON template for the stack')),
             Arg('--capabilities', dest='Capabilities.member',
                 metavar='CAP[,...]', type=delimited_list(','),
                 help='capabilities needed to update the stack'),
@@ -61,6 +63,11 @@ class UpdateStack(CloudFormationRequest):
         CloudFormationRequest.configure(self)
         stack_params = sum(self.args.get('param_sets') or [], [])
         self.params['Parameters.member'] = stack_params
+
+    def preprocess(self):
+        if (not self.args.get('TemplateBody') and
+                not self.args.get('TemplateURL')):
+            self.params['UsePreviousTemplate'] = True
 
     # pylint: disable=no-self-use
     def print_result(self, result):
