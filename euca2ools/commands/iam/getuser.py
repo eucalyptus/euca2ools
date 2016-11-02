@@ -1,4 +1,4 @@
-# Copyright 2009-2015 Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2016 Hewlett Packard Enterprise Development LP
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -33,7 +33,8 @@ class GetUser(IAMRequest):
     ARGS = [arg_user(nargs='?', help='''name of the user to describe
                      (default: current user)'''),
             Arg('--show-extra', dest='ShowExtra', action='store_const',
-                const='true', help='also display additional user info'),
+                const='true', help='''[Eucalyptus only] also display
+                Eucalyptus-specific user info'''),
             AS_ACCOUNT]
 
     def print_result(self, result):

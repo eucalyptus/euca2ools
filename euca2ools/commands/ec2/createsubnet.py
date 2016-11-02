@@ -1,4 +1,4 @@
-# Copyright 2013-2014 Eucalyptus Systems, Inc.
+# Copyright (c) 2013-2016 Hewlett Packard Enterprise Development LP
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -42,6 +42,7 @@ class CreateSubnet(EC2Request):
             Arg('-i', '--cidr', dest='CidrBlock', metavar='CIDR',
                 help='CIDR address block for the new subnet (required)'),
             Arg('-z', '--availability-zone', dest='AvailabilityZone',
+                metavar='ZONE',
                 help='availability zone in which to create the new subnet')]
     LIST_TAGS = ['tagSet']
 
