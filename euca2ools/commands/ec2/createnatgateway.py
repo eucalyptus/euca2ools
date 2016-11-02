@@ -29,13 +29,14 @@ from euca2ools.commands.ec2 import EC2Request
 
 
 class CreateNatGateway(EC2Request):
-    API_VERSION = '2015-10-01'
     DESCRIPTION = 'Create a new VPC NAT gateway'
-    ARGS = [Arg('-s', '--subnet-id', dest='SubnetId',
-                help='the subnet in which to create the NAT gateway'),
-            Arg('-a', '--allocation-id', dest='AllocationId',
-                help='the allocation ID of an Elastic IP address to associate '
-                     'with the NAT gateway')]
+    ARGS = [Arg('-s', '--subnet-id', dest='SubnetId', metavar='SUBNET',
+                required=True, help='''the subnet in which to create the new
+                NAT gateway (required)'''),
+            Arg('-a', '--allocation-id', dest='AllocationId', metavar='ALLOC',
+                required=True, help='''the allocation ID of the Elastic IP
+                address to associate with the NAT gateway (required)''')]
+
     LIST_TAGS = ['natGatewayAddressSet']
 
     def print_result(self, result):
