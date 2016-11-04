@@ -23,6 +23,8 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import base64
+
 from requestbuilder import Arg
 from requestbuilder.mixins import TabifyingMixin
 from requestbuilder.response import PaginatedResponse
@@ -79,6 +81,11 @@ class DescribeLaunchConfigurations(AutoScalingRequest, TabifyingMixin):
                 bits.append(config.get('EbsOptimized'))
                 bits.append(config.get('AssociatePublicIpAddress'))
             print self.tabify(bits)
+            if config.get('UserData') and self.args['show_long']:
+                print self.tabify(('USER-DATA',
+                                   config.get('LaunchConfigurationName')))
+                print base64.b64decode(config['UserData'])
+                print
 
 
 def convert_block_mapping_to_str(mapping):
