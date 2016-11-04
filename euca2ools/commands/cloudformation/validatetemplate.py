@@ -1,4 +1,4 @@
-# Copyright 2014 Eucalyptus Systems, Inc.
+# Copyright (c) 2014-2016 Hewlett Packard Enterprise Development LP
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -37,14 +37,14 @@ class ValidateTemplate(CloudFormationRequest):
                 Arg('--template-url', dest='TemplateURL',
                     metavar='URL', help='S3 URL for JSON template'))
             .required()]
-    LIST_TAGS = ['Parameters', 'CapabilitiesReason', 'Capabilities']
+    LIST_TAGS = ['Parameters', 'Capabilities']
 
     def print_result(self, result):
         print self.tabify(('DESCRIPTION', result.get('Description')))
         for cap in result.get('Capabilities') or []:
             print self.tabify(('CAPABILITY', cap))
-        for reason in result.get('CapabilitiesReason') or []:
-            print self.tabify(('CAPABILITYREASON', reason))
+        if result.get('CapabilitiesReason'):
+            print self.tabify(('CAPABILITIESREASON', result['CapabilitiesReason']))
         for param in result.get('Parameters') or []:
             print self.tabify(('PARAMETER', param.get('ParameterKey'),
                                param.get('NoEcho'), param.get('DefaultValue'),
