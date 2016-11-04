@@ -50,7 +50,7 @@ class EC2(BaseService):
     NAME = 'ec2'
     DESCRIPTION = 'Elastic compute cloud service'
     API_VERSION = '2015-10-01'
-    REGION_ENVVAR = 'AWS_DEFAULT_REGION'
+    REGION_ENVVAR = ('EUCA_DEFAULT_REGION', 'AWS_DEFAULT_REGION')
     URL_ENVVAR = 'EC2_URL'
 
     ARGS = [Arg('-U', '--url', metavar='URL',

@@ -40,7 +40,7 @@ class ELB(requestbuilder.service.BaseService):
     NAME = 'elasticloadbalancing'
     DESCRIPTION = 'Load balancing service'
     API_VERSION = '2012-06-01'
-    REGION_ENVVAR = 'AWS_DEFAULT_REGION'
+    REGION_ENVVAR = ('EUCA_DEFAULT_REGION', 'AWS_DEFAULT_REGION')
     URL_ENVVAR = 'AWS_ELB_URL'
 
     ARGS = [Arg('-U', '--url', metavar='URL',

@@ -38,7 +38,7 @@ class CloudFormation(requestbuilder.service.BaseService):
     NAME = 'cloudformation'
     DESCRIPTION = 'Deployment templating service'
     API_VERSION = '2010-05-15'
-    REGION_ENVVAR = 'AWS_DEFAULT_REGION'
+    REGION_ENVVAR = ('EUCA_DEFAULT_REGION', 'AWS_DEFAULT_REGION')
     URL_ENVVAR = 'AWS_CLOUDFORMATION_URL'
 
     ARGS = [Arg('-U', '--url', metavar='URL',

@@ -41,7 +41,7 @@ class IAM(requestbuilder.service.BaseService):
     NAME = 'iam'
     DESCRIPTION = 'Identity and access management service'
     API_VERSION = '2010-05-08'
-    REGION_ENVVAR = 'AWS_DEFAULT_REGION'
+    REGION_ENVVAR = ('EUCA_DEFAULT_REGION', 'AWS_DEFAULT_REGION')
     URL_ENVVAR = 'AWS_IAM_URL'
 
     ARGS = [Arg('-U', '--url', metavar='URL',

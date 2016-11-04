@@ -41,7 +41,7 @@ class CloudWatch(requestbuilder.service.BaseService):
     NAME = 'monitoring'
     DESCRIPTION = 'Instance monitoring service'
     API_VERSION = '2010-08-01'
-    REGION_ENVVAR = 'AWS_DEFAULT_REGION'
+    REGION_ENVVAR = ('EUCA_DEFAULT_REGION', 'AWS_DEFAULT_REGION')
     URL_ENVVAR = 'AWS_CLOUDWATCH_URL'
 
     ARGS = [Arg('-U', '--url', metavar='URL',

@@ -54,7 +54,7 @@ class BundleVolume(BaseCommand, FileTransferProgressBarMixin):
     SUITE = Euca2ools
     DESCRIPTION = ("Prepare this machine's filesystem for use in the cloud\n\n"
                    "This command must be run as the superuser.")
-    REGION_ENVVAR = 'AWS_DEFAULT_REGION'
+    REGION_ENVVAR = ('EUCA_DEFAULT_REGION', 'AWS_DEFAULT_REGION')
     ARGS = [Arg('-p', '--prefix', help='''the file name prefix to give the
                 bundle's files (default: image)'''),
             Arg('-d', '--destination', metavar='DIR', help='''location to place

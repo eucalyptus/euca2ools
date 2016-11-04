@@ -37,7 +37,7 @@ class STS(requestbuilder.service.BaseService):
     NAME = 'sts'
     DESCRIPTION = 'Token service'
     API_VERSION = '2011-06-15'
-    REGION_ENVVAR = 'AWS_DEFAULT_REGION'
+    REGION_ENVVAR = ('EUCA_DEFAULT_REGION', 'AWS_DEFAULT_REGION')
     URL_ENVVAR = 'TOKEN_URL'
 
     ARGS = [Arg('-U', '--url', metavar='URL',

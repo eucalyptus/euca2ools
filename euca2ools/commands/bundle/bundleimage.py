@@ -48,7 +48,7 @@ class BundleImage(BaseCommand, BundleCreatingMixin,
                   RegionConfigurableMixin):
     SUITE = Euca2ools
     DESCRIPTION = 'Prepare an image for use in the cloud'
-    REGION_ENVVAR = 'AWS_DEFAULT_REGION'
+    REGION_ENVVAR = ('EUCA_DEFAULT_REGION', 'AWS_DEFAULT_REGION')
     # Needed because BundleImage has no auth class of its own
     ARGS = BootstrapRequest.AUTH_CLASS.ARGS
 

@@ -38,7 +38,7 @@ class Bootstrap(requestbuilder.service.BaseService):
     NAME = 'bootstrap'
     DESCRIPTION = '[Eucalyptus only] Bootstrap service'
     API_VERSION = 'eucalyptus'
-    REGION_ENVVAR = 'AWS_DEFAULT_REGION'
+    REGION_ENVVAR = ('EUCA_DEFAULT_REGION', 'AWS_DEFAULT_REGION')
     URL_ENVVAR = 'EUCA_BOOTSTRAP_URL'
 
     ARGS = [Arg('-U', '--url', metavar='URL',

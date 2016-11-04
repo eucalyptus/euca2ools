@@ -40,7 +40,7 @@ class AutoScaling(requestbuilder.service.BaseService):
     NAME = 'autoscaling'
     DESCRIPTION = 'Auto-scaling service'
     API_VERSION = '2011-01-01'
-    REGION_ENVVAR = 'AWS_DEFAULT_REGION'
+    REGION_ENVVAR = ('EUCA_DEFAULT_REGION', 'AWS_DEFAULT_REGION')
     URL_ENVVAR = 'AWS_AUTO_SCALING_URL'
 
     ARGS = [Arg('-U', '--url', metavar='URL',

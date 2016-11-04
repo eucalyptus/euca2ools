@@ -1,6 +1,6 @@
-.Dd 2015-09-03
+.Dd 2016-11-04
 .Dt EUCA2OOLS 7
-.Os euca2ools 3.2
+.Os euca2ools 3.4
 .Sh NAME
 .Nm euca2ools
 .Nd eucalyptus command line client tools
@@ -17,13 +17,15 @@ The URL for each web service can be set with a
 .Va Em SERVICE Ns No -url
 region option, where
 .Em SERVICE
-is the name of the service, in a
+is the name of the service, in
 .Xr euca2ools.ini 5
-configuration file and then chosen with the
+configuration files and then chosen with the
 .Fl -region
 command line option or the
+.Ev EUCA_DEFAULT_REGION
+or
 .Ev AWS_DEFAULT_REGION
-environment variable.  Alternatively, the URL can be
+environment variables.  Alternatively, the URL can be
 set at the command line or with an environment variable
 that is specific to the service.  Environment variables
 take precedence over configuration file data.

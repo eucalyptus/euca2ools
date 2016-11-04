@@ -43,7 +43,7 @@ from euca2ools.exceptions import AWSError
 class S3(requestbuilder.service.BaseService):
     NAME = 's3'
     DESCRIPTION = 'Object storage service'
-    REGION_ENVVAR = 'AWS_DEFAULT_REGION'
+    REGION_ENVVAR = ('EUCA_DEFAULT_REGION', 'AWS_DEFAULT_REGION')
     URL_ENVVAR = 'S3_URL'
 
     ARGS = [Arg('-U', '--url', metavar='URL',
