@@ -85,7 +85,7 @@ class AssumeRole(STSRequest):
             self.args.get('rolename'))
         if not self.params.get('RoleSessionName'):
             session = datetime.datetime.utcnow().strftime(
-                'euca2ools-%Y-%m-%dT%H:%M:%SZ')
+                'euca2ools-%Y-%m-%dT%H-%M-%SZ')
             self.params['RoleSessionName'] = session
 
     def __build_role_arn(self, arn):

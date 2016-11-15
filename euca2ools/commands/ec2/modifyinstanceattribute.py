@@ -1,4 +1,4 @@
-# Copyright 2014-2016 Hewlett Packard Enterprise Development LP
+# Copyright (c) 2014-2016 Hewlett Packard Enterprise Development LP
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -25,7 +25,7 @@
 
 import argparse
 
-from requestbuilder import Arg, MutuallyExclusiveArgList
+from requestbuilder import Arg, EMPTY, MutuallyExclusiveArgList
 
 from euca2ools.commands.argtypes import b64encoded_file_contents
 from euca2ools.commands.ec2 import EC2Request
@@ -91,3 +91,7 @@ class ModifyInstanceAttribute(EC2Request):
                     type=b64encoded_file_contents, help='''change the
                     instance's user data to the contents of a file'''))
             .required()]
+
+    def preprocess(self):
+        if self.args.get('UserData.Value') == '':
+            self.params['UserData.Value'] = EMPTY

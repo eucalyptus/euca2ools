@@ -185,8 +185,8 @@ class BundleVolume(BaseCommand, FileTransferProgressBarMixin):
 
             except KeyboardInterrupt:
                 self.log.info('received ^C; skipping to cleanup')
-                msg = ('Cleaning up after ^C -- pressing ^C again will '
-                       'result in the need for manual device cleanup')
+                msg = ('\n\nCleaning up after ^C -- pressing ^C again will '
+                       'result in the need for manual device cleanup\n\n')
                 print >> sys.stderr, msg
                 raise
             # Cleanup
@@ -528,12 +528,15 @@ def _get_partition_table_type(device, debug=False):
 
 
 def _get_root_device():
+    root_device = None
     for device, mountpoint, _ in _get_all_mounts():
         if mountpoint == '/' and os.path.exists(device):
             root_device = device
             # Do not skip the rest of the mount points.  Another
             # / filesystem, such as a btrfs subvolume, may be
             # mounted on top of that.
+    if not root_device:
+        raise KeyError('no / filesystem found')
     return root_device
 
 
