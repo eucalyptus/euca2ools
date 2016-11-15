@@ -1,4 +1,4 @@
-# Copyright 2012-2015 Eucalyptus Systems, Inc.
+# Copyright (c) 2012-2016 Hewlett Packard Enterprise Development LP
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -91,7 +91,8 @@ class _ModifySecurityGroupRule(EC2Request):
                 if self.args['egress']:
                     raise ArgumentError('argument -o: egress rules must use '
                                         'group IDs, not names')
-                self.params['IpPermissions.1.Groups.1.GroupName'] = target_group
+                self.params['IpPermissions.1.Groups.1.GroupName'] = \
+                    target_group
 
         protocol = self.args.get('IpPermissions.1.IpProtocol')
         if str(protocol).lower() in ('icmp', 'tcp', 'udp', '1', '6', '17'):

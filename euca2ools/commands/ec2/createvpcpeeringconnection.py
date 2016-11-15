@@ -1,4 +1,4 @@
-# Copyright 2014 Eucalyptus Systems, Inc.
+# Copyright (c) 2014-2016 Hewlett Packard Enterprise Development LP
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -33,7 +33,8 @@ class CreateVpcPeeringConnection(EC2Request):
                    'owner of the VPC you wish to peer with must accept '
                    'the peering request to activate the peering connection')
     ARGS = [Arg('-c', '--vpc', dest='VpcId', metavar='VPC', required=True,
-                help='the VPC to request a peering connection from (required)'),
+                help='''the VPC to request a peering connection from
+                (required)'''),
             Arg('-p', '--peer-vpc', dest='PeerVpcId', metavar='VPC',
                 required=True,
                 help='the VPC to request a peering connection to (required)'),

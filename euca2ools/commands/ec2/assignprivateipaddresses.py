@@ -1,4 +1,4 @@
-# Copyright 2014 Eucalyptus Systems, Inc.
+# Copyright (c) 2014-2016 Hewlett Packard Enterprise Development LP
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -42,13 +42,13 @@ class AssignPrivateIpAddresses(EC2Request):
                 help=argparse.SUPPRESS),
             MutuallyExclusiveArgList(
                 Arg('--secondary-address', '--secondary-private-ip-address',
-                    metavar='ADDRESS', dest='PrivateIpAddress', action='append',
-                    help='''assign a specific secondary private IP address
-                    to the network interface.  Use this option multiple
-                    times to add additional addresses.'''),
-                Arg('--secondary-count', '--secondary-private-ip-address-count',
+                    metavar='ADDRESS', dest='PrivateIpAddress',
+                    action='append', help='''assign a specific secondary
+                    private IP address to the network interface.  Use this
+                    option multiple times to add additional addresses.'''),
+                Arg('--secondary-count',
+                    '--secondary-private-ip-address-count', type=int,
                     dest='SecondaryPrivateIpAddressCount', metavar='COUNT',
-                    type=int,
                     help='''automatically assign a specific number of secondary
                     private IP addresses to the network interface'''))
             .required(),

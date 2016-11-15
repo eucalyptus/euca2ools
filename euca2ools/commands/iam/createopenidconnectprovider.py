@@ -60,5 +60,7 @@ class CreateOpenIDConnectProvider(IAMRequest):
             self.params['ThumbprintList.member.1'] = \
                 util.get_cert_fingerprint(self.args['Url'], log=self.log)
 
+    # pylint: disable=no-self-use
     def print_result(self, result):
         print result.get('OpenIDConnectProviderArn')
+    # pylint: enable=no-self-use

@@ -1,4 +1,4 @@
-# Copyright 2014 Eucalyptus Systems, Inc.
+# Copyright (c) 2014-2016 Hewlett Packard Enterprise Development LP
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -30,15 +30,16 @@ from euca2ools.commands.ec2 import EC2Request
 
 class DescribeNetworkInterfaceAttribute(EC2Request):
     DESCRIPTION = 'Show an attribute of a VPC network interface'
-    ARGS = [Arg('NetworkInterfaceId', metavar='INTERFACE',
-                help='ID of the network interface to show info for (required)'),
+    ARGS = [Arg('NetworkInterfaceId', metavar='INTERFACE', help='''ID of the
+                network interface to show info for (required)'''),
             MutuallyExclusiveArgList(
                 Arg('-d', '--description', dest='Attribute',
                     action='store_const', const='description',
                     help="show the interface's description"),
                 Arg('--source-dest-check', dest='Attribute',
                     action='store_const', const='sourceDestCheck',
-                    help='show whether source/destination checking is enabled'),
+                    help='''show whether source/destination address
+                    checking is enabled'''),
                 Arg('--group-set', dest='Attribute', action='store_const',
                     const='groupSet', help='''show the security groups the
                     network interface belongs to'''),
@@ -50,7 +51,8 @@ class DescribeNetworkInterfaceAttribute(EC2Request):
     LIST_TAGS = ['groupSet']
 
     def print_result(self, result):
-        print self.tabify(('NETWORKINTERFACE', result.get('networkInterfaceId'),
+        print self.tabify(('NETWORKINTERFACE',
+                           result.get('networkInterfaceId'),
                            self.args['Attribute']))
         if self.args['Attribute'] == 'description':
             print self.tabify(('DESCRIPTION',

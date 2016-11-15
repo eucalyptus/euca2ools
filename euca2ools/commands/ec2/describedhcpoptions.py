@@ -1,4 +1,4 @@
-# Copyright 2014 Eucalyptus Systems, Inc.
+# Copyright (c) 2014-2016 Hewlett Packard Enterprise Development LP
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -43,7 +43,8 @@ class DescribeDhcpOptions(EC2Request):
                                 help='specific tag key/value combination'),
                Filter('value', help='value for one of the options')]
 
-    LIST_TAGS = ['dhcpConfigurationSet', 'dhcpOptionsSet', 'tagSet', 'valueSet']
+    LIST_TAGS = ['dhcpConfigurationSet', 'dhcpOptionsSet', 'tagSet',
+                 'valueSet']
 
     def print_result(self, result):
         for dopt in result.get('dhcpOptionsSet', []):

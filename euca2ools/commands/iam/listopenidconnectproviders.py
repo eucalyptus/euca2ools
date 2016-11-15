@@ -34,6 +34,8 @@ class ListOpenIDConnectProviders(IAMRequest):
     ARGS = [AS_ACCOUNT]
     LIST_TAGS = ['OpenIDConnectProviderList']
 
+    # pylint: disable=no-self-use
     def print_result(self, result):
         for provider in result.get('OpenIDConnectProviderList') or []:
             print provider.get('Arn')
+    # pylint: enable=no-self-use

@@ -113,10 +113,11 @@ class RunInstances(EC2Request):
                     help='''[VPC only] assign a specific secondary private IP
                     address to an instance's network interface.  Use this
                     option multiple times to add additional addresses.'''),
-                Arg('--secondary-count', '--secondary-private-ip-address-count',
-                    metavar='COUNT', type=int, route_to=None, help='''[VPC only]
-                    automatically assign a specific number of secondary private
-                    IP addresses to an instance's network interface''')),
+                Arg('--secondary-count',
+                    '--secondary-private-ip-address-count', metavar='COUNT',
+                    type=int, route_to=None, help='''[VPC only] automatically
+                    assign a specific number of secondary private IP addresses
+                    to an instance's network interface''')),
             Arg('-a', '--network-interface', dest='NetworkInterface',
                 metavar='INTERFACE', action='append', type=vpc_interface,
                 help=('[VPC only] add a network interface to the new '

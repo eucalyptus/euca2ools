@@ -1,4 +1,4 @@
-# (C) Copyright 2014 Eucalyptus Systems, Inc.
+# Copyright (c) 2014-2016 Hewlett Packard Enterprise Development LP
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -142,9 +142,9 @@ class ImagePack(object):
         with contextlib.closing(tarfile.open(name=self.filename, mode='r')) \
                 as tarball:
             # This looks like it will return a file handle that will run out of
-            # data as soon as we leave this with block, but since what we return
-            # actually uses the read end of an os.pipe that reads from a forked
-            # process things should Just Work (tm).
+            # data as soon as we leave this with block, but since what we
+            # return actually uses the read end of an os.pipe that reads from a
+            # forked process things should Just Work (tm).
             return _PackedImageWrapper(tarball)
 
 

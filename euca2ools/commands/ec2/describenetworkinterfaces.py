@@ -1,4 +1,4 @@
-# Copyright 2014 Eucalyptus Systems, Inc.
+# Copyright (c) 2014-2016 Hewlett Packard Enterprise Development LP
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -35,7 +35,8 @@ class DescribeNetworkInterfaces(EC2Request):
     FILTERS = [Filter('addresses.private-ip-addresses',
                       help="the interface's private IP addresses"),
                Filter('addresses.primary', help='''whether the private IP
-                      address is the network interface's primary IP address'''),
+                      address is the network interface's primary IP
+                      address'''),
                Filter('addresses.association.public-ip', help='''association
                       ID for the network interface's elastic IP address'''),
                Filter('addresses.association.owner-id', help='''owner ID of
@@ -83,8 +84,9 @@ class DescribeNetworkInterfaces(EC2Request):
                       help="the network interface's private DNS name"),
                Filter('requester-id', help='''ID of the entity that created
                       the network interface'''),
-               Filter('requester-managed', help='''whether the network interface
-                      is being managed by one of the cloud's services'''),
+               Filter('requester-managed', help='''whether the network
+                      interface is being managed by one of the cloud's
+                      services'''),
                Filter('source-dest-check',
                       help='''whether the network interface's traffic is
                       subject to source/destination address checking'''),

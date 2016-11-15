@@ -1,4 +1,4 @@
-# Copyright 2013-2014 Eucalyptus Systems, Inc.
+# Copyright (c) 2013-2016 Hewlett Packard Enterprise Development LP
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -40,7 +40,8 @@ class ModifyInstanceTypeAttribute(EC2Request, TabifyingMixin):
                 help='amount of instance storage to allow each instance'),
             Arg('-m', '--memory', dest='Memory', metavar='MiB', type=int,
                 help='amount of RAM to allocate to each instance'),
-            Arg('-i', '--network-interfaces', dest='NetworkInterfaces', metavar='COUNT', type=int,
+            Arg('-i', '--network-interfaces', dest='NetworkInterfaces',
+                metavar='COUNT', type=int,
                 help='maximum network interfaces for each instance (VPC)'),
             Arg('--reset', dest='Reset', action='store_true',
                 help='reset the instance type to its default configuration')]
@@ -59,4 +60,5 @@ class ModifyInstanceTypeAttribute(EC2Request, TabifyingMixin):
         newtype = result.get('instanceType', {})
         print self.tabify(('INSTANCETYPE', newtype.get('name'),
                            newtype.get('cpu'), newtype.get('memory'),
-                           newtype.get('disk'), newtype.get('networkInterfaces')))
+                           newtype.get('disk'),
+                           newtype.get('networkInterfaces')))

@@ -1,4 +1,4 @@
-# Copyright 2014 Eucalyptus Systems, Inc.
+# Copyright (c) 2014-2016 Hewlett Packard Enterprise Development LP
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -32,8 +32,8 @@ class EnableVgwRoutePropagation(EC2Request):
     DESCRIPTION = ('Allow a VPC route table to obtain routes from a '
                    'virtual private gateway')
     ARGS = [Arg('--route-table', dest='RouteTableId', metavar='RTABLE',
-                required=True,
-                help='ID of the route table to propagate routes to (required)'),
+                required=True, help='''ID of the route table to propagate
+                routes to (required)'''),
             Arg('--vgw', dest='GatewayId', metavar='VGATEWAY', required=True,
                 help='''ID of the virtual private gateway to obtain routes
                 from (required)''')]

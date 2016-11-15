@@ -1,4 +1,4 @@
-# Copyright 2014 Eucalyptus Systems, Inc.
+# Copyright (c) 2014-2016 Hewlett Packard Enterprise Development LP
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -50,8 +50,8 @@ class DescribeVpcPeeringConnections(EC2Request):
                       provisioning, rejected)'''),
                Filter('tag-key',
                       help='key of a tag assigned to the peering connection'),
-               Filter('tag-value',
-                      help='value of a tag assigned to the peering connection'),
+               Filter('tag-value', help='''value of a tag assigned to the
+                      peering connection'''),
                GenericTagFilter('tag:KEY',
                                 help='specific tag key/value combination'),
                Filter('vpc-peering-connection-id',

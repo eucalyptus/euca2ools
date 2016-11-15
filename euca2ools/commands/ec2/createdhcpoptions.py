@@ -1,4 +1,4 @@
-# Copyright 2014 Eucalyptus Systems, Inc.
+# Copyright (c) 2014-2016 Hewlett Packard Enterprise Development LP
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -50,8 +50,8 @@ def _dhcp_option(option_str):
 class CreateDhcpOptions(EC2Request):
     DESCRIPTION = 'Create a VPC DHCP option set'
     # EC2 throws 500s when presented with empty DhcpConfigurations.
-    ARGS = [Arg('DhcpConfiguration', nargs='+', metavar='KEY=VALUE,[VALUE,...]',
-                type=_dhcp_option,
+    ARGS = [Arg('DhcpConfiguration', nargs='+',
+                metavar='KEY=VALUE,[VALUE,...]', type=_dhcp_option,
                 help='''key and one or more values for a DHCP option (choose
                 from {0}) (required)'''.format(', '.join(_DHCP_OPTION_KEYS)))]
     LIST_TAGS = ['dhcpConfigurationSet', 'tagSet', 'valueSet']

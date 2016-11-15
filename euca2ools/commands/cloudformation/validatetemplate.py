@@ -44,7 +44,8 @@ class ValidateTemplate(CloudFormationRequest):
         for cap in result.get('Capabilities') or []:
             print self.tabify(('CAPABILITY', cap))
         if result.get('CapabilitiesReason'):
-            print self.tabify(('CAPABILITIESREASON', result['CapabilitiesReason']))
+            print self.tabify(('CAPABILITIESREASON',
+                               result['CapabilitiesReason']))
         for param in result.get('Parameters') or []:
             print self.tabify(('PARAMETER', param.get('ParameterKey'),
                                param.get('NoEcho'), param.get('DefaultValue'),

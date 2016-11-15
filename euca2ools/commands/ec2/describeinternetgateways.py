@@ -1,4 +1,4 @@
-# Copyright 2014 Eucalyptus Systems, Inc.
+# Copyright (c) 2014-2016 Hewlett Packard Enterprise Development LP
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -34,8 +34,8 @@ class DescribeInternetGateways(EC2Request):
                 help='limit results to one or more Internet gateways')]
     FILTERS = [Filter('attachment.state', help='''if the Internet gateway is
                       attached to a VPC, its attachment state (available)'''),
-               Filter('attachment.vpc-id',
-                      help='ID of the VPC the Internet gateway is attached to'),
+               Filter('attachment.vpc-id', help='''ID of the VPC the Internet
+                      gateway is attached to'''),
                Filter('internet-gateway-id', "the Internet gateway's ID"),
                Filter('tag-key',
                       help='key of a tag assigned to the Internet gateway'),

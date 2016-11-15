@@ -1,4 +1,4 @@
-# Copyright 2013-2015 Eucalyptus Systems, Inc.
+# Copyright (c) 2013-2016 Hewlett Packard Enterprise Development LP
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -75,8 +75,8 @@ class CreateLoadBalancerPolicy(ELBRequest):
                 help='name of the load balancer to modify (required)'),
             Arg('-n', '--policy-name', dest='PolicyName', metavar='POLICY',
                 required=True, help='name of the new policy (required)'),
-            Arg('-t', '--policy-type', dest='PolicyTypeName', metavar='POLTYPE',
-                required=True,
+            Arg('-t', '--policy-type', dest='PolicyTypeName',
+                metavar='POLTYPE', required=True,
                 help='''type of the new policy.  For a list of policy types,
                 use eulb-describe-lb-policy-types.  (required)'''),
             Arg('-a', '--attribute', dest='PolicyAttributes.member',

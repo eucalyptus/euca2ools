@@ -1,4 +1,4 @@
-# Copyright 2014-2015 Eucalyptus Systems, Inc.
+# Copyright (c) 2014-2016 Hewlett Packard Enterprise Development LP
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -48,9 +48,9 @@ class CreateNetworkInterface(EC2Request):
                     help='''assign a specific secondary private IP address
                     to the new network interface.  Use this option multiple
                     times to add additional addresses.'''),
-                Arg('--secondary-count', '--secondary-private-ip-address-count',
+                Arg('--secondary-count',
+                    '--secondary-private-ip-address-count', type=int,
                     dest='SecondaryPrivateIpAddressCount', metavar='COUNT',
-                    type=int,
                     help='''automatically assign a specific number of secondary
                     private IP addresses to the new network interface'''))]
     LIST_TAGS = ['groupSet', 'privateIpAddressesSet']

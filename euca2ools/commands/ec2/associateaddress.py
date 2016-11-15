@@ -53,9 +53,9 @@ class AssociateAddress(EC2Request):
                     help='''[VPC only] allow the address to be associated even
                     if it is already associated with another interface'''),
                 Arg('--no-allow-reassociation', dest='AllowReassociation',
-                    action='store_const', const='false',
-                    help='''[VPC only] do not allow the address to be associated
-                    if it is already associated with another interface'''))]
+                    action='store_const', const='false', help='''[VPC only]
+                    do not allow the address to be associated if it is already
+                    associated with another interface'''))]
 
     # noinspection PyExceptionInherit
     def configure(self):

@@ -44,8 +44,8 @@ class CreateVpnConnection(EC2Request):
                 metavar='CGATEWAY',
                 help='ID of the customer gateway to connect (required)'),
             Arg('--vpn-gateway', dest='VpnGatewayId', required=True,
-                metavar='VGATEWAY',
-                help='ID of the virtual private gateway to connect (required)'),
+                metavar='VGATEWAY', help='''ID of the virtual private gateway
+                to connect (required)'''),
             Arg('--static-routes-only', dest='Options.StaticRoutesOnly',
                 action='store_true',
                 help='use only static routes instead of BGP'),

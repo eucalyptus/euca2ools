@@ -5,4 +5,7 @@ import sys
 import euca2ools.commands
 
 
-print >> sys.stderr, euca2ools.commands.Euca2ools().format_version()
+if '--help' in sys.argv or '-h' in sys.argv:
+    print "usage: euca-version\n\nDisplay the euca2ools suite's version"
+else:
+    print >> sys.stderr, euca2ools.commands.Euca2ools().format_version()

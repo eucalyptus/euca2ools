@@ -38,9 +38,11 @@ class GetOpenIDConnectProvider(IAMRequest):
             AS_ACCOUNT]
     LIST_TAGS = ['ClientIDList', 'ThumbprintList']
 
+    # pylint: disable=no-self-use
     def print_result(self, result):
         print 'url', result.get('Url')
         for fprint in result.get('ThumbprintList') or []:
             print 'thumbprint', fprint
         for client in result.get('ClientIDList') or []:
             print 'client-id', client
+    # pylint: enable=no-self-use

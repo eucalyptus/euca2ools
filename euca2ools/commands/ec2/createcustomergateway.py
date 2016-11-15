@@ -1,4 +1,4 @@
-# Copyright 2014 Eucalyptus Systems, Inc.
+# Copyright (c) 2014-2016 Hewlett Packard Enterprise Development LP
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -29,9 +29,13 @@ from euca2ools.commands.ec2 import EC2Request
 
 
 class CreateCustomerGateway(EC2Request):
-    DESCRIPTION = ('Create a VPN customer gateway\n\nThis is the external '
-                   'side of a VPN connection.  You will also need to create '
-                   'a virtual private gateway with euca-create-vpn-gateway(1).')
+    """
+    Create a VPN customer gateway
+
+    This is the external side of a VPN connection.  You will also need to
+    create a virtual private gateway with euca-create-vpn-gateway(1).
+    """
+
     ARGS = [Arg('-t', '--type', dest='Type', metavar='ipsec.1', required=True,
                 choices=('ipsec.1',),
                 help='the type of VPN connection to use (required)'),

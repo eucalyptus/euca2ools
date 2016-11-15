@@ -1,4 +1,4 @@
-# Copyright 2014 Eucalyptus Systems, Inc.
+# Copyright (c) 2014-2016 Hewlett Packard Enterprise Development LP
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -31,8 +31,8 @@ from euca2ools.commands.ec2 import EC2Request
 class AttachVpnGateway(EC2Request):
     DESCRIPTION = 'Attach a virtual private gateway to a VPC'
     ARGS = [Arg('-c', '--vpc', dest='VpcId', metavar='VPC',
-                required=True,
-                help='VPC to attach the virtual private gateway to (required)'),
+                required=True, help='''VPC to attach the virtual private
+                gateway to (required)'''),
             Arg('VpnGatewayId', metavar='VGATEWAY',
                 help='virtual private gateway to attach (required)')]
 

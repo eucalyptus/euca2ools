@@ -358,8 +358,9 @@ class EC2Request(AWSQueryRequest, TabifyingMixin):
             else:
                 if (stylesheet.startswith('http://') or
                         stylesheet.startswith('https://')):
-                    self.log.info('fetching connection info stylesheet from %s',
-                                  stylesheet)
+                    self.log.info(
+                        'fetching connection info stylesheet from %s',
+                        stylesheet)
                     response = requests.get(stylesheet)
                     try:
                         response.raise_for_status()
