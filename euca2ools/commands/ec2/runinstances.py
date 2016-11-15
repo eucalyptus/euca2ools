@@ -1,4 +1,4 @@
-# Copyright 2009-2015 Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2016 Hewlett Packard Enterprise Development LP
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -102,8 +102,8 @@ class RunInstances(EC2Request):
                 help='''[VPC only] subnet to create the instance's network
                 interface in'''),
             Arg('--associate-public-ip-address', type=flexible_bool,
-                route_to=None, help='''[VPC only] assign a public address
-                to the instance's network interface'''),
+                route_to=None, help='''[VPC only] whether or not to assign a
+                public address to the instance's network interface'''),
             Arg('--private-ip-address', metavar='ADDRESS', route_to=None,
                 help='''[VPC only] assign a specific primary private IP address
                 to an instance's interface'''),
@@ -211,7 +211,8 @@ class RunInstances(EC2Request):
             else:
                 self.params['IamInstanceProfile.Name'] = iprofile
 
-        if self.args.get('subnet') or self.args.get('NetworkInterface'):
+        if (self.args.get('subnet') or self.args.get('NetworkInterface') or
+                self.args.get('associate_public_ip_address') is not None):
             # This is going into a VPC.
             # We can't mix top-level and interface-level parameters, so
             # build an interface out of all the network-related options
