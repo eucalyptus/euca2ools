@@ -35,12 +35,12 @@ class CreateSubnet(EC2Request):
     DESCRIPTION = 'Create a new VPC subnet'
     # We also accept CidrBlock positionally because forgetting -i is common.
     # https://eucalyptus.atlassian.net/browse/TOOLS-497
-    ARGS = [Arg('positional_cidr', nargs='?', route_to=None,
-                help=argparse.SUPPRESS),
+    ARGS = [Arg('CidrBlock', metavar='CIDR',
+                help='CIDR address block for the new subnet (required)'),
+            Arg('-i', '--cidr', dest='dummy', action='store_true',
+                route_to=None, help=argparse.SUPPRESS),  # for compatibility
             Arg('-c', '--vpc', dest='VpcId', required=True,
                 help='ID of the VPC to create the new subnet in (required)'),
-            Arg('-i', '--cidr', dest='CidrBlock', metavar='CIDR',
-                help='CIDR address block for the new subnet (required)'),
             Arg('-z', '--availability-zone', dest='AvailabilityZone',
                 metavar='ZONE',
                 help='availability zone in which to create the new subnet')]
