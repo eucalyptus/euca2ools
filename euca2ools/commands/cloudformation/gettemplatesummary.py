@@ -39,7 +39,8 @@ class GetTemplateSummary(CloudFormationRequest):
         Arg('--template-url', dest='TemplateURL',
             metavar='URL', help='S3 URL for JSON template'))
             .required()]
-    LIST_TAGS = ['Capabilities', 'Parameters', 'ResourceTypes']
+    LIST_TAGS = ['AllowedValues', 'Capabilities', 'Parameters',
+                 'ResourceTypes']
 
     def print_result(self, result):
         if result.get('Description'):
@@ -55,5 +56,9 @@ class GetTemplateSummary(CloudFormationRequest):
             print self.tabify(('PARAMETER', param.get('ParameterKey'),
                                param.get('NoEcho'), param.get('DefaultValue'),
                                param.get('Description')))
+            for allowed in ((param.get('ParameterConstraints') or {})
+                            .get('AllowedValues') or []):
+                print self.tabify(('ALLOWED-VALUE', param.get('ParameterKey'),
+                                   allowed))
         if result.get('Metadata'):
             print self.tabify(('METADATA', result.get('Metadata')))
