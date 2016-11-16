@@ -1,4 +1,4 @@
-# Copyright 2009-2014 Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2016 Hewlett Packard Enterprise Development LP
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -23,10 +23,11 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.iam import IAMRequest
-from euca2ools.commands.iam.getaccountpolicy import GetAccountPolicy
 from requestbuilder import Arg
 from requestbuilder.response import PaginatedResponse
+
+from euca2ools.commands.iam import IAMRequest
+from euca2ools.commands.iam.getaccountpolicy import GetAccountPolicy
 
 
 class ListAccountPolicies(IAMRequest):
@@ -73,8 +74,8 @@ class ListAccountPolicies(IAMRequest):
                     self.print_policy(policy_name)
 
     def print_policy(self, policy_name):
-        req = GetAccountPolicy(
-            service=self.service, AccountName=self.args['AccountName'],
+        req = GetAccountPolicy.from_other(
+            self, AccountName=self.args['AccountName'],
             PolicyName=policy_name, pretty_print=self.args['pretty_print'])
         response = req.main()
         req.print_result(response)
