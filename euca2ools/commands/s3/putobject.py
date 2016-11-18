@@ -1,4 +1,4 @@
-# Copyright 2013-2014 Eucalyptus Systems, Inc.
+# Copyright (c) 2013-2016 Hewlett Packard Enterprise Development LP
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -200,7 +200,7 @@ class _FileObjectExtent(object):
         remaining = self.size - self.__bytes_read
         if remaining <= 0:
             raise StopIteration()
-        chunk = self.fileobj.next()  # might raise StopIteration, which is good
+        chunk = next(self.fileobj)  # might raise StopIteration, which is good
         chunk = chunk[:remaining]  # throw away data that are off the end
         self.__bytes_read += len(chunk)
         self.__md5.update(chunk)

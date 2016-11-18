@@ -1,4 +1,4 @@
-# Copyright 2013 Eucalyptus Systems, Inc.
+# Copyright (c) 2013-2016 Hewlett Packard Enterprise Development LP
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -39,7 +39,7 @@ def autoscaling_filter_def(filter_str):
         filter_dict.setdefault(key.strip(), [])
         filter_dict[key.strip()].append(val.strip())
     filter_list = []
-    for key, values in filter_dict.iteritems():
+    for key, values in filter_dict.items():
         filter_list.append({'Name': key, 'Values': values})
     return filter_list
 

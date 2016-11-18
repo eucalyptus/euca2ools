@@ -35,8 +35,8 @@ class GetCallerIdentity(STSRequest):
         info = {
             'key-id': self.auth.args.get('key_id')
         }
-        for key, val in result.iteritems():
+        for key, val in result.items():
             info[re.sub('(.)([A-Z][a-z]+)', r'\1-\2', key).lower()] = val
-        for key, val in sorted(info.iteritems()):
+        for key, val in sorted(info.items()):
             if val:
                 print '{0} = {1}'.format(key, val)

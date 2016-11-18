@@ -70,7 +70,7 @@ class S3(requestbuilder.service.BaseService):
         else:
             # Try to look it up in the config
             s3_urls = self.config.get_all_region_options('s3-url')
-            for section, conf_url in s3_urls.iteritems():
+            for section, conf_url in s3_urls.items():
                 parsed_conf_url = six.moves.urllib.parse.urlparse(conf_url)
                 bucket, key = self.__match_path(parsed_url, parsed_conf_url)
                 if bucket:

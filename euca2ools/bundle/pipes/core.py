@@ -1,4 +1,4 @@
-# Copyright 2013-2014 Eucalyptus Systems, Inc.
+# Copyright (c) 2013-2016 Hewlett Packard Enterprise Development LP
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -242,7 +242,7 @@ def _extract_from_tarball_stream(infile, outfile, debug=False):
     close_all_fds([infile, outfile])
     tarball = tarfile.open(mode='r|', fileobj=infile)
     try:
-        tarinfo = tarball.next()
+        tarinfo = next(tarball)
         shutil.copyfileobj(tarball.extractfile(tarinfo), outfile)
     except IOError:
         # HACK

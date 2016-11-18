@@ -1,4 +1,4 @@
-# (C) Copyright 2014 Eucalyptus Systems, Inc.
+# Copyright (c) 2014-2016 Hewlett Packard Enterprise Development LP
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -140,7 +140,7 @@ class ImageMetadata(object):
         if not isinstance(profiles, dict):
             raise ValueError('image "{0}": profiles must be an associative '
                              'array'.format(new_md.name))
-        for profile_name, profile_info in profiles.iteritems():
+        for profile_name, profile_info in profiles.items():
             new_md.profiles[profile_name] = build_image_profile(profile_info,
                                                                 new_md.arch)
         return new_md

@@ -1,4 +1,4 @@
-# Copyright 2009-2014 Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2016 Hewlett Packard Enterprise Development LP
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -23,9 +23,11 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from euca2ools.commands.ec2 import EC2Request
 from requestbuilder import Arg, Filter, GenericTagFilter
 from requestbuilder.exceptions import ArgumentError
+import six
+
+from euca2ools.commands.ec2 import EC2Request
 
 
 class DescribeImages(EC2Request):
@@ -124,7 +126,7 @@ class DescribeImages(EC2Request):
         images = {}
         for image in result.get('imagesSet', []):
             images.setdefault(image['imageId'], image)
-        for _, image in sorted(images.iteritems()):
+        for _, image in sorted(six.iteritems(images)):
             self.print_image(image)
 
     def print_image(self, image):

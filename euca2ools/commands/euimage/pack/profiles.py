@@ -1,4 +1,4 @@
-# (C) Copyright 2014 Eucalyptus Systems, Inc.
+# Copyright (c) 2014-2016 Hewlett Packard Enterprise Development LP
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -81,7 +81,7 @@ class InstanceStoreImageProfile(object):
         if not isinstance(mappings, dict):
             raise ValueError('register: block-device-mappings must be an '
                              'associative array')
-        for device, mapping_info in mappings.iteritems():
+        for device, mapping_info in mappings.items():
             mapping = {'DeviceName': device}
             if mapping_info == 'none':
                 mapping['NoDevice'] = 'true'
@@ -104,7 +104,7 @@ class InstanceStoreImageProfile(object):
     def __load_tag_args(self, args):
         check_dict_whitelist(args, 'tag')
         tags = []
-        for key, val in args.iteritems():
+        for key, val in args.items():
             tags.append({'Key': key, 'Value': val})
         if tags:
             self.tag_args.setdefault('Tag', [])
@@ -157,7 +157,7 @@ class InstanceStoreImageProfile(object):
         tag_args['ResourceId'] = [image_id]
         tag_args.setdefault('Tag', [])
         if tags:
-            for key, val in tags.iteritems():
+            for key, val in tags.items():
                 tag_args['Tag'].append({'Key': key, 'Value': val})
         req = CreateTags(
             service=services['ec2']['service'],

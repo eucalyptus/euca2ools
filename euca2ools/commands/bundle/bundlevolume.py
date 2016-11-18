@@ -267,10 +267,10 @@ class BundleVolume(BaseCommand, FileTransferProgressBarMixin):
             if not self.args.get('block_device_mappings'):
                 self.args['block_device_mappings'] = {}
                 for key, val in (self.__read_metadata_dict(
-                        'block-device-mapping') or {}).iteritems():
+                        'block-device-mapping') or {}).items():
                     if not key.startswith('ebs'):
                         self.args['block_device_mappings'][key] = val
-                for key, val in self.args['block_device_mappings'].iteritems():
+                for key, val in self.args['block_device_mappings'].items():
                     self.log.info('inherited block device mapping: %s=%s',
                                   key, val)
         except requests.exceptions.Timeout:
@@ -478,7 +478,7 @@ def _get_all_mounts():
             device, mountpoint, fstype, _ = line.split(None, 3)
             filesystems_dict[mountpoint] = (device, fstype)
     filesystems_list = []
-    for mountpoint, (device, fstype) in filesystems_dict.iteritems():
+    for mountpoint, (device, fstype) in filesystems_dict.items():
         filesystems_list.append((device, mountpoint, fstype))
     return filesystems_list
 

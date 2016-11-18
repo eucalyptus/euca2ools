@@ -73,7 +73,7 @@ class DescribeInstanceTypes(EC2Request, TabifyingMixin):
                         'max': max_}
 
         if self.args.get('by_zone'):
-            for zone, zone_vmtypes in sorted(zones.iteritems()):
+            for zone, zone_vmtypes in sorted(zones.items()):
                 print self.tabify(('AVAILABILITYZONE', zone))
                 self._print_vmtypes(zone_vmtypes, vmtype_names)
                 print
@@ -91,7 +91,7 @@ class DescribeInstanceTypes(EC2Request, TabifyingMixin):
                   'total': 'Total',
                   'used_pct': 'Used %'}
         field_lengths = dict((field, len(header)) for field, header
-                             in fields.iteritems())
+                             in fields.items())
         vmtype_infos = []
         for vmtype_name in vmtype_names:
             total = int(vmtypes[vmtype_name].get('max', 0))
