@@ -132,8 +132,8 @@ class PutObject(S3Request, FileTransferProgressBarMixin):
     def try_send(self, source, retries_left=0):
         self.body = source
         if retries_left > 0 and not source.can_rewind:
-            self.log.warn('source cannot rewind, so requested retries will '
-                          'not be attempted')
+            self.log.notice('source cannot rewind, so requested retries will '
+                            'not be attempted')
             retries_left = 0
         try:
             response = self.send()
