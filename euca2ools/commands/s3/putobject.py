@@ -32,6 +32,7 @@ import time
 from requestbuilder import Arg
 import requestbuilder.exceptions
 from requestbuilder.mixins import FileTransferProgressBarMixin
+import six
 
 from euca2ools.commands.s3 import S3Request
 import euca2ools.util
@@ -73,7 +74,7 @@ class PutObject(S3Request, FileTransferProgressBarMixin):
                 raise requestbuilder.exceptions.ArgumentError(
                     "argument --size is required when uploading stdin")
             source = _FileObjectExtent(sys.stdin, self.args['size'])
-        elif isinstance(self.args['source'], basestring):
+        elif isinstance(self.args['source'], six.string_types):
             source = _FileObjectExtent.from_filename(
                 self.args['source'], size=self.args.get('size'))
         else:

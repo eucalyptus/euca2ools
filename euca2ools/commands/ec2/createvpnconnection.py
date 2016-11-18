@@ -26,6 +26,7 @@
 import sys
 
 from requestbuilder import Arg
+import six
 
 from euca2ools.commands.ec2 import EC2Request
 

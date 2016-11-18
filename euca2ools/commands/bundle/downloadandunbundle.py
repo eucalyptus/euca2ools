@@ -1,4 +1,4 @@
-# Copyright 2009-2014 Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2016 Hewlett Packard Enterprise Development LP
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -30,6 +30,7 @@ import sys
 from requestbuilder import Arg
 from requestbuilder.exceptions import ArgumentError
 from requestbuilder.mixins import FileTransferProgressBarMixin
+import six
 
 from euca2ools.bundle.util import open_pipe_fileobjs
 from euca2ools.bundle.util import waitpid_in_thread
@@ -83,7 +84,7 @@ class DownloadAndUnbundle(S3Request, FileTransferProgressBarMixin,
         if self.args['dest'] == '-':
             self.args['dest'] = sys.stdout
             self.args['show_progress'] = False
-        elif isinstance(self.args['dest'], basestring):
+        elif isinstance(self.args['dest'], six.string_types):
             if os.path.isdir(self.args['dest']):
                 image_filename = os.path.join(self.args['dest'],
                                               manifest.image_name)

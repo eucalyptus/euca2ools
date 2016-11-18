@@ -1,4 +1,4 @@
-# Copyright 2009-2014 Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2016 Hewlett Packard Enterprise Development LP
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -30,6 +30,7 @@ from requestbuilder import Arg
 from requestbuilder.command import BaseCommand
 from requestbuilder.mixins import (FileTransferProgressBarMixin,
                                    RegionConfigurableMixin)
+import six
 
 from euca2ools.bundle.pipes.core import (create_unbundle_pipeline,
                                          copy_with_progressbar)
@@ -66,14 +67,14 @@ class UnbundleStream(BaseCommand, FileTransferProgressBarMixin,
         if not self.args.get('source') or self.args['source'] == '-':
             # We dup stdin because the multiprocessing lib closes it
             self.args['source'] = os.fdopen(os.dup(sys.stdin.fileno()))
-        elif isinstance(self.args['source'], basestring):
+        elif isinstance(self.args['source'], six.string_types):
             self.args['source'] = open(self.args['source'])
         # Otherwise, assume it is already a file object
 
         if not self.args.get('dest') or self.args['dest'] == '-':
             self.args['dest'] = sys.stdout
             self.args['show_progress'] = False
-        elif isinstance(self.args['dest'], basestring):
+        elif isinstance(self.args['dest'], six.string_types):
             self.args['dest'] = open(self.args['dest'], 'w')
         # Otherwise, assume it is already a file object
 

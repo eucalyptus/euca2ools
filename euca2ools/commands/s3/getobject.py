@@ -1,4 +1,4 @@
-# Copyright 2013-2014 Eucalyptus Systems, Inc.
+# Copyright (c) 2013-2016 Hewlett Packard Enterprise Development LP
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -30,6 +30,7 @@ import sys
 from requestbuilder import Arg
 from requestbuilder.exceptions import ArgumentError
 from requestbuilder.mixins import FileTransferProgressBarMixin
+import six
 
 from euca2ools.commands.s3 import S3Request
 import euca2ools.bundle.pipes
@@ -55,7 +56,7 @@ class GetObject(S3Request, FileTransferProgressBarMixin):
         if not key:
             raise ArgumentError('source must contain a key name')
 
-        if isinstance(self.args.get('dest'), basestring):
+        if isinstance(self.args.get('dest'), six.string_types):
             # If it is not a string we assume it is a file-like object
             if self.args['dest'] == '-':
                 self.args['dest'] = sys.stdout

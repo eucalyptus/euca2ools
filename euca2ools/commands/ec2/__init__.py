@@ -27,7 +27,6 @@ import argparse
 import io
 from operator import itemgetter
 import os.path
-import six
 import socket
 from string import Template
 import sys
@@ -40,6 +39,7 @@ from requestbuilder.mixins import TabifyingMixin
 from requestbuilder.request import AWSQueryRequest
 from requestbuilder.service import BaseService
 import requests.exceptions
+import six
 
 from euca2ools.commands import Euca2ools
 from euca2ools.exceptions import AWSError
@@ -543,8 +543,8 @@ class _ResourceTypeMap(object):
         'vgw':    'vpn-gateway'}
 
     def lookup(self, item):
-        if not isinstance(item, basestring):
-            raise TypeError('argument type must be str')
+        if not isinstance(item, six.string_types):
+            raise TypeError('argument type must be a string type')
         for prefix in self._prefix_type_map:
             if item.startswith(prefix + '-'):
                 return self._prefix_type_map[prefix]

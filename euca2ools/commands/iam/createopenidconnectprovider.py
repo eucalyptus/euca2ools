@@ -25,7 +25,7 @@
 
 from requestbuilder import Arg
 from requestbuilder.exceptions import ArgumentError
-import six.moves.urllib.parse
+import six
 
 from euca2ools.commands.iam import IAMRequest, AS_ACCOUNT, util
 

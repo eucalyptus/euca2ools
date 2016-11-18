@@ -1,4 +1,4 @@
-# Copyright 2013-2015 Eucalyptus Systems, Inc.
+# Copyright (c) 2013-2016 Hewlett Packard Enterprise Development LP
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -34,6 +34,7 @@ import tempfile
 
 from requestbuilder import Arg, MutuallyExclusiveArgList
 from requestbuilder.exceptions import ArgumentError
+import six
 
 import euca2ools.bundle.manifest
 import euca2ools.bundle.util
@@ -224,7 +225,7 @@ class BundleCreatingMixin(object):
             if not self.args.get('image_size'):
                 raise ArgumentError(
                     'argument --image-size is required when bundling stdin')
-        elif isinstance(self.args['image'], basestring):
+        elif isinstance(self.args['image'], six.string_types):
             if not self.args.get('prefix'):
                 self.args['prefix'] = os.path.basename(self.args['image'])
             if not self.args.get('image_size'):

@@ -29,6 +29,7 @@ import sys
 
 from requestbuilder import Arg, MutuallyExclusiveArgList
 from requestbuilder.exceptions import ArgumentError
+import six
 
 from euca2ools.commands.argtypes import b64encoded_file_contents
 from euca2ools.commands.s3 import S3Request
@@ -81,7 +82,7 @@ class PostObject(S3Request):
 
         if self.args['source'] == '-':
             self.files['file'] = sys.stdin
-        elif isinstance(self.args['source'], basestring):
+        elif isinstance(self.args['source'], six.string_types):
             self.files['file'] = open(self.args['source'])
         else:
             self.files['file'] = self.args['source']

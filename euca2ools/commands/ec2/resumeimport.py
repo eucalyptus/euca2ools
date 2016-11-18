@@ -1,4 +1,4 @@
-# Copyright 2014 Eucalyptus Systems, Inc.
+# Copyright (c) 2014-2016 Hewlett Packard Enterprise Development LP
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -30,6 +30,7 @@ import tempfile
 from requestbuilder import Arg
 from requestbuilder.exceptions import ArgumentError, ServerError
 from requestbuilder.mixins import FileTransferProgressBarMixin
+import six
 
 from euca2ools.commands.ec2 import EC2Request
 from euca2ools.commands.ec2.describeconversiontasks import \
@@ -168,7 +169,8 @@ class ResumeImport(EC2Request, S3AccessMixin, FileTransferProgressBarMixin):
         manifest.image_size = int(vol_container['image']['size'])
         manifest.volume_size = int(vol_container['volume']['size'])
         part_size = (self.args.get('part_size') or 10) * 2 ** 20  # MiB
-        for index, part_start in enumerate(xrange(0, file_size, part_size)):
+        for index, part_start in enumerate(six.moves.range(0, file_size,
+                                                           part_size)):
             part = ImportImagePart()
             part.index = index
             part.start = part_start

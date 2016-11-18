@@ -27,7 +27,7 @@ import hashlib
 import socket
 import ssl
 
-import six.moves.urllib.parse
+import six
 
 
 def get_cert_fingerprint(url, log=None):

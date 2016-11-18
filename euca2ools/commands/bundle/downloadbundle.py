@@ -1,4 +1,4 @@
-# Copyright 2009-2014 Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2016 Hewlett Packard Enterprise Development LP
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -30,6 +30,7 @@ import sys
 from requestbuilder import Arg
 from requestbuilder.exceptions import ArgumentError
 from requestbuilder.mixins import FileTransferProgressBarMixin
+import six
 
 from euca2ools.commands.bundle.mixins import BundleDownloadingMixin
 from euca2ools.commands.s3 import S3Request
@@ -50,7 +51,7 @@ class DownloadBundle(S3Request, FileTransferProgressBarMixin,
         if self.args['dest'] == '-':
             self.args['dest'] = sys.stdout
             self.args['show_progress'] = False
-        elif isinstance(self.args['dest'], basestring):
+        elif isinstance(self.args['dest'], six.string_types):
             if not os.path.exists(self.args['dest']):
                 raise ArgumentError(
                     "argument -d/--directory: '{0}' does not exist"
@@ -64,7 +65,7 @@ class DownloadBundle(S3Request, FileTransferProgressBarMixin,
     # noinspection PyExceptionInherit
     def main(self):
         manifest = self.fetch_manifest(self.service)
-        if isinstance(self.args['dest'], basestring):
+        if isinstance(self.args['dest'], six.string_types):
             manifest_dest = self.download_bundle_to_dir(
                 manifest, self.args['dest'], self.service)
         else:
@@ -75,6 +76,6 @@ class DownloadBundle(S3Request, FileTransferProgressBarMixin,
     def print_result(self, result):
         _, manifest_filename = result
         if (manifest_filename and
-                (isinstance(self.args['dest'], basestring) or
+                (isinstance(self.args['dest'], six.string_types) or
                  self.args['dest'].fileno() != sys.stdout.fileno())):
             print 'Wrote manifest', manifest_filename
