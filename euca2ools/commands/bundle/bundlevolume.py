@@ -35,13 +35,15 @@ import time
 from requestbuilder import Arg, MutuallyExclusiveArgList
 from requestbuilder.command import BaseCommand
 from requestbuilder.exceptions import ArgumentError, ClientError
-from requestbuilder.mixins import FileTransferProgressBarMixin
+from requestbuilder.mixins import (FileTransferProgressBarMixin,
+                                   RegionConfigurableMixin)
 import requests
 
 import euca2ools
 from euca2ools.commands import Euca2ools, SYSCONFDIR
 from euca2ools.commands.argtypes import (delimited_list, filesize,
                                          manifest_block_device_mappings)
+from euca2ools.commands.bootstrap import BootstrapRequest
 from euca2ools.commands.bundle.bundleimage import BundleImage
 
 
@@ -50,7 +52,8 @@ EXCLUDES_FILE = os.path.join(SYSCONFDIR, 'bundle-vol', 'excludes')
 FSTAB_TEMPLATE_FILE = os.path.join(SYSCONFDIR, 'bundle-vol', 'fstab')
 
 
-class BundleVolume(BaseCommand, FileTransferProgressBarMixin):
+class BundleVolume(BaseCommand, FileTransferProgressBarMixin,
+                   RegionConfigurableMixin):
     SUITE = Euca2ools
     DESCRIPTION = ("Prepare this machine's filesystem for use in the cloud\n\n"
                    "This command must be run as the superuser.")
@@ -89,7 +92,7 @@ class BundleVolume(BaseCommand, FileTransferProgressBarMixin):
             Arg('-P', '--partition', choices=('mbr', 'gpt', 'none'),
                 help='''the type of partition table to create (default: attempt
                 to guess based on the existing disk)'''),
-            Arg('-S', '--script', metavar='FILE', help='''location of a script
+            Arg('--script', metavar='FILE', help='''location of a script
                 to run immediately before bundling.  It will receive the
                 volume's mount point as its only argument.'''),
             MutuallyExclusiveArgList(
@@ -102,7 +105,7 @@ class BundleVolume(BaseCommand, FileTransferProgressBarMixin):
                 configuration file to copy to /boot/grub/menu.lst on the
                 bundled image'''),
 
-            # Bundle-related stuff
+            # User- and cloud-specific stuff for bundling
             Arg('-k', '--privatekey', metavar='FILE', help='''file containing
                 your private key to sign the bundle's manifest with.  This
                 private key will also be required to unbundle the image in the
@@ -116,6 +119,14 @@ class BundleVolume(BaseCommand, FileTransferProgressBarMixin):
                 associate with this machine image'''),
             Arg('--ramdisk', metavar='IMAGE', help='''ID of the ramdisk image
                 to associate with this machine image'''),
+            Arg('--bootstrap-url', route_to=None, help='''[Eucalyptus
+                only] bootstrap service endpoint URL (used for obtaining
+                --ec2cert automatically'''),
+            Arg('--bootstrap-service', route_to=None, help=argparse.SUPPRESS),
+            Arg('--bootstrap-auth', route_to=None, help=argparse.SUPPRESS),
+            BootstrapRequest.AUTH_CLASS.ARGS,
+
+            # Obscurities
             Arg('-B', '--block-device-mappings',
                 metavar='VIRTUAL1=DEVICE1,VIRTUAL2=DEVICE2,...',
                 type=manifest_block_device_mappings,
@@ -124,12 +135,14 @@ class BundleVolume(BaseCommand, FileTransferProgressBarMixin):
             Arg('--productcodes', metavar='CODE1,CODE2,...',
                 type=delimited_list(','), default=[],
                 help='comma-separated list of product codes for the image'),
-            Arg('--part-size', type=filesize, default=10485760,
+
+            # Overrides for debugging and other entertaining uses
+            Arg('--part-size', type=filesize, default=10485760,  # 10MB
                 help=argparse.SUPPRESS),
             Arg('--enc-key', type=(lambda s: int(s, 16)),
-                help=argparse.SUPPRESS),
+                help=argparse.SUPPRESS),  # a hex string
             Arg('--enc-iv', type=(lambda s: int(s, 16)),
-                help=argparse.SUPPRESS)]
+                help=argparse.SUPPRESS)]  # a hex string
 
     def configure(self):
         if os.geteuid() != 0:
@@ -150,8 +163,9 @@ class BundleVolume(BaseCommand, FileTransferProgressBarMixin):
                 self.log.warn('could not determine the partition table type '
                               'for root device %s', root_device)
                 raise ArgumentError(
-                    'could not determine the type of partition table to use; '
-                    'specify one with -P/--partition'.format(root_device))
+                    'could not determine the type of partition table to use '
+                    'for disk {0}; specify one with -P/--partition'
+                    .format(root_device))
             self.log.info('discovered partition table type %s',
                           self.args['partition'])
         if not self.args.get('fstab') and not self.args.get('generate_fstab'):
@@ -210,7 +224,9 @@ class BundleVolume(BaseCommand, FileTransferProgressBarMixin):
         bundle_args = ('prefix', 'destination', 'arch', 'privatekey', 'cert',
                        'ec2cert', 'user', 'kernel', 'ramdisk',
                        'block_device_mappings', 'productcodes', 'part_size',
-                       'enc_key', 'enc_iv', 'show_progress')
+                       'enc_key', 'enc_iv', 'show_progress', 'key_id',
+                       'secret_key', 'security_token', 'bootstrap_url',
+                       'bootstrap_service', 'bootstrap_auth', 'region')
         bundle_args_dict = dict((key, self.args.get(key))
                                 for key in bundle_args)
         return BundleImage.from_other(self, image=image_filename,

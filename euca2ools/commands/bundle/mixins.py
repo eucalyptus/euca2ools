@@ -207,7 +207,8 @@ class BundleCreatingMixin(object):
         if not self.args.get('ec2cert'):
             raise ArgumentError(
                 'missing cloud certificate; please supply one with '
-                '--ec2cert or use --bootstrap-url to fetch one automatically')
+                '--ec2cert or use --bootstrap-url and access keys to '
+                'fetch one automatically')
         self.log.debug('cloud certificate: %s', self.args['ec2cert'])
 
     def configure_bundle_output(self):
