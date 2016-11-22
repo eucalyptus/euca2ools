@@ -1,6 +1,6 @@
 argparse
 PyYAML
 lxml
-requestbuilder>=0.3.4
+requestbuilder>=0.6
 requests
 six>=1.8
