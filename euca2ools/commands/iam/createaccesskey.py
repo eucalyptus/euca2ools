@@ -1,4 +1,4 @@
-# Copyright 2009-2015 Eucalyptus Systems, Inc.
+# Copyright (c) 2009-2016 Hewlett Packard Enterprise Development LP
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -87,6 +87,12 @@ class CreateAccessKey(IAMRequest):
                         service=service)
                     configfile.set(region_section, '{0}-url'.format(service),
                                    url)
+                if self.config.get_region_option('verify-tls') is not None:
+                    configfile.set(region_section, 'verify-tls',
+                                   self.config.get_region_option('verify-tls'))
+                if self.config.get_region_option('verify-ssl') is not None:
+                    configfile.set(region_section, 'verify-ssl',
+                                   self.config.get_region_option('verify-ssl'))
 
             user_name = result['AccessKey'].get('UserName') or 'root'
             account_id = self.get_user_account_id()
