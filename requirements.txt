@@ -2,4 +2,4 @@ lxml
 PyYAML
 requestbuilder>=0.3.4
 requests
-six>=1.4
+six>=1.8

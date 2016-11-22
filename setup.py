@@ -40,7 +40,7 @@ REQUIREMENTS = ['lxml',
                 'PyYAML',
                 'requestbuilder>=0.6',
                 'requests',
-                'six>=1.4']
+                'six>=1.8']
 if sys.version_info < (2, 7):
     REQUIREMENTS.append('argparse')
 

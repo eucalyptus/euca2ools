@@ -194,9 +194,21 @@ class BundleCreatingMixin(object):
                 # Sending requests during configure() can be precarious.
                 # Pay close attention to ordering to ensure all
                 # of this request's dependencies have been fulfilled.
-                fetched_cert = self.__get_bundle_certificate(
-                    self.args['bootstrap_service'],
-                    self.args['bootstrap_auth'])
+                try:
+                    fetched_cert = self.__get_bundle_certificate(
+                        self.args['bootstrap_service'],
+                        self.args['bootstrap_auth'])
+                except AWSError as err:
+                    self.log.debug('failed to fetch ec2cert', exc_info=True)
+                    if err.response.status_code == 403:
+                        msg = ('permission error retrieving cloud '
+                               'certificate; please supply one with '
+                               '--ec2cert or obtain an IAM policy that '
+                               'allows "euserv:DescribeServiceCertificates"')
+                    else:
+                        msg = ('error retrieving cloud certificate; please '
+                               'supply one with --ec2cert')
+                    six.raise_from(ArgumentError(msg), err)
                 if fetched_cert:
                     self.log.debug('using cloud certificate from '
                                    'bootstrap service')
