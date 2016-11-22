@@ -513,7 +513,7 @@ def _get_partition_table_type(device, debug=False):
     parted = subprocess.Popen(['parted', '-m', '-s', device, 'print'],
                               stdout=subprocess.PIPE, stderr=stderr_dest)
     stdout, _ = parted.communicate()
-    for line in stdout:
+    for line in stdout.splitlines():
         if line.startswith('/dev/'):
             # /dev/sda:500GB:scsi:512:512:msdos:ATA WDC WD5003ABYX-1;
             line_bits = line.split(':')
