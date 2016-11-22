@@ -19,4 +19,9 @@
 - /media/**
 - /mnt/**
 - /proc/**
+- /run/**
 - /sys/**
+- /tmp/**
+- /var/cache/**
+- /var/run/**
+- /var/tmp/**
