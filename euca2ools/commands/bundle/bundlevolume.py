@@ -182,7 +182,7 @@ class BundleVolume(BaseCommand, FileTransferProgressBarMixin,
         # Prepare the disk image
         device = self.__create_disk_image(image, self.args['size'])
         try:
-            self.__create_and_mount_filesystem(device, mountpoint)
+            fsinfo = self.__create_and_mount_filesystem(device, mountpoint)
             try:
                 # Copy files
                 exclude_opts = self.__get_exclude_and_include_args()
@@ -199,8 +199,9 @@ class BundleVolume(BaseCommand, FileTransferProgressBarMixin,
 
             except KeyboardInterrupt:
                 self.log.info('received ^C; skipping to cleanup')
-                msg = ('\n\nCleaning up after ^C -- pressing ^C again will '
-                       'result in the need for manual device cleanup\n\n')
+                msg = ('\n\nCleaning up after ^C\nWARNING:  pressing '
+                       '^C again will result in the need for manual '
+                       'device cleanup\n\n')
                 print >> sys.stderr, msg
                 raise
             # Cleanup
@@ -208,6 +209,7 @@ class BundleVolume(BaseCommand, FileTransferProgressBarMixin,
                 time.sleep(0.2)
                 self.__unmount_filesystem(device)
                 os.rmdir(mountpoint)
+            self.__update_filesystem_ids(device, fsinfo)
         finally:
             self.__detach_disk_image(image, device)
 
@@ -352,19 +354,6 @@ class BundleVolume(BaseCommand, FileTransferProgressBarMixin,
         self.log.info('creating filesystem on %s using metadata from %s: %s',
                       device, root_device, fsinfo)
         fs_cmds = [['mkfs', '-t', fsinfo['type']]]
-        if fsinfo.get('label'):
-            fs_cmds[0].extend(['-L', fsinfo['label']])
-        elif fsinfo['type'] in ('ext2', 'ext3', 'ext4'):
-            if fsinfo.get('uuid'):
-                fs_cmds[0].extend(['-U', fsinfo['uuid']])
-            # Time-based checking doesn't make much sense for cloud images
-            fs_cmds.append(['tune2fs', '-i', '0'])
-        elif fsinfo['type'] == 'jfs':
-            if fsinfo.get('uuid'):
-                fs_cmds.append(['jfs_tune', '-U', fsinfo['uuid']])
-        elif fsinfo['type'] == 'xfs':
-            if fsinfo.get('uuid'):
-                fs_cmds.append(['xfs_admin', '-U', fsinfo['uuid']])
         for fs_cmd in fs_cmds:
             fs_cmd.append(device)
             self.log.info("formatting with ``%s''", _quote_cmd(fs_cmd))
@@ -373,12 +362,39 @@ class BundleVolume(BaseCommand, FileTransferProgressBarMixin,
                       device, mountpoint)
         subprocess.check_call(['mount', '-t', fsinfo['type'], device,
                                mountpoint])
+        return fsinfo
 
     def __unmount_filesystem(self, device):
         self.log.info('unmounting %s', device)
         subprocess.check_call(['sync'])
         time.sleep(0.2)
         subprocess.check_call(['umount', device])
+
+    def __update_filesystem_ids(self, device, fsinfo):
+        """
+        Apply filesystem identifiers to an unmounted filesystem.  To
+        avoid UUID conflicts, run this only after the filesystem no
+        longer needs to be mounted on the running system.
+        """
+        options = []
+        if fsinfo.get('label'):
+            options.extend(('-L', fsinfo['label']))
+        if fsinfo.get('uuid'):
+            options.extend(('-U', fsinfo['uuid']))
+        if fsinfo.get('type') in ('ext2', 'ext3', 'ext4'):
+            # Time-based checking doesn't make much sense for cloud images
+            options.extend(('-i', '0'))
+        if options:
+            if fsinfo.get('type') in ('ext2', 'ext3', 'ext4'):
+                cmd = ['tune2fs'] + options
+            elif fsinfo.get('type') == 'jfs':
+                cmd = ['jfs_admin'] + options
+            elif fsinfo.get('type') == 'xfs':
+                cmd = ['xfs_admin'] + options
+            cmd.append(device)
+            self.log.info("updating device %s filesystem IDs with ``%s''",
+                          device, _quote_cmd(cmd))
+            subprocess.check_call(cmd)
 
     def __detach_disk_image(self, image, device):
         if self.args['partition'] in ('mbr', 'gpt'):
@@ -529,7 +545,7 @@ def _get_partition_table_type(device, debug=False):
     parted = subprocess.Popen(['parted', '-m', '-s', device, 'print'],
                               stdout=subprocess.PIPE, stderr=stderr_dest)
     stdout, _ = parted.communicate()
-    for line in stdout:
+    for line in stdout.splitlines():
         if line.startswith('/dev/'):
             # /dev/sda:500GB:scsi:512:512:msdos:ATA WDC WD5003ABYX-1;
             line_bits = line.split(':')
