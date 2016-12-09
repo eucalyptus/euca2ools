@@ -35,13 +35,15 @@ import time
 from requestbuilder import Arg, MutuallyExclusiveArgList
 from requestbuilder.command import BaseCommand
 from requestbuilder.exceptions import ArgumentError, ClientError
-from requestbuilder.mixins import FileTransferProgressBarMixin
+from requestbuilder.mixins import (FileTransferProgressBarMixin,
+                                   RegionConfigurableMixin)
 import requests
 
 import euca2ools
 from euca2ools.commands import Euca2ools, SYSCONFDIR
 from euca2ools.commands.argtypes import (delimited_list, filesize,
                                          manifest_block_device_mappings)
+from euca2ools.commands.bootstrap import BootstrapRequest
 from euca2ools.commands.bundle.bundleimage import BundleImage
 
 
@@ -50,7 +52,8 @@ EXCLUDES_FILE = os.path.join(SYSCONFDIR, 'bundle-vol', 'excludes')
 FSTAB_TEMPLATE_FILE = os.path.join(SYSCONFDIR, 'bundle-vol', 'fstab')
 
 
-class BundleVolume(BaseCommand, FileTransferProgressBarMixin):
+class BundleVolume(BaseCommand, FileTransferProgressBarMixin,
+                   RegionConfigurableMixin):
     SUITE = Euca2ools
     DESCRIPTION = ("Prepare this machine's filesystem for use in the cloud\n\n"
                    "This command must be run as the superuser.")
@@ -90,7 +93,7 @@ class BundleVolume(BaseCommand, FileTransferProgressBarMixin):
             Arg('-P', '--partition', choices=('mbr', 'gpt', 'none'),
                 help='''the type of partition table to create (default: attempt
                 to guess based on the existing disk)'''),
-            Arg('-S', '--script', metavar='FILE', help='''location of a script
+            Arg('--script', metavar='FILE', help='''location of a script
                 to run immediately before bundling.  It will receive the
                 volume's mount point as its only argument.'''),
             MutuallyExclusiveArgList(
@@ -103,7 +106,7 @@ class BundleVolume(BaseCommand, FileTransferProgressBarMixin):
                 configuration file to copy to /boot/grub/menu.lst on the
                 bundled image'''),
 
-            # Bundle-related stuff
+            # User- and cloud-specific stuff for bundling
             Arg('-k', '--privatekey', metavar='FILE', help='''file containing
                 your private key to sign the bundle's manifest with.  This
                 private key will also be required to unbundle the image in the
@@ -117,6 +120,14 @@ class BundleVolume(BaseCommand, FileTransferProgressBarMixin):
                 associate with this machine image'''),
             Arg('--ramdisk', metavar='IMAGE', help='''ID of the ramdisk image
                 to associate with this machine image'''),
+            Arg('--bootstrap-url', route_to=None, help='''[Eucalyptus
+                only] bootstrap service endpoint URL (used for obtaining
+                --ec2cert automatically'''),
+            Arg('--bootstrap-service', route_to=None, help=argparse.SUPPRESS),
+            Arg('--bootstrap-auth', route_to=None, help=argparse.SUPPRESS),
+            BootstrapRequest.AUTH_CLASS.ARGS,
+
+            # Obscurities
             Arg('-B', '--block-device-mappings',
                 metavar='VIRTUAL1=DEVICE1,VIRTUAL2=DEVICE2,...',
                 type=manifest_block_device_mappings,
@@ -125,12 +136,14 @@ class BundleVolume(BaseCommand, FileTransferProgressBarMixin):
             Arg('--productcodes', metavar='CODE1,CODE2,...',
                 type=delimited_list(','), default=[],
                 help='comma-separated list of product codes for the image'),
-            Arg('--part-size', type=filesize, default=10485760,
+
+            # Overrides for debugging and other entertaining uses
+            Arg('--part-size', type=filesize, default=10485760,  # 10MB
                 help=argparse.SUPPRESS),
             Arg('--enc-key', type=(lambda s: int(s, 16)),
-                help=argparse.SUPPRESS),
+                help=argparse.SUPPRESS),  # a hex string
             Arg('--enc-iv', type=(lambda s: int(s, 16)),
-                help=argparse.SUPPRESS)]
+                help=argparse.SUPPRESS)]  # a hex string
 
     def configure(self):
         if os.geteuid() != 0:
@@ -151,8 +164,9 @@ class BundleVolume(BaseCommand, FileTransferProgressBarMixin):
                 self.log.warn('could not determine the partition table type '
                               'for root device %s', root_device)
                 raise ArgumentError(
-                    'could not determine the type of partition table to use; '
-                    'specify one with -P/--partition')
+                    'could not determine the type of partition table to use '
+                    'for disk {0}; specify one with -P/--partition'
+                    .format(root_device))
             self.log.info('discovered partition table type %s',
                           self.args['partition'])
         if not self.args.get('fstab') and not self.args.get('generate_fstab'):
@@ -169,7 +183,7 @@ class BundleVolume(BaseCommand, FileTransferProgressBarMixin):
         # Prepare the disk image
         device = self.__create_disk_image(image, self.args['size'])
         try:
-            self.__create_and_mount_filesystem(device, mountpoint)
+            fsinfo = self.__create_and_mount_filesystem(device, mountpoint)
             try:
                 # Copy files
                 exclude_opts = self.__get_exclude_and_include_args()
@@ -186,8 +200,9 @@ class BundleVolume(BaseCommand, FileTransferProgressBarMixin):
 
             except KeyboardInterrupt:
                 self.log.info('received ^C; skipping to cleanup')
-                msg = ('\n\nCleaning up after ^C -- pressing ^C again will '
-                       'result in the need for manual device cleanup\n\n')
+                msg = ('\n\nCleaning up after ^C\nWARNING:  pressing '
+                       '^C again will result in the need for manual '
+                       'device cleanup\n\n')
                 print >> sys.stderr, msg
                 raise
             # Cleanup
@@ -195,6 +210,7 @@ class BundleVolume(BaseCommand, FileTransferProgressBarMixin):
                 time.sleep(0.2)
                 self.__unmount_filesystem(device)
                 os.rmdir(mountpoint)
+            self.__update_filesystem_ids(device, fsinfo)
         finally:
             self.__detach_disk_image(image, device)
 
@@ -213,7 +229,9 @@ class BundleVolume(BaseCommand, FileTransferProgressBarMixin):
         bundle_args = ('prefix', 'destination', 'arch', 'privatekey', 'cert',
                        'ec2cert', 'user', 'kernel', 'ramdisk',
                        'block_device_mappings', 'productcodes', 'part_size',
-                       'enc_key', 'enc_iv', 'show_progress')
+                       'enc_key', 'enc_iv', 'show_progress', 'key_id',
+                       'secret_key', 'security_token', 'bootstrap_url',
+                       'bootstrap_service', 'bootstrap_auth', 'region')
         bundle_args_dict = dict((key, self.args.get(key))
                                 for key in bundle_args)
         return BundleImage.from_other(self, image=image_filename,
@@ -339,19 +357,6 @@ class BundleVolume(BaseCommand, FileTransferProgressBarMixin):
         self.log.info('creating filesystem on %s using metadata from %s: %s',
                       device, root_device, fsinfo)
         fs_cmds = [['mkfs', '-t', fsinfo['type']]]
-        if fsinfo.get('label'):
-            fs_cmds[0].extend(['-L', fsinfo['label']])
-        elif fsinfo['type'] in ('ext2', 'ext3', 'ext4'):
-            if fsinfo.get('uuid'):
-                fs_cmds[0].extend(['-U', fsinfo['uuid']])
-            # Time-based checking doesn't make much sense for cloud images
-            fs_cmds.append(['tune2fs', '-i', '0'])
-        elif fsinfo['type'] == 'jfs':
-            if fsinfo.get('uuid'):
-                fs_cmds.append(['jfs_tune', '-U', fsinfo['uuid']])
-        elif fsinfo['type'] == 'xfs':
-            if fsinfo.get('uuid'):
-                fs_cmds.append(['xfs_admin', '-U', fsinfo['uuid']])
         for fs_cmd in fs_cmds:
             fs_cmd.append(device)
             self.log.info("formatting with ``%s''", _quote_cmd(fs_cmd))
@@ -360,12 +365,39 @@ class BundleVolume(BaseCommand, FileTransferProgressBarMixin):
                       device, mountpoint)
         subprocess.check_call(['mount', '-t', fsinfo['type'], device,
                                mountpoint])
+        return fsinfo
 
     def __unmount_filesystem(self, device):
         self.log.info('unmounting %s', device)
         subprocess.check_call(['sync'])
         time.sleep(0.2)
         subprocess.check_call(['umount', device])
+
+    def __update_filesystem_ids(self, device, fsinfo):
+        """
+        Apply filesystem identifiers to an unmounted filesystem.  To
+        avoid UUID conflicts, run this only after the filesystem no
+        longer needs to be mounted on the running system.
+        """
+        options = []
+        if fsinfo.get('label'):
+            options.extend(('-L', fsinfo['label']))
+        if fsinfo.get('uuid'):
+            options.extend(('-U', fsinfo['uuid']))
+        if fsinfo.get('type') in ('ext2', 'ext3', 'ext4'):
+            # Time-based checking doesn't make much sense for cloud images
+            options.extend(('-i', '0'))
+        if options:
+            if fsinfo.get('type') in ('ext2', 'ext3', 'ext4'):
+                cmd = ['tune2fs'] + options
+            elif fsinfo.get('type') == 'jfs':
+                cmd = ['jfs_admin'] + options
+            elif fsinfo.get('type') == 'xfs':
+                cmd = ['xfs_admin'] + options
+            cmd.append(device)
+            self.log.info("updating device %s filesystem IDs with ``%s''",
+                          device, _quote_cmd(cmd))
+            subprocess.check_call(cmd)
 
     def __detach_disk_image(self, image, device):
         if self.args['partition'] in ('mbr', 'gpt'):
@@ -516,7 +548,7 @@ def _get_partition_table_type(device, debug=False):
     parted = subprocess.Popen(['parted', '-m', '-s', device, 'print'],
                               stdout=subprocess.PIPE, stderr=stderr_dest)
     stdout, _ = parted.communicate()
-    for line in stdout:
+    for line in stdout.splitlines():
         if line.startswith('/dev/'):
             # /dev/sda:500GB:scsi:512:512:msdos:ATA WDC WD5003ABYX-1;
             line_bits = line.split(':')
