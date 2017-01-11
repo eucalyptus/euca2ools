@@ -1,4 +1,4 @@
-# Copyright 2013-2015 Eucalyptus Systems, Inc.
+# Copyright (c) 2013-2017 Hewlett Packard Enterprise Development LP
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -374,6 +374,7 @@ class BundleUploadingMixin(object):
                 raise ArgumentError('--upload-policy-signature is required '
                                     'when using an upload policy')
             self.auth = None
+            self.AUTH_CLASS = None
 
     def get_bundle_key_prefix(self):
         (bucket, _, prefix) = self.args['bucket'].partition('/')
