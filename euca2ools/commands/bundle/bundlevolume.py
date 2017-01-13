@@ -1,4 +1,4 @@
-# Copyright (c) 2009-2016 Hewlett Packard Enterprise Development LP
+# Copyright (c) 2009-2017 Hewlett Packard Enterprise Development LP
 #
 # Redistribution and use of this software in source and binary forms,
 # with or without modification, are permitted provided that the following
@@ -400,6 +400,7 @@ class BundleVolume(BaseCommand, FileTransferProgressBarMixin,
             subprocess.check_call(cmd)
 
     def __detach_disk_image(self, image, device):
+        subprocess.check_call(['sync'])
         if self.args['partition'] in ('mbr', 'gpt'):
             self.log.debug('unmapping partitioned image %s', image)
             cmd = ['kpartx', '-s', '-d', image]
