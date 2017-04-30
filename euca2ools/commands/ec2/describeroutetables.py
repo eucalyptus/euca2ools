@@ -68,6 +68,6 @@ class DescribeRouteTables(EC2Request):
     LIST_TAGS = ['associationSet', 'propagatingVgwSet', 'routeTableSet',
                  'routeSet', 'tagSet']
 
-    def print_result(self, result):
+    def print_result_plain(self, result):
         for table in result.get('routeTableSet') or []:
             self.print_route_table(table)

@@ -36,7 +36,7 @@ class DescribeTags(EC2Request):
                Filter('value')]
     LIST_TAGS = ['tagSet']
 
-    def print_result(self, result):
+    def print_result_plain(self, result):
         for tag in result.get('tagSet', []):
             print self.tabify(['TAG', tag.get('resourceType'),
                                tag.get('resourceId'), tag.get('key'),

@@ -72,7 +72,7 @@ class DescribeVpnConnections(EC2Request):
                       help='ID of the connected virtual private gateway')]
     LIST_TAGS = ['vpnConnectionSet', 'tagSet']
 
-    def print_result(self, result):
+    def print_result_plain(self, result):
         if self.args.get('format') is None:
             stylesheet = self.args.get('stylesheet')
             show_conn_info = bool(stylesheet)

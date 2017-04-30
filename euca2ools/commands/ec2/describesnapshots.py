@@ -85,6 +85,6 @@ class DescribeSnapshots(EC2Request):
         else:
             return self.send()
 
-    def print_result(self, result):
+    def print_result_plain(self, result):
         for snapshot in result.get('snapshotSet', []):
             self.print_snapshot(snapshot)

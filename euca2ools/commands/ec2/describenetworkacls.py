@@ -68,6 +68,6 @@ class DescribeNetworkAcls(EC2Request):
 
     LIST_TAGS = ['associationSet', 'entrySet', 'networkAclSet', 'tagSet']
 
-    def print_result(self, result):
+    def print_result_plain(self, result):
         for acl in result.get('networkAclSet') or []:
             self.print_network_acl(acl)

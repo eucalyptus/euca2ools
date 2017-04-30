@@ -54,6 +54,6 @@ class DescribeVolumes(EC2Request):
                Filter(name='volume-type')]
     LIST_TAGS = ['volumeSet', 'attachmentSet', 'tagSet']
 
-    def print_result(self, result):
+    def print_result_plain(self, result):
         for volume in result.get('volumeSet'):
             self.print_volume(volume)

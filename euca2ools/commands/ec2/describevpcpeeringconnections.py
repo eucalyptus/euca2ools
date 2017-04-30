@@ -58,6 +58,6 @@ class DescribeVpcPeeringConnections(EC2Request):
                       help="the peering connection's ID")]
     LIST_TAGS = ['tagSet', 'vpcPeeringConnectionSet']
 
-    def print_result(self, result):
+    def print_result_plain(self, result):
         for pcx in result.get('vpcPeeringConnectionSet') or []:
             self.print_peering_connection(pcx)

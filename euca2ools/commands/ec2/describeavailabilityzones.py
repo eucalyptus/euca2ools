@@ -39,7 +39,7 @@ class DescribeAvailabilityZones(EC2Request):
                Filter('zone-name', help='name of the availability zone')]
     LIST_TAGS = ['availabilityZoneInfo', 'messageSet']
 
-    def print_result(self, result):
+    def print_result_plain(self, result):
         for zone in result.get('availabilityZoneInfo', []):
             msgs = ', '.join(msg for msg in zone.get('messageSet', []))
             print self.tabify(('AVAILABILITYZONE', zone.get('zoneName'),

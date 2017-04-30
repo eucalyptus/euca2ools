@@ -42,7 +42,7 @@ class DescribeVpcAttribute(EC2Request):
                     help='show whether DNS resolution is enabled'))
             .required()]
 
-    def print_result(self, result):
+    def print_result_plain(self, result):
         if self.args['Attribute'] == 'enableDnsHostnames':
             print self.tabify(('RETURN',
                                result['enableDnsHostnames'].get('value')))

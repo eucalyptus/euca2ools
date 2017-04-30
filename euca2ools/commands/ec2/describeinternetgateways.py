@@ -46,6 +46,6 @@ class DescribeInternetGateways(EC2Request):
 
     LIST_TAGS = ['attachmentSet', 'internetGatewaySet', 'tagSet']
 
-    def print_result(self, result):
+    def print_result_plain(self, result):
         for igw in result.get('internetGatewaySet') or []:
             self.print_internet_gateway(igw)

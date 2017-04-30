@@ -43,6 +43,6 @@ class DescribeVpcs(EC2Request):
                Filter('vpc-id', help="the VPC's ID")]
     LIST_TAGS = ['tagSet', 'vpcSet']
 
-    def print_result(self, result):
+    def print_result_plain(self, result):
         for vpc in result.get('vpcSet') or []:
             self.print_vpc(vpc)

@@ -71,7 +71,7 @@ class DescribeSecurityGroups(EC2Request):
                 self.params.setdefault('GroupName', [])
                 self.params['GroupName'].append(group)
 
-    def print_result(self, result):
+    def print_result_plain(self, result):
         for group in result.get('securityGroupInfo', []):
             self.print_group(group)
 

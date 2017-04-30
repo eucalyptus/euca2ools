@@ -54,6 +54,6 @@ class DescribeSubnets(EC2Request):
                Filter('vpc-id', help="the associated VPC's ID")]
     LIST_TAGS = ['subnetSet', 'tagSet']
 
-    def print_result(self, result):
+    def print_result_plain(self, result):
         for subnet in result.get('subnetSet') or []:
             self.print_subnet(subnet)

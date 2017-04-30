@@ -25,6 +25,7 @@
 
 import argparse
 import io
+import json
 from operator import itemgetter
 import os.path
 import socket
@@ -72,8 +73,29 @@ class EC2Request(AWSQueryRequest, TabifyingMixin):
     AUTH_CLASS = requestbuilder.auth.aws.HmacV4Auth
     METHOD = 'POST'
 
+    ARGS = [Arg('--pretty', choices=('json',), route_to=None,
+                help='''pretty print output format''')]
+
     def __init__(self, **kwargs):
         AWSQueryRequest.__init__(self, **kwargs)
+
+    def print_result(self, result):
+        if self.args.get('pretty') == 'json':
+            self.print_result_json(result)
+        else:
+            self.print_result_plain(result)
+
+    def print_result_json(self, result):
+        '''
+        Pretty print result in json format
+        '''
+        print json.dumps(result, sort_keys=True, indent=2)
+
+    def print_result_plain(self, result):
+        '''
+        Print result in plain format (default)
+        '''
+        pass
 
     def print_resource_tag(self, resource_tag, resource_id):
         resource_type = RESOURCE_TYPE_MAP.lookup(resource_id)

@@ -46,6 +46,6 @@ class DescribeBundleTasks(EC2Request):
                Filter('update-time', help='most recent task update time')]
     LIST_TAGS = ['bundleInstanceTasksSet']
 
-    def print_result(self, result):
+    def print_result_plain(self, result):
         for task in result.get('bundleInstanceTasksSet', []):
             self.print_bundle_task(task)

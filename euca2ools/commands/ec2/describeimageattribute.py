@@ -50,7 +50,7 @@ class DescribeImageAttribute(EC2Request):
             .required()]
     LIST_TAGS = ['blockDeviceMapping', 'launchPermission', 'productCodes']
 
-    def print_result(self, result):
+    def print_result_plain(self, result):
         image_id = result.get('imageId')
         for perm in result.get('launchPermission', []):
             for (entity_type, entity_name) in perm.items():

@@ -41,7 +41,7 @@ class DescribeSnapshotAttribute(EC2Request):
             .required()]
     LIST_TAGS = ['createVolumePermission', 'productCodes']
 
-    def print_result(self, result):
+    def print_result_plain(self, result):
         snapshot_id = result.get('snapshotId')
         for perm in result.get('createVolumePermission', []):
             for (entity_type, entity_name) in perm.items():

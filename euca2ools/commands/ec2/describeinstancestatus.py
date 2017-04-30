@@ -69,7 +69,7 @@ class DescribeInstanceStatus(EC2Request):
                       help="instance's system reachability status")]
     LIST_TAGS = ['instanceStatusSet', 'details', 'eventsSet']
 
-    def print_result(self, result):
+    def print_result_plain(self, result):
         for sset in result.get('instanceStatusSet') or []:
             if (self.args.get('hide_healthy', False) and
                     sset.get('systemStatus', {}).get('status') == 'ok' and

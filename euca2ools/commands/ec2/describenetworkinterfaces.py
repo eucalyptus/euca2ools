@@ -106,6 +106,6 @@ class DescribeNetworkInterfaces(EC2Request):
     LIST_TAGS = ['groupSet', 'networkInterfaceSet', 'privateIpAddressesSet',
                  'tagSet']
 
-    def print_result(self, result):
+    def print_result_plain(self, result):
         for nic in result.get('networkInterfaceSet') or []:
             self.print_interface(nic)

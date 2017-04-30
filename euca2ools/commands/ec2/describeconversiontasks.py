@@ -33,6 +33,6 @@ class DescribeConversionTasks(EC2Request):
                 help='limit results to specific tasks')]
     LIST_TAGS = ['conversionTasks', 'volumes']
 
-    def print_result(self, result):
+    def print_result_plain(self, result):
         for task in result.get('conversionTasks') or []:
             self.print_conversion_task(task)

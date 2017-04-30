@@ -78,7 +78,7 @@ class DescribeInstanceAttribute(EC2Request):
             .required()]
     LIST_TAGS = ['blockDeviceMapping', 'groupSet', 'productCodes']
 
-    def print_result(self, result):
+    def print_result_plain(self, result):
         # Deal with complex data first
         if self.args['Attribute'] == 'blockDeviceMapping':
             for mapping in result.get('blockDeviceMapping', []):

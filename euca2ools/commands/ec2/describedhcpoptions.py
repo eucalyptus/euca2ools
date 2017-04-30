@@ -46,6 +46,6 @@ class DescribeDhcpOptions(EC2Request):
     LIST_TAGS = ['dhcpConfigurationSet', 'dhcpOptionsSet', 'tagSet',
                  'valueSet']
 
-    def print_result(self, result):
+    def print_result_plain(self, result):
         for dopt in result.get('dhcpOptionsSet', []):
             self.print_dhcp_options(dopt)

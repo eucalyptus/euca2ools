@@ -34,7 +34,7 @@ class DescribeAccountAttributes(EC2Request):
                 help='limit results to specific account attributes')]
     LIST_TAGS = ['accountAttributeSet', 'attributeValueSet']
 
-    def print_result(self, result):
+    def print_result_plain(self, result):
         for attr in result.get('accountAttributeSet') or []:
             print self.tabify(('ACCOUNTATTRIBUTE', attr.get('attributeName')))
             for value in attr.get('attributeValueSet') or []:

@@ -48,6 +48,6 @@ class DescribeCustomerGateways(EC2Request):
 
     LIST_TAGS = ['customerGatewaySet', 'tagSet']
 
-    def print_result(self, result):
+    def print_result_plain(self, result):
         for cgw in result.get('customerGatewaySet', []):
             self.print_customer_gateway(cgw)

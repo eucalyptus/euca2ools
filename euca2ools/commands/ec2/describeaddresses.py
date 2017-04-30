@@ -56,7 +56,7 @@ class DescribeAddresses(EC2Request):
         if public_ips:
             self.params['PublicIp'] = list(sorted(public_ips))
 
-    def print_result(self, result):
+    def print_result_plain(self, result):
         for addr in result.get('addressesSet', []):
             print self.tabify(('ADDRESS', addr.get('publicIp'),
                                addr.get('instanceId'),

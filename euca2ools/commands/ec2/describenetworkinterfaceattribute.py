@@ -50,7 +50,7 @@ class DescribeNetworkInterfaceAttribute(EC2Request):
 
     LIST_TAGS = ['groupSet']
 
-    def print_result(self, result):
+    def print_result_plain(self, result):
         print self.tabify(('NETWORKINTERFACE',
                            result.get('networkInterfaceId'),
                            self.args['Attribute']))

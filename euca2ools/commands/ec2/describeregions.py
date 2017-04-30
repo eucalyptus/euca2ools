@@ -35,7 +35,7 @@ class DescribeRegions(EC2Request):
                Filter('region-name')]
     LIST_TAGS = ['regionInfo']
 
-    def print_result(self, result):
+    def print_result_plain(self, result):
         for region in result.get('regionInfo', []):
             print self.tabify(('REGION', region.get('regionName'),
                                region.get('regionEndpoint')))

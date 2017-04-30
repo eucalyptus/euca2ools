@@ -35,7 +35,7 @@ class DescribeKeyPairs(EC2Request):
                Filter('key-name', help='name of the key pair')]
     LIST_TAGS = ['keySet']
 
-    def print_result(self, result):
+    def print_result_plain(self, result):
         for key in result.get('keySet', []):
             print self.tabify(('KEYPAIR', key.get('keyName'),
                                key.get('keyFingerprint')))
